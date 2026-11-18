@@ -1,52 +1,52 @@
 # Captured on the full engine hak set (scripts/ci/fetch-engine-test-haks.sh checkout, prepare-engine-test-home.sh staging, SWLOR.CLI --hak), host entry; compare only on that set, not on the debugserver hak set.
 open 1 step
-open 2 engine NuiCreate <player>, <json>, GUI_WINDOW_PlayerGuide
-open 3 engine NuiSetBind <player>, 1, Geometry, <json>
-open 4 engine NuiSetBind <player>, 1, Geometry, <json>
+open 2 engine NuiCreate <player>, <622 chars hash 91ee5eb6bccfe8eae8f8f13fe427413c> {"accepts_input":true,"border":true,"closable":true,"collapsed":null,"geometry":{"bind":"Geometry"},"resizable":true,"ro, GUI_WINDOW_PlayerGuide
+open 3 engine NuiSetBind <player>, 1, Geometry, {"h":640.0,"w":980.0,"x":0.0,"y":0.0}
+open 4 engine NuiSetBind <player>, 1, Geometry, {"h":640.0,"w":980.0,"x":0.0,"y":0.0}
 open 5 engine NuiSetBindWatch <player>, 1, Geometry, True
 open 6 property ModalInputText ""
-open 7 engine NuiSetBind <player>, 1, ModalInputText, <json>
-open 8 engine NuiSetBind <player>, 1, ModalInputText, <json>
+open 7 engine NuiSetBind <player>, 1, ModalInputText, ""
+open 8 engine NuiSetBind <player>, 1, ModalInputText, ""
 open 9 engine NuiSetBindWatch <player>, 1, ModalInputText, True
-open 10 engine NuiSetGroupLayout <player>, 1, _window_, <json>
-open 11 engine NuiSetBind <player>, 1, Geometry, <json>
+open 10 engine NuiSetGroupLayout <player>, 1, _window_, <5208 chars hash 2fb6cc411359894ea8bee285724ebbd6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+open 11 engine NuiSetBind <player>, 1, Geometry, {"h":641.0,"w":980.0,"x":0.0,"y":0.0}
 open 12 property SearchText ""
-open 13 engine NuiSetBind <player>, 1, SearchText, <json>
+open 13 engine NuiSetBind <player>, 1, SearchText, ""
 open 14 property TopicButtonTexts <1152 chars hash 9e5f43557ac51dea05cf26c05805cf16> ["Common Questions","Communication","Skills","Skill Decay","Perks","Force Affinity","Perk Refunds","XP Debt","Abilities"
-open 15 engine NuiSetBind <player>, 1, TopicButtonTexts_RowCount, <json>
-open 16 engine NuiSetBind <player>, 1, TopicButtonTexts_RowVisibility, <json>
-open 17 engine NuiSetBind <player>, 1, TopicButtonTexts, <json>
+open 15 engine NuiSetBind <player>, 1, TopicButtonTexts_RowCount, 57
+open 16 engine NuiSetBind <player>, 1, TopicButtonTexts_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
+open 17 engine NuiSetBind <player>, 1, TopicButtonTexts, <1152 chars hash 9e5f43557ac51dea05cf26c05805cf16> ["Common Questions","Communication","Skills","Skill Decay","Perks","Force Affinity","Perk Refunds","XP Debt","Abilities"
 open 18 property TopicSelections [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-open 19 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-open 20 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-open 21 engine NuiSetBind <player>, 1, TopicSelections, <json>
+open 19 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+open 20 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
+open 21 engine NuiSetBind <player>, 1, TopicSelections, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 open 22 property TopicTooltips <5572 chars hash 0fa340a5a0f0831fe3fcf0e4dbf9db73> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
-open 23 engine NuiSetBind <player>, 1, TopicTooltips_RowCount, <json>
-open 24 engine NuiSetBind <player>, 1, TopicTooltips_RowVisibility, <json>
-open 25 engine NuiSetBind <player>, 1, TopicTooltips, <json>
+open 23 engine NuiSetBind <player>, 1, TopicTooltips_RowCount, 57
+open 24 engine NuiSetBind <player>, 1, TopicTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
+open 25 engine NuiSetBind <player>, 1, TopicTooltips, <5572 chars hash 0fa340a5a0f0831fe3fcf0e4dbf9db73> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
 open 26 property TopicSelections [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-open 27 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-open 28 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-open 29 engine NuiSetBind <player>, 1, TopicSelections, <json>
+open 27 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+open 28 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
+open 29 engine NuiSetBind <player>, 1, TopicSelections, [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 open 30 property SelectedTopicCategory "CORE"
-open 31 engine NuiSetBind <player>, 1, SelectedTopicCategory, <json>
+open 31 engine NuiSetBind <player>, 1, SelectedTopicCategory, "CORE"
 open 32 property SelectedTopicName "Common Questions"
-open 33 engine NuiSetBind <player>, 1, SelectedTopicName, <json>
+open 33 engine NuiSetBind <player>, 1, SelectedTopicName, "Common Questions"
 open 34 property SelectedTopicSummary "Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windows."
-open 35 engine NuiSetBind <player>, 1, SelectedTopicSummary, <json>
+open 35 engine NuiSetBind <player>, 1, SelectedTopicSummary, "Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windows."
 open 36 property SelectedArticleBody <2771 chars hash 4c09bcb346be4d0c44e1950e8709d023> "SKILLS\nSkills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 SP from skill 
-open 37 engine NuiSetBind <player>, 1, SelectedArticleBody, <json>
+open 37 engine NuiSetBind <player>, 1, SelectedArticleBody, <2771 chars hash 4c09bcb346be4d0c44e1950e8709d023> "SKILLS\nSkills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 SP from skill 
 open 38 property QuestionSummaryText <1549 chars hash b159acb24e7baf0e0139cb7a19f8da27> "Q: How do skills work?\nA: Skill XP raises individual skills. Skill ranks create earned SP until 400; languages do not 
-open 39 engine NuiSetBind <player>, 1, QuestionSummaryText, <json>
+open 39 engine NuiSetBind <player>, 1, QuestionSummaryText, <1549 chars hash b159acb24e7baf0e0139cb7a19f8da27> "Q: How do skills work?\nA: Skill XP raises individual skills. Skill ranks create earned SP until 400; languages do not 
 open 40 property RelatedTopicTexts ["Communication","Skills","Attributes","Perks","Skill Decay","Perk Refunds","XP Debt","Death & Recovery","Combat Basics","Crafting","Travel & Navigation","Beasts & Stables","Droids","Quests & Key Items","Useful Windows"]
-open 41 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, <json>
-open 42 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, <json>
-open 43 engine NuiSetBind <player>, 1, RelatedTopicTexts, <json>
+open 41 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, 15
+open 42 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
+open 43 engine NuiSetBind <player>, 1, RelatedTopicTexts, ["Communication","Skills","Attributes","Perks","Skill Decay","Perk Refunds","XP Debt","Death & Recovery","Combat Basics","Crafting","Travel & Navigation","Beasts & Stables","Droids","Quests & Key Items","Useful Windows"]
 open 44 property RelatedTopicTooltips <1395 chars hash 9bbea88c94de99a3360be50349187038> ["Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and set
-open 45 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, <json>
-open 46 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, <json>
-open 47 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <json>
-open 48 engine NuiSetBind <player>, 1, SearchText, <json>
+open 45 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, 15
+open 46 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
+open 47 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <1395 chars hash 9bbea88c94de99a3360be50349187038> ["Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and set
+open 48 engine NuiSetBind <player>, 1, SearchText, ""
 open 49 engine NuiSetBindWatch <player>, 1, SearchText, True
 open 50 state carried
 open 51 state worn Chest=farmer_outfit002
@@ -54,431 +54,431 @@ open 52 state feats 2,3,4,10,28,32,45,46,106,258,1089
 open 53 state quickbar 0=10:1:;1=10:0:;2=4:28:
 select-topic-0 1 step
 select-topic-0 2 property TopicSelections [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-topic-0 3 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-select-topic-0 4 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-select-topic-0 5 engine NuiSetBind <player>, 1, TopicSelections, <json>
+select-topic-0 3 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+select-topic-0 4 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
+select-topic-0 5 engine NuiSetBind <player>, 1, TopicSelections, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 select-topic-0 6 property TopicSelections [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-topic-0 7 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-select-topic-0 8 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-select-topic-0 9 engine NuiSetBind <player>, 1, TopicSelections, <json>
+select-topic-0 7 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+select-topic-0 8 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
+select-topic-0 9 engine NuiSetBind <player>, 1, TopicSelections, [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 select-topic-0 10 property SelectedTopicCategory "CORE"
-select-topic-0 11 engine NuiSetBind <player>, 1, SelectedTopicCategory, <json>
+select-topic-0 11 engine NuiSetBind <player>, 1, SelectedTopicCategory, "CORE"
 select-topic-0 12 property SelectedTopicName "Common Questions"
-select-topic-0 13 engine NuiSetBind <player>, 1, SelectedTopicName, <json>
+select-topic-0 13 engine NuiSetBind <player>, 1, SelectedTopicName, "Common Questions"
 select-topic-0 14 property SelectedTopicSummary "Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windows."
-select-topic-0 15 engine NuiSetBind <player>, 1, SelectedTopicSummary, <json>
+select-topic-0 15 engine NuiSetBind <player>, 1, SelectedTopicSummary, "Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windows."
 select-topic-0 16 property SelectedArticleBody <2771 chars hash 4c09bcb346be4d0c44e1950e8709d023> "SKILLS\nSkills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 SP from skill 
-select-topic-0 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <json>
+select-topic-0 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <2771 chars hash 4c09bcb346be4d0c44e1950e8709d023> "SKILLS\nSkills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 SP from skill 
 select-topic-0 18 property QuestionSummaryText <1549 chars hash b159acb24e7baf0e0139cb7a19f8da27> "Q: How do skills work?\nA: Skill XP raises individual skills. Skill ranks create earned SP until 400; languages do not 
-select-topic-0 19 engine NuiSetBind <player>, 1, QuestionSummaryText, <json>
+select-topic-0 19 engine NuiSetBind <player>, 1, QuestionSummaryText, <1549 chars hash b159acb24e7baf0e0139cb7a19f8da27> "Q: How do skills work?\nA: Skill XP raises individual skills. Skill ranks create earned SP until 400; languages do not 
 select-topic-0 20 property RelatedTopicTexts ["Communication","Skills","Attributes","Perks","Skill Decay","Perk Refunds","XP Debt","Death & Recovery","Combat Basics","Crafting","Travel & Navigation","Beasts & Stables","Droids","Quests & Key Items","Useful Windows"]
-select-topic-0 21 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, <json>
-select-topic-0 22 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, <json>
-select-topic-0 23 engine NuiSetBind <player>, 1, RelatedTopicTexts, <json>
+select-topic-0 21 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, 15
+select-topic-0 22 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
+select-topic-0 23 engine NuiSetBind <player>, 1, RelatedTopicTexts, ["Communication","Skills","Attributes","Perks","Skill Decay","Perk Refunds","XP Debt","Death & Recovery","Combat Basics","Crafting","Travel & Navigation","Beasts & Stables","Droids","Quests & Key Items","Useful Windows"]
 select-topic-0 24 property RelatedTopicTooltips <1395 chars hash 9bbea88c94de99a3360be50349187038> ["Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and set
-select-topic-0 25 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, <json>
-select-topic-0 26 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, <json>
-select-topic-0 27 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <json>
+select-topic-0 25 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, 15
+select-topic-0 26 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
+select-topic-0 27 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <1395 chars hash 9bbea88c94de99a3360be50349187038> ["Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and set
 select-topic-0 28 state carried
 select-topic-0 29 state worn Chest=farmer_outfit002
 select-topic-0 30 state feats 2,3,4,10,28,32,45,46,106,258,1089
 select-topic-0 31 state quickbar 0=10:1:;1=10:0:;2=4:28:
 select-topic-1 1 step
 select-topic-1 2 property TopicSelections [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-topic-1 3 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-select-topic-1 4 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-select-topic-1 5 engine NuiSetBind <player>, 1, TopicSelections, <json>
+select-topic-1 3 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+select-topic-1 4 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
+select-topic-1 5 engine NuiSetBind <player>, 1, TopicSelections, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 select-topic-1 6 property TopicSelections [false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-topic-1 7 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-select-topic-1 8 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-select-topic-1 9 engine NuiSetBind <player>, 1, TopicSelections, <json>
+select-topic-1 7 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+select-topic-1 8 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
+select-topic-1 9 engine NuiSetBind <player>, 1, TopicSelections, [false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 select-topic-1 10 property SelectedTopicCategory "SOCIAL"
-select-topic-1 11 engine NuiSetBind <player>, 1, SelectedTopicCategory, <json>
+select-topic-1 11 engine NuiSetBind <player>, 1, SelectedTopicCategory, "SOCIAL"
 select-topic-1 12 property SelectedTopicName "Communication"
-select-topic-1 13 engine NuiSetBind <player>, 1, SelectedTopicName, <json>
+select-topic-1 13 engine NuiSetBind <player>, 1, SelectedTopicName, "Communication"
 select-topic-1 14 property SelectedTopicSummary "Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and settings."
-select-topic-1 15 engine NuiSetBind <player>, 1, SelectedTopicSummary, <json>
+select-topic-1 15 engine NuiSetBind <player>, 1, SelectedTopicSummary, "Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and settings."
 select-topic-1 16 property SelectedArticleBody <4335 chars hash f850ff831703f3f9b8d01f4fb8f6d4ce> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
-select-topic-1 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <json>
+select-topic-1 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <4335 chars hash f850ff831703f3f9b8d01f4fb8f6d4ce> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
 select-topic-1 18 property QuestionSummaryText <1715 chars hash d2f9039ceea69599491345fcba10555a> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
-select-topic-1 19 engine NuiSetBind <player>, 1, QuestionSummaryText, <json>
+select-topic-1 19 engine NuiSetBind <player>, 1, QuestionSummaryText, <1715 chars hash d2f9039ceea69599491345fcba10555a> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
 select-topic-1 20 property RelatedTopicTexts ["Common Questions","Useful Windows","Skills","Quests & Key Items","Disguises","Death & Recovery"]
-select-topic-1 21 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, <json>
-select-topic-1 22 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, <json>
-select-topic-1 23 engine NuiSetBind <player>, 1, RelatedTopicTexts, <json>
+select-topic-1 21 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, 15
+select-topic-1 22 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, [true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false]
+select-topic-1 23 engine NuiSetBind <player>, 1, RelatedTopicTexts, ["Common Questions","Useful Windows","Skills","Quests & Key Items","Disguises","Death & Recovery"]
 select-topic-1 24 property RelatedTopicTooltips <568 chars hash 9f836847ea61440c5697337ee2bf974c> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
-select-topic-1 25 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, <json>
-select-topic-1 26 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, <json>
-select-topic-1 27 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <json>
+select-topic-1 25 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, 15
+select-topic-1 26 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, [true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false]
+select-topic-1 27 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <568 chars hash 9f836847ea61440c5697337ee2bf974c> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
 select-topic-1 28 state carried
 select-topic-1 29 state worn Chest=farmer_outfit002
 select-topic-1 30 state feats 2,3,4,10,28,32,45,46,106,258,1089
 select-topic-1 31 state quickbar 0=10:1:;1=10:0:;2=4:28:
 select-topic-28 1 step
 select-topic-28 2 property TopicSelections [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-topic-28 3 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-select-topic-28 4 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-select-topic-28 5 engine NuiSetBind <player>, 1, TopicSelections, <json>
+select-topic-28 3 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+select-topic-28 4 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
+select-topic-28 5 engine NuiSetBind <player>, 1, TopicSelections, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 select-topic-28 6 property TopicSelections [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-topic-28 7 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-select-topic-28 8 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-select-topic-28 9 engine NuiSetBind <player>, 1, TopicSelections, <json>
+select-topic-28 7 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+select-topic-28 8 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
+select-topic-28 9 engine NuiSetBind <player>, 1, TopicSelections, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 select-topic-28 10 property SelectedTopicCategory "ACTIVITIES"
-select-topic-28 11 engine NuiSetBind <player>, 1, SelectedTopicCategory, <json>
+select-topic-28 11 engine NuiSetBind <player>, 1, SelectedTopicCategory, "ACTIVITIES"
 select-topic-28 12 property SelectedTopicName "Ships & Space"
-select-topic-28 13 engine NuiSetBind <player>, 1, SelectedTopicName, <json>
+select-topic-28 13 engine NuiSetBind <player>, 1, SelectedTopicName, "Ships & Space"
 select-topic-28 14 property SelectedTopicSummary "Ship deeds, registration, boarding, piloting, permissions, modules, targeting, repairs, shields, hull, and capacitor."
-select-topic-28 15 engine NuiSetBind <player>, 1, SelectedTopicSummary, <json>
+select-topic-28 15 engine NuiSetBind <player>, 1, SelectedTopicSummary, "Ship deeds, registration, boarding, piloting, permissions, modules, targeting, repairs, shields, hull, and capacitor."
 select-topic-28 16 property SelectedArticleBody <1374 chars hash 9d89f1c477cbd9cedf829270172e67a0> "REGISTERING SHIPS\nShip Management can register ship deeds from your inventory. You can have up to 10 registered ships.
-select-topic-28 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <json>
+select-topic-28 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <1374 chars hash 9d89f1c477cbd9cedf829270172e67a0> "REGISTERING SHIPS\nShip Management can register ship deeds from your inventory. You can have up to 10 registered ships.
 select-topic-28 18 property QuestionSummaryText "Q: How many ships can I register?\nA: Up to 10.\n\nQ: Why can't I pilot?\nA: You may lack Pilot Ship permission, the required ship or module perks, or the ship controls may already be in use.\n\nQ: Why won't a module install?\nA: It may be the wrong slot type, require a perk, or require a different ship class.\n\nQ: What lowers repair cost?\nA: Starport upgrades and Social can reduce the bill."
-select-topic-28 19 engine NuiSetBind <player>, 1, QuestionSummaryText, <json>
+select-topic-28 19 engine NuiSetBind <player>, 1, QuestionSummaryText, "Q: How many ships can I register?\nA: Up to 10.\n\nQ: Why can't I pilot?\nA: You may lack Pilot Ship permission, the required ship or module perks, or the ship controls may already be in use.\n\nQ: Why won't a module install?\nA: It may be the wrong slot type, require a perk, or require a different ship class.\n\nQ: What lowers repair cost?\nA: Starport upgrades and Social can reduce the bill."
 select-topic-28 20 property RelatedTopicTexts ["Housing & Markets","Travel & Navigation","Perks","Combat Basics","Useful Windows"]
-select-topic-28 21 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, <json>
-select-topic-28 22 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, <json>
-select-topic-28 23 engine NuiSetBind <player>, 1, RelatedTopicTexts, <json>
+select-topic-28 21 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, 15
+select-topic-28 22 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, [true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false]
+select-topic-28 23 engine NuiSetBind <player>, 1, RelatedTopicTexts, ["Housing & Markets","Travel & Navigation","Perks","Combat Basics","Useful Windows"]
 select-topic-28 24 property RelatedTopicTooltips <464 chars hash 9ecdd0bb0f836cf1c49bcae0b3dca4a9> ["Apartments, leases, permissions, storage, banks, markets, listings, taxes, and tills.","CZ-220 orientation, scheduled 
-select-topic-28 25 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, <json>
-select-topic-28 26 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, <json>
-select-topic-28 27 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <json>
+select-topic-28 25 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, 15
+select-topic-28 26 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, [true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false]
+select-topic-28 27 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <464 chars hash 9ecdd0bb0f836cf1c49bcae0b3dca4a9> ["Apartments, leases, permissions, storage, banks, markets, listings, taxes, and tills.","CZ-220 orientation, scheduled 
 select-topic-28 28 state carried
 select-topic-28 29 state worn Chest=farmer_outfit002
 select-topic-28 30 state feats 2,3,4,10,28,32,45,46,106,258,1089
 select-topic-28 31 state quickbar 0=10:1:;1=10:0:;2=4:28:
 select-topic-56 1 step
 select-topic-56 2 property TopicSelections [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-topic-56 3 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-select-topic-56 4 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-select-topic-56 5 engine NuiSetBind <player>, 1, TopicSelections, <json>
+select-topic-56 3 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+select-topic-56 4 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
+select-topic-56 5 engine NuiSetBind <player>, 1, TopicSelections, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 select-topic-56 6 property TopicSelections [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true]
-select-topic-56 7 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-select-topic-56 8 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-select-topic-56 9 engine NuiSetBind <player>, 1, TopicSelections, <json>
+select-topic-56 7 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+select-topic-56 8 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
+select-topic-56 9 engine NuiSetBind <player>, 1, TopicSelections, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true]
 select-topic-56 10 property SelectedTopicCategory "COMBAT STYLES"
-select-topic-56 11 engine NuiSetBind <player>, 1, SelectedTopicCategory, <json>
+select-topic-56 11 engine NuiSetBind <player>, 1, SelectedTopicCategory, "COMBAT STYLES"
 select-topic-56 12 property SelectedTopicName "Vibroknife Combat Styles"
-select-topic-56 13 engine NuiSetBind <player>, 1, SelectedTopicName, <json>
+select-topic-56 13 engine NuiSetBind <player>, 1, SelectedTopicName, "Vibroknife Combat Styles"
 select-topic-56 14 property SelectedTopicSummary "Choose Vibroknife for attacks that exploit Exposed targets or extend Venom and Infection."
-select-topic-56 15 engine NuiSetBind <player>, 1, SelectedTopicSummary, <json>
+select-topic-56 15 engine NuiSetBind <player>, 1, SelectedTopicSummary, "Choose Vibroknife for attacks that exploit Exposed targets or extend Venom and Infection."
 select-topic-56 16 property SelectedArticleBody "VIBROKNIFE - SABOTEUR\nSaboteur attacks apply Exposed and gain extra damage against targets already affected by it.\n\nVIBROKNIFE - SHADOW\nShadow attacks apply Venom and can extend Venom or Infection already affecting a target."
-select-topic-56 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <json>
+select-topic-56 17 engine NuiSetBind <player>, 1, SelectedArticleBody, "VIBROKNIFE - SABOTEUR\nSaboteur attacks apply Exposed and gain extra damage against targets already affected by it.\n\nVIBROKNIFE - SHADOW\nShadow attacks apply Venom and can extend Venom or Infection already affecting a target."
 select-topic-56 18 property QuestionSummaryText "Q: What does Vibroknife focus on?\nA: Choose Vibroknife for attacks that exploit Exposed targets or extend Venom and Infection."
-select-topic-56 19 engine NuiSetBind <player>, 1, QuestionSummaryText, <json>
+select-topic-56 19 engine NuiSetBind <player>, 1, QuestionSummaryText, "Q: What does Vibroknife focus on?\nA: Choose Vibroknife for attacks that exploit Exposed targets or extend Venom and Infection."
 select-topic-56 20 property RelatedTopicTexts ["Perks","Combat Basics","Espionage","Twin Blade Combat Styles"]
-select-topic-56 21 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, <json>
-select-topic-56 22 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, <json>
-select-topic-56 23 engine NuiSetBind <player>, 1, RelatedTopicTexts, <json>
+select-topic-56 21 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, 15
+select-topic-56 22 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, [true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false]
+select-topic-56 23 engine NuiSetBind <player>, 1, RelatedTopicTexts, ["Perks","Combat Basics","Espionage","Twin Blade Combat Styles"]
 select-topic-56 24 property RelatedTopicTooltips ["Perk ranks, SP prices, requirements, colors, Force Affinity, beast perks, and granted effects.","HP, FP, STM, hit chance, damage, defenses, resistances, deflection, guard, and character-sheet stats.","Infiltration, slicing, poisoncraft, trapcraft, Force Sensitive spies, and how Espionage XP is earned.","Choose Twin Blade for repeated attacks that build momentum or spread bleeding."]
-select-topic-56 25 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, <json>
-select-topic-56 26 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, <json>
-select-topic-56 27 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <json>
+select-topic-56 25 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, 15
+select-topic-56 26 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, [true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false]
+select-topic-56 27 engine NuiSetBind <player>, 1, RelatedTopicTooltips, ["Perk ranks, SP prices, requirements, colors, Force Affinity, beast perks, and granted effects.","HP, FP, STM, hit chance, damage, defenses, resistances, deflection, guard, and character-sheet stats.","Infiltration, slicing, poisoncraft, trapcraft, Force Sensitive spies, and how Espionage XP is earned.","Choose Twin Blade for repeated attacks that build momentum or spread bleeding."]
 select-topic-56 28 state carried
 select-topic-56 29 state worn Chest=farmer_outfit002
 select-topic-56 30 state feats 2,3,4,10,28,32,45,46,106,258,1089
 select-topic-56 31 state quickbar 0=10:1:;1=10:0:;2=4:28:
 search-attack 1 step
 search-attack 2 property SearchText "attack"
-search-attack 3 engine NuiSetBind <player>, 1, SearchText, <json>
+search-attack 3 engine NuiSetBind <player>, 1, SearchText, "attack"
 search-attack 4 property TopicButtonTexts <619 chars hash f0cdea1ba1ee3699da96afafcc0a5062> ["Common Questions","Attributes","Death & Recovery","PvP Combat","Combat Basics","Stat Caps","Espionage","Control & Harm
-search-attack 5 engine NuiSetBind <player>, 1, TopicButtonTexts_RowCount, <json>
-search-attack 6 engine NuiSetBind <player>, 1, TopicButtonTexts_RowVisibility, <json>
-search-attack 7 engine NuiSetBind <player>, 1, TopicButtonTexts, <json>
+search-attack 5 engine NuiSetBind <player>, 1, TopicButtonTexts_RowCount, 57
+search-attack 6 engine NuiSetBind <player>, 1, TopicButtonTexts_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+search-attack 7 engine NuiSetBind <player>, 1, TopicButtonTexts, <619 chars hash f0cdea1ba1ee3699da96afafcc0a5062> ["Common Questions","Attributes","Death & Recovery","PvP Combat","Combat Basics","Stat Caps","Espionage","Control & Harm
 search-attack 8 property TopicSelections [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true]
-search-attack 9 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-search-attack 10 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-search-attack 11 engine NuiSetBind <player>, 1, TopicSelections, <json>
+search-attack 9 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+search-attack 10 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+search-attack 11 engine NuiSetBind <player>, 1, TopicSelections, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true]
 search-attack 12 property TopicTooltips <2636 chars hash f2e83b4884d014577e2819c6c6cb9993> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
-search-attack 13 engine NuiSetBind <player>, 1, TopicTooltips_RowCount, <json>
-search-attack 14 engine NuiSetBind <player>, 1, TopicTooltips_RowVisibility, <json>
-search-attack 15 engine NuiSetBind <player>, 1, TopicTooltips, <json>
+search-attack 13 engine NuiSetBind <player>, 1, TopicTooltips_RowCount, 57
+search-attack 14 engine NuiSetBind <player>, 1, TopicTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+search-attack 15 engine NuiSetBind <player>, 1, TopicTooltips, <2636 chars hash f2e83b4884d014577e2819c6c6cb9993> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
 search-attack 16 property TopicSelections [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-search-attack 17 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-search-attack 18 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-search-attack 19 engine NuiSetBind <player>, 1, TopicSelections, <json>
+search-attack 17 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+search-attack 18 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+search-attack 19 engine NuiSetBind <player>, 1, TopicSelections, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 search-attack 20 property TopicSelections [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-search-attack 21 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-search-attack 22 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-search-attack 23 engine NuiSetBind <player>, 1, TopicSelections, <json>
+search-attack 21 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+search-attack 22 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+search-attack 23 engine NuiSetBind <player>, 1, TopicSelections, [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 search-attack 24 property SelectedTopicCategory "CORE"
-search-attack 25 engine NuiSetBind <player>, 1, SelectedTopicCategory, <json>
+search-attack 25 engine NuiSetBind <player>, 1, SelectedTopicCategory, "CORE"
 search-attack 26 property SelectedTopicName "Common Questions"
-search-attack 27 engine NuiSetBind <player>, 1, SelectedTopicName, <json>
+search-attack 27 engine NuiSetBind <player>, 1, SelectedTopicName, "Common Questions"
 search-attack 28 property SelectedTopicSummary "Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windows."
-search-attack 29 engine NuiSetBind <player>, 1, SelectedTopicSummary, <json>
+search-attack 29 engine NuiSetBind <player>, 1, SelectedTopicSummary, "Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windows."
 search-attack 30 property SelectedArticleBody <2771 chars hash 4c09bcb346be4d0c44e1950e8709d023> "SKILLS\nSkills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 SP from skill 
-search-attack 31 engine NuiSetBind <player>, 1, SelectedArticleBody, <json>
+search-attack 31 engine NuiSetBind <player>, 1, SelectedArticleBody, <2771 chars hash 4c09bcb346be4d0c44e1950e8709d023> "SKILLS\nSkills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 SP from skill 
 search-attack 32 property QuestionSummaryText <1549 chars hash b159acb24e7baf0e0139cb7a19f8da27> "Q: How do skills work?\nA: Skill XP raises individual skills. Skill ranks create earned SP until 400; languages do not 
-search-attack 33 engine NuiSetBind <player>, 1, QuestionSummaryText, <json>
+search-attack 33 engine NuiSetBind <player>, 1, QuestionSummaryText, <1549 chars hash b159acb24e7baf0e0139cb7a19f8da27> "Q: How do skills work?\nA: Skill XP raises individual skills. Skill ranks create earned SP until 400; languages do not 
 search-attack 34 property RelatedTopicTexts ["Communication","Skills","Attributes","Perks","Skill Decay","Perk Refunds","XP Debt","Death & Recovery","Combat Basics","Crafting","Travel & Navigation","Beasts & Stables","Droids","Quests & Key Items","Useful Windows"]
-search-attack 35 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, <json>
-search-attack 36 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, <json>
-search-attack 37 engine NuiSetBind <player>, 1, RelatedTopicTexts, <json>
+search-attack 35 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, 15
+search-attack 36 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+search-attack 37 engine NuiSetBind <player>, 1, RelatedTopicTexts, ["Communication","Skills","Attributes","Perks","Skill Decay","Perk Refunds","XP Debt","Death & Recovery","Combat Basics","Crafting","Travel & Navigation","Beasts & Stables","Droids","Quests & Key Items","Useful Windows"]
 search-attack 38 property RelatedTopicTooltips <1395 chars hash 9bbea88c94de99a3360be50349187038> ["Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and set
-search-attack 39 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, <json>
-search-attack 40 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, <json>
-search-attack 41 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <json>
+search-attack 39 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, 15
+search-attack 40 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+search-attack 41 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <1395 chars hash 9bbea88c94de99a3360be50349187038> ["Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and set
 search-attack 42 state carried
 search-attack 43 state worn Chest=farmer_outfit002
 search-attack 44 state feats 2,3,4,10,28,32,45,46,106,258,1089
 search-attack 45 state quickbar 0=10:1:;1=10:0:;2=4:28:
 select-first-result 1 step
 select-first-result 2 property TopicSelections [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-first-result 3 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-select-first-result 4 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-select-first-result 5 engine NuiSetBind <player>, 1, TopicSelections, <json>
+select-first-result 3 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+select-first-result 4 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+select-first-result 5 engine NuiSetBind <player>, 1, TopicSelections, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 select-first-result 6 property TopicSelections [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-first-result 7 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-select-first-result 8 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-select-first-result 9 engine NuiSetBind <player>, 1, TopicSelections, <json>
+select-first-result 7 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+select-first-result 8 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+select-first-result 9 engine NuiSetBind <player>, 1, TopicSelections, [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 select-first-result 10 property SelectedTopicCategory "CORE"
-select-first-result 11 engine NuiSetBind <player>, 1, SelectedTopicCategory, <json>
+select-first-result 11 engine NuiSetBind <player>, 1, SelectedTopicCategory, "CORE"
 select-first-result 12 property SelectedTopicName "Common Questions"
-select-first-result 13 engine NuiSetBind <player>, 1, SelectedTopicName, <json>
+select-first-result 13 engine NuiSetBind <player>, 1, SelectedTopicName, "Common Questions"
 select-first-result 14 property SelectedTopicSummary "Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windows."
-select-first-result 15 engine NuiSetBind <player>, 1, SelectedTopicSummary, <json>
+select-first-result 15 engine NuiSetBind <player>, 1, SelectedTopicSummary, "Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windows."
 select-first-result 16 property SelectedArticleBody <2771 chars hash 4c09bcb346be4d0c44e1950e8709d023> "SKILLS\nSkills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 SP from skill 
-select-first-result 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <json>
+select-first-result 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <2771 chars hash 4c09bcb346be4d0c44e1950e8709d023> "SKILLS\nSkills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 SP from skill 
 select-first-result 18 property QuestionSummaryText <1549 chars hash b159acb24e7baf0e0139cb7a19f8da27> "Q: How do skills work?\nA: Skill XP raises individual skills. Skill ranks create earned SP until 400; languages do not 
-select-first-result 19 engine NuiSetBind <player>, 1, QuestionSummaryText, <json>
+select-first-result 19 engine NuiSetBind <player>, 1, QuestionSummaryText, <1549 chars hash b159acb24e7baf0e0139cb7a19f8da27> "Q: How do skills work?\nA: Skill XP raises individual skills. Skill ranks create earned SP until 400; languages do not 
 select-first-result 20 property RelatedTopicTexts ["Communication","Skills","Attributes","Perks","Skill Decay","Perk Refunds","XP Debt","Death & Recovery","Combat Basics","Crafting","Travel & Navigation","Beasts & Stables","Droids","Quests & Key Items","Useful Windows"]
-select-first-result 21 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, <json>
-select-first-result 22 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, <json>
-select-first-result 23 engine NuiSetBind <player>, 1, RelatedTopicTexts, <json>
+select-first-result 21 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, 15
+select-first-result 22 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+select-first-result 23 engine NuiSetBind <player>, 1, RelatedTopicTexts, ["Communication","Skills","Attributes","Perks","Skill Decay","Perk Refunds","XP Debt","Death & Recovery","Combat Basics","Crafting","Travel & Navigation","Beasts & Stables","Droids","Quests & Key Items","Useful Windows"]
 select-first-result 24 property RelatedTopicTooltips <1395 chars hash 9bbea88c94de99a3360be50349187038> ["Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and set
-select-first-result 25 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, <json>
-select-first-result 26 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, <json>
-select-first-result 27 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <json>
+select-first-result 25 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, 15
+select-first-result 26 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+select-first-result 27 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <1395 chars hash 9bbea88c94de99a3360be50349187038> ["Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and set
 select-first-result 28 state carried
 select-first-result 29 state worn Chest=farmer_outfit002
 select-first-result 30 state feats 2,3,4,10,28,32,45,46,106,258,1089
 select-first-result 31 state quickbar 0=10:1:;1=10:0:;2=4:28:
 search-nothing 1 step
 search-nothing 2 property SearchText "zzzz no such guide text"
-search-nothing 3 engine NuiSetBind <player>, 1, SearchText, <json>
+search-nothing 3 engine NuiSetBind <player>, 1, SearchText, "zzzz no such guide text"
 search-nothing 4 property TopicButtonTexts []
-search-nothing 5 engine NuiSetBind <player>, 1, TopicButtonTexts_RowCount, <json>
-search-nothing 6 engine NuiSetBind <player>, 1, TopicButtonTexts_RowVisibility, <json>
-search-nothing 7 engine NuiSetBind <player>, 1, TopicButtonTexts, <json>
+search-nothing 5 engine NuiSetBind <player>, 1, TopicButtonTexts_RowCount, 57
+search-nothing 6 engine NuiSetBind <player>, 1, TopicButtonTexts_RowVisibility, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+search-nothing 7 engine NuiSetBind <player>, 1, TopicButtonTexts, []
 search-nothing 8 property TopicSelections []
-search-nothing 9 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-search-nothing 10 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-search-nothing 11 engine NuiSetBind <player>, 1, TopicSelections, <json>
+search-nothing 9 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+search-nothing 10 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+search-nothing 11 engine NuiSetBind <player>, 1, TopicSelections, []
 search-nothing 12 property TopicTooltips []
-search-nothing 13 engine NuiSetBind <player>, 1, TopicTooltips_RowCount, <json>
-search-nothing 14 engine NuiSetBind <player>, 1, TopicTooltips_RowVisibility, <json>
-search-nothing 15 engine NuiSetBind <player>, 1, TopicTooltips, <json>
+search-nothing 13 engine NuiSetBind <player>, 1, TopicTooltips_RowCount, 57
+search-nothing 14 engine NuiSetBind <player>, 1, TopicTooltips_RowVisibility, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+search-nothing 15 engine NuiSetBind <player>, 1, TopicTooltips, []
 search-nothing 16 property SelectedTopicCategory "BROWSE"
-search-nothing 17 engine NuiSetBind <player>, 1, SelectedTopicCategory, <json>
+search-nothing 17 engine NuiSetBind <player>, 1, SelectedTopicCategory, "BROWSE"
 search-nothing 18 property SelectedTopicName "No Matching Topics"
-search-nothing 19 engine NuiSetBind <player>, 1, SelectedTopicName, <json>
+search-nothing 19 engine NuiSetBind <player>, 1, SelectedTopicName, "No Matching Topics"
 search-nothing 20 property SelectedTopicSummary "No guide topics matched your search. Clear the search to return to the full guide."
-search-nothing 21 engine NuiSetBind <player>, 1, SelectedTopicSummary, <json>
+search-nothing 21 engine NuiSetBind <player>, 1, SelectedTopicSummary, "No guide topics matched your search. Clear the search to return to the full guide."
 search-nothing 22 property SelectedArticleBody "Try searching for skills, perks, techniques, espionage, death, combat, crafting, gathering, research, beasts, droids, quests, contracts, travel, housing, markets, ships, guilds, citizenship, disguises, chat, or windows."
-search-nothing 23 engine NuiSetBind <player>, 1, SelectedArticleBody, <json>
+search-nothing 23 engine NuiSetBind <player>, 1, SelectedArticleBody, "Try searching for skills, perks, techniques, espionage, death, combat, crafting, gathering, research, beasts, droids, quests, contracts, travel, housing, markets, ships, guilds, citizenship, disguises, chat, or windows."
 search-nothing 24 property QuestionSummaryText ""
-search-nothing 25 engine NuiSetBind <player>, 1, QuestionSummaryText, <json>
+search-nothing 25 engine NuiSetBind <player>, 1, QuestionSummaryText, ""
 search-nothing 26 property RelatedTopicTexts []
-search-nothing 27 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, <json>
-search-nothing 28 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, <json>
-search-nothing 29 engine NuiSetBind <player>, 1, RelatedTopicTexts, <json>
+search-nothing 27 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, 15
+search-nothing 28 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+search-nothing 29 engine NuiSetBind <player>, 1, RelatedTopicTexts, []
 search-nothing 30 property RelatedTopicTooltips []
-search-nothing 31 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, <json>
-search-nothing 32 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, <json>
-search-nothing 33 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <json>
+search-nothing 31 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, 15
+search-nothing 32 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+search-nothing 33 engine NuiSetBind <player>, 1, RelatedTopicTooltips, []
 search-nothing 34 state carried
 search-nothing 35 state worn Chest=farmer_outfit002
 search-nothing 36 state feats 2,3,4,10,28,32,45,46,106,258,1089
 search-nothing 37 state quickbar 0=10:1:;1=10:0:;2=4:28:
 clear-search 1 step
 clear-search 2 property SearchText ""
-clear-search 3 engine NuiSetBind <player>, 1, SearchText, <json>
+clear-search 3 engine NuiSetBind <player>, 1, SearchText, ""
 clear-search 4 property TopicButtonTexts <1152 chars hash 9e5f43557ac51dea05cf26c05805cf16> ["Common Questions","Communication","Skills","Skill Decay","Perks","Force Affinity","Perk Refunds","XP Debt","Abilities"
-clear-search 5 engine NuiSetBind <player>, 1, TopicButtonTexts_RowCount, <json>
-clear-search 6 engine NuiSetBind <player>, 1, TopicButtonTexts_RowVisibility, <json>
-clear-search 7 engine NuiSetBind <player>, 1, TopicButtonTexts, <json>
+clear-search 5 engine NuiSetBind <player>, 1, TopicButtonTexts_RowCount, 57
+clear-search 6 engine NuiSetBind <player>, 1, TopicButtonTexts_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+clear-search 7 engine NuiSetBind <player>, 1, TopicButtonTexts, <1152 chars hash 9e5f43557ac51dea05cf26c05805cf16> ["Common Questions","Communication","Skills","Skill Decay","Perks","Force Affinity","Perk Refunds","XP Debt","Abilities"
 clear-search 8 property TopicSelections [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-clear-search 9 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-clear-search 10 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-clear-search 11 engine NuiSetBind <player>, 1, TopicSelections, <json>
+clear-search 9 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+clear-search 10 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+clear-search 11 engine NuiSetBind <player>, 1, TopicSelections, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 clear-search 12 property TopicTooltips <5572 chars hash 0fa340a5a0f0831fe3fcf0e4dbf9db73> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
-clear-search 13 engine NuiSetBind <player>, 1, TopicTooltips_RowCount, <json>
-clear-search 14 engine NuiSetBind <player>, 1, TopicTooltips_RowVisibility, <json>
-clear-search 15 engine NuiSetBind <player>, 1, TopicTooltips, <json>
+clear-search 13 engine NuiSetBind <player>, 1, TopicTooltips_RowCount, 57
+clear-search 14 engine NuiSetBind <player>, 1, TopicTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+clear-search 15 engine NuiSetBind <player>, 1, TopicTooltips, <5572 chars hash 0fa340a5a0f0831fe3fcf0e4dbf9db73> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
 clear-search 16 property TopicSelections [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-clear-search 17 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-clear-search 18 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-clear-search 19 engine NuiSetBind <player>, 1, TopicSelections, <json>
+clear-search 17 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+clear-search 18 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+clear-search 19 engine NuiSetBind <player>, 1, TopicSelections, [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 clear-search 20 property SelectedTopicCategory "CORE"
-clear-search 21 engine NuiSetBind <player>, 1, SelectedTopicCategory, <json>
+clear-search 21 engine NuiSetBind <player>, 1, SelectedTopicCategory, "CORE"
 clear-search 22 property SelectedTopicName "Common Questions"
-clear-search 23 engine NuiSetBind <player>, 1, SelectedTopicName, <json>
+clear-search 23 engine NuiSetBind <player>, 1, SelectedTopicName, "Common Questions"
 clear-search 24 property SelectedTopicSummary "Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windows."
-clear-search 25 engine NuiSetBind <player>, 1, SelectedTopicSummary, <json>
+clear-search 25 engine NuiSetBind <player>, 1, SelectedTopicSummary, "Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windows."
 clear-search 26 property SelectedArticleBody <2771 chars hash 4c09bcb346be4d0c44e1950e8709d023> "SKILLS\nSkills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 SP from skill 
-clear-search 27 engine NuiSetBind <player>, 1, SelectedArticleBody, <json>
+clear-search 27 engine NuiSetBind <player>, 1, SelectedArticleBody, <2771 chars hash 4c09bcb346be4d0c44e1950e8709d023> "SKILLS\nSkills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 SP from skill 
 clear-search 28 property QuestionSummaryText <1549 chars hash b159acb24e7baf0e0139cb7a19f8da27> "Q: How do skills work?\nA: Skill XP raises individual skills. Skill ranks create earned SP until 400; languages do not 
-clear-search 29 engine NuiSetBind <player>, 1, QuestionSummaryText, <json>
+clear-search 29 engine NuiSetBind <player>, 1, QuestionSummaryText, <1549 chars hash b159acb24e7baf0e0139cb7a19f8da27> "Q: How do skills work?\nA: Skill XP raises individual skills. Skill ranks create earned SP until 400; languages do not 
 clear-search 30 property RelatedTopicTexts ["Communication","Skills","Attributes","Perks","Skill Decay","Perk Refunds","XP Debt","Death & Recovery","Combat Basics","Crafting","Travel & Navigation","Beasts & Stables","Droids","Quests & Key Items","Useful Windows"]
-clear-search 31 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, <json>
-clear-search 32 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, <json>
-clear-search 33 engine NuiSetBind <player>, 1, RelatedTopicTexts, <json>
+clear-search 31 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, 15
+clear-search 32 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+clear-search 33 engine NuiSetBind <player>, 1, RelatedTopicTexts, ["Communication","Skills","Attributes","Perks","Skill Decay","Perk Refunds","XP Debt","Death & Recovery","Combat Basics","Crafting","Travel & Navigation","Beasts & Stables","Droids","Quests & Key Items","Useful Windows"]
 clear-search 34 property RelatedTopicTooltips <1395 chars hash 9bbea88c94de99a3360be50349187038> ["Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and set
-clear-search 35 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, <json>
-clear-search 36 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, <json>
-clear-search 37 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <json>
+clear-search 35 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, 15
+clear-search 36 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+clear-search 37 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <1395 chars hash 9bbea88c94de99a3360be50349187038> ["Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and set
 clear-search 38 state carried
 clear-search 39 state worn Chest=farmer_outfit002
 clear-search 40 state feats 2,3,4,10,28,32,45,46,106,258,1089
 clear-search 41 state quickbar 0=10:1:;1=10:0:;2=4:28:
 select-topic-with-related 1 step
 select-topic-with-related 2 property TopicSelections [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-topic-with-related 3 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-select-topic-with-related 4 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-select-topic-with-related 5 engine NuiSetBind <player>, 1, TopicSelections, <json>
+select-topic-with-related 3 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+select-topic-with-related 4 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+select-topic-with-related 5 engine NuiSetBind <player>, 1, TopicSelections, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 select-topic-with-related 6 property TopicSelections [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-topic-with-related 7 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-select-topic-with-related 8 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-select-topic-with-related 9 engine NuiSetBind <player>, 1, TopicSelections, <json>
+select-topic-with-related 7 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+select-topic-with-related 8 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+select-topic-with-related 9 engine NuiSetBind <player>, 1, TopicSelections, [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 select-topic-with-related 10 property SelectedTopicCategory "CORE"
-select-topic-with-related 11 engine NuiSetBind <player>, 1, SelectedTopicCategory, <json>
+select-topic-with-related 11 engine NuiSetBind <player>, 1, SelectedTopicCategory, "CORE"
 select-topic-with-related 12 property SelectedTopicName "Common Questions"
-select-topic-with-related 13 engine NuiSetBind <player>, 1, SelectedTopicName, <json>
+select-topic-with-related 13 engine NuiSetBind <player>, 1, SelectedTopicName, "Common Questions"
 select-topic-with-related 14 property SelectedTopicSummary "Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windows."
-select-topic-with-related 15 engine NuiSetBind <player>, 1, SelectedTopicSummary, <json>
+select-topic-with-related 15 engine NuiSetBind <player>, 1, SelectedTopicSummary, "Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windows."
 select-topic-with-related 16 property SelectedArticleBody <2771 chars hash 4c09bcb346be4d0c44e1950e8709d023> "SKILLS\nSkills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 SP from skill 
-select-topic-with-related 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <json>
+select-topic-with-related 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <2771 chars hash 4c09bcb346be4d0c44e1950e8709d023> "SKILLS\nSkills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 SP from skill 
 select-topic-with-related 18 property QuestionSummaryText <1549 chars hash b159acb24e7baf0e0139cb7a19f8da27> "Q: How do skills work?\nA: Skill XP raises individual skills. Skill ranks create earned SP until 400; languages do not 
-select-topic-with-related 19 engine NuiSetBind <player>, 1, QuestionSummaryText, <json>
+select-topic-with-related 19 engine NuiSetBind <player>, 1, QuestionSummaryText, <1549 chars hash b159acb24e7baf0e0139cb7a19f8da27> "Q: How do skills work?\nA: Skill XP raises individual skills. Skill ranks create earned SP until 400; languages do not 
 select-topic-with-related 20 property RelatedTopicTexts ["Communication","Skills","Attributes","Perks","Skill Decay","Perk Refunds","XP Debt","Death & Recovery","Combat Basics","Crafting","Travel & Navigation","Beasts & Stables","Droids","Quests & Key Items","Useful Windows"]
-select-topic-with-related 21 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, <json>
-select-topic-with-related 22 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, <json>
-select-topic-with-related 23 engine NuiSetBind <player>, 1, RelatedTopicTexts, <json>
+select-topic-with-related 21 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, 15
+select-topic-with-related 22 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+select-topic-with-related 23 engine NuiSetBind <player>, 1, RelatedTopicTexts, ["Communication","Skills","Attributes","Perks","Skill Decay","Perk Refunds","XP Debt","Death & Recovery","Combat Basics","Crafting","Travel & Navigation","Beasts & Stables","Droids","Quests & Key Items","Useful Windows"]
 select-topic-with-related 24 property RelatedTopicTooltips <1395 chars hash 9bbea88c94de99a3360be50349187038> ["Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and set
-select-topic-with-related 25 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, <json>
-select-topic-with-related 26 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, <json>
-select-topic-with-related 27 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <json>
+select-topic-with-related 25 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, 15
+select-topic-with-related 26 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+select-topic-with-related 27 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <1395 chars hash 9bbea88c94de99a3360be50349187038> ["Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and set
 select-topic-with-related 28 state carried
 select-topic-with-related 29 state worn Chest=farmer_outfit002
 select-topic-with-related 30 state feats 2,3,4,10,28,32,45,46,106,258,1089
 select-topic-with-related 31 state quickbar 0=10:1:;1=10:0:;2=4:28:
 select-related 1 step
 select-related 2 property TopicSelections [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-related 3 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-select-related 4 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-select-related 5 engine NuiSetBind <player>, 1, TopicSelections, <json>
+select-related 3 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+select-related 4 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+select-related 5 engine NuiSetBind <player>, 1, TopicSelections, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 select-related 6 property TopicSelections [false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-related 7 engine NuiSetBind <player>, 1, TopicSelections_RowCount, <json>
-select-related 8 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, <json>
-select-related 9 engine NuiSetBind <player>, 1, TopicSelections, <json>
+select-related 7 engine NuiSetBind <player>, 1, TopicSelections_RowCount, 57
+select-related 8 engine NuiSetBind <player>, 1, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+select-related 9 engine NuiSetBind <player>, 1, TopicSelections, [false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 select-related 10 property SelectedTopicCategory "SOCIAL"
-select-related 11 engine NuiSetBind <player>, 1, SelectedTopicCategory, <json>
+select-related 11 engine NuiSetBind <player>, 1, SelectedTopicCategory, "SOCIAL"
 select-related 12 property SelectedTopicName "Communication"
-select-related 13 engine NuiSetBind <player>, 1, SelectedTopicName, <json>
+select-related 13 engine NuiSetBind <player>, 1, SelectedTopicName, "Communication"
 select-related 14 property SelectedTopicSummary "Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and settings."
-select-related 15 engine NuiSetBind <player>, 1, SelectedTopicSummary, <json>
+select-related 15 engine NuiSetBind <player>, 1, SelectedTopicSummary, "Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and settings."
 select-related 16 property SelectedArticleBody <4335 chars hash f850ff831703f3f9b8d01f4fb8f6d4ce> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
-select-related 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <json>
+select-related 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <4335 chars hash f850ff831703f3f9b8d01f4fb8f6d4ce> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
 select-related 18 property QuestionSummaryText <1715 chars hash d2f9039ceea69599491345fcba10555a> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
-select-related 19 engine NuiSetBind <player>, 1, QuestionSummaryText, <json>
+select-related 19 engine NuiSetBind <player>, 1, QuestionSummaryText, <1715 chars hash d2f9039ceea69599491345fcba10555a> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
 select-related 20 property RelatedTopicTexts ["Common Questions","Useful Windows","Skills","Quests & Key Items","Disguises","Death & Recovery"]
-select-related 21 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, <json>
-select-related 22 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, <json>
-select-related 23 engine NuiSetBind <player>, 1, RelatedTopicTexts, <json>
+select-related 21 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, 15
+select-related 22 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, [true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false]
+select-related 23 engine NuiSetBind <player>, 1, RelatedTopicTexts, ["Common Questions","Useful Windows","Skills","Quests & Key Items","Disguises","Death & Recovery"]
 select-related 24 property RelatedTopicTooltips <568 chars hash 9f836847ea61440c5697337ee2bf974c> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
-select-related 25 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, <json>
-select-related 26 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, <json>
-select-related 27 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <json>
+select-related 25 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowCount, 15
+select-related 26 engine NuiSetBind <player>, 1, RelatedTopicTooltips_RowVisibility, [true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false]
+select-related 27 engine NuiSetBind <player>, 1, RelatedTopicTooltips, <568 chars hash 9f836847ea61440c5697337ee2bf974c> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
 select-related 28 state carried
 select-related 29 state worn Chest=farmer_outfit002
 select-related 30 state feats 2,3,4,10,28,32,45,46,106,258,1089
 select-related 31 state quickbar 0=10:1:;1=10:0:;2=4:28:
 close-and-reopen 1 step
 close-and-reopen 2 engine NuiDestroy <player>, 1
-close-and-reopen 3 engine NuiCreate <player>, <json>, GUI_WINDOW_PlayerGuide
-close-and-reopen 4 engine NuiSetBind <player>, 2, Geometry, <json>
-close-and-reopen 5 engine NuiSetBind <player>, 2, ModalInputText, <json>
-close-and-reopen 6 engine NuiSetBind <player>, 2, SearchText, <json>
-close-and-reopen 7 engine NuiSetBind <player>, 2, TopicButtonTexts, <json>
-close-and-reopen 8 engine NuiSetBind <player>, 2, TopicSelections, <json>
-close-and-reopen 9 engine NuiSetBind <player>, 2, TopicTooltips, <json>
-close-and-reopen 10 engine NuiSetBind <player>, 2, SelectedTopicCategory, <json>
-close-and-reopen 11 engine NuiSetBind <player>, 2, SelectedTopicName, <json>
-close-and-reopen 12 engine NuiSetBind <player>, 2, SelectedTopicSummary, <json>
-close-and-reopen 13 engine NuiSetBind <player>, 2, SelectedArticleBody, <json>
-close-and-reopen 14 engine NuiSetBind <player>, 2, QuestionSummaryText, <json>
-close-and-reopen 15 engine NuiSetBind <player>, 2, RelatedTopicTexts, <json>
-close-and-reopen 16 engine NuiSetBind <player>, 2, RelatedTopicTooltips, <json>
-close-and-reopen 17 engine NuiSetBind <player>, 2, Geometry, <json>
+close-and-reopen 3 engine NuiCreate <player>, <622 chars hash 91ee5eb6bccfe8eae8f8f13fe427413c> {"accepts_input":true,"border":true,"closable":true,"collapsed":null,"geometry":{"bind":"Geometry"},"resizable":true,"ro, GUI_WINDOW_PlayerGuide
+close-and-reopen 4 engine NuiSetBind <player>, 2, Geometry, {"h":641.0,"w":980.0,"x":0.0,"y":0.0}
+close-and-reopen 5 engine NuiSetBind <player>, 2, ModalInputText, ""
+close-and-reopen 6 engine NuiSetBind <player>, 2, SearchText, ""
+close-and-reopen 7 engine NuiSetBind <player>, 2, TopicButtonTexts, <1152 chars hash 9e5f43557ac51dea05cf26c05805cf16> ["Common Questions","Communication","Skills","Skill Decay","Perks","Force Affinity","Perk Refunds","XP Debt","Abilities"
+close-and-reopen 8 engine NuiSetBind <player>, 2, TopicSelections, [false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+close-and-reopen 9 engine NuiSetBind <player>, 2, TopicTooltips, <5572 chars hash 0fa340a5a0f0831fe3fcf0e4dbf9db73> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
+close-and-reopen 10 engine NuiSetBind <player>, 2, SelectedTopicCategory, "SOCIAL"
+close-and-reopen 11 engine NuiSetBind <player>, 2, SelectedTopicName, "Communication"
+close-and-reopen 12 engine NuiSetBind <player>, 2, SelectedTopicSummary, "Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and settings."
+close-and-reopen 13 engine NuiSetBind <player>, 2, SelectedArticleBody, <4335 chars hash f850ff831703f3f9b8d01f4fb8f6d4ce> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
+close-and-reopen 14 engine NuiSetBind <player>, 2, QuestionSummaryText, <1715 chars hash d2f9039ceea69599491345fcba10555a> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
+close-and-reopen 15 engine NuiSetBind <player>, 2, RelatedTopicTexts, ["Common Questions","Useful Windows","Skills","Quests & Key Items","Disguises","Death & Recovery"]
+close-and-reopen 16 engine NuiSetBind <player>, 2, RelatedTopicTooltips, <568 chars hash 9f836847ea61440c5697337ee2bf974c> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
+close-and-reopen 17 engine NuiSetBind <player>, 2, Geometry, {"h":641.0,"w":980.0,"x":0.0,"y":0.0}
 close-and-reopen 18 engine NuiSetBindWatch <player>, 2, Geometry, True
 close-and-reopen 19 property ModalInputText ""
-close-and-reopen 20 engine NuiSetBind <player>, 2, ModalInputText, <json>
-close-and-reopen 21 engine NuiSetBind <player>, 2, ModalInputText, <json>
+close-and-reopen 20 engine NuiSetBind <player>, 2, ModalInputText, ""
+close-and-reopen 21 engine NuiSetBind <player>, 2, ModalInputText, ""
 close-and-reopen 22 engine NuiSetBindWatch <player>, 2, ModalInputText, True
-close-and-reopen 23 engine NuiSetGroupLayout <player>, 2, _window_, <json>
-close-and-reopen 24 engine NuiSetBind <player>, 2, Geometry, <json>
+close-and-reopen 23 engine NuiSetGroupLayout <player>, 2, _window_, <5208 chars hash 2fb6cc411359894ea8bee285724ebbd6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+close-and-reopen 24 engine NuiSetBind <player>, 2, Geometry, {"h":642.0,"w":980.0,"x":0.0,"y":0.0}
 close-and-reopen 25 property TopicButtonTexts <1152 chars hash 9e5f43557ac51dea05cf26c05805cf16> ["Common Questions","Communication","Skills","Skill Decay","Perks","Force Affinity","Perk Refunds","XP Debt","Abilities"
-close-and-reopen 26 engine NuiSetBind <player>, 2, TopicButtonTexts_RowCount, <json>
-close-and-reopen 27 engine NuiSetBind <player>, 2, TopicButtonTexts_RowVisibility, <json>
-close-and-reopen 28 engine NuiSetBind <player>, 2, TopicButtonTexts, <json>
+close-and-reopen 26 engine NuiSetBind <player>, 2, TopicButtonTexts_RowCount, 57
+close-and-reopen 27 engine NuiSetBind <player>, 2, TopicButtonTexts_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+close-and-reopen 28 engine NuiSetBind <player>, 2, TopicButtonTexts, <1152 chars hash 9e5f43557ac51dea05cf26c05805cf16> ["Common Questions","Communication","Skills","Skill Decay","Perks","Force Affinity","Perk Refunds","XP Debt","Abilities"
 close-and-reopen 29 property TopicTooltips <5572 chars hash 0fa340a5a0f0831fe3fcf0e4dbf9db73> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
-close-and-reopen 30 engine NuiSetBind <player>, 2, TopicTooltips_RowCount, <json>
-close-and-reopen 31 engine NuiSetBind <player>, 2, TopicTooltips_RowVisibility, <json>
-close-and-reopen 32 engine NuiSetBind <player>, 2, TopicTooltips, <json>
+close-and-reopen 30 engine NuiSetBind <player>, 2, TopicTooltips_RowCount, 57
+close-and-reopen 31 engine NuiSetBind <player>, 2, TopicTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+close-and-reopen 32 engine NuiSetBind <player>, 2, TopicTooltips, <5572 chars hash 0fa340a5a0f0831fe3fcf0e4dbf9db73> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
 close-and-reopen 33 property SelectedTopicCategory "SOCIAL"
-close-and-reopen 34 engine NuiSetBind <player>, 2, SelectedTopicCategory, <json>
+close-and-reopen 34 engine NuiSetBind <player>, 2, SelectedTopicCategory, "SOCIAL"
 close-and-reopen 35 property SelectedTopicName "Communication"
-close-and-reopen 36 engine NuiSetBind <player>, 2, SelectedTopicName, <json>
+close-and-reopen 36 engine NuiSetBind <player>, 2, SelectedTopicName, "Communication"
 close-and-reopen 37 property SelectedTopicSummary "Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and settings."
-close-and-reopen 38 engine NuiSetBind <player>, 2, SelectedTopicSummary, <json>
+close-and-reopen 38 engine NuiSetBind <player>, 2, SelectedTopicSummary, "Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and settings."
 close-and-reopen 39 property SelectedArticleBody <4335 chars hash f850ff831703f3f9b8d01f4fb8f6d4ce> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
-close-and-reopen 40 engine NuiSetBind <player>, 2, SelectedArticleBody, <json>
+close-and-reopen 40 engine NuiSetBind <player>, 2, SelectedArticleBody, <4335 chars hash f850ff831703f3f9b8d01f4fb8f6d4ce> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
 close-and-reopen 41 property QuestionSummaryText <1715 chars hash d2f9039ceea69599491345fcba10555a> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
-close-and-reopen 42 engine NuiSetBind <player>, 2, QuestionSummaryText, <json>
+close-and-reopen 42 engine NuiSetBind <player>, 2, QuestionSummaryText, <1715 chars hash d2f9039ceea69599491345fcba10555a> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
 close-and-reopen 43 property RelatedTopicTexts ["Common Questions","Useful Windows","Skills","Quests & Key Items","Disguises","Death & Recovery"]
-close-and-reopen 44 engine NuiSetBind <player>, 2, RelatedTopicTexts_RowCount, <json>
-close-and-reopen 45 engine NuiSetBind <player>, 2, RelatedTopicTexts_RowVisibility, <json>
-close-and-reopen 46 engine NuiSetBind <player>, 2, RelatedTopicTexts, <json>
+close-and-reopen 44 engine NuiSetBind <player>, 2, RelatedTopicTexts_RowCount, 15
+close-and-reopen 45 engine NuiSetBind <player>, 2, RelatedTopicTexts_RowVisibility, [true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false]
+close-and-reopen 46 engine NuiSetBind <player>, 2, RelatedTopicTexts, ["Common Questions","Useful Windows","Skills","Quests & Key Items","Disguises","Death & Recovery"]
 close-and-reopen 47 property RelatedTopicTooltips <568 chars hash 9f836847ea61440c5697337ee2bf974c> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
-close-and-reopen 48 engine NuiSetBind <player>, 2, RelatedTopicTooltips_RowCount, <json>
-close-and-reopen 49 engine NuiSetBind <player>, 2, RelatedTopicTooltips_RowVisibility, <json>
-close-and-reopen 50 engine NuiSetBind <player>, 2, RelatedTopicTooltips, <json>
+close-and-reopen 48 engine NuiSetBind <player>, 2, RelatedTopicTooltips_RowCount, 15
+close-and-reopen 49 engine NuiSetBind <player>, 2, RelatedTopicTooltips_RowVisibility, [true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false]
+close-and-reopen 50 engine NuiSetBind <player>, 2, RelatedTopicTooltips, <568 chars hash 9f836847ea61440c5697337ee2bf974c> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
 close-and-reopen 51 property SearchText ""
-close-and-reopen 52 engine NuiSetBind <player>, 2, SearchText, <json>
+close-and-reopen 52 engine NuiSetBind <player>, 2, SearchText, ""
 close-and-reopen 53 property TopicButtonTexts <1152 chars hash 9e5f43557ac51dea05cf26c05805cf16> ["Common Questions","Communication","Skills","Skill Decay","Perks","Force Affinity","Perk Refunds","XP Debt","Abilities"
-close-and-reopen 54 engine NuiSetBind <player>, 2, TopicButtonTexts_RowCount, <json>
-close-and-reopen 55 engine NuiSetBind <player>, 2, TopicButtonTexts_RowVisibility, <json>
-close-and-reopen 56 engine NuiSetBind <player>, 2, TopicButtonTexts, <json>
+close-and-reopen 54 engine NuiSetBind <player>, 2, TopicButtonTexts_RowCount, 57
+close-and-reopen 55 engine NuiSetBind <player>, 2, TopicButtonTexts_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+close-and-reopen 56 engine NuiSetBind <player>, 2, TopicButtonTexts, <1152 chars hash 9e5f43557ac51dea05cf26c05805cf16> ["Common Questions","Communication","Skills","Skill Decay","Perks","Force Affinity","Perk Refunds","XP Debt","Abilities"
 close-and-reopen 57 property TopicSelections [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-close-and-reopen 58 engine NuiSetBind <player>, 2, TopicSelections_RowCount, <json>
-close-and-reopen 59 engine NuiSetBind <player>, 2, TopicSelections_RowVisibility, <json>
-close-and-reopen 60 engine NuiSetBind <player>, 2, TopicSelections, <json>
+close-and-reopen 58 engine NuiSetBind <player>, 2, TopicSelections_RowCount, 57
+close-and-reopen 59 engine NuiSetBind <player>, 2, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+close-and-reopen 60 engine NuiSetBind <player>, 2, TopicSelections, [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 close-and-reopen 61 property TopicTooltips <5572 chars hash 0fa340a5a0f0831fe3fcf0e4dbf9db73> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
-close-and-reopen 62 engine NuiSetBind <player>, 2, TopicTooltips_RowCount, <json>
-close-and-reopen 63 engine NuiSetBind <player>, 2, TopicTooltips_RowVisibility, <json>
-close-and-reopen 64 engine NuiSetBind <player>, 2, TopicTooltips, <json>
+close-and-reopen 62 engine NuiSetBind <player>, 2, TopicTooltips_RowCount, 57
+close-and-reopen 63 engine NuiSetBind <player>, 2, TopicTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+close-and-reopen 64 engine NuiSetBind <player>, 2, TopicTooltips, <5572 chars hash 0fa340a5a0f0831fe3fcf0e4dbf9db73> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
 close-and-reopen 65 property TopicSelections [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-close-and-reopen 66 engine NuiSetBind <player>, 2, TopicSelections_RowCount, <json>
-close-and-reopen 67 engine NuiSetBind <player>, 2, TopicSelections_RowVisibility, <json>
-close-and-reopen 68 engine NuiSetBind <player>, 2, TopicSelections, <json>
+close-and-reopen 66 engine NuiSetBind <player>, 2, TopicSelections_RowCount, 57
+close-and-reopen 67 engine NuiSetBind <player>, 2, TopicSelections_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+close-and-reopen 68 engine NuiSetBind <player>, 2, TopicSelections, [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 close-and-reopen 69 property SelectedTopicCategory "CORE"
-close-and-reopen 70 engine NuiSetBind <player>, 2, SelectedTopicCategory, <json>
+close-and-reopen 70 engine NuiSetBind <player>, 2, SelectedTopicCategory, "CORE"
 close-and-reopen 71 property SelectedTopicName "Common Questions"
-close-and-reopen 72 engine NuiSetBind <player>, 2, SelectedTopicName, <json>
+close-and-reopen 72 engine NuiSetBind <player>, 2, SelectedTopicName, "Common Questions"
 close-and-reopen 73 property SelectedTopicSummary "Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windows."
-close-and-reopen 74 engine NuiSetBind <player>, 2, SelectedTopicSummary, <json>
+close-and-reopen 74 engine NuiSetBind <player>, 2, SelectedTopicSummary, "Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windows."
 close-and-reopen 75 property SelectedArticleBody <2771 chars hash 4c09bcb346be4d0c44e1950e8709d023> "SKILLS\nSkills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 SP from skill 
-close-and-reopen 76 engine NuiSetBind <player>, 2, SelectedArticleBody, <json>
+close-and-reopen 76 engine NuiSetBind <player>, 2, SelectedArticleBody, <2771 chars hash 4c09bcb346be4d0c44e1950e8709d023> "SKILLS\nSkills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 SP from skill 
 close-and-reopen 77 property QuestionSummaryText <1549 chars hash b159acb24e7baf0e0139cb7a19f8da27> "Q: How do skills work?\nA: Skill XP raises individual skills. Skill ranks create earned SP until 400; languages do not 
-close-and-reopen 78 engine NuiSetBind <player>, 2, QuestionSummaryText, <json>
+close-and-reopen 78 engine NuiSetBind <player>, 2, QuestionSummaryText, <1549 chars hash b159acb24e7baf0e0139cb7a19f8da27> "Q: How do skills work?\nA: Skill XP raises individual skills. Skill ranks create earned SP until 400; languages do not 
 close-and-reopen 79 property RelatedTopicTexts ["Communication","Skills","Attributes","Perks","Skill Decay","Perk Refunds","XP Debt","Death & Recovery","Combat Basics","Crafting","Travel & Navigation","Beasts & Stables","Droids","Quests & Key Items","Useful Windows"]
-close-and-reopen 80 engine NuiSetBind <player>, 2, RelatedTopicTexts_RowCount, <json>
-close-and-reopen 81 engine NuiSetBind <player>, 2, RelatedTopicTexts_RowVisibility, <json>
-close-and-reopen 82 engine NuiSetBind <player>, 2, RelatedTopicTexts, <json>
+close-and-reopen 80 engine NuiSetBind <player>, 2, RelatedTopicTexts_RowCount, 15
+close-and-reopen 81 engine NuiSetBind <player>, 2, RelatedTopicTexts_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+close-and-reopen 82 engine NuiSetBind <player>, 2, RelatedTopicTexts, ["Communication","Skills","Attributes","Perks","Skill Decay","Perk Refunds","XP Debt","Death & Recovery","Combat Basics","Crafting","Travel & Navigation","Beasts & Stables","Droids","Quests & Key Items","Useful Windows"]
 close-and-reopen 83 property RelatedTopicTooltips <1395 chars hash 9bbea88c94de99a3360be50349187038> ["Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and set
-close-and-reopen 84 engine NuiSetBind <player>, 2, RelatedTopicTooltips_RowCount, <json>
-close-and-reopen 85 engine NuiSetBind <player>, 2, RelatedTopicTooltips_RowVisibility, <json>
-close-and-reopen 86 engine NuiSetBind <player>, 2, RelatedTopicTooltips, <json>
-close-and-reopen 87 engine NuiSetBind <player>, 2, SearchText, <json>
+close-and-reopen 84 engine NuiSetBind <player>, 2, RelatedTopicTooltips_RowCount, 15
+close-and-reopen 85 engine NuiSetBind <player>, 2, RelatedTopicTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false]
+close-and-reopen 86 engine NuiSetBind <player>, 2, RelatedTopicTooltips, <1395 chars hash 9bbea88c94de99a3360be50349187038> ["Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and set
+close-and-reopen 87 engine NuiSetBind <player>, 2, SearchText, ""
 close-and-reopen 88 engine NuiSetBindWatch <player>, 2, SearchText, True
 close-and-reopen 89 state carried
 close-and-reopen 90 state worn Chest=farmer_outfit002

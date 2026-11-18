@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void SwitchViews()
         {
             var dbJob = GetJob();
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             IsCompleteJobEnabled = IsJobComplete(dbJob, now);
             if (dbJob == null)
             {
@@ -251,7 +251,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RefreshAllStats()
         {
             var job = GetJob();
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             var hasPendingStage = job == null || (now >= job.DateCompleted && job.CurrentStage < NumberOfStages);
 
             RefreshButtons(job);
@@ -885,7 +885,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             EnzymeSlotSetter setSlot) => () =>
         {
             var job = GetJob();
-            if (job != null && DateTime.UtcNow < job.DateCompleted)
+            if (job != null && Clock.UtcNow < job.DateCompleted)
                 return;
             if (job != null && job.CurrentStage >= NumberOfStages)
                 return;
@@ -1014,7 +1014,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (job.CurrentStage >= NumberOfStages)
                 return "Max stage reached.";
 
-            if (DateTime.UtcNow < job.DateCompleted)
+            if (Clock.UtcNow < job.DateCompleted)
                 return "The current stage is still running.";
 
             if (IsErraticGeniusChecked && Perk.GetPerkLevel(Player, PerkType.ErraticGenius) <= 0)
@@ -1035,7 +1035,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void StartJob(IncubationJob job)
         {
             var incubationSeconds = CalculateIncubationSeconds();
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
             var hasPendingStage = true;
 
             var validationError = ValidateCreateJob();
@@ -1155,7 +1155,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal(prompt, () =>
             {
                 var current = GetJob();
-                if (!IsJobComplete(current, DateTime.UtcNow))
+                if (!IsJobComplete(current, Clock.UtcNow))
                 {
                     SwitchViews();
                     return;

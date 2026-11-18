@@ -71,3 +71,7 @@ SWLOR.Game.Server/Docker/*.patch text eol=lf
 
 /scripts/SetupRepository.sh text eol=lf
 /scripts/ci/*.sh text eol=lf
+
+# The view model split transcripts and the guide dump are compared byte for byte and are written with LF; git must never convert them (a guide body may hold CR LF).
+/SWLOR.Game.Server.Tests/Fixtures/ViewModelSplit/*.txt -text
+/SWLOR.Game.Server.EngineTests/Definitions/Fixtures/ViewModelTranscript/*.txt -text

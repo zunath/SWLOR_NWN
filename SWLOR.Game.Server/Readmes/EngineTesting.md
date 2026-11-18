@@ -658,6 +658,13 @@ Read the numbers with these limits in mind:
 - The driver waits on wall-clock time, so when frames run long it issues fewer casts. Compare casts
   completed alongside frame times; a saturated server reports close to 1000 managed ms per second.
 
+### View model binding transcripts
+
+`ViewModelBindingTranscriptEngineTests` (category `ViewModelTranscript`) record what six windows publish to the client and compare it with
+fixtures captured before the view model split (`Readmes/MaintainabilityRefactorViewModelSplit.md`). The fixtures need the full engine hak set,
+so a default sweep skips them: they run only when the filter names the category (`./scripts/run-engine-tests.ps1 -Filter ViewModelTranscript`).
+On a mismatch the run writes the new transcript to `/nwn/home/viewmodel-transcript-<name>.txt` (the server home) and the message says where it went.
+
 ### Characterization scenarios (output locking)
 
 `SWLOR.Game.Server.EngineTests/Characterization/` locks today's engine-side outputs for the maintainability refactor

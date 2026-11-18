@@ -429,7 +429,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var now = DateTime.UtcNow;
+            var now = Clock.UtcNow;
 
             LoadForceAffinityDetails(dbPlayer);
 
@@ -959,7 +959,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedDetails = selectedDetails;
             IsPerkSelected = true;
             IsRefundEnabled = (dbPlayer.DatePerkRefundAvailable == null ||
-                               dbPlayer.DatePerkRefundAvailable <= DateTime.UtcNow) &&
+                               dbPlayer.DatePerkRefundAvailable <= Clock.UtcNow) &&
                               Currency.GetCurrency(Player, CurrencyType.PerkRefundToken) > 0 &&
                               currentUpgrade != null;
         }
@@ -1357,9 +1357,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     FloatingTextStringOnCreature($"You do not have any refund tokens.", Player, false);
                 }
                 else if (dbPlayer.DatePerkRefundAvailable != null &&
-                    dbPlayer.DatePerkRefundAvailable > DateTime.UtcNow)
+                    dbPlayer.DatePerkRefundAvailable > Clock.UtcNow)
                 {
-                    var delta = (DateTime)dbPlayer.DatePerkRefundAvailable - DateTime.UtcNow;
+                    var delta = (DateTime)dbPlayer.DatePerkRefundAvailable - Clock.UtcNow;
                     var time = Time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
                     FloatingTextStringOnCreature($"You can refund another perk in {time}.", Player, false);
                 }
@@ -1386,7 +1386,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         dbPlayer.UnallocatedSP += refundAmount;
                         dbPlayer.Perks.Remove(selectedPerk);
 
-                        Log.Write(LogGroup.PerkRefund, $"REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {perkLevel} - PerkID {selectedPerk}");
+                        Log.Write(LogGroup.PerkRefund, $"REFUND - {playerId} - Refunded Date {Clock.UtcNow} - Level {perkLevel} - PerkID {selectedPerk}");
                         FloatingTextStringOnCreature($"Perk refunded! You reclaimed {refundAmount} SP.", Player, false);
                     }
                     else
@@ -1405,11 +1405,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         DB.Set(dbBeast);
 
-                        Log.Write(LogGroup.PerkRefund, $"REFUND Beast - {dbBeast.Id} (Owner: {dbPlayer.Id}) - Refunded Date {DateTime.UtcNow} - Level {perkLevel} - PerkID {selectedPerk}");
+                        Log.Write(LogGroup.PerkRefund, $"REFUND Beast - {dbBeast.Id} (Owner: {dbPlayer.Id}) - Refunded Date {Clock.UtcNow} - Level {perkLevel} - PerkID {selectedPerk}");
                         FloatingTextStringOnCreature($"Perk refunded! Your beast reclaimed {refundAmount} SP.", Player, false);
                     }
 
-                    dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(1);
+                    dbPlayer.DatePerkRefundAvailable = Clock.UtcNow.AddHours(1);
                     DB.Set(dbPlayer);
                     Currency.TakeCurrency(Player, CurrencyType.PerkRefundToken, 1);
 

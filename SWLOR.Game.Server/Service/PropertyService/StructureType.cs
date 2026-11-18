@@ -1984,7 +1984,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         SpeakerStanding = 330,
 
         [Structure("Ashmark Field Cot",
-            "plc_cot",
+            "zep_bedrolls007",
             "",
             true,
             1)]
@@ -2054,7 +2054,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         AshmarkWorkStool = 340,
 
         [Structure("Guttermark Field Cot",
-            "plc_cot",
+            "zep_bedrolls002",
             "",
             true,
             1)]
@@ -2124,7 +2124,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         GuttermarkWorkStool = 350,
 
         [Structure("Trailmark Field Cot",
-            "plc_cot",
+            "_mdrn_pl_cotsimp",
             "",
             true,
             1)]
@@ -2194,7 +2194,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         TrailmarkWorkStool = 360,
 
         [Structure("Stonewake Field Cot",
-            "plc_cot",
+            "zep_bedrolls004",
             "",
             true,
             1)]
@@ -2264,7 +2264,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         StonewakeWorkStool = 370,
 
         [Structure("Aegisline Field Cot",
-            "plc_cot",
+            "_mdrn_pl_bedsgrd",
             "",
             true,
             1)]
@@ -2334,7 +2334,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         AegislineWorkStool = 380,
 
         [Structure("Veilcarved Field Cot",
-            "plc_cot",
+            "swlor_0771",
             "",
             true,
             1)]
@@ -2404,7 +2404,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         VeilcarvedWorkStool = 390,
 
         [Structure("Surgewake Field Cot",
-            "plc_cot",
+            "_mdrn_pl_bedmtl2",
             "",
             true,
             1)]
@@ -2474,7 +2474,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         SurgewakeWorkStool = 400,
 
         [Structure("Resonant Field Cot",
-            "plc_cot",
+            "zep_bedrolls001",
             "",
             true,
             1)]
@@ -2544,7 +2544,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         ResonantWorkStool = 410,
 
         [Structure("Fieldline Field Cot",
-            "plc_cot",
+            "_mdrn_pl_bedenli",
             "",
             true,
             1)]
@@ -2614,7 +2614,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         FieldlineWorkStool = 420,
 
         [Structure("Commandline Field Cot",
-            "plc_cot",
+            "swlor_0622",
             "",
             true,
             1)]

@@ -153,10 +153,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "explicit source exclusion must override party membership");
             StatusEffect.ApplyStatusEffect(caster, caster, new WardenWallStanceStatusEffect(), 60f);
             await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect(ally, typeof(WardenWallStanceAuraStatusEffect)), 10f, "the wall to reach the nearby ally");
+            // The personal wall and the ally aura are one shared 10% Physical and Force defense stat.
+            ctx.AssertEqual(10, Stat.GetStatAdjustment(caster, StatType.PhysicalAndForceDefenseAuraPercentAdjustment),
+                "caster aura defense is not doubled by its own aura");
+            ctx.AssertEqual(10, Stat.GetStatAdjustment(ally, StatType.PhysicalAndForceDefenseAuraPercentAdjustment), "ally aura defense");
             foreach (var stat in new[] { StatType.PhysicalDefensePercentAdjustment, StatType.ForceDefensePercentAdjustment })
             {
-                ctx.AssertEqual(20, Stat.GetStatAdjustment(caster, stat), $"caster {stat} is not doubled by its own aura");
-                ctx.AssertEqual(20, Stat.GetStatAdjustment(ally, stat), $"ally {stat}");
+                ctx.AssertEqual(0, Stat.GetStatAdjustment(caster, stat), $"caster {stat} is untouched by the wall");
+                ctx.AssertEqual(0, Stat.GetStatAdjustment(ally, stat), $"ally {stat} is untouched by the wall");
             }
             ctx.Assert(!StatusEffect.HasStatusEffect(caster, typeof(WardenWallStanceAuraStatusEffect)), "caster must not receive its own aura effect");
             ctx.Assert(!StatusEffect.HasStatusEffect(outsider, typeof(WardenWallStanceAuraStatusEffect)), "wall excludes a nonparty neighbor");
@@ -652,6 +656,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var caster = ctx.SpawnCreature("nw_bandit001");
             await ctx.WaitFrameAsync();
             PrepareStationaryCreature(ctx, caster);
+            // The spawn handler refills the caster's stamina; if it ran after the first cost was spent, the
+            // refill would read as a refund.
+            await ctx.WaitForSpawnInitializationAsync(caster);
             ctx.SetNPCResources(caster, 100, 100);
             var ability = Ability.GetAbilityDetail(FeatType.BladeVortex2);
             Combat.SetAbilityHitResolutionOverride(true);

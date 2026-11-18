@@ -211,84 +211,84 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
-    "Line": 443,
+    "Line": 446,
     "Member": "AnnounceApplication",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, durationResistanceMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
-    "Line": 468,
+    "Line": 471,
     "Member": "AnnounceApplication",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(creature, BuildApplicationMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
-    "Line": 473,
+    "Line": 476,
     "Member": "AnnounceApplication",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, BuildApplicationMessage(creature))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
-    "Line": 475,
+    "Line": 478,
     "Member": "AnnounceApplication",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, BuildApplicationMessage(source))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
-    "Line": 486,
+    "Line": 489,
     "Member": "SendStatusEffectFailure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(recipient, message)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs",
-    "Line": 71,
+    "Line": 74,
     "Member": "ResolveApplicationTiming",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs",
-    "Line": 91,
+    "Line": 94,
     "Member": "ResolveApplicationTiming",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs",
-    "Line": 253,
+    "Line": 256,
     "Member": "RestartInPlace",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, durationResistanceMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs",
-    "Line": 386,
+    "Line": 389,
     "Member": "RefreshStatusEffectDuration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs",
-    "Line": 395,
+    "Line": 398,
     "Member": "RefreshStatusEffectDuration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 1017,
+    "Line": 724,
     "Member": "RemoveStatusEffectInstance",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(creature, BuildWornOffMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 1019,
+    "Line": 726,
     "Member": "RemoveStatusEffectInstance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, BuildWornOffMessage(creature))"

@@ -103,6 +103,9 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The damage and attack notices, the guarded hit, the native attack swing and the limited attack-timing reads (part 6 of the status effect split, P5-5g).</summary>
         public static IStatusEffectCombatEventService StatusEffectCombatEvent => FacadeAccessor.Resolve<IStatusEffectCombatEventService>();
 
+        /// <summary>The native effect that carries each status effect, the three effect scripts and the ticks (part 5 of the status effect split, P5-5h).</summary>
+        public static IStatusEffectNativeService StatusEffectNative => FacadeAccessor.Resolve<IStatusEffectNativeService>();
+
         /// <summary>
         /// Timed stat modifiers a creature carries (the facade <c>Service.TemporaryStatModifier</c> until P2-ZG). Combat and content
         /// write them and the stat read reads them, so they are Character's (P5-4b).

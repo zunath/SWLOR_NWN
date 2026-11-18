@@ -19,8 +19,9 @@ public sealed class TestStatusEffectApplicationService : StatusEffectApplication
         IMessagingService messaging,
         IPlayerNameService playerName,
         IStatusEffectDurationService duration,
-        IStatusEffectCombatEventService combatEvents)
-        : base(statusEffect, statusCatalog, messaging, playerName, FacadeForwarder.For<IActiveAbilityImpact>(), duration, combatEvents)
+        IStatusEffectCombatEventService combatEvents,
+        IStatusEffectNativeService native)
+        : base(statusEffect, statusCatalog, messaging, playerName, FacadeForwarder.For<IActiveAbilityImpact>(), duration, combatEvents, native)
     {
         _bench = bench;
     }

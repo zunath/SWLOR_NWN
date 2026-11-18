@@ -1,34 +1,25 @@
-using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.UI;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Domain.Character;
-using SWLOR.NWN.API.Engine;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
-    /// Status effects: the per-creature trackers, the native
-    /// effect that carries each status and the effects granted while a native attack cycle resolves. The logic that used
-    /// to be static in the facade <c>StatusEffect</c> is moved here unchanged; the event handlers run on the container's
-    /// instance, and static callers reach it through <c>GameServices.StatusEffect</c>. Calls into <c>Stat</c>, <c>Ability</c> and
-    /// <c>Combat</c>, the feature code, the native effect read and the definition search sit behind one-line
-    /// <c>protected virtual</c> methods whose bodies are the original calls. The pure duration rules live in
+    /// Status effects, part 1 of the status effect split: the per-creature trackers, what a creature has (the reads), the removal
+    /// of status effects and the worn-off messages. The logic that used to be static in the facade <c>StatusEffect</c> is moved
+    /// here unchanged; static callers reach it through <c>GameServices.StatusEffect</c>. The hit point limit check of the feature code
+    /// sits behind a one-line <c>protected virtual</c> method whose body is the original call. Applying, durations, the native
+    /// effect, the combat events and the session are the other parts (<see cref="IStatusEffectApplicationService"/>,
+    /// <see cref="IStatusEffectDurationService"/>, <see cref="IStatusEffectNativeService"/>,
+    /// <see cref="IStatusEffectCombatEventService"/>, <see cref="IStatusEffectSessionService"/>). The pure duration rules live in
     /// <see cref="StatusEffectRules"/>, for code that has no container.
     /// </summary>
     public class StatusEffectService : IStatusEffectService
     {
         private const string StatusEffectTag = "STATUS_EFFECT";
-        private const float Interval = 1f;
 
         [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, CreatureStatusEffect> _creatureEffects = new();
@@ -101,33 +92,6 @@ namespace SWLOR.Game.Server.Domain.Character
         }
 
         /// <summary>
-        /// Handle when a status effect is applied (called by NWN script)
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnApplyStatusEffect)]
-        public void OnApplyStatusEffect()
-        {
-            OnApplyNWNStatusEffect(OBJECT_SELF);
-        }
-
-        /// <summary>
-        /// Handle when a status effect is removed (called by NWN script)
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnRemoveStatusEffect)]
-        public void OnRemoveStatusEffect()
-        {
-            OnRemoveNWNStatusEffect(OBJECT_SELF);
-        }
-
-        /// <summary>
-        /// Handle status effect interval processing (called by NWN script)
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnStatusEffectInterval)]
-        public void OnStatusEffectInterval()
-        {
-            OnNWNStatusEffectInterval(OBJECT_SELF);
-        }
-
-        /// <summary>
         /// Registers who holds the effects of players who logged out, so a source-wide removal reaches them too. The list holds service
         /// instances, so a reload rebuilds it through the boot handler that registers the holder (it reruns before the carried status
         /// effects are adopted). Registering the same holder twice keeps one entry.
@@ -170,131 +134,6 @@ namespace SWLOR.Game.Server.Domain.Character
             return effects;
         }
 
-        public void OnApplyNWNStatusEffect(uint player)
-        {
-            if (!_creatureEffects.ContainsKey(player))
-                _creatureEffects[player] = new CreatureStatusEffect();
-        }
-
-        public void OnRemoveNWNStatusEffect(uint player)
-        {
-            var tag = GetLastStatusEffectTag();
-            if (string.IsNullOrWhiteSpace(tag) || tag == StatusEffectTag)
-            {
-                if (_creatureEffects.ContainsKey(player))
-                    _creatureEffects.Remove(player);
-
-                return;
-            }
-
-            if (_suppressedStatusEffectRemovalIds.Contains(tag))
-                return;
-
-            // NWN can deliver the old timer's removal callback after a duration extension
-            // has already replaced it with another native effect carrying the same tag.
-            // Wait until native removal settles, then only clear statuses without a timer.
-            DelayCommand(0f, () =>
-            {
-                if (!MayHaveEffectTag(player, tag) || !HasEffectByTag(player, tag))
-                    RemoveStatusEffectById(player, tag, true, false);
-            });
-        }
-
-        private string GetLastStatusEffectTag()
-        {
-            var effect = GetLastRunScriptEffect();
-            var tag = GetEffectTag(effect);
-            return !string.IsNullOrWhiteSpace(tag)
-                ? tag
-                : GetEffectString(effect, 0);
-        }
-
-        public void OnNWNStatusEffectInterval(uint creature)
-        {
-            var tag = GetLastStatusEffectTag();
-            if (string.IsNullOrWhiteSpace(tag) || tag == StatusEffectTag)
-            {
-                TickAllStatusEffects(creature);
-                return;
-            }
-
-            TickStatusEffectById(creature, tag);
-        }
-
-        private void TickAllStatusEffects(uint creature)
-        {
-            // Clean up invalid creatures when we encounter them
-            if (!GetIsObjectValid(creature) || GetIsDead(creature))
-            {
-                if (_creatureEffects.ContainsKey(creature))
-                {
-                    _creatureEffects.Remove(creature);
-                }
-                RemoveEffectByTag(creature, StatusEffectTag);
-                return;
-            }
-
-            if (!_creatureEffects.ContainsKey(creature))
-            {
-                RemoveEffectByTag(creature, StatusEffectTag);
-                return;
-            }
-
-            var effects = _creatureEffects[creature];
-
-            foreach (var effect in effects.GetAllTickEffects())
-            {
-                if (effect.ActivationType != StatusEffectActivationType.Tick)
-                    continue;
-
-                TickStatusEffect(creature, effect);
-            }
-        }
-
-        private void TickStatusEffectById(uint creature, string statusEffectId)
-        {
-            if (!GetIsObjectValid(creature) || GetIsDead(creature))
-            {
-                RemoveStatusEffectById(creature, statusEffectId, false, true);
-                return;
-            }
-
-            if (!_creatureEffects.TryGetValue(creature, out var effects))
-            {
-                RemoveEffectByTag(creature, statusEffectId);
-                return;
-            }
-
-            var effect = effects.GetAllTickEffects().FirstOrDefault(x => x.Id == statusEffectId);
-            if (effect == null)
-            {
-                RemoveEffectByTag(creature, statusEffectId);
-                return;
-            }
-
-            TickStatusEffect(creature, effect);
-        }
-
-        private void TickStatusEffect(uint creature, IStatusEffect effect)
-        {
-            if (effect.ActivationType != StatusEffectActivationType.Tick)
-                return;
-
-            if (effect.IsFlaggedForRemoval)
-            {
-                RemoveStatusEffectById(creature, effect.Id, true, true);
-            }
-            else
-            {
-                effect.TickEffect(creature);
-
-                if (effect.IsFlaggedForRemoval)
-                {
-                    RemoveStatusEffectById(creature, effect.Id, true, true);
-                }
-            }
-        }
-
         public CreatureStatusEffect GetCreatureStatusEffects(uint creature)
         {
             return !_creatureEffects.ContainsKey(creature)
@@ -327,27 +166,6 @@ namespace SWLOR.Game.Server.Domain.Character
             return _creatureEffects.TryGetValue(creature, out var effects) && effects.HasAnyActiveEffect(sourceType);
         }
 
-        public void ReapplyNWNEffects(uint creature, CreatureStatusEffect effects)
-        {
-            var shouldReapplyMovementRate = false;
-
-            foreach (var statusEffect in effects.GetAllEffects())
-            {
-                statusEffect.ReapplyEffect(creature);
-                ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
-
-                if (HasStatAdjustment(statusEffect))
-                {
-                    shouldReapplyMovementRate = true;
-                }
-            }
-
-            if (shouldReapplyMovementRate)
-            {
-                ApplyCreatureMovementRate(creature);
-            }
-        }
-
         public void RemoveNonPersistentStatusEffects(uint creature, CreatureStatusEffect effects)
         {
             foreach (var statusEffect in effects.GetAllEffects().Where(effect => !effect.PersistsOnLogout))
@@ -365,117 +183,6 @@ namespace SWLOR.Game.Server.Domain.Character
             }
 
             RemoveEffectByTag(creature, StatusEffectTag);
-        }
-
-        public void ApplyTrackedNWNEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent)
-        {
-            if (MayHaveEffectTag(creature, statusEffect.Id) && HasEffectByTag(creature, statusEffect.Id))
-                return;
-
-            ApplyNativeStatusEffect(creature, statusEffect, durationTicks, isPermanent);
-        }
-
-        // RemoveEffectByTag hides every effect it finds with the tag, so the presence check that
-        // ApplyTrackedNWNEffect makes would always fail here.
-        public void ReplaceNativeStatusEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent)
-        {
-            RemoveNativeStatusEffect(creature, statusEffect.Id);
-            ApplyNativeStatusEffect(creature, statusEffect, durationTicks, isPermanent);
-        }
-
-        private void ApplyNativeStatusEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent)
-        {
-            var effect = BuildNativeStatusEffect(statusEffect);
-
-            if (isPermanent || durationTicks < 0)
-            {
-                ApplyEffectToObject(DurationType.Permanent, effect, creature);
-            }
-            else
-            {
-                var durationSeconds = GetStatusEffectDurationSeconds(statusEffect, durationTicks);
-                ApplyEffectToObject(DurationType.Temporary, effect, creature, durationSeconds);
-            }
-
-            ScheduleTemporaryHitPointLimitCheckForVitality(creature, statusEffect);
-        }
-
-        // Native Vitality effects change maximum HP outside the HP budget setters.
-        private void ScheduleTemporaryHitPointLimitCheckForVitality(uint creature, IStatusEffect statusEffect)
-        {
-            if (statusEffect.StatGroup.Abilities.TryGetValue(AbilityType.Vitality, out var vitality) && vitality != 0)
-                ScheduleTemporaryHitPointLimitCheck(creature);
-        }
-
-        private Effect BuildNativeStatusEffect(IStatusEffect statusEffect)
-        {
-            var intervalScript = statusEffect.ActivationType == StatusEffectActivationType.Tick
-                ? ScriptName.OnStatusEffectInterval
-                : string.Empty;
-
-            var effect = EffectRunScript(
-                ScriptName.OnApplyStatusEffect,
-                ScriptName.OnRemoveStatusEffect,
-                intervalScript,
-                Interval,
-                statusEffect.Id);
-            effect = TagEffect(effect, statusEffect.Id);
-
-            if (statusEffect.Icon != EffectIconType.Invalid)
-            {
-                var iconEffect = TagEffect(EffectIcon(statusEffect.Icon), statusEffect.Id);
-                effect = LinkEffect(effect, iconEffect);
-            }
-
-            var abilityStatEffects = BuildAbilityStatEffects(statusEffect);
-            effect = LinkEffect(effect, abilityStatEffects);
-            effect = TagEffect(effect, statusEffect.Id);
-            return SupernaturalEffect(effect);
-        }
-
-        private float GetStatusEffectDurationSeconds(IStatusEffect statusEffect, int durationTicks)
-        {
-            var logicalDurationSeconds = statusEffect.DurationTicks > 0
-                ? statusEffect.GetRemainingDurationSeconds(Clock.UtcNow)
-                : durationTicks * Math.Max(1f, statusEffect.Frequency);
-
-            // NWN may remove an effect before delivering an interval callback scheduled for the
-            // exact same timestamp. Ticking effects therefore keep one logical tick of native
-            // lifetime grace so a late callback can catch up and the final logical tick can remove
-            // the effect.
-            // Passive effects have no interval callback and retain their exact duration.
-            return statusEffect.ActivationType == StatusEffectActivationType.Tick
-                ? logicalDurationSeconds + Math.Max(Interval, statusEffect.Frequency)
-                : logicalDurationSeconds;
-        }
-
-        private Effect LinkEffect(Effect linkedEffect, Effect effect)
-        {
-            return effect == null
-                ? linkedEffect
-                : EffectLinkEffects(linkedEffect, effect);
-        }
-
-        private Effect BuildAbilityStatEffects(IStatusEffect statusEffect)
-        {
-            Effect linkedEffect = null;
-
-            foreach (var (ability, amount) in statusEffect.StatGroup.Abilities)
-            {
-                if (ability == AbilityType.Invalid || amount == 0)
-                    continue;
-
-                var effect = amount > 0
-                    ? EffectAbilityIncrease(ability, amount)
-                    : EffectAbilityDecrease(ability, Math.Abs(amount));
-                effect = TagEffect(effect, statusEffect.Id);
-
-                linkedEffect = linkedEffect == null
-                    ? effect
-                    : EffectLinkEffects(linkedEffect, effect);
-            }
-
-            return linkedEffect;
         }
 
         public bool HasStatusEffect(uint creature, Type statusEffectClass)
@@ -1080,11 +787,16 @@ namespace SWLOR.Game.Server.Domain.Character
             _gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectRemovedRefreshEvent());
         }
 
-        private void RemoveNativeStatusEffect(uint creature, string statusEffectId)
+        public void RemoveNativeStatusEffect(uint creature, string statusEffectId)
         {
             _suppressedStatusEffectRemovalIds.Add(statusEffectId);
             RemoveEffectByTag(creature, statusEffectId);
             _suppressedStatusEffectRemovalIds.Remove(statusEffectId);
+        }
+
+        public bool IsRemovalSuppressed(string statusEffectId)
+        {
+            return _suppressedStatusEffectRemovalIds.Contains(statusEffectId);
         }
 
         public void RemoveStatusEffect<T>(uint creature)
@@ -1273,9 +985,13 @@ namespace SWLOR.Game.Server.Domain.Character
                 throw new InvalidOperationException("No applied listener is registered with the status effects.");
         }
 
-        protected virtual void ScheduleTemporaryHitPointLimitCheck(uint target) => TemporaryHitPointEffects.ScheduleLimitCheck(target);
+        // Native Vitality effects change maximum HP outside the HP budget setters.
+        public void ScheduleTemporaryHitPointLimitCheckForVitality(uint creature, IStatusEffect statusEffect)
+        {
+            if (statusEffect.StatGroup.Abilities.TryGetValue(AbilityType.Vitality, out var vitality) && vitality != 0)
+                ScheduleTemporaryHitPointLimitCheck(creature);
+        }
 
-        // A native read of the object's applied effects.
-        protected virtual bool MayHaveEffectTag(uint creature, string tag) => AppliedEffects.MayHaveTag(creature, tag);
+        protected virtual void ScheduleTemporaryHitPointLimitCheck(uint target) => TemporaryHitPointEffects.ScheduleLimitCheck(target);
     }
 }

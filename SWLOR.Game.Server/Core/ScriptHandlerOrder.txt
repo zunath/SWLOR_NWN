@@ -1129,13 +1129,13 @@ start_convo
   action      SWLOR.Game.Server.Domain.Foundation.ConversationMenuService.StartFromLocalConversation
 
 status_apply
-  action      SWLOR.Game.Server.Domain.Character.StatusEffectService.OnApplyStatusEffect
+  action      SWLOR.Game.Server.Domain.Character.StatusEffectNativeService.OnApplyStatusEffect
 
 status_interval
-  action      SWLOR.Game.Server.Domain.Character.StatusEffectService.OnStatusEffectInterval
+  action      SWLOR.Game.Server.Domain.Character.StatusEffectNativeService.OnStatusEffectInterval
 
 status_remove
-  action      SWLOR.Game.Server.Domain.Character.StatusEffectService.OnRemoveStatusEffect
+  action      SWLOR.Game.Server.Domain.Character.StatusEffectNativeService.OnRemoveStatusEffect
 
 stlent_add_aft
   action      SWLOR.Game.Server.Domain.Combat.StealthService.OnStealthEntered

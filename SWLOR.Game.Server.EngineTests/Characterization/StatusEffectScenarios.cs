@@ -83,7 +83,7 @@ public static class StatusEffectScenarios
                 for (var second = 0; second < planned.AdvanceSeconds; second++)
                 {
                     clock.Advance(1);
-                    StatusEffect.OnNWNStatusEffectInterval(target);
+                    StatusEffectNative.OnNWNStatusEffectInterval(target);
                 }
 
                 await SettleAsync(scenario);

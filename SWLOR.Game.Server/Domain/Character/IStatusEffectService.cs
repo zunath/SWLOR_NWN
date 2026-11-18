@@ -47,9 +47,6 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>Gives a creature the tracker of effects it already holds, as a player returning from logout gets theirs back.</summary>
         void TrackCreatureStatusEffects(uint creature, CreatureStatusEffect effects);
 
-        /// <summary>Applies the native effect of every status effect a creature holds again, and its movement rate when one adjusts a stat.</summary>
-        void ReapplyNWNEffects(uint creature, CreatureStatusEffect effects);
-
         /// <summary>Tells the stat effect listeners that a player's status effects were restored, so the food bonus returns.</summary>
         void ReapplyFoodHP(uint player);
 
@@ -81,14 +78,17 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>Removes every instance of a type, from one source or any (<c>OBJECT_INVALID</c>), because an application replaces it: no worn-off message, the native effect removed.</summary>
         void RemoveStatusEffectForReplacement(Type type, uint creature, uint source);
 
-        /// <summary>Replaces the native effect of a status effect with one for the given duration, as a restart, refresh or extension does.</summary>
-        void ReplaceNativeStatusEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent);
-
         /// <summary>Tells the melee listeners a direct hit is about to land, so the stand-ins and techniques validate their state.</summary>
         void NotifyBeforeDirectDamage(uint attacker, uint defender, CombatDamageDeliveryType deliveryType);
 
-        /// <summary>Applies the native effect of a status effect and tracks it, so a restart or logout finds it.</summary>
-        void ApplyTrackedNWNEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent);
+        /// <summary>Removes the native effect with this tag from a creature, without the removal script settling the status effect (the native part replaces and removes effects through it).</summary>
+        void RemoveNativeStatusEffect(uint creature, string statusEffectId);
+
+        /// <summary>Whether the removal of the native effect with this tag is in progress and the remove script is to leave the status effect alone.</summary>
+        bool IsRemovalSuppressed(string statusEffectId);
+
+        /// <summary>Checks the temporary hit point limit of a creature when an effect adjusts its Vitality, as the native effects and the removal do.</summary>
+        void ScheduleTemporaryHitPointLimitCheckForVitality(uint creature, IStatusEffect statusEffect);
 
         /// <summary>Whether an effect adjusts any stat.</summary>
         bool HasStatAdjustment(IStatusEffect statusEffect);
@@ -106,27 +106,6 @@ namespace SWLOR.Game.Server.Domain.Character
         void NotifyApplicationCompleted(uint source, uint creature, Type statusEffectType, AbilityDetail ability);
 
         void ClearStatusEffectsOnDeath(uint player);
-
-        /// <summary>
-        /// Handle when a status effect is applied (called by NWN script)
-        /// </summary>
-        void OnApplyStatusEffect();
-
-        /// <summary>
-        /// Handle when a status effect is removed (called by NWN script)
-        /// </summary>
-        void OnRemoveStatusEffect();
-
-        /// <summary>
-        /// Handle status effect interval processing (called by NWN script)
-        /// </summary>
-        void OnStatusEffectInterval();
-
-        void OnApplyNWNStatusEffect(uint player);
-
-        void OnRemoveNWNStatusEffect(uint player);
-
-        void OnNWNStatusEffectInterval(uint creature);
 
         CreatureStatusEffect GetCreatureStatusEffects(uint creature);
 

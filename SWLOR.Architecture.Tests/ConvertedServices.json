@@ -118,6 +118,7 @@
     { "name": "StatusEffectCatalog", "domain": "Character" },
     { "name": "StatusEffectCombatEvent", "domain": "Character" },
     { "name": "StatusEffectDuration", "domain": "Character" },
+    { "name": "StatusEffectNative", "domain": "Character" },
     { "name": "StatusEffectSession", "domain": "Character" },
     { "name": "Stealth", "domain": "Combat" },
     { "name": "Targeting", "domain": "Combat" },

@@ -201,7 +201,7 @@ public class ReloadStateCarrierTests
         var changed = new List<uint>();
         var written = NewTrackers(new Dictionary<uint, CreatureStatusEffect> { [42u] = new CreatureStatusEffect() }, changed);
         var trackers = NewTrackers(new Dictionary<uint, CreatureStatusEffect>(), changed);
-        var sessionService = new StatusEffectSessionService(trackers, null!, null!, null!, null!);
+        var sessionService = new StatusEffectSessionService(trackers, null!, null!, null!, null!, null!);
         var store = new Dictionary<string, string>
         {
             [ReloadStateCarrier.KeyPrefix + typeof(StatusEffectService).FullName] = Carrier().Write(trackerFields, written),

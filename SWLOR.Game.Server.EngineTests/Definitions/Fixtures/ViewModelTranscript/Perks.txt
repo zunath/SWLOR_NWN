@@ -1,3 +1,4 @@
+# Captured on the full engine hak set (scripts/ci/fetch-engine-test-haks.sh checkout, prepare-engine-test-home.sh staging, SWLOR.CLI --hak), host entry; compare only on that set, not on the debugserver hak set.
 open 1 step
 open 2 engine NuiCreate <player>, <json>, GUI_WINDOW_Perks
 open 3 engine NuiSetBind <player>, 1, PerkButtonIcons, <json>
@@ -856,173 +857,448 @@ select-maxed-perk 36 state carried
 select-maxed-perk 37 state worn Chest=farmer_outfit002
 select-maxed-perk 38 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
 select-maxed-perk 39 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
-select-hot-bar-perk 1 step
-select-hot-bar-perk 2 property PerkDetailSelected [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-hot-bar-perk 3 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
-select-hot-bar-perk 4 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
-select-hot-bar-perk 5 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-select-hot-bar-perk 6 property PerkDetailSelected [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-hot-bar-perk 7 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
-select-hot-bar-perk 8 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
-select-hot-bar-perk 9 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-select-hot-bar-perk 10 property SelectedRequirements ["MAXED"]
-select-hot-bar-perk 11 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
-select-hot-bar-perk 12 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
-select-hot-bar-perk 13 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
-select-hot-bar-perk 14 property SelectedRequirementColors [{"a":255,"b":0,"g":255,"r":0}]
-select-hot-bar-perk 15 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowCount, <json>
-select-hot-bar-perk 16 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowVisibility, <json>
-select-hot-bar-perk 17 engine NuiSetBind <player>, 1, SelectedRequirementColors, <json>
-select-hot-bar-perk 18 property SelectedRequirementIcons ["req_other"]
-select-hot-bar-perk 19 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
-select-hot-bar-perk 20 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
-select-hot-bar-perk 21 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
-select-hot-bar-perk 22 property SelectedRequirementTooltips ["This perk is fully upgraded."]
-select-hot-bar-perk 23 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
-select-hot-bar-perk 24 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
-select-hot-bar-perk 25 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
-select-hot-bar-perk 26 property BuyText "Buy Upgrade"
-select-hot-bar-perk 27 engine NuiSetBind <player>, 1, BuyText, <json>
-select-hot-bar-perk 28 property IsBuyEnabled false
-select-hot-bar-perk 29 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
-select-hot-bar-perk 30 property SelectedDetails "Adrenal Stim\n\n[First Aid - Combat Pharmacology]\nType: Active\nRecast Group: Adrenal Stim\n\nRank 3 / 3\n\nCurrent (rank 3):\nFP: 0\nSTM: 0\nRecast: 45s\nRestores 25% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.\n\n"
-select-hot-bar-perk 31 engine NuiSetBind <player>, 1, SelectedDetails, <json>
-select-hot-bar-perk 32 property IsPerkSelected true
-select-hot-bar-perk 33 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
-select-hot-bar-perk 34 property IsRefundEnabled false
-select-hot-bar-perk 35 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
-select-hot-bar-perk 36 state carried
-select-hot-bar-perk 37 state worn Chest=farmer_outfit002
-select-hot-bar-perk 38 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
-select-hot-bar-perk 39 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
-buy-hot-bar-perk 1 step
-buy-hot-bar-perk 2 property ModalPromptText "This upgrade will cost  SP. Are you sure you want to buy it?"
-buy-hot-bar-perk 3 engine NuiSetBind <player>, 1, ModalPromptText, <json>
-buy-hot-bar-perk 4 property ModalConfirmButtonText "Yes"
-buy-hot-bar-perk 5 engine NuiSetBind <player>, 1, ModalConfirmButtonText, <json>
-buy-hot-bar-perk 6 property ModalCancelButtonText "No"
-buy-hot-bar-perk 7 engine NuiSetBind <player>, 1, ModalCancelButtonText, <json>
-buy-hot-bar-perk 8 engine NuiSetGroupLayout <player>, 1, _window_, <json>
-buy-hot-bar-perk 9 engine NuiSetBind <player>, 1, Geometry, <json>
-buy-hot-bar-perk 10 property ModalPromptText "This upgrade will cost  SP. Are you sure you want to buy it?"
-buy-hot-bar-perk 11 engine NuiSetBind <player>, 1, ModalPromptText, <json>
-buy-hot-bar-perk 12 property ModalConfirmButtonText "Yes"
-buy-hot-bar-perk 13 engine NuiSetBind <player>, 1, ModalConfirmButtonText, <json>
-buy-hot-bar-perk 14 property ModalCancelButtonText "No"
-buy-hot-bar-perk 15 engine NuiSetBind <player>, 1, ModalCancelButtonText, <json>
-buy-hot-bar-perk 16 engine NuiSetGroupLayout <player>, 1, _window_, <json>
-buy-hot-bar-perk 17 engine NuiSetBind <player>, 1, Geometry, <json>
-buy-hot-bar-perk 18 property HasBeast true
-buy-hot-bar-perk 19 engine NuiSetBind <player>, 1, HasBeast, <json>
-buy-hot-bar-perk 20 property Categories <1483 chars hash e3dd3832f7d2b7653e7f67ba2723e886> [["<All Categories>",0],["Agriculture",13],["General",2],["Beast Mastery - Incubation",17],["Beast Mastery - Training",1
-buy-hot-bar-perk 21 engine NuiSetBind <player>, 1, Categories, <json>
-buy-hot-bar-perk 22 property AvailableSP "Available SP: 111"
-buy-hot-bar-perk 23 engine NuiSetBind <player>, 1, AvailableSP, <json>
-buy-hot-bar-perk 24 property TotalSP "Total SP: 410 / 410"
-buy-hot-bar-perk 25 engine NuiSetBind <player>, 1, TotalSP, <json>
-buy-hot-bar-perk 26 property ForceAffinityColor {"a":255,"b":93,"g":181,"r":221}
-buy-hot-bar-perk 27 engine NuiSetBind <player>, 1, ForceAffinityColor, <json>
-buy-hot-bar-perk 28 property ForceAffinityHeading "FORCE AFFINITY: 0 Neutral"
-buy-hot-bar-perk 29 engine NuiSetBind <player>, 1, ForceAffinityHeading, <json>
-buy-hot-bar-perk 30 property IsForceAffinityVisible true
-buy-hot-bar-perk 31 engine NuiSetBind <player>, 1, IsForceAffinityVisible, <json>
-buy-hot-bar-perk 32 property ResetNextAvailable "Reset Available: Now [# Available: 0]"
-buy-hot-bar-perk 33 engine NuiSetBind <player>, 1, ResetNextAvailable, <json>
-buy-hot-bar-perk 34 property PerkButtonIcons <492 chars hash 0dde09090fb79455df1c55851e4d23d5> ["ife_adrenalstim1","ife_benevolence1","ife_blstbcn1","ife_pf_dance1","ife_def_modul","ife_deflshld1","ife_flame1","ife_
-buy-hot-bar-perk 35 engine NuiSetBind <player>, 1, PerkButtonIcons_RowCount, <json>
-buy-hot-bar-perk 36 engine NuiSetBind <player>, 1, PerkButtonIcons_RowVisibility, <json>
-buy-hot-bar-perk 37 engine NuiSetBind <player>, 1, PerkButtonIcons, <json>
-buy-hot-bar-perk 38 property PerkButtonColors <974 chars hash 0bb642744293abb0b81f21c49096f04a> [{"a":255,"b":230,"g":170,"r":90},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":169,"g":169,"r":169},{"a":255,"b":90,"g":
-buy-hot-bar-perk 39 engine NuiSetBind <player>, 1, PerkButtonColors_RowCount, <json>
-buy-hot-bar-perk 40 engine NuiSetBind <player>, 1, PerkButtonColors_RowVisibility, <json>
-buy-hot-bar-perk 41 engine NuiSetBind <player>, 1, PerkButtonColors, <json>
-buy-hot-bar-perk 42 property PerkButtonTexts <630 chars hash 4ca3d5e04a5d694f8a0051d12b0eec2d> ["Adrenal Stim (3/3)","Benevolence (0/3)","Blaster Beacon (0/3)","Dance (0/4)","Defensive Modules (0/5)","Deflector Shie
-buy-hot-bar-perk 43 engine NuiSetBind <player>, 1, PerkButtonTexts_RowCount, <json>
-buy-hot-bar-perk 44 engine NuiSetBind <player>, 1, PerkButtonTexts_RowVisibility, <json>
-buy-hot-bar-perk 45 engine NuiSetBind <player>, 1, PerkButtonTexts, <json>
-buy-hot-bar-perk 46 property PerkRowCosts ["","2 SP","3 SP","2 SP","1 SP","3 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP"]
-buy-hot-bar-perk 47 engine NuiSetBind <player>, 1, PerkRowCosts_RowCount, <json>
-buy-hot-bar-perk 48 engine NuiSetBind <player>, 1, PerkRowCosts_RowVisibility, <json>
-buy-hot-bar-perk 49 engine NuiSetBind <player>, 1, PerkRowCosts, <json>
-buy-hot-bar-perk 50 property PerkRowReqTooltips <1040 chars hash cb01d4ab11e36d664902874d3e757896> ["Fully upgraded.","Can buy - 2 SP","Locked - Character Type: Character Type: Standard. Only Standard character types ma
-buy-hot-bar-perk 51 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowCount, <json>
-buy-hot-bar-perk 52 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowVisibility, <json>
-buy-hot-bar-perk 53 engine NuiSetBind <player>, 1, PerkRowReqTooltips, <json>
-buy-hot-bar-perk 54 property PerkRowReqIcons ["req_other","req_met","req_chartype_r","req_met","req_met","req_chartype_r","req_chartype_r","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met"]
-buy-hot-bar-perk 55 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowCount, <json>
-buy-hot-bar-perk 56 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowVisibility, <json>
-buy-hot-bar-perk 57 engine NuiSetBind <player>, 1, PerkRowReqIcons, <json>
-buy-hot-bar-perk 58 property SelectedDetails "Adrenal Stim\n\n[First Aid - Combat Pharmacology]\nType: Active\nRecast Group: Adrenal Stim\n\nRank 3 / 3\n\nCurrent (rank 3):\nFP: 0\nSTM: 0\nRecast: 45s\nRestores 25% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.\n\n"
-buy-hot-bar-perk 59 engine NuiSetBind <player>, 1, SelectedDetails, <json>
-buy-hot-bar-perk 60 property IsPerkSelected true
-buy-hot-bar-perk 61 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
-buy-hot-bar-perk 62 property SelectedRequirementTooltips ["This perk is fully upgraded."]
-buy-hot-bar-perk 63 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
-buy-hot-bar-perk 64 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
-buy-hot-bar-perk 65 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
-buy-hot-bar-perk 66 property SelectedRequirementIcons ["req_other"]
-buy-hot-bar-perk 67 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
-buy-hot-bar-perk 68 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
-buy-hot-bar-perk 69 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
-buy-hot-bar-perk 70 property SelectedRequirementColors [{"a":255,"b":0,"g":255,"r":0}]
-buy-hot-bar-perk 71 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowCount, <json>
-buy-hot-bar-perk 72 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowVisibility, <json>
-buy-hot-bar-perk 73 engine NuiSetBind <player>, 1, SelectedRequirementColors, <json>
-buy-hot-bar-perk 74 property SelectedRequirements ["MAXED"]
-buy-hot-bar-perk 75 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
-buy-hot-bar-perk 76 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
-buy-hot-bar-perk 77 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
-buy-hot-bar-perk 78 property PageNumbers [["Page 1",1],["Page 2",2],["Page 3",3],["Page 4",4],["Page 5",5],["Page 6",6],["Page 7",7],["Page 8",8],["Page 9",9],["Page 10",10],["Page 11",11],["Page 12",12],["Page 13",13],["Page 14",14],["Page 15",15],["Page 16",16],["Page 17",17],["Page 18",18],["Page 19",19]]
-buy-hot-bar-perk 79 engine NuiSetBind <player>, 1, PageNumbers, <json>
-buy-hot-bar-perk 80 property IsBuyEnabled false
-buy-hot-bar-perk 81 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
-buy-hot-bar-perk 82 property BuyText "Buy Upgrade"
-buy-hot-bar-perk 83 engine NuiSetBind <player>, 1, BuyText, <json>
-buy-hot-bar-perk 84 property IsRefundEnabled false
-buy-hot-bar-perk 85 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
-buy-hot-bar-perk 86 state carried
-buy-hot-bar-perk 87 state worn Chest=farmer_outfit002
-buy-hot-bar-perk 88 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
-buy-hot-bar-perk 89 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
-select-hot-bar-perk-again 1 step
-select-hot-bar-perk-again 2 property PerkDetailSelected [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-hot-bar-perk-again 3 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
-select-hot-bar-perk-again 4 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
-select-hot-bar-perk-again 5 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-select-hot-bar-perk-again 6 property PerkDetailSelected [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-select-hot-bar-perk-again 7 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
-select-hot-bar-perk-again 8 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
-select-hot-bar-perk-again 9 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-select-hot-bar-perk-again 10 property SelectedRequirements ["MAXED"]
-select-hot-bar-perk-again 11 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
-select-hot-bar-perk-again 12 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
-select-hot-bar-perk-again 13 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
-select-hot-bar-perk-again 14 property SelectedRequirementColors [{"a":255,"b":0,"g":255,"r":0}]
-select-hot-bar-perk-again 15 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowCount, <json>
-select-hot-bar-perk-again 16 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowVisibility, <json>
-select-hot-bar-perk-again 17 engine NuiSetBind <player>, 1, SelectedRequirementColors, <json>
-select-hot-bar-perk-again 18 property SelectedRequirementIcons ["req_other"]
-select-hot-bar-perk-again 19 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
-select-hot-bar-perk-again 20 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
-select-hot-bar-perk-again 21 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
-select-hot-bar-perk-again 22 property SelectedRequirementTooltips ["This perk is fully upgraded."]
-select-hot-bar-perk-again 23 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
-select-hot-bar-perk-again 24 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
-select-hot-bar-perk-again 25 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
-select-hot-bar-perk-again 26 property BuyText "Buy Upgrade"
-select-hot-bar-perk-again 27 engine NuiSetBind <player>, 1, BuyText, <json>
-select-hot-bar-perk-again 28 property IsBuyEnabled false
-select-hot-bar-perk-again 29 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
-select-hot-bar-perk-again 30 property SelectedDetails "Adrenal Stim\n\n[First Aid - Combat Pharmacology]\nType: Active\nRecast Group: Adrenal Stim\n\nRank 3 / 3\n\nCurrent (rank 3):\nFP: 0\nSTM: 0\nRecast: 45s\nRestores 25% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.\n\n"
-select-hot-bar-perk-again 31 engine NuiSetBind <player>, 1, SelectedDetails, <json>
-select-hot-bar-perk-again 32 property IsPerkSelected true
-select-hot-bar-perk-again 33 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
-select-hot-bar-perk-again 34 property IsRefundEnabled false
-select-hot-bar-perk-again 35 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
-select-hot-bar-perk-again 36 state carried
-select-hot-bar-perk-again 37 state worn Chest=farmer_outfit002
-select-hot-bar-perk-again 38 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
-select-hot-bar-perk-again 39 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
+hot-bar-perk-found 1 step
+hot-bar-perk-found 2 state carried
+hot-bar-perk-found 3 state worn Chest=farmer_outfit002
+hot-bar-perk-found 4 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+hot-bar-perk-found 5 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
+hot-bar-perk-select 1 step
+hot-bar-perk-select 2 property PerkDetailSelected [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+hot-bar-perk-select 3 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
+hot-bar-perk-select 4 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
+hot-bar-perk-select 5 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
+hot-bar-perk-select 6 property PerkDetailSelected [false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+hot-bar-perk-select 7 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
+hot-bar-perk-select 8 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
+hot-bar-perk-select 9 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
+hot-bar-perk-select 10 property SelectedRequirements ["None"]
+hot-bar-perk-select 11 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
+hot-bar-perk-select 12 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
+hot-bar-perk-select 13 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
+hot-bar-perk-select 14 property SelectedRequirementColors [{"a":255,"b":0,"g":255,"r":0}]
+hot-bar-perk-select 15 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowCount, <json>
+hot-bar-perk-select 16 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowVisibility, <json>
+hot-bar-perk-select 17 engine NuiSetBind <player>, 1, SelectedRequirementColors, <json>
+hot-bar-perk-select 18 property SelectedRequirementIcons ["req_met"]
+hot-bar-perk-select 19 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
+hot-bar-perk-select 20 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
+hot-bar-perk-select 21 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
+hot-bar-perk-select 22 property SelectedRequirementTooltips ["This upgrade has no requirements."]
+hot-bar-perk-select 23 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
+hot-bar-perk-select 24 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
+hot-bar-perk-select 25 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
+hot-bar-perk-select 26 property BuyText "Buy Upgrade (2 SP)"
+hot-bar-perk-select 27 engine NuiSetBind <player>, 1, BuyText, <json>
+hot-bar-perk-select 28 property IsBuyEnabled true
+hot-bar-perk-select 29 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
+hot-bar-perk-select 30 property SelectedDetails "Dance\n\n[Performance - Dancing]\nType: Active\n\nRank 0 / 4\n\nNext Upgrade (rank 1) - 2 SP:\nFP: 0\nSTM: 0\nRecast: 0s\nEnters dance mode: your hotbar is replaced with your dance steps until you stop. Your audience's Inspired grants +6% skill XP, and each minute they watch clears 1% of their XP debt. SOC scaling can raise the XP bonus to +8%. Unlocks the Cantina Shuffle routine.\n\n"
+hot-bar-perk-select 31 engine NuiSetBind <player>, 1, SelectedDetails, <json>
+hot-bar-perk-select 32 property IsPerkSelected true
+hot-bar-perk-select 33 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
+hot-bar-perk-select 34 property IsRefundEnabled false
+hot-bar-perk-select 35 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
+hot-bar-perk-select 36 state carried
+hot-bar-perk-select 37 state worn Chest=farmer_outfit002
+hot-bar-perk-select 38 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+hot-bar-perk-select 39 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
+hot-bar-perk-buy 1 step
+hot-bar-perk-buy 2 property ModalPromptText "This upgrade will cost 2 SP. Are you sure you want to buy it?"
+hot-bar-perk-buy 3 engine NuiSetBind <player>, 1, ModalPromptText, <json>
+hot-bar-perk-buy 4 property ModalConfirmButtonText "Yes"
+hot-bar-perk-buy 5 engine NuiSetBind <player>, 1, ModalConfirmButtonText, <json>
+hot-bar-perk-buy 6 property ModalCancelButtonText "No"
+hot-bar-perk-buy 7 engine NuiSetBind <player>, 1, ModalCancelButtonText, <json>
+hot-bar-perk-buy 8 engine NuiSetGroupLayout <player>, 1, _window_, <json>
+hot-bar-perk-buy 9 engine NuiSetBind <player>, 1, Geometry, <json>
+hot-bar-perk-buy 10 property ModalPromptText "This upgrade will cost 2 SP. Are you sure you want to buy it?"
+hot-bar-perk-buy 11 engine NuiSetBind <player>, 1, ModalPromptText, <json>
+hot-bar-perk-buy 12 property ModalConfirmButtonText "Yes"
+hot-bar-perk-buy 13 engine NuiSetBind <player>, 1, ModalConfirmButtonText, <json>
+hot-bar-perk-buy 14 property ModalCancelButtonText "No"
+hot-bar-perk-buy 15 engine NuiSetBind <player>, 1, ModalCancelButtonText, <json>
+hot-bar-perk-buy 16 engine NuiSetGroupLayout <player>, 1, _window_, <json>
+hot-bar-perk-buy 17 engine NuiSetBind <player>, 1, Geometry, <json>
+hot-bar-perk-buy 18 property HasBeast true
+hot-bar-perk-buy 19 engine NuiSetBind <player>, 1, HasBeast, <json>
+hot-bar-perk-buy 20 property Categories <1483 chars hash e3dd3832f7d2b7653e7f67ba2723e886> [["<All Categories>",0],["Agriculture",13],["General",2],["Beast Mastery - Incubation",17],["Beast Mastery - Training",1
+hot-bar-perk-buy 21 engine NuiSetBind <player>, 1, Categories, <json>
+hot-bar-perk-buy 22 property AvailableSP "Available SP: 111"
+hot-bar-perk-buy 23 engine NuiSetBind <player>, 1, AvailableSP, <json>
+hot-bar-perk-buy 24 property TotalSP "Total SP: 410 / 410"
+hot-bar-perk-buy 25 engine NuiSetBind <player>, 1, TotalSP, <json>
+hot-bar-perk-buy 26 property ForceAffinityColor {"a":255,"b":93,"g":181,"r":221}
+hot-bar-perk-buy 27 engine NuiSetBind <player>, 1, ForceAffinityColor, <json>
+hot-bar-perk-buy 28 property ForceAffinityHeading "FORCE AFFINITY: 0 Neutral"
+hot-bar-perk-buy 29 engine NuiSetBind <player>, 1, ForceAffinityHeading, <json>
+hot-bar-perk-buy 30 property IsForceAffinityVisible true
+hot-bar-perk-buy 31 engine NuiSetBind <player>, 1, IsForceAffinityVisible, <json>
+hot-bar-perk-buy 32 property ResetNextAvailable "Reset Available: Now [# Available: 0]"
+hot-bar-perk-buy 33 engine NuiSetBind <player>, 1, ResetNextAvailable, <json>
+hot-bar-perk-buy 34 property PerkButtonIcons <492 chars hash 0dde09090fb79455df1c55851e4d23d5> ["ife_adrenalstim1","ife_benevolence1","ife_blstbcn1","ife_pf_dance1","ife_def_modul","ife_deflshld1","ife_flame1","ife_
+hot-bar-perk-buy 35 engine NuiSetBind <player>, 1, PerkButtonIcons_RowCount, <json>
+hot-bar-perk-buy 36 engine NuiSetBind <player>, 1, PerkButtonIcons_RowVisibility, <json>
+hot-bar-perk-buy 37 engine NuiSetBind <player>, 1, PerkButtonIcons, <json>
+hot-bar-perk-buy 38 property PerkButtonColors <974 chars hash 0bb642744293abb0b81f21c49096f04a> [{"a":255,"b":230,"g":170,"r":90},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":169,"g":169,"r":169},{"a":255,"b":90,"g":
+hot-bar-perk-buy 39 engine NuiSetBind <player>, 1, PerkButtonColors_RowCount, <json>
+hot-bar-perk-buy 40 engine NuiSetBind <player>, 1, PerkButtonColors_RowVisibility, <json>
+hot-bar-perk-buy 41 engine NuiSetBind <player>, 1, PerkButtonColors, <json>
+hot-bar-perk-buy 42 property PerkButtonTexts <630 chars hash 4ca3d5e04a5d694f8a0051d12b0eec2d> ["Adrenal Stim (3/3)","Benevolence (0/3)","Blaster Beacon (0/3)","Dance (0/4)","Defensive Modules (0/5)","Deflector Shie
+hot-bar-perk-buy 43 engine NuiSetBind <player>, 1, PerkButtonTexts_RowCount, <json>
+hot-bar-perk-buy 44 engine NuiSetBind <player>, 1, PerkButtonTexts_RowVisibility, <json>
+hot-bar-perk-buy 45 engine NuiSetBind <player>, 1, PerkButtonTexts, <json>
+hot-bar-perk-buy 46 property PerkRowCosts ["","2 SP","3 SP","2 SP","1 SP","3 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP"]
+hot-bar-perk-buy 47 engine NuiSetBind <player>, 1, PerkRowCosts_RowCount, <json>
+hot-bar-perk-buy 48 engine NuiSetBind <player>, 1, PerkRowCosts_RowVisibility, <json>
+hot-bar-perk-buy 49 engine NuiSetBind <player>, 1, PerkRowCosts, <json>
+hot-bar-perk-buy 50 property PerkRowReqTooltips <1040 chars hash cb01d4ab11e36d664902874d3e757896> ["Fully upgraded.","Can buy - 2 SP","Locked - Character Type: Character Type: Standard. Only Standard character types ma
+hot-bar-perk-buy 51 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowCount, <json>
+hot-bar-perk-buy 52 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowVisibility, <json>
+hot-bar-perk-buy 53 engine NuiSetBind <player>, 1, PerkRowReqTooltips, <json>
+hot-bar-perk-buy 54 property PerkRowReqIcons ["req_other","req_met","req_chartype_r","req_met","req_met","req_chartype_r","req_chartype_r","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met"]
+hot-bar-perk-buy 55 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowCount, <json>
+hot-bar-perk-buy 56 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowVisibility, <json>
+hot-bar-perk-buy 57 engine NuiSetBind <player>, 1, PerkRowReqIcons, <json>
+hot-bar-perk-buy 58 property SelectedDetails "Dance\n\n[Performance - Dancing]\nType: Active\n\nRank 0 / 4\n\nNext Upgrade (rank 1) - 2 SP:\nFP: 0\nSTM: 0\nRecast: 0s\nEnters dance mode: your hotbar is replaced with your dance steps until you stop. Your audience's Inspired grants +6% skill XP, and each minute they watch clears 1% of their XP debt. SOC scaling can raise the XP bonus to +8%. Unlocks the Cantina Shuffle routine.\n\n"
+hot-bar-perk-buy 59 engine NuiSetBind <player>, 1, SelectedDetails, <json>
+hot-bar-perk-buy 60 property IsPerkSelected true
+hot-bar-perk-buy 61 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
+hot-bar-perk-buy 62 property SelectedRequirementTooltips ["This upgrade has no requirements."]
+hot-bar-perk-buy 63 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
+hot-bar-perk-buy 64 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
+hot-bar-perk-buy 65 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
+hot-bar-perk-buy 66 property SelectedRequirementIcons ["req_met"]
+hot-bar-perk-buy 67 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
+hot-bar-perk-buy 68 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
+hot-bar-perk-buy 69 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
+hot-bar-perk-buy 70 property SelectedRequirementColors [{"a":255,"b":0,"g":255,"r":0}]
+hot-bar-perk-buy 71 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowCount, <json>
+hot-bar-perk-buy 72 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowVisibility, <json>
+hot-bar-perk-buy 73 engine NuiSetBind <player>, 1, SelectedRequirementColors, <json>
+hot-bar-perk-buy 74 property SelectedRequirements ["None"]
+hot-bar-perk-buy 75 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
+hot-bar-perk-buy 76 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
+hot-bar-perk-buy 77 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
+hot-bar-perk-buy 78 property PageNumbers [["Page 1",1],["Page 2",2],["Page 3",3],["Page 4",4],["Page 5",5],["Page 6",6],["Page 7",7],["Page 8",8],["Page 9",9],["Page 10",10],["Page 11",11],["Page 12",12],["Page 13",13],["Page 14",14],["Page 15",15],["Page 16",16],["Page 17",17],["Page 18",18],["Page 19",19]]
+hot-bar-perk-buy 79 engine NuiSetBind <player>, 1, PageNumbers, <json>
+hot-bar-perk-buy 80 property IsBuyEnabled true
+hot-bar-perk-buy 81 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
+hot-bar-perk-buy 82 property BuyText "Buy Upgrade (2 SP)"
+hot-bar-perk-buy 83 engine NuiSetBind <player>, 1, BuyText, <json>
+hot-bar-perk-buy 84 property IsRefundEnabled false
+hot-bar-perk-buy 85 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
+hot-bar-perk-buy 86 engine RemoveFeat <player>, Dance2
+hot-bar-perk-buy 87 engine RemoveFeat <player>, Dance3
+hot-bar-perk-buy 88 engine RemoveFeat <player>, Dance4
+hot-bar-perk-buy 89 engine AddFeatByLevel <player>, Dance1, 1
+hot-bar-perk-buy 90 engine SetQuickBarSlot <player>, 4, {"Item":2130706432,"SecondaryItem":2130706432,"ObjectType":4,"MultiClass":0,"Resref":"","CommandLabel":"","CommandLine":"","ToolTip":"","INTParam1":3400,"MetaType":0,"DomainLevel":0,"AssociateType":0,"Associate":2130706432}
+hot-bar-perk-buy 91 engine FloatingTextStringOnCreature <cü>You purchase 'Dance' rank 1.</c>, <player>, False
+hot-bar-perk-buy 92 engine SignalEvent SWLOR_BUY_PERK, <player>
+hot-bar-perk-buy 93 service IGuiService.PublishRefreshEvent <player>, {"Type":950}, 2130706432
+hot-bar-perk-buy 94 engine ExportSingleCharacter <player>
+hot-bar-perk-buy 95 property IsForceAffinityVisible true
+hot-bar-perk-buy 96 engine NuiSetBind <player>, 1, IsForceAffinityVisible, <json>
+hot-bar-perk-buy 97 property ForceAffinityHeading "FORCE AFFINITY: 0 Neutral"
+hot-bar-perk-buy 98 engine NuiSetBind <player>, 1, ForceAffinityHeading, <json>
+hot-bar-perk-buy 99 property ForceAffinityColor {"a":255,"b":93,"g":181,"r":221}
+hot-bar-perk-buy 100 engine NuiSetBind <player>, 1, ForceAffinityColor, <json>
+hot-bar-perk-buy 101 property AvailableSP "Available SP: 109"
+hot-bar-perk-buy 102 engine NuiSetBind <player>, 1, AvailableSP, <json>
+hot-bar-perk-buy 103 property TotalSP "Total SP: 410 / 410"
+hot-bar-perk-buy 104 engine NuiSetBind <player>, 1, TotalSP, <json>
+hot-bar-perk-buy 105 property WindowTitle "Perks - 109 SP available"
+hot-bar-perk-buy 106 engine NuiSetBind <player>, 1, WindowTitle, <json>
+hot-bar-perk-buy 107 property ResetNextAvailable "Reset Available: Now [# Available: 0]"
+hot-bar-perk-buy 108 engine NuiSetBind <player>, 1, ResetNextAvailable, <json>
+hot-bar-perk-buy 109 property IsRefundEnabled false
+hot-bar-perk-buy 110 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
+hot-bar-perk-buy 111 property HasBeast true
+hot-bar-perk-buy 112 engine NuiSetBind <player>, 1, HasBeast, <json>
+hot-bar-perk-buy 113 property SelectedDetails <584 chars hash b0bd766e662f7ecc5b82126fc4a7ea9c> "Dance\n\n[Performance - Dancing]\nType: Active\n\nRank 1 / 4\n\nCurrent (rank 1):\nFP: 0\nSTM: 0\nRecast: 0s\nEnters da
+hot-bar-perk-buy 114 engine NuiSetBind <player>, 1, SelectedDetails, <json>
+hot-bar-perk-buy 115 property PerkButtonTexts <630 chars hash 2b3870225d997e4c9951dcba2290e292> ["Adrenal Stim (3/3)","Benevolence (0/3)","Blaster Beacon (0/3)","Dance (1/4)","Defensive Modules (0/5)","Deflector Shie
+hot-bar-perk-buy 116 engine NuiSetBind <player>, 1, PerkButtonTexts_RowCount, <json>
+hot-bar-perk-buy 117 engine NuiSetBind <player>, 1, PerkButtonTexts_RowVisibility, <json>
+hot-bar-perk-buy 118 engine NuiSetBind <player>, 1, PerkButtonTexts, <json>
+hot-bar-perk-buy 119 property PerkButtonColors <974 chars hash 0bb642744293abb0b81f21c49096f04a> [{"a":255,"b":230,"g":170,"r":90},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":169,"g":169,"r":169},{"a":255,"b":90,"g":
+hot-bar-perk-buy 120 engine NuiSetBind <player>, 1, PerkButtonColors_RowCount, <json>
+hot-bar-perk-buy 121 engine NuiSetBind <player>, 1, PerkButtonColors_RowVisibility, <json>
+hot-bar-perk-buy 122 engine NuiSetBind <player>, 1, PerkButtonColors, <json>
+hot-bar-perk-buy 123 property PerkRowReqIcons ["req_other","req_met","req_chartype_r","req_met","req_met","req_chartype_r","req_chartype_r","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met"]
+hot-bar-perk-buy 124 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowCount, <json>
+hot-bar-perk-buy 125 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowVisibility, <json>
+hot-bar-perk-buy 126 engine NuiSetBind <player>, 1, PerkRowReqIcons, <json>
+hot-bar-perk-buy 127 property PerkRowReqTooltips <1040 chars hash 9aa22e61adcea0b77f4d919f59e7b8cf> ["Fully upgraded.","Can buy - 2 SP","Locked - Character Type: Character Type: Standard. Only Standard character types ma
+hot-bar-perk-buy 128 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowCount, <json>
+hot-bar-perk-buy 129 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowVisibility, <json>
+hot-bar-perk-buy 130 engine NuiSetBind <player>, 1, PerkRowReqTooltips, <json>
+hot-bar-perk-buy 131 property PerkRowCosts ["","2 SP","3 SP","3 SP","1 SP","3 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP"]
+hot-bar-perk-buy 132 engine NuiSetBind <player>, 1, PerkRowCosts_RowCount, <json>
+hot-bar-perk-buy 133 engine NuiSetBind <player>, 1, PerkRowCosts_RowVisibility, <json>
+hot-bar-perk-buy 134 engine NuiSetBind <player>, 1, PerkRowCosts, <json>
+hot-bar-perk-buy 135 property SelectedRequirements ["Performance rank 12"]
+hot-bar-perk-buy 136 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
+hot-bar-perk-buy 137 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
+hot-bar-perk-buy 138 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
+hot-bar-perk-buy 139 property SelectedRequirementColors [{"a":255,"b":0,"g":255,"r":0}]
+hot-bar-perk-buy 140 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowCount, <json>
+hot-bar-perk-buy 141 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowVisibility, <json>
+hot-bar-perk-buy 142 engine NuiSetBind <player>, 1, SelectedRequirementColors, <json>
+hot-bar-perk-buy 143 property SelectedRequirementIcons ["req_met"]
+hot-bar-perk-buy 144 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
+hot-bar-perk-buy 145 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
+hot-bar-perk-buy 146 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
+hot-bar-perk-buy 147 property SelectedRequirementTooltips ["Skill: Performance rank 12 - met."]
+hot-bar-perk-buy 148 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
+hot-bar-perk-buy 149 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
+hot-bar-perk-buy 150 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
+hot-bar-perk-buy 151 property IsBuyEnabled true
+hot-bar-perk-buy 152 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
+hot-bar-perk-buy 153 property BuyText "Buy Upgrade (3 SP)"
+hot-bar-perk-buy 154 engine NuiSetBind <player>, 1, BuyText, <json>
+hot-bar-perk-buy 155 state carried
+hot-bar-perk-buy 156 state worn Chest=farmer_outfit002
+hot-bar-perk-buy 157 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408,3400
+hot-bar-perk-buy 158 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:;4=4:3400:
+hot-bar-perk-buy 159 state record Perks.Dance 1
+hot-bar-perk-buy 160 state record UnallocatedSP 109
+hot-bar-slot-assigned 1 step
+hot-bar-slot-assigned 2 state carried
+hot-bar-slot-assigned 3 state worn Chest=farmer_outfit002
+hot-bar-slot-assigned 4 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408,3400
+hot-bar-slot-assigned 5 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:;4=4:3400:
+hot-bar-perk-select-owned 1 step
+hot-bar-perk-select-owned 2 property PerkDetailSelected [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+hot-bar-perk-select-owned 3 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
+hot-bar-perk-select-owned 4 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
+hot-bar-perk-select-owned 5 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
+hot-bar-perk-select-owned 6 property PerkDetailSelected [false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+hot-bar-perk-select-owned 7 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
+hot-bar-perk-select-owned 8 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
+hot-bar-perk-select-owned 9 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
+hot-bar-perk-select-owned 10 property SelectedRequirements ["Performance rank 12"]
+hot-bar-perk-select-owned 11 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
+hot-bar-perk-select-owned 12 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
+hot-bar-perk-select-owned 13 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
+hot-bar-perk-select-owned 14 property SelectedRequirementColors [{"a":255,"b":0,"g":255,"r":0}]
+hot-bar-perk-select-owned 15 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowCount, <json>
+hot-bar-perk-select-owned 16 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowVisibility, <json>
+hot-bar-perk-select-owned 17 engine NuiSetBind <player>, 1, SelectedRequirementColors, <json>
+hot-bar-perk-select-owned 18 property SelectedRequirementIcons ["req_met"]
+hot-bar-perk-select-owned 19 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
+hot-bar-perk-select-owned 20 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
+hot-bar-perk-select-owned 21 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
+hot-bar-perk-select-owned 22 property SelectedRequirementTooltips ["Skill: Performance rank 12 - met."]
+hot-bar-perk-select-owned 23 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
+hot-bar-perk-select-owned 24 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
+hot-bar-perk-select-owned 25 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
+hot-bar-perk-select-owned 26 property BuyText "Buy Upgrade (3 SP)"
+hot-bar-perk-select-owned 27 engine NuiSetBind <player>, 1, BuyText, <json>
+hot-bar-perk-select-owned 28 property IsBuyEnabled true
+hot-bar-perk-select-owned 29 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
+hot-bar-perk-select-owned 30 property SelectedDetails <584 chars hash b0bd766e662f7ecc5b82126fc4a7ea9c> "Dance\n\n[Performance - Dancing]\nType: Active\n\nRank 1 / 4\n\nCurrent (rank 1):\nFP: 0\nSTM: 0\nRecast: 0s\nEnters da
+hot-bar-perk-select-owned 31 engine NuiSetBind <player>, 1, SelectedDetails, <json>
+hot-bar-perk-select-owned 32 property IsPerkSelected true
+hot-bar-perk-select-owned 33 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
+hot-bar-perk-select-owned 34 property IsRefundEnabled false
+hot-bar-perk-select-owned 35 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
+hot-bar-perk-select-owned 36 state carried
+hot-bar-perk-select-owned 37 state worn Chest=farmer_outfit002
+hot-bar-perk-select-owned 38 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408,3400
+hot-bar-perk-select-owned 39 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:;4=4:3400:
+give-refund-tokens-for-hot-bar 1 step
+give-refund-tokens-for-hot-bar 2 state carried
+give-refund-tokens-for-hot-bar 3 state worn Chest=farmer_outfit002
+give-refund-tokens-for-hot-bar 4 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408,3400
+give-refund-tokens-for-hot-bar 5 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:;4=4:3400:
+give-refund-tokens-for-hot-bar 6 state record Currencies.PerkRefundToken 3
+hot-bar-perk-refund 1 step
+hot-bar-perk-refund 2 property ModalPromptText "You may only refund one perk per 1 hour (real world time). This will also consume a refund token. Are you sure you want to refund this perk?"
+hot-bar-perk-refund 3 engine NuiSetBind <player>, 1, ModalPromptText, <json>
+hot-bar-perk-refund 4 property ModalConfirmButtonText "Yes"
+hot-bar-perk-refund 5 engine NuiSetBind <player>, 1, ModalConfirmButtonText, <json>
+hot-bar-perk-refund 6 property ModalCancelButtonText "No"
+hot-bar-perk-refund 7 engine NuiSetBind <player>, 1, ModalCancelButtonText, <json>
+hot-bar-perk-refund 8 engine NuiSetGroupLayout <player>, 1, _window_, <json>
+hot-bar-perk-refund 9 engine NuiSetBind <player>, 1, Geometry, <json>
+hot-bar-perk-refund 10 property ModalPromptText "You may only refund one perk per 1 hour (real world time). This will also consume a refund token. Are you sure you want to refund this perk?"
+hot-bar-perk-refund 11 engine NuiSetBind <player>, 1, ModalPromptText, <json>
+hot-bar-perk-refund 12 property ModalConfirmButtonText "Yes"
+hot-bar-perk-refund 13 engine NuiSetBind <player>, 1, ModalConfirmButtonText, <json>
+hot-bar-perk-refund 14 property ModalCancelButtonText "No"
+hot-bar-perk-refund 15 engine NuiSetBind <player>, 1, ModalCancelButtonText, <json>
+hot-bar-perk-refund 16 engine NuiSetGroupLayout <player>, 1, _window_, <json>
+hot-bar-perk-refund 17 engine NuiSetBind <player>, 1, Geometry, <json>
+hot-bar-perk-refund 18 property HasBeast true
+hot-bar-perk-refund 19 engine NuiSetBind <player>, 1, HasBeast, <json>
+hot-bar-perk-refund 20 property Categories <1483 chars hash e3dd3832f7d2b7653e7f67ba2723e886> [["<All Categories>",0],["Agriculture",13],["General",2],["Beast Mastery - Incubation",17],["Beast Mastery - Training",1
+hot-bar-perk-refund 21 engine NuiSetBind <player>, 1, Categories, <json>
+hot-bar-perk-refund 22 property AvailableSP "Available SP: 109"
+hot-bar-perk-refund 23 engine NuiSetBind <player>, 1, AvailableSP, <json>
+hot-bar-perk-refund 24 property TotalSP "Total SP: 410 / 410"
+hot-bar-perk-refund 25 engine NuiSetBind <player>, 1, TotalSP, <json>
+hot-bar-perk-refund 26 property ForceAffinityColor {"a":255,"b":93,"g":181,"r":221}
+hot-bar-perk-refund 27 engine NuiSetBind <player>, 1, ForceAffinityColor, <json>
+hot-bar-perk-refund 28 property ForceAffinityHeading "FORCE AFFINITY: 0 Neutral"
+hot-bar-perk-refund 29 engine NuiSetBind <player>, 1, ForceAffinityHeading, <json>
+hot-bar-perk-refund 30 property IsForceAffinityVisible true
+hot-bar-perk-refund 31 engine NuiSetBind <player>, 1, IsForceAffinityVisible, <json>
+hot-bar-perk-refund 32 property ResetNextAvailable "Reset Available: Now [# Available: 0]"
+hot-bar-perk-refund 33 engine NuiSetBind <player>, 1, ResetNextAvailable, <json>
+hot-bar-perk-refund 34 property PerkButtonIcons <492 chars hash 0dde09090fb79455df1c55851e4d23d5> ["ife_adrenalstim1","ife_benevolence1","ife_blstbcn1","ife_pf_dance1","ife_def_modul","ife_deflshld1","ife_flame1","ife_
+hot-bar-perk-refund 35 engine NuiSetBind <player>, 1, PerkButtonIcons_RowCount, <json>
+hot-bar-perk-refund 36 engine NuiSetBind <player>, 1, PerkButtonIcons_RowVisibility, <json>
+hot-bar-perk-refund 37 engine NuiSetBind <player>, 1, PerkButtonIcons, <json>
+hot-bar-perk-refund 38 property PerkButtonColors <974 chars hash 0bb642744293abb0b81f21c49096f04a> [{"a":255,"b":230,"g":170,"r":90},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":169,"g":169,"r":169},{"a":255,"b":90,"g":
+hot-bar-perk-refund 39 engine NuiSetBind <player>, 1, PerkButtonColors_RowCount, <json>
+hot-bar-perk-refund 40 engine NuiSetBind <player>, 1, PerkButtonColors_RowVisibility, <json>
+hot-bar-perk-refund 41 engine NuiSetBind <player>, 1, PerkButtonColors, <json>
+hot-bar-perk-refund 42 property PerkButtonTexts <630 chars hash 2b3870225d997e4c9951dcba2290e292> ["Adrenal Stim (3/3)","Benevolence (0/3)","Blaster Beacon (0/3)","Dance (1/4)","Defensive Modules (0/5)","Deflector Shie
+hot-bar-perk-refund 43 engine NuiSetBind <player>, 1, PerkButtonTexts_RowCount, <json>
+hot-bar-perk-refund 44 engine NuiSetBind <player>, 1, PerkButtonTexts_RowVisibility, <json>
+hot-bar-perk-refund 45 engine NuiSetBind <player>, 1, PerkButtonTexts, <json>
+hot-bar-perk-refund 46 property PerkRowCosts ["","2 SP","3 SP","3 SP","1 SP","3 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP"]
+hot-bar-perk-refund 47 engine NuiSetBind <player>, 1, PerkRowCosts_RowCount, <json>
+hot-bar-perk-refund 48 engine NuiSetBind <player>, 1, PerkRowCosts_RowVisibility, <json>
+hot-bar-perk-refund 49 engine NuiSetBind <player>, 1, PerkRowCosts, <json>
+hot-bar-perk-refund 50 property PerkRowReqTooltips <1040 chars hash 9aa22e61adcea0b77f4d919f59e7b8cf> ["Fully upgraded.","Can buy - 2 SP","Locked - Character Type: Character Type: Standard. Only Standard character types ma
+hot-bar-perk-refund 51 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowCount, <json>
+hot-bar-perk-refund 52 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowVisibility, <json>
+hot-bar-perk-refund 53 engine NuiSetBind <player>, 1, PerkRowReqTooltips, <json>
+hot-bar-perk-refund 54 property PerkRowReqIcons ["req_other","req_met","req_chartype_r","req_met","req_met","req_chartype_r","req_chartype_r","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met"]
+hot-bar-perk-refund 55 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowCount, <json>
+hot-bar-perk-refund 56 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowVisibility, <json>
+hot-bar-perk-refund 57 engine NuiSetBind <player>, 1, PerkRowReqIcons, <json>
+hot-bar-perk-refund 58 property SelectedDetails <584 chars hash b0bd766e662f7ecc5b82126fc4a7ea9c> "Dance\n\n[Performance - Dancing]\nType: Active\n\nRank 1 / 4\n\nCurrent (rank 1):\nFP: 0\nSTM: 0\nRecast: 0s\nEnters da
+hot-bar-perk-refund 59 engine NuiSetBind <player>, 1, SelectedDetails, <json>
+hot-bar-perk-refund 60 property IsPerkSelected true
+hot-bar-perk-refund 61 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
+hot-bar-perk-refund 62 property SelectedRequirementTooltips ["Skill: Performance rank 12 - met."]
+hot-bar-perk-refund 63 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
+hot-bar-perk-refund 64 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
+hot-bar-perk-refund 65 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
+hot-bar-perk-refund 66 property SelectedRequirementIcons ["req_met"]
+hot-bar-perk-refund 67 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
+hot-bar-perk-refund 68 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
+hot-bar-perk-refund 69 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
+hot-bar-perk-refund 70 property SelectedRequirementColors [{"a":255,"b":0,"g":255,"r":0}]
+hot-bar-perk-refund 71 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowCount, <json>
+hot-bar-perk-refund 72 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowVisibility, <json>
+hot-bar-perk-refund 73 engine NuiSetBind <player>, 1, SelectedRequirementColors, <json>
+hot-bar-perk-refund 74 property SelectedRequirements ["Performance rank 12"]
+hot-bar-perk-refund 75 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
+hot-bar-perk-refund 76 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
+hot-bar-perk-refund 77 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
+hot-bar-perk-refund 78 property PageNumbers [["Page 1",1],["Page 2",2],["Page 3",3],["Page 4",4],["Page 5",5],["Page 6",6],["Page 7",7],["Page 8",8],["Page 9",9],["Page 10",10],["Page 11",11],["Page 12",12],["Page 13",13],["Page 14",14],["Page 15",15],["Page 16",16],["Page 17",17],["Page 18",18],["Page 19",19]]
+hot-bar-perk-refund 79 engine NuiSetBind <player>, 1, PageNumbers, <json>
+hot-bar-perk-refund 80 property IsBuyEnabled true
+hot-bar-perk-refund 81 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
+hot-bar-perk-refund 82 property BuyText "Buy Upgrade (3 SP)"
+hot-bar-perk-refund 83 engine NuiSetBind <player>, 1, BuyText, <json>
+hot-bar-perk-refund 84 property IsRefundEnabled false
+hot-bar-perk-refund 85 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
+hot-bar-perk-refund 86 engine FloatingTextStringOnCreature Perk refunded! You reclaimed 2 SP., <player>, False
+hot-bar-perk-refund 87 service IGuiService.PublishRefreshEvent <player>, {"Type":950}, 2130706432
+hot-bar-perk-refund 88 engine RemoveFeat <player>, Dance1
+hot-bar-perk-refund 89 engine RemoveFeat <player>, Dance2
+hot-bar-perk-refund 90 engine RemoveFeat <player>, Dance3
+hot-bar-perk-refund 91 engine RemoveFeat <player>, Dance4
+hot-bar-perk-refund 92 engine SetQuickBarSlot <player>, 4, {"Item":2130706432,"SecondaryItem":2130706432,"ObjectType":0,"MultiClass":0,"Resref":"","CommandLabel":"","CommandLine":"","ToolTip":"","INTParam1":0,"MetaType":0,"DomainLevel":0,"AssociateType":0,"Associate":2130706432}
+hot-bar-perk-refund 93 engine ExportSingleCharacter <player>
+hot-bar-perk-refund 94 property IsForceAffinityVisible true
+hot-bar-perk-refund 95 engine NuiSetBind <player>, 1, IsForceAffinityVisible, <json>
+hot-bar-perk-refund 96 property ForceAffinityHeading "FORCE AFFINITY: 0 Neutral"
+hot-bar-perk-refund 97 engine NuiSetBind <player>, 1, ForceAffinityHeading, <json>
+hot-bar-perk-refund 98 property ForceAffinityColor {"a":255,"b":93,"g":181,"r":221}
+hot-bar-perk-refund 99 engine NuiSetBind <player>, 1, ForceAffinityColor, <json>
+hot-bar-perk-refund 100 property AvailableSP "Available SP: 111"
+hot-bar-perk-refund 101 engine NuiSetBind <player>, 1, AvailableSP, <json>
+hot-bar-perk-refund 102 property TotalSP "Total SP: 410 / 410"
+hot-bar-perk-refund 103 engine NuiSetBind <player>, 1, TotalSP, <json>
+hot-bar-perk-refund 104 property WindowTitle "Perks - 111 SP available"
+hot-bar-perk-refund 105 engine NuiSetBind <player>, 1, WindowTitle, <json>
+hot-bar-perk-refund 106 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 2]"
+hot-bar-perk-refund 107 engine NuiSetBind <player>, 1, ResetNextAvailable, <json>
+hot-bar-perk-refund 108 property IsRefundEnabled false
+hot-bar-perk-refund 109 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
+hot-bar-perk-refund 110 property HasBeast true
+hot-bar-perk-refund 111 engine NuiSetBind <player>, 1, HasBeast, <json>
+hot-bar-perk-refund 112 property IsPerkSelected false
+hot-bar-perk-refund 113 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
+hot-bar-perk-refund 114 property IsPerkSelected false
+hot-bar-perk-refund 115 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
+hot-bar-perk-refund 116 property PerkButtonColors <973 chars hash 5d5387a3a11538b1168d4cd1dc6d7b64> [{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":169,"g":169,"r":169},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":2
+hot-bar-perk-refund 117 engine NuiSetBind <player>, 1, PerkButtonColors_RowCount, <json>
+hot-bar-perk-refund 118 engine NuiSetBind <player>, 1, PerkButtonColors_RowVisibility, <json>
+hot-bar-perk-refund 119 engine NuiSetBind <player>, 1, PerkButtonColors, <json>
+hot-bar-perk-refund 120 property PerkButtonIcons <490 chars hash c4de69b8f0727ca530e7c0310b384167> ["ife_benevolence1","ife_blstbcn1","ife_pf_dance1","ife_def_modul","ife_deflshld1","ife_flame1","ife_forcespark1","ife_f
+hot-bar-perk-refund 121 engine NuiSetBind <player>, 1, PerkButtonIcons_RowCount, <json>
+hot-bar-perk-refund 122 engine NuiSetBind <player>, 1, PerkButtonIcons_RowVisibility, <json>
+hot-bar-perk-refund 123 engine NuiSetBind <player>, 1, PerkButtonIcons, <json>
+hot-bar-perk-refund 124 property PerkButtonTexts <634 chars hash 2c39cf3c2a69fc387e6da709392e9d96> ["Benevolence (0/3)","Blaster Beacon (0/3)","Dance (0/4)","Defensive Modules (0/5)","Deflector Shield (0/3)","Flamethrow
+hot-bar-perk-refund 125 engine NuiSetBind <player>, 1, PerkButtonTexts_RowCount, <json>
+hot-bar-perk-refund 126 engine NuiSetBind <player>, 1, PerkButtonTexts_RowVisibility, <json>
+hot-bar-perk-refund 127 engine NuiSetBind <player>, 1, PerkButtonTexts, <json>
+hot-bar-perk-refund 128 property PerkDetailSelected [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+hot-bar-perk-refund 129 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
+hot-bar-perk-refund 130 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
+hot-bar-perk-refund 131 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
+hot-bar-perk-refund 132 property PerkRowReqIcons ["req_met","req_chartype_r","req_met","req_met","req_chartype_r","req_chartype_r","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met"]
+hot-bar-perk-refund 133 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowCount, <json>
+hot-bar-perk-refund 134 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowVisibility, <json>
+hot-bar-perk-refund 135 engine NuiSetBind <player>, 1, PerkRowReqIcons, <json>
+hot-bar-perk-refund 136 property PerkRowReqTooltips <1039 chars hash d8e26dad7f0e544474edfd260a09036f> ["Can buy - 2 SP","Locked - Character Type: Character Type: Standard. Only Standard character types may access this perk
+hot-bar-perk-refund 137 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowCount, <json>
+hot-bar-perk-refund 138 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowVisibility, <json>
+hot-bar-perk-refund 139 engine NuiSetBind <player>, 1, PerkRowReqTooltips, <json>
+hot-bar-perk-refund 140 property PerkRowCosts ["2 SP","3 SP","2 SP","1 SP","3 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP","2 SP"]
+hot-bar-perk-refund 141 engine NuiSetBind <player>, 1, PerkRowCosts_RowCount, <json>
+hot-bar-perk-refund 142 engine NuiSetBind <player>, 1, PerkRowCosts_RowVisibility, <json>
+hot-bar-perk-refund 143 engine NuiSetBind <player>, 1, PerkRowCosts, <json>
+hot-bar-perk-refund 144 property PageNumbers [["Page 1",1],["Page 2",2],["Page 3",3],["Page 4",4],["Page 5",5],["Page 6",6],["Page 7",7],["Page 8",8],["Page 9",9],["Page 10",10],["Page 11",11],["Page 12",12],["Page 13",13],["Page 14",14],["Page 15",15],["Page 16",16],["Page 17",17],["Page 18",18],["Page 19",19]]
+hot-bar-perk-refund 145 engine NuiSetBind <player>, 1, PageNumbers, <json>
+hot-bar-perk-refund 146 property PerkDetailSelected [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
+hot-bar-perk-refund 147 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
+hot-bar-perk-refund 148 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
+hot-bar-perk-refund 149 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
+hot-bar-perk-refund 150 property SelectedRequirements ["Character Type: Force Sensitive"]
+hot-bar-perk-refund 151 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
+hot-bar-perk-refund 152 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
+hot-bar-perk-refund 153 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
+hot-bar-perk-refund 154 property SelectedRequirementColors [{"a":255,"b":0,"g":255,"r":0}]
+hot-bar-perk-refund 155 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowCount, <json>
+hot-bar-perk-refund 156 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowVisibility, <json>
+hot-bar-perk-refund 157 engine NuiSetBind <player>, 1, SelectedRequirementColors, <json>
+hot-bar-perk-refund 158 property SelectedRequirementIcons ["req_met"]
+hot-bar-perk-refund 159 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
+hot-bar-perk-refund 160 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
+hot-bar-perk-refund 161 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
+hot-bar-perk-refund 162 property SelectedRequirementTooltips ["Character Type: Character Type: Force Sensitive - met."]
+hot-bar-perk-refund 163 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
+hot-bar-perk-refund 164 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
+hot-bar-perk-refund 165 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
+hot-bar-perk-refund 166 property BuyText "Buy Upgrade (2 SP)"
+hot-bar-perk-refund 167 engine NuiSetBind <player>, 1, BuyText, <json>
+hot-bar-perk-refund 168 property IsBuyEnabled true
+hot-bar-perk-refund 169 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
+hot-bar-perk-refund 170 property SelectedDetails <520 chars hash 5f27e2d24107746627b34d569ab587f6> "Benevolence\n\n[Force - Control]\nType: Active\n\nLIGHT-ALIGNED FORCE POWER\nAt 0 Neutral: 0% magnitude, 0% hit chance.
+hot-bar-perk-refund 171 engine NuiSetBind <player>, 1, SelectedDetails, <json>
+hot-bar-perk-refund 172 property IsPerkSelected true
+hot-bar-perk-refund 173 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
+hot-bar-perk-refund 174 property IsRefundEnabled false
+hot-bar-perk-refund 175 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
+hot-bar-perk-refund 176 state carried
+hot-bar-perk-refund 177 state worn Chest=farmer_outfit002
+hot-bar-perk-refund 178 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+hot-bar-perk-refund 179 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
+hot-bar-perk-refund 180 state record Currencies.PerkRefundToken 2
+hot-bar-perk-refund 181 state record DatePerkRefundAvailable "2026-01-15T13:00:00Z"
+hot-bar-perk-refund 182 state record UnallocatedSP 111
+hot-bar-perk-refund 183 state record Perks.Dance <removed>
+hot-bar-slot-cleared 1 step
+hot-bar-slot-cleared 2 state carried
+hot-bar-slot-cleared 3 state worn Chest=farmer_outfit002
+hot-bar-slot-cleared 4 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+hot-bar-slot-cleared 5 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 select-refundable-perk 1 step
 select-refundable-perk 2 property PerkDetailSelected [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 select-refundable-perk 3 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
@@ -1032,7 +1308,7 @@ select-refundable-perk 6 property PerkDetailSelected [true,false,false,false,fal
 select-refundable-perk 7 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
 select-refundable-perk 8 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
 select-refundable-perk 9 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-select-refundable-perk 10 property SelectedRequirements ["MAXED"]
+select-refundable-perk 10 property SelectedRequirements ["Character Type: Force Sensitive"]
 select-refundable-perk 11 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
 select-refundable-perk 12 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
 select-refundable-perk 13 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
@@ -1040,19 +1316,19 @@ select-refundable-perk 14 property SelectedRequirementColors [{"a":255,"b":0,"g"
 select-refundable-perk 15 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowCount, <json>
 select-refundable-perk 16 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowVisibility, <json>
 select-refundable-perk 17 engine NuiSetBind <player>, 1, SelectedRequirementColors, <json>
-select-refundable-perk 18 property SelectedRequirementIcons ["req_other"]
+select-refundable-perk 18 property SelectedRequirementIcons ["req_met"]
 select-refundable-perk 19 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
 select-refundable-perk 20 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
 select-refundable-perk 21 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
-select-refundable-perk 22 property SelectedRequirementTooltips ["This perk is fully upgraded."]
+select-refundable-perk 22 property SelectedRequirementTooltips ["Character Type: Character Type: Force Sensitive - met."]
 select-refundable-perk 23 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
 select-refundable-perk 24 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
 select-refundable-perk 25 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
-select-refundable-perk 26 property BuyText "Buy Upgrade"
+select-refundable-perk 26 property BuyText "Buy Upgrade (2 SP)"
 select-refundable-perk 27 engine NuiSetBind <player>, 1, BuyText, <json>
-select-refundable-perk 28 property IsBuyEnabled false
+select-refundable-perk 28 property IsBuyEnabled true
 select-refundable-perk 29 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
-select-refundable-perk 30 property SelectedDetails "Adrenal Stim\n\n[First Aid - Combat Pharmacology]\nType: Active\nRecast Group: Adrenal Stim\n\nRank 3 / 3\n\nCurrent (rank 3):\nFP: 0\nSTM: 0\nRecast: 45s\nRestores 25% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.\n\n"
+select-refundable-perk 30 property SelectedDetails <520 chars hash 5f27e2d24107746627b34d569ab587f6> "Benevolence\n\n[Force - Control]\nType: Active\n\nLIGHT-ALIGNED FORCE POWER\nAt 0 Neutral: 0% magnitude, 0% hit chance.
 select-refundable-perk 31 engine NuiSetBind <player>, 1, SelectedDetails, <json>
 select-refundable-perk 32 property IsPerkSelected true
 select-refundable-perk 33 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
@@ -1067,7 +1343,7 @@ give-refund-tokens 2 state carried
 give-refund-tokens 3 state worn Chest=farmer_outfit002
 give-refund-tokens 4 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
 give-refund-tokens 5 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
-give-refund-tokens 6 state record Currencies.PerkRefundToken 3
+give-refund-tokens 6 state record Currencies.PerkRefundToken 5
 refund 1 step
 refund 2 property ModalPromptText "You may only refund one perk per 1 hour (real world time). This will also consume a refund token. Are you sure you want to refund this perk?"
 refund 3 engine NuiSetBind <player>, 1, ModalPromptText, <json>
@@ -1099,41 +1375,41 @@ refund 28 property ForceAffinityHeading "FORCE AFFINITY: 0 Neutral"
 refund 29 engine NuiSetBind <player>, 1, ForceAffinityHeading, <json>
 refund 30 property IsForceAffinityVisible true
 refund 31 engine NuiSetBind <player>, 1, IsForceAffinityVisible, <json>
-refund 32 property ResetNextAvailable "Reset Available: Now [# Available: 0]"
+refund 32 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 2]"
 refund 33 engine NuiSetBind <player>, 1, ResetNextAvailable, <json>
-refund 34 property PerkButtonIcons <492 chars hash 0dde09090fb79455df1c55851e4d23d5> ["ife_adrenalstim1","ife_benevolence1","ife_blstbcn1","ife_pf_dance1","ife_def_modul","ife_deflshld1","ife_flame1","ife_
+refund 34 property PerkButtonIcons <490 chars hash c4de69b8f0727ca530e7c0310b384167> ["ife_benevolence1","ife_blstbcn1","ife_pf_dance1","ife_def_modul","ife_deflshld1","ife_flame1","ife_forcespark1","ife_f
 refund 35 engine NuiSetBind <player>, 1, PerkButtonIcons_RowCount, <json>
 refund 36 engine NuiSetBind <player>, 1, PerkButtonIcons_RowVisibility, <json>
 refund 37 engine NuiSetBind <player>, 1, PerkButtonIcons, <json>
-refund 38 property PerkButtonColors <974 chars hash 0bb642744293abb0b81f21c49096f04a> [{"a":255,"b":230,"g":170,"r":90},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":169,"g":169,"r":169},{"a":255,"b":90,"g":
+refund 38 property PerkButtonColors <973 chars hash 5d5387a3a11538b1168d4cd1dc6d7b64> [{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":169,"g":169,"r":169},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":2
 refund 39 engine NuiSetBind <player>, 1, PerkButtonColors_RowCount, <json>
 refund 40 engine NuiSetBind <player>, 1, PerkButtonColors_RowVisibility, <json>
 refund 41 engine NuiSetBind <player>, 1, PerkButtonColors, <json>
-refund 42 property PerkButtonTexts <630 chars hash 4ca3d5e04a5d694f8a0051d12b0eec2d> ["Adrenal Stim (3/3)","Benevolence (0/3)","Blaster Beacon (0/3)","Dance (0/4)","Defensive Modules (0/5)","Deflector Shie
+refund 42 property PerkButtonTexts <634 chars hash 2c39cf3c2a69fc387e6da709392e9d96> ["Benevolence (0/3)","Blaster Beacon (0/3)","Dance (0/4)","Defensive Modules (0/5)","Deflector Shield (0/3)","Flamethrow
 refund 43 engine NuiSetBind <player>, 1, PerkButtonTexts_RowCount, <json>
 refund 44 engine NuiSetBind <player>, 1, PerkButtonTexts_RowVisibility, <json>
 refund 45 engine NuiSetBind <player>, 1, PerkButtonTexts, <json>
-refund 46 property PerkRowCosts ["","2 SP","3 SP","2 SP","1 SP","3 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP"]
+refund 46 property PerkRowCosts ["2 SP","3 SP","2 SP","1 SP","3 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP","2 SP"]
 refund 47 engine NuiSetBind <player>, 1, PerkRowCosts_RowCount, <json>
 refund 48 engine NuiSetBind <player>, 1, PerkRowCosts_RowVisibility, <json>
 refund 49 engine NuiSetBind <player>, 1, PerkRowCosts, <json>
-refund 50 property PerkRowReqTooltips <1040 chars hash cb01d4ab11e36d664902874d3e757896> ["Fully upgraded.","Can buy - 2 SP","Locked - Character Type: Character Type: Standard. Only Standard character types ma
+refund 50 property PerkRowReqTooltips <1039 chars hash d8e26dad7f0e544474edfd260a09036f> ["Can buy - 2 SP","Locked - Character Type: Character Type: Standard. Only Standard character types may access this perk
 refund 51 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowCount, <json>
 refund 52 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowVisibility, <json>
 refund 53 engine NuiSetBind <player>, 1, PerkRowReqTooltips, <json>
-refund 54 property PerkRowReqIcons ["req_other","req_met","req_chartype_r","req_met","req_met","req_chartype_r","req_chartype_r","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met"]
+refund 54 property PerkRowReqIcons ["req_met","req_chartype_r","req_met","req_met","req_chartype_r","req_chartype_r","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met"]
 refund 55 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowCount, <json>
 refund 56 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowVisibility, <json>
 refund 57 engine NuiSetBind <player>, 1, PerkRowReqIcons, <json>
-refund 58 property SelectedDetails "Adrenal Stim\n\n[First Aid - Combat Pharmacology]\nType: Active\nRecast Group: Adrenal Stim\n\nRank 3 / 3\n\nCurrent (rank 3):\nFP: 0\nSTM: 0\nRecast: 45s\nRestores 25% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.\n\n"
+refund 58 property SelectedDetails <520 chars hash 5f27e2d24107746627b34d569ab587f6> "Benevolence\n\n[Force - Control]\nType: Active\n\nLIGHT-ALIGNED FORCE POWER\nAt 0 Neutral: 0% magnitude, 0% hit chance.
 refund 59 engine NuiSetBind <player>, 1, SelectedDetails, <json>
 refund 60 property IsPerkSelected true
 refund 61 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
-refund 62 property SelectedRequirementTooltips ["This perk is fully upgraded."]
+refund 62 property SelectedRequirementTooltips ["Character Type: Character Type: Force Sensitive - met."]
 refund 63 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
 refund 64 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
 refund 65 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
-refund 66 property SelectedRequirementIcons ["req_other"]
+refund 66 property SelectedRequirementIcons ["req_met"]
 refund 67 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
 refund 68 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
 refund 69 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
@@ -1141,118 +1417,23 @@ refund 70 property SelectedRequirementColors [{"a":255,"b":0,"g":255,"r":0}]
 refund 71 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowCount, <json>
 refund 72 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowVisibility, <json>
 refund 73 engine NuiSetBind <player>, 1, SelectedRequirementColors, <json>
-refund 74 property SelectedRequirements ["MAXED"]
+refund 74 property SelectedRequirements ["Character Type: Force Sensitive"]
 refund 75 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
 refund 76 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
 refund 77 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
 refund 78 property PageNumbers [["Page 1",1],["Page 2",2],["Page 3",3],["Page 4",4],["Page 5",5],["Page 6",6],["Page 7",7],["Page 8",8],["Page 9",9],["Page 10",10],["Page 11",11],["Page 12",12],["Page 13",13],["Page 14",14],["Page 15",15],["Page 16",16],["Page 17",17],["Page 18",18],["Page 19",19]]
 refund 79 engine NuiSetBind <player>, 1, PageNumbers, <json>
-refund 80 property IsBuyEnabled false
+refund 80 property IsBuyEnabled true
 refund 81 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
-refund 82 property BuyText "Buy Upgrade"
+refund 82 property BuyText "Buy Upgrade (2 SP)"
 refund 83 engine NuiSetBind <player>, 1, BuyText, <json>
 refund 84 property IsRefundEnabled false
 refund 85 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
-refund 86 engine FloatingTextStringOnCreature Perk refunded! You reclaimed 9 SP., <player>, False
-refund 87 service IGuiService.PublishRefreshEvent <player>, {"Type":298}, 2130706432
-refund 88 engine RemoveFeat <player>, AdrenalStim1
-refund 89 engine RemoveFeat <player>, AutoCastAdrenalStim1
-refund 90 engine RemoveFeat <player>, AdrenalStim2
-refund 91 engine RemoveFeat <player>, AutoCastAdrenalStim2
-refund 92 engine RemoveFeat <player>, AdrenalStim3
-refund 93 engine RemoveFeat <player>, AutoCastAdrenalStim3
-refund 94 engine SetQuickBarSlot <player>, 3, {"Item":2130706432,"SecondaryItem":2130706432,"ObjectType":0,"MultiClass":0,"Resref":"","CommandLabel":"","CommandLine":"","ToolTip":"","INTParam1":0,"MetaType":0,"DomainLevel":0,"AssociateType":0,"Associate":2130706432}
-refund 95 engine ExportSingleCharacter <player>
-refund 96 property IsForceAffinityVisible true
-refund 97 engine NuiSetBind <player>, 1, IsForceAffinityVisible, <json>
-refund 98 property ForceAffinityHeading "FORCE AFFINITY: 0 Neutral"
-refund 99 engine NuiSetBind <player>, 1, ForceAffinityHeading, <json>
-refund 100 property ForceAffinityColor {"a":255,"b":93,"g":181,"r":221}
-refund 101 engine NuiSetBind <player>, 1, ForceAffinityColor, <json>
-refund 102 property AvailableSP "Available SP: 120"
-refund 103 engine NuiSetBind <player>, 1, AvailableSP, <json>
-refund 104 property TotalSP "Total SP: 410 / 410"
-refund 105 engine NuiSetBind <player>, 1, TotalSP, <json>
-refund 106 property WindowTitle "Perks - 120 SP available"
-refund 107 engine NuiSetBind <player>, 1, WindowTitle, <json>
-refund 108 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 2]"
-refund 109 engine NuiSetBind <player>, 1, ResetNextAvailable, <json>
-refund 110 property IsRefundEnabled false
-refund 111 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
-refund 112 property HasBeast true
-refund 113 engine NuiSetBind <player>, 1, HasBeast, <json>
-refund 114 property IsPerkSelected false
-refund 115 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
-refund 116 property IsPerkSelected false
-refund 117 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
-refund 118 property PerkButtonColors <973 chars hash 08a9806d0d331941e5d9be11ca026ea4> [{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":169,"g":169,"r":169},{"a":255,"b":90,"g":2
-refund 119 engine NuiSetBind <player>, 1, PerkButtonColors_RowCount, <json>
-refund 120 engine NuiSetBind <player>, 1, PerkButtonColors_RowVisibility, <json>
-refund 121 engine NuiSetBind <player>, 1, PerkButtonColors, <json>
-refund 122 property PerkButtonIcons <492 chars hash 0dde09090fb79455df1c55851e4d23d5> ["ife_adrenalstim1","ife_benevolence1","ife_blstbcn1","ife_pf_dance1","ife_def_modul","ife_deflshld1","ife_flame1","ife_
-refund 123 engine NuiSetBind <player>, 1, PerkButtonIcons_RowCount, <json>
-refund 124 engine NuiSetBind <player>, 1, PerkButtonIcons_RowVisibility, <json>
-refund 125 engine NuiSetBind <player>, 1, PerkButtonIcons, <json>
-refund 126 property PerkButtonTexts <630 chars hash 34e7b02f6109ace86efbcc2b8a2283ce> ["Adrenal Stim (0/3)","Benevolence (0/3)","Blaster Beacon (0/3)","Dance (0/4)","Defensive Modules (0/5)","Deflector Shie
-refund 127 engine NuiSetBind <player>, 1, PerkButtonTexts_RowCount, <json>
-refund 128 engine NuiSetBind <player>, 1, PerkButtonTexts_RowVisibility, <json>
-refund 129 engine NuiSetBind <player>, 1, PerkButtonTexts, <json>
-refund 130 property PerkDetailSelected [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-refund 131 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
-refund 132 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
-refund 133 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-refund 134 property PerkRowReqIcons ["req_met","req_met","req_chartype_r","req_met","req_met","req_chartype_r","req_chartype_r","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met"]
-refund 135 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowCount, <json>
-refund 136 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowVisibility, <json>
-refund 137 engine NuiSetBind <player>, 1, PerkRowReqIcons, <json>
-refund 138 property PerkRowReqTooltips <1039 chars hash 3479204cb875d9be7b3144d2d23df4b9> ["Can buy - 2 SP","Can buy - 2 SP","Locked - Character Type: Character Type: Standard. Only Standard character types may
-refund 139 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowCount, <json>
-refund 140 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowVisibility, <json>
-refund 141 engine NuiSetBind <player>, 1, PerkRowReqTooltips, <json>
-refund 142 property PerkRowCosts ["2 SP","2 SP","3 SP","2 SP","1 SP","3 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP"]
-refund 143 engine NuiSetBind <player>, 1, PerkRowCosts_RowCount, <json>
-refund 144 engine NuiSetBind <player>, 1, PerkRowCosts_RowVisibility, <json>
-refund 145 engine NuiSetBind <player>, 1, PerkRowCosts, <json>
-refund 146 property PageNumbers [["Page 1",1],["Page 2",2],["Page 3",3],["Page 4",4],["Page 5",5],["Page 6",6],["Page 7",7],["Page 8",8],["Page 9",9],["Page 10",10],["Page 11",11],["Page 12",12],["Page 13",13],["Page 14",14],["Page 15",15],["Page 16",16],["Page 17",17],["Page 18",18],["Page 19",19]]
-refund 147 engine NuiSetBind <player>, 1, PageNumbers, <json>
-refund 148 property PerkDetailSelected [true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
-refund 149 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
-refund 150 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
-refund 151 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-refund 152 property SelectedRequirements ["None"]
-refund 153 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
-refund 154 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
-refund 155 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
-refund 156 property SelectedRequirementColors [{"a":255,"b":0,"g":255,"r":0}]
-refund 157 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowCount, <json>
-refund 158 engine NuiSetBind <player>, 1, SelectedRequirementColors_RowVisibility, <json>
-refund 159 engine NuiSetBind <player>, 1, SelectedRequirementColors, <json>
-refund 160 property SelectedRequirementIcons ["req_met"]
-refund 161 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
-refund 162 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
-refund 163 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
-refund 164 property SelectedRequirementTooltips ["This upgrade has no requirements."]
-refund 165 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
-refund 166 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
-refund 167 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
-refund 168 property BuyText "Buy Upgrade (2 SP)"
-refund 169 engine NuiSetBind <player>, 1, BuyText, <json>
-refund 170 property IsBuyEnabled true
-refund 171 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
-refund 172 property SelectedDetails "Adrenal Stim\n\n[First Aid - Combat Pharmacology]\nType: Active\nRecast Group: Adrenal Stim\n\nRank 0 / 3\n\nNext Upgrade (rank 1) - 2 SP:\nFP: 0\nSTM: 0\nRecast: 45s\nRestores 10% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.\n\n"
-refund 173 engine NuiSetBind <player>, 1, SelectedDetails, <json>
-refund 174 property IsPerkSelected true
-refund 175 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
-refund 176 property IsRefundEnabled false
-refund 177 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
-refund 178 state carried
-refund 179 state worn Chest=farmer_outfit002
-refund 180 state feats 2,3,4,10,28,32,45,46,106,258,1089
-refund 181 state quickbar 0=10:1:;1=10:0:;2=4:28:
-refund 182 state record Currencies.PerkRefundToken 2
-refund 183 state record DatePerkRefundAvailable "2026-01-15T13:00:00Z"
-refund 184 state record UnallocatedSP 120
-refund 185 state record Perks.AdrenalStim <removed>
+refund 86 engine FloatingTextStringOnCreature You can refund another perk in 1 hour, 0 seconds., <player>, False
+refund 87 state carried
+refund 88 state worn Chest=farmer_outfit002
+refund 89 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+refund 90 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 filter-owned 1 step
 filter-owned 2 property SelectedStatusFilter 1
 filter-owned 3 engine NuiSetBind <player>, 1, SelectedStatusFilter, <json>
@@ -1268,37 +1449,37 @@ filter-owned 12 property IsPerkSelected false
 filter-owned 13 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
 filter-owned 14 property IsPerkSelected false
 filter-owned 15 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
-filter-owned 16 property PerkButtonColors [{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":230,"g":170,"r":90}]
+filter-owned 16 property PerkButtonColors [{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":230,"g":170,"r":90},{"a":255,"b":230,"g":170,"r":90}]
 filter-owned 17 engine NuiSetBind <player>, 1, PerkButtonColors_RowCount, <json>
 filter-owned 18 engine NuiSetBind <player>, 1, PerkButtonColors_RowVisibility, <json>
 filter-owned 19 engine NuiSetBind <player>, 1, PerkButtonColors, <json>
-filter-owned 20 property PerkButtonIcons ["ife_cmb_anlyzr","ife_anlyzr_mem","ife_tame"]
+filter-owned 20 property PerkButtonIcons ["ife_cmb_anlyzr","ife_anlyzr_mem","ife_adrenalstim1","ife_tame"]
 filter-owned 21 engine NuiSetBind <player>, 1, PerkButtonIcons_RowCount, <json>
 filter-owned 22 engine NuiSetBind <player>, 1, PerkButtonIcons_RowVisibility, <json>
 filter-owned 23 engine NuiSetBind <player>, 1, PerkButtonIcons, <json>
-filter-owned 24 property PerkButtonTexts ["Combat Analyzer (1/4)","Analyzer Memory (1/3)","Tame (5/5)"]
+filter-owned 24 property PerkButtonTexts ["Combat Analyzer (1/4)","Analyzer Memory (1/3)","Adrenal Stim (3/3)","Tame (5/5)"]
 filter-owned 25 engine NuiSetBind <player>, 1, PerkButtonTexts_RowCount, <json>
 filter-owned 26 engine NuiSetBind <player>, 1, PerkButtonTexts_RowVisibility, <json>
 filter-owned 27 engine NuiSetBind <player>, 1, PerkButtonTexts, <json>
-filter-owned 28 property PerkDetailSelected [false,false,false]
+filter-owned 28 property PerkDetailSelected [false,false,false,false]
 filter-owned 29 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
 filter-owned 30 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
 filter-owned 31 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-filter-owned 32 property PerkRowReqIcons ["req_met","req_met","req_other"]
+filter-owned 32 property PerkRowReqIcons ["req_met","req_met","req_other","req_other"]
 filter-owned 33 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowCount, <json>
 filter-owned 34 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowVisibility, <json>
 filter-owned 35 engine NuiSetBind <player>, 1, PerkRowReqIcons, <json>
-filter-owned 36 property PerkRowReqTooltips ["Can buy - 3 SP","Can buy - 3 SP","Fully upgraded."]
+filter-owned 36 property PerkRowReqTooltips ["Can buy - 3 SP","Can buy - 3 SP","Fully upgraded.","Fully upgraded."]
 filter-owned 37 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowCount, <json>
 filter-owned 38 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowVisibility, <json>
 filter-owned 39 engine NuiSetBind <player>, 1, PerkRowReqTooltips, <json>
-filter-owned 40 property PerkRowCosts ["3 SP","3 SP",""]
+filter-owned 40 property PerkRowCosts ["3 SP","3 SP","",""]
 filter-owned 41 engine NuiSetBind <player>, 1, PerkRowCosts_RowCount, <json>
 filter-owned 42 engine NuiSetBind <player>, 1, PerkRowCosts_RowVisibility, <json>
 filter-owned 43 engine NuiSetBind <player>, 1, PerkRowCosts, <json>
 filter-owned 44 property PageNumbers [["Page 1",1]]
 filter-owned 45 engine NuiSetBind <player>, 1, PageNumbers, <json>
-filter-owned 46 property PerkDetailSelected [true,false,false]
+filter-owned 46 property PerkDetailSelected [true,false,false,false]
 filter-owned 47 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
 filter-owned 48 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
 filter-owned 49 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
@@ -1330,8 +1511,8 @@ filter-owned 74 property IsRefundEnabled false
 filter-owned 75 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
 filter-owned 76 state carried
 filter-owned 77 state worn Chest=farmer_outfit002
-filter-owned 78 state feats 2,3,4,10,28,32,45,46,106,258,1089
-filter-owned 79 state quickbar 0=10:1:;1=10:0:;2=4:28:
+filter-owned 78 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+filter-owned 79 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 filter-can-buy 1 step
 filter-can-buy 2 property SelectedStatusFilter 2
 filter-can-buy 3 engine NuiSetBind <player>, 1, SelectedStatusFilter, <json>
@@ -1351,11 +1532,11 @@ filter-can-buy 16 property PerkButtonColors <961 chars hash e8fe4f934b2944fd4311
 filter-can-buy 17 engine NuiSetBind <player>, 1, PerkButtonColors_RowCount, <json>
 filter-can-buy 18 engine NuiSetBind <player>, 1, PerkButtonColors_RowVisibility, <json>
 filter-can-buy 19 engine NuiSetBind <player>, 1, PerkButtonColors, <json>
-filter-can-buy 20 property PerkButtonIcons <498 chars hash 8e87020ceecf5093a4eb87977ec9c38d> ["ife_adrenalstim1","ife_benevolence1","ife_pf_dance1","ife_def_modul","ife_forcespark1","ife_intu_pilot","ife_pf_lightf
+filter-can-buy 20 property PerkButtonIcons <497 chars hash e060f727dfeb860a473c652b2384c8b7> ["ife_benevolence1","ife_pf_dance1","ife_def_modul","ife_forcespark1","ife_intu_pilot","ife_pf_lightft1","ife_medkit1","
 filter-can-buy 21 engine NuiSetBind <player>, 1, PerkButtonIcons_RowCount, <json>
 filter-can-buy 22 engine NuiSetBind <player>, 1, PerkButtonIcons_RowVisibility, <json>
 filter-can-buy 23 engine NuiSetBind <player>, 1, PerkButtonIcons, <json>
-filter-can-buy 24 property PerkButtonTexts <636 chars hash 7624a07b3f38f88fca6fb4e55c762a43> ["Adrenal Stim (0/3)","Benevolence (0/3)","Dance (0/4)","Defensive Modules (0/5)","Force Spark (0/2)","Intuitive Pilotin
+filter-can-buy 24 property PerkButtonTexts <639 chars hash 3eb8bbaa427f74171ef4b4cbb76d90a8> ["Benevolence (0/3)","Dance (0/4)","Defensive Modules (0/5)","Force Spark (0/2)","Intuitive Piloting (0/1)","Light Feet 
 filter-can-buy 25 engine NuiSetBind <player>, 1, PerkButtonTexts_RowCount, <json>
 filter-can-buy 26 engine NuiSetBind <player>, 1, PerkButtonTexts_RowVisibility, <json>
 filter-can-buy 27 engine NuiSetBind <player>, 1, PerkButtonTexts, <json>
@@ -1367,11 +1548,11 @@ filter-can-buy 32 property PerkRowReqIcons ["req_met","req_met","req_met","req_m
 filter-can-buy 33 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowCount, <json>
 filter-can-buy 34 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowVisibility, <json>
 filter-can-buy 35 engine NuiSetBind <player>, 1, PerkRowReqIcons, <json>
-filter-can-buy 36 property PerkRowReqTooltips <511 chars hash d1f4dd74f1e798c8a10eb0834a0c5133> ["Can buy - 2 SP","Can buy - 2 SP","Can buy - 2 SP","Can buy - 1 SP","Can buy - 2 SP","Can buy - 3 SP","Can buy - 2 SP",
+filter-can-buy 36 property PerkRowReqTooltips <511 chars hash b37e68434400799e2a03eb0bf708a32d> ["Can buy - 2 SP","Can buy - 2 SP","Can buy - 1 SP","Can buy - 2 SP","Can buy - 3 SP","Can buy - 2 SP","Can buy - 2 SP",
 filter-can-buy 37 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowCount, <json>
 filter-can-buy 38 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowVisibility, <json>
 filter-can-buy 39 engine NuiSetBind <player>, 1, PerkRowReqTooltips, <json>
-filter-can-buy 40 property PerkRowCosts ["2 SP","2 SP","2 SP","1 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP"]
+filter-can-buy 40 property PerkRowCosts ["2 SP","2 SP","1 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP"]
 filter-can-buy 41 engine NuiSetBind <player>, 1, PerkRowCosts_RowCount, <json>
 filter-can-buy 42 engine NuiSetBind <player>, 1, PerkRowCosts_RowVisibility, <json>
 filter-can-buy 43 engine NuiSetBind <player>, 1, PerkRowCosts, <json>
@@ -1381,7 +1562,7 @@ filter-can-buy 46 property PerkDetailSelected [true,false,false,false,false,fals
 filter-can-buy 47 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
 filter-can-buy 48 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
 filter-can-buy 49 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-filter-can-buy 50 property SelectedRequirements ["None"]
+filter-can-buy 50 property SelectedRequirements ["Character Type: Force Sensitive"]
 filter-can-buy 51 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
 filter-can-buy 52 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
 filter-can-buy 53 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
@@ -1393,7 +1574,7 @@ filter-can-buy 58 property SelectedRequirementIcons ["req_met"]
 filter-can-buy 59 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
 filter-can-buy 60 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
 filter-can-buy 61 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
-filter-can-buy 62 property SelectedRequirementTooltips ["This upgrade has no requirements."]
+filter-can-buy 62 property SelectedRequirementTooltips ["Character Type: Character Type: Force Sensitive - met."]
 filter-can-buy 63 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
 filter-can-buy 64 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
 filter-can-buy 65 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
@@ -1401,7 +1582,7 @@ filter-can-buy 66 property BuyText "Buy Upgrade (2 SP)"
 filter-can-buy 67 engine NuiSetBind <player>, 1, BuyText, <json>
 filter-can-buy 68 property IsBuyEnabled true
 filter-can-buy 69 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
-filter-can-buy 70 property SelectedDetails "Adrenal Stim\n\n[First Aid - Combat Pharmacology]\nType: Active\nRecast Group: Adrenal Stim\n\nRank 0 / 3\n\nNext Upgrade (rank 1) - 2 SP:\nFP: 0\nSTM: 0\nRecast: 45s\nRestores 10% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.\n\n"
+filter-can-buy 70 property SelectedDetails <520 chars hash 5f27e2d24107746627b34d569ab587f6> "Benevolence\n\n[Force - Control]\nType: Active\n\nLIGHT-ALIGNED FORCE POWER\nAt 0 Neutral: 0% magnitude, 0% hit chance.
 filter-can-buy 71 engine NuiSetBind <player>, 1, SelectedDetails, <json>
 filter-can-buy 72 property IsPerkSelected true
 filter-can-buy 73 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
@@ -1409,8 +1590,8 @@ filter-can-buy 74 property IsRefundEnabled false
 filter-can-buy 75 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
 filter-can-buy 76 state carried
 filter-can-buy 77 state worn Chest=farmer_outfit002
-filter-can-buy 78 state feats 2,3,4,10,28,32,45,46,106,258,1089
-filter-can-buy 79 state quickbar 0=10:1:;1=10:0:;2=4:28:
+filter-can-buy 78 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+filter-can-buy 79 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 filter-maxed 1 step
 filter-maxed 2 property SelectedStatusFilter 3
 filter-maxed 3 engine NuiSetBind <player>, 1, SelectedStatusFilter, <json>
@@ -1426,37 +1607,37 @@ filter-maxed 12 property IsPerkSelected false
 filter-maxed 13 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
 filter-maxed 14 property IsPerkSelected false
 filter-maxed 15 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
-filter-maxed 16 property PerkButtonColors [{"a":255,"b":230,"g":170,"r":90}]
+filter-maxed 16 property PerkButtonColors [{"a":255,"b":230,"g":170,"r":90},{"a":255,"b":230,"g":170,"r":90}]
 filter-maxed 17 engine NuiSetBind <player>, 1, PerkButtonColors_RowCount, <json>
 filter-maxed 18 engine NuiSetBind <player>, 1, PerkButtonColors_RowVisibility, <json>
 filter-maxed 19 engine NuiSetBind <player>, 1, PerkButtonColors, <json>
-filter-maxed 20 property PerkButtonIcons ["ife_tame"]
+filter-maxed 20 property PerkButtonIcons ["ife_adrenalstim1","ife_tame"]
 filter-maxed 21 engine NuiSetBind <player>, 1, PerkButtonIcons_RowCount, <json>
 filter-maxed 22 engine NuiSetBind <player>, 1, PerkButtonIcons_RowVisibility, <json>
 filter-maxed 23 engine NuiSetBind <player>, 1, PerkButtonIcons, <json>
-filter-maxed 24 property PerkButtonTexts ["Tame (5/5)"]
+filter-maxed 24 property PerkButtonTexts ["Adrenal Stim (3/3)","Tame (5/5)"]
 filter-maxed 25 engine NuiSetBind <player>, 1, PerkButtonTexts_RowCount, <json>
 filter-maxed 26 engine NuiSetBind <player>, 1, PerkButtonTexts_RowVisibility, <json>
 filter-maxed 27 engine NuiSetBind <player>, 1, PerkButtonTexts, <json>
-filter-maxed 28 property PerkDetailSelected [false]
+filter-maxed 28 property PerkDetailSelected [false,false]
 filter-maxed 29 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
 filter-maxed 30 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
 filter-maxed 31 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-filter-maxed 32 property PerkRowReqIcons ["req_other"]
+filter-maxed 32 property PerkRowReqIcons ["req_other","req_other"]
 filter-maxed 33 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowCount, <json>
 filter-maxed 34 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowVisibility, <json>
 filter-maxed 35 engine NuiSetBind <player>, 1, PerkRowReqIcons, <json>
-filter-maxed 36 property PerkRowReqTooltips ["Fully upgraded."]
+filter-maxed 36 property PerkRowReqTooltips ["Fully upgraded.","Fully upgraded."]
 filter-maxed 37 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowCount, <json>
 filter-maxed 38 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowVisibility, <json>
 filter-maxed 39 engine NuiSetBind <player>, 1, PerkRowReqTooltips, <json>
-filter-maxed 40 property PerkRowCosts [""]
+filter-maxed 40 property PerkRowCosts ["",""]
 filter-maxed 41 engine NuiSetBind <player>, 1, PerkRowCosts_RowCount, <json>
 filter-maxed 42 engine NuiSetBind <player>, 1, PerkRowCosts_RowVisibility, <json>
 filter-maxed 43 engine NuiSetBind <player>, 1, PerkRowCosts, <json>
 filter-maxed 44 property PageNumbers [["Page 1",1]]
 filter-maxed 45 engine NuiSetBind <player>, 1, PageNumbers, <json>
-filter-maxed 46 property PerkDetailSelected [true]
+filter-maxed 46 property PerkDetailSelected [true,false]
 filter-maxed 47 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
 filter-maxed 48 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
 filter-maxed 49 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
@@ -1480,7 +1661,7 @@ filter-maxed 66 property BuyText "Buy Upgrade"
 filter-maxed 67 engine NuiSetBind <player>, 1, BuyText, <json>
 filter-maxed 68 property IsBuyEnabled false
 filter-maxed 69 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
-filter-maxed 70 property SelectedDetails "Tame\n\n[Beast Mastery - Training]\nType: Active\nRecast Group: Tame\n\nRank 5 / 5\n\nCurrent (rank 5):\nEnables you to tame & train creatures between levels 0 and 50. Taming chance increases by 3% per SOC, capped at 75%.\n\n"
+filter-maxed 70 property SelectedDetails "Adrenal Stim\n\n[First Aid - Combat Pharmacology]\nType: Active\nRecast Group: Adrenal Stim\n\nRank 3 / 3\n\nCurrent (rank 3):\nFP: 0\nSTM: 0\nRecast: 45s\nRestores 25% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.\n\n"
 filter-maxed 71 engine NuiSetBind <player>, 1, SelectedDetails, <json>
 filter-maxed 72 property IsPerkSelected true
 filter-maxed 73 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
@@ -1488,8 +1669,8 @@ filter-maxed 74 property IsRefundEnabled false
 filter-maxed 75 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
 filter-maxed 76 state carried
 filter-maxed 77 state worn Chest=farmer_outfit002
-filter-maxed 78 state feats 2,3,4,10,28,32,45,46,106,258,1089
-filter-maxed 79 state quickbar 0=10:1:;1=10:0:;2=4:28:
+filter-maxed 78 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+filter-maxed 79 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 filter-all 1 step
 filter-all 2 property SelectedStatusFilter 0
 filter-all 3 engine NuiSetBind <player>, 1, SelectedStatusFilter, <json>
@@ -1505,15 +1686,15 @@ filter-all 12 property IsPerkSelected false
 filter-all 13 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
 filter-all 14 property IsPerkSelected false
 filter-all 15 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
-filter-all 16 property PerkButtonColors <973 chars hash 08a9806d0d331941e5d9be11ca026ea4> [{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":169,"g":169,"r":169},{"a":255,"b":90,"g":2
+filter-all 16 property PerkButtonColors <973 chars hash 5d5387a3a11538b1168d4cd1dc6d7b64> [{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":169,"g":169,"r":169},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":2
 filter-all 17 engine NuiSetBind <player>, 1, PerkButtonColors_RowCount, <json>
 filter-all 18 engine NuiSetBind <player>, 1, PerkButtonColors_RowVisibility, <json>
 filter-all 19 engine NuiSetBind <player>, 1, PerkButtonColors, <json>
-filter-all 20 property PerkButtonIcons <492 chars hash 0dde09090fb79455df1c55851e4d23d5> ["ife_adrenalstim1","ife_benevolence1","ife_blstbcn1","ife_pf_dance1","ife_def_modul","ife_deflshld1","ife_flame1","ife_
+filter-all 20 property PerkButtonIcons <490 chars hash c4de69b8f0727ca530e7c0310b384167> ["ife_benevolence1","ife_blstbcn1","ife_pf_dance1","ife_def_modul","ife_deflshld1","ife_flame1","ife_forcespark1","ife_f
 filter-all 21 engine NuiSetBind <player>, 1, PerkButtonIcons_RowCount, <json>
 filter-all 22 engine NuiSetBind <player>, 1, PerkButtonIcons_RowVisibility, <json>
 filter-all 23 engine NuiSetBind <player>, 1, PerkButtonIcons, <json>
-filter-all 24 property PerkButtonTexts <630 chars hash 34e7b02f6109ace86efbcc2b8a2283ce> ["Adrenal Stim (0/3)","Benevolence (0/3)","Blaster Beacon (0/3)","Dance (0/4)","Defensive Modules (0/5)","Deflector Shie
+filter-all 24 property PerkButtonTexts <634 chars hash 2c39cf3c2a69fc387e6da709392e9d96> ["Benevolence (0/3)","Blaster Beacon (0/3)","Dance (0/4)","Defensive Modules (0/5)","Deflector Shield (0/3)","Flamethrow
 filter-all 25 engine NuiSetBind <player>, 1, PerkButtonTexts_RowCount, <json>
 filter-all 26 engine NuiSetBind <player>, 1, PerkButtonTexts_RowVisibility, <json>
 filter-all 27 engine NuiSetBind <player>, 1, PerkButtonTexts, <json>
@@ -1521,15 +1702,15 @@ filter-all 28 property PerkDetailSelected [false,false,false,false,false,false,f
 filter-all 29 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
 filter-all 30 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
 filter-all 31 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-filter-all 32 property PerkRowReqIcons ["req_met","req_met","req_chartype_r","req_met","req_met","req_chartype_r","req_chartype_r","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met"]
+filter-all 32 property PerkRowReqIcons ["req_met","req_chartype_r","req_met","req_met","req_chartype_r","req_chartype_r","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met"]
 filter-all 33 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowCount, <json>
 filter-all 34 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowVisibility, <json>
 filter-all 35 engine NuiSetBind <player>, 1, PerkRowReqIcons, <json>
-filter-all 36 property PerkRowReqTooltips <1039 chars hash 3479204cb875d9be7b3144d2d23df4b9> ["Can buy - 2 SP","Can buy - 2 SP","Locked - Character Type: Character Type: Standard. Only Standard character types may
+filter-all 36 property PerkRowReqTooltips <1039 chars hash d8e26dad7f0e544474edfd260a09036f> ["Can buy - 2 SP","Locked - Character Type: Character Type: Standard. Only Standard character types may access this perk
 filter-all 37 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowCount, <json>
 filter-all 38 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowVisibility, <json>
 filter-all 39 engine NuiSetBind <player>, 1, PerkRowReqTooltips, <json>
-filter-all 40 property PerkRowCosts ["2 SP","2 SP","3 SP","2 SP","1 SP","3 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP"]
+filter-all 40 property PerkRowCosts ["2 SP","3 SP","2 SP","1 SP","3 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP","2 SP"]
 filter-all 41 engine NuiSetBind <player>, 1, PerkRowCosts_RowCount, <json>
 filter-all 42 engine NuiSetBind <player>, 1, PerkRowCosts_RowVisibility, <json>
 filter-all 43 engine NuiSetBind <player>, 1, PerkRowCosts, <json>
@@ -1539,7 +1720,7 @@ filter-all 46 property PerkDetailSelected [true,false,false,false,false,false,fa
 filter-all 47 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
 filter-all 48 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
 filter-all 49 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-filter-all 50 property SelectedRequirements ["None"]
+filter-all 50 property SelectedRequirements ["Character Type: Force Sensitive"]
 filter-all 51 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
 filter-all 52 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
 filter-all 53 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
@@ -1551,7 +1732,7 @@ filter-all 58 property SelectedRequirementIcons ["req_met"]
 filter-all 59 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
 filter-all 60 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
 filter-all 61 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
-filter-all 62 property SelectedRequirementTooltips ["This upgrade has no requirements."]
+filter-all 62 property SelectedRequirementTooltips ["Character Type: Character Type: Force Sensitive - met."]
 filter-all 63 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
 filter-all 64 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
 filter-all 65 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
@@ -1559,7 +1740,7 @@ filter-all 66 property BuyText "Buy Upgrade (2 SP)"
 filter-all 67 engine NuiSetBind <player>, 1, BuyText, <json>
 filter-all 68 property IsBuyEnabled true
 filter-all 69 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
-filter-all 70 property SelectedDetails "Adrenal Stim\n\n[First Aid - Combat Pharmacology]\nType: Active\nRecast Group: Adrenal Stim\n\nRank 0 / 3\n\nNext Upgrade (rank 1) - 2 SP:\nFP: 0\nSTM: 0\nRecast: 45s\nRestores 10% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.\n\n"
+filter-all 70 property SelectedDetails <520 chars hash 5f27e2d24107746627b34d569ab587f6> "Benevolence\n\n[Force - Control]\nType: Active\n\nLIGHT-ALIGNED FORCE POWER\nAt 0 Neutral: 0% magnitude, 0% hit chance.
 filter-all 71 engine NuiSetBind <player>, 1, SelectedDetails, <json>
 filter-all 72 property IsPerkSelected true
 filter-all 73 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
@@ -1567,8 +1748,8 @@ filter-all 74 property IsRefundEnabled false
 filter-all 75 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
 filter-all 76 state carried
 filter-all 77 state worn Chest=farmer_outfit002
-filter-all 78 state feats 2,3,4,10,28,32,45,46,106,258,1089
-filter-all 79 state quickbar 0=10:1:;1=10:0:;2=4:28:
+filter-all 78 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+filter-all 79 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 page-next 1 step
 page-next 2 property SelectedPage 2
 page-next 3 engine NuiSetBind <player>, 1, SelectedPage, <json>
@@ -1576,15 +1757,15 @@ page-next 4 property IsPerkSelected false
 page-next 5 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
 page-next 6 property IsPerkSelected false
 page-next 7 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
-page-next 8 property PerkButtonColors <961 chars hash e8fe4f934b2944fd431196d7848ebba4> [{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":200
+page-next 8 property PerkButtonColors <963 chars hash 899afbf01795227a6dddfc9fab0040dd> [{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":200
 page-next 9 engine NuiSetBind <player>, 1, PerkButtonColors_RowCount, <json>
 page-next 10 engine NuiSetBind <player>, 1, PerkButtonColors_RowVisibility, <json>
 page-next 11 engine NuiSetBind <player>, 1, PerkButtonColors, <json>
-page-next 12 property PerkButtonIcons <499 chars hash b5cacec2b775070889d4ad1cdb7cf13b> ["ife_disblstrk1","ife_disarmsht1","ife_dblstrike1","ife_explsvtss1","ife_focusedarc1","ife_frcsheath1","ife_fortstrike1
+page-next 12 property PerkButtonIcons <500 chars hash 228ca73cdd348d59e7b0cb53c84bd19d> ["ife_disarmsht1","ife_dblstrike1","ife_explsvtss1","ife_focusedarc1","ife_frcsheath1","ife_fortstrike1","ife_grdcounter
 page-next 13 engine NuiSetBind <player>, 1, PerkButtonIcons_RowCount, <json>
 page-next 14 engine NuiSetBind <player>, 1, PerkButtonIcons_RowVisibility, <json>
 page-next 15 engine NuiSetBind <player>, 1, PerkButtonIcons, <json>
-page-next 16 property PerkButtonTexts <635 chars hash 4ffd581231e2910d2cef3224d7c63166> ["Disabling Strike (0/4)","Disarming Shot (0/4)","Double Strike (0/4)","Explosive Toss (0/4)","Focused Arc (0/4)","Force
+page-next 16 property PerkButtonTexts <635 chars hash 30131f8c9b08fa2720bfc4838ae443ac> ["Disarming Shot (0/4)","Double Strike (0/4)","Explosive Toss (0/4)","Focused Arc (0/4)","Force Sheath (0/4)","Fortress 
 page-next 17 engine NuiSetBind <player>, 1, PerkButtonTexts_RowCount, <json>
 page-next 18 engine NuiSetBind <player>, 1, PerkButtonTexts_RowVisibility, <json>
 page-next 19 engine NuiSetBind <player>, 1, PerkButtonTexts, <json>
@@ -1592,15 +1773,15 @@ page-next 20 property PerkDetailSelected [false,false,false,false,false,false,fa
 page-next 21 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
 page-next 22 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
 page-next 23 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-page-next 24 property PerkRowReqIcons ["req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met"]
+page-next 24 property PerkRowReqIcons ["req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r"]
 page-next 25 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowCount, <json>
 page-next 26 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowVisibility, <json>
 page-next 27 engine NuiSetBind <player>, 1, PerkRowReqIcons, <json>
-page-next 28 property PerkRowReqTooltips <511 chars hash cbff35ed0719a146ca9de665a186349d> ["Can buy - 2 SP","Can buy - 2 SP","Can buy - 2 SP","Can buy - 2 SP","Can buy - 2 SP","Can buy - 2 SP","Can buy - 2 SP",
+page-next 28 property PerkRowReqTooltips <599 chars hash afd2305d4c4c813609b14857ab875671> ["Can buy - 2 SP","Can buy - 2 SP","Can buy - 2 SP","Can buy - 2 SP","Can buy - 2 SP","Can buy - 2 SP","Can buy - 2 SP",
 page-next 29 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowCount, <json>
 page-next 30 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowVisibility, <json>
 page-next 31 engine NuiSetBind <player>, 1, PerkRowReqTooltips, <json>
-page-next 32 property PerkRowCosts ["2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP"]
+page-next 32 property PerkRowCosts ["2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP"]
 page-next 33 engine NuiSetBind <player>, 1, PerkRowCosts_RowCount, <json>
 page-next 34 engine NuiSetBind <player>, 1, PerkRowCosts_RowVisibility, <json>
 page-next 35 engine NuiSetBind <player>, 1, PerkRowCosts, <json>
@@ -1610,7 +1791,7 @@ page-next 38 property PerkDetailSelected [true,false,false,false,false,false,fal
 page-next 39 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
 page-next 40 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
 page-next 41 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-page-next 42 property SelectedRequirements ["Spear rank 2"]
+page-next 42 property SelectedRequirements ["Pistol rank 2"]
 page-next 43 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
 page-next 44 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
 page-next 45 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
@@ -1622,7 +1803,7 @@ page-next 50 property SelectedRequirementIcons ["req_met"]
 page-next 51 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
 page-next 52 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
 page-next 53 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
-page-next 54 property SelectedRequirementTooltips ["Skill: Spear rank 2 - met."]
+page-next 54 property SelectedRequirementTooltips ["Skill: Pistol rank 2 - met."]
 page-next 55 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
 page-next 56 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
 page-next 57 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
@@ -1630,7 +1811,7 @@ page-next 58 property BuyText "Buy Upgrade (2 SP)"
 page-next 59 engine NuiSetBind <player>, 1, BuyText, <json>
 page-next 60 property IsBuyEnabled true
 page-next 61 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
-page-next 62 property SelectedDetails "Disabling Strike\n\n[Spear - Disabler]\nType: Active\nRecast Group: Disabling Strike\n\nRank 0 / 4\n\nNext Upgrade (rank 1) - 2 SP:\nFP: 0\nSTM: 3\nRecast: 18s\nDeals weapon DMG + 8. Inflicts Foggy Mind for 30 seconds, increasing ability costs.\n\n"
+page-next 62 property SelectedDetails "Disarming Shot\n\n[Pistol - Skirmisher]\nType: Active\nRecast Group: Disarming Shot\n\nRank 0 / 4\n\nNext Upgrade (rank 1) - 2 SP:\nFP: 0\nSTM: 3\nRecast: 18s\nDeals weapon DMG + 8 and inflicts Disarming Shot for 30 seconds, reducing the target's Attack by 10%.\n\n"
 page-next 63 engine NuiSetBind <player>, 1, SelectedDetails, <json>
 page-next 64 property IsPerkSelected true
 page-next 65 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
@@ -1638,8 +1819,8 @@ page-next 66 property IsRefundEnabled false
 page-next 67 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
 page-next 68 state carried
 page-next 69 state worn Chest=farmer_outfit002
-page-next 70 state feats 2,3,4,10,28,32,45,46,106,258,1089
-page-next 71 state quickbar 0=10:1:;1=10:0:;2=4:28:
+page-next 70 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+page-next 71 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 page-previous 1 step
 page-previous 2 property SelectedPage 1
 page-previous 3 engine NuiSetBind <player>, 1, SelectedPage, <json>
@@ -1647,15 +1828,15 @@ page-previous 4 property IsPerkSelected false
 page-previous 5 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
 page-previous 6 property IsPerkSelected false
 page-previous 7 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
-page-previous 8 property PerkButtonColors <973 chars hash 08a9806d0d331941e5d9be11ca026ea4> [{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":169,"g":169,"r":169},{"a":255,"b":90,"g":2
+page-previous 8 property PerkButtonColors <973 chars hash 5d5387a3a11538b1168d4cd1dc6d7b64> [{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":169,"g":169,"r":169},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":2
 page-previous 9 engine NuiSetBind <player>, 1, PerkButtonColors_RowCount, <json>
 page-previous 10 engine NuiSetBind <player>, 1, PerkButtonColors_RowVisibility, <json>
 page-previous 11 engine NuiSetBind <player>, 1, PerkButtonColors, <json>
-page-previous 12 property PerkButtonIcons <492 chars hash 0dde09090fb79455df1c55851e4d23d5> ["ife_adrenalstim1","ife_benevolence1","ife_blstbcn1","ife_pf_dance1","ife_def_modul","ife_deflshld1","ife_flame1","ife_
+page-previous 12 property PerkButtonIcons <490 chars hash c4de69b8f0727ca530e7c0310b384167> ["ife_benevolence1","ife_blstbcn1","ife_pf_dance1","ife_def_modul","ife_deflshld1","ife_flame1","ife_forcespark1","ife_f
 page-previous 13 engine NuiSetBind <player>, 1, PerkButtonIcons_RowCount, <json>
 page-previous 14 engine NuiSetBind <player>, 1, PerkButtonIcons_RowVisibility, <json>
 page-previous 15 engine NuiSetBind <player>, 1, PerkButtonIcons, <json>
-page-previous 16 property PerkButtonTexts <630 chars hash 34e7b02f6109ace86efbcc2b8a2283ce> ["Adrenal Stim (0/3)","Benevolence (0/3)","Blaster Beacon (0/3)","Dance (0/4)","Defensive Modules (0/5)","Deflector Shie
+page-previous 16 property PerkButtonTexts <634 chars hash 2c39cf3c2a69fc387e6da709392e9d96> ["Benevolence (0/3)","Blaster Beacon (0/3)","Dance (0/4)","Defensive Modules (0/5)","Deflector Shield (0/3)","Flamethrow
 page-previous 17 engine NuiSetBind <player>, 1, PerkButtonTexts_RowCount, <json>
 page-previous 18 engine NuiSetBind <player>, 1, PerkButtonTexts_RowVisibility, <json>
 page-previous 19 engine NuiSetBind <player>, 1, PerkButtonTexts, <json>
@@ -1663,15 +1844,15 @@ page-previous 20 property PerkDetailSelected [false,false,false,false,false,fals
 page-previous 21 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
 page-previous 22 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
 page-previous 23 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-page-previous 24 property PerkRowReqIcons ["req_met","req_met","req_chartype_r","req_met","req_met","req_chartype_r","req_chartype_r","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met"]
+page-previous 24 property PerkRowReqIcons ["req_met","req_chartype_r","req_met","req_met","req_chartype_r","req_chartype_r","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met"]
 page-previous 25 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowCount, <json>
 page-previous 26 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowVisibility, <json>
 page-previous 27 engine NuiSetBind <player>, 1, PerkRowReqIcons, <json>
-page-previous 28 property PerkRowReqTooltips <1039 chars hash 3479204cb875d9be7b3144d2d23df4b9> ["Can buy - 2 SP","Can buy - 2 SP","Locked - Character Type: Character Type: Standard. Only Standard character types may
+page-previous 28 property PerkRowReqTooltips <1039 chars hash d8e26dad7f0e544474edfd260a09036f> ["Can buy - 2 SP","Locked - Character Type: Character Type: Standard. Only Standard character types may access this perk
 page-previous 29 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowCount, <json>
 page-previous 30 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowVisibility, <json>
 page-previous 31 engine NuiSetBind <player>, 1, PerkRowReqTooltips, <json>
-page-previous 32 property PerkRowCosts ["2 SP","2 SP","3 SP","2 SP","1 SP","3 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP"]
+page-previous 32 property PerkRowCosts ["2 SP","3 SP","2 SP","1 SP","3 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP","2 SP"]
 page-previous 33 engine NuiSetBind <player>, 1, PerkRowCosts_RowCount, <json>
 page-previous 34 engine NuiSetBind <player>, 1, PerkRowCosts_RowVisibility, <json>
 page-previous 35 engine NuiSetBind <player>, 1, PerkRowCosts, <json>
@@ -1681,7 +1862,7 @@ page-previous 38 property PerkDetailSelected [true,false,false,false,false,false
 page-previous 39 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
 page-previous 40 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
 page-previous 41 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-page-previous 42 property SelectedRequirements ["None"]
+page-previous 42 property SelectedRequirements ["Character Type: Force Sensitive"]
 page-previous 43 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
 page-previous 44 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
 page-previous 45 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
@@ -1693,7 +1874,7 @@ page-previous 50 property SelectedRequirementIcons ["req_met"]
 page-previous 51 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
 page-previous 52 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
 page-previous 53 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
-page-previous 54 property SelectedRequirementTooltips ["This upgrade has no requirements."]
+page-previous 54 property SelectedRequirementTooltips ["Character Type: Character Type: Force Sensitive - met."]
 page-previous 55 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
 page-previous 56 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
 page-previous 57 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
@@ -1701,7 +1882,7 @@ page-previous 58 property BuyText "Buy Upgrade (2 SP)"
 page-previous 59 engine NuiSetBind <player>, 1, BuyText, <json>
 page-previous 60 property IsBuyEnabled true
 page-previous 61 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
-page-previous 62 property SelectedDetails "Adrenal Stim\n\n[First Aid - Combat Pharmacology]\nType: Active\nRecast Group: Adrenal Stim\n\nRank 0 / 3\n\nNext Upgrade (rank 1) - 2 SP:\nFP: 0\nSTM: 0\nRecast: 45s\nRestores 10% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.\n\n"
+page-previous 62 property SelectedDetails <520 chars hash 5f27e2d24107746627b34d569ab587f6> "Benevolence\n\n[Force - Control]\nType: Active\n\nLIGHT-ALIGNED FORCE POWER\nAt 0 Neutral: 0% magnitude, 0% hit chance.
 page-previous 63 engine NuiSetBind <player>, 1, SelectedDetails, <json>
 page-previous 64 property IsPerkSelected true
 page-previous 65 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
@@ -1709,8 +1890,8 @@ page-previous 66 property IsRefundEnabled false
 page-previous 67 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
 page-previous 68 state carried
 page-previous 69 state worn Chest=farmer_outfit002
-page-previous 70 state feats 2,3,4,10,28,32,45,46,106,258,1089
-page-previous 71 state quickbar 0=10:1:;1=10:0:;2=4:28:
+page-previous 70 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+page-previous 71 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 search 1 step
 search 2 property SearchText "attack"
 search 3 engine NuiSetBind <player>, 1, SearchText, <json>
@@ -1780,8 +1961,8 @@ search 66 property IsRefundEnabled false
 search 67 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
 search 68 state carried
 search 69 state worn Chest=farmer_outfit002
-search 70 state feats 2,3,4,10,28,32,45,46,106,258,1089
-search 71 state quickbar 0=10:1:;1=10:0:;2=4:28:
+search 70 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+search 71 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 clear-search 1 step
 clear-search 2 property SearchText ""
 clear-search 3 engine NuiSetBind <player>, 1, SearchText, <json>
@@ -1789,15 +1970,15 @@ clear-search 4 property IsPerkSelected false
 clear-search 5 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
 clear-search 6 property IsPerkSelected false
 clear-search 7 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
-clear-search 8 property PerkButtonColors <973 chars hash 08a9806d0d331941e5d9be11ca026ea4> [{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":169,"g":169,"r":169},{"a":255,"b":90,"g":2
+clear-search 8 property PerkButtonColors <973 chars hash 5d5387a3a11538b1168d4cd1dc6d7b64> [{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":169,"g":169,"r":169},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":2
 clear-search 9 engine NuiSetBind <player>, 1, PerkButtonColors_RowCount, <json>
 clear-search 10 engine NuiSetBind <player>, 1, PerkButtonColors_RowVisibility, <json>
 clear-search 11 engine NuiSetBind <player>, 1, PerkButtonColors, <json>
-clear-search 12 property PerkButtonIcons <492 chars hash 0dde09090fb79455df1c55851e4d23d5> ["ife_adrenalstim1","ife_benevolence1","ife_blstbcn1","ife_pf_dance1","ife_def_modul","ife_deflshld1","ife_flame1","ife_
+clear-search 12 property PerkButtonIcons <490 chars hash c4de69b8f0727ca530e7c0310b384167> ["ife_benevolence1","ife_blstbcn1","ife_pf_dance1","ife_def_modul","ife_deflshld1","ife_flame1","ife_forcespark1","ife_f
 clear-search 13 engine NuiSetBind <player>, 1, PerkButtonIcons_RowCount, <json>
 clear-search 14 engine NuiSetBind <player>, 1, PerkButtonIcons_RowVisibility, <json>
 clear-search 15 engine NuiSetBind <player>, 1, PerkButtonIcons, <json>
-clear-search 16 property PerkButtonTexts <630 chars hash 34e7b02f6109ace86efbcc2b8a2283ce> ["Adrenal Stim (0/3)","Benevolence (0/3)","Blaster Beacon (0/3)","Dance (0/4)","Defensive Modules (0/5)","Deflector Shie
+clear-search 16 property PerkButtonTexts <634 chars hash 2c39cf3c2a69fc387e6da709392e9d96> ["Benevolence (0/3)","Blaster Beacon (0/3)","Dance (0/4)","Defensive Modules (0/5)","Deflector Shield (0/3)","Flamethrow
 clear-search 17 engine NuiSetBind <player>, 1, PerkButtonTexts_RowCount, <json>
 clear-search 18 engine NuiSetBind <player>, 1, PerkButtonTexts_RowVisibility, <json>
 clear-search 19 engine NuiSetBind <player>, 1, PerkButtonTexts, <json>
@@ -1805,15 +1986,15 @@ clear-search 20 property PerkDetailSelected [false,false,false,false,false,false
 clear-search 21 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
 clear-search 22 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
 clear-search 23 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-clear-search 24 property PerkRowReqIcons ["req_met","req_met","req_chartype_r","req_met","req_met","req_chartype_r","req_chartype_r","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met"]
+clear-search 24 property PerkRowReqIcons ["req_met","req_chartype_r","req_met","req_met","req_chartype_r","req_chartype_r","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met"]
 clear-search 25 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowCount, <json>
 clear-search 26 engine NuiSetBind <player>, 1, PerkRowReqIcons_RowVisibility, <json>
 clear-search 27 engine NuiSetBind <player>, 1, PerkRowReqIcons, <json>
-clear-search 28 property PerkRowReqTooltips <1039 chars hash 3479204cb875d9be7b3144d2d23df4b9> ["Can buy - 2 SP","Can buy - 2 SP","Locked - Character Type: Character Type: Standard. Only Standard character types may
+clear-search 28 property PerkRowReqTooltips <1039 chars hash d8e26dad7f0e544474edfd260a09036f> ["Can buy - 2 SP","Locked - Character Type: Character Type: Standard. Only Standard character types may access this perk
 clear-search 29 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowCount, <json>
 clear-search 30 engine NuiSetBind <player>, 1, PerkRowReqTooltips_RowVisibility, <json>
 clear-search 31 engine NuiSetBind <player>, 1, PerkRowReqTooltips, <json>
-clear-search 32 property PerkRowCosts ["2 SP","2 SP","3 SP","2 SP","1 SP","3 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP"]
+clear-search 32 property PerkRowCosts ["2 SP","3 SP","2 SP","1 SP","3 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP","2 SP"]
 clear-search 33 engine NuiSetBind <player>, 1, PerkRowCosts_RowCount, <json>
 clear-search 34 engine NuiSetBind <player>, 1, PerkRowCosts_RowVisibility, <json>
 clear-search 35 engine NuiSetBind <player>, 1, PerkRowCosts, <json>
@@ -1823,7 +2004,7 @@ clear-search 38 property PerkDetailSelected [true,false,false,false,false,false,
 clear-search 39 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
 clear-search 40 engine NuiSetBind <player>, 1, PerkDetailSelected_RowVisibility, <json>
 clear-search 41 engine NuiSetBind <player>, 1, PerkDetailSelected, <json>
-clear-search 42 property SelectedRequirements ["None"]
+clear-search 42 property SelectedRequirements ["Character Type: Force Sensitive"]
 clear-search 43 engine NuiSetBind <player>, 1, SelectedRequirements_RowCount, <json>
 clear-search 44 engine NuiSetBind <player>, 1, SelectedRequirements_RowVisibility, <json>
 clear-search 45 engine NuiSetBind <player>, 1, SelectedRequirements, <json>
@@ -1835,7 +2016,7 @@ clear-search 50 property SelectedRequirementIcons ["req_met"]
 clear-search 51 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowCount, <json>
 clear-search 52 engine NuiSetBind <player>, 1, SelectedRequirementIcons_RowVisibility, <json>
 clear-search 53 engine NuiSetBind <player>, 1, SelectedRequirementIcons, <json>
-clear-search 54 property SelectedRequirementTooltips ["This upgrade has no requirements."]
+clear-search 54 property SelectedRequirementTooltips ["Character Type: Character Type: Force Sensitive - met."]
 clear-search 55 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowCount, <json>
 clear-search 56 engine NuiSetBind <player>, 1, SelectedRequirementTooltips_RowVisibility, <json>
 clear-search 57 engine NuiSetBind <player>, 1, SelectedRequirementTooltips, <json>
@@ -1843,7 +2024,7 @@ clear-search 58 property BuyText "Buy Upgrade (2 SP)"
 clear-search 59 engine NuiSetBind <player>, 1, BuyText, <json>
 clear-search 60 property IsBuyEnabled true
 clear-search 61 engine NuiSetBind <player>, 1, IsBuyEnabled, <json>
-clear-search 62 property SelectedDetails "Adrenal Stim\n\n[First Aid - Combat Pharmacology]\nType: Active\nRecast Group: Adrenal Stim\n\nRank 0 / 3\n\nNext Upgrade (rank 1) - 2 SP:\nFP: 0\nSTM: 0\nRecast: 45s\nRestores 10% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.\n\n"
+clear-search 62 property SelectedDetails <520 chars hash 5f27e2d24107746627b34d569ab587f6> "Benevolence\n\n[Force - Control]\nType: Active\n\nLIGHT-ALIGNED FORCE POWER\nAt 0 Neutral: 0% magnitude, 0% hit chance.
 clear-search 63 engine NuiSetBind <player>, 1, SelectedDetails, <json>
 clear-search 64 property IsPerkSelected true
 clear-search 65 engine NuiSetBind <player>, 1, IsPerkSelected, <json>
@@ -1851,8 +2032,8 @@ clear-search 66 property IsRefundEnabled false
 clear-search 67 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
 clear-search 68 state carried
 clear-search 69 state worn Chest=farmer_outfit002
-clear-search 70 state feats 2,3,4,10,28,32,45,46,106,258,1089
-clear-search 71 state quickbar 0=10:1:;1=10:0:;2=4:28:
+clear-search 70 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+clear-search 71 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 category 1 step
 category 2 property SelectedPerkCategoryId 1
 category 3 engine NuiSetBind <player>, 1, SelectedPerkCategoryId, <json>
@@ -1922,8 +2103,8 @@ category 66 property IsRefundEnabled false
 category 67 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
 category 68 state carried
 category 69 state worn Chest=farmer_outfit002
-category 70 state feats 2,3,4,10,28,32,45,46,106,258,1089
-category 71 state quickbar 0=10:1:;1=10:0:;2=4:28:
+category 70 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+category 71 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 sort 1 step
 sort 2 property SelectedSortOrderId 1
 sort 3 engine NuiSetBind <player>, 1, SelectedSortOrderId, <json>
@@ -1993,8 +2174,8 @@ sort 66 property IsRefundEnabled false
 sort 67 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
 sort 68 state carried
 sort 69 state worn Chest=farmer_outfit002
-sort 70 state feats 2,3,4,10,28,32,45,46,106,258,1089
-sort 71 state quickbar 0=10:1:;1=10:0:;2=4:28:
+sort 70 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+sort 71 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 category-all 1 step
 category-all 2 property SelectedPerkCategoryId 0
 category-all 3 engine NuiSetBind <player>, 1, SelectedPerkCategoryId, <json>
@@ -2064,8 +2245,8 @@ category-all 66 property IsRefundEnabled false
 category-all 67 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
 category-all 68 state carried
 category-all 69 state worn Chest=farmer_outfit002
-category-all 70 state feats 2,3,4,10,28,32,45,46,106,258,1089
-category-all 71 state quickbar 0=10:1:;1=10:0:;2=4:28:
+category-all 70 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+category-all 71 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 beast-mode 1 step
 beast-mode 2 property IsInMyPerksMode false
 beast-mode 3 engine NuiSetBind <player>, 1, IsInMyPerksMode, <json>
@@ -2161,7 +2342,7 @@ beast-mode 92 property TotalSP "Total SP: 20 / 50"
 beast-mode 93 engine NuiSetBind <player>, 1, TotalSP, <json>
 beast-mode 94 property WindowTitle "Beast Perks - 8 SP available"
 beast-mode 95 engine NuiSetBind <player>, 1, WindowTitle, <json>
-beast-mode 96 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 2]"
+beast-mode 96 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 5]"
 beast-mode 97 engine NuiSetBind <player>, 1, ResetNextAvailable, <json>
 beast-mode 98 property IsRefundEnabled false
 beast-mode 99 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
@@ -2231,8 +2412,8 @@ beast-mode 162 property IsRefundEnabled false
 beast-mode 163 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
 beast-mode 164 state carried
 beast-mode 165 state worn Chest=farmer_outfit002
-beast-mode 166 state feats 2,3,4,10,28,32,45,46,106,258,1089
-beast-mode 167 state quickbar 0=10:1:;1=10:0:;2=4:28:
+beast-mode 166 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+beast-mode 167 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 beast-select 1 step
 beast-select 2 property PerkDetailSelected [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
 beast-select 3 engine NuiSetBind <player>, 1, PerkDetailSelected_RowCount, <json>
@@ -2270,8 +2451,8 @@ beast-select 34 property IsRefundEnabled false
 beast-select 35 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
 beast-select 36 state carried
 beast-select 37 state worn Chest=farmer_outfit002
-beast-select 38 state feats 2,3,4,10,28,32,45,46,106,258,1089
-beast-select 39 state quickbar 0=10:1:;1=10:0:;2=4:28:
+beast-select 38 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+beast-select 39 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 beast-buy 1 step
 beast-buy 2 property ModalPromptText "This upgrade will cost 3 SP. Are you sure you want to buy it?"
 beast-buy 3 engine NuiSetBind <player>, 1, ModalPromptText, <json>
@@ -2303,7 +2484,7 @@ beast-buy 28 property ForceAffinityHeading ""
 beast-buy 29 engine NuiSetBind <player>, 1, ForceAffinityHeading, <json>
 beast-buy 30 property IsForceAffinityVisible false
 beast-buy 31 engine NuiSetBind <player>, 1, IsForceAffinityVisible, <json>
-beast-buy 32 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 2]"
+beast-buy 32 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 5]"
 beast-buy 33 engine NuiSetBind <player>, 1, ResetNextAvailable, <json>
 beast-buy 34 property PerkButtonIcons <501 chars hash 38422b92ae2396b3051be3eb9895856a> ["ife_wardinghowl1","ife_venom_hide","ife_untchnstnct1","ife_unbrkbst1","ife_sniff","ife_rendingclaw1","ife_ramparthide1
 beast-buy 35 engine NuiSetBind <player>, 1, PerkButtonIcons_RowCount, <json>
@@ -2359,8 +2540,8 @@ beast-buy 84 property IsRefundEnabled false
 beast-buy 85 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
 beast-buy 86 state carried
 beast-buy 87 state worn Chest=farmer_outfit002
-beast-buy 88 state feats 2,3,4,10,28,32,45,46,106,258,1089
-beast-buy 89 state quickbar 0=10:1:;1=10:0:;2=4:28:
+beast-buy 88 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+beast-buy 89 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 my-perks 1 step
 my-perks 2 property IsInMyPerksMode true
 my-perks 3 engine NuiSetBind <player>, 1, IsInMyPerksMode, <json>
@@ -2450,13 +2631,13 @@ my-perks 86 property ForceAffinityHeading "FORCE AFFINITY: 0 Neutral"
 my-perks 87 engine NuiSetBind <player>, 1, ForceAffinityHeading, <json>
 my-perks 88 property ForceAffinityColor {"a":255,"b":93,"g":181,"r":221}
 my-perks 89 engine NuiSetBind <player>, 1, ForceAffinityColor, <json>
-my-perks 90 property AvailableSP "Available SP: 120"
+my-perks 90 property AvailableSP "Available SP: 111"
 my-perks 91 engine NuiSetBind <player>, 1, AvailableSP, <json>
 my-perks 92 property TotalSP "Total SP: 410 / 410"
 my-perks 93 engine NuiSetBind <player>, 1, TotalSP, <json>
-my-perks 94 property WindowTitle "Perks - 120 SP available"
+my-perks 94 property WindowTitle "Perks - 111 SP available"
 my-perks 95 engine NuiSetBind <player>, 1, WindowTitle, <json>
-my-perks 96 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 2]"
+my-perks 96 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 5]"
 my-perks 97 engine NuiSetBind <player>, 1, ResetNextAvailable, <json>
 my-perks 98 property IsRefundEnabled false
 my-perks 99 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
@@ -2526,8 +2707,8 @@ my-perks 162 property IsRefundEnabled false
 my-perks 163 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
 my-perks 164 state carried
 my-perks 165 state worn Chest=farmer_outfit002
-my-perks 166 state feats 2,3,4,10,28,32,45,46,106,258,1089
-my-perks 167 state quickbar 0=10:1:;1=10:0:;2=4:28:
+my-perks 166 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+my-perks 167 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 refresh-skill-xp 1 step
 refresh-skill-xp 2 property IsForceAffinityVisible true
 refresh-skill-xp 3 engine NuiSetBind <player>, 1, IsForceAffinityVisible, <json>
@@ -2535,13 +2716,13 @@ refresh-skill-xp 4 property ForceAffinityHeading "FORCE AFFINITY: 0 Neutral"
 refresh-skill-xp 5 engine NuiSetBind <player>, 1, ForceAffinityHeading, <json>
 refresh-skill-xp 6 property ForceAffinityColor {"a":255,"b":93,"g":181,"r":221}
 refresh-skill-xp 7 engine NuiSetBind <player>, 1, ForceAffinityColor, <json>
-refresh-skill-xp 8 property AvailableSP "Available SP: 120"
+refresh-skill-xp 8 property AvailableSP "Available SP: 111"
 refresh-skill-xp 9 engine NuiSetBind <player>, 1, AvailableSP, <json>
 refresh-skill-xp 10 property TotalSP "Total SP: 410 / 410"
 refresh-skill-xp 11 engine NuiSetBind <player>, 1, TotalSP, <json>
-refresh-skill-xp 12 property WindowTitle "Perks - 120 SP available"
+refresh-skill-xp 12 property WindowTitle "Perks - 111 SP available"
 refresh-skill-xp 13 engine NuiSetBind <player>, 1, WindowTitle, <json>
-refresh-skill-xp 14 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 2]"
+refresh-skill-xp 14 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 5]"
 refresh-skill-xp 15 engine NuiSetBind <player>, 1, ResetNextAvailable, <json>
 refresh-skill-xp 16 property IsRefundEnabled false
 refresh-skill-xp 17 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
@@ -2549,8 +2730,8 @@ refresh-skill-xp 18 property HasBeast true
 refresh-skill-xp 19 engine NuiSetBind <player>, 1, HasBeast, <json>
 refresh-skill-xp 20 state carried
 refresh-skill-xp 21 state worn Chest=farmer_outfit002
-refresh-skill-xp 22 state feats 2,3,4,10,28,32,45,46,106,258,1089
-refresh-skill-xp 23 state quickbar 0=10:1:;1=10:0:;2=4:28:
+refresh-skill-xp 22 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+refresh-skill-xp 23 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 refresh-reset 1 step
 refresh-reset 2 property IsForceAffinityVisible true
 refresh-reset 3 engine NuiSetBind <player>, 1, IsForceAffinityVisible, <json>
@@ -2558,13 +2739,13 @@ refresh-reset 4 property ForceAffinityHeading "FORCE AFFINITY: 0 Neutral"
 refresh-reset 5 engine NuiSetBind <player>, 1, ForceAffinityHeading, <json>
 refresh-reset 6 property ForceAffinityColor {"a":255,"b":93,"g":181,"r":221}
 refresh-reset 7 engine NuiSetBind <player>, 1, ForceAffinityColor, <json>
-refresh-reset 8 property AvailableSP "Available SP: 120"
+refresh-reset 8 property AvailableSP "Available SP: 111"
 refresh-reset 9 engine NuiSetBind <player>, 1, AvailableSP, <json>
 refresh-reset 10 property TotalSP "Total SP: 410 / 410"
 refresh-reset 11 engine NuiSetBind <player>, 1, TotalSP, <json>
-refresh-reset 12 property WindowTitle "Perks - 120 SP available"
+refresh-reset 12 property WindowTitle "Perks - 111 SP available"
 refresh-reset 13 engine NuiSetBind <player>, 1, WindowTitle, <json>
-refresh-reset 14 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 2]"
+refresh-reset 14 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 5]"
 refresh-reset 15 engine NuiSetBind <player>, 1, ResetNextAvailable, <json>
 refresh-reset 16 property IsRefundEnabled false
 refresh-reset 17 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
@@ -2572,8 +2753,8 @@ refresh-reset 18 property HasBeast true
 refresh-reset 19 engine NuiSetBind <player>, 1, HasBeast, <json>
 refresh-reset 20 state carried
 refresh-reset 21 state worn Chest=farmer_outfit002
-refresh-reset 22 state feats 2,3,4,10,28,32,45,46,106,258,1089
-refresh-reset 23 state quickbar 0=10:1:;1=10:0:;2=4:28:
+refresh-reset 22 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+refresh-reset 23 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 refresh-cooldown 1 step
 refresh-cooldown 2 property IsForceAffinityVisible true
 refresh-cooldown 3 engine NuiSetBind <player>, 1, IsForceAffinityVisible, <json>
@@ -2581,13 +2762,13 @@ refresh-cooldown 4 property ForceAffinityHeading "FORCE AFFINITY: 0 Neutral"
 refresh-cooldown 5 engine NuiSetBind <player>, 1, ForceAffinityHeading, <json>
 refresh-cooldown 6 property ForceAffinityColor {"a":255,"b":93,"g":181,"r":221}
 refresh-cooldown 7 engine NuiSetBind <player>, 1, ForceAffinityColor, <json>
-refresh-cooldown 8 property AvailableSP "Available SP: 120"
+refresh-cooldown 8 property AvailableSP "Available SP: 111"
 refresh-cooldown 9 engine NuiSetBind <player>, 1, AvailableSP, <json>
 refresh-cooldown 10 property TotalSP "Total SP: 410 / 410"
 refresh-cooldown 11 engine NuiSetBind <player>, 1, TotalSP, <json>
-refresh-cooldown 12 property WindowTitle "Perks - 120 SP available"
+refresh-cooldown 12 property WindowTitle "Perks - 111 SP available"
 refresh-cooldown 13 engine NuiSetBind <player>, 1, WindowTitle, <json>
-refresh-cooldown 14 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 2]"
+refresh-cooldown 14 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 5]"
 refresh-cooldown 15 engine NuiSetBind <player>, 1, ResetNextAvailable, <json>
 refresh-cooldown 16 property IsRefundEnabled false
 refresh-cooldown 17 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
@@ -2629,8 +2810,8 @@ refresh-cooldown 52 property IsRefundEnabled false
 refresh-cooldown 53 engine NuiSetBind <player>, 1, IsRefundEnabled, <json>
 refresh-cooldown 54 state carried
 refresh-cooldown 55 state worn Chest=farmer_outfit002
-refresh-cooldown 56 state feats 2,3,4,10,28,32,45,46,106,258,1089
-refresh-cooldown 57 state quickbar 0=10:1:;1=10:0:;2=4:28:
+refresh-cooldown 56 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+refresh-cooldown 57 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
 close-and-reopen 1 step
 close-and-reopen 2 engine NuiDestroy <player>, 1
 close-and-reopen 3 engine NuiCreate <player>, <json>, GUI_WINDOW_Perks
@@ -2688,7 +2869,7 @@ close-and-reopen 54 property HasBeast true
 close-and-reopen 55 engine NuiSetBind <player>, 2, HasBeast, <json>
 close-and-reopen 56 property Categories <1483 chars hash e3dd3832f7d2b7653e7f67ba2723e886> [["<All Categories>",0],["Agriculture",13],["General",2],["Beast Mastery - Incubation",17],["Beast Mastery - Training",1
 close-and-reopen 57 engine NuiSetBind <player>, 2, Categories, <json>
-close-and-reopen 58 property AvailableSP "Available SP: 120"
+close-and-reopen 58 property AvailableSP "Available SP: 111"
 close-and-reopen 59 engine NuiSetBind <player>, 2, AvailableSP, <json>
 close-and-reopen 60 property TotalSP "Total SP: 410 / 410"
 close-and-reopen 61 engine NuiSetBind <player>, 2, TotalSP, <json>
@@ -2698,7 +2879,7 @@ close-and-reopen 64 property ForceAffinityHeading "FORCE AFFINITY: 0 Neutral"
 close-and-reopen 65 engine NuiSetBind <player>, 2, ForceAffinityHeading, <json>
 close-and-reopen 66 property IsForceAffinityVisible true
 close-and-reopen 67 engine NuiSetBind <player>, 2, IsForceAffinityVisible, <json>
-close-and-reopen 68 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 2]"
+close-and-reopen 68 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 5]"
 close-and-reopen 69 engine NuiSetBind <player>, 2, ResetNextAvailable, <json>
 close-and-reopen 70 property PerkButtonIcons <498 chars hash ddd7075125ed8a217fa6780b5719780f> ["ife_wristrocket1","ife_worldbrkr1","ife_whirlguard1","ife_weaponjam1","ife_weakres1","ife_weakpoints","ife_watchpres1"
 close-and-reopen 71 engine NuiSetBind <player>, 2, PerkButtonIcons_RowCount, <json>
@@ -2796,13 +2977,13 @@ close-and-reopen 162 property ForceAffinityHeading "FORCE AFFINITY: 0 Neutral"
 close-and-reopen 163 engine NuiSetBind <player>, 2, ForceAffinityHeading, <json>
 close-and-reopen 164 property ForceAffinityColor {"a":255,"b":93,"g":181,"r":221}
 close-and-reopen 165 engine NuiSetBind <player>, 2, ForceAffinityColor, <json>
-close-and-reopen 166 property AvailableSP "Available SP: 120"
+close-and-reopen 166 property AvailableSP "Available SP: 111"
 close-and-reopen 167 engine NuiSetBind <player>, 2, AvailableSP, <json>
 close-and-reopen 168 property TotalSP "Total SP: 410 / 410"
 close-and-reopen 169 engine NuiSetBind <player>, 2, TotalSP, <json>
-close-and-reopen 170 property WindowTitle "Perks - 120 SP available"
+close-and-reopen 170 property WindowTitle "Perks - 111 SP available"
 close-and-reopen 171 engine NuiSetBind <player>, 2, WindowTitle, <json>
-close-and-reopen 172 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 2]"
+close-and-reopen 172 property ResetNextAvailable "Reset Available: 0 days, 1 hour, 0 minutes, 0 seconds [# Available: 5]"
 close-and-reopen 173 engine NuiSetBind <player>, 2, ResetNextAvailable, <json>
 close-and-reopen 174 property IsRefundEnabled false
 close-and-reopen 175 engine NuiSetBind <player>, 2, IsRefundEnabled, <json>
@@ -2810,15 +2991,15 @@ close-and-reopen 176 property HasBeast true
 close-and-reopen 177 engine NuiSetBind <player>, 2, HasBeast, <json>
 close-and-reopen 178 property IsPerkSelected false
 close-and-reopen 179 engine NuiSetBind <player>, 2, IsPerkSelected, <json>
-close-and-reopen 180 property PerkButtonColors <973 chars hash 08a9806d0d331941e5d9be11ca026ea4> [{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":169,"g":169,"r":169},{"a":255,"b":90,"g":2
+close-and-reopen 180 property PerkButtonColors <973 chars hash 5d5387a3a11538b1168d4cd1dc6d7b64> [{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":169,"g":169,"r":169},{"a":255,"b":90,"g":200,"r":60},{"a":255,"b":90,"g":2
 close-and-reopen 181 engine NuiSetBind <player>, 2, PerkButtonColors_RowCount, <json>
 close-and-reopen 182 engine NuiSetBind <player>, 2, PerkButtonColors_RowVisibility, <json>
 close-and-reopen 183 engine NuiSetBind <player>, 2, PerkButtonColors, <json>
-close-and-reopen 184 property PerkButtonIcons <492 chars hash 0dde09090fb79455df1c55851e4d23d5> ["ife_adrenalstim1","ife_benevolence1","ife_blstbcn1","ife_pf_dance1","ife_def_modul","ife_deflshld1","ife_flame1","ife_
+close-and-reopen 184 property PerkButtonIcons <490 chars hash c4de69b8f0727ca530e7c0310b384167> ["ife_benevolence1","ife_blstbcn1","ife_pf_dance1","ife_def_modul","ife_deflshld1","ife_flame1","ife_forcespark1","ife_f
 close-and-reopen 185 engine NuiSetBind <player>, 2, PerkButtonIcons_RowCount, <json>
 close-and-reopen 186 engine NuiSetBind <player>, 2, PerkButtonIcons_RowVisibility, <json>
 close-and-reopen 187 engine NuiSetBind <player>, 2, PerkButtonIcons, <json>
-close-and-reopen 188 property PerkButtonTexts <630 chars hash 34e7b02f6109ace86efbcc2b8a2283ce> ["Adrenal Stim (0/3)","Benevolence (0/3)","Blaster Beacon (0/3)","Dance (0/4)","Defensive Modules (0/5)","Deflector Shie
+close-and-reopen 188 property PerkButtonTexts <634 chars hash 2c39cf3c2a69fc387e6da709392e9d96> ["Benevolence (0/3)","Blaster Beacon (0/3)","Dance (0/4)","Defensive Modules (0/5)","Deflector Shield (0/3)","Flamethrow
 close-and-reopen 189 engine NuiSetBind <player>, 2, PerkButtonTexts_RowCount, <json>
 close-and-reopen 190 engine NuiSetBind <player>, 2, PerkButtonTexts_RowVisibility, <json>
 close-and-reopen 191 engine NuiSetBind <player>, 2, PerkButtonTexts, <json>
@@ -2826,15 +3007,15 @@ close-and-reopen 192 property PerkDetailSelected [false,false,false,false,false,
 close-and-reopen 193 engine NuiSetBind <player>, 2, PerkDetailSelected_RowCount, <json>
 close-and-reopen 194 engine NuiSetBind <player>, 2, PerkDetailSelected_RowVisibility, <json>
 close-and-reopen 195 engine NuiSetBind <player>, 2, PerkDetailSelected, <json>
-close-and-reopen 196 property PerkRowReqIcons ["req_met","req_met","req_chartype_r","req_met","req_met","req_chartype_r","req_chartype_r","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met"]
+close-and-reopen 196 property PerkRowReqIcons ["req_met","req_chartype_r","req_met","req_met","req_chartype_r","req_chartype_r","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met","req_chartype_r","req_met","req_met","req_met","req_met","req_met","req_met","req_met"]
 close-and-reopen 197 engine NuiSetBind <player>, 2, PerkRowReqIcons_RowCount, <json>
 close-and-reopen 198 engine NuiSetBind <player>, 2, PerkRowReqIcons_RowVisibility, <json>
 close-and-reopen 199 engine NuiSetBind <player>, 2, PerkRowReqIcons, <json>
-close-and-reopen 200 property PerkRowReqTooltips <1039 chars hash 3479204cb875d9be7b3144d2d23df4b9> ["Can buy - 2 SP","Can buy - 2 SP","Locked - Character Type: Character Type: Standard. Only Standard character types may
+close-and-reopen 200 property PerkRowReqTooltips <1039 chars hash d8e26dad7f0e544474edfd260a09036f> ["Can buy - 2 SP","Locked - Character Type: Character Type: Standard. Only Standard character types may access this perk
 close-and-reopen 201 engine NuiSetBind <player>, 2, PerkRowReqTooltips_RowCount, <json>
 close-and-reopen 202 engine NuiSetBind <player>, 2, PerkRowReqTooltips_RowVisibility, <json>
 close-and-reopen 203 engine NuiSetBind <player>, 2, PerkRowReqTooltips, <json>
-close-and-reopen 204 property PerkRowCosts ["2 SP","2 SP","3 SP","2 SP","1 SP","3 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP"]
+close-and-reopen 204 property PerkRowCosts ["2 SP","3 SP","2 SP","1 SP","3 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","1 SP","1 SP","2 SP","2 SP","2 SP","1 SP","2 SP","1 SP","2 SP","2 SP","2 SP","2 SP","2 SP","3 SP","2 SP","2 SP","2 SP","2 SP","2 SP"]
 close-and-reopen 205 engine NuiSetBind <player>, 2, PerkRowCosts_RowCount, <json>
 close-and-reopen 206 engine NuiSetBind <player>, 2, PerkRowCosts_RowVisibility, <json>
 close-and-reopen 207 engine NuiSetBind <player>, 2, PerkRowCosts, <json>
@@ -2844,7 +3025,7 @@ close-and-reopen 210 property PerkDetailSelected [true,false,false,false,false,f
 close-and-reopen 211 engine NuiSetBind <player>, 2, PerkDetailSelected_RowCount, <json>
 close-and-reopen 212 engine NuiSetBind <player>, 2, PerkDetailSelected_RowVisibility, <json>
 close-and-reopen 213 engine NuiSetBind <player>, 2, PerkDetailSelected, <json>
-close-and-reopen 214 property SelectedRequirements ["None"]
+close-and-reopen 214 property SelectedRequirements ["Character Type: Force Sensitive"]
 close-and-reopen 215 engine NuiSetBind <player>, 2, SelectedRequirements_RowCount, <json>
 close-and-reopen 216 engine NuiSetBind <player>, 2, SelectedRequirements_RowVisibility, <json>
 close-and-reopen 217 engine NuiSetBind <player>, 2, SelectedRequirements, <json>
@@ -2856,7 +3037,7 @@ close-and-reopen 222 property SelectedRequirementIcons ["req_met"]
 close-and-reopen 223 engine NuiSetBind <player>, 2, SelectedRequirementIcons_RowCount, <json>
 close-and-reopen 224 engine NuiSetBind <player>, 2, SelectedRequirementIcons_RowVisibility, <json>
 close-and-reopen 225 engine NuiSetBind <player>, 2, SelectedRequirementIcons, <json>
-close-and-reopen 226 property SelectedRequirementTooltips ["This upgrade has no requirements."]
+close-and-reopen 226 property SelectedRequirementTooltips ["Character Type: Character Type: Force Sensitive - met."]
 close-and-reopen 227 engine NuiSetBind <player>, 2, SelectedRequirementTooltips_RowCount, <json>
 close-and-reopen 228 engine NuiSetBind <player>, 2, SelectedRequirementTooltips_RowVisibility, <json>
 close-and-reopen 229 engine NuiSetBind <player>, 2, SelectedRequirementTooltips, <json>
@@ -2864,7 +3045,7 @@ close-and-reopen 230 property BuyText "Buy Upgrade (2 SP)"
 close-and-reopen 231 engine NuiSetBind <player>, 2, BuyText, <json>
 close-and-reopen 232 property IsBuyEnabled true
 close-and-reopen 233 engine NuiSetBind <player>, 2, IsBuyEnabled, <json>
-close-and-reopen 234 property SelectedDetails "Adrenal Stim\n\n[First Aid - Combat Pharmacology]\nType: Active\nRecast Group: Adrenal Stim\n\nRank 0 / 3\n\nNext Upgrade (rank 1) - 2 SP:\nFP: 0\nSTM: 0\nRecast: 45s\nRestores 10% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.\n\n"
+close-and-reopen 234 property SelectedDetails <520 chars hash 5f27e2d24107746627b34d569ab587f6> "Benevolence\n\n[Force - Control]\nType: Active\n\nLIGHT-ALIGNED FORCE POWER\nAt 0 Neutral: 0% magnitude, 0% hit chance.
 close-and-reopen 235 engine NuiSetBind <player>, 2, SelectedDetails, <json>
 close-and-reopen 236 property IsPerkSelected true
 close-and-reopen 237 engine NuiSetBind <player>, 2, IsPerkSelected, <json>
@@ -2880,9 +3061,9 @@ close-and-reopen 246 engine NuiSetBind <player>, 2, SelectedPage, <json>
 close-and-reopen 247 engine NuiSetBindWatch <player>, 2, SelectedPage, True
 close-and-reopen 248 state carried
 close-and-reopen 249 state worn Chest=farmer_outfit002
-close-and-reopen 250 state feats 2,3,4,10,28,32,45,46,106,258,1089
-close-and-reopen 251 state quickbar 0=10:1:;1=10:0:;2=4:28:
-close-and-reopen 252 state record WindowGeometries.Perks.Height 634.0
+close-and-reopen 250 state feats 2,3,4,10,28,32,45,46,106,258,1089,2408
+close-and-reopen 251 state quickbar 0=10:1:;1=10:0:;2=4:28:;3=4:2408:
+close-and-reopen 252 state record WindowGeometries.Perks.Height 636.0
 close-and-reopen 253 state record WindowGeometries.Perks.Width 760.0
 close-and-reopen 254 state record WindowGeometries.Perks.X 0.0
 close-and-reopen 255 state record WindowGeometries.Perks.Y 0.0

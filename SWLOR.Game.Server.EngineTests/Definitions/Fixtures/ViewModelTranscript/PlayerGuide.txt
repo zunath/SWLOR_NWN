@@ -1,3 +1,4 @@
+# Captured on the full engine hak set (scripts/ci/fetch-engine-test-haks.sh checkout, prepare-engine-test-home.sh staging, SWLOR.CLI --hak), host entry; compare only on that set, not on the debugserver hak set.
 open 1 step
 open 2 engine NuiCreate <player>, <json>, GUI_WINDOW_PlayerGuide
 open 3 engine NuiSetBind <player>, 1, Geometry, <json>

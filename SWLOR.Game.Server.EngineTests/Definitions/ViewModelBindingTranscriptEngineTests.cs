@@ -110,10 +110,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 CloseWindows(fixture);
             }
 
-            Compare(ctx, name, Normalize(transcript.Text));
+            Compare(ctx, name, CaptureHeader + transcript.Text);
         }
 
-        private static string Normalize(string text) => text;
+        /// <summary>
+        /// The first line of every fixture. The windows read hak data (robe and forearm models, 2DA rows), so the fixtures are captured, and
+        /// later compared, on the full engine hak set the P5-16e PR 3 recipe builds; the debugserver hak set lacks models and differs.
+        /// </summary>
+        private const string CaptureHeader =
+            "# Captured on the full engine hak set (scripts/ci/fetch-engine-test-haks.sh checkout, prepare-engine-test-home.sh staging, SWLOR.CLI --hak), host entry; compare only on that set, not on the debugserver hak set.\n";
 
         // ------------------------------------------------------------------ player guide
 
@@ -207,15 +212,27 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         Buy();
                 });
                 t.Step("select-maxed-perk", () => Select(0));
-                var activeIndex = IndexWhere(perk =>
+                // A perk whose first rank grants an active ability feat that goes to the quick bar (PerkHotBarService in the split).
+                var hotBarIndex = IndexWhere(perk =>
                 {
                     var detail = Perk.GetPerkDetails(perk);
-                    return detail.IsActive && detail.PerkLevels.TryGetValue(1, out var level) && level.GrantedFeats.Count > 0 &&
-                           level.Requirements.Count == 0;
+                    return perk != PerkType.AdrenalStim && detail.IsActive && detail.PerkLevels.TryGetValue(1, out var level) &&
+                           level.Requirements.Count == 0 &&
+                           level.GrantedFeats.Any(feat => AbilityCatalog.IsFeatRegistered(feat) &&
+                                                          AbilityCatalog.GetAbilityDetail(feat).ImpactAction != null);
                 });
-                t.Step("select-hot-bar-perk", () => Select(activeIndex < 0 ? 1 : activeIndex));
-                t.Step("buy-hot-bar-perk", Buy);
-                t.Step("select-hot-bar-perk-again", () => Select(activeIndex < 0 ? 1 : activeIndex));
+                t.Step("hot-bar-perk-found", () => run.Context.Assert(hotBarIndex >= 0, "A perk that grants a quick bar feat is in the list."));
+                t.Step("hot-bar-perk-select", () => Select(hotBarIndex));
+                t.Step("hot-bar-perk-buy", Buy);
+                t.Step("hot-bar-slot-assigned", () => { });
+                t.Step("hot-bar-perk-select-owned", () => Select(hotBarIndex));
+                t.Step("give-refund-tokens-for-hot-bar", () => Currency.GiveCurrency(run.Player, CurrencyType.PerkRefundToken, 3));
+                t.Step("hot-bar-perk-refund", () =>
+                {
+                    perks.OnClickRefund()();
+                    perks.OnModalConfirmClick()();
+                });
+                t.Step("hot-bar-slot-cleared", () => { });
                 t.Step("select-refundable-perk", () => Select(0));
                 t.Step("give-refund-tokens", () => Currency.GiveCurrency(run.Player, CurrencyType.PerkRefundToken, 3));
                 t.Step("refund", () =>

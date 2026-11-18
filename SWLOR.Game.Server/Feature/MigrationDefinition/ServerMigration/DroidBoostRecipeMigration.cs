@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CraftService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
@@ -67,17 +66,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             { "DroidThrowingBoost2", 4822 },
         };
 
-        public static bool ExpandPlayerRecipeDictionaries(JObject player)
-        {
-            if (player == null)
-                return false;
-
-            var migrated = ExpandRecipeDictionaryKeys(player[nameof(Player.UnlockedRecipes)] as JObject);
-            migrated |= ExpandRecipeDictionaryKeys(player[nameof(Player.CraftedRecipes)] as JObject);
-
-            return migrated;
-        }
-
         public static bool TryGetReplacementRecipeNames(JToken recipe, out string[] newRecipeNames)
         {
             newRecipeNames = null;
@@ -131,31 +119,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             return GetReplacementRecipeIds(recipeNames)
                 .Select(recipeId => (RecipeType)recipeId)
                 .Distinct();
-        }
-
-        private static bool ExpandRecipeDictionaryKeys(JObject dictionary)
-        {
-            if (dictionary == null)
-                return false;
-
-            var migrated = false;
-
-            foreach (var property in dictionary.Properties().ToList())
-            {
-                if (!TryGetReplacementRecipeNames(property.Name, out var newRecipeNames))
-                    continue;
-
-                foreach (var newRecipeName in newRecipeNames)
-                {
-                    if (dictionary[newRecipeName] == null)
-                        dictionary[newRecipeName] = property.Value.DeepClone();
-                }
-
-                property.Remove();
-                migrated = true;
-            }
-
-            return migrated;
         }
     }
 }

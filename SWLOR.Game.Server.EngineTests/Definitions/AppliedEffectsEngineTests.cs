@@ -122,9 +122,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var steps = new (string Name, Func<bool> Run)[]
             {
                 ("an in-place refresh", () => StatusEffectApplication.ApplyStatusEffect(caster, target, typeof(HobbleStatusEffect), 6f)),
-                ("a restart", () => StatusEffect.RestartStatusEffectDuration(target, typeof(HobbleStatusEffect), caster, 6f)),
-                ("an extension", () => StatusEffect.ExtendStatusEffectDuration(target, typeof(HobbleStatusEffect), caster, 1f)),
-                ("a refresh", () => StatusEffect.RefreshStatusEffectDuration(target, typeof(HobbleStatusEffect), caster, 6f)),
+                ("a restart", () => StatusEffectDuration.RestartStatusEffectDuration(target, typeof(HobbleStatusEffect), caster, 6f)),
+                ("an extension", () => StatusEffectDuration.ExtendStatusEffectDuration(target, typeof(HobbleStatusEffect), caster, 1f)),
+                ("a refresh", () => StatusEffectDuration.RefreshStatusEffectDuration(target, typeof(HobbleStatusEffect), caster, 6f)),
             };
             foreach (var (name, run) in steps)
             {

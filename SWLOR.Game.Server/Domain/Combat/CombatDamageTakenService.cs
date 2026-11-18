@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatRatingService _combatRating;
         private readonly IStatusEffectService _statusEffect;
         private readonly IStatusEffectApplicationService _statusEffectApplication;
+        private readonly IStatusEffectCombatEventService _statusEffectCombatEvents;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly IPvpCombatService _pvpCombat;
@@ -60,6 +61,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatRatingService combatRating,
             IStatusEffectService statusEffect,
             IStatusEffectApplicationService statusEffectApplication,
+            IStatusEffectCombatEventService statusEffectCombatEvents,
             ITemporaryStatModifierService temporaryStatModifier,
             ICombatRecorderService combatRecorder,
             IPvpCombatService pvpCombat,
@@ -80,6 +82,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _combatRating = combatRating;
             _statusEffect = statusEffect;
             _statusEffectApplication = statusEffectApplication;
+            _statusEffectCombatEvents = statusEffectCombatEvents;
             _temporaryStatModifier = temporaryStatModifier;
             _combatRecorder = combatRecorder;
             _pvpCombat = pvpCombat;
@@ -1002,7 +1005,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             var adjustedDamage = Math.Max(0, damage - preventedDamage);
 
             TrackGuardedHit(defender);
-            _statusEffect.OnGuardedHit(defender, attacker, preventedDamage);
+            _statusEffectCombatEvents.OnGuardedHit(defender, attacker, preventedDamage);
             ApplyGuardedHitRecovery(defender);
             ApplyGuardedHitRetaliation(attacker, defender, damage);
             ApplyGuardedHitEnmity(attacker, defender, damage);

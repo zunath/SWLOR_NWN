@@ -198,7 +198,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         triggeredDamage.Should().Contain(
             "ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered)");
         triggeredDamage.Should().Contain(
-            "_statusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered)");
+            "_statusEffectCombatEvents.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered)");
         triggeredDamage.Should().NotContain("ApplyDamageReflectionEffects");
 
         statusBase.Should().Contain("if (deliveryType != CombatDamageDeliveryType.Direct)",

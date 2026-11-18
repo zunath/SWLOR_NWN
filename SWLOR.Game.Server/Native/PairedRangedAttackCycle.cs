@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Native
             if (!unlimited)
                 attacks = Math.Min(attacks, GetIsObjectValid(ammunition) ? GetItemStackSize(ammunition) : 0);
             if (attacks == 0) return;
-            StatusEffect.BeginNativeAttackSwing(actor);
+            StatusEffectCombatEvent.BeginNativeAttackSwing(actor);
             try
             {
                 var mainAttacks = (attacks + 1) / 2;
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Native
             catch
             {
                 PendingHands.Remove(actor);
-                StatusEffect.EndNativeAttackSwing(actor);
+                StatusEffectCombatEvent.EndNativeAttackSwing(actor);
                 throw;
             }
         }
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Native
 
         public static void Cancel(uint actor)
         {
-            if (PendingHands.Remove(actor)) StatusEffect.EndNativeAttackSwing(actor);
+            if (PendingHands.Remove(actor)) StatusEffectCombatEvent.EndNativeAttackSwing(actor);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Native
         /// </summary>
         public static void ForgetDestroyed(uint actor)
         {
-            if (PendingHands.Remove(actor)) StatusEffect.ForgetDestroyedNativeAttackSwing(actor);
+            if (PendingHands.Remove(actor)) StatusEffectCombatEvent.ForgetDestroyedNativeAttackSwing(actor);
         }
 
         private static void Finish(uint actor, Pending pending)
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Native
             finally
             {
                 PendingHands.Remove(actor);
-                StatusEffect.EndNativeAttackSwing(actor);
+                StatusEffectCombatEvent.EndNativeAttackSwing(actor);
             }
         }
 

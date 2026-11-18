@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             // fresh application restarts that cadence, so re-applying on each pulse would leave it
             // never ticking at all. Refresh the running instance instead: that extends its duration
             // without resetting its clock.
-            if (StatusEffect.RefreshStatusEffectDuration(
+            if (StatusEffectDuration.RefreshStatusEffectDuration(
                     target, typeof(SereneFocusStatusEffect), activator, SereneFocusDurationSeconds))
             {
                 return;

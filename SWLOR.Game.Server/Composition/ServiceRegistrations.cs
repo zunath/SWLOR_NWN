@@ -53,6 +53,8 @@ namespace SWLOR.Game.Server.Composition
             // Content: the factory of made content, and the content singletons (written by tools/Refactor/SWLOR.ContentInjection).
             services.AddSingleton<IContentFactory, ContentFactory>();
             ContentRegistrations.Register(services);
+            // The weapon appearance definitions the appearance editor reads, built once with the container (P5-16e).
+            services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.IWeaponAppearanceCatalog, SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponAppearanceCatalog>();
 
             // Core
             // The Redis connection DBService takes; a host that keeps it across hot reloads registers its own (P4-10).
@@ -146,6 +148,10 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IStatusEffectSessionService, StatusEffectSessionService>();
             // Part 3 of the status effect split (P5-5f): applying a status effect.
             services.AddSingleton<IStatusEffectApplicationService, StatusEffectApplicationService>();
+            // Part 4 of the status effect split (P5-5g): the timing, refresh, restart and extension of a status effect.
+            services.AddSingleton<IStatusEffectDurationService, StatusEffectDurationService>();
+            // Part 6 of the status effect split (P5-5g): the damage and attack notices and the native attack swing.
+            services.AddSingleton<IStatusEffectCombatEventService, StatusEffectCombatEventService>();
             services.AddSingleton<ITemporaryStatModifierService, TemporaryStatModifierService>();
             services.AddSingleton<ITintMapStateService, TintMapStateService>();
         }

@@ -1431,7 +1431,7 @@ public class ItemServiceTests
     private sealed class TestItemService : ItemService
     {
         public TestItemService(ICompanionLookup beastMastery, IDBService db)
-            : base(beastMastery, db, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.For<IRecastService>(), FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<ITwinPistolEquipmentService>())
+            : base(beastMastery, db, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IRecastService>(), FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<ITwinPistolEquipmentService>())
         {
         }
 
@@ -1460,7 +1460,7 @@ public class ItemServiceTests
     private sealed class ProbingItemService : ItemService
     {
         public ProbingItemService(ICompanionLookup beastMastery, IDBService db)
-            : base(beastMastery, db, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.For<IRecastService>(), FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<ITwinPistolEquipmentService>())
+            : base(beastMastery, db, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IRecastService>(), FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<ITwinPistolEquipmentService>())
         {
         }
 

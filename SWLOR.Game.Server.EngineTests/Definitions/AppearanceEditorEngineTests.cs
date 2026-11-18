@@ -1003,10 +1003,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var receiver = (object)editor;
             if (target == null)
             {
-                // The editor's services hold the tint, color and part code; each takes the editor as its first argument.
-                foreach (var type in new[] { typeof(AppearanceTintEditorService), typeof(AppearanceColorService), typeof(AppearancePartEditService) })
+                // The editor's services hold the tint, color, part, list, browser, swatch, outfit and settings code; each takes the editor as its first argument.
+                foreach (var type in new[] { typeof(AppearanceTintEditorService), typeof(AppearanceColorService), typeof(AppearancePartEditService),
+                    typeof(AppearancePartListService), typeof(AppearancePartBrowserService), typeof(AppearanceSwatchService),
+                    typeof(AppearanceOutfitService), typeof(AppearanceSettingsService) })
                 {
-                    target = type.GetMethod(method, BindingFlags.Public | BindingFlags.Instance);
+                    target = type.GetMethod(method, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                     if (target == null)
                         continue;
                     receiver = ServiceOf(editor, type);
@@ -1592,14 +1594,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetResultDetail("Actual VM preset actions edited global and robe dyes independently. Native raw0/raw255 inherited parts stayed unset; APC-marked palette0 survived a later global edit and tab rehydration. No client renderer or mouse-event transport is attached.");
         }
 
-        internal static AppearanceEditorViewModel BindWithoutClient(uint target)
+        internal static AppearanceEditorViewModel BindWithoutClient(uint target, uint viewer = OBJECT_INVALID)
         {
             var geometry = new GuiRectangle(0, 0, 1200, 900);
             var editor = Content.Create<AppearanceEditorViewModel>();
             editor.Geometry = geometry;
             // Exercise the public hydration path without creating a window or connecting a PC.
-            // The invalid viewer/zero token cannot send client updates; Target is the real NPC.
-            editor.Bind(OBJECT_INVALID, 0, geometry, GuiWindowType.AppearanceEditor,
+            // The zero token cannot send client updates; Target is the real NPC, or the viewer's own creature.
+            editor.Bind(viewer, 0, geometry, GuiWindowType.AppearanceEditor,
                 new AppearanceEditorPayload(target), OBJECT_INVALID);
             return editor;
         }

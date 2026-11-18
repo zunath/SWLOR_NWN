@@ -386,7 +386,7 @@ public class TintMapReviewTests
             "ApplySelectedPaletteColor",
             "ApplyArmorPaletteColor",
             "OnClickColorPalette",
-            "OnClickColorTarget"
+            "ClickColorTarget"
         };
         var methods = root.DescendantNodes()
             .OfType<MethodDeclarationSyntax>()
@@ -422,7 +422,7 @@ public class TintMapReviewTests
         methods["ApplySelectedPaletteColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
         methods["ApplySelectedPaletteColor"].ToString().Should().Contain("SetColor(host.Session.Target");
         methods["ApplyArmorPaletteColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
-        methods["OnClickColorTarget"].ToString().Should().Contain("LoadTintMapEditor");
+        methods["ClickColorTarget"].ToString().Should().Contain("LoadTintMapEditor");
         methods["ResetCurrentCustomTintOverrides"].ToString().Should()
             .Contain("TryGetSelectedTintLayer(host, out var selectedLayerType)");
         methods["ResetCurrentCustomTintOverrides"].ToString().Should()

@@ -141,11 +141,11 @@ public static class StatusEffectScenarios
         {
             new Step("advance 6", 6),
             new Step("extend by 6", 0, (source, target) =>
-                StatusEffect.ExtendStatusEffectDuration(target, typeof(BleedStatusEffect), source, 6f)
+                StatusEffectDuration.ExtendStatusEffectDuration(target, typeof(BleedStatusEffect), source, 6f)
                     ? "extended" : "not extended"),
             new Step("advance 6", 6),
             new Step("refresh to 12", 0, (source, target) =>
-                StatusEffect.RefreshStatusEffectDuration(target, typeof(BleedStatusEffect), source, 12f)
+                StatusEffectDuration.RefreshStatusEffectDuration(target, typeof(BleedStatusEffect), source, 12f)
                     ? "refreshed" : "not refreshed"),
             new Step("advance 6", 6),
             new Step("advance 6", 6),

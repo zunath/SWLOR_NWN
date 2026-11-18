@@ -92,7 +92,7 @@ public class StatusEffectFacadeAllocationTests
         Allocated(() => sink += StatusEffect.HasEffect<ProbeEffect>(Untracked) ? 1 : 0).Should().Be(0);
         Allocated(() => sink += StatusEffect.GetStatusEffect<ProbeEffect>(Untracked) == null ? 1 : 0).Should().Be(0);
         Allocated(() => sink += StatusEffect.GetCreatureStatusEffects(Tracked).StatGroup == null ? 1 : 0).Should().Be(0);
-        Allocated(() => StatusEffect.OnGuardedHit(Untracked, Tracked, 5)).Should().Be(0);
+        Allocated(() => StatusEffectCombatEvent.OnGuardedHit(Untracked, Tracked, 5)).Should().Be(0);
         GC.KeepAlive(sink);
     }
 
@@ -155,13 +155,13 @@ public class StatusEffectFacadeAllocationTests
     {
         Allocated(() =>
         {
-            StatusEffect.BeginNativeAttackSwing(Tracked);
-            StatusEffect.BeginNativeAttackSwing(Tracked);
-            StatusEffect.EndNativeAttackSwing(Tracked);
-            StatusEffect.EndNativeAttackSwing(Tracked);
+            StatusEffectCombatEvent.BeginNativeAttackSwing(Tracked);
+            StatusEffectCombatEvent.BeginNativeAttackSwing(Tracked);
+            StatusEffectCombatEvent.EndNativeAttackSwing(Tracked);
+            StatusEffectCombatEvent.EndNativeAttackSwing(Tracked);
         }).Should().Be(0);
 
-        Allocated(() => StatusEffect.ForgetDestroyedNativeAttackSwing(Untracked)).Should().Be(0);
+        Allocated(() => StatusEffectCombatEvent.ForgetDestroyedNativeAttackSwing(Untracked)).Should().Be(0);
     }
 
     // ---- Part 1: the generic reads and the measurement ----

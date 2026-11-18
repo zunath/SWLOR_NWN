@@ -596,7 +596,8 @@ Domain/Space -> Domain/World | 12
 Feature/GuiDefinition -> Domain/Abilities | 36
 Feature/GuiDefinition -> Feature/AbilityDefinition | 4
 
-# UI -> Administration (1 edge)
+# UI -> Administration (2 edges)
+Feature/AppearanceEditing -> Domain/Administration | 5
 Feature/GuiDefinition -> Domain/Administration | 96
 
 # UI -> Character (5 edges)
@@ -606,7 +607,8 @@ Feature/AppearanceEditing -> Feature/AppearanceDefinition | 6
 Feature/GuiDefinition -> Domain/Character | 199
 Feature/GuiDefinition -> Feature/AppearanceDefinition | 56
 
-# UI -> Combat (1 edge)
+# UI -> Combat (2 edges)
+Feature/AppearanceEditing -> Domain/Combat | 6
 Feature/GuiDefinition -> Domain/Combat | 61
 
 # UI -> Companions (2 edges)
@@ -622,14 +624,16 @@ Feature/GuiDefinition -> Domain/Creatures | 1
 # UI -> Economy (1 edge)
 Feature/GuiDefinition -> Domain/Economy | 30
 
-# UI -> Gameplay (5 edges)
+# UI -> Gameplay (6 edges)
+Feature/AppearanceEditing -> Feature.ArmorDisplay | 3
 Feature/GuiDefinition -> Feature.ArmorDisplay | 5
 Feature/GuiDefinition -> Feature.EquipmentRestrictions | 1
 Feature/GuiDefinition -> Feature.PlayerInitialization | 1
 Feature/GuiDefinition -> Feature.PlayerStatusWindow | 1
 Feature/GuiDefinition -> Feature.PowerGlovePairLifecycle | 1
 
-# UI -> Items (1 edge)
+# UI -> Items (2 edges)
+Feature/AppearanceEditing -> Domain/Items | 12
 Feature/GuiDefinition -> Domain/Items | 76
 
 # UI -> Quests (1 edge)

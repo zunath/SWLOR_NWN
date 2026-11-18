@@ -229,7 +229,7 @@ public class PoisonsServiceTests
     private sealed class TestPoisons : PoisonsService
     {
         public TestPoisons()
-            : base(FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>(), FacadeForwarder.For<ICombatPointService>())
+            : base(FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>(), FacadeForwarder.For<IStatusEffectDurationService>(), FacadeForwarder.For<ICombatPointService>())
         {
         }
 

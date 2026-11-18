@@ -451,7 +451,7 @@ public class PairedRangedTraitsServiceTests
         public bool DualWield;
 
         public TestTraits(ITwinPistolMasteryService mastery, AbilityImpactStore store)
-            : base(mastery, store, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>())
+            : base(mastery, store, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>(), FacadeForwarder.For<IStatusEffectDurationService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>())
         {
             Store = store;
         }

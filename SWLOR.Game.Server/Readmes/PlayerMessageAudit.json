@@ -211,84 +211,84 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
-    "Line": 436,
+    "Line": 443,
     "Member": "AnnounceApplication",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, durationResistanceMessage)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
-    "Line": 461,
-    "Member": "AnnounceApplication",
-    "Delivery": "Retained",
-    "Call": "_messaging.SendMessageNearbyToPlayers(creature, BuildApplicationMessage)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
-    "Line": 466,
-    "Member": "AnnounceApplication",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(creature, BuildApplicationMessage(creature))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
     "Line": 468,
     "Member": "AnnounceApplication",
     "Delivery": "Retained",
+    "Call": "_messaging.SendMessageNearbyToPlayers(creature, BuildApplicationMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
+    "Line": 473,
+    "Member": "AnnounceApplication",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(creature, BuildApplicationMessage(creature))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
+    "Line": 475,
+    "Member": "AnnounceApplication",
+    "Delivery": "Retained",
     "Call": "SendMessageToPC(source, BuildApplicationMessage(source))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
-    "Line": 479,
+    "Line": 486,
     "Member": "SendStatusEffectFailure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(recipient, message)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 378,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs",
+    "Line": 71,
     "Member": "ResolveApplicationTiming",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 398,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs",
+    "Line": 91,
     "Member": "ResolveApplicationTiming",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 560,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs",
+    "Line": 253,
     "Member": "RestartInPlace",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, durationResistanceMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 866,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs",
+    "Line": 386,
+    "Member": "RefreshStatusEffectDuration",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs",
+    "Line": 395,
     "Member": "RefreshStatusEffectDuration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 875,
-    "Member": "RefreshStatusEffectDuration",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 1405,
+    "Line": 1017,
     "Member": "RemoveStatusEffectInstance",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(creature, BuildWornOffMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 1407,
+    "Line": 1019,
     "Member": "RemoveStatusEffectInstance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, BuildWornOffMessage(creature))"
@@ -302,7 +302,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs",
-    "Line": 1454,
+    "Line": 1457,
     "Member": "ApplyStatusAppliedTargetStaminaDrain",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                ColorToken.Combat($\"-{staminaDrained} STM\"),\n                target,\n                false)"
@@ -358,14 +358,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatAttackTimingService.cs",
-    "Line": 454,
+    "Line": 457,
     "Member": "ShowReadyCue",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(text), creature, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatAttackTimingService.cs",
-    "Line": 797,
+    "Line": 800,
     "Member": "HandleParalyze",
     "Delivery": "Rate limited in Production",
     "Call": "_playerFeedback.SendWarningNearby(\n                    attacker,\n                    \"PARALYZED\",\n                    receiver => $\"{_playerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!\",\n                    5)"
@@ -414,28 +414,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 800,
+    "Line": 803,
     "Member": "ApplyLowHPGuardEffect",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), guardRecipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 1137,
+    "Line": 1140,
     "Member": "ApplyGuardedHitRetaliationPulse",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Retaliation Pulse\"), defender, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 1320,
+    "Line": 1323,
     "Member": "ApplyGuardedHitNextSkillAbilityEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{selected.DamageBonus} DMG{criticalText}\"),\n                    creature,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 1553,
+    "Line": 1556,
     "Member": "ApplyRangedDeflectionReflection",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(\n                defender,\n                observer => BuildDeflectingReturnCombatLogMessage(observer, defender, attacker, appliedDamage),\n                60f)"
@@ -498,14 +498,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs",
-    "Line": 890,
+    "Line": 896,
     "Member": "ApplyCriticalHitEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Weak Points\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs",
-    "Line": 1095,
+    "Line": 1101,
     "Member": "ApplyNonCriticalAbilityEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Next ranged ability +{currentTotal}% Critical Rate\"),\n                    activator,\n                    false)"
@@ -568,7 +568,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/PoisonsService.cs",
-    "Line": 86,
+    "Line": 88,
     "Member": "ConsumePoisonCoating",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, $\"The venom coating on {GetName(weapon)} has worn off.\")"
@@ -2807,6 +2807,76 @@
     "Call": "SendMessageToPC(activator, $\"{StatusEffectCatalog.GetStatusEffectName(type)} deactivated.\")"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceOutfitService.cs",
+    "Line": 183,
+    "Member": "ClickNewOutfit",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(limit < WardrobeService.MaxSlotLimit\n                    ? $\"Your wardrobe holds {limit} outfits. {WardrobeService.ExpansionHint}\"\n                    : $\"Your wardrobe holds {limit} outfits.\", host.Session.Target, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceOutfitService.cs",
+    "Line": 242,
+    "Member": "ClickStoreOutfit",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(message, host.Session.Target, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceOutfitService.cs",
+    "Line": 271,
+    "Member": "ClickUndoOutfit",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(message, host.Session.Target, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceOutfitService.cs",
+    "Line": 284,
+    "Member": "WearOutfit",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(message, host.Session.Target, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceOutfitService.cs",
+    "Line": 290,
+    "Member": "WearOutfit",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(string.IsNullOrEmpty(message) ? $\"Now wearing {outfit.Name}.\" : message, host.Session.Target, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/AppearanceEditing/AppearancePartBrowserService.cs",
+    "Line": 504,
+    "Member": "ClickMapSlot",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(host.Player, ColorToken.Red($\"No {(itemType == 1 ? \"helmet\" : \"cloak\")} is equipped.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceSettingsService.cs",
+    "Line": 41,
+    "Member": "CloseForUnsupportedAppearance",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(owner, \"This creature's appearance cannot be customized.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceSettingsService.cs",
+    "Line": 75,
+    "Member": "ApplyDMArmorDisplay",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(host.Player, ColorToken.Red(\"Your helmet and cloak setting could not be saved.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceSettingsService.cs",
+    "Line": 86,
+    "Member": "SendScaleMessage",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(host.Player, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceSettingsService.cs",
+    "Line": 207,
+    "Member": "SaveSettings",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(host.Session.Target, ColorToken.Green(\"Appearance settings saved successfully.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/BuffTimer.cs",
     "Line": 61,
     "Member": "SendBuffInfo",
@@ -3911,76 +3981,6 @@
     "Member": "EnterExplorationTrigger",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan(message))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 1202,
-    "Member": "CloseForUnsupportedAppearance",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(owner, \"This creature's appearance cannot be customized.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 1335,
-    "Member": "ApplyDMArmorDisplay",
-    "Delivery": "Retained",
-    "Call": "DMPresence.SendMessage(Player, ColorToken.Red(\"Your helmet and cloak setting could not be saved.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 1640,
-    "Member": "SendScaleMessage",
-    "Delivery": "Retained",
-    "Call": "DMPresence.SendMessage(Player, message)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 1872,
-    "Member": "OnClickSaveSettings",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(_session.Target, ColorToken.Green(\"Appearance settings saved successfully.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs",
-    "Line": 222,
-    "Member": "OnClickNewOutfit",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(limit < WardrobeService.MaxSlotLimit\n                    ? $\"Your wardrobe holds {limit} outfits. {WardrobeService.ExpansionHint}\"\n                    : $\"Your wardrobe holds {limit} outfits.\", _session.Target, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs",
-    "Line": 281,
-    "Member": "OnClickStoreOutfit",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(message, _session.Target, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs",
-    "Line": 310,
-    "Member": "OnClickUndoOutfit",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(message, _session.Target, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs",
-    "Line": 323,
-    "Member": "WearOutfit",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(message, _session.Target, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs",
-    "Line": 329,
-    "Member": "WearOutfit",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(string.IsNullOrEmpty(message) ? $\"Now wearing {outfit.Name}.\" : message, _session.Target, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.PartBrowser.cs",
-    "Line": 634,
-    "Member": "OnClickMapSlot",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Red($\"No {(itemType == 1 ? \"helmet\" : \"cloak\")} is equipped.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearancePartBrowserViewModel.cs",

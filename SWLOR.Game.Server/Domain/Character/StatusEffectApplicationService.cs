@@ -10,7 +10,8 @@ namespace SWLOR.Game.Server.Domain.Character
     /// <summary>
     /// Applying status effects (part 3 of the status effect split): the public <c>ApplyStatusEffect</c> family, the checks, the
     /// replaced and conflicting effects, the activation and the messages. The trackers, the removal, the durations and the native
-    /// effect stay in <see cref="StatusEffectService"/>; this part calls them through <see cref="IStatusEffectService"/>. The
+    /// effect stay in <see cref="StatusEffectService"/>; this part calls them through <see cref="IStatusEffectService"/>, the timing and refresh
+    /// through <see cref="IStatusEffectDurationService"/> and the swing deferral through <see cref="IStatusEffectCombatEventService"/>. The
     /// application is cut into named steps that keep the original's order of reads and writes. The active ability impact sits behind
     /// a one-line <c>protected virtual</c> method whose body is the original call.
     /// </summary>
@@ -21,19 +22,25 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IMessagingService _messaging;
         private readonly IPlayerNameService _playerName;
         private readonly IActiveAbilityImpact _activeImpact;
+        private readonly IStatusEffectDurationService _duration;
+        private readonly IStatusEffectCombatEventService _combatEvents;
 
         public StatusEffectApplicationService(
             IStatusEffectService statusEffect,
             IStatusEffectCatalogService statusCatalog,
             IMessagingService messaging,
             IPlayerNameService playerName,
-            IActiveAbilityImpact activeImpact)
+            IActiveAbilityImpact activeImpact,
+            IStatusEffectDurationService duration,
+            IStatusEffectCombatEventService combatEvents)
         {
             _statusEffect = statusEffect;
             _statusCatalog = statusCatalog;
             _messaging = messaging;
             _playerName = playerName;
             _activeImpact = activeImpact;
+            _duration = duration;
+            _combatEvents = combatEvents;
         }
 
         public void ApplyPermanentStatusEffect<T>(uint source, uint creature)
@@ -61,7 +68,7 @@ namespace SWLOR.Game.Server.Domain.Character
             Type replacedStatusEffectType = null)
         {
             // A deferred application is timed when it runs after the swing.
-            if (_statusEffect.IsDeferredNativeAttackStatusEffect(statusEffect, creature))
+            if (_combatEvents.IsDeferredNativeAttackStatusEffect(statusEffect, creature))
                 return RecordCapstoneProof(ApplyStatusEffectInternal(statusEffect, source, creature, durationSeconds, isPermanent,
                     resistanceOverride, sourceDamageType, replacedStatusEffectType), statusEffect, source, creature);
 
@@ -204,7 +211,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 return true;
             }
 
-            if (!_statusEffect.ResolveApplicationTiming(
+            if (!_duration.ResolveApplicationTiming(
                     statusEffect, source, creature, durationSeconds, isPermanent, resistanceOverride, sourceDamageType, out var timing))
             {
                 return false;
@@ -220,7 +227,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 return false;
 
             if (!isPermanent && replacedStatusEffectType == null &&
-                _statusEffect.TryRefreshInPlace(statusEffect, source, creature, timing.DurationTicks, timing.DurationTicksWithoutResistance,
+                _duration.TryRefreshInPlace(statusEffect, source, creature, timing.DurationTicks, timing.DurationTicksWithoutResistance,
                     Math.Min(timing.DurationSeconds, timing.DurationTicks * timing.Frequency), timing.ResistanceType))
             {
                 return true;
@@ -246,10 +253,10 @@ namespace SWLOR.Game.Server.Domain.Character
             CombatDamageType sourceDamageType,
             Type replacedStatusEffectType)
         {
-            if (!_statusEffect.IsDeferredNativeAttackStatusEffect(statusEffect, creature))
+            if (!_combatEvents.IsDeferredNativeAttackStatusEffect(statusEffect, creature))
                 return false;
 
-            _statusEffect.DeferNativeAttackStatusEffect(creature, () => ApplyAndProfileStatusEffect(
+            _combatEvents.DeferNativeAttackStatusEffect(creature, () => ApplyAndProfileStatusEffect(
                 statusEffect,
                 source,
                 creature,

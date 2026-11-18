@@ -116,11 +116,11 @@ public sealed partial class AbilityBench : IDisposable
         ImpactMessage = new TestAbilityImpactMessageService(Messaging(), CombatRecorder);
         ImpactVisual = new AbilityImpactVisualService(Stealth());
         DarkForce = new TestAbilityDarkForceService(this, ImpactState, CombatRecorder);
-        DamageDelivery = new TestAbilityDamageDeliveryService(this, statusEffects, CombatRecorder, DarkForce);
+        DamageDelivery = new TestAbilityDamageDeliveryService(this, StatusCombatEvents(), CombatRecorder, DarkForce);
         StatusApplication = new TestAbilityStatusApplicationService(this, statusEffects, statusApplications, resistance, ImpactState);
         DamageInput = new TestAbilityDamageInputService(this, ImpactState, Magnitude, resistance);
         DamageStage = new TestAbilityDamageStageService(this, DamageInput, ImpactState, Magnitude, resistance);
-        Lifecycle = new TestAbilityImpactLifecycleService(this, ImpactState, meleeTechnique, CombatRecorder, DamageDelivery, statusEffects);
+        Lifecycle = new TestAbilityImpactLifecycleService(this, ImpactState, meleeTechnique, CombatRecorder, DamageDelivery, StatusCombatEvents());
         HostileImpact = new TestAbilityHostileImpactService(this, ImpactState, observers, combatPoints, enmity, DamageDelivery,
             StatusApplication, DarkForce, ImpactVisual);
         HitRoll = new TestAbilityHitRollService(this, observers, meleeTechnique, DamageInput, StatusApplication, ImpactMessage,

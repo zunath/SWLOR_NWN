@@ -694,3 +694,56 @@ parameters, so the Character -> Combat and Character -> Quests references of the
   ones that read `SWLOR_Haks` content the sparse checkout lacks): 19,013 passed on the base, 19,016 on the branch (3 new tests of the application double). The engine run
   filtered with `StatusEffect|HotReloadPlayers` (host entry, server-only haks) passes 26 of 28 with 1 skipped (hot reload off); the one failure is the Piercing Toss bleed test
   (7 ticks, expected 6) that P5-5e recorded failing alike on its base. No hot-reload check ran: this part holds no state, handlers or carried fields.
+
+### P5-5g (duration and combat event parts)
+
+`StatusEffectService` 1,912 -> 1,281 lines, 8 -> 4 services (`IStatusEffectCatalogService`, `IMessagingService`, `IPlayerNameService`, `IGuiRefreshPublisher`; the
+resistance, recorder, stat and active-impact parameters and the `Lazy<IStatService>` left with the parts that use them).
+
+- **Part 4** `StatusEffectDurationService` behind `IStatusEffectDurationService` (Character, `GameServices.StatusEffectDuration`; 415 lines, 5 services:
+  `IStatusEffectService`, `IStatusResistance`, `ICharacterRecording`, `Lazy<IStatService>`, `IActiveAbilityImpact`) holds `ResolveApplicationTiming`,
+  `TryRefreshInPlace`, `RestartStatusEffectDuration`, `ExtendStatusEffectDuration`, `RefreshStatusEffectDuration` and the helpers they call. `GetCreatureStatAdjustment`
+  and `GetActiveAbilityImpactSummary` are its two `protected virtual` seams. It reads the clock (`ClockSeamFiles.txt`).
+- **Part 6** `StatusEffectCombatEventService` behind `IStatusEffectCombatEventService` (Character, `GameServices.StatusEffectCombatEvent`; 279 lines, 2 services:
+  `IStatusEffectService`, `Lazy<IStatService>`) holds `OnDealtDamage` (the `swlor_damage` handler), the damage, pre-damage and attack-attempt notices, `OnGuardedHit`,
+  the native attack swing with the deferred applications, and the two limited attack-timing reads. `IsAttackDelayReductionSuppressed` is its seam.
+- **Carried state and handlers:** none carried. `_nativeAttackSwingDepth` and `_deferredNativeAttackStatusEffects` are `[ReloadState(Runtime)]` and move with part 6
+  (a reload starts them empty, as before). `OnDealtDamage` is the one handler that moves (`ScriptHandlerOrder.txt`, `HandlerRenames.txt` line 322).
+- **Promoted on part 1** (public, on `IStatusEffectService`): `ReplaceNativeStatusEffect` and `NotifyBeforeDirectDamage`. The two parts reach everything else part 1 already
+  exposed (`TryGetCreatureStatusEffects`, `RemoveOtherCommandStatuses`, `RemoveStatusEffectForReplacement`, `NotifyStatusApplied`, `NotifyHostileDebuffApplied`,
+  `PublishStatusEffectReceivedRefresh`, `GetCreatureStatusEffects`, `RemoveStatusEffect`). `StatusEffectApplicationService` takes both new interfaces (5 -> 7 services).
+- **Departures from the guide:**
+  - `IStatService` is `Lazy<>` in both parts, not plain: `StatService -> IResourceRestoredListener -> ResourceRestoredEffectsService -> IStatusEffectApplicationService ->
+    the new parts -> IStatService` is a plain cycle (it deadlocked the container build, not a thrown error). The body is the original `_stat.Value` read that part 1 held, so the
+    `Lazy<>` moved and part 1 lost its own; P5-5h tries to make them plain.
+  - The `GameServices` property of part 6 is `StatusEffectCombatEvent`, not `StatusEffectCombatEvents`: `The_GameServices_property_of_a_service_returns_the_installed_containers_instance`
+    derives the property from the interface name (`IStatusEffectCombatEventService`).
+  - `ClockSeamFiles.txt` lists part 6 as well as part 4: `ClockSeamSourceGuardTests` requires every `StatusEffectSource.PartFiles` entry.
+  - With part 1 no longer holding the recorder, resistance and impact services, three `Lazy<>` parameters of other services stopped breaking a cycle and
+    `Every_lazy_constructor_parameter_of_a_server_service_breaks_a_real_cycle` fails on them, so they are plain now: `ItemService` and `MimicryService` take `IPerkService`,
+    `MimicryService` and `ResistanceService` take `IStatusEffectService` (4 `Lazy<>` parameters in 3 files; the P5-5h item for `Lazy<IStatusEffectService>` shrinks by two).
+- **Holders** (distinct services after; accepted growth is removed by P5-7): `CombatHitEffectsService` 18 -> 20 (duration and combat events), `CombatDamageTakenService`
+  19 -> 20 (combat events), `CombatAbilityImpactService` 15 -> 16 (duration); all three accepted. `CombatAttackTimingService` 7 -> 8 (combat events), `PoisonsService` 3 -> 4,
+  `OrdinaryAttackTraitsService` 3 -> 4, `PairedRangedTraitsService` 7 -> 8, `PerformanceInspiredService` 2 -> 3 (duration). `AbilityDamageDeliveryService` and
+  `AbilityImpactLifecycleService` swap `IStatusEffectService` for `IStatusEffectCombatEventService` (count unchanged). No other holder passes 10.
+- **Callers:** `Apply-FacadeRemoval.ps1` rewrote 58 static call sites in 24 files (`RemovedFacades.json` lists three duration names under owner `StatusEffectDuration` and nine
+  combat event names under owner `StatusEffectCombatEvent`); 15 instance call sites in the ten holders changed by hand. All the mechanical `-Check` runs report nothing to change.
+- **Content debt from the tool:** `WeaponActiveAbilityDefinitionBase` goes from 23 to 24 lookups (its `ExtendStatusEffectDuration` call now names `StatusEffectDuration`); P5-16f
+  splits that base and removes it.
+- **Tests:** `TestStatusEffectDurationService` and `TestStatusEffectCombatEventService` are the part 4 and 6 doubles (`Bench.Duration`, `Bench.CombatEvents`; the application
+  double is built over the same two instances, so the swing state is shared); the seam partials of the old double moved into them. `StatusEffectSource.PartFiles`,
+  `InterfaceFiles` and `PartInterfaces` gain both parts; `StatusEffectInternals.CombatEventsType` is part 6. The holder tests script `IStatusEffectDurationService` and
+  `IStatusEffectCombatEventService` on proxies beside the status effect proxy; the ability bench has a combat event proxy. Source needles that named the moved calls
+  (`StatusEffect.EndNativeAttackSwing(`, `_statusEffect.NotifyDamageStatusEffects(` and the like) follow the new receivers.
+- **Baselines:** `ConvertedServices.json` and `DomainMap.json` list the two parts; `DeferredResolution.txt` (Lazy rows: `StatusEffectService` out, the two parts in,
+  `ItemService`, `MimicryService`, `ResistanceService` down), `ServicesPerType.txt` (the four holder counts and `WeaponActiveAbilityDefinitionBase`), `LargeTypes.txt`
+  (`StatusEffectService` out of the list) and `DebtReport.md` regenerated. `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` changed only in member counts and were
+  reverted. `PlayerMessageAudit.json`: rows re-keyed to the duration part and moved lines of the application part.
+- **Readings and runs:** CombatSim's team-fight, twin-pistol-barrage, twin-pistol-crossfire and solo-boss reports (seed 1, 50 runs, Markdown and JSON) and its ability table are
+  byte-identical to the base's (`43bd39ee8`). `SWLOR.Game.Server.Tests` (no exclusions) fails the same 121 tests with the same messages on the base and the branch (the ones that
+  read `SWLOR_Haks` content the sparse checkout lacks): 19,016 passed on the base, 19,022 on the branch (six more cases, from the two new part files in the source reader's lists).
+  `SWLOR.Architecture.Tests` (297), `SWLOR.Game.Server.CharacterizationTests` (148), `SWLOR.CombatSim.Tests` (895) and `SWLOR.CraftSim.Tests` (1,097) pass. The engine run
+  filtered with `StatusEffect` (host entry, server-only haks) passes 26 of 27; the one failure is the Piercing Toss bleed test (7 ticks, expected 6) that P5-5e and P5-5f recorded
+  failing alike on their bases. The hot-reload check (`--engine-filter HotReloadPlayers --reloads 2`, run because `OnDealtDamage` moves) passes: 251 cache digests and 86 adopted
+  digests match at both reloads. A plain cycle through a factory registration deadlocks the container build instead of throwing, so a hung `dotnet test` or CombatSim run after a
+  constructor change means a new cycle: dump the process (`dotnet-dump collect`) and read `clrstack -all`.

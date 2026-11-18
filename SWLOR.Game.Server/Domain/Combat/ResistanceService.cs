@@ -33,9 +33,9 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IDBService _db;
         private readonly IMimicryService _mimicry;
         private readonly Lazy<IStatService> _stat;
-        private readonly Lazy<IStatusEffectService> _statusEffect;
+        private readonly IStatusEffectService _statusEffect;
 
-        public ResistanceService(IDBService db, IMimicryService mimicry, Lazy<IStatService> stat, Lazy<IStatusEffectService> statusEffect)
+        public ResistanceService(IDBService db, IMimicryService mimicry, Lazy<IStatService> stat, IStatusEffectService statusEffect)
         {
             _db = db;
             _mimicry = mimicry;
@@ -316,7 +316,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.Value.GetStatAdjustment(creature, stat);
 
         protected virtual CreatureStatusEffect GetCreatureStatusEffects(uint creature) =>
-            _statusEffect.Value.GetCreatureStatusEffects(creature);
+            _statusEffect.GetCreatureStatusEffects(creature);
 
         protected virtual uint GetNativeSelf(CNWSCreature creature) => creature.m_idSelf;
 

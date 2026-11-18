@@ -8,20 +8,23 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     internal static class DroidBoostRecipeMigration
     {
+        // Each legacy boost expands into the replacement recipes that are still registered. The saber
+        // replacements (4801, 4805, 4813, 4817) were retired when droids lost their saber skills, so they
+        // are intentionally absent here and from NewRecipeIdsByName; their IDs stay reserved in RecipeType.
         private static readonly Dictionary<string, string[]> RecipeNameMap = new()
         {
-            { "OneHandedBoost1", new[] { "DroidVibrobladeBoost1", "DroidVibroknifeBoost1", "DroidLightsaberBoost1" } },
-            { "LightWeaponBoost1", new[] { "DroidVibrobladeBoost1", "DroidVibroknifeBoost1", "DroidLightsaberBoost1" } },
-            { "TwoHandedBoost1", new[] { "DroidHeavyVibrobladeBoost1", "DroidSpearBoost1", "DroidTwinBladeBoost1", "DroidSaberstaffBoost1" } },
-            { "HeavyWeaponBoost1", new[] { "DroidHeavyVibrobladeBoost1", "DroidSpearBoost1", "DroidTwinBladeBoost1", "DroidSaberstaffBoost1" } },
+            { "OneHandedBoost1", new[] { "DroidVibrobladeBoost1", "DroidVibroknifeBoost1" } },
+            { "LightWeaponBoost1", new[] { "DroidVibrobladeBoost1", "DroidVibroknifeBoost1" } },
+            { "TwoHandedBoost1", new[] { "DroidHeavyVibrobladeBoost1", "DroidSpearBoost1", "DroidTwinBladeBoost1" } },
+            { "HeavyWeaponBoost1", new[] { "DroidHeavyVibrobladeBoost1", "DroidSpearBoost1", "DroidTwinBladeBoost1" } },
             { "MartialArtsBoost1", new[] { "DroidKatarBoost1", "DroidStaffBoost1" } },
             { "KatarStaffBoost1", new[] { "DroidKatarBoost1", "DroidStaffBoost1" } },
             { "RangedBoost1", new[] { "DroidPistolBoost1", "DroidRifleBoost1", "DroidThrowingBoost1" } },
             { "ProjectileBoost1", new[] { "DroidPistolBoost1", "DroidRifleBoost1", "DroidThrowingBoost1" } },
-            { "OneHandedBoost2", new[] { "DroidVibrobladeBoost2", "DroidVibroknifeBoost2", "DroidLightsaberBoost2" } },
-            { "LightWeaponBoost2", new[] { "DroidVibrobladeBoost2", "DroidVibroknifeBoost2", "DroidLightsaberBoost2" } },
-            { "TwoHandedBoost2", new[] { "DroidHeavyVibrobladeBoost2", "DroidSpearBoost2", "DroidTwinBladeBoost2", "DroidSaberstaffBoost2" } },
-            { "HeavyWeaponBoost2", new[] { "DroidHeavyVibrobladeBoost2", "DroidSpearBoost2", "DroidTwinBladeBoost2", "DroidSaberstaffBoost2" } },
+            { "OneHandedBoost2", new[] { "DroidVibrobladeBoost2", "DroidVibroknifeBoost2" } },
+            { "LightWeaponBoost2", new[] { "DroidVibrobladeBoost2", "DroidVibroknifeBoost2" } },
+            { "TwoHandedBoost2", new[] { "DroidHeavyVibrobladeBoost2", "DroidSpearBoost2", "DroidTwinBladeBoost2" } },
+            { "HeavyWeaponBoost2", new[] { "DroidHeavyVibrobladeBoost2", "DroidSpearBoost2", "DroidTwinBladeBoost2" } },
             { "MartialArtsBoost2", new[] { "DroidKatarBoost2", "DroidStaffBoost2" } },
             { "KatarStaffBoost2", new[] { "DroidKatarBoost2", "DroidStaffBoost2" } },
             { "RangedBoost2", new[] { "DroidPistolBoost2", "DroidRifleBoost2", "DroidThrowingBoost2" } },
@@ -40,28 +43,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             { 3495, "RangedBoost2" },
         };
 
-        /// <summary>
-        /// Replacements retired when droids lost their saber skills. Their recipe IDs stay reserved for saved
-        /// characters, but no recipe is registered for them, so a blueprint for one could not be used or even
-        /// named. Migration expands a legacy boost into its remaining alternatives only.
-        /// </summary>
-        private static readonly HashSet<string> RetiredRecipeNames = new()
-        {
-            "DroidLightsaberBoost1",
-            "DroidSaberstaffBoost1",
-            "DroidLightsaberBoost2",
-            "DroidSaberstaffBoost2",
-        };
-
         internal static readonly Dictionary<string, int> NewRecipeIdsByName = new()
         {
             { "DroidVibrobladeBoost1", 4799 },
             { "DroidVibroknifeBoost1", 4800 },
-            { "DroidLightsaberBoost1", 4801 },
             { "DroidHeavyVibrobladeBoost1", 4802 },
             { "DroidSpearBoost1", 4803 },
             { "DroidTwinBladeBoost1", 4804 },
-            { "DroidSaberstaffBoost1", 4805 },
             { "DroidKatarBoost1", 4806 },
             { "DroidStaffBoost1", 4807 },
             { "DroidPistolBoost1", 4808 },
@@ -69,11 +57,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             { "DroidThrowingBoost1", 4810 },
             { "DroidVibrobladeBoost2", 4811 },
             { "DroidVibroknifeBoost2", 4812 },
-            { "DroidLightsaberBoost2", 4813 },
             { "DroidHeavyVibrobladeBoost2", 4814 },
             { "DroidSpearBoost2", 4815 },
             { "DroidTwinBladeBoost2", 4816 },
-            { "DroidSaberstaffBoost2", 4817 },
             { "DroidKatarBoost2", 4818 },
             { "DroidStaffBoost2", 4819 },
             { "DroidPistolBoost2", 4820 },
@@ -136,7 +122,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         public static IEnumerable<int> GetReplacementRecipeIds(IEnumerable<string> recipeNames)
         {
             return recipeNames
-                .Where(recipeName => !RetiredRecipeNames.Contains(recipeName))
                 .Select(recipeName => NewRecipeIdsByName[recipeName])
                 .Distinct();
         }

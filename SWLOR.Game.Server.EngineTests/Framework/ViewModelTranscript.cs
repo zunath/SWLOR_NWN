@@ -212,8 +212,10 @@ namespace SWLOR.Game.Server.EngineTests.Framework
 
         // Not System.Security.Cryptography: the hosted runtime in the server container hangs creating a SHA-1 (the server's own notes name it).
         // Two 64-bit FNV-1a hashes with different bases and primes over the UTF-16 text identify a changed value as well.
-        private static string Compress(string json)
+        private string Compress(string json)
         {
+            // The player id and the masked ids are written as their names before the length and the hash are taken, so an id that is new every run changes neither.
+            json = Clean(json);
             if (json.Length <= InlineJsonLimit)
                 return json;
             ulong first = 14695981039346656037UL;
@@ -265,7 +267,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             }
         }
 
-        private static string DescribeJson(Json json)
+        private string DescribeJson(Json json)
         {
             try
             {

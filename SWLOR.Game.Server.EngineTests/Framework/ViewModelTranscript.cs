@@ -453,6 +453,16 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             public object GetService(Type serviceType)
             {
                 var real = _real.GetService(serviceType);
+                if (real != null && !serviceType.IsInterface && serviceType.Namespace?.StartsWith(ContentFactory.ContentNamespace + ".") == true)
+                {
+                    // A content singleton took its services from the real container when the server booted, so its calls would
+                    // bypass the spies. The transcript builds its own copy from this provider, so the singleton's service calls are
+                    // recorded like a view model's own.
+                    if (!_spies.TryGetValue(serviceType, out var content))
+                        _spies[serviceType] = content = ActivatorUtilities.CreateInstance(this, serviceType);
+                    return content;
+                }
+
                 if (real == null || !SpiedTypes.Contains(serviceType))
                     return real;
                 if (!_spies.TryGetValue(serviceType, out var spy))

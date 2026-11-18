@@ -810,7 +810,6 @@ SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/FabricatorCraftViewModel.cs | 
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ForgeViewModel.cs | 23
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/GuildTasksViewModel.cs | 20
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/HoloNetViewModel.cs | 7
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs | 47
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IntroductionsViewModel.cs | 5
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/KeyItemsViewModel.cs | 6
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/KitchenViewModel.cs | 26

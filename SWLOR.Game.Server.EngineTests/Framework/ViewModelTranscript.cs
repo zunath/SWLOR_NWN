@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
                 return;
             _baselined = true;
             var current = new Dictionary<string, string>(StringComparer.Ordinal);
-            foreach (var leaf in JObject.FromObject(DB.Get<Player>(_fixture.Id)).SelectTokens("$..*").OfType<JValue>())
+            foreach (var leaf in JObject.FromObject(DB.Get<Player>(_fixture.Id)).SelectTokens("$..*").OfType<JValue>().Where(leaf => !IsSavedAtDebouncedTime(leaf.Path)))
                 current[leaf.Path] = leaf.ToString(Formatting.None, Array.Empty<JsonConverter>());
             _previous["record"] = current;
         }
@@ -387,10 +387,14 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         private readonly Dictionary<string, string> _listText = new();
         private readonly List<KeyValuePair<string, Func<IList>>> _watched = new();
 
+        // A window's geometry is saved by a debounced delayed command (GuiService.QueueWindowGeometrySave) and by the client's close event, at
+        // wall-clock times, so the step that sees it changes from run to run. The geometry the window publishes is recorded through its bind.
+        private static bool IsSavedAtDebouncedTime(string path) => path.StartsWith("WindowGeometries", StringComparison.Ordinal);
+
         private void DumpDiff(string label, Func<JToken> read)
         {
             var current = new Dictionary<string, string>(StringComparer.Ordinal);
-            foreach (var leaf in read().SelectTokens("$..*").OfType<JValue>())
+            foreach (var leaf in read().SelectTokens("$..*").OfType<JValue>().Where(leaf => !IsSavedAtDebouncedTime(leaf.Path)))
                 current[leaf.Path] = leaf.ToString(Formatting.None, Array.Empty<JsonConverter>());
             if (_previous.TryGetValue(label, out var before))
             {

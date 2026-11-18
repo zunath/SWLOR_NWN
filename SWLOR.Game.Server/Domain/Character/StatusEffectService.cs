@@ -156,6 +156,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
         private IEnumerable<CreatureStatusEffect> GetLoggedOutEffects()
         {
+            RequireLoggedOutSources();
             return _loggedOutSources.SelectMany(source => source.GetLoggedOutEffects());
         }
 
@@ -2214,6 +2215,12 @@ namespace SWLOR.Game.Server.Domain.Character
             RequireAppliedListeners();
             foreach (var listener in _appliedListeners)
                 listener.OnApplicationCompleted(source, creature, statusEffectType, ability);
+        }
+
+        private void RequireLoggedOutSources()
+        {
+            if (_loggedOutSources.Count == 0)
+                throw new InvalidOperationException("No logged-out holder is registered with the status effects.");
         }
 
         private void RequireMeleeListeners()

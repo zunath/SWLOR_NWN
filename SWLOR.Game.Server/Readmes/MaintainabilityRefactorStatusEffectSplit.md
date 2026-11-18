@@ -629,8 +629,8 @@ parameters, so the Character -> Combat and Character -> Quests references of the
 - **Departure from the map: the session part registers as a holder.** `RemoveStatusEffectsFromAllTargetsBySource` (public, used by `PerkService` and
   `MimicryService`) and `RemoveStatusEffectsFromAllTargetsWhenSourceExits` (part 1) also remove effects held by logged-out players, so part 1 still needs to see
   the table that moved. A constructor parameter would make a cycle (part 7 depends on part 1), and splitting the loops would give every caller two calls, so part 1
-  holds a `[ReloadState(Runtime)]` list of `ILoggedOutStatusEffectSource` (`RegisterLoggedOutSource`, one entry per holder, no throw when empty: no holder means no
-  logged-out state) and the session part registers itself from a `Rerun` boot handler `RegisterLoggedOutSource` in `OnModuleCacheBefore`, after the three
+  holds a `[ReloadState(Runtime)]` list of `ILoggedOutStatusEffectSource` (`RegisterLoggedOutSource`, one entry per holder; a removal by source with no holder throws
+  `InvalidOperationException` (`RequireLoggedOutSources`), as the listener lists do: an empty list means the registration was missed) and the session part registers itself from a `Rerun` boot handler `RegisterLoggedOutSource` in `OnModuleCacheBefore`, after the three
   listener registrations (`ScriptHandlerOrder.txt`, `BootHandlerClassification.txt`, `HandlerRenames.txt` line 320 with a fifth branch name). A reload reruns it before it
   adopts the carried state, as for the listeners. The two loops read `GetLoggedOutEffects()`; their bodies are otherwise unchanged. The map listed no new handler for
   this PR; the reload reruns went from 84 to 85.

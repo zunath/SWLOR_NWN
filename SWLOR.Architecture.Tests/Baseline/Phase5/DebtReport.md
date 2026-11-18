@@ -8,7 +8,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
 | 1. Static service lookup | `StaticLookups.txt` | 1,089 | 13,382 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 30 | 47,049 lines | none over 1,000 lines |
+| 2. Large types | `LargeTypes.txt` | 30 | 47,056 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 11 | 3,140 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 16 | 255 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 34 | 47 parameters | none |
@@ -58,7 +58,7 @@ Largest 15 of 1,089 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 30 types over 1,000 lines, 47,049 lines in all.
+- 30 types over 1,000 lines, 47,056 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
@@ -69,7 +69,7 @@ Largest 15 of 30 (all in `LargeTypes.txt`):
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel` | 3,469 | AppearanceEditorViewModel.ColorBindings.cs, AppearanceEditorViewModel.ColorSelection.cs, AppearanceEditorViewModel.ColorSwatches.cs, AppearanceEditorViewModel.Outfits.cs, AppearanceEditorViewModel.PartBrowser.cs, AppearanceEditorViewModel.cs |
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 2,768 | SpaceService.cs |
 | `SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase` | 2,332 | WeaponActiveAbilityDefinitionBase.cs |
-| `SWLOR.Game.Server.Domain.Character.StatusEffectService` | 2,238 | StatusEffectService.cs |
+| `SWLOR.Game.Server.Domain.Character.StatusEffectService` | 2,245 | StatusEffectService.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel` | 2,081 | ShipManagementViewModel.cs |
 | `SWLOR.Game.Server.Domain.Creatures.AIService` | 1,878 | AIService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 1,714 | CombatAbilityImpactService.cs |

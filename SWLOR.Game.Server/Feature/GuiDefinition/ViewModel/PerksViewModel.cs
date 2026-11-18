@@ -1181,27 +1181,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickBuyUpgrade() => () =>
         {
-            int rank;
             var selectedPerk = _filteredPerks[_selectedPerkIndex];
-
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
-            if (IsInMyPerksMode)
-            {
-                rank = dbPlayer.Perks.ContainsKey(selectedPerk)
-                    ? dbPlayer.Perks[selectedPerk]
-                    : 0;
-            }
-            else
-            {
-                var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
-                if (dbBeast == null)
-                    return;
-
-                rank = dbBeast.Perks.ContainsKey(selectedPerk)
-                    ? dbBeast.Perks[selectedPerk]
-                    : 0;
-            }
+            if (!TryGetPerkRank(dbPlayer, selectedPerk, out var rank, out _))
+                return;
 
             var detail = Perk.GetPerkDetails(selectedPerk);
 
@@ -1210,137 +1194,153 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : null;
 
             ShowModal($"This upgrade will cost {nextUpgrade?.Price} SP. Are you sure you want to buy it?",
-                () =>
-                {
-                    if (GetResRef(GetArea(Player)) == "char_migration")
-                    {
-                        FloatingTextStringOnCreature($"Perks cannot be purchased in this area.", Player, false);
-                        return;
-                    }
-
-                    // Refresh data
-                    dbPlayer = DB.Get<Player>(playerId);
-                    selectedPerk = _filteredPerks[_selectedPerkIndex];
-                    detail = Perk.GetPerkDetails(selectedPerk);
-                    int unallocatedSP;
-
-                    if (IsInMyPerksMode)
-                    {
-                        rank = dbPlayer.Perks.ContainsKey(selectedPerk)
-                            ? dbPlayer.Perks[selectedPerk]
-                            : 0;
-                        unallocatedSP = dbPlayer.UnallocatedSP;
-                    }
-                    else
-                    {
-                        var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
-                        if (dbBeast == null)
-                            return;
-
-                        rank = dbBeast.Perks.ContainsKey(selectedPerk)
-                            ? dbBeast.Perks[selectedPerk]
-                            : 0;
-                        unallocatedSP = dbBeast.UnallocatedSP;
-                    }
-
-                    nextUpgrade = detail.PerkLevels.ContainsKey(rank + 1)
-                        ? detail.PerkLevels[rank + 1]
-                        : null;
-
-                    // Run validation again
-                    if (nextUpgrade == null)
-                        return;
-
-                    if (rank + 1 > detail.PerkLevels.Count)
-                        return;
-
-                    foreach (var req in nextUpgrade.Requirements)
-                    {
-                        if (!string.IsNullOrWhiteSpace(req.CheckRequirements(Player)))
-                        {
-                            return;
-                        }
-                    }
-
-                    if (unallocatedSP < nextUpgrade.Price)
-                        return;
-
-                    // Custom purchase validation logic for the perk.
-                    var canPurchase = detail.PurchaseRequirement == null
-                        ? string.Empty
-                        : detail.PurchaseRequirement(Player);
-
-                    if (!string.IsNullOrWhiteSpace(canPurchase))
-                    {
-                        SendMessageToPC(Player, ColorToken.Red(canPurchase));
-                        return;
-                    }
-
-                    // All validation passes. Perform the upgrade.
-                    if (IsInMyPerksMode)
-                    {
-                        dbPlayer.Perks[selectedPerk] = rank + 1;
-                        dbPlayer.UnallocatedSP -= nextUpgrade.Price;
-                        DB.Set(dbPlayer);
-
-                        unallocatedSP = dbPlayer.UnallocatedSP;
-                    }
-                    else
-                    {
-                        var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
-                        if (dbBeast == null)
-                            return;
-
-                        dbBeast.Perks[selectedPerk] = rank + 1;
-                        dbBeast.UnallocatedSP -= nextUpgrade.Price;
-                        DB.Set(dbBeast);
-
-                        unallocatedSP = dbBeast.UnallocatedSP;
-                    }
-
-                    var newRank = rank + 1;
-                    GrantFeats(selectedPerk, newRank);
-                    ApplyPurchasePerkTriggers(newRank, selectedPerk);
-
-                    FloatingTextStringOnCreature(ColorToken.Green($"You purchase '{detail.Name}' rank {newRank}."), Player, false);
-
-                    EventsPlugin.SignalEvent("SWLOR_BUY_PERK", Player);
-                    Gui.PublishRefreshEvent(Player, new PerkAcquiredRefreshEvent(selectedPerk));
-
-                    ExportSingleCharacter(Player);
-
-                    // Update UI with latest upgrade changes.
-                    LoadDetails();
-
-                    var currentUpgrade = detail.PerkLevels.ContainsKey(newRank)
-                        ? detail.PerkLevels[newRank]
-                        : null;
-                    nextUpgrade = detail.PerkLevels.ContainsKey(newRank + 1)
-                        ? detail.PerkLevels[newRank + 1]
-                        : null;
-                    SelectedDetails = BuildSelectedPerkDetailText(detail, currentUpgrade, nextUpgrade, newRank);
-                    PerkButtonTexts[_selectedPerkIndex] = $"{detail.Name} ({newRank}/{detail.PerkLevels.Count})";
-
-                    var (meetsRequirements, requirements, requirementColors, requirementIcons, requirementTooltips) = BuildRequirements(nextUpgrade);
-                    var (_, chipColor, rowIcon, rowTooltip) = GetPerkRowStatus(detail, newRank, unallocatedSP);
-
-                    PerkButtonColors[_selectedPerkIndex] = chipColor;
-                    PerkRowReqIcons[_selectedPerkIndex] = rowIcon;
-                    PerkRowReqTooltips[_selectedPerkIndex] = rowTooltip;
-                    PerkRowCosts[_selectedPerkIndex] = nextUpgrade != null ? $"{nextUpgrade.Price} SP" : string.Empty;
-                    SelectedRequirements = requirements;
-                    SelectedRequirementColors = requirementColors;
-                    SelectedRequirementIcons = requirementIcons;
-                    SelectedRequirementTooltips = requirementTooltips;
-                    IsBuyEnabled = nextUpgrade != null &&
-                                   unallocatedSP >= nextUpgrade.Price &&
-                                   meetsRequirements;
-
-                    BuyText = nextUpgrade != null
-                        ? $"Buy Upgrade ({nextUpgrade.Price} SP)"
-                        : "Buy Upgrade";
-                });
+                () => ConfirmBuyUpgrade(playerId));
         };
+
+        private void ConfirmBuyUpgrade(string playerId)
+        {
+            if (GetResRef(GetArea(Player)) == "char_migration")
+            {
+                FloatingTextStringOnCreature($"Perks cannot be purchased in this area.", Player, false);
+                return;
+            }
+
+            // Refresh data
+            var dbPlayer = DB.Get<Player>(playerId);
+            var selectedPerk = _filteredPerks[_selectedPerkIndex];
+            var detail = Perk.GetPerkDetails(selectedPerk);
+            if (!TryGetPerkRank(dbPlayer, selectedPerk, out var rank, out var unallocatedSP))
+                return;
+
+            var nextUpgrade = detail.PerkLevels.ContainsKey(rank + 1)
+                ? detail.PerkLevels[rank + 1]
+                : null;
+
+            // Run validation again
+            if (nextUpgrade == null)
+                return;
+
+            if (rank + 1 > detail.PerkLevels.Count)
+                return;
+
+            foreach (var req in nextUpgrade.Requirements)
+            {
+                if (!string.IsNullOrWhiteSpace(req.CheckRequirements(Player)))
+                {
+                    return;
+                }
+            }
+
+            if (unallocatedSP < nextUpgrade.Price)
+                return;
+
+            // Custom purchase validation logic for the perk.
+            var canPurchase = detail.PurchaseRequirement == null
+                ? string.Empty
+                : detail.PurchaseRequirement(Player);
+
+            if (!string.IsNullOrWhiteSpace(canPurchase))
+            {
+                SendMessageToPC(Player, ColorToken.Red(canPurchase));
+                return;
+            }
+
+            // All validation passes. Perform the upgrade.
+            if (IsInMyPerksMode)
+            {
+                dbPlayer.Perks[selectedPerk] = rank + 1;
+                dbPlayer.UnallocatedSP -= nextUpgrade.Price;
+                DB.Set(dbPlayer);
+
+                unallocatedSP = dbPlayer.UnallocatedSP;
+            }
+            else
+            {
+                var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
+                if (dbBeast == null)
+                    return;
+
+                dbBeast.Perks[selectedPerk] = rank + 1;
+                dbBeast.UnallocatedSP -= nextUpgrade.Price;
+                DB.Set(dbBeast);
+
+                unallocatedSP = dbBeast.UnallocatedSP;
+            }
+
+            var newRank = rank + 1;
+            GrantFeats(selectedPerk, newRank);
+            ApplyPurchasePerkTriggers(newRank, selectedPerk);
+
+            FloatingTextStringOnCreature(ColorToken.Green($"You purchase '{detail.Name}' rank {newRank}."), Player, false);
+
+            EventsPlugin.SignalEvent("SWLOR_BUY_PERK", Player);
+            Gui.PublishRefreshEvent(Player, new PerkAcquiredRefreshEvent(selectedPerk));
+
+            ExportSingleCharacter(Player);
+
+            // Update UI with latest upgrade changes.
+            LoadDetails();
+
+            RefreshAfterUpgrade(detail, newRank, unallocatedSP);
+        }
+
+        // The rank of the perk and the points left to spend, on the player or the active beast. False when the beast is gone.
+        private bool TryGetPerkRank(Player dbPlayer, PerkType selectedPerk, out int rank, out int unallocatedSP)
+        {
+            if (IsInMyPerksMode)
+            {
+                rank = dbPlayer.Perks.ContainsKey(selectedPerk)
+                    ? dbPlayer.Perks[selectedPerk]
+                    : 0;
+                unallocatedSP = dbPlayer.UnallocatedSP;
+                return true;
+            }
+
+            var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
+            if (dbBeast == null)
+            {
+                rank = 0;
+                unallocatedSP = 0;
+                return false;
+            }
+
+            rank = dbBeast.Perks.ContainsKey(selectedPerk)
+                ? dbBeast.Perks[selectedPerk]
+                : 0;
+            unallocatedSP = dbBeast.UnallocatedSP;
+            return true;
+        }
+
+        private void RefreshAfterUpgrade(PerkDetail detail, int newRank, int unallocatedSP)
+        {
+            var currentUpgrade = detail.PerkLevels.ContainsKey(newRank)
+                ? detail.PerkLevels[newRank]
+                : null;
+            var nextUpgrade = detail.PerkLevels.ContainsKey(newRank + 1)
+                ? detail.PerkLevels[newRank + 1]
+                : null;
+            SelectedDetails = BuildSelectedPerkDetailText(detail, currentUpgrade, nextUpgrade, newRank);
+            PerkButtonTexts[_selectedPerkIndex] = $"{detail.Name} ({newRank}/{detail.PerkLevels.Count})";
+
+            var (meetsRequirements, requirements, requirementColors, requirementIcons, requirementTooltips) = BuildRequirements(nextUpgrade);
+            var (_, chipColor, rowIcon, rowTooltip) = GetPerkRowStatus(detail, newRank, unallocatedSP);
+
+            PerkButtonColors[_selectedPerkIndex] = chipColor;
+            PerkRowReqIcons[_selectedPerkIndex] = rowIcon;
+            PerkRowReqTooltips[_selectedPerkIndex] = rowTooltip;
+            PerkRowCosts[_selectedPerkIndex] = nextUpgrade != null ? $"{nextUpgrade.Price} SP" : string.Empty;
+            SelectedRequirements = requirements;
+            SelectedRequirementColors = requirementColors;
+            SelectedRequirementIcons = requirementIcons;
+            SelectedRequirementTooltips = requirementTooltips;
+            IsBuyEnabled = nextUpgrade != null &&
+                           unallocatedSP >= nextUpgrade.Price &&
+                           meetsRequirements;
+
+            BuyText = nextUpgrade != null
+                ? $"Buy Upgrade ({nextUpgrade.Price} SP)"
+                : "Buy Upgrade";
+        }
 
         public Action OnClickRefund() => () =>
         {

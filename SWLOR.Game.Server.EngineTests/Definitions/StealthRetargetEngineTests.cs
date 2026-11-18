@@ -76,16 +76,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static async Task<PlayerAbilityFixture> CreateStealthPlayerAsync(EngineTestContext ctx)
         {
             var player = await PlayerAbilityFixture.CreateAsync(ctx);
-            player.Update(record =>
+            try
             {
-                record.Perks[PerkType.Stealth] = 1;
-                record.Perks[PerkType.GhostProtocol] = 1;
-                record.Stealth = UndetectableStealth;
-            });
-            // The enemies must not defeat the player during the test.
-            ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(5000), player.Creature, 120f);
-            ctx.Assert(!GetActionMode(player.Creature, ActionMode.Stealth), "the player starts out of stealth");
-            return player;
+                player.Update(record =>
+                {
+                    record.Perks[PerkType.Stealth] = 1;
+                    record.Perks[PerkType.GhostProtocol] = 1;
+                    record.Stealth = UndetectableStealth;
+                });
+                // The enemies must not defeat the player during the test.
+                ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(5000), player.Creature, 120f);
+                ctx.Assert(!GetActionMode(player.Creature, ActionMode.Stealth), "the player starts out of stealth");
+                return player;
+            }
+            catch
+            {
+                player.Dispose();
+                throw;
+            }
         }
 
         private static uint SpawnEnemy(EngineTestContext ctx, uint player, float xOffset, float yOffset)

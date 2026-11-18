@@ -75,59 +75,71 @@ public sealed class CombatTranscriptBench : IDisposable
 
     public CombatTranscriptBench(IEnumerable<Type>? leaves = null, Action<IServiceCollection, CombatTranscriptBench>? configure = null)
     {
-        var leafTypes = (leaves ?? DefaultLeaves).ToArray();
-        Lines = new List<string>();
-
-        _engine = new FakeNWScript();
-        _engine.SetReturnHandler("GetIsObjectValid", args => (uint)args[0]! is not (0 or ObjectInvalid or Gone));
-        _engine.SetReturnHandler("GetIsReactionTypeHostile", args => (uint)args[0]! != (uint)args[1]!);
-        _engine.SetReturnHandler("GetIsDead", args => false);
-        _engine.SetReturnHandler("GetMaxHitPoints", args => 200);
-        _engine.SetReturnHandler("GetCurrentHitPoints", args => 100);
-        _engine.SetReturnHandler("GetIsPC", args => (uint)args[0]! is Attacker or Defender);
-        _engine.SetReturnHandler("GetObjectUUID", args => "uuid-" + Name((uint)args[0]!));
-        _engine.SetReturnHandler("GetArea", args => 900u);
-        _engine.SetReturnHandler("GetDistanceBetween", args => 3.0f);
-        _engine.SetReturnHandler("GetTag", args => "tag-" + Name((uint)args[0]!));
-        _engine.SetReturnHandler("GetName", args => Name((uint)args[0]!));
-
-        _scopes.Add(Clock.OverrideForTests(() => _now, () => (long)(_now - new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds));
-        _scopes.Add(RecordingRandom.Install(Seed, Lines, Name));
-        _scopes.Add(NWScriptRuntime.Override(EngineProxy.Wrap<INWScript>(_engine, this)));
-        var objectPlugin = new FakeObjectPlugin();
-        objectPlugin.SetReturnHandler("GetCurrentHitPoints", args => 100);
-        _scopes.Add(ObjectPluginRuntime.Override(EngineProxy.Wrap<IObjectPlugin>(objectPlugin, this)));
-        _scopes.Add(CreaturePluginRuntime.Override(EngineProxy.Wrap<ICreaturePlugin>(new FakeCreaturePlugin(), this)));
-        Events = new FakeEventsPlugin();
-        _scopes.Add(EventsPluginRuntime.Override(Events));
-
-        Db = new InMemoryDBService();
-        foreach (var id in new[] { "uuid-Attacker", "uuid-Defender" })
+        FacadeContainer? facades = null;
+        try
         {
-            var player = new Player(id);
-            foreach (var skill in Enum.GetValues<SkillType>())
-                player.Skills[skill] = new PlayerSkill { Rank = 20 };
-            Db.With(player);
-        }
-        var facades = new FacadeContainer(services =>
-        {
-            services.Replace(ServiceDescriptor.Singleton<IDBService>(Db));
-            foreach (var type in leafTypes)
+            var leafTypes = (leaves ?? DefaultLeaves).ToArray();
+            Lines = new List<string>();
+
+            _engine = new FakeNWScript();
+            _engine.SetReturnHandler("GetIsObjectValid", args => (uint)args[0]! is not (0 or ObjectInvalid or Gone));
+            _engine.SetReturnHandler("GetIsReactionTypeHostile", args => (uint)args[0]! != (uint)args[1]!);
+            _engine.SetReturnHandler("GetIsDead", args => false);
+            _engine.SetReturnHandler("GetMaxHitPoints", args => 200);
+            _engine.SetReturnHandler("GetCurrentHitPoints", args => 100);
+            _engine.SetReturnHandler("GetIsPC", args => (uint)args[0]! is Attacker or Defender);
+            _engine.SetReturnHandler("GetObjectUUID", args => "uuid-" + Name((uint)args[0]!));
+            _engine.SetReturnHandler("GetArea", args => 900u);
+            _engine.SetReturnHandler("GetDistanceBetween", args => 3.0f);
+            _engine.SetReturnHandler("GetTag", args => "tag-" + Name((uint)args[0]!));
+            _engine.SetReturnHandler("GetName", args => Name((uint)args[0]!));
+
+            _scopes.Add(Clock.OverrideForTests(() => _now, () => (long)(_now - new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds));
+            _scopes.Add(RecordingRandom.Install(Seed, Lines, Name));
+            _scopes.Add(NWScriptRuntime.Override(EngineProxy.Wrap<INWScript>(_engine, this)));
+            var objectPlugin = new FakeObjectPlugin();
+            objectPlugin.SetReturnHandler("GetCurrentHitPoints", args => 100);
+            _scopes.Add(ObjectPluginRuntime.Override(EngineProxy.Wrap<IObjectPlugin>(objectPlugin, this)));
+            _scopes.Add(CreaturePluginRuntime.Override(EngineProxy.Wrap<ICreaturePlugin>(new FakeCreaturePlugin(), this)));
+            Events = new FakeEventsPlugin();
+            _scopes.Add(EventsPluginRuntime.Override(Events));
+
+            Db = new InMemoryDBService();
+            foreach (var id in new[] { "uuid-Attacker", "uuid-Defender" })
             {
-                var leaf = CreateLeaf(type);
-                services.Replace(ServiceDescriptor.Singleton(type, leaf));
+                var player = new Player(id);
+                foreach (var skill in Enum.GetValues<SkillType>())
+                    player.Skills[skill] = new PlayerSkill { Rank = 20 };
+                Db.With(player);
             }
+            facades = new FacadeContainer(services =>
+            {
+                services.Replace(ServiceDescriptor.Singleton<IDBService>(Db));
+                foreach (var type in leafTypes)
+                {
+                    var leaf = CreateLeaf(type);
+                    services.Replace(ServiceDescriptor.Singleton(type, leaf));
+                }
 
-            configure?.Invoke(services, this);
-        });
-        Facades = facades;
-        _scopes.Add(facades.Install());
-        InstallStatAnswers();
-        // The recording flag is read on every event and is part of how a recorder is split; its reads are not part of a transcript.
-        if (_leaves.TryGetValue(typeof(ICombatRecorderService), out var recorder))
-            recorder.Silence("get_IsRecording");
-        if (_leaves.TryGetValue(typeof(ICombatRecording), out var recording))
-            recording.Silence("get_IsRecording");
+                configure?.Invoke(services, this);
+            });
+            Facades = facades;
+            _scopes.Add(facades.Install());
+            InstallStatAnswers();
+            // The recording flag is read on every event and is part of how a recorder is split; its reads are not part of a transcript.
+            if (_leaves.TryGetValue(typeof(ICombatRecorderService), out var recorder))
+                recorder.Silence("get_IsRecording");
+            if (_leaves.TryGetValue(typeof(ICombatRecording), out var recording))
+                recording.Silence("get_IsRecording");
+        }
+        catch
+        {
+            for (var index = _scopes.Count - 1; index >= 0; index--)
+                _scopes[index].Dispose();
+            _scopes.Clear();
+            facades?.Dispose();
+            throw;
+        }
     }
 
     /// <summary>The ordered transcript of the step being recorded.</summary>
@@ -213,7 +225,8 @@ public sealed class CombatTranscriptBench : IDisposable
     }
 
     private static bool IsNativeBoundary(Exception exception) =>
-        exception is TypeInitializationException or DllNotFoundException or EntryPointNotFoundException or BadImageFormatException;
+        exception is DllNotFoundException or EntryPointNotFoundException or BadImageFormatException
+        || exception is TypeInitializationException { InnerException: { } inner } && IsNativeBoundary(inner);
 
     /// <summary>The transcript so far, as the committed text.</summary>
     public string Text => _text.ToString();

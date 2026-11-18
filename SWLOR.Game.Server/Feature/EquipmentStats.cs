@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.EquipmentStatActions;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
@@ -29,61 +30,27 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterStatActions()
         {
-            Stat.RegisterEquipmentStatAction(ItemPropertyType.HPBonus, ApplyHPBonus);
-            Stat.RegisterEquipmentStatAction(ItemPropertyType.FP, ApplyFPBonus);
-            Stat.RegisterEquipmentStatAction(ItemPropertyType.FPRegen, ApplyFPRegenBonus);
-            Stat.RegisterEquipmentStatAction(ItemPropertyType.Stamina, ApplySTMBonus);
-            Stat.RegisterEquipmentStatAction(ItemPropertyType.STMRegen, ApplySTMRegenBonus);
-            Stat.RegisterEquipmentStatAction(ItemPropertyType.CombatReadiness, ApplyCombatReadiness);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.HPBonus, (creature, item, ip, adding) => EquipmentVitalStatActions.ApplyHPBonus(creature, item, ip, adding));
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.FP, (creature, item, ip, adding) => EquipmentVitalStatActions.ApplyFPBonus(creature, item, ip, adding));
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.FPRegen, (creature, item, ip, adding) => EquipmentVitalStatActions.ApplyFPRegenBonus(creature, item, ip, adding));
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.Stamina, (creature, item, ip, adding) => EquipmentVitalStatActions.ApplySTMBonus(creature, item, ip, adding));
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.STMRegen, (creature, item, ip, adding) => EquipmentVitalStatActions.ApplySTMRegenBonus(creature, item, ip, adding));
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.CombatReadiness, (creature, item, ip, adding) => EquipmentVitalStatActions.ApplyCombatReadiness(creature, item, ip, adding));
             Stat.RegisterEquipmentStatAction(ItemPropertyType.Attack, ApplyAttack);
             Stat.RegisterEquipmentStatAction(ItemPropertyType.Accuracy, ApplyAccuracy);
             Stat.RegisterEquipmentStatAction(ItemPropertyType.ForceAttack, ApplyForceAttack);
             Stat.RegisterEquipmentStatAction(ItemPropertyType.Defense, ApplyDefense);
             Stat.RegisterEquipmentStatAction(ItemPropertyType.Resistance, ApplyResistance);
             Stat.RegisterEquipmentStatAction(ItemPropertyType.Evasion, ApplyEvasion);
-            Stat.RegisterEquipmentStatAction(ItemPropertyType.Control, ApplyControl);
-            Stat.RegisterEquipmentStatAction(ItemPropertyType.Craftsmanship, ApplyCraftsmanship);
-            Stat.RegisterEquipmentStatAction(ItemPropertyType.CPBonus, ApplyCPBonus);
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.Control, (creature, item, ip, adding) => EquipmentCraftStatActions.ApplyControl(creature, item, ip, adding));
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.Craftsmanship, (creature, item, ip, adding) => EquipmentCraftStatActions.ApplyCraftsmanship(creature, item, ip, adding));
+            Stat.RegisterEquipmentStatAction(ItemPropertyType.CPBonus, (creature, item, ip, adding) => EquipmentCraftStatActions.ApplyCPBonus(creature, item, ip, adding));
             Stat.RegisterEquipmentStatAction(ItemPropertyType.Stealth, ApplyStealth);
             Stat.RegisterEquipmentStatAction(ItemPropertyType.Detection, ApplyDetection);
             Stat.RegisterEquipmentStatAction(ItemPropertyType.TrapBonus, ApplyTrapBonus);
             Stat.RegisterEquipmentStatAction(ItemPropertyType.Disarm, ApplyTrapDisarm);
             Stat.RegisterEquipmentStatAction(ItemPropertyType.PoisonBonus, ApplyPoisonBonus);
             Stat.RegisterEquipmentStatAction(ItemPropertyType.Lockpicking, ApplyLockpicking);
-        }
-
-        private static void ReapplyNPCStat(uint npc, ItemPropertyType ipType, int amount, bool isAdding)
-        {
-            var skin = GetItemInSlot(InventorySlot.CreatureArmor, npc);
-            var value = 0;
-
-            for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
-            {
-                var type = GetItemPropertyType(ip);
-                if (type == ipType)
-                {
-                    value += GetItemPropertyCostTableValue(ip);
-                }
-            }
-
-            if (isAdding)
-            {
-                value += amount;
-            }
-            else
-            {
-                value -= amount;
-            }
-
-            if (value <= 0)
-            {
-                BiowareXP2.IPRemoveMatchingItemProperties(skin, ipType, DurationType.Invalid, -1);
-            }
-            else
-            {
-                var itemProperty = ItemPropertyCustom(ipType, -1, value);
-                BiowareXP2.IPSafeAddItemProperty(skin, itemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
-            }
         }
 
         private const string DisplacedRecordStatsVariable = "EQUIPMENT_DISPLACED_RECORD_STATS";
@@ -233,236 +200,6 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// Applies or removes an HP bonus on a creature.
-        /// </summary>
-        /// <param name="creature">The creature to adjust</param>
-        /// <param name="item">The item being equipped or unequipped</param>
-        /// <param name="ip">The item property associated with this change.</param>
-        /// <param name="isAdding">If true, we're adding the HP, if false we're removing it</param>
-        private static void ApplyHPBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
-        {
-            if (GetIsDM(creature) || GetIsDMPossessed(creature))
-                return;
-
-            var amount = GetItemPropertyCostTableValue(ip);
-
-            if (GetIsPC(creature))
-            {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                if (isAdding)
-                {
-                    CreatureStat.AdjustPlayerMaxHP(dbPlayer, creature, amount);
-                }
-                else
-                {
-                    CreatureStat.AdjustPlayerMaxHP(dbPlayer, creature, -amount);
-                }
-
-                DB.Set(dbPlayer);
-            }
-            else
-            {
-                var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
-
-                var maxHP = 0;
-                for (var ipHP = GetFirstItemProperty(skin); GetIsItemPropertyValid(ipHP); ipHP = GetNextItemProperty(skin))
-                {
-                    if (GetItemPropertyType(ipHP) == ItemPropertyType.NPCHP)
-                    {
-                        maxHP += GetItemPropertyCostTableValue(ipHP);
-                    }
-                }
-
-                if (isAdding)
-                {
-                    maxHP += amount;
-                }
-                else
-                {
-                    maxHP -= amount;
-                }
-
-                var newIP = ItemPropertyCustom(ItemPropertyType.NPCHP, -1, maxHP);
-                BiowareXP2.IPSafeAddItemProperty(skin, newIP, 0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
-
-                if (maxHP > 0)
-                {
-                    CreatureStat.SetNPCMaxHitPoints(creature, maxHP);
-                }
-
-                // Base HP only: the native getter includes temporary HP, which must not heal the NPC.
-                if (ObjectPlugin.GetCurrentHitPoints(creature) > GetMaxHitPoints(creature))
-                {
-                    SetCurrentHitPoints(creature, GetMaxHitPoints(creature));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Applies or removes an FP bonus on a creature.
-        /// </summary>
-        /// <param name="creature">The creature to adjust</param>
-        /// <param name="item">The item being equipped or unequipped</param>
-        /// <param name="ip">The item property associated with this change</param>
-        /// <param name="isAdding">If true, we're adding the FP, if false we're removing it</param>
-        private static void ApplyFPBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
-        {
-            if (GetIsDM(creature) || GetIsDMPossessed(creature))
-                return;
-
-            var amount = GetItemPropertyCostTableValue(ip);
-
-            if (GetIsPC(creature))
-            {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                if (isAdding)
-                {
-                    StatRecord.AdjustPlayerMaxFP(dbPlayer, amount, creature);
-                }
-                else
-                {
-                    StatRecord.AdjustPlayerMaxFP(dbPlayer, -amount, creature);
-                }
-
-                DB.Set(dbPlayer);
-            }
-            else
-            {
-                ReapplyNPCStat(creature, ItemPropertyType.FP, amount, isAdding);
-            }
-        }
-
-        /// <summary>
-        /// Applies or removes an FP Regen bonus on a creature.
-        /// </summary>
-        /// <param name="creature">The creature to adjust</param>
-        /// <param name="item">The item being equipped or unequipped</param>
-        /// <param name="ip">The item property associated with this change</param>
-        /// <param name="isAdding">If true, we're adding the FP Regen, if false we're removing it</param>
-        private static void ApplyFPRegenBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
-        {
-            if (GetIsDM(creature) || GetIsDMPossessed(creature))
-                return;
-
-            var amount = GetItemPropertyCostTableValue(ip);
-
-            if (GetIsPC(creature))
-            {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                if (isAdding)
-                {
-                    StatRecord.AdjustFPRegen(dbPlayer, amount);
-                }
-                else
-                {
-                    StatRecord.AdjustFPRegen(dbPlayer, -amount);
-                }
-
-                DB.Set(dbPlayer);
-            }
-            else
-            {
-                ReapplyNPCStat(creature, ItemPropertyType.FPRegen, amount, isAdding);
-            }
-        }
-
-        /// <summary>
-        /// Applies or removes a STM bonus on a creature.
-        /// </summary>
-        /// <param name="creature">The creature to adjust</param>
-        /// <param name="item">The item being equipped or unequipped</param>
-        /// <param name="ip">The item property associated with this change</param>
-        /// <param name="isAdding">If true, we're adding the FP, if false we're removing it</param>
-        private static void ApplySTMBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
-        {
-            if (GetIsDM(creature) || GetIsDMPossessed(creature))
-                return;
-
-            var amount = GetItemPropertyCostTableValue(ip);
-
-            if (GetIsPC(creature))
-            {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                if (isAdding)
-                {
-                    StatRecord.AdjustPlayerMaxSTM(dbPlayer, amount, creature);
-                }
-                else
-                {
-                    StatRecord.AdjustPlayerMaxSTM(dbPlayer, -amount, creature);
-                }
-
-                DB.Set(dbPlayer);
-            }
-            else
-            {
-                ReapplyNPCStat(creature, ItemPropertyType.Stamina, amount, isAdding);
-            }
-        }
-
-        /// <summary>
-        /// Applies or removes a STM Regen bonus on a creature.
-        /// </summary>
-        /// <param name="creature">The creature to adjust</param>
-        /// <param name="item">The item being equipped or unequipped</param>
-        /// <param name="ip">The item property associated with this change</param>
-        /// <param name="isAdding">If true, we're adding the FP Regen, if false we're removing it</param>
-        private static void ApplySTMRegenBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
-        {
-            if (GetIsDM(creature) || GetIsDMPossessed(creature))
-                return;
-
-            var amount = GetItemPropertyCostTableValue(ip);
-
-            if (GetIsPC(creature))
-            {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                if (isAdding)
-                {
-                    StatRecord.AdjustSTMRegen(dbPlayer, amount);
-                }
-                else
-                {
-                    StatRecord.AdjustSTMRegen(dbPlayer, -amount);
-                }
-
-                DB.Set(dbPlayer);
-            }
-            else
-            {
-                ReapplyNPCStat(creature, ItemPropertyType.STMRegen, amount, isAdding);
-            }
-        }
-
-        /// <summary>
-        /// Applies or removes a combat readiness bonus on a creature.
-        /// </summary>
-        /// <param name="creature">The creature to adjust</param>
-        /// <param name="item">The item being equipped or unequipped</param>
-        /// <param name="ip">The item property associated with this change</param>
-        /// <param name="isAdding">If true, we're adding the bonus, if false we're removing it.</param>
-        private static void ApplyCombatReadiness(uint creature, uint item, ItemProperty ip, bool isAdding)
-        {
-            // Player equipment totals are refreshed after the native operation.
-            // Updating them during validation can persist a change that never occurs.
-            if (GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
-                return;
-
-            var amount = GetItemPropertyCostTableValue(ip);
-            ReapplyNPCStat(creature, ItemPropertyType.CombatReadiness, amount, isAdding);
-        }
-
-        /// <summary>
         /// Applies or removes attack bonuses. This affects the end result of the damage calculation (not to be confused with Accuracy, which affects the chance to hit).
         /// </summary>
         /// <param name="creature">The creature to adjust</param>
@@ -494,7 +231,7 @@ namespace SWLOR.Game.Server.Feature
             }
             else
             {
-                ReapplyNPCStat(creature, ItemPropertyType.Attack, amount, isAdding);
+                NpcSkinStatWriter.ReapplyNPCStat(creature, ItemPropertyType.Attack, amount, isAdding);
             }
         }
 
@@ -536,7 +273,7 @@ namespace SWLOR.Game.Server.Feature
             }
             else
             {
-                ReapplyNPCStat(creature, ItemPropertyType.Accuracy, amount, isAdding);
+                NpcSkinStatWriter.ReapplyNPCStat(creature, ItemPropertyType.Accuracy, amount, isAdding);
             }
         }
 
@@ -572,7 +309,7 @@ namespace SWLOR.Game.Server.Feature
             }
             else
             {
-                ReapplyNPCStat(creature, ItemPropertyType.ForceAttack, amount, isAdding);
+                NpcSkinStatWriter.ReapplyNPCStat(creature, ItemPropertyType.ForceAttack, amount, isAdding);
             }
         }
 
@@ -753,7 +490,7 @@ namespace SWLOR.Game.Server.Feature
             }
             else
             {
-                ReapplyNPCStat(creature, ItemPropertyType.Evasion, amount, isAdding);
+                NpcSkinStatWriter.ReapplyNPCStat(creature, ItemPropertyType.Evasion, amount, isAdding);
             }
         }
 
@@ -789,7 +526,7 @@ namespace SWLOR.Game.Server.Feature
             }
             else
             {
-                ReapplyNPCStat(creature, ItemPropertyType.Stealth, amount, isAdding);
+                NpcSkinStatWriter.ReapplyNPCStat(creature, ItemPropertyType.Stealth, amount, isAdding);
             }
         }
 
@@ -825,7 +562,7 @@ namespace SWLOR.Game.Server.Feature
             }
             else
             {
-                ReapplyNPCStat(creature, ItemPropertyType.Detection, amount, isAdding);
+                NpcSkinStatWriter.ReapplyNPCStat(creature, ItemPropertyType.Detection, amount, isAdding);
             }
         }
 
@@ -861,7 +598,7 @@ namespace SWLOR.Game.Server.Feature
             }
             else
             {
-                ReapplyNPCStat(creature, ItemPropertyType.TrapBonus, amount, isAdding);
+                NpcSkinStatWriter.ReapplyNPCStat(creature, ItemPropertyType.TrapBonus, amount, isAdding);
             }
         }
 
@@ -897,7 +634,7 @@ namespace SWLOR.Game.Server.Feature
             }
             else
             {
-                ReapplyNPCStat(creature, ItemPropertyType.Disarm, amount, isAdding);
+                NpcSkinStatWriter.ReapplyNPCStat(creature, ItemPropertyType.Disarm, amount, isAdding);
             }
         }
 
@@ -933,7 +670,7 @@ namespace SWLOR.Game.Server.Feature
             }
             else
             {
-                ReapplyNPCStat(creature, ItemPropertyType.PoisonBonus, amount, isAdding);
+                NpcSkinStatWriter.ReapplyNPCStat(creature, ItemPropertyType.PoisonBonus, amount, isAdding);
             }
         }
 
@@ -969,163 +706,9 @@ namespace SWLOR.Game.Server.Feature
             }
             else
             {
-                ReapplyNPCStat(creature, ItemPropertyType.Lockpicking, amount, isAdding);
+                NpcSkinStatWriter.ReapplyNPCStat(creature, ItemPropertyType.Lockpicking, amount, isAdding);
             }
         }
 
-        /// <summary>
-        /// Applies or removes control on a creature.
-        /// </summary>
-        /// <param name="creature">The creature to adjust</param>
-        /// <param name="item">The item being equipped or unequipped</param>
-        /// <param name="ip">The item property associated with this change</param>
-        /// <param name="isAdding">If true, we're adding control, if false we're removing it.</param>
-        private static void ApplyControl(uint creature, uint item, ItemProperty ip, bool isAdding)
-        {
-            if (GetIsDM(creature) || GetIsDMPossessed(creature))
-                return;
-
-            var amount = GetItemPropertyCostTableValue(ip);
-
-            if (GetIsPC(creature))
-            {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var subType = GetItemPropertySubType(ip);
-                var skillType = SkillType.Invalid;
-
-                // Types are defined in iprp_crafttype.2da
-                switch (subType)
-                {
-                    case 1:
-                        skillType = SkillType.Smithery;
-                        break;
-                    case 2:
-                        skillType = SkillType.Engineering;
-                        break;
-                    case 3:
-                        skillType = SkillType.Fabrication;
-                        break;
-                    case 4:
-                        skillType = SkillType.Agriculture;
-                        break;
-                }
-
-                if (skillType == SkillType.Invalid)
-                {
-                    throw new Exception($"Unable to determine skill type for {nameof(ApplyControl)}");
-                }
-
-                if (isAdding)
-                {
-                    StatRecord.AdjustControl(dbPlayer, skillType, amount);
-                }
-                else
-                {
-                    StatRecord.AdjustControl(dbPlayer, skillType, -amount);
-                }
-
-                DB.Set(dbPlayer);
-            }
-        }
-
-        /// <summary>
-        /// Applies or removes craftsmanship on a creature.
-        /// </summary>
-        /// <param name="creature">The creature to adjust</param>
-        /// <param name="item">The item being equipped or unequipped</param>
-        /// <param name="ip">The item property associated with this change</param>
-        /// <param name="isAdding">If true, we're adding craftsmanship, if false we're removing it.</param>
-        private static void ApplyCraftsmanship(uint creature, uint item, ItemProperty ip, bool isAdding)
-        {
-            if (GetIsDM(creature) || GetIsDMPossessed(creature))
-                return;
-
-            var amount = GetItemPropertyCostTableValue(ip);
-
-            if (GetIsPC(creature))
-            {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var subType = GetItemPropertySubType(ip);
-                var skillType = SkillType.Invalid;
-
-                // Types are defined in iprp_crafttype.2da
-                switch (subType)
-                {
-                    case 1:
-                        skillType = SkillType.Smithery;
-                        break;
-                    case 2:
-                        skillType = SkillType.Engineering;
-                        break;
-                    case 3:
-                        skillType = SkillType.Fabrication;
-                        break;
-                    case 4:
-                        skillType = SkillType.Agriculture;
-                        break;
-                }
-                if (isAdding)
-                {
-                    StatRecord.AdjustCraftsmanship(dbPlayer, skillType, amount);
-                }
-                else
-                {
-                    StatRecord.AdjustCraftsmanship(dbPlayer, skillType, -amount);
-                }
-
-                DB.Set(dbPlayer);
-            }
-        }
-        /// <summary>
-        /// Applies or removes CP bonuses on a player.
-        /// </summary>
-        /// <param name="creature">The creature to adjust</param>
-        /// <param name="item">The item being equipped or unequipped</param>
-        /// <param name="ip">The item property associated with this change</param>
-        /// <param name="isAdding">If true, we're adding the CP bonus, if false we're removing it.</param>
-        private static void ApplyCPBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
-        {
-            if (GetIsDM(creature) || GetIsDMPossessed(creature))
-                return;
-
-            var amount = GetItemPropertyCostTableValue(ip);
-
-            if (GetIsPC(creature))
-            {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var subType = GetItemPropertySubType(ip);
-                var skillType = SkillType.Invalid;
-
-                // Types are defined in iprp_crafttype.2da
-                switch (subType)
-                {
-                    case 1:
-                        skillType = SkillType.Smithery;
-                        break;
-                    case 2:
-                        skillType = SkillType.Engineering;
-                        break;
-                    case 3:
-                        skillType = SkillType.Fabrication;
-                        break;
-                    case 4:
-                        skillType = SkillType.Agriculture;
-                        break;
-                }
-                if (isAdding)
-                {
-                    StatRecord.AdjustCPBonus(dbPlayer, skillType, amount);
-                }
-                else
-                {
-                    StatRecord.AdjustCPBonus(dbPlayer, skillType, -amount);
-                }
-
-                DB.Set(dbPlayer);
-            }
-        }
     }
 }

@@ -46,10 +46,11 @@ public class CombatReadinessEquipmentTests
         _root = root!.FullName;
         var methods = StatHarnessSource.Methods(node => node.Identifier.ValueText is "GetCombatReadinessPercent" or "GetEquippedCombatReadiness"
             or "RefreshCombatReadinessEquipment" or "AdjustCombatReadiness");
-        var equipmentMethods = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
-                "SWLOR.Game.Server", "Feature", "EquipmentStats.cs"))).GetRoot()
+        var equipmentMethods = new[] { "EquipmentStats.cs", Path.Combine("EquipmentStatActions", "EquipmentVitalStatActions.cs") }
+            .SelectMany(file => CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
+                "SWLOR.Game.Server", "Feature", file))).GetRoot()
             .DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(node => node.Identifier.ValueText is "ApplyCombatReadiness" or "RefreshCombatReadinessAfterEquipmentChange");
+            .Where(node => node.Identifier.ValueText is "ApplyCombatReadiness" or "RefreshCombatReadinessAfterEquipmentChange"));
         // Execute the real cache reconciliation, before/after handlers, and read path.
         // Substitute only the native equipment/actor queries, database, and other stat sources.
         var source = $$"""
@@ -62,6 +63,7 @@ public class CombatReadinessEquipmentTests
             using SWLOR.NWN.API.NWScript.Enum.Item;
             using static SWLOR.Game.Server.Composition.GameServices;
             using Stat = ReadinessHarness;
+            using NpcSkinStatWriter = ReadinessHarness;
             using StatRecord = ReadinessHarness;
 
             public static class ReadinessHarness

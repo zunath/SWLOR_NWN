@@ -142,7 +142,7 @@
     },
     "Gameplay": {
       "services": ["ServerTask"],
-      "featureFolders": []
+      "featureFolders": ["EquipmentStatActions"]
     }
   }
 }

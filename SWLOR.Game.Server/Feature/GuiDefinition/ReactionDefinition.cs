@@ -10,10 +10,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// <summary>The Reaction window: Espionage's poison and trap crafting.</summary>
     public class ReactionDefinition : IGuiWindowDefinition
     {
-        private const float PanelWidth = 580f;
         private const float StatusTextHeight = 66f;
         private const float ActionButtonWidth = 130f;
         private const float ActionButtonHeight = 32f;
+        /// <summary>Three wrapped lines: an action's summary beside its button can carry two outcomes and a warning.</summary>
+        private const float ActionTextHeight = 66f;
         private const float MeterLabelHeight = 20f;
         private const float MeterBarHeight = 18f;
         private const float RecipeDetailHeight = 210f;
@@ -226,12 +227,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindOnClicked(model => model.OnClickAction(index))
                             .SetWidth(ActionButtonWidth)
                             .SetHeight(ActionButtonHeight);
-                        row.AddLabel()
-                            .BindText(Binding<string>(ReactionViewModel.ActionSummaryProperty(index)))
-                            .BindColor(Binding<GuiColor>(ReactionViewModel.ActionColorProperty(index)))
-                            .SetHeight(ActionButtonHeight)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                        AddWrappedText(row, Binding<string>(ReactionViewModel.ActionSummaryProperty(index)), ActionTextHeight)
+                            .BindColor(Binding<GuiColor>(ReactionViewModel.ActionColorProperty(index)));
                     });
                 }
 
@@ -247,6 +244,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddSpacer();
                 });
             });
+        }
+
+        /// <summary>A borderless, unscrolled text box: it wraps a sentence to the panel's width, where a label cuts it off at one line.</summary>
+        private static GuiText<ReactionViewModel> AddWrappedText(
+            GuiRow<ReactionViewModel> row,
+            Expression<Func<ReactionViewModel, string>> text,
+            float height)
+        {
+            return row.AddText()
+                .BindText(text)
+                .SetHeight(height)
+                .SetShowBorder(false)
+                .SetScrollbars(NuiScrollbars.None);
         }
 
         private static void AddPhaseLabel(
@@ -286,7 +296,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
-        /// <summary>A fixed-width borderless panel in the standard layout's content host (rule R5).</summary>
+        /// <summary>
+        /// A borderless panel in the standard layout's content host (rule R5). It has no fixed width: it takes the window's width, so the
+        /// wrapped sentences reflow when the window is resized.
+        /// </summary>
         private static void AddPanel(GuiGroup<ReactionViewModel> host, Action<GuiColumn<ReactionViewModel>> buildContent)
         {
             host.AddColumn(col =>
@@ -299,8 +312,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         // Auto: the host group only hands this panel the viewport height, so the panel is what scrolls on a short screen.
                         panel.SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(buildContent);
-                    })
-                        .SetWidth(PanelWidth);
+                    });
                 });
             });
         }

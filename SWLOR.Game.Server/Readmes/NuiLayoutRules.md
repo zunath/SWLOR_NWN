@@ -149,6 +149,13 @@ and nothing scrolls; the Auto panel is then what scrolls. Keep the action button
 that scrolled content, and wrap result sentences in a borderless `AddText` instead of a
 one-line label (`CraftWindowLayoutTests` guards both).
 
+The minigame pages (Forge, Circuit, Fabricator, Kitchen, Reaction, Line, Search) are made
+mostly of sentences that run past one line, such as an action's summary beside its button.
+They leave the panel's width unset, so the panel fills the content column and the wrapped
+text reflows when the player resizes the window. Every such sentence is a borderless
+`AddText` tall enough for its lines at the default window width (a text in a list cell
+takes the list's row height); a label clips at the panel edge however wide the window is.
+
 ### R6 — Re-select the current tab after any modal closes (framework hook)
 Closing `ShowModal`/`ShowInputModal` swaps `%%WINDOW_MAIN%%` back into the root with
 every group layout assigned through `ChangePartialView`/`SetGroupLayout` already

@@ -41,10 +41,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "ruined dish costs. Closing the window ruins the dish too. Craftsmanship makes cooking faster, and Control narrows " +
             "your pushes.";
 
-        private const float ContentPanelWidth = 620f;
         private const float LabelHeight = 20f;
         private const float BarHeight = 20f;
-        private const float RowHeight = 34f;
+        /// <summary>Two wrapped lines: an enhancement's slot, threshold and item name beside its button.</summary>
+        private const float EnhancementRowHeight = 44f;
+        /// <summary>Two wrapped lines: an action's summary, which can list several effects, their ranges and a warning.</summary>
+        private const float ActionRowHeight = 44f;
+        /// <summary>Every action without scrolling the list: the Kitchen has fourteen.</summary>
+        private const float ActionListHeight = 14 * ActionRowHeight + 8f;
         private const float NoteHeight = 44f;
         private const float ButtonWidth = 190f;
         private const float EnhancementButtonWidth = 90f;
@@ -85,6 +89,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 col.AddRow(row =>
                 {
+                    // No fixed width: the panel takes the window's width, so the wrapped sentences reflow when the window is resized.
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
@@ -164,15 +169,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     });
                                     template.AddCell(cell =>
                                     {
-                                        cell.AddLabel()
+                                        cell.AddText()
                                             .BindText(model => model.EnhancementTexts)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                            .SetShowBorder(false)
+                                            .SetScrollbars(NuiScrollbars.None);
                                     });
                                 })
                                     .BindRowCount(model => model.EnhancementTexts)
-                                    .SetRowHeight(RowHeight)
-                                    .SetHeight(106f);
+                                    .SetRowHeight(EnhancementRowHeight)
+                                    .SetHeight(3 * EnhancementRowHeight + 8f);
                             });
 
                             AddNote(content, model => model.FailureRuleText);
@@ -198,8 +203,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 r.AddSpacer();
                             });
                         });
-                    })
-                        .SetWidth(ContentPanelWidth);
+                    });
                 });
             });
         }
@@ -210,6 +214,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 col.AddRow(row =>
                 {
+                    // No fixed width: the panel takes the window's width, so the wrapped sentences reflow when the window is resized.
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
@@ -269,14 +274,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHeight(90f);
                             });
 
-                            content.AddRow(r =>
-                            {
-                                r.AddLabel()
-                                    .BindText(model => model.DistanceText)
-                                    .BindColor(model => model.DistanceColor)
-                                    .SetHeight(LabelHeight)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                            });
+                            content.AddRow(r => r.AddText()
+                                .BindText(model => model.DistanceText)
+                                .BindColor(model => model.DistanceColor)
+                                .SetHeight(NoteHeight)
+                                .SetShowBorder(false)
+                                .SetScrollbars(NuiScrollbars.None));
                             AddNote(content, model => model.HeatText);
                             AddNote(content, model => model.DriftText);
                             content.AddRow(r =>
@@ -287,7 +290,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHeight(LabelHeight)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
                             });
-                            AddLabel(content, model => model.ThresholdText);
+                            AddNote(content, model => model.ThresholdText);
 
                             AddLabel(content, null, "Actions (hover for every result)");
                             content.AddRow(r =>
@@ -307,20 +310,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     });
                                     template.AddCell(cell =>
                                     {
-                                        cell.AddLabel()
+                                        cell.AddText()
                                             .BindText(model => model.ActionSummaries)
                                             .BindColor(model => model.ActionColors)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                            .SetShowBorder(false)
+                                            .SetScrollbars(NuiScrollbars.None);
                                     });
                                 })
                                     .BindRowCount(model => model.ActionNames)
-                                    .SetRowHeight(RowHeight)
-                                    .SetHeight(440f);
+                                    .SetRowHeight(ActionRowHeight)
+                                    .SetHeight(ActionListHeight);
                             });
                         });
-                    })
-                        .SetWidth(ContentPanelWidth);
+                    });
                 });
             });
         }

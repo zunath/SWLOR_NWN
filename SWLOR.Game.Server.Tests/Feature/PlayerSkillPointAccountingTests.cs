@@ -88,10 +88,10 @@ public class PlayerSkillPointAccountingTests : SkillFacadeFixture
             "GuiDefinition",
             "ViewModel",
             "CharacterFullRebuildViewModel.cs"));
-        var resetAction = ExtractMethod(source, "public Action OnClickResetEverything() => () =>");
+        var resetAction = ExtractMethod(source, "private void ShowResetEverythingModal()");
 
-        resetAction.Should().Contain("void ResetSkillPointPool()");
-        resetAction.Should().Contain("dbPlayer.UnallocatedSP = Skill.GetTotalSkillPoints(dbPlayer);");
+        source.Should().Contain("private void ResetSkillPointPool()");
+        source.Should().Contain("dbPlayer.UnallocatedSP = Skill.GetTotalSkillPoints(dbPlayer);");
         resetAction.IndexOf("RefundAllPerks();", StringComparison.Ordinal)
             .Should()
             .BeLessThan(resetAction.IndexOf("ResetSkillPointPool();", StringComparison.Ordinal));

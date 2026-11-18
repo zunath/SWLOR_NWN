@@ -31,7 +31,7 @@ SWLOR.Game.Server.Domain.Items.ItemService | 1605
 SWLOR.Game.Server.Domain.Space.SpaceService | 2768
 SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase | 2332
 SWLOR.Game.Server.Feature.EquipmentStats | 1131
-SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel | 4591
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel | 3469
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel | 1516
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DisguiseViewModel | 1029
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DroidAssemblyViewModel | 1023

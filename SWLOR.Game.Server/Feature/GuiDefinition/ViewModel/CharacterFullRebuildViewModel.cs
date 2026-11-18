@@ -391,143 +391,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return _remainingAbilityPoints > 0 || _remainingSkillPoints > 0;
         }
 
-        public Action OnClickResetEverything() => () =>
+        public Action OnClickResetEverything() => () => ShowResetEverythingModal();
+
+        private void ShowResetEverythingModal()
         {
-            void UnequipAllItems()
-            {
-                AssignCommand(Player, () => ClearAllActions());
-                for (var index = 0; index < NumberOfInventorySlots; index++)
-                {
-                    var slot = (InventorySlot)index;
-                    var item = GetItemInSlot(slot, Player);
-                    if (GetIsObjectValid(item)
-                        && slot != InventorySlot.CreatureArmor
-                        && slot != InventorySlot.CreatureBite
-                        && slot != InventorySlot.CreatureLeft
-                        && slot != InventorySlot.CreatureRight)
-                    {
-                        AssignCommand(Player, () =>
-                        {
-                            ActionUnequipItem(item);
-                        });
-                    }
-                }
-            }
-
-            void RefundAllPerks()
-            {
-                var playerId = GetObjectUUID(Player);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var pcPerks = dbPlayer.Perks.ToDictionary(x => x.Key, y => y.Value);
-                var allPerks = Perk.GetAllPerks();
-
-                foreach (var (type, level) in pcPerks)
-                {
-                    if (!allPerks.TryGetValue(type, out var perkDetail))
-                    {
-                        dbPlayer.Perks.Remove(type);
-                        Log.Write(LogGroup.PerkRefund, $"REFUND - {playerId} - Removed undefined perk during full rebuild Date {DateTime.UtcNow} - Level {level} - PerkID {type}");
-                        continue;
-                    }
-
-                    var refundAmount = perkDetail.PerkLevels
-                        .Where(x => x.Key <= level)
-                        .Sum(x => x.Value.Price);
-
-                    dbPlayer.UnallocatedSP += refundAmount;
-                    dbPlayer.Perks.Remove(type);
-                    Log.Write(LogGroup.PerkRefund, $"REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {level} - PerkID {type}");
-
-                    // Remove all feats granted by all levels of this perk.
-                    var feats = perkDetail.PerkLevels.Values.SelectMany(s => s.GrantedFeats);
-                    foreach (var feat in feats)
-                    {
-                        CreaturePlugin.RemoveFeat(Player, feat);
-                    }
-
-                    Perk.RemoveStatusEffectsOnPerkRefund(Player, type);
-
-                    // Run all of the triggers related to refunding this perk.
-                    foreach (var action in perkDetail.RefundedTriggers)
-                    {
-                        action(Player);
-                    }
-                }
-
-                // Every perk is refunded, so no crafting style stays selected. The record is saved below, after the
-                // refund triggers, so clearing it here cannot be overwritten by this stale copy.
-                CraftingStyleSelection.ClearAll(dbPlayer);
-                DB.Set(dbPlayer);
-            }
-
-            void RefundAllSkills()
-            {
-                var playerId = GetObjectUUID(Player);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                foreach (var (type, _) in dbPlayer.Skills)
-                {
-                    var detail = Skill.GetSkillDetails(type);
-                    if (!detail.ContributesToSkillCap)
-                        continue;
-
-                    dbPlayer.Skills[type].Rank = 0;
-                    dbPlayer.Skills[type].XP = 0;
-                    dbPlayer.Skills[type].IsLocked = false;
-                }
-
-                DB.Set(dbPlayer);
-            }
-
-            void ResetSkillPointPool()
-            {
-                var playerId = GetObjectUUID(Player);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                dbPlayer.UnallocatedSP = Skill.GetTotalSkillPoints(dbPlayer);
-
-                DB.Set(dbPlayer);
-            }
-
-            void ResetFeats()
-            {
-                PlayerInitialization.ResetFeatsToBaseline(Player);
-            }
-
-            void ResetStats()
-            {
-                var playerId = GetObjectUUID(Player);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Might, 10);
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Perception, 10);
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Vitality, 10);
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Willpower, 10);
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Agility, 10);
-                CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Social, 10);
-                CreaturePlugin.SetBaseAttackBonus(Player, 1);
-
-                dbPlayer.BaseStats[AbilityType.Might] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Might);
-                dbPlayer.BaseStats[AbilityType.Perception] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Perception);
-                dbPlayer.BaseStats[AbilityType.Vitality] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Vitality);
-                dbPlayer.BaseStats[AbilityType.Willpower] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Willpower);
-                dbPlayer.BaseStats[AbilityType.Agility] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Agility);
-                dbPlayer.BaseStats[AbilityType.Social] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Social);
-
-                dbPlayer.UpgradedStats[AbilityType.Might] = 0;
-                dbPlayer.UpgradedStats[AbilityType.Perception] = 0;
-                dbPlayer.UpgradedStats[AbilityType.Vitality] = 0;
-                dbPlayer.UpgradedStats[AbilityType.Willpower] = 0;
-                dbPlayer.UpgradedStats[AbilityType.Agility] = 0;
-                dbPlayer.UpgradedStats[AbilityType.Social] = 0;
-
-                dbPlayer.UnallocatedAP = dbPlayer.TotalAPAcquired;
-                dbPlayer.RacialStat = AbilityType.Invalid;
-                dbPlayer.CombatReadiness = 0;
-                dbPlayer.RebuildComplete = false;
-                DB.Set(dbPlayer);
-            }
-
             ShowModal($"WARNING: Your perks and skill points will be refunded. Your stats will be reinitialized to 10 and your racial bonus stat will be refunded. You will be required to distribute all of these points before leaving this area. Partial XP towards the next skill rank will be LOST. Are you sure you'd like to proceed?", () =>
             {
                 // Return the player to a clean state before refunding: drop every stance/status effect and
@@ -548,7 +415,142 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 FloatingTextStringOnCreature(ColorToken.Green("Character reset successfully!"), Player, false);
             });
-        };
+        }
+
+        private void UnequipAllItems()
+        {
+            AssignCommand(Player, () => ClearAllActions());
+            for (var index = 0; index < NumberOfInventorySlots; index++)
+            {
+                var slot = (InventorySlot)index;
+                var item = GetItemInSlot(slot, Player);
+                if (GetIsObjectValid(item)
+                    && slot != InventorySlot.CreatureArmor
+                    && slot != InventorySlot.CreatureBite
+                    && slot != InventorySlot.CreatureLeft
+                    && slot != InventorySlot.CreatureRight)
+                {
+                    AssignCommand(Player, () =>
+                    {
+                        ActionUnequipItem(item);
+                    });
+                }
+            }
+        }
+
+        private void RefundAllPerks()
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var pcPerks = dbPlayer.Perks.ToDictionary(x => x.Key, y => y.Value);
+            var allPerks = Perk.GetAllPerks();
+
+            foreach (var (type, level) in pcPerks)
+            {
+                if (!allPerks.TryGetValue(type, out var perkDetail))
+                {
+                    dbPlayer.Perks.Remove(type);
+                    Log.Write(LogGroup.PerkRefund, $"REFUND - {playerId} - Removed undefined perk during full rebuild Date {DateTime.UtcNow} - Level {level} - PerkID {type}");
+                    continue;
+                }
+
+                var refundAmount = perkDetail.PerkLevels
+                    .Where(x => x.Key <= level)
+                    .Sum(x => x.Value.Price);
+
+                dbPlayer.UnallocatedSP += refundAmount;
+                dbPlayer.Perks.Remove(type);
+                Log.Write(LogGroup.PerkRefund, $"REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {level} - PerkID {type}");
+
+                // Remove all feats granted by all levels of this perk.
+                var feats = perkDetail.PerkLevels.Values.SelectMany(s => s.GrantedFeats);
+                foreach (var feat in feats)
+                {
+                    CreaturePlugin.RemoveFeat(Player, feat);
+                }
+
+                Perk.RemoveStatusEffectsOnPerkRefund(Player, type);
+
+                // Run all of the triggers related to refunding this perk.
+                foreach (var action in perkDetail.RefundedTriggers)
+                {
+                    action(Player);
+                }
+            }
+
+            // Every perk is refunded, so no crafting style stays selected. The record is saved below, after the
+            // refund triggers, so clearing it here cannot be overwritten by this stale copy.
+            CraftingStyleSelection.ClearAll(dbPlayer);
+            DB.Set(dbPlayer);
+        }
+
+        private void RefundAllSkills()
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            foreach (var (type, _) in dbPlayer.Skills)
+            {
+                var detail = Skill.GetSkillDetails(type);
+                if (!detail.ContributesToSkillCap)
+                    continue;
+
+                dbPlayer.Skills[type].Rank = 0;
+                dbPlayer.Skills[type].XP = 0;
+                dbPlayer.Skills[type].IsLocked = false;
+            }
+
+            DB.Set(dbPlayer);
+        }
+
+        private void ResetSkillPointPool()
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            dbPlayer.UnallocatedSP = Skill.GetTotalSkillPoints(dbPlayer);
+
+            DB.Set(dbPlayer);
+        }
+
+        private void ResetFeats()
+        {
+            PlayerInitialization.ResetFeatsToBaseline(Player);
+        }
+
+        private void ResetStats()
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Might, 10);
+            CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Perception, 10);
+            CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Vitality, 10);
+            CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Willpower, 10);
+            CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Agility, 10);
+            CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Social, 10);
+            CreaturePlugin.SetBaseAttackBonus(Player, 1);
+
+            dbPlayer.BaseStats[AbilityType.Might] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Might);
+            dbPlayer.BaseStats[AbilityType.Perception] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Perception);
+            dbPlayer.BaseStats[AbilityType.Vitality] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Vitality);
+            dbPlayer.BaseStats[AbilityType.Willpower] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Willpower);
+            dbPlayer.BaseStats[AbilityType.Agility] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Agility);
+            dbPlayer.BaseStats[AbilityType.Social] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Social);
+
+            dbPlayer.UpgradedStats[AbilityType.Might] = 0;
+            dbPlayer.UpgradedStats[AbilityType.Perception] = 0;
+            dbPlayer.UpgradedStats[AbilityType.Vitality] = 0;
+            dbPlayer.UpgradedStats[AbilityType.Willpower] = 0;
+            dbPlayer.UpgradedStats[AbilityType.Agility] = 0;
+            dbPlayer.UpgradedStats[AbilityType.Social] = 0;
+
+            dbPlayer.UnallocatedAP = dbPlayer.TotalAPAcquired;
+            dbPlayer.RacialStat = AbilityType.Invalid;
+            dbPlayer.CombatReadiness = 0;
+            dbPlayer.RebuildComplete = false;
+            DB.Set(dbPlayer);
+        }
 
         public Action OnClickSubtractMight() => () =>
         {

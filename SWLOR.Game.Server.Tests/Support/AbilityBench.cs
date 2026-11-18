@@ -102,7 +102,7 @@ public sealed partial class AbilityBench : IDisposable
         Magnitude = new TestCombatAbilityMagnitudeService(this, ImpactState);
         var statusEffects = StatusEffects();
         var combatPoints = CombatPoints();
-        Aura = new TestAbilityAuraService(this, statusEffects, Party(), combatPoints);
+        Aura = new TestAbilityAuraService(this, statusEffects, StatusCatalog(), Party(), combatPoints);
         Immunity = new AbilityImmunityService(statusEffects);
         ActivationState = new AbilityActivationStateService();
         var meleeTechnique = MeleeTechnique();

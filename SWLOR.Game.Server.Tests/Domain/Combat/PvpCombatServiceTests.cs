@@ -452,7 +452,7 @@ public class PvpCombatServiceTests
     private sealed class TestPvp : PvpCombatService
     {
         public TestPvp()
-            : base(FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.For<ICombatRecorderService>())
+            : base(FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatRecorderService>())
         {
         }
 

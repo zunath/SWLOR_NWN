@@ -183,7 +183,7 @@ public class StatusEffectServiceDefaultSeamsTests
     private abstract class DefaultsBase : StatusEffectService
     {
         protected DefaultsBase()
-            : base(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IActiveAbilityImpact>(), FacadeForwarder.LazyFor<ICombatAbilityImpactService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>())
+            : base(null!, null!, null!, null!, null!, null!, null!, null!, null!, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IActiveAbilityImpact>(), FacadeForwarder.LazyFor<ICombatAbilityImpactService>())
         {
         }
     }

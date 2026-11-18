@@ -31,8 +31,8 @@ public static class StatusEffectInternals
     /// <summary>Part 7, the session: <c>_loggedOutPlayerEffects</c> and its private nested <c>LoggedOutStatusEffects</c>.</summary>
     public static readonly Type SessionType = typeof(StatusEffectService);
 
-    /// <summary>The class that declares the leadership damage reduction members (part 3 now, <c>LeadershipDamageReductionRules</c> after P5-5c).</summary>
-    public static readonly Type LeadershipType = typeof(StatusEffectService);
+    /// <summary>The static class that declares the leadership damage reduction members.</summary>
+    public static readonly Type LeadershipType = typeof(LeadershipDamageReductionRules);
 
     public static Dictionary<uint, CreatureStatusEffect> CreatureEffects =>
         (Dictionary<uint, CreatureStatusEffect>)Field(CoreType, "_creatureEffects", Core);
@@ -49,9 +49,9 @@ public static class StatusEffectInternals
     public static TResult InvokeNative<TResult>(string method, params object[] arguments) =>
         Invoke<TResult>(NativeType, method, Native, arguments);
 
-    /// <summary>Runs a private method of the leadership damage reduction rules in the installed container.</summary>
+    /// <summary>Runs a method of the leadership damage reduction rules, which are static.</summary>
     public static TResult InvokeLeadership<TResult>(string method, params object[] arguments) =>
-        Invoke<TResult>(LeadershipType, method, Leadership, arguments);
+        (TResult)LeadershipType.GetMethod(method, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, arguments)!;
 
     private static TResult Invoke<TResult>(Type owner, string method, object instance, object[] arguments) =>
         (TResult)owner.GetMethod(method, PrivateInstance)!.Invoke(instance, arguments)!;
@@ -64,8 +64,6 @@ public static class StatusEffectInternals
     private static object Native => Resolve<IStatusEffectService>();
 
     private static object CombatEvents => Resolve<IStatusEffectService>();
-
-    private static object Leadership => Resolve<IStatusEffectService>();
 
     private static object Resolve<TInterface>()
     {

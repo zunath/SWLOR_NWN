@@ -32,12 +32,10 @@ public sealed partial class AbilityBench
                 ActiveEffects[((uint)args[1]!, type)] = effect ?? ((IStatusEffect)Activator.CreateInstance(type)!);
                 return true;
             })
-            .On("CreateStatusEffect", args => (IStatusEffect)Activator.CreateInstance((Type)args[0]!)!)
             .On("GetCreatureStatusEffects", args => CreatureEffects.TryGetValue((uint)args[0]!, out var found)
                 ? found
                 : new CreatureStatusEffect { StatGroup = new StatGroup() })
             .On("GetStatusEffect", args => ActiveEffects.GetValueOrDefault(((uint)args[0]!, (Type)args[1]!)))
-            .On("GetStatusEffectName", args => ((Type)args[0]!).Name)
             .On("HasStatusEffect", args => ActiveEffects.ContainsKey(((uint)args[0]!, (Type)args[1]!)))
             .On("HasStatusEffectCategory", args => (TypeCategories & (StatusEffectCategory)args[1]!) == (StatusEffectCategory)args[1]! && TypeCategories != StatusEffectCategory.None)
             .On("NotifyAttackAttemptStatusEffects", args =>
@@ -61,6 +59,15 @@ public sealed partial class AbilityBench
                 ActiveEffects.Remove(((uint)args[0]!, (Type)args[1]!));
                 return null;
             });
+        return service;
+    }
+
+    private IStatusEffectCatalogService StatusCatalog()
+    {
+        var service = ScriptedProxy.Create<IStatusEffectCatalogService>(out var proxy);
+        proxy
+            .On("CreateStatusEffect", args => (IStatusEffect)Activator.CreateInstance((Type)args[0]!)!)
+            .On("GetStatusEffectName", args => ((Type)args[0]!).Name);
         return service;
     }
 

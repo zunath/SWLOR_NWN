@@ -28,7 +28,7 @@ public abstract class StatusEffectServiceTestBase
     // One accessor per part of the status effect split; each is the part's double (StatusEffectBench).
     protected TestStatusEffectService Service => Bench.Service;
 
-    protected TestStatusEffectService Catalog => Bench.Catalog;
+    protected TestStatusEffectCatalogService Catalog => Bench.Catalog;
 
     protected TestStatusEffectService Application => Bench.Application;
 

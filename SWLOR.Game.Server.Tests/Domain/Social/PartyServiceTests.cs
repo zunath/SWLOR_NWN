@@ -67,7 +67,7 @@ public class PartyServiceTests
         telegraphScript.On("UpdateShadersForPlayers", _ => null);
         _provider = ContainerHost.Create(new ServiceCollection()
             .AddSingleton<IPartyService>(_service)
-            .AddSingleton<IAbilityAuraService>(new AbilityAuraService(null!, _roster, null!, null!))
+            .AddSingleton<IAbilityAuraService>(new AbilityAuraService(null!, null!, _roster, null!, null!))
             .AddSingleton(telegraph));
         _containerScope = CompositionRoot.InstallForTests(_provider);
         _engineScope = NWScriptRuntime.Override(_engine);

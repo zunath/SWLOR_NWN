@@ -111,6 +111,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (HostedEventRules.TryParseLocalTime(StartText, out var local) &&
                 PlayerTimeZones.TryToUtc(local, _formZone, out var startUtc))
             {
+                // Unchanged text keeps the event's stored start, which may be the second copy of a repeated hour.
+                var storedUtc = string.IsNullOrEmpty(_selectedEventId) ? null : HostedEvents.GetEvent(_selectedEventId)?.ScheduledStartUtc;
+                startUtc = HostedEventRules.GetStartToSave(storedUtc, StartText, _formZone, startUtc);
                 StartText = HostedEventRules.FormatStartTime(startUtc, zone);
             }
 

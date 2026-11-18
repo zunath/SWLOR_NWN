@@ -24,6 +24,10 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearanceSwatchService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearanceTintEditorService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.MigrationDefinition.CharacterLoginRestoration>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow.IncubatorItemService>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow.IncubatorJobCalculator>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow.IncubatorJobService>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow.IncubatorPanelService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.PlaceableScripts>();
         }
 

@@ -146,6 +146,10 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IStatusEffectSessionService, StatusEffectSessionService>();
             // Part 3 of the status effect split (P5-5f): applying a status effect.
             services.AddSingleton<IStatusEffectApplicationService, StatusEffectApplicationService>();
+            // Part 4 of the status effect split (P5-5g): the timing, refresh, restart and extension of a status effect.
+            services.AddSingleton<IStatusEffectDurationService, StatusEffectDurationService>();
+            // Part 6 of the status effect split (P5-5g): the damage and attack notices and the native attack swing.
+            services.AddSingleton<IStatusEffectCombatEventService, StatusEffectCombatEventService>();
             services.AddSingleton<ITemporaryStatModifierService, TemporaryStatModifierService>();
             services.AddSingleton<ITintMapStateService, TintMapStateService>();
         }

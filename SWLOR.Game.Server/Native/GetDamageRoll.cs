@@ -255,7 +255,7 @@ namespace SWLOR.Game.Server.Native
                 void ApplyPreDamageEffects(int resolvedDamage)
                 {
                     if (resolvedDamage <= 0 || !GetIsObjectValid(attackerId) || !GetIsObjectValid(defenderId)) return;
-                    StatusEffect.NotifyPreDamageStatusEffects(attackerId, defenderId, resolvedDamage, rolledType);
+                    StatusEffectCombatEvent.NotifyPreDamageStatusEffects(attackerId, defenderId, resolvedDamage, rolledType);
                     GameServices.CombatDamageTaken.ApplyDamageReflectionEffects(attackerId, defenderId, resolvedDamage, rolledType);
                 }
                 if (weaponImpactScheduler == null) ApplyPreDamageEffects(damage);

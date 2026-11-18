@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Native
             var round = creature.m_pcCombatRound;
             var firstAttack = round.m_nCurrentAttack;
             var duration = WeaponAttackAnimation.CalculateSwingDuration(cycleDuration, 2);
-            StatusEffect.BeginNativeAttackSwing(attacker);
+            StatusEffectCombatEvent.BeginNativeAttackSwing(attacker);
             try
             {
                 creature.ResolveAttack(target, (attacks + 1) / 2, duration);
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Native
             {
                 _pendingHands.Remove(attacker);
                 WeaponAttackAnimation.Cancel(attacker);
-                StatusEffect.EndNativeAttackSwing(attacker);
+                StatusEffectCombatEvent.EndNativeAttackSwing(attacker);
                 throw;
             }
         }
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Native
         {
             if (!_pendingHands.Remove(attacker)) return;
             WeaponAttackAnimation.Cancel(attacker);
-            StatusEffect.EndNativeAttackSwing(attacker);
+            StatusEffectCombatEvent.EndNativeAttackSwing(attacker);
         }
 
         private static void CompleteOffHand(uint attacker, PendingHand pending)
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Native
             finally
             {
                 _pendingHands.Remove(attacker);
-                StatusEffect.EndNativeAttackSwing(attacker);
+                StatusEffectCombatEvent.EndNativeAttackSwing(attacker);
             }
         }
 

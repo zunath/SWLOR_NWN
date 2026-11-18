@@ -40,6 +40,8 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly IStatusEffectApplicationService _statusEffectApplication;
+        private readonly IStatusEffectCombatEventService _statusEffectCombatEvents;
+        private readonly IStatusEffectDurationService _statusEffectDuration;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly IAbilityImpactState _impactState;
         private readonly IPairedRangedTraitsService _pairedRangedTraits;
@@ -60,6 +62,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatService stat,
             IStatusEffectService statusEffect,
             IStatusEffectApplicationService statusEffectApplication,
+            IStatusEffectCombatEventService statusEffectCombatEvents,
+            IStatusEffectDurationService statusEffectDuration,
             ITemporaryStatModifierService temporaryStatModifier,
             IAbilityImpactState impactState,
             IPairedRangedTraitsService pairedRangedTraits,
@@ -79,6 +83,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             _stat = stat;
             _statusEffect = statusEffect;
             _statusEffectApplication = statusEffectApplication;
+            _statusEffectCombatEvents = statusEffectCombatEvents;
+            _statusEffectDuration = statusEffectDuration;
             _temporaryStatModifier = temporaryStatModifier;
             _impactState = impactState;
             _pairedRangedTraits = pairedRangedTraits;
@@ -1116,8 +1122,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (!_resources.TryUseStatTrigger(attacker, StatType.CriticalBleedingStatusDurationExtensionSeconds, cooldownSeconds))
                 return;
 
-            _statusEffect.ExtendStatusEffectDuration(defender, typeof(BleedStatusEffect), attacker, extensionSeconds);
-            _statusEffect.ExtendStatusEffectDuration(defender, typeof(HemorrhageStatusEffect), attacker, extensionSeconds);
+            _statusEffectDuration.ExtendStatusEffectDuration(defender, typeof(BleedStatusEffect), attacker, extensionSeconds);
+            _statusEffectDuration.ExtendStatusEffectDuration(defender, typeof(HemorrhageStatusEffect), attacker, extensionSeconds);
         }
 
         private void ApplyCriticalHitSequenceEffects(uint attacker)
@@ -1561,7 +1567,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
 
             existing.AddStack(maximumStacks);
-            _statusEffect.RefreshStatusEffectDuration(
+            _statusEffectDuration.RefreshStatusEffectDuration(
                 defender,
                 typeof(InfectionStatusEffect),
                 attacker,
@@ -1679,7 +1685,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
 
             ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered);
-            _statusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered);
+            _statusEffectCombatEvents.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered);
             return damage;
         }
 

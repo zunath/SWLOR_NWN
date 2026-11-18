@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Native
             }
             else
             {
-                StatusEffect.NotifyAttackAttemptStatusEffects(
+                StatusEffectCombatEvent.NotifyAttackAttemptStatusEffects(
                     attacker.m_idSelf,
                     weaponSkillType);
             }

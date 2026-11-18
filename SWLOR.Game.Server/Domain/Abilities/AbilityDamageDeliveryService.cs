@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
     /// </summary>
     public class AbilityDamageDeliveryService : IAbilityDamageDeliveryService
     {
-        private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectCombatEventService _statusEffectCombatEvents;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly IAbilityDarkForceService _darkForce;
         private readonly ICombatFeedbackService _feedback;
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly ICombatAbilityBonusService _abilityBonus;
 
         public AbilityDamageDeliveryService(
-            IStatusEffectService statusEffect,
+            IStatusEffectCombatEventService statusEffectCombatEvents,
             ICombatRecorderService combatRecorder,
             IAbilityDarkForceService darkForce,
             ICombatFeedbackService feedback,
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             ICombatDamageTakenService damageTaken,
             ICombatAbilityBonusService abilityBonus)
         {
-            _statusEffect = statusEffect;
+            _statusEffectCombatEvents = statusEffectCombatEvents;
             _combatRecorder = combatRecorder;
             _darkForce = darkForce;
             _feedback = feedback;
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             ConsumeStatusAppliedNextAttackDamageBonus(trackedImpact, activator);
             if (trackedImpact == null)
             {
-                _statusEffect.NotifyPreDamageStatusEffects(activator, target, damage, damageType);
+                _statusEffectCombatEvents.NotifyPreDamageStatusEffects(activator, target, damage, damageType);
                 SendTemporaryHitPointDamageFeedback(activator, target, damage);
                 AssignCommand(
                     activator,
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 damageType,
                 isAbilityDamage: true,
                 allowsHitProcs: allowsHitProcs);
-            _statusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
+            _statusEffectCombatEvents.NotifyDamageStatusEffects(activator, target, damage, damageType);
             if (trackedImpact == null)
                 ApplyDamageReflectionEffects(activator, target, damage, damageType);
         }
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                     {
                         // Resolve the direct-hit lifecycle inside this loop so the next queued
                         // hit observes temporary HP and status effects consumed by this one.
-                        _statusEffect.NotifyPreDamageStatusEffects(
+                        _statusEffectCombatEvents.NotifyPreDamageStatusEffects(
                             activator,
                             effect.Target,
                             effect.Damage,

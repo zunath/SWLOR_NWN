@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Domain.Items
         private readonly IActivityService _activity;
         private readonly ICombatRecording _combatRecorder;
         private readonly ICraftMinigameRoutingService _craftMinigameRouting;
-        private readonly Lazy<IPerkService> _perk;
+        private readonly IPerkService _perk;
         private readonly IRecastService _recast;
         private readonly Lazy<ISkillService> _skill;
         private readonly Lazy<ITwinPistolEquipmentService> _twinPistolEquipment;
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Domain.Items
             IActivityService activity,
             ICombatRecording combatRecorder,
             ICraftMinigameRoutingService craftMinigameRouting,
-            Lazy<IPerkService> perk,
+            IPerkService perk,
             IRecastService recast,
             Lazy<ISkillService> skill,
             Lazy<ITwinPistolEquipmentService> twinPistolEquipment)
@@ -603,13 +603,13 @@ namespace SWLOR.Game.Server.Domain.Items
         /// <summary>The creature's perk level (the perk service reads the database for a player).</summary>
         protected virtual int GetPerkLevel(uint creature, PerkType perkType)
         {
-            return _perk.Value.GetPerkLevel(creature, perkType);
+            return _perk.GetPerkLevel(creature, perkType);
         }
 
         /// <summary>The display name of a perk (the perk service keeps the catalog in a static dictionary).</summary>
         protected virtual string GetPerkName(PerkType perkType)
         {
-            return _perk.Value.GetPerkDetails(perkType).Name;
+            return _perk.GetPerkDetails(perkType).Name;
         }
 
         /// <summary>The creature's skill rank (the skill service reads the database for a player).</summary>

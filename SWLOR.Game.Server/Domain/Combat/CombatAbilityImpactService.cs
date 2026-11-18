@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly IStatusEffectApplicationService _statusEffectApplication;
+        private readonly IStatusEffectDurationService _statusEffectDuration;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly IAbilityImpactState _impactState;
         private readonly IEnmityService _enmity;
@@ -60,6 +61,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatService stat,
             IStatusEffectService statusEffect,
             IStatusEffectApplicationService statusEffectApplication,
+            IStatusEffectDurationService statusEffectDuration,
             ITemporaryStatModifierService temporaryStatModifier,
             IAbilityImpactState impactState,
             IEnmityService enmity,
@@ -76,6 +78,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _stat = stat;
             _statusEffect = statusEffect;
             _statusEffectApplication = statusEffectApplication;
+            _statusEffectDuration = statusEffectDuration;
             _temporaryStatModifier = temporaryStatModifier;
             _impactState = impactState;
             _enmity = enmity;
@@ -851,7 +854,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (extensionSeconds <= 0)
                 return;
 
-            _statusEffect.ExtendStatusEffectDuration(defender, typeof(BleedStatusEffect), attacker, extensionSeconds);
+            _statusEffectDuration.ExtendStatusEffectDuration(defender, typeof(BleedStatusEffect), attacker, extensionSeconds);
         }
 
         private void ApplyBleedingTargetAbilityBleedSpread(

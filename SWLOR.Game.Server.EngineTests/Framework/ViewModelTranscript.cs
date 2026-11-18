@@ -202,8 +202,20 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             text = text.Replace(_fixture.Id, "<player>");
             foreach (var mask in _masks)
                 text = text.Replace(mask.Key, mask.Value);
-            return text;
+            // The window elements take a new Guid for an id every run; each is written as a number in the order it first appears, so the
+            // same widget keeps the same name and a changed layout still changes the text and its hash.
+            return GuidPattern.Replace(text, match =>
+            {
+                if (!_guids.TryGetValue(match.Value, out var name))
+                    _guids[match.Value] = name = "<guid-" + (_guids.Count + 1) + ">";
+                return name;
+            });
         }
+
+        private static readonly System.Text.RegularExpressions.Regex GuidPattern =
+            new(@"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+        private readonly Dictionary<string, string> _guids = new(StringComparer.Ordinal);
 
         /// <summary>Writes a generated id (a new Guid every run, such as a disguise's) as a fixed name from here on.</summary>
         public void Mask(string value, string replacement) => _masks[value] = replacement;

@@ -543,7 +543,8 @@ need a module repack and the new resources need a hak rebuild. Player structures
 the new appearance after both.
 
 `--config` points the tool at another model list in the same format. `tools/TrophyStandModels.json` holds the ten furniture
-Trophy Stands, which are new blueprints (resref = model name) rather than stations swapped in place.
+Trophy Stands, which are new blueprints (resref = model name) rather than stations swapped in place;
+`tools/FieldCotModels.json` holds the five Meshy Field Cots the same way.
 
 ### Meshy placeables
 
@@ -563,7 +564,9 @@ and `enable_pbr: true` (15 credits each). Meshy output differs from TRELLIS outp
   one vertex, export stops with "Missing source tangent requires splitting a Mikk seam". Re-export that GLB from Blender 4.0
   with `export_tangents=True` (it splits those vertices) and replace any zero-length tangent with a unit vector
   perpendicular to its normal ("Degenerate/nonfinite tangent basis" names it; one per model on two stands), then record the
-  new file's `sha256` in the manifest.
+  new file's `sha256` in the manifest. Re-export only the GLBs that need it: on three of the five Field Cots the re-exported
+  GLB then failed `package` with "Authored tangent conflict at compiled vertex", while the original GLB exported and
+  packaged cleanly.
 
 Meshy faces the front of the concept image toward -Y after import; `yaw_degrees: 180` turns it to +Y, which points along
 the placeable's `GetFacing`.

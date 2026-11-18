@@ -50,6 +50,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         /// <summary>Every action without scrolling the list: the Kitchen has fourteen.</summary>
         private const float ActionListHeight = 14 * ActionRowHeight + 8f;
         private const float NoteHeight = 44f;
+        /// <summary>Three lines: the failure rule runs to three lines in the default window.</summary>
+        private const float RuleNoteHeight = 66f;
+        /// <summary>The three flavor rows of 28 with the list's padding, so the last one is not cut off.</summary>
+        private const float AxisListHeight = 3 * 28f + 16f;
         private const float ButtonWidth = 190f;
         private const float EnhancementButtonWidth = 90f;
         private const float PalateRowHeight = 40f;
@@ -180,7 +184,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHeight(3 * EnhancementRowHeight + 8f);
                             });
 
-                            AddNote(content, model => model.FailureRuleText);
+                            AddNote(content, model => model.FailureRuleText, RuleNoteHeight);
 
                             content.AddRow(r =>
                             {
@@ -271,7 +275,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 })
                                     .BindRowCount(model => model.AxisNames)
                                     .SetRowHeight(28f)
-                                    .SetHeight(90f);
+                                    .SetHeight(AxisListHeight);
                             });
 
                             content.AddRow(r => r.AddText()
@@ -346,12 +350,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         }
 
         /// <summary>Text that may wrap to a few lines.</summary>
-        private static void AddNote(GuiColumn<KitchenViewModel> content, Expression<Func<KitchenViewModel, string>> text)
+        private static void AddNote(GuiColumn<KitchenViewModel> content, Expression<Func<KitchenViewModel, string>> text, float height = NoteHeight)
         {
             content.AddRow(r => r.AddText()
                 .BindText(text)
                 .SetShowBorder(false)
-                .SetHeight(NoteHeight));
+                .SetHeight(height));
         }
 
         private static void AddMeter(

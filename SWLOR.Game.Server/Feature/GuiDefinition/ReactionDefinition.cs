@@ -18,7 +18,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float MeterLabelHeight = 20f;
         private const float MeterBarHeight = 18f;
         private const float RecipeDetailHeight = 210f;
-        private const float RuleTextHeight = 52f;
+        /// <summary>Three lines: the failure rule runs to three lines in the default window.</summary>
+        private const float RuleTextHeight = 66f;
+        /// <summary>Holds "THEN: Settling" and its siblings; a width of its own keeps the first label from taking the whole row.</summary>
+        private const float PhaseLabelWidth = 170f;
 
         private static readonly int FailureXpPercent = (int)(CraftOutcomeRules.FailureXpFraction * 100);
 
@@ -176,9 +179,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 content.AddRow(row =>
                 {
+                    row.AddSpacer();
                     AddPhaseLabel(row, model => model.PhaseNowText, model => model.PhaseNowColor);
                     AddPhaseLabel(row, model => model.PhaseNextText, model => model.PhaseNextColor);
                     AddPhaseLabel(row, model => model.PhaseThenText, model => model.PhaseThenColor);
+                    row.AddSpacer();
                 });
                 content.AddRow(row =>
                 {
@@ -267,6 +272,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             row.AddLabel()
                 .BindText(text)
                 .BindColor(color)
+                .SetWidth(PhaseLabelWidth)
                 .SetHeight(28f)
                 .SetHorizontalAlign(NuiHorizontalAlign.Center)
                 .SetVerticalAlign(NuiVerticalAlign.Middle);

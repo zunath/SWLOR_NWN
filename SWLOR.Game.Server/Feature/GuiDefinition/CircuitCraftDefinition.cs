@@ -19,7 +19,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float StyleListHeight = 3 * StyleRowHeight + 8f;
         private const float ActionRowHeight = 50f;
         private const float ActionListHeight = 9 * ActionRowHeight + 8f;
-        private const float ActionButtonWidth = 170f;
+        /// <summary>Holds the longest action name, such as "Retool (Extruder) (1 CP)".</summary>
+        private const float ActionButtonWidth = 190f;
+        /// <summary>Three lines: the failure rule runs to three lines in the default window.</summary>
+        private const float RuleTextHeight = 66f;
+        /// <summary>The recipe's components, requirements and properties; a list with no height of its own collapses in a scrolled panel.</summary>
+        private const float RecipeDetailHeight = 210f;
 
         public static readonly string HelpText =
             "GOAL\n" +
@@ -142,14 +147,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindText(model => model.RuleText)
                                 .SetShowBorder(false)
                                 .SetScrollbars(NuiScrollbars.None)
-                                .SetHeight(56f));
+                                .SetHeight(RuleTextHeight));
                             content.AddRow(row2 => row2.AddList(template =>
                                     template.AddCell(cell => cell.AddLabel()
                                         .BindText(model => model.RecipeDescription)
                                         .BindColor(model => model.RecipeColors)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                         .SetVerticalAlign(NuiVerticalAlign.Middle)))
-                                .BindRowCount(model => model.RecipeDescription));
+                                .BindRowCount(model => model.RecipeDescription)
+                                .SetRowHeight(22f)
+                                .SetHeight(RecipeDetailHeight));
                             content.AddRow(row2 => row2.AddLabel()
                                 .BindText(model => model.StatusText)
                                 .BindColor(model => model.StatusColor)
@@ -206,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindText(model => model.LoadRuleText)
                                 .SetShowBorder(false)
                                 .SetScrollbars(NuiScrollbars.None)
-                                .SetHeight(48f));
+                                .SetHeight(RuleTextHeight));
                             AddLabelRow(content, model => model.CpText);
                             AddLabelRow(content, model => model.PerkText);
                             AddWrappedRow(content, model => model.OpportunityText)

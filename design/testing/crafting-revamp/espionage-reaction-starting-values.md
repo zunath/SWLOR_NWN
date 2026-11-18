@@ -83,7 +83,7 @@ The old minigame is trivial at levels 1-10 with no gear: 3.2 actions a craft at 
 | 1-10 | 3.0 (`ReactionRules.LowLevelXpMultiplier`) | 2.93x is the least that passes with Dampen in play (2.9 gave 0.99x) | 1.03x |
 | 11 and above | 1.0 | The old loop is already slow there, so the Reaction passes unscaled | 1.15x (11-20), 1.19x (21-30), 1.25x (31-40), 1.67x (41-53) |
 
-The multiplier lives in one place, `ReactionRules.XpMultiplier(recipeLevel)` (with `LowLevelXpMultiplier` and `XpMultiplierLastLevel`), is registered in the shared `CraftMinigameXp.MultiplierFor`, and is applied in `CraftMinigameXp.BaseXp` for both a finished craft and a failed one's 15%. A flat 3.0 over every band would have paid 3.4x to 4.9x the old XP per hour in 11-53. The Bible records the per-band rule, with the Stabilize unlock and Dampen, in a row of the System Changes & Migrations tab (`python tools/UpdateReactionBible.py`, which reads the constants from the source; a test fails when the two drift).
+The multiplier lives in one place, `ReactionRules.XpMultiplier(recipeLevel)` (with `LowLevelXpMultiplier` and `XpMultiplierLastLevel`), is registered in the shared `CraftMinigameXp.MultiplierFor`, and is applied in `CraftMinigameXp.BaseXp` for both a finished craft and a failed one's 15%. A flat 3.0 over every band would have paid 3.4x to 4.9x the old XP per hour in 11-53.
 
 ## Does Dampen earn its CP?
 
@@ -144,4 +144,4 @@ dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll gates --scenario reac
 dotnet SWLOR.CraftSim/bin/Debug/net10.0/SWLOR.CraftSim.dll gates --scenario reaction-minrank --runs 200 --seed 7 --gates length,materials,perks
 ```
 
-`python tools/UpdateReactionBible.py` writes the System Changes row and changes nothing on a second run. The recipe Bible columns come from `espionage-reaction-bible-columns.json` (`python tools/UpdateRecipeParameterBible.py --data design/testing/crafting-revamp/espionage-reaction-bible-columns.json`) and only change when the recipe parameters do.
+The recipe Bible columns come from `espionage-reaction-bible-columns.json` (`python tools/UpdateRecipeParameterBible.py --data design/testing/crafting-revamp/espionage-reaction-bible-columns.json`) and only change when the recipe parameters do.

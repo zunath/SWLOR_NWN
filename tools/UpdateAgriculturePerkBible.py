@@ -37,6 +37,7 @@ MODULE_ITEMS = ROOT / "Module" / "uti"
 SHEET = "Agriculture"
 
 TEMPLATE_PERK_ROW = 9
+STYLE_TOTAL_NOTE = "Counts one of the two rank-20 styles; they exclude each other."
 FIRST_LINE_ROW = 9
 
 # (line name, perk definition file, the engine that reads it, whether it has the rank-20 choice of two styles)
@@ -56,13 +57,6 @@ ACTION_PERKS = {"KitchenReduce", "SignatureDish"}
 ACTION_CP = {"KitchenReduce": ["12", "11"]}
 # A perk the player switches on or off for each dish.
 TOGGLE_PERKS = {"SeasonedPalate"}
-
-# The description's last sentences, from the first marker found on, are replaced on every run.
-DESCRIPTION_MARKERS = ("The Chef (Kitchen) and Angler", "The Farmer (crops), Chef (Kitchen) and Angler")
-DESCRIPTION_SUFFIX = (
-    " The Farmer (crops), Chef (Kitchen) and Angler (Line) lines are three optional lines of 25 SP each at Agriculture"
-    " 5/10/15/20/25/30/35/40/45/50. Chef and Angler have a choice of two exclusive styles at rank 20 and a capstone at rank 50;"
-    " Farmer has neither. The crop table below the lines lists the 26 crops of the farming system.")
 
 # The Farmer line's notes, by perk: what the farming service reads from it.
 FARMER_NOTES = {
@@ -271,11 +265,14 @@ def update_sheet(sheet: Bible.Sheet, lines: list[tuple[str, str, list[dict]]], c
             total = sum(purchase["price"] for purchase in purchases)
             formula = f"SUM(B{first}:B{last})"
 
-        sheet.write_row(row, {
+        total_cells = {
             "A": Bible.text_cell(f"A{row}", total_styles["A"], "Total"),
             "B": Bible.num_cell(f"B{row}", total_styles["B"], total, formula),
             "C": Bible.blank_cell(f"C{row}", total_styles.get("C", total_styles["B"])),
-        }, after=row - 1)
+        }
+        if has_styles_by_line[line]:
+            total_cells["O"] = Bible.text_cell(f"O{row}", styles.get("O", styles["G"]), STYLE_TOTAL_NOTE)
+        sheet.write_row(row, total_cells, after=row - 1)
         total_rows.append(row)
         totals.append(total)
         summary[line] = {"first": first, "last": last, "total_row": row, "sp": total}
@@ -288,12 +285,6 @@ def update_sheet(sheet: Bible.Sheet, lines: list[tuple[str, str, list[dict]]], c
 
     summary["crops"] = crop_rows(sheet, row, crops, {**styles, "TOTAL": total_styles["A"]}, header_styles)
 
-    cell = sheet.row_cells(3)["B"]
-    text = sheet.text_of(cell)
-    cuts = [text.index(marker) for marker in DESCRIPTION_MARKERS if marker in text]
-    if cuts:
-        text = text[:min(cuts)].rstrip()
-    sheet.set_cell(3, "B", Bible.text_cell("B3", Bible.cell_style(cell), text + DESCRIPTION_SUFFIX))
     summary["total_sp"] = grand
     return summary
 

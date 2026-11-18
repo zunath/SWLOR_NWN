@@ -15,7 +15,7 @@ public class EmotesWindowLifecycleTests
     public void CompileProductionCommandAndWindowLifecycle()
     {
         _harness = Compile($$"""
-            public enum GuiWindowType { Emotes }
+            public enum GuiWindowType { Emotes, Dice, AppearanceEditor }
             public enum AuthorizationLevel { All }
             public class GuiPayloadBase { }
             public class GuiRectangle { public float X, Y, Width = 150, Height = 300; }
@@ -70,7 +70,7 @@ public class EmotesWindowLifecycleTests
             public static class Gui
             {
                 private static readonly Dictionary<GuiWindowType, Template> _windowTemplates = new()
-                    { [GuiWindowType.Emotes] = new() };
+                    { [GuiWindowType.Emotes] = new(), [GuiWindowType.Dice] = new(), [GuiWindowType.AppearanceEditor] = new() };
                 {{Field("Service/Gui.cs", "_playerWindows")}}
                 private static uint GetEnteringObject() => NativeGui.GetEnteringObject();
                 private static uint GetExitingObject() => NativeGui.GetExitingObject();
@@ -87,6 +87,7 @@ public class EmotesWindowLifecycleTests
                 {{Method("Service/Gui.cs", "IsWindowOpen")}}
                 {{Method("Service/Gui.cs", "TogglePlayerWindow")}}
                 {{Method("Service/Gui.cs", "ClosePlayerWindow")}}
+                {{Method("Service/Gui.cs", "GetWindowOwner")}}
                 {{Method("Service/Gui.cs", "GetPlayerWindow")}}
                 {{Method("Service/Gui.cs", "CloseAllWindows")}}
                 public static int Owners => _playerWindows.Count;
@@ -119,12 +120,42 @@ public class EmotesWindowLifecycleTests
                 public SystemChatCommand() { EmotesWindowCommand(); }
                 {{Method("Feature/ChatCommandDefinition/SystemChatCommand.cs", "EmotesWindowCommand")}}
             }
+            public class ChatCommandDetail { }
+            public class ChatCommandBuilder : CommandBuilder
+            {
+                public Dictionary<string, ChatCommandDetail> Build() => new();
+            }
+            public class AppearanceEditorPayload : GuiPayloadBase { public AppearanceEditorPayload(uint target) { } }
+            public static class AstromechWorkshop
+            {
+                public static readonly HashSet<uint> Astromechs = new();
+                public static readonly List<uint> Opened = new();
+                public static bool TryOpenInsteadOfAppearanceEditor(uint player)
+                {
+                    if (!Astromechs.Contains(player)) return false;
+                    Opened.Add(player);
+                    return true;
+                }
+            }
+            public class CharacterChatCommand
+            {
+                private readonly ChatCommandBuilder _builder = new();
+                public CharacterChatCommand() { Customize(); }
+                {{Method("Feature/ChatCommandDefinition/CharacterChatCommand.cs", "Customize")}}
+            }
+            public class DiceChatCommand
+            {
+                {{Method("Feature/ChatCommandDefinition/DiceChatCommand.cs", "BuildChatCommands")}}
+            }
             public static class Driver
             {
                 public static void Reset()
                 {
                     Gui.Reset(); DMPresence.Reset(); NativeGui.Windows.Clear(); DB.Records.Clear();
+                    AstromechWorkshop.Astromechs.Clear(); AstromechWorkshop.Opened.Clear();
                     new SystemChatCommand();
+                    new DiceChatCommand().BuildChatCommands();
+                    new CharacterChatCommand();
                 }
                 public static void Login(uint player)
                 {
@@ -143,12 +174,16 @@ public class EmotesWindowLifecycleTests
                     CommandBuilder.Commands[alias](actor, OBJECT_INVALID, null, Array.Empty<string>());
                 public static void Transition(uint actor)
                 { NativeGui.Entering = actor; Gui.CloseAllWindows(); }
-                public static object Window(uint owner) => Gui.GetPlayerWindow(owner, GuiWindowType.Emotes);
-                public static uint BoundTo(uint owner) => Gui.GetPlayerWindow(owner, GuiWindowType.Emotes).ViewModel.BoundTo;
+                public static GuiWindowType TypeOf(string alias) => alias switch
+                    { "dice" => GuiWindowType.Dice, "customize" => GuiWindowType.AppearanceEditor, _ => GuiWindowType.Emotes };
+                public static object Window(uint owner, string alias) => Gui.GetPlayerWindow(owner, TypeOf(alias));
+                public static uint BoundTo(uint owner, string alias) => Gui.GetPlayerWindow(owner, TypeOf(alias)).ViewModel.BoundTo;
                 public static int Owners() => Gui.Owners;
                 public static int OpenWindows() => NativeGui.Windows.Count;
                 public static int Binds(uint owner) => Gui.GetPlayerWindow(owner, GuiWindowType.Emotes).ViewModel.Binds;
                 public static void DirectCreatureToggle(uint actor) => Gui.TogglePlayerWindow(actor, GuiWindowType.Emotes);
+                public static void MakeAstromech(uint creature) => AstromechWorkshop.Astromechs.Add(creature);
+                public static int WorkshopOpens() => AstromechWorkshop.Opened.Count;
             }
             """);
     }
@@ -202,13 +237,16 @@ public class EmotesWindowLifecycleTests
 
     [TestCase(DMPossess)]
     [TestCase(DMPossessFullPower)]
-    public void PossessedCreatureIsNotRegisteredButCommandUsesTheDMsWindow(int possessionType)
+    public void PossessedCreatureIsNotRegisteredButUsesTheDMsWindow(int possessionType)
     {
         Login(DM, isDM: true);
         _harness.Possess(DM, Creature, possessionType);
-        Action direct = () => _harness.Invoke("Driver", "DirectCreatureToggle", Creature);
-        direct.Should().Throw<System.Reflection.TargetInvocationException>()
-            .WithInnerException<KeyNotFoundException>();
+        // Commands such as /rename pass the possessed creature itself; production threw KeyNotFoundException.
+        _harness.Invoke("Driver", "DirectCreatureToggle", Creature);
+        OpenWindows.Should().Be(1);
+        BoundTo(DM).Should().Be(Creature);
+        _harness.Invoke("Driver", "DirectCreatureToggle", Creature);
+        OpenWindows.Should().Be(0);
 
         Command(Creature);
         OpenWindows.Should().Be(1);
@@ -223,32 +261,58 @@ public class EmotesWindowLifecycleTests
         Owners.Should().Be(1, "a possessed NPC must never receive its own player window cache");
     }
 
-    [TestCase(DMPossess)]
-    [TestCase(DMPossessFullPower)]
-    public void ChangingControlledCreatureMovesOneWindowWithoutReplacingItsViewModel(int possessionType)
+    // /dice and /customize used to open a second copy on the possessed creature and rebind the avatar's open window to it.
+    [TestCase(DMPossess, "emotesgui")]
+    [TestCase(DMPossessFullPower, "emotesgui")]
+    [TestCase(DMPossess, "dice")]
+    [TestCase(DMPossessFullPower, "dice")]
+    [TestCase(DMPossess, "customize")]
+    [TestCase(DMPossessFullPower, "customize")]
+    public void ChangingControlledCreatureMovesOneWindowWithoutReplacingItsViewModel(int possessionType, string alias)
     {
         Login(DM, isDM: true);
-        var window = Window(DM);
-        Command(DM);
+        var window = Window(DM, alias);
+        Command(DM, alias);
         _harness.Possess(DM, Creature, possessionType);
-        Command(Creature);
+        Command(Creature, alias);
         OpenWindows.Should().Be(1);
-        BoundTo(DM).Should().Be(Creature);
+        BoundTo(DM, alias).Should().Be(Creature);
         _harness.Release(DM);
         _harness.Possess(DM, 4, possessionType);
-        Command(4);
+        Command(4, alias);
         OpenWindows.Should().Be(1);
-        BoundTo(DM).Should().Be(4);
+        BoundTo(DM, alias).Should().Be(4);
         _harness.Release(DM);
-        Command(DM);
+        Command(DM, alias);
         OpenWindows.Should().Be(1);
-        BoundTo(DM).Should().Be(DM);
-        Command(DM);
+        BoundTo(DM, alias).Should().Be(DM);
+        Command(DM, alias);
         OpenWindows.Should().Be(0);
-        Command(DM);
+        Command(DM, alias);
         OpenWindows.Should().Be(1);
-        Window(DM).Should().BeSameAs(window);
+        Window(DM, alias).Should().BeSameAs(window);
         Owners.Should().Be(1);
+    }
+
+    // An astromech changes its chassis in the workshop, so /customize never opens the appearance editor for it. A DM who
+    // controls an astromech creature keeps the editor, as for any creature.
+    [TestCase(DMPossess)]
+    [TestCase(DMPossessFullPower)]
+    public void CustomizeOpensTheWorkshopForAnAstromechAndTheEditorForADMControllingOne(int possessionType)
+    {
+        Login(Player);
+        _harness.Invoke("Driver", "MakeAstromech", Player);
+        Command(Player, "customize");
+        OpenWindows.Should().Be(0);
+        _harness.Invoke<int>("Driver", "WorkshopOpens").Should().Be(1);
+
+        Login(DM, isDM: true);
+        _harness.Invoke("Driver", "MakeAstromech", Creature);
+        _harness.Possess(DM, Creature, possessionType);
+        Command(Creature, "customize");
+        OpenWindows.Should().Be(1);
+        BoundTo(DM, "customize").Should().Be(Creature);
+        _harness.Invoke<int>("Driver", "WorkshopOpens").Should().Be(1, "the DM gets the editor");
     }
 
     private void Login(uint player, bool isDM = false)
@@ -257,8 +321,8 @@ public class EmotesWindowLifecycleTests
         _harness.Invoke("Driver", "Login", player);
     }
     private void Command(uint actor, string alias = "emotesgui") => _harness.Invoke("Driver", "Command", actor, alias);
-    private object Window(uint owner) => _harness.Invoke("Driver", "Window", owner);
-    private uint BoundTo(uint owner) => _harness.Invoke<uint>("Driver", "BoundTo", owner);
+    private object Window(uint owner, string alias = "emotesgui") => _harness.Invoke("Driver", "Window", owner, alias);
+    private uint BoundTo(uint owner, string alias = "emotesgui") => _harness.Invoke<uint>("Driver", "BoundTo", owner, alias);
     private int OpenWindows => _harness.Invoke<int>("Driver", "OpenWindows");
     private int Owners => _harness.Invoke<int>("Driver", "Owners");
 }

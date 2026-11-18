@@ -721,6 +721,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 if (shipStatus == null || !GetIsObjectValid(target) || remainingUnits <= 0)
                     return;
 
+                // Read before the asteroid is killed below.
+                var lootTableId = GetLocalString(target, "STRIPMINE_LOOT_TABLE_ID");
+
                 // The same per-cycle ore as a mining laser, over every cycle the asteroid has left.
                 var amountToMine = ApplyOperatorEffectiveness(activator, "MINING", ApplyProspector(activator, operatorSource,
                     SpaceCombatMath.StripMinerYield(SpaceCombatMath.ExtractionBaseAmount(shipStatus.Industrial, moduleBonus), remainingUnits)),
@@ -734,7 +737,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                 Loot.SpawnLoot(target, activator, "LOOT_TABLE_");
 
-                var lootTableId = GetLocalString(target, "STRIPMINE_LOOT_TABLE_ID");
                 var lootTable = Loot.GetLootTableByName(lootTableId);
 
                 var delivered = DroidIndustryRules.ApplyPercent(amountToMine, Space.GetDroidBayYieldPercent(activator));

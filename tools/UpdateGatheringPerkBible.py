@@ -32,7 +32,6 @@ SHEET = "Gathering"
 FIRST_PERK_ROW = 47
 TEMPLATE_ROW = 16
 HEADER_ROW = 8
-DESCRIPTION_MARKER = "Two perk lines"
 
 # What each perk's notes say besides the stats the row grants (the export lists the stats).
 NOTES = {
@@ -60,11 +59,6 @@ def notes_for(row: dict) -> str:
     return prefix + NOTES[base]
 
 
-def description_suffix(total: int) -> str:
-    return (
-        f" {DESCRIPTION_MARKER} of {total // 2} SP each (Prospector and Treasure Seeker) change Prospecting, the Search board and refining: ten"
-        " purchases at Gathering 5/10/15/20/25/30/35/40/45/50 priced 1/1/2/2/3/3/3/3/3/4 SP, a style at rank 20 and an automatic capstone at rank 50."
-        " Both styles can be owned and the Prospecting and Search windows toggle between them, one at a time. Neither line changes Quick Harvest or Quick Search.")
 
 
 def update_sheet(sheet: Bible.Sheet, rows: list[dict]) -> int:
@@ -97,11 +91,6 @@ def update_sheet(sheet: Bible.Sheet, rows: list[dict]) -> int:
     last = FIRST_PERK_ROW + len(rows) - 1
     Bible.set_formula(
         sheet, "D4", f'SUMIFS(B9:B{last},{status}9:{status}{last},"<>Retired",{status}9:{status}{last},"<>Moved")', total)
-    description = sheet.row_cells(3)["B"]
-    text = sheet.text_of(description)
-    if DESCRIPTION_MARKER in text:
-        text = text[:text.index(DESCRIPTION_MARKER)].rstrip()
-    sheet.set_cell(3, "B", Bible.text_cell("B3", Bible.cell_style(description), text + description_suffix(total)))
     return total
 
 

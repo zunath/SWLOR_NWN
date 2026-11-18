@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void SetUnknownDisplayName(uint player, string name)
         {
-            if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player))
+            if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 throw new ArgumentException("Unknown display names may only be set for player characters.");
 
             var validationError = PlayerName.ValidateKnownNameInput(name);
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Service
 
         public static bool EnsureUnknownDisplayName(uint player)
         {
-            if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player))
+            if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return false;
 
             var playerId = GetObjectUUID(player);

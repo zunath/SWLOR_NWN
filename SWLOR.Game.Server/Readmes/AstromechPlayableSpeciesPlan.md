@@ -312,7 +312,7 @@ Built on `feature/astromech` (cut from the space revamp) and checked on 2026-11-
 
 - `tools/AstromechCreatureExport.py` (with tests): chassis as rigid node meshes assigned by whole shell, the shared animation model `c_astromech` with 34 clips, two built-in tools, the dye mask, review renders, and packaging. The pipeline is described in `BlasterModelImport.md` under "Astromech chassis".
 - `tools/GenerateAstromechSoundset.py` (with tests): 49 synthesized sounds and the SSF.
-- Hak content: chassis `c_astro_01` (appearance row 10282, simple type), `c_astromech`, the prod and blaster textures, the dye material and `tintmap.2da` row from the project's tint generator, voice set row 954 with its name string, and the sound files.
+- Hak content: chassis `c_astro_01` (appearance row 10300, simple type), `c_astromech`, the prod and blaster textures, the dye material and `tintmap.2da` row from the project's tint generator, voice set row 954 with its name string, and the sound files.
 - Meshy spend to date: 72 of the 1,000 credits (one chassis, two tools).
 
 **Verified in the client**
@@ -329,7 +329,7 @@ Built on `feature/astromech` (cut from the space revamp) and checked on 2026-11-
 
 The owner asked for a contributor's set of seven astromech models to be added, made tintable and compatible. They are skinned to one shared skeleton, so the exporter gained a second source kind that assigns parts by bone. These are not original designs, so they sit outside decision 2; the owner asked for them directly.
 
-- Models `c_astro_02` to `c_astro_08`, appearance rows 10283 to 10289, on their own copy of the clip model (`c_astromechb`, same clips, shorter tool retract).
+- Models `c_astro_02` to `c_astro_08`, appearance rows 10301 to 10307, on their own copy of the clip model (`c_astromechb`, same clips, shorter tool retract).
 - Each has a dye material from the tint generator. The sources carry no dye masks, so each mask is derived from the model's painted texture with per-model thresholds. Two models are a single hue, so nearly all of their paint is one dye layer.
 - Checked in the client: all eight chassis load and change color through the real dye system (`runp2/evidence/sheet_tour.png`); one of the seven played the shared clips including knockdown (`sheet_p2reel.png`, `p2reel.mp4`) and the combat clips in a real fight (`sheet_p2fight.png`).
 - Not verified: the tool arm's motion could not be made out from the fight camera angle; only one of the seven was filmed animating; the head gun does not deploy (it is fixed to the head); painted detail such as lenses takes the dye color of its layer.

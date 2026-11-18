@@ -428,20 +428,18 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    var player = user;
-                    var uiTarget = OBJECT_INVALID;
-                    if (GetIsDMPossessed(player))
-                    {
-                        uiTarget = player;
-                        player = GetMaster(player);
-                    }
-                    else if (AstromechWorkshop.TryOpenInsteadOfAppearanceEditor(player))
-                    {
+                    // An astromech changes its chassis in the workshop. A creature a DM controls keeps the editor.
+                    if (!DMPresence.IsControlledByDM(user) && AstromechWorkshop.TryOpenInsteadOfAppearanceEditor(user))
                         return;
-                    }
 
                     var payload = new AppearanceEditorPayload(user);
-                    Gui.TogglePlayerWindow(player, GuiWindowType.AppearanceEditor, payload, OBJECT_INVALID, uiTarget);
+
+                    // A DM's window can still be open on the avatar or a creature they possessed before; DMPresence
+                    // moves it to the creature they control now instead of rebinding it under the open copy.
+                    if (DMPresence.IsControlledByDM(user))
+                        DMPresence.ToggleWindow(user, GuiWindowType.AppearanceEditor, payload);
+                    else
+                        Gui.TogglePlayerWindow(user, GuiWindowType.AppearanceEditor, payload);
                 });
         }
 
@@ -638,7 +636,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .RequiresTarget(ObjectType.Creature)
                 .Action((user, target, location, args) =>
                 {
-                    if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))
+                    if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target))
                     {
                         SendMessageToPC(user, ColorToken.Red("You may only name player characters."));
                         return;
@@ -710,7 +708,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .RequiresTarget(ObjectType.Creature)
                 .Action((user, target, location, args) =>
                 {
-                    if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))
+                    if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target))
                     {
                         SendMessageToPC(user, ColorToken.Red("You may only forget names for player characters."));
                         return;

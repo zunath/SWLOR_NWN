@@ -233,6 +233,39 @@ public class SpaceItemMigrationTests
     }
 
     [Test]
+    public void ModulesFromDifferentRowsAndTheSameSlot_ReturnToDistinctStableOverflowRecords()
+    {
+        ShipStatus.ShipStatusModule WithoutId(string resref)
+        {
+            var module = Module(resref);
+            module.ItemInstanceId = null;
+            return module;
+        }
+
+        PlayerShip Ship()
+        {
+            var ship = LegacyShip();
+            ship.Status.HighPowerModules.Clear();
+            ship.Status.LowPowerModules.Clear();
+            ship.Status.ConfigurationModules.Clear();
+            // Shield repairers and boosters both move to Mid. Without saved item IDs, the overflow record ID comes from the slot.
+            for (var slot = 1; slot <= 4; slot++)
+                ship.Status.HighPowerModules[slot] = WithoutId("shld_rep_b");
+            ship.Status.LowPowerModules[4] = WithoutId("shld_boost_b");
+            return ship;
+        }
+
+        var hull = RevampShipCatalog.Hulls.Single(x => x.Tag == "sd_republicgunsh");
+        hull.Mid.Should().BeLessThan(5, "the test needs the Mid row to overflow");
+
+        var first = PlayerShipConversion.Convert(Ship(), 10).ReturnedModules.Select(x => x.Id).ToList();
+        var retry = PlayerShipConversion.Convert(Ship(), 10).ReturnedModules.Select(x => x.Id).ToList();
+
+        first.Should().HaveCount(5 - hull.Mid).And.OnlyHaveUniqueItems("a second record with the same ID would overwrite the first");
+        retry.Should().Equal(first, "a retried conversion writes the same records");
+    }
+
+    [Test]
     public void TheRecord_RefundsTheRetiredPerksAndGetsATokenAndTheNotice()
     {
         var player = new Player { Name = "Pilot", UnallocatedSP = 1 };

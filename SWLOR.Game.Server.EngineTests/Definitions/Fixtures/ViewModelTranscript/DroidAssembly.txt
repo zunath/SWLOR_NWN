@@ -8,7 +8,7 @@ open 6 property ModalInputText ""
 open 7 engine NuiSetBind <player>, 1, ModalInputText, ""
 open 8 engine NuiSetBind <player>, 1, ModalInputText, ""
 open 9 engine NuiSetBindWatch <player>, 1, ModalInputText, True
-open 10 engine NuiSetGroupLayout <player>, 1, _window_, <13488 chars hash be92a4d7eeeaf15e465c94bb22aa815a> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":true,"foreground_color":{"a":
+open 10 engine NuiSetGroupLayout <player>, 1, _window_, <13264 chars hash 22da38f44e87cd1c85ecb261634023ec> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":true,"foreground_color":{"a":
 open 11 engine NuiSetBind <player>, 1, Geometry, {"h":671.0,"w":520.0,"x":0.0,"y":0.0}
 open 12 property Error ""
 open 13 engine NuiSetBind <player>, 1, Error, ""
@@ -556,7 +556,7 @@ remove-legs 6 property ModalConfirmButtonText "Yes"
 remove-legs 7 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 remove-legs 8 property ModalCancelButtonText "No"
 remove-legs 9 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-remove-legs 10 engine NuiSetGroupLayout <player>, 1, _window_, <1128 chars hash 4b3d1e02f8351eeec5a0bae20489eb8a> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+remove-legs 10 engine NuiSetGroupLayout <player>, 1, _window_, <1073 chars hash 55611c2d42a85cfda6207146be17b598> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 remove-legs 11 engine NuiSetBind <player>, 1, Geometry, {"h":671.0,"w":520.0,"x":0.0,"y":0.0}
 remove-legs 12 property ModalPromptText "Will you remove the Legs part?"
 remove-legs 13 engine NuiSetBind <player>, 1, ModalPromptText, "Will you remove the Legs part?"
@@ -564,7 +564,7 @@ remove-legs 14 property ModalConfirmButtonText "Yes"
 remove-legs 15 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 remove-legs 16 property ModalCancelButtonText "No"
 remove-legs 17 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-remove-legs 18 engine NuiSetGroupLayout <player>, 1, _window_, <13488 chars hash be92a4d7eeeaf15e465c94bb22aa815a> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":true,"foreground_color":{"a":
+remove-legs 18 engine NuiSetGroupLayout <player>, 1, _window_, <13264 chars hash 22da38f44e87cd1c85ecb261634023ec> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":true,"foreground_color":{"a":
 remove-legs 19 engine NuiSetBind <player>, 1, Geometry, {"h":672.0,"w":520.0,"x":0.0,"y":0.0}
 remove-legs 20 property Error ""
 remove-legs 21 engine NuiSetBind <player>, 1, Error, ""
@@ -835,7 +835,7 @@ reset 6 property ModalConfirmButtonText "Yes"
 reset 7 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 reset 8 property ModalCancelButtonText "No"
 reset 9 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-reset 10 engine NuiSetGroupLayout <player>, 1, _window_, <1128 chars hash 4b3d1e02f8351eeec5a0bae20489eb8a> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+reset 10 engine NuiSetGroupLayout <player>, 1, _window_, <1073 chars hash 55611c2d42a85cfda6207146be17b598> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 reset 11 engine NuiSetBind <player>, 1, Geometry, {"h":673.0,"w":520.0,"x":0.0,"y":0.0}
 reset 12 property ModalPromptText "Are you sure you want to reset everything?"
 reset 13 engine NuiSetBind <player>, 1, ModalPromptText, "Are you sure you want to reset everything?"
@@ -843,7 +843,7 @@ reset 14 property ModalConfirmButtonText "Yes"
 reset 15 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 reset 16 property ModalCancelButtonText "No"
 reset 17 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-reset 18 engine NuiSetGroupLayout <player>, 1, _window_, <13488 chars hash be92a4d7eeeaf15e465c94bb22aa815a> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":true,"foreground_color":{"a":
+reset 18 engine NuiSetGroupLayout <player>, 1, _window_, <13264 chars hash 22da38f44e87cd1c85ecb261634023ec> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":true,"foreground_color":{"a":
 reset 19 engine NuiSetBind <player>, 1, Geometry, {"h":674.0,"w":520.0,"x":0.0,"y":0.0}
 reset 20 property Error ""
 reset 21 engine NuiSetBind <player>, 1, Error, ""
@@ -1827,7 +1827,7 @@ construct 8 property ModalConfirmButtonText "Yes"
 construct 9 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 construct 10 property ModalCancelButtonText "No"
 construct 11 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-construct 12 engine NuiSetGroupLayout <player>, 1, _window_, <1128 chars hash 4b3d1e02f8351eeec5a0bae20489eb8a> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+construct 12 engine NuiSetGroupLayout <player>, 1, _window_, <1073 chars hash 55611c2d42a85cfda6207146be17b598> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 construct 13 engine NuiSetBind <player>, 1, Geometry, {"h":671.0,"w":520.0,"x":0.0,"y":0.0}
 construct 14 property ModalPromptText "You are about to construct the droid. Are you sure you want to continue?"
 construct 15 engine NuiSetBind <player>, 1, ModalPromptText, "You are about to construct the droid. Are you sure you want to continue?"
@@ -1835,7 +1835,7 @@ construct 16 property ModalConfirmButtonText "Yes"
 construct 17 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 construct 18 property ModalCancelButtonText "No"
 construct 19 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-construct 20 engine NuiSetGroupLayout <player>, 1, _window_, <13488 chars hash be92a4d7eeeaf15e465c94bb22aa815a> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":true,"foreground_color":{"a":
+construct 20 engine NuiSetGroupLayout <player>, 1, _window_, <13264 chars hash 22da38f44e87cd1c85ecb261634023ec> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":true,"foreground_color":{"a":
 construct 21 engine NuiSetBind <player>, 1, Geometry, {"h":672.0,"w":520.0,"x":0.0,"y":0.0}
 construct 22 property Error ""
 construct 23 engine NuiSetBind <player>, 1, Error, ""
@@ -2169,7 +2169,7 @@ close-and-reopen 142 property ModalInputText ""
 close-and-reopen 143 engine NuiSetBind <player>, 2, ModalInputText, ""
 close-and-reopen 144 engine NuiSetBind <player>, 2, ModalInputText, ""
 close-and-reopen 145 engine NuiSetBindWatch <player>, 2, ModalInputText, True
-close-and-reopen 146 engine NuiSetGroupLayout <player>, 2, _window_, <13488 chars hash be92a4d7eeeaf15e465c94bb22aa815a> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":true,"foreground_color":{"a":
+close-and-reopen 146 engine NuiSetGroupLayout <player>, 2, _window_, <13264 chars hash 22da38f44e87cd1c85ecb261634023ec> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":true,"foreground_color":{"a":
 close-and-reopen 147 engine NuiSetBind <player>, 2, Geometry, {"h":673.0,"w":520.0,"x":0.0,"y":0.0}
 close-and-reopen 148 property Error ""
 close-and-reopen 149 engine NuiSetBind <player>, 2, Error, ""

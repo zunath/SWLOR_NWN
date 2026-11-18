@@ -8,7 +8,7 @@ open-new-job 6 property ModalInputText ""
 open-new-job 7 engine NuiSetBind <player>, 1, ModalInputText, ""
 open-new-job 8 engine NuiSetBind <player>, 1, ModalInputText, ""
 open-new-job 9 engine NuiSetBindWatch <player>, 1, ModalInputText, True
-open-new-job 10 engine NuiSetGroupLayout <player>, 1, _window_, <3461 chars hash f2bac72c4fb78081ec3a8678a38fb0fc> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+open-new-job 10 engine NuiSetGroupLayout <player>, 1, _window_, <3405 chars hash 6807763b7a42705ed847d0f3faf23f7f> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 open-new-job 11 engine NuiSetBind <player>, 1, Geometry, {"h":691.0,"w":920.0,"x":0.0,"y":0.0}
 open-new-job 12 property DNAItemResref "Blank"
 open-new-job 13 engine NuiSetBind <player>, 1, DNAItemResref, "Blank"
@@ -48,7 +48,7 @@ open-new-job 46 property EstimatedTimeToCompletion "Each stage takes 1D, 12H, 0S
 open-new-job 47 engine NuiSetBind <player>, 1, EstimatedTimeToCompletion, "Each stage takes 1D, 12H, 0S"
 open-new-job 48 property IsCompleteJobEnabled false
 open-new-job 49 engine NuiSetBind <player>, 1, IsCompleteJobEnabled, false
-open-new-job 50 engine NuiSetGroupLayout <player>, 1, _window_, <12403 chars hash 3f0847641472705648ddd0cd66ac006d> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+open-new-job 50 engine NuiSetGroupLayout <player>, 1, _window_, <12179 chars hash d456a4114643fcb166bfc50507c34a62> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 open-new-job 51 engine NuiSetBind <player>, 1, Geometry, {"h":692.0,"w":920.0,"x":0.0,"y":0.0}
 open-new-job 52 property DNAItemResref "Blank"
 open-new-job 53 engine NuiSetBind <player>, 1, DNAItemResref, "Blank"
@@ -1035,7 +1035,7 @@ remove-lyase 4 property ModalConfirmButtonText "Yes"
 remove-lyase 5 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 remove-lyase 6 property ModalCancelButtonText "No"
 remove-lyase 7 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-remove-lyase 8 engine NuiSetGroupLayout <player>, 1, _window_, <1128 chars hash fc6afd6f9d4ea011d28d92a0f9ca776d> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+remove-lyase 8 engine NuiSetGroupLayout <player>, 1, _window_, <1073 chars hash 55611c2d42a85cfda6207146be17b598> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 remove-lyase 9 engine NuiSetBind <player>, 1, Geometry, {"h":691.0,"w":920.0,"x":0.0,"y":0.0}
 remove-lyase 10 property ModalPromptText "Will you remove the Lyase enzyme?"
 remove-lyase 11 engine NuiSetBind <player>, 1, ModalPromptText, "Will you remove the Lyase enzyme?"
@@ -1043,7 +1043,7 @@ remove-lyase 12 property ModalConfirmButtonText "Yes"
 remove-lyase 13 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 remove-lyase 14 property ModalCancelButtonText "No"
 remove-lyase 15 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-remove-lyase 16 engine NuiSetGroupLayout <player>, 1, _window_, <12403 chars hash 3f0847641472705648ddd0cd66ac006d> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+remove-lyase 16 engine NuiSetGroupLayout <player>, 1, _window_, <12179 chars hash d456a4114643fcb166bfc50507c34a62> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 remove-lyase 17 engine NuiSetBind <player>, 1, Geometry, {"h":692.0,"w":920.0,"x":0.0,"y":0.0}
 remove-lyase 18 property IsDNASlotEnabled true
 remove-lyase 19 engine NuiSetBind <player>, 1, IsDNASlotEnabled, true
@@ -1155,7 +1155,7 @@ remove-lyase 124 property LyaseDetail "Empty"
 remove-lyase 125 engine NuiSetBind <player>, 1, LyaseDetail, "Empty"
 remove-lyase 126 property IsCompleteJobEnabled false
 remove-lyase 127 engine NuiSetBind <player>, 1, IsCompleteJobEnabled, false
-remove-lyase 128 engine NuiSetGroupLayout <player>, 1, _window_, <12403 chars hash 3f0847641472705648ddd0cd66ac006d> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+remove-lyase 128 engine NuiSetGroupLayout <player>, 1, _window_, <12179 chars hash d456a4114643fcb166bfc50507c34a62> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 remove-lyase 129 engine NuiSetBind <player>, 1, Geometry, {"h":693.0,"w":920.0,"x":0.0,"y":0.0}
 remove-lyase 130 property IsDNASlotEnabled true
 remove-lyase 131 engine NuiSetBind <player>, 1, IsDNASlotEnabled, true
@@ -1477,7 +1477,7 @@ start-job 4 property ModalConfirmButtonText "Yes"
 start-job 5 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 start-job 6 property ModalCancelButtonText "No"
 start-job 7 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-start-job 8 engine NuiSetGroupLayout <player>, 1, _window_, <1128 chars hash fc6afd6f9d4ea011d28d92a0f9ca776d> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+start-job 8 engine NuiSetGroupLayout <player>, 1, _window_, <1073 chars hash 55611c2d42a85cfda6207146be17b598> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 start-job 9 engine NuiSetBind <player>, 1, Geometry, {"h":694.0,"w":920.0,"x":0.0,"y":0.0}
 start-job 10 property ModalPromptText "Start stage 1 of this job? The DNA and enzymes go into the incubator."
 start-job 11 engine NuiSetBind <player>, 1, ModalPromptText, "Start stage 1 of this job? The DNA and enzymes go into the incubator."
@@ -1485,7 +1485,7 @@ start-job 12 property ModalConfirmButtonText "Yes"
 start-job 13 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 start-job 14 property ModalCancelButtonText "No"
 start-job 15 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-start-job 16 engine NuiSetGroupLayout <player>, 1, _window_, <12403 chars hash 3f0847641472705648ddd0cd66ac006d> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+start-job 16 engine NuiSetGroupLayout <player>, 1, _window_, <12179 chars hash d456a4114643fcb166bfc50507c34a62> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 start-job 17 engine NuiSetBind <player>, 1, Geometry, {"h":695.0,"w":920.0,"x":0.0,"y":0.0}
 start-job 18 property IsDNASlotEnabled true
 start-job 19 engine NuiSetBind <player>, 1, IsDNASlotEnabled, true
@@ -1595,7 +1595,7 @@ start-job 122 property JobProgress 0.0
 start-job 123 engine NuiSetBind <player>, 1, JobProgress, 0.0
 start-job 124 property JobProgressTime "Stage 1 - 1D, 12H, 0S left"
 start-job 125 engine NuiSetBind <player>, 1, JobProgressTime, "Stage 1 - 1D, 12H, 0S left"
-start-job 126 engine NuiSetGroupLayout <player>, 1, _window_, <9848 chars hash 201df2fbfcad7c014d08714d48ebebd1> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+start-job 126 engine NuiSetGroupLayout <player>, 1, _window_, <9711 chars hash a84d147314ad60c0dca23282014ed027> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 start-job 127 engine NuiSetBind <player>, 1, Geometry, {"h":696.0,"w":920.0,"x":0.0,"y":0.0}
 start-job 128 property IsDNASlotEnabled true
 start-job 129 engine NuiSetBind <player>, 1, IsDNASlotEnabled, true
@@ -1848,7 +1848,7 @@ in-progress-reopen 64 property ModalInputText ""
 in-progress-reopen 65 engine NuiSetBind <player>, 2, ModalInputText, ""
 in-progress-reopen 66 engine NuiSetBind <player>, 2, ModalInputText, ""
 in-progress-reopen 67 engine NuiSetBindWatch <player>, 2, ModalInputText, True
-in-progress-reopen 68 engine NuiSetGroupLayout <player>, 2, _window_, <3461 chars hash f2bac72c4fb78081ec3a8678a38fb0fc> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+in-progress-reopen 68 engine NuiSetGroupLayout <player>, 2, _window_, <3405 chars hash 6807763b7a42705ed847d0f3faf23f7f> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 in-progress-reopen 69 engine NuiSetBind <player>, 2, Geometry, {"h":697.0,"w":920.0,"x":0.0,"y":0.0}
 in-progress-reopen 70 property MutationChanceColor {"a":255,"b":255,"g":255,"r":255}
 in-progress-reopen 71 engine NuiSetBind <player>, 2, MutationChanceColor, {"a":255,"b":255,"g":255,"r":255}
@@ -1912,7 +1912,7 @@ in-progress-reopen 128 property JobProgress 0.0
 in-progress-reopen 129 engine NuiSetBind <player>, 2, JobProgress, 0.0
 in-progress-reopen 130 property JobProgressTime "Stage 1 - 1D, 12H, 0S left"
 in-progress-reopen 131 engine NuiSetBind <player>, 2, JobProgressTime, "Stage 1 - 1D, 12H, 0S left"
-in-progress-reopen 132 engine NuiSetGroupLayout <player>, 2, _window_, <9848 chars hash 201df2fbfcad7c014d08714d48ebebd1> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+in-progress-reopen 132 engine NuiSetGroupLayout <player>, 2, _window_, <9711 chars hash a84d147314ad60c0dca23282014ed027> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 in-progress-reopen 133 engine NuiSetBind <player>, 2, Geometry, {"h":698.0,"w":920.0,"x":0.0,"y":0.0}
 in-progress-reopen 134 property IsDNASlotEnabled false
 in-progress-reopen 135 engine NuiSetBind <player>, 2, IsDNASlotEnabled, false
@@ -2282,7 +2282,7 @@ stage-complete 67 property ModalInputText ""
 stage-complete 68 engine NuiSetBind <player>, 3, ModalInputText, ""
 stage-complete 69 engine NuiSetBind <player>, 3, ModalInputText, ""
 stage-complete 70 engine NuiSetBindWatch <player>, 3, ModalInputText, True
-stage-complete 71 engine NuiSetGroupLayout <player>, 3, _window_, <3461 chars hash f2bac72c4fb78081ec3a8678a38fb0fc> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+stage-complete 71 engine NuiSetGroupLayout <player>, 3, _window_, <3405 chars hash 6807763b7a42705ed847d0f3faf23f7f> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 stage-complete 72 engine NuiSetBind <player>, 3, Geometry, {"h":699.0,"w":920.0,"x":0.0,"y":0.0}
 stage-complete 73 property MutationChanceColor {"a":255,"b":255,"g":255,"r":255}
 stage-complete 74 engine NuiSetBind <player>, 3, MutationChanceColor, {"a":255,"b":255,"g":255,"r":255}
@@ -2346,7 +2346,7 @@ stage-complete 131 property JobProgress 1.0
 stage-complete 132 engine NuiSetBind <player>, 3, JobProgress, 1.0
 stage-complete 133 property JobProgressTime "Stage 1 complete"
 stage-complete 134 engine NuiSetBind <player>, 3, JobProgressTime, "Stage 1 complete"
-stage-complete 135 engine NuiSetGroupLayout <player>, 3, _window_, <12552 chars hash 6ecc8d54ff367d765e245afe144a3576> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+stage-complete 135 engine NuiSetGroupLayout <player>, 3, _window_, <12307 chars hash 4d9e7e0c4a42eccc9ddfc3853fb3db3f> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 stage-complete 136 engine NuiSetBind <player>, 3, Geometry, {"h":700.0,"w":920.0,"x":0.0,"y":0.0}
 stage-complete 137 property IsDNASlotEnabled false
 stage-complete 138 engine NuiSetBind <player>, 3, IsDNASlotEnabled, false
@@ -2628,7 +2628,7 @@ stage-2-ready 67 property ModalInputText ""
 stage-2-ready 68 engine NuiSetBind <player>, 4, ModalInputText, ""
 stage-2-ready 69 engine NuiSetBind <player>, 4, ModalInputText, ""
 stage-2-ready 70 engine NuiSetBindWatch <player>, 4, ModalInputText, True
-stage-2-ready 71 engine NuiSetGroupLayout <player>, 4, _window_, <3461 chars hash f2bac72c4fb78081ec3a8678a38fb0fc> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+stage-2-ready 71 engine NuiSetGroupLayout <player>, 4, _window_, <3405 chars hash 6807763b7a42705ed847d0f3faf23f7f> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 stage-2-ready 72 engine NuiSetBind <player>, 4, Geometry, {"h":701.0,"w":920.0,"x":0.0,"y":0.0}
 stage-2-ready 73 property MutationChanceColor {"a":255,"b":255,"g":255,"r":255}
 stage-2-ready 74 engine NuiSetBind <player>, 4, MutationChanceColor, {"a":255,"b":255,"g":255,"r":255}
@@ -2692,7 +2692,7 @@ stage-2-ready 131 property JobProgress 1.0
 stage-2-ready 132 engine NuiSetBind <player>, 4, JobProgress, 1.0
 stage-2-ready 133 property JobProgressTime "Stage 1 complete"
 stage-2-ready 134 engine NuiSetBind <player>, 4, JobProgressTime, "Stage 1 complete"
-stage-2-ready 135 engine NuiSetGroupLayout <player>, 4, _window_, <12552 chars hash 6ecc8d54ff367d765e245afe144a3576> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+stage-2-ready 135 engine NuiSetGroupLayout <player>, 4, _window_, <12307 chars hash 4d9e7e0c4a42eccc9ddfc3853fb3db3f> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 stage-2-ready 136 engine NuiSetBind <player>, 4, Geometry, {"h":702.0,"w":920.0,"x":0.0,"y":0.0}
 stage-2-ready 137 property IsDNASlotEnabled false
 stage-2-ready 138 engine NuiSetBind <player>, 4, IsDNASlotEnabled, false
@@ -3259,7 +3259,7 @@ continue-job 4 property ModalConfirmButtonText "Yes"
 continue-job 5 engine NuiSetBind <player>, 4, ModalConfirmButtonText, "Yes"
 continue-job 6 property ModalCancelButtonText "No"
 continue-job 7 engine NuiSetBind <player>, 4, ModalCancelButtonText, "No"
-continue-job 8 engine NuiSetGroupLayout <player>, 4, _window_, <1128 chars hash fc6afd6f9d4ea011d28d92a0f9ca776d> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+continue-job 8 engine NuiSetGroupLayout <player>, 4, _window_, <1073 chars hash 55611c2d42a85cfda6207146be17b598> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 continue-job 9 engine NuiSetBind <player>, 4, Geometry, {"h":703.0,"w":920.0,"x":0.0,"y":0.0}
 continue-job 10 property ModalPromptText "Start stage 2? These enzymes go into the incubator."
 continue-job 11 engine NuiSetBind <player>, 4, ModalPromptText, "Start stage 2? These enzymes go into the incubator."
@@ -3267,7 +3267,7 @@ continue-job 12 property ModalConfirmButtonText "Yes"
 continue-job 13 engine NuiSetBind <player>, 4, ModalConfirmButtonText, "Yes"
 continue-job 14 property ModalCancelButtonText "No"
 continue-job 15 engine NuiSetBind <player>, 4, ModalCancelButtonText, "No"
-continue-job 16 engine NuiSetGroupLayout <player>, 4, _window_, <12552 chars hash 6ecc8d54ff367d765e245afe144a3576> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+continue-job 16 engine NuiSetGroupLayout <player>, 4, _window_, <12307 chars hash 4d9e7e0c4a42eccc9ddfc3853fb3db3f> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 continue-job 17 engine NuiSetBind <player>, 4, Geometry, {"h":704.0,"w":920.0,"x":0.0,"y":0.0}
 continue-job 18 property IsDNASlotEnabled false
 continue-job 19 engine NuiSetBind <player>, 4, IsDNASlotEnabled, false
@@ -3379,7 +3379,7 @@ continue-job 124 property JobProgress 0.0
 continue-job 125 engine NuiSetBind <player>, 4, JobProgress, 0.0
 continue-job 126 property JobProgressTime "Stage 2 - 1D, 12H, 0S left"
 continue-job 127 engine NuiSetBind <player>, 4, JobProgressTime, "Stage 2 - 1D, 12H, 0S left"
-continue-job 128 engine NuiSetGroupLayout <player>, 4, _window_, <9848 chars hash 201df2fbfcad7c014d08714d48ebebd1> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+continue-job 128 engine NuiSetGroupLayout <player>, 4, _window_, <9711 chars hash a84d147314ad60c0dca23282014ed027> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 continue-job 129 engine NuiSetBind <player>, 4, Geometry, {"h":705.0,"w":920.0,"x":0.0,"y":0.0}
 continue-job 130 property IsDNASlotEnabled false
 continue-job 131 engine NuiSetBind <player>, 4, IsDNASlotEnabled, false
@@ -3631,7 +3631,7 @@ reopen-after-continue 64 property ModalInputText ""
 reopen-after-continue 65 engine NuiSetBind <player>, 5, ModalInputText, ""
 reopen-after-continue 66 engine NuiSetBind <player>, 5, ModalInputText, ""
 reopen-after-continue 67 engine NuiSetBindWatch <player>, 5, ModalInputText, True
-reopen-after-continue 68 engine NuiSetGroupLayout <player>, 5, _window_, <3461 chars hash f2bac72c4fb78081ec3a8678a38fb0fc> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+reopen-after-continue 68 engine NuiSetGroupLayout <player>, 5, _window_, <3405 chars hash 6807763b7a42705ed847d0f3faf23f7f> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 reopen-after-continue 69 engine NuiSetBind <player>, 5, Geometry, {"h":706.0,"w":920.0,"x":0.0,"y":0.0}
 reopen-after-continue 70 property MutationChanceColor {"a":255,"b":255,"g":255,"r":255}
 reopen-after-continue 71 engine NuiSetBind <player>, 5, MutationChanceColor, {"a":255,"b":255,"g":255,"r":255}
@@ -3695,7 +3695,7 @@ reopen-after-continue 128 property JobProgress 0.0
 reopen-after-continue 129 engine NuiSetBind <player>, 5, JobProgress, 0.0
 reopen-after-continue 130 property JobProgressTime "Stage 2 - 1D, 12H, 0S left"
 reopen-after-continue 131 engine NuiSetBind <player>, 5, JobProgressTime, "Stage 2 - 1D, 12H, 0S left"
-reopen-after-continue 132 engine NuiSetGroupLayout <player>, 5, _window_, <9848 chars hash 201df2fbfcad7c014d08714d48ebebd1> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+reopen-after-continue 132 engine NuiSetGroupLayout <player>, 5, _window_, <9711 chars hash a84d147314ad60c0dca23282014ed027> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 reopen-after-continue 133 engine NuiSetBind <player>, 5, Geometry, {"h":707.0,"w":920.0,"x":0.0,"y":0.0}
 reopen-after-continue 134 property IsDNASlotEnabled false
 reopen-after-continue 135 engine NuiSetBind <player>, 5, IsDNASlotEnabled, false
@@ -3888,7 +3888,7 @@ cancel-job 4 property ModalConfirmButtonText "Yes"
 cancel-job 5 engine NuiSetBind <player>, 5, ModalConfirmButtonText, "Yes"
 cancel-job 6 property ModalCancelButtonText "No"
 cancel-job 7 engine NuiSetBind <player>, 5, ModalCancelButtonText, "No"
-cancel-job 8 engine NuiSetGroupLayout <player>, 5, _window_, <1128 chars hash fc6afd6f9d4ea011d28d92a0f9ca776d> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+cancel-job 8 engine NuiSetGroupLayout <player>, 5, _window_, <1073 chars hash 55611c2d42a85cfda6207146be17b598> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 cancel-job 9 engine NuiSetBind <player>, 5, Geometry, {"h":708.0,"w":920.0,"x":0.0,"y":0.0}
 cancel-job 10 property ModalPromptText "Are you sure you want to cancel this job? All DNA and enzyme items will be permanently lost!"
 cancel-job 11 engine NuiSetBind <player>, 5, ModalPromptText, "Are you sure you want to cancel this job? All DNA and enzyme items will be permanently lost!"
@@ -3896,7 +3896,7 @@ cancel-job 12 property ModalConfirmButtonText "Yes"
 cancel-job 13 engine NuiSetBind <player>, 5, ModalConfirmButtonText, "Yes"
 cancel-job 14 property ModalCancelButtonText "No"
 cancel-job 15 engine NuiSetBind <player>, 5, ModalCancelButtonText, "No"
-cancel-job 16 engine NuiSetGroupLayout <player>, 5, _window_, <9848 chars hash 201df2fbfcad7c014d08714d48ebebd1> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+cancel-job 16 engine NuiSetGroupLayout <player>, 5, _window_, <9711 chars hash a84d147314ad60c0dca23282014ed027> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 cancel-job 17 engine NuiSetBind <player>, 5, Geometry, {"h":709.0,"w":920.0,"x":0.0,"y":0.0}
 cancel-job 18 property IsDNASlotEnabled false
 cancel-job 19 engine NuiSetBind <player>, 5, IsDNASlotEnabled, false
@@ -3982,7 +3982,7 @@ cancel-job 98 engine NuiDestroy <player>, 5
 cancel-job 99 engine FloatingTextStringOnCreature Incubation job cancelled!, <player>, False
 cancel-job 100 property IsCompleteJobEnabled false
 cancel-job 101 engine NuiSetBind <player>, 5, IsCompleteJobEnabled, false
-cancel-job 102 engine NuiSetGroupLayout <player>, 5, _window_, <12403 chars hash 3f0847641472705648ddd0cd66ac006d> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+cancel-job 102 engine NuiSetGroupLayout <player>, 5, _window_, <12179 chars hash d456a4114643fcb166bfc50507c34a62> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 cancel-job 103 engine NuiSetBind <player>, 5, Geometry, {"h":710.0,"w":920.0,"x":0.0,"y":0.0}
 cancel-job 104 property IsDNASlotEnabled false
 cancel-job 105 engine NuiSetBind <player>, 5, IsDNASlotEnabled, false
@@ -4304,7 +4304,7 @@ start-second-job 4 property ModalConfirmButtonText "Yes"
 start-second-job 5 engine NuiSetBind <player>, 5, ModalConfirmButtonText, "Yes"
 start-second-job 6 property ModalCancelButtonText "No"
 start-second-job 7 engine NuiSetBind <player>, 5, ModalCancelButtonText, "No"
-start-second-job 8 engine NuiSetGroupLayout <player>, 5, _window_, <1128 chars hash fc6afd6f9d4ea011d28d92a0f9ca776d> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+start-second-job 8 engine NuiSetGroupLayout <player>, 5, _window_, <1073 chars hash 55611c2d42a85cfda6207146be17b598> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 start-second-job 9 engine NuiSetBind <player>, 5, Geometry, {"h":711.0,"w":920.0,"x":0.0,"y":0.0}
 start-second-job 10 property ModalPromptText "Start stage 1 of this job? The DNA and enzymes go into the incubator."
 start-second-job 11 engine NuiSetBind <player>, 5, ModalPromptText, "Start stage 1 of this job? The DNA and enzymes go into the incubator."
@@ -4312,7 +4312,7 @@ start-second-job 12 property ModalConfirmButtonText "Yes"
 start-second-job 13 engine NuiSetBind <player>, 5, ModalConfirmButtonText, "Yes"
 start-second-job 14 property ModalCancelButtonText "No"
 start-second-job 15 engine NuiSetBind <player>, 5, ModalCancelButtonText, "No"
-start-second-job 16 engine NuiSetGroupLayout <player>, 5, _window_, <12403 chars hash 3f0847641472705648ddd0cd66ac006d> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+start-second-job 16 engine NuiSetGroupLayout <player>, 5, _window_, <12179 chars hash d456a4114643fcb166bfc50507c34a62> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 start-second-job 17 engine NuiSetBind <player>, 5, Geometry, {"h":712.0,"w":920.0,"x":0.0,"y":0.0}
 start-second-job 18 property IsDNASlotEnabled true
 start-second-job 19 engine NuiSetBind <player>, 5, IsDNASlotEnabled, true
@@ -4421,7 +4421,7 @@ start-second-job 121 property JobProgress 0.0
 start-second-job 122 engine NuiSetBind <player>, 5, JobProgress, 0.0
 start-second-job 123 property JobProgressTime "Stage 1 - 1D, 12H, 0S left"
 start-second-job 124 engine NuiSetBind <player>, 5, JobProgressTime, "Stage 1 - 1D, 12H, 0S left"
-start-second-job 125 engine NuiSetGroupLayout <player>, 5, _window_, <9848 chars hash 201df2fbfcad7c014d08714d48ebebd1> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+start-second-job 125 engine NuiSetGroupLayout <player>, 5, _window_, <9711 chars hash a84d147314ad60c0dca23282014ed027> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 start-second-job 126 engine NuiSetBind <player>, 5, Geometry, {"h":713.0,"w":920.0,"x":0.0,"y":0.0}
 start-second-job 127 property IsDNASlotEnabled true
 start-second-job 128 engine NuiSetBind <player>, 5, IsDNASlotEnabled, true
@@ -4674,7 +4674,7 @@ stage-2-ready 64 property ModalInputText ""
 stage-2-ready 65 engine NuiSetBind <player>, 6, ModalInputText, ""
 stage-2-ready 66 engine NuiSetBind <player>, 6, ModalInputText, ""
 stage-2-ready 67 engine NuiSetBindWatch <player>, 6, ModalInputText, True
-stage-2-ready 68 engine NuiSetGroupLayout <player>, 6, _window_, <3461 chars hash f2bac72c4fb78081ec3a8678a38fb0fc> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+stage-2-ready 68 engine NuiSetGroupLayout <player>, 6, _window_, <3405 chars hash 6807763b7a42705ed847d0f3faf23f7f> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 stage-2-ready 69 engine NuiSetBind <player>, 6, Geometry, {"h":714.0,"w":920.0,"x":0.0,"y":0.0}
 stage-2-ready 70 property MutationChanceColor {"a":255,"b":255,"g":255,"r":255}
 stage-2-ready 71 engine NuiSetBind <player>, 6, MutationChanceColor, {"a":255,"b":255,"g":255,"r":255}
@@ -4738,7 +4738,7 @@ stage-2-ready 128 property JobProgress 1.0
 stage-2-ready 129 engine NuiSetBind <player>, 6, JobProgress, 1.0
 stage-2-ready 130 property JobProgressTime "Stage 1 complete"
 stage-2-ready 131 engine NuiSetBind <player>, 6, JobProgressTime, "Stage 1 complete"
-stage-2-ready 132 engine NuiSetGroupLayout <player>, 6, _window_, <12552 chars hash 6ecc8d54ff367d765e245afe144a3576> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+stage-2-ready 132 engine NuiSetGroupLayout <player>, 6, _window_, <12307 chars hash 4d9e7e0c4a42eccc9ddfc3853fb3db3f> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 stage-2-ready 133 engine NuiSetBind <player>, 6, Geometry, {"h":715.0,"w":920.0,"x":0.0,"y":0.0}
 stage-2-ready 134 property IsDNASlotEnabled false
 stage-2-ready 135 engine NuiSetBind <player>, 6, IsDNASlotEnabled, false
@@ -5304,7 +5304,7 @@ second-job-start-stage-2 4 property ModalConfirmButtonText "Yes"
 second-job-start-stage-2 5 engine NuiSetBind <player>, 6, ModalConfirmButtonText, "Yes"
 second-job-start-stage-2 6 property ModalCancelButtonText "No"
 second-job-start-stage-2 7 engine NuiSetBind <player>, 6, ModalCancelButtonText, "No"
-second-job-start-stage-2 8 engine NuiSetGroupLayout <player>, 6, _window_, <1128 chars hash fc6afd6f9d4ea011d28d92a0f9ca776d> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+second-job-start-stage-2 8 engine NuiSetGroupLayout <player>, 6, _window_, <1073 chars hash 55611c2d42a85cfda6207146be17b598> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 second-job-start-stage-2 9 engine NuiSetBind <player>, 6, Geometry, {"h":716.0,"w":920.0,"x":0.0,"y":0.0}
 second-job-start-stage-2 10 property ModalPromptText "Start stage 2? These enzymes go into the incubator."
 second-job-start-stage-2 11 engine NuiSetBind <player>, 6, ModalPromptText, "Start stage 2? These enzymes go into the incubator."
@@ -5312,7 +5312,7 @@ second-job-start-stage-2 12 property ModalConfirmButtonText "Yes"
 second-job-start-stage-2 13 engine NuiSetBind <player>, 6, ModalConfirmButtonText, "Yes"
 second-job-start-stage-2 14 property ModalCancelButtonText "No"
 second-job-start-stage-2 15 engine NuiSetBind <player>, 6, ModalCancelButtonText, "No"
-second-job-start-stage-2 16 engine NuiSetGroupLayout <player>, 6, _window_, <12552 chars hash 6ecc8d54ff367d765e245afe144a3576> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+second-job-start-stage-2 16 engine NuiSetGroupLayout <player>, 6, _window_, <12307 chars hash 4d9e7e0c4a42eccc9ddfc3853fb3db3f> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 second-job-start-stage-2 17 engine NuiSetBind <player>, 6, Geometry, {"h":717.0,"w":920.0,"x":0.0,"y":0.0}
 second-job-start-stage-2 18 property IsDNASlotEnabled false
 second-job-start-stage-2 19 engine NuiSetBind <player>, 6, IsDNASlotEnabled, false
@@ -5424,7 +5424,7 @@ second-job-start-stage-2 124 property JobProgress 0.0
 second-job-start-stage-2 125 engine NuiSetBind <player>, 6, JobProgress, 0.0
 second-job-start-stage-2 126 property JobProgressTime "Stage 2 - 1D, 12H, 0S left"
 second-job-start-stage-2 127 engine NuiSetBind <player>, 6, JobProgressTime, "Stage 2 - 1D, 12H, 0S left"
-second-job-start-stage-2 128 engine NuiSetGroupLayout <player>, 6, _window_, <9848 chars hash 201df2fbfcad7c014d08714d48ebebd1> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+second-job-start-stage-2 128 engine NuiSetGroupLayout <player>, 6, _window_, <9711 chars hash a84d147314ad60c0dca23282014ed027> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 second-job-start-stage-2 129 engine NuiSetBind <player>, 6, Geometry, {"h":718.0,"w":920.0,"x":0.0,"y":0.0}
 second-job-start-stage-2 130 property IsDNASlotEnabled false
 second-job-start-stage-2 131 engine NuiSetBind <player>, 6, IsDNASlotEnabled, false
@@ -5676,7 +5676,7 @@ stage-3-ready 64 property ModalInputText ""
 stage-3-ready 65 engine NuiSetBind <player>, 7, ModalInputText, ""
 stage-3-ready 66 engine NuiSetBind <player>, 7, ModalInputText, ""
 stage-3-ready 67 engine NuiSetBindWatch <player>, 7, ModalInputText, True
-stage-3-ready 68 engine NuiSetGroupLayout <player>, 7, _window_, <3461 chars hash f2bac72c4fb78081ec3a8678a38fb0fc> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+stage-3-ready 68 engine NuiSetGroupLayout <player>, 7, _window_, <3405 chars hash 6807763b7a42705ed847d0f3faf23f7f> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 stage-3-ready 69 engine NuiSetBind <player>, 7, Geometry, {"h":719.0,"w":920.0,"x":0.0,"y":0.0}
 stage-3-ready 70 property MutationChanceColor {"a":255,"b":255,"g":255,"r":255}
 stage-3-ready 71 engine NuiSetBind <player>, 7, MutationChanceColor, {"a":255,"b":255,"g":255,"r":255}
@@ -5740,7 +5740,7 @@ stage-3-ready 128 property JobProgress 1.0
 stage-3-ready 129 engine NuiSetBind <player>, 7, JobProgress, 1.0
 stage-3-ready 130 property JobProgressTime "Stage 2 complete"
 stage-3-ready 131 engine NuiSetBind <player>, 7, JobProgressTime, "Stage 2 complete"
-stage-3-ready 132 engine NuiSetGroupLayout <player>, 7, _window_, <12552 chars hash 6ecc8d54ff367d765e245afe144a3576> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+stage-3-ready 132 engine NuiSetGroupLayout <player>, 7, _window_, <12307 chars hash 4d9e7e0c4a42eccc9ddfc3853fb3db3f> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 stage-3-ready 133 engine NuiSetBind <player>, 7, Geometry, {"h":720.0,"w":920.0,"x":0.0,"y":0.0}
 stage-3-ready 134 property IsDNASlotEnabled false
 stage-3-ready 135 engine NuiSetBind <player>, 7, IsDNASlotEnabled, false
@@ -6306,7 +6306,7 @@ second-job-start-stage-3 4 property ModalConfirmButtonText "Yes"
 second-job-start-stage-3 5 engine NuiSetBind <player>, 7, ModalConfirmButtonText, "Yes"
 second-job-start-stage-3 6 property ModalCancelButtonText "No"
 second-job-start-stage-3 7 engine NuiSetBind <player>, 7, ModalCancelButtonText, "No"
-second-job-start-stage-3 8 engine NuiSetGroupLayout <player>, 7, _window_, <1128 chars hash fc6afd6f9d4ea011d28d92a0f9ca776d> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+second-job-start-stage-3 8 engine NuiSetGroupLayout <player>, 7, _window_, <1073 chars hash 55611c2d42a85cfda6207146be17b598> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 second-job-start-stage-3 9 engine NuiSetBind <player>, 7, Geometry, {"h":721.0,"w":920.0,"x":0.0,"y":0.0}
 second-job-start-stage-3 10 property ModalPromptText "Start stage 3? These enzymes go into the incubator."
 second-job-start-stage-3 11 engine NuiSetBind <player>, 7, ModalPromptText, "Start stage 3? These enzymes go into the incubator."
@@ -6314,7 +6314,7 @@ second-job-start-stage-3 12 property ModalConfirmButtonText "Yes"
 second-job-start-stage-3 13 engine NuiSetBind <player>, 7, ModalConfirmButtonText, "Yes"
 second-job-start-stage-3 14 property ModalCancelButtonText "No"
 second-job-start-stage-3 15 engine NuiSetBind <player>, 7, ModalCancelButtonText, "No"
-second-job-start-stage-3 16 engine NuiSetGroupLayout <player>, 7, _window_, <12552 chars hash 6ecc8d54ff367d765e245afe144a3576> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+second-job-start-stage-3 16 engine NuiSetGroupLayout <player>, 7, _window_, <12307 chars hash 4d9e7e0c4a42eccc9ddfc3853fb3db3f> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 second-job-start-stage-3 17 engine NuiSetBind <player>, 7, Geometry, {"h":722.0,"w":920.0,"x":0.0,"y":0.0}
 second-job-start-stage-3 18 property IsDNASlotEnabled false
 second-job-start-stage-3 19 engine NuiSetBind <player>, 7, IsDNASlotEnabled, false
@@ -6426,7 +6426,7 @@ second-job-start-stage-3 124 property JobProgress 0.0
 second-job-start-stage-3 125 engine NuiSetBind <player>, 7, JobProgress, 0.0
 second-job-start-stage-3 126 property JobProgressTime "Stage 3 - 1D, 12H, 0S left"
 second-job-start-stage-3 127 engine NuiSetBind <player>, 7, JobProgressTime, "Stage 3 - 1D, 12H, 0S left"
-second-job-start-stage-3 128 engine NuiSetGroupLayout <player>, 7, _window_, <9848 chars hash 201df2fbfcad7c014d08714d48ebebd1> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+second-job-start-stage-3 128 engine NuiSetGroupLayout <player>, 7, _window_, <9711 chars hash a84d147314ad60c0dca23282014ed027> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 second-job-start-stage-3 129 engine NuiSetBind <player>, 7, Geometry, {"h":723.0,"w":920.0,"x":0.0,"y":0.0}
 second-job-start-stage-3 130 property IsDNASlotEnabled false
 second-job-start-stage-3 131 engine NuiSetBind <player>, 7, IsDNASlotEnabled, false
@@ -6678,7 +6678,7 @@ all-stages-complete 64 property ModalInputText ""
 all-stages-complete 65 engine NuiSetBind <player>, 8, ModalInputText, ""
 all-stages-complete 66 engine NuiSetBind <player>, 8, ModalInputText, ""
 all-stages-complete 67 engine NuiSetBindWatch <player>, 8, ModalInputText, True
-all-stages-complete 68 engine NuiSetGroupLayout <player>, 8, _window_, <3461 chars hash f2bac72c4fb78081ec3a8678a38fb0fc> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+all-stages-complete 68 engine NuiSetGroupLayout <player>, 8, _window_, <3405 chars hash 6807763b7a42705ed847d0f3faf23f7f> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 all-stages-complete 69 engine NuiSetBind <player>, 8, Geometry, {"h":724.0,"w":920.0,"x":0.0,"y":0.0}
 all-stages-complete 70 property MutationChanceColor {"a":255,"b":255,"g":255,"r":255}
 all-stages-complete 71 engine NuiSetBind <player>, 8, MutationChanceColor, {"a":255,"b":255,"g":255,"r":255}
@@ -6742,7 +6742,7 @@ all-stages-complete 128 property JobProgress 1.0
 all-stages-complete 129 engine NuiSetBind <player>, 8, JobProgress, 1.0
 all-stages-complete 130 property JobProgressTime "Stage 3 complete"
 all-stages-complete 131 engine NuiSetBind <player>, 8, JobProgressTime, "Stage 3 complete"
-all-stages-complete 132 engine NuiSetGroupLayout <player>, 8, _window_, <10311 chars hash c4aaac757d01578acfe2fe9628516195> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+all-stages-complete 132 engine NuiSetGroupLayout <player>, 8, _window_, <10174 chars hash a15340255290af85fa1568b334945f93> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 all-stages-complete 133 engine NuiSetBind <player>, 8, Geometry, {"h":725.0,"w":920.0,"x":0.0,"y":0.0}
 all-stages-complete 134 property IsDNASlotEnabled false
 all-stages-complete 135 engine NuiSetBind <player>, 8, IsDNASlotEnabled, false
@@ -6947,7 +6947,7 @@ complete-job 4 property ModalConfirmButtonText "Yes"
 complete-job 5 engine NuiSetBind <player>, 8, ModalConfirmButtonText, "Yes"
 complete-job 6 property ModalCancelButtonText "No"
 complete-job 7 engine NuiSetBind <player>, 8, ModalCancelButtonText, "No"
-complete-job 8 engine NuiSetGroupLayout <player>, 8, _window_, <1128 chars hash fc6afd6f9d4ea011d28d92a0f9ca776d> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+complete-job 8 engine NuiSetGroupLayout <player>, 8, _window_, <1073 chars hash 55611c2d42a85cfda6207146be17b598> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 complete-job 9 engine NuiSetBind <player>, 8, Geometry, {"h":726.0,"w":920.0,"x":0.0,"y":0.0}
 complete-job 10 property ModalPromptText "Complete this job? The egg keeps its DNA's beast type."
 complete-job 11 engine NuiSetBind <player>, 8, ModalPromptText, "Complete this job? The egg keeps its DNA's beast type."
@@ -6955,7 +6955,7 @@ complete-job 12 property ModalConfirmButtonText "Yes"
 complete-job 13 engine NuiSetBind <player>, 8, ModalConfirmButtonText, "Yes"
 complete-job 14 property ModalCancelButtonText "No"
 complete-job 15 engine NuiSetBind <player>, 8, ModalCancelButtonText, "No"
-complete-job 16 engine NuiSetGroupLayout <player>, 8, _window_, <10311 chars hash c4aaac757d01578acfe2fe9628516195> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+complete-job 16 engine NuiSetGroupLayout <player>, 8, _window_, <10174 chars hash a15340255290af85fa1568b334945f93> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 complete-job 17 engine NuiSetBind <player>, 8, Geometry, {"h":727.0,"w":920.0,"x":0.0,"y":0.0}
 complete-job 18 property IsDNASlotEnabled false
 complete-job 19 engine NuiSetBind <player>, 8, IsDNASlotEnabled, false
@@ -7053,7 +7053,7 @@ complete-job 110 engine CreateItemOnObject beast_egg, <player>, 1,
 complete-job 111 engine NuiDestroy <player>, 8
 complete-job 112 property IsCompleteJobEnabled false
 complete-job 113 engine NuiSetBind <player>, 8, IsCompleteJobEnabled, false
-complete-job 114 engine NuiSetGroupLayout <player>, 8, _window_, <12403 chars hash 3f0847641472705648ddd0cd66ac006d> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+complete-job 114 engine NuiSetGroupLayout <player>, 8, _window_, <12179 chars hash d456a4114643fcb166bfc50507c34a62> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 complete-job 115 engine NuiSetBind <player>, 8, Geometry, {"h":728.0,"w":920.0,"x":0.0,"y":0.0}
 complete-job 116 property IsDNASlotEnabled false
 complete-job 117 engine NuiSetBind <player>, 8, IsDNASlotEnabled, false
@@ -7377,6 +7377,7 @@ close-with-held-items 5 state carried beast_egg|beast_egg|1;herb_m|herb_m|43;lya
 close-with-held-items 6 state worn Chest=farmer_outfit002
 close-with-held-items 7 state feats 2,3,4,10,28,32,45,46,106,258,1089
 close-with-held-items 8 state quickbar 0=10:1:;1=10:0:;2=4:28:
+close-with-held-items 9 state record WindowGeometries.Incubator.Height 690.0
 reopen-with-held-items 1 step
 reopen-with-held-items 2 engine NuiCreate <player>, <619 chars hash 291702ab025a8c2ca9b11ca9387cc95f> {"accepts_input":true,"border":true,"closable":true,"collapsed":null,"geometry":{"bind":"Geometry"},"resizable":true,"ro, GUI_WINDOW_Incubator
 reopen-with-held-items 3 engine NuiSetBind <player>, 9, Geometry, {"h":690.0,"w":920.0,"x":0.0,"y":0.0}
@@ -7444,7 +7445,7 @@ reopen-with-held-items 64 property ModalInputText ""
 reopen-with-held-items 65 engine NuiSetBind <player>, 9, ModalInputText, ""
 reopen-with-held-items 66 engine NuiSetBind <player>, 9, ModalInputText, ""
 reopen-with-held-items 67 engine NuiSetBindWatch <player>, 9, ModalInputText, True
-reopen-with-held-items 68 engine NuiSetGroupLayout <player>, 9, _window_, <3461 chars hash f2bac72c4fb78081ec3a8678a38fb0fc> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+reopen-with-held-items 68 engine NuiSetGroupLayout <player>, 9, _window_, <3405 chars hash 6807763b7a42705ed847d0f3faf23f7f> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 reopen-with-held-items 69 engine NuiSetBind <player>, 9, Geometry, {"h":691.0,"w":920.0,"x":0.0,"y":0.0}
 reopen-with-held-items 70 property MutationChanceColor {"a":255,"b":255,"g":255,"r":255}
 reopen-with-held-items 71 engine NuiSetBind <player>, 9, MutationChanceColor, {"a":255,"b":255,"g":255,"r":255}
@@ -7508,7 +7509,7 @@ reopen-with-held-items 128 property EstimatedTimeToCompletion "Each stage takes 
 reopen-with-held-items 129 engine NuiSetBind <player>, 9, EstimatedTimeToCompletion, "Each stage takes 1D, 12H, 0S"
 reopen-with-held-items 130 property IsCompleteJobEnabled false
 reopen-with-held-items 131 engine NuiSetBind <player>, 9, IsCompleteJobEnabled, false
-reopen-with-held-items 132 engine NuiSetGroupLayout <player>, 9, _window_, <12403 chars hash 3f0847641472705648ddd0cd66ac006d> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
+reopen-with-held-items 132 engine NuiSetGroupLayout <player>, 9, _window_, <12179 chars hash d456a4114643fcb166bfc50507c34a62> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"border":fals
 reopen-with-held-items 133 engine NuiSetBind <player>, 9, Geometry, {"h":692.0,"w":920.0,"x":0.0,"y":0.0}
 reopen-with-held-items 134 property IsDNASlotEnabled true
 reopen-with-held-items 135 engine NuiSetBind <player>, 9, IsDNASlotEnabled, true
@@ -7712,4 +7713,3 @@ reopen-with-held-items 332 state carried beast_egg|beast_egg|1;herb_m|herb_m|43;
 reopen-with-held-items 333 state worn Chest=farmer_outfit002
 reopen-with-held-items 334 state feats 2,3,4,10,28,32,45,46,106,258,1089
 reopen-with-held-items 335 state quickbar 0=10:1:;1=10:0:;2=4:28:
-reopen-with-held-items 336 state record WindowGeometries.Incubator.Height 690.0

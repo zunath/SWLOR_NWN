@@ -8,7 +8,7 @@ open-self 6 property ModalInputText ""
 open-self 7 engine NuiSetBind <player>, 1, ModalInputText, ""
 open-self 8 engine NuiSetBind <player>, 1, ModalInputText, ""
 open-self 9 engine NuiSetBindWatch <player>, 1, ModalInputText, True
-open-self 10 engine NuiSetGroupLayout <player>, 1, _window_, <11391 chars hash 45f604cb74442b894aed6eed746a78ca> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+open-self 10 engine NuiSetGroupLayout <player>, 1, _window_, <10977 chars hash c469682cdcacf9a70a73f31f09e7738a> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 open-self 11 engine NuiSetBind <player>, 1, Geometry, {"h":461.0,"w":800.0,"x":0.0,"y":0.0}
 open-self 12 property IsPlayerMode true
 open-self 13 engine NuiSetBind <player>, 1, IsPlayerMode, true
@@ -24,7 +24,7 @@ open-self 22 property TopTabId 0
 open-self 23 engine NuiSetBind <player>, 1, TopTabId, 0
 open-self 24 property BottomTabId -1
 open-self 25 engine NuiSetBind <player>, 1, BottomTabId, -1
-open-self 26 engine NuiSetGroupLayout <player>, 1, _window_, <22314 chars hash de145ef517504b7b6fd9f7a45ab1bea5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+open-self 26 engine NuiSetGroupLayout <player>, 1, _window_, <21738 chars hash d97eaf0ceba62acf85f9ffaa30231e81> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 open-self 27 engine NuiSetBind <player>, 1, Geometry, {"h":462.0,"w":800.0,"x":0.0,"y":0.0}
 open-self 28 property IsPlayerMode true
 open-self 29 engine NuiSetBind <player>, 1, IsPlayerMode, true
@@ -197,7 +197,7 @@ tab-1 16 property StatTooltips <3890 chars hash e0178b1cff49bf24d0e67e9fd2507406
 tab-1 17 engine NuiSetBind <player>, 1, StatTooltips_RowCount, 41
 tab-1 18 engine NuiSetBind <player>, 1, StatTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
 tab-1 19 engine NuiSetBind <player>, 1, StatTooltips, <3890 chars hash e0178b1cff49bf24d0e67e9fd2507406> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
-tab-1 20 engine NuiSetGroupLayout <player>, 1, _window_, <12869 chars hash eeec38272bf88574b5d49f718b29d185> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+tab-1 20 engine NuiSetGroupLayout <player>, 1, _window_, <12455 chars hash 8e6ede611a3e4aaa56d0d812c6016ac5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 tab-1 21 engine NuiSetBind <player>, 1, Geometry, {"h":463.0,"w":800.0,"x":0.0,"y":0.0}
 tab-1 22 property Name "Civilian"
 tab-1 23 engine NuiSetBind <player>, 1, Name, "Civilian"
@@ -272,7 +272,7 @@ tab-2 20 property ResistanceStatusDurations ["Full Duration","Full Duration","Fu
 tab-2 21 engine NuiSetBind <player>, 1, ResistanceStatusDurations_RowCount, 8
 tab-2 22 engine NuiSetBind <player>, 1, ResistanceStatusDurations_RowVisibility, [true,true,true,true,true,true,true,true,true]
 tab-2 23 engine NuiSetBind <player>, 1, ResistanceStatusDurations, ["Full Duration","Full Duration","Full Duration","Full Duration","Full Duration","Full Duration","Full Duration","Full Duration"]
-tab-2 24 engine NuiSetGroupLayout <player>, 1, _window_, <13538 chars hash 63084f92b0a504fc190bc404c46554f6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+tab-2 24 engine NuiSetGroupLayout <player>, 1, _window_, <13124 chars hash f043b3a43a6a03283f369435e9a99ba0> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 tab-2 25 engine NuiSetBind <player>, 1, Geometry, {"h":464.0,"w":800.0,"x":0.0,"y":0.0}
 tab-2 26 property Name "Civilian"
 tab-2 27 engine NuiSetBind <player>, 1, Name, "Civilian"
@@ -351,7 +351,7 @@ tab-3 20 property Control "0/0/0/0/0"
 tab-3 21 engine NuiSetBind <player>, 1, Control, "0/0/0/0/0"
 tab-3 22 property Craftsmanship "0/0/0/0/0"
 tab-3 23 engine NuiSetBind <player>, 1, Craftsmanship, "0/0/0/0/0"
-tab-3 24 engine NuiSetGroupLayout <player>, 1, _window_, <13206 chars hash 5028a7afd118f6f120377b179e602c5b> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+tab-3 24 engine NuiSetGroupLayout <player>, 1, _window_, <12792 chars hash 5ba514d39a6f26b56ffca2e1698ae1b5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 tab-3 25 engine NuiSetBind <player>, 1, Geometry, {"h":465.0,"w":800.0,"x":0.0,"y":0.0}
 tab-3 26 property Name "Civilian"
 tab-3 27 engine NuiSetBind <player>, 1, Name, "Civilian"
@@ -410,7 +410,7 @@ tab-0 4 property TopTabId 0
 tab-0 5 engine NuiSetBind <player>, 1, TopTabId, 0
 tab-0 6 property BottomTabId -1
 tab-0 7 engine NuiSetBind <player>, 1, BottomTabId, -1
-tab-0 8 engine NuiSetGroupLayout <player>, 1, _window_, <22314 chars hash de145ef517504b7b6fd9f7a45ab1bea5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+tab-0 8 engine NuiSetGroupLayout <player>, 1, _window_, <21738 chars hash d97eaf0ceba62acf85f9ffaa30231e81> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 tab-0 9 engine NuiSetBind <player>, 1, Geometry, {"h":466.0,"w":800.0,"x":0.0,"y":0.0}
 tab-0 10 property Name "Civilian"
 tab-0 11 engine NuiSetBind <player>, 1, Name, "Civilian"
@@ -511,7 +511,7 @@ upgrade-might 4 property ModalConfirmButtonText "Yes"
 upgrade-might 5 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 upgrade-might 6 property ModalCancelButtonText "No"
 upgrade-might 7 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-upgrade-might 8 engine NuiSetGroupLayout <player>, 1, _window_, <1128 chars hash b0936a95092805681482b0a368613e90> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+upgrade-might 8 engine NuiSetGroupLayout <player>, 1, _window_, <1074 chars hash 469520256753223e1a230ae1c23bafe8> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 upgrade-might 9 engine NuiSetBind <player>, 1, Geometry, {"h":467.0,"w":800.0,"x":0.0,"y":0.0}
 upgrade-might 10 property ModalPromptText "WARNING: You are about to spend your one-time racial stat bonus. Once spent, this action can only be undone with a stat rebuild. Are you SURE you want to upgrade this stat?"
 upgrade-might 11 engine NuiSetBind <player>, 1, ModalPromptText, "WARNING: You are about to spend your one-time racial stat bonus. Once spent, this action can only be undone with a stat rebuild. Are you SURE you want to upgrade this stat?"
@@ -519,7 +519,7 @@ upgrade-might 12 property ModalConfirmButtonText "Yes"
 upgrade-might 13 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 upgrade-might 14 property ModalCancelButtonText "No"
 upgrade-might 15 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-upgrade-might 16 engine NuiSetGroupLayout <player>, 1, _window_, <22314 chars hash de145ef517504b7b6fd9f7a45ab1bea5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+upgrade-might 16 engine NuiSetGroupLayout <player>, 1, _window_, <21738 chars hash d97eaf0ceba62acf85f9ffaa30231e81> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 upgrade-might 17 engine NuiSetBind <player>, 1, Geometry, {"h":468.0,"w":800.0,"x":0.0,"y":0.0}
 upgrade-might 18 property Name "Civilian"
 upgrade-might 19 engine NuiSetBind <player>, 1, Name, "Civilian"
@@ -747,7 +747,7 @@ upgrade-might 240 property SP "410 / 410 (120)"
 upgrade-might 241 engine NuiSetBind <player>, 1, SP, "410 / 410 (120)"
 upgrade-might 242 property APOrLevel "0 / 40 (0)"
 upgrade-might 243 engine NuiSetBind <player>, 1, APOrLevel, "0 / 40 (0)"
-upgrade-might 244 engine NuiSetGroupLayout <player>, 1, _window_, <22314 chars hash de145ef517504b7b6fd9f7a45ab1bea5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+upgrade-might 244 engine NuiSetGroupLayout <player>, 1, _window_, <21738 chars hash d97eaf0ceba62acf85f9ffaa30231e81> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 upgrade-might 245 engine NuiSetBind <player>, 1, Geometry, {"h":469.0,"w":800.0,"x":0.0,"y":0.0}
 upgrade-might 246 property Name "Civilian"
 upgrade-might 247 engine NuiSetBind <player>, 1, Name, "Civilian"
@@ -849,7 +849,7 @@ upgrade-agility 4 property ModalConfirmButtonText "Yes"
 upgrade-agility 5 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 upgrade-agility 6 property ModalCancelButtonText "No"
 upgrade-agility 7 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-upgrade-agility 8 engine NuiSetGroupLayout <player>, 1, _window_, <1128 chars hash b0936a95092805681482b0a368613e90> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+upgrade-agility 8 engine NuiSetGroupLayout <player>, 1, _window_, <1074 chars hash 469520256753223e1a230ae1c23bafe8> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 upgrade-agility 9 engine NuiSetBind <player>, 1, Geometry, {"h":470.0,"w":800.0,"x":0.0,"y":0.0}
 upgrade-agility 10 property ModalPromptText "Upgrading your Agility attribute will consume 1 AP. Are you sure you want to upgrade it?"
 upgrade-agility 11 engine NuiSetBind <player>, 1, ModalPromptText, "Upgrading your Agility attribute will consume 1 AP. Are you sure you want to upgrade it?"
@@ -857,7 +857,7 @@ upgrade-agility 12 property ModalConfirmButtonText "Yes"
 upgrade-agility 13 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 upgrade-agility 14 property ModalCancelButtonText "No"
 upgrade-agility 15 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-upgrade-agility 16 engine NuiSetGroupLayout <player>, 1, _window_, <22314 chars hash de145ef517504b7b6fd9f7a45ab1bea5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+upgrade-agility 16 engine NuiSetGroupLayout <player>, 1, _window_, <21738 chars hash d97eaf0ceba62acf85f9ffaa30231e81> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 upgrade-agility 17 engine NuiSetBind <player>, 1, Geometry, {"h":471.0,"w":800.0,"x":0.0,"y":0.0}
 upgrade-agility 18 property Name "Civilian"
 upgrade-agility 19 engine NuiSetBind <player>, 1, Name, "Civilian"
@@ -948,7 +948,7 @@ upgrade-agility 103 engine NuiSetBind <player>, 1, ForceDefense, 78
 upgrade-agility 104 property IsTechniquesEnabled true
 upgrade-agility 105 engine NuiSetBind <player>, 1, IsTechniquesEnabled, true
 upgrade-agility 106 engine FloatingTextStringOnCreature You do not have enough AP to purchase this upgrade., <player>, False
-upgrade-agility 107 engine NuiSetGroupLayout <player>, 1, _window_, <22314 chars hash de145ef517504b7b6fd9f7a45ab1bea5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+upgrade-agility 107 engine NuiSetGroupLayout <player>, 1, _window_, <21738 chars hash d97eaf0ceba62acf85f9ffaa30231e81> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 upgrade-agility 108 engine NuiSetBind <player>, 1, Geometry, {"h":472.0,"w":800.0,"x":0.0,"y":0.0}
 upgrade-agility 109 property Name "Civilian"
 upgrade-agility 110 engine NuiSetBind <player>, 1, Name, "Civilian"
@@ -1383,7 +1383,7 @@ stats-tab 16 property StatTooltips <3890 chars hash e0178b1cff49bf24d0e67e9fd250
 stats-tab 17 engine NuiSetBind <player>, 1, StatTooltips_RowCount, 41
 stats-tab 18 engine NuiSetBind <player>, 1, StatTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
 stats-tab 19 engine NuiSetBind <player>, 1, StatTooltips, <3890 chars hash e0178b1cff49bf24d0e67e9fd2507406> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
-stats-tab 20 engine NuiSetGroupLayout <player>, 1, _window_, <12869 chars hash eeec38272bf88574b5d49f718b29d185> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+stats-tab 20 engine NuiSetGroupLayout <player>, 1, _window_, <12455 chars hash 8e6ede611a3e4aaa56d0d812c6016ac5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 stats-tab 21 engine NuiSetBind <player>, 1, Geometry, {"h":473.0,"w":800.0,"x":0.0,"y":0.0}
 stats-tab 22 property Name "Civilian"
 stats-tab 23 engine NuiSetBind <player>, 1, Name, "Civilian"
@@ -1544,7 +1544,7 @@ resistances-tab 20 property ResistanceStatusDurations ["Full Duration","Full Dur
 resistances-tab 21 engine NuiSetBind <player>, 1, ResistanceStatusDurations_RowCount, 8
 resistances-tab 22 engine NuiSetBind <player>, 1, ResistanceStatusDurations_RowVisibility, [true,true,true,true,true,true,true,true,true]
 resistances-tab 23 engine NuiSetBind <player>, 1, ResistanceStatusDurations, ["Full Duration","Full Duration","Full Duration","Full Duration","Full Duration","Full Duration","Full Duration","Full Duration"]
-resistances-tab 24 engine NuiSetGroupLayout <player>, 1, _window_, <13538 chars hash 63084f92b0a504fc190bc404c46554f6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+resistances-tab 24 engine NuiSetGroupLayout <player>, 1, _window_, <13124 chars hash f043b3a43a6a03283f369435e9a99ba0> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 resistances-tab 25 engine NuiSetBind <player>, 1, Geometry, {"h":461.0,"w":800.0,"x":0.0,"y":0.0}
 resistances-tab 26 property Name "Civilian"
 resistances-tab 27 engine NuiSetBind <player>, 1, Name, "Civilian"
@@ -1619,7 +1619,7 @@ stats-tab-again 16 property StatTooltips <3890 chars hash e0178b1cff49bf24d0e67e
 stats-tab-again 17 engine NuiSetBind <player>, 1, StatTooltips_RowCount, 41
 stats-tab-again 18 engine NuiSetBind <player>, 1, StatTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
 stats-tab-again 19 engine NuiSetBind <player>, 1, StatTooltips, <3890 chars hash e0178b1cff49bf24d0e67e9fd2507406> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
-stats-tab-again 20 engine NuiSetGroupLayout <player>, 1, _window_, <12869 chars hash eeec38272bf88574b5d49f718b29d185> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+stats-tab-again 20 engine NuiSetGroupLayout <player>, 1, _window_, <12455 chars hash 8e6ede611a3e4aaa56d0d812c6016ac5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 stats-tab-again 21 engine NuiSetBind <player>, 1, Geometry, {"h":462.0,"w":800.0,"x":0.0,"y":0.0}
 stats-tab-again 22 property Name "Civilian"
 stats-tab-again 23 engine NuiSetBind <player>, 1, Name, "Civilian"
@@ -1776,7 +1776,7 @@ crafting-tab 20 property Control "0/0/0/0/0"
 crafting-tab 21 engine NuiSetBind <player>, 1, Control, "0/0/0/0/0"
 crafting-tab 22 property Craftsmanship "0/0/0/0/0"
 crafting-tab 23 engine NuiSetBind <player>, 1, Craftsmanship, "0/0/0/0/0"
-crafting-tab 24 engine NuiSetGroupLayout <player>, 1, _window_, <13206 chars hash 5028a7afd118f6f120377b179e602c5b> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+crafting-tab 24 engine NuiSetGroupLayout <player>, 1, _window_, <12792 chars hash 5ba514d39a6f26b56ffca2e1698ae1b5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 crafting-tab 25 engine NuiSetBind <player>, 1, Geometry, {"h":461.0,"w":800.0,"x":0.0,"y":0.0}
 crafting-tab 26 property Name "Civilian"
 crafting-tab 27 engine NuiSetBind <player>, 1, Name, "Civilian"
@@ -1847,7 +1847,7 @@ stats-tab-dual-wield 16 property StatTooltips <3905 chars hash 037d59fc9b29446a0
 stats-tab-dual-wield 17 engine NuiSetBind <player>, 1, StatTooltips_RowCount, 41
 stats-tab-dual-wield 18 engine NuiSetBind <player>, 1, StatTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
 stats-tab-dual-wield 19 engine NuiSetBind <player>, 1, StatTooltips, <3905 chars hash 037d59fc9b29446a03f584d82d8a3fbf> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
-stats-tab-dual-wield 20 engine NuiSetGroupLayout <player>, 1, _window_, <12869 chars hash eeec38272bf88574b5d49f718b29d185> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+stats-tab-dual-wield 20 engine NuiSetGroupLayout <player>, 1, _window_, <12455 chars hash 8e6ede611a3e4aaa56d0d812c6016ac5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 stats-tab-dual-wield 21 engine NuiSetBind <player>, 1, Geometry, {"h":462.0,"w":800.0,"x":0.0,"y":0.0}
 stats-tab-dual-wield 22 property Name "Civilian"
 stats-tab-dual-wield 23 engine NuiSetBind <player>, 1, Name, "Civilian"
@@ -2044,7 +2044,7 @@ stats-tab-after-unequip 16 property StatTooltips <3890 chars hash e0178b1cff49bf
 stats-tab-after-unequip 17 engine NuiSetBind <player>, 1, StatTooltips_RowCount, 41
 stats-tab-after-unequip 18 engine NuiSetBind <player>, 1, StatTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
 stats-tab-after-unequip 19 engine NuiSetBind <player>, 1, StatTooltips, <3890 chars hash e0178b1cff49bf24d0e67e9fd2507406> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
-stats-tab-after-unequip 20 engine NuiSetGroupLayout <player>, 1, _window_, <12869 chars hash eeec38272bf88574b5d49f718b29d185> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+stats-tab-after-unequip 20 engine NuiSetGroupLayout <player>, 1, _window_, <12455 chars hash 8e6ede611a3e4aaa56d0d812c6016ac5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 stats-tab-after-unequip 21 engine NuiSetBind <player>, 1, Geometry, {"h":461.0,"w":800.0,"x":0.0,"y":0.0}
 stats-tab-after-unequip 22 property Name "Civilian"
 stats-tab-after-unequip 23 engine NuiSetBind <player>, 1, Name, "Civilian"
@@ -2175,7 +2175,7 @@ open-npc 69 property ModalInputText ""
 open-npc 70 engine NuiSetBind <player>, 2, ModalInputText, ""
 open-npc 71 engine NuiSetBind <player>, 2, ModalInputText, ""
 open-npc 72 engine NuiSetBindWatch <player>, 2, ModalInputText, True
-open-npc 73 engine NuiSetGroupLayout <player>, 2, _window_, <11391 chars hash 45f604cb74442b894aed6eed746a78ca> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+open-npc 73 engine NuiSetGroupLayout <player>, 2, _window_, <10977 chars hash c469682cdcacf9a70a73f31f09e7738a> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 open-npc 74 engine NuiSetBind <player>, 2, Geometry, {"h":462.0,"w":800.0,"x":0.0,"y":0.0}
 open-npc 75 property Name "Civilian"
 open-npc 76 engine NuiSetBind <player>, 2, Name, "Civilian"
@@ -2225,7 +2225,7 @@ open-npc 119 property TopTabId 0
 open-npc 120 engine NuiSetBind <player>, 2, TopTabId, 0
 open-npc 121 property BottomTabId -1
 open-npc 122 engine NuiSetBind <player>, 2, BottomTabId, -1
-open-npc 123 engine NuiSetGroupLayout <player>, 2, _window_, <22314 chars hash de145ef517504b7b6fd9f7a45ab1bea5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+open-npc 123 engine NuiSetGroupLayout <player>, 2, _window_, <21738 chars hash d97eaf0ceba62acf85f9ffaa30231e81> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 open-npc 124 engine NuiSetBind <player>, 2, Geometry, {"h":463.0,"w":800.0,"x":0.0,"y":0.0}
 open-npc 125 property Name "Civilian"
 open-npc 126 engine NuiSetBind <player>, 2, Name, "Civilian"
@@ -2461,7 +2461,7 @@ npc-tab-1 16 property StatTooltips <3890 chars hash e0178b1cff49bf24d0e67e9fd250
 npc-tab-1 17 engine NuiSetBind <player>, 2, StatTooltips_RowCount, 41
 npc-tab-1 18 engine NuiSetBind <player>, 2, StatTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
 npc-tab-1 19 engine NuiSetBind <player>, 2, StatTooltips, <3890 chars hash e0178b1cff49bf24d0e67e9fd2507406> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
-npc-tab-1 20 engine NuiSetGroupLayout <player>, 2, _window_, <12869 chars hash eeec38272bf88574b5d49f718b29d185> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+npc-tab-1 20 engine NuiSetGroupLayout <player>, 2, _window_, <12455 chars hash 8e6ede611a3e4aaa56d0d812c6016ac5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 npc-tab-1 21 engine NuiSetBind <player>, 2, Geometry, {"h":464.0,"w":800.0,"x":0.0,"y":0.0}
 npc-tab-1 22 property Name "Bandit"
 npc-tab-1 23 engine NuiSetBind <player>, 2, Name, "Bandit"
@@ -2536,7 +2536,7 @@ npc-tab-2 20 property ResistanceStatusDurations ["Full Duration","Full Duration"
 npc-tab-2 21 engine NuiSetBind <player>, 2, ResistanceStatusDurations_RowCount, 8
 npc-tab-2 22 engine NuiSetBind <player>, 2, ResistanceStatusDurations_RowVisibility, [true,true,true,true,true,true,true,true,true]
 npc-tab-2 23 engine NuiSetBind <player>, 2, ResistanceStatusDurations, ["Full Duration","Full Duration","Full Duration","Full Duration","Full Duration","Full Duration","Full Duration","Full Duration"]
-npc-tab-2 24 engine NuiSetGroupLayout <player>, 2, _window_, <13538 chars hash 63084f92b0a504fc190bc404c46554f6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+npc-tab-2 24 engine NuiSetGroupLayout <player>, 2, _window_, <13124 chars hash f043b3a43a6a03283f369435e9a99ba0> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 npc-tab-2 25 engine NuiSetBind <player>, 2, Geometry, {"h":465.0,"w":800.0,"x":0.0,"y":0.0}
 npc-tab-2 26 property Name "Bandit"
 npc-tab-2 27 engine NuiSetBind <player>, 2, Name, "Bandit"
@@ -2615,7 +2615,7 @@ npc-tab-3 20 property Control "0/0/0/0/0"
 npc-tab-3 21 engine NuiSetBind <player>, 2, Control, "0/0/0/0/0"
 npc-tab-3 22 property Craftsmanship "0/0/0/0/0"
 npc-tab-3 23 engine NuiSetBind <player>, 2, Craftsmanship, "0/0/0/0/0"
-npc-tab-3 24 engine NuiSetGroupLayout <player>, 2, _window_, <13206 chars hash 5028a7afd118f6f120377b179e602c5b> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+npc-tab-3 24 engine NuiSetGroupLayout <player>, 2, _window_, <12792 chars hash 5ba514d39a6f26b56ffca2e1698ae1b5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 npc-tab-3 25 engine NuiSetBind <player>, 2, Geometry, {"h":466.0,"w":800.0,"x":0.0,"y":0.0}
 npc-tab-3 26 property Name "Bandit"
 npc-tab-3 27 engine NuiSetBind <player>, 2, Name, "Bandit"
@@ -2674,7 +2674,7 @@ npc-tab-0 4 property TopTabId 0
 npc-tab-0 5 engine NuiSetBind <player>, 2, TopTabId, 0
 npc-tab-0 6 property BottomTabId -1
 npc-tab-0 7 engine NuiSetBind <player>, 2, BottomTabId, -1
-npc-tab-0 8 engine NuiSetGroupLayout <player>, 2, _window_, <22314 chars hash de145ef517504b7b6fd9f7a45ab1bea5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+npc-tab-0 8 engine NuiSetGroupLayout <player>, 2, _window_, <21738 chars hash d97eaf0ceba62acf85f9ffaa30231e81> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 npc-tab-0 9 engine NuiSetBind <player>, 2, Geometry, {"h":467.0,"w":800.0,"x":0.0,"y":0.0}
 npc-tab-0 10 property Name "Bandit"
 npc-tab-0 11 engine NuiSetBind <player>, 2, Name, "Bandit"
@@ -2847,7 +2847,7 @@ open-high-resource 69 property ModalInputText ""
 open-high-resource 70 engine NuiSetBind <player>, 3, ModalInputText, ""
 open-high-resource 71 engine NuiSetBind <player>, 3, ModalInputText, ""
 open-high-resource 72 engine NuiSetBindWatch <player>, 3, ModalInputText, True
-open-high-resource 73 engine NuiSetGroupLayout <player>, 3, _window_, <11391 chars hash 45f604cb74442b894aed6eed746a78ca> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+open-high-resource 73 engine NuiSetGroupLayout <player>, 3, _window_, <10977 chars hash c469682cdcacf9a70a73f31f09e7738a> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 open-high-resource 74 engine NuiSetBind <player>, 3, Geometry, {"h":468.0,"w":800.0,"x":0.0,"y":0.0}
 open-high-resource 75 property Name "Bandit"
 open-high-resource 76 engine NuiSetBind <player>, 3, Name, "Bandit"
@@ -2897,7 +2897,7 @@ open-high-resource 119 property TopTabId 0
 open-high-resource 120 engine NuiSetBind <player>, 3, TopTabId, 0
 open-high-resource 121 property BottomTabId -1
 open-high-resource 122 engine NuiSetBind <player>, 3, BottomTabId, -1
-open-high-resource 123 engine NuiSetGroupLayout <player>, 3, _window_, <22314 chars hash de145ef517504b7b6fd9f7a45ab1bea5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+open-high-resource 123 engine NuiSetGroupLayout <player>, 3, _window_, <21738 chars hash d97eaf0ceba62acf85f9ffaa30231e81> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 open-high-resource 124 engine NuiSetBind <player>, 3, Geometry, {"h":469.0,"w":800.0,"x":0.0,"y":0.0}
 open-high-resource 125 property Name "Bandit"
 open-high-resource 126 engine NuiSetBind <player>, 3, Name, "Bandit"
@@ -3156,7 +3156,7 @@ high-resource-stats 16 property StatTooltips <3890 chars hash e0178b1cff49bf24d0
 high-resource-stats 17 engine NuiSetBind <player>, 3, StatTooltips_RowCount, 41
 high-resource-stats 18 engine NuiSetBind <player>, 3, StatTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
 high-resource-stats 19 engine NuiSetBind <player>, 3, StatTooltips, <3890 chars hash e0178b1cff49bf24d0e67e9fd2507406> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
-high-resource-stats 20 engine NuiSetGroupLayout <player>, 3, _window_, <12869 chars hash eeec38272bf88574b5d49f718b29d185> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+high-resource-stats 20 engine NuiSetGroupLayout <player>, 3, _window_, <12455 chars hash 8e6ede611a3e4aaa56d0d812c6016ac5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 high-resource-stats 21 engine NuiSetBind <player>, 3, Geometry, {"h":470.0,"w":800.0,"x":0.0,"y":0.0}
 high-resource-stats 22 property Name "Civilian"
 high-resource-stats 23 engine NuiSetBind <player>, 3, Name, "Civilian"

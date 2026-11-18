@@ -8,7 +8,7 @@ open 6 property ModalInputText ""
 open 7 engine NuiSetBind <player>, 1, ModalInputText, ""
 open 8 engine NuiSetBind <player>, 1, ModalInputText, ""
 open 9 engine NuiSetBindWatch <player>, 1, ModalInputText, True
-open 10 engine NuiSetGroupLayout <player>, 1, _window_, <5208 chars hash 5a88c7e3036dc2b9d9238e6dd9cae201> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+open 10 engine NuiSetGroupLayout <player>, 1, _window_, <5096 chars hash 091f71dee04c8181edd196ce6ba75999> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 open 11 engine NuiSetBind <player>, 1, Geometry, {"h":641.0,"w":980.0,"x":0.0,"y":0.0}
 open 12 property SearchText ""
 open 13 engine NuiSetBind <player>, 1, SearchText, ""
@@ -414,7 +414,7 @@ close-and-reopen 19 property ModalInputText ""
 close-and-reopen 20 engine NuiSetBind <player>, 2, ModalInputText, ""
 close-and-reopen 21 engine NuiSetBind <player>, 2, ModalInputText, ""
 close-and-reopen 22 engine NuiSetBindWatch <player>, 2, ModalInputText, True
-close-and-reopen 23 engine NuiSetGroupLayout <player>, 2, _window_, <5208 chars hash 5a88c7e3036dc2b9d9238e6dd9cae201> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+close-and-reopen 23 engine NuiSetGroupLayout <player>, 2, _window_, <5096 chars hash 091f71dee04c8181edd196ce6ba75999> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 close-and-reopen 24 engine NuiSetBind <player>, 2, Geometry, {"h":642.0,"w":980.0,"x":0.0,"y":0.0}
 close-and-reopen 25 property TopicButtonTexts <1152 chars hash 9e5f43557ac51dea05cf26c05805cf16> ["Common Questions","Communication","Skills","Skill Decay","Perks","Force Affinity","Perk Refunds","XP Debt","Abilities"
 close-and-reopen 26 engine NuiSetBind <player>, 2, TopicButtonTexts_RowCount, 57

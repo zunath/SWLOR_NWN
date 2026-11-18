@@ -8,7 +8,7 @@ open-empty 6 property ModalInputText ""
 open-empty 7 engine NuiSetBind <player>, 1, ModalInputText, ""
 open-empty 8 engine NuiSetBind <player>, 1, ModalInputText, ""
 open-empty 9 engine NuiSetBindWatch <player>, 1, ModalInputText, True
-open-empty 10 engine NuiSetGroupLayout <player>, 1, _window_, <2511 chars hash 68332132f9b63b8f745e0bc65165c438> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+open-empty 10 engine NuiSetGroupLayout <player>, 1, _window_, <2399 chars hash 963b35d5e04df7266e3b02c4746faee1> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 open-empty 11 engine NuiSetBind <player>, 1, Geometry, {"h":601.0,"w":792.0,"x":0.0,"y":0.0}
 open-empty 12 property IsAvailableSelected true
 open-empty 13 engine NuiSetBind <player>, 1, IsAvailableSelected, true
@@ -182,7 +182,7 @@ open-empty 180 property StatusText ""
 open-empty 181 engine NuiSetBind <player>, 1, StatusText, ""
 open-empty 182 property StatusColor {"a":255,"b":138,"g":162,"r":170}
 open-empty 183 engine NuiSetBind <player>, 1, StatusColor, {"a":255,"b":138,"g":162,"r":170}
-open-empty 184 engine NuiSetGroupLayout <player>, 1, _window_, <3785 chars hash ba396b701f8486cefb056ee892e656ef> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+open-empty 184 engine NuiSetGroupLayout <player>, 1, _window_, <3673 chars hash f92d6250e8d464dfde645f2daca8c0d6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 open-empty 185 engine NuiSetBind <player>, 1, Geometry, {"h":602.0,"w":792.0,"x":0.0,"y":0.0}
 open-empty 186 property SlotBarLabel "Disguise Slots   0 / 1"
 open-empty 187 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   0 / 1"
@@ -210,7 +210,7 @@ open-empty 208 property EmptyStateTitle "No Available Disguises"
 open-empty 209 engine NuiSetBind <player>, 1, EmptyStateTitle, "No Available Disguises"
 open-empty 210 property EmptyStateText "Create a disguise to begin."
 open-empty 211 engine NuiSetBind <player>, 1, EmptyStateText, "Create a disguise to begin."
-open-empty 212 engine NuiSetGroupLayout <player>, 1, _window_, <3785 chars hash ba396b701f8486cefb056ee892e656ef> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+open-empty 212 engine NuiSetGroupLayout <player>, 1, _window_, <3673 chars hash f92d6250e8d464dfde645f2daca8c0d6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 open-empty 213 engine NuiSetBind <player>, 1, Geometry, {"h":603.0,"w":792.0,"x":0.0,"y":0.0}
 open-empty 214 property SlotBarLabel "Disguise Slots   0 / 1"
 open-empty 215 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   0 / 1"
@@ -230,7 +230,7 @@ open-empty 228 property EmptyStateTitle "No Available Disguises"
 open-empty 229 engine NuiSetBind <player>, 1, EmptyStateTitle, "No Available Disguises"
 open-empty 230 property EmptyStateText "Create a disguise to begin."
 open-empty 231 engine NuiSetBind <player>, 1, EmptyStateText, "Create a disguise to begin."
-open-empty 232 engine NuiSetGroupLayout <player>, 1, _window_, <3785 chars hash ba396b701f8486cefb056ee892e656ef> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+open-empty 232 engine NuiSetGroupLayout <player>, 1, _window_, <3673 chars hash f92d6250e8d464dfde645f2daca8c0d6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 open-empty 233 engine NuiSetBind <player>, 1, Geometry, {"h":604.0,"w":792.0,"x":0.0,"y":0.0}
 open-empty 234 property SlotBarLabel "Disguise Slots   0 / 1"
 open-empty 235 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   0 / 1"
@@ -377,7 +377,7 @@ retired-tab 106 property StatusText ""
 retired-tab 107 engine NuiSetBind <player>, 1, StatusText, ""
 retired-tab 108 property StatusColor {"a":255,"b":138,"g":162,"r":170}
 retired-tab 109 engine NuiSetBind <player>, 1, StatusColor, {"a":255,"b":138,"g":162,"r":170}
-retired-tab 110 engine NuiSetGroupLayout <player>, 1, _window_, <3785 chars hash ba396b701f8486cefb056ee892e656ef> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+retired-tab 110 engine NuiSetGroupLayout <player>, 1, _window_, <3673 chars hash f92d6250e8d464dfde645f2daca8c0d6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 retired-tab 111 engine NuiSetBind <player>, 1, Geometry, {"h":605.0,"w":792.0,"x":0.0,"y":0.0}
 retired-tab 112 property SlotBarLabel "Disguise Slots   0 / 1"
 retired-tab 113 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   0 / 1"
@@ -405,7 +405,7 @@ retired-tab 134 property EmptyStateTitle "No Retired Disguises"
 retired-tab 135 engine NuiSetBind <player>, 1, EmptyStateTitle, "No Retired Disguises"
 retired-tab 136 property EmptyStateText "Retired disguises will appear here."
 retired-tab 137 engine NuiSetBind <player>, 1, EmptyStateText, "Retired disguises will appear here."
-retired-tab 138 engine NuiSetGroupLayout <player>, 1, _window_, <3785 chars hash ba396b701f8486cefb056ee892e656ef> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+retired-tab 138 engine NuiSetGroupLayout <player>, 1, _window_, <3673 chars hash f92d6250e8d464dfde645f2daca8c0d6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 retired-tab 139 engine NuiSetBind <player>, 1, Geometry, {"h":606.0,"w":792.0,"x":0.0,"y":0.0}
 retired-tab 140 property SlotBarLabel "Disguise Slots   0 / 1"
 retired-tab 141 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   0 / 1"
@@ -538,7 +538,7 @@ available-tab 106 property StatusText ""
 available-tab 107 engine NuiSetBind <player>, 1, StatusText, ""
 available-tab 108 property StatusColor {"a":255,"b":138,"g":162,"r":170}
 available-tab 109 engine NuiSetBind <player>, 1, StatusColor, {"a":255,"b":138,"g":162,"r":170}
-available-tab 110 engine NuiSetGroupLayout <player>, 1, _window_, <3785 chars hash ba396b701f8486cefb056ee892e656ef> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+available-tab 110 engine NuiSetGroupLayout <player>, 1, _window_, <3673 chars hash f92d6250e8d464dfde645f2daca8c0d6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 available-tab 111 engine NuiSetBind <player>, 1, Geometry, {"h":607.0,"w":792.0,"x":0.0,"y":0.0}
 available-tab 112 property SlotBarLabel "Disguise Slots   0 / 1"
 available-tab 113 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   0 / 1"
@@ -566,7 +566,7 @@ available-tab 134 property EmptyStateTitle "No Available Disguises"
 available-tab 135 engine NuiSetBind <player>, 1, EmptyStateTitle, "No Available Disguises"
 available-tab 136 property EmptyStateText "Create a disguise to begin."
 available-tab 137 engine NuiSetBind <player>, 1, EmptyStateText, "Create a disguise to begin."
-available-tab 138 engine NuiSetGroupLayout <player>, 1, _window_, <3785 chars hash ba396b701f8486cefb056ee892e656ef> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+available-tab 138 engine NuiSetGroupLayout <player>, 1, _window_, <3673 chars hash f92d6250e8d464dfde645f2daca8c0d6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 available-tab 139 engine NuiSetBind <player>, 1, Geometry, {"h":608.0,"w":792.0,"x":0.0,"y":0.0}
 available-tab 140 property SlotBarLabel "Disguise Slots   0 / 1"
 available-tab 141 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   0 / 1"
@@ -597,7 +597,7 @@ new 4 property ModalConfirmButtonText "Yes"
 new 5 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 new 6 property ModalCancelButtonText "No"
 new 7 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-new 8 engine NuiSetGroupLayout <player>, 1, _window_, <1128 chars hash 5d2134781bf89094d42f777e1032e260> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+new 8 engine NuiSetGroupLayout <player>, 1, _window_, <1072 chars hash ed42bfc782722e0642845520e0283bc2> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 new 9 engine NuiSetBind <player>, 1, Geometry, {"h":609.0,"w":792.0,"x":0.0,"y":0.0}
 new 10 property ModalPromptText "Creating a new disguise will consume one of your disguise slots. Retired disguises also occupy disguise slots until they are wiped. Are you sure?"
 new 11 engine NuiSetBind <player>, 1, ModalPromptText, "Creating a new disguise will consume one of your disguise slots. Retired disguises also occupy disguise slots until they are wiped. Are you sure?"
@@ -605,7 +605,7 @@ new 12 property ModalConfirmButtonText "Yes"
 new 13 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 new 14 property ModalCancelButtonText "No"
 new 15 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-new 16 engine NuiSetGroupLayout <player>, 1, _window_, <3785 chars hash ba396b701f8486cefb056ee892e656ef> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+new 16 engine NuiSetGroupLayout <player>, 1, _window_, <3673 chars hash f92d6250e8d464dfde645f2daca8c0d6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 new 17 engine NuiSetBind <player>, 1, Geometry, {"h":610.0,"w":792.0,"x":0.0,"y":0.0}
 new 18 property SlotBarLabel "Disguise Slots   0 / 1"
 new 19 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   0 / 1"
@@ -721,7 +721,7 @@ new 128 property StatusText "Inactive"
 new 129 engine NuiSetBind <player>, 1, StatusText, "Inactive"
 new 130 property StatusColor {"a":255,"b":138,"g":162,"r":170}
 new 131 engine NuiSetBind <player>, 1, StatusColor, {"a":255,"b":138,"g":162,"r":170}
-new 132 engine NuiSetGroupLayout <player>, 1, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+new 132 engine NuiSetGroupLayout <player>, 1, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 new 133 engine NuiSetBind <player>, 1, Geometry, {"h":611.0,"w":792.0,"x":0.0,"y":0.0}
 new 134 property SlotBarLabel "Disguise Slots   1 / 1"
 new 135 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -781,7 +781,7 @@ new 188 property StatusText "Editing"
 new 189 engine NuiSetBind <player>, 1, StatusText, "Editing"
 new 190 property StatusColor {"a":255,"b":225,"g":185,"r":120}
 new 191 engine NuiSetBind <player>, 1, StatusColor, {"a":255,"b":225,"g":185,"r":120}
-new 192 engine NuiSetGroupLayout <player>, 1, _window_, <8304 chars hash c511e5699667155be5b9501dc127ca5b> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+new 192 engine NuiSetGroupLayout <player>, 1, _window_, <8003 chars hash 1a8149c62cf0f4c89ee2639b31bcfd07> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 new 193 engine NuiSetBind <player>, 1, Geometry, {"h":612.0,"w":792.0,"x":0.0,"y":0.0}
 new 194 property SlotBarLabel "Disguise Slots   1 / 1"
 new 195 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -819,7 +819,7 @@ new 226 property SelectedSoundSetIndex 10
 new 227 engine NuiSetBind <player>, 1, SelectedSoundSetIndex, 10
 new 228 property SoundSetName "Human, Female, Courtesan, Friendly"
 new 229 engine NuiSetBind <player>, 1, SoundSetName, "Human, Female, Courtesan, Friendly"
-new 230 engine NuiSetGroupLayout <player>, 1, _window_, <8304 chars hash c511e5699667155be5b9501dc127ca5b> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+new 230 engine NuiSetGroupLayout <player>, 1, _window_, <8003 chars hash 1a8149c62cf0f4c89ee2639b31bcfd07> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 new 231 engine NuiSetBind <player>, 1, Geometry, {"h":613.0,"w":792.0,"x":0.0,"y":0.0}
 new 232 property SlotBarLabel "Disguise Slots   1 / 1"
 new 233 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -847,7 +847,7 @@ new 254 property SoundSetOptions <789 chars hash a0ba673eeff7db485a0bc9268829b95
 new 255 engine NuiSetBind <player>, 1, SoundSetOptions, <789 chars hash a0ba673eeff7db485a0bc9268829b959> [["HK47",0],["Hobgoblin",1],["Hobgoblin, Wizard",2],["Hook Horror",3],["Horse",4],["Horse*",5],["Hssiss",6],["Human, Fem
 new 256 property SoundSetPageNumbers [["Page 1",0],["Page 2",1],["Page 3",2],["Page 4",3],["Page 5",4],["Page 6",5],["Page 7",6],["Page 8",7],["Page 9",8],["Page 10",9],["Page 11",10],["Page 12",11],["Page 13",12],["Page 14",13],["Page 15",14],["Page 16",15],["Page 17",16],["Page 18",17]]
 new 257 engine NuiSetBind <player>, 1, SoundSetPageNumbers, [["Page 1",0],["Page 2",1],["Page 3",2],["Page 4",3],["Page 5",4],["Page 6",5],["Page 7",6],["Page 8",7],["Page 9",8],["Page 10",9],["Page 11",10],["Page 12",11],["Page 13",12],["Page 14",13],["Page 15",14],["Page 16",15],["Page 17",16],["Page 18",17]]
-new 258 engine NuiSetGroupLayout <player>, 1, _window_, <8304 chars hash c511e5699667155be5b9501dc127ca5b> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+new 258 engine NuiSetGroupLayout <player>, 1, _window_, <8003 chars hash 1a8149c62cf0f4c89ee2639b31bcfd07> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 new 259 engine NuiSetBind <player>, 1, Geometry, {"h":614.0,"w":792.0,"x":0.0,"y":0.0}
 new 260 property SlotBarLabel "Disguise Slots   1 / 1"
 new 261 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -1099,7 +1099,7 @@ save 112 property StatusText "Inactive"
 save 113 engine NuiSetBind <player>, 1, StatusText, "Inactive"
 save 114 property StatusColor {"a":255,"b":138,"g":162,"r":170}
 save 115 engine NuiSetBind <player>, 1, StatusColor, {"a":255,"b":138,"g":162,"r":170}
-save 116 engine NuiSetGroupLayout <player>, 1, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+save 116 engine NuiSetGroupLayout <player>, 1, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 save 117 engine NuiSetBind <player>, 1, Geometry, {"h":615.0,"w":792.0,"x":0.0,"y":0.0}
 save 118 property SlotBarLabel "Disguise Slots   1 / 1"
 save 119 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -1165,7 +1165,7 @@ edit 16 property StatusText "Editing"
 edit 17 engine NuiSetBind <player>, 1, StatusText, "Editing"
 edit 18 property StatusColor {"a":255,"b":225,"g":185,"r":120}
 edit 19 engine NuiSetBind <player>, 1, StatusColor, {"a":255,"b":225,"g":185,"r":120}
-edit 20 engine NuiSetGroupLayout <player>, 1, _window_, <8304 chars hash c511e5699667155be5b9501dc127ca5b> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+edit 20 engine NuiSetGroupLayout <player>, 1, _window_, <8003 chars hash 1a8149c62cf0f4c89ee2639b31bcfd07> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 edit 21 engine NuiSetBind <player>, 1, Geometry, {"h":616.0,"w":792.0,"x":0.0,"y":0.0}
 edit 22 property SlotBarLabel "Disguise Slots   1 / 1"
 edit 23 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -1274,7 +1274,7 @@ cancel-edit 64 property StatusText "Inactive"
 cancel-edit 65 engine NuiSetBind <player>, 1, StatusText, "Inactive"
 cancel-edit 66 property StatusColor {"a":255,"b":138,"g":162,"r":170}
 cancel-edit 67 engine NuiSetBind <player>, 1, StatusColor, {"a":255,"b":138,"g":162,"r":170}
-cancel-edit 68 engine NuiSetGroupLayout <player>, 1, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+cancel-edit 68 engine NuiSetGroupLayout <player>, 1, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 cancel-edit 69 engine NuiSetBind <player>, 1, Geometry, {"h":617.0,"w":792.0,"x":0.0,"y":0.0}
 cancel-edit 70 property SlotBarLabel "Disguise Slots   1 / 1"
 cancel-edit 71 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -1327,7 +1327,7 @@ activate 4 property ModalConfirmButtonText "Yes"
 activate 5 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 activate 6 property ModalCancelButtonText "No"
 activate 7 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-activate 8 engine NuiSetGroupLayout <player>, 1, _window_, <1128 chars hash 5d2134781bf89094d42f777e1032e260> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+activate 8 engine NuiSetGroupLayout <player>, 1, _window_, <1072 chars hash ed42bfc782722e0642845520e0283bc2> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 activate 9 engine NuiSetBind <player>, 1, Geometry, {"h":618.0,"w":792.0,"x":0.0,"y":0.0}
 activate 10 property ModalPromptText "Activating this disguise starts a 30-minute delay before you can activate another disguise. Deactivation has no delay. Are you sure?"
 activate 11 engine NuiSetBind <player>, 1, ModalPromptText, "Activating this disguise starts a 30-minute delay before you can activate another disguise. Deactivation has no delay. Are you sure?"
@@ -1335,7 +1335,7 @@ activate 12 property ModalConfirmButtonText "Yes"
 activate 13 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 activate 14 property ModalCancelButtonText "No"
 activate 15 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-activate 16 engine NuiSetGroupLayout <player>, 1, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+activate 16 engine NuiSetGroupLayout <player>, 1, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 activate 17 engine NuiSetBind <player>, 1, Geometry, {"h":619.0,"w":792.0,"x":0.0,"y":0.0}
 activate 18 property SlotBarLabel "Disguise Slots   1 / 1"
 activate 19 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -1482,7 +1482,7 @@ activate 159 property StatusText "? Active"
 activate 160 engine NuiSetBind <player>, 1, StatusText, "? Active"
 activate 161 property StatusColor {"a":255,"b":140,"g":210,"r":120}
 activate 162 engine NuiSetBind <player>, 1, StatusColor, {"a":255,"b":140,"g":210,"r":120}
-activate 163 engine NuiSetGroupLayout <player>, 1, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+activate 163 engine NuiSetGroupLayout <player>, 1, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 activate 164 engine NuiSetBind <player>, 1, Geometry, {"h":620.0,"w":792.0,"x":0.0,"y":0.0}
 activate 165 property SlotBarLabel "Disguise Slots   1 / 1"
 activate 166 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -1524,7 +1524,7 @@ activate 201 property SelectedSoundSetIndex 0
 activate 202 engine NuiSetBind <player>, 1, SelectedSoundSetIndex, 0
 activate 203 property SoundSetName "Bear, Dire"
 activate 204 engine NuiSetBind <player>, 1, SoundSetName, "Bear, Dire"
-activate 205 engine NuiSetGroupLayout <player>, 1, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+activate 205 engine NuiSetGroupLayout <player>, 1, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 activate 206 engine NuiSetBind <player>, 1, Geometry, {"h":621.0,"w":792.0,"x":0.0,"y":0.0}
 activate 207 property SlotBarLabel "Disguise Slots   1 / 1"
 activate 208 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -1556,7 +1556,7 @@ activate 233 property ActivateButtonText "Deactivate"
 activate 234 engine NuiSetBind <player>, 1, ActivateButtonText, "Deactivate"
 activate 235 property ActivationDelayNote "Activating starts a 30-minute cooldown before you can activate another disguise."
 activate 236 engine NuiSetBind <player>, 1, ActivationDelayNote, "Activating starts a 30-minute cooldown before you can activate another disguise."
-activate 237 engine NuiSetGroupLayout <player>, 1, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+activate 237 engine NuiSetGroupLayout <player>, 1, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 activate 238 engine NuiSetBind <player>, 1, Geometry, {"h":622.0,"w":792.0,"x":0.0,"y":0.0}
 activate 239 property SlotBarLabel "Disguise Slots   1 / 1"
 activate 240 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -1614,7 +1614,7 @@ deactivate 4 property ModalConfirmButtonText "Yes"
 deactivate 5 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 deactivate 6 property ModalCancelButtonText "No"
 deactivate 7 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-deactivate 8 engine NuiSetGroupLayout <player>, 1, _window_, <1128 chars hash 5d2134781bf89094d42f777e1032e260> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+deactivate 8 engine NuiSetGroupLayout <player>, 1, _window_, <1072 chars hash ed42bfc782722e0642845520e0283bc2> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 deactivate 9 engine NuiSetBind <player>, 1, Geometry, {"h":623.0,"w":792.0,"x":0.0,"y":0.0}
 deactivate 10 property ModalPromptText "Deactivating this disguise immediately restores your normal identity. Deactivation does not trigger the 30-minute delay between disguise activations. Are you sure?"
 deactivate 11 engine NuiSetBind <player>, 1, ModalPromptText, "Deactivating this disguise immediately restores your normal identity. Deactivation does not trigger the 30-minute delay between disguise activations. Are you sure?"
@@ -1622,7 +1622,7 @@ deactivate 12 property ModalConfirmButtonText "Yes"
 deactivate 13 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 deactivate 14 property ModalCancelButtonText "No"
 deactivate 15 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-deactivate 16 engine NuiSetGroupLayout <player>, 1, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+deactivate 16 engine NuiSetGroupLayout <player>, 1, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 deactivate 17 engine NuiSetBind <player>, 1, Geometry, {"h":624.0,"w":792.0,"x":0.0,"y":0.0}
 deactivate 18 property SlotBarLabel "Disguise Slots   1 / 1"
 deactivate 19 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -1769,7 +1769,7 @@ deactivate 159 property StatusText "Inactive"
 deactivate 160 engine NuiSetBind <player>, 1, StatusText, "Inactive"
 deactivate 161 property StatusColor {"a":255,"b":138,"g":162,"r":170}
 deactivate 162 engine NuiSetBind <player>, 1, StatusColor, {"a":255,"b":138,"g":162,"r":170}
-deactivate 163 engine NuiSetGroupLayout <player>, 1, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+deactivate 163 engine NuiSetGroupLayout <player>, 1, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 deactivate 164 engine NuiSetBind <player>, 1, Geometry, {"h":625.0,"w":792.0,"x":0.0,"y":0.0}
 deactivate 165 property SlotBarLabel "Disguise Slots   1 / 1"
 deactivate 166 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -1811,7 +1811,7 @@ deactivate 201 property SelectedSoundSetIndex 0
 deactivate 202 engine NuiSetBind <player>, 1, SelectedSoundSetIndex, 0
 deactivate 203 property SoundSetName "Bear, Dire"
 deactivate 204 engine NuiSetBind <player>, 1, SoundSetName, "Bear, Dire"
-deactivate 205 engine NuiSetGroupLayout <player>, 1, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+deactivate 205 engine NuiSetGroupLayout <player>, 1, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 deactivate 206 engine NuiSetBind <player>, 1, Geometry, {"h":626.0,"w":792.0,"x":0.0,"y":0.0}
 deactivate 207 property SlotBarLabel "Disguise Slots   1 / 1"
 deactivate 208 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -1843,7 +1843,7 @@ deactivate 233 property ActivateButtonText "Activate"
 deactivate 234 engine NuiSetBind <player>, 1, ActivateButtonText, "Activate"
 deactivate 235 property ActivationDelayNote "Activating starts a 30-minute cooldown before you can activate another disguise."
 deactivate 236 engine NuiSetBind <player>, 1, ActivationDelayNote, "Activating starts a 30-minute cooldown before you can activate another disguise."
-deactivate 237 engine NuiSetGroupLayout <player>, 1, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+deactivate 237 engine NuiSetGroupLayout <player>, 1, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 deactivate 238 engine NuiSetBind <player>, 1, Geometry, {"h":627.0,"w":792.0,"x":0.0,"y":0.0}
 deactivate 239 property SlotBarLabel "Disguise Slots   1 / 1"
 deactivate 240 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -1901,7 +1901,7 @@ retire 4 property ModalConfirmButtonText "Yes"
 retire 5 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 retire 6 property ModalCancelButtonText "No"
 retire 7 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-retire 8 engine NuiSetGroupLayout <player>, 1, _window_, <1128 chars hash 5d2134781bf89094d42f777e1032e260> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+retire 8 engine NuiSetGroupLayout <player>, 1, _window_, <1072 chars hash ed42bfc782722e0642845520e0283bc2> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 retire 9 engine NuiSetBind <player>, 1, Geometry, {"h":628.0,"w":792.0,"x":0.0,"y":0.0}
 retire 10 property ModalPromptText "Retiring this disguise will make it unavailable until an Identity Broker wipes it. Retired disguises still occupy disguise slots. Are you sure?"
 retire 11 engine NuiSetBind <player>, 1, ModalPromptText, "Retiring this disguise will make it unavailable until an Identity Broker wipes it. Retired disguises still occupy disguise slots. Are you sure?"
@@ -1909,7 +1909,7 @@ retire 12 property ModalConfirmButtonText "Yes"
 retire 13 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 retire 14 property ModalCancelButtonText "No"
 retire 15 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-retire 16 engine NuiSetGroupLayout <player>, 1, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+retire 16 engine NuiSetGroupLayout <player>, 1, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 retire 17 engine NuiSetBind <player>, 1, Geometry, {"h":629.0,"w":792.0,"x":0.0,"y":0.0}
 retire 18 property SlotBarLabel "Disguise Slots   1 / 1"
 retire 19 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -2028,7 +2028,7 @@ retire 131 property StatusText ""
 retire 132 engine NuiSetBind <player>, 1, StatusText, ""
 retire 133 property StatusColor {"a":255,"b":138,"g":162,"r":170}
 retire 134 engine NuiSetBind <player>, 1, StatusColor, {"a":255,"b":138,"g":162,"r":170}
-retire 135 engine NuiSetGroupLayout <player>, 1, _window_, <3785 chars hash ba396b701f8486cefb056ee892e656ef> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+retire 135 engine NuiSetGroupLayout <player>, 1, _window_, <3673 chars hash f92d6250e8d464dfde645f2daca8c0d6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 retire 136 engine NuiSetBind <player>, 1, Geometry, {"h":630.0,"w":792.0,"x":0.0,"y":0.0}
 retire 137 property SlotBarLabel "Disguise Slots   1 / 1"
 retire 138 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -2056,7 +2056,7 @@ retire 159 property EmptyStateTitle "No Available Disguises"
 retire 160 engine NuiSetBind <player>, 1, EmptyStateTitle, "No Available Disguises"
 retire 161 property EmptyStateText "Create a disguise to begin."
 retire 162 engine NuiSetBind <player>, 1, EmptyStateText, "Create a disguise to begin."
-retire 163 engine NuiSetGroupLayout <player>, 1, _window_, <3785 chars hash ba396b701f8486cefb056ee892e656ef> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+retire 163 engine NuiSetGroupLayout <player>, 1, _window_, <3673 chars hash f92d6250e8d464dfde645f2daca8c0d6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 retire 164 engine NuiSetBind <player>, 1, Geometry, {"h":631.0,"w":792.0,"x":0.0,"y":0.0}
 retire 165 property SlotBarLabel "Disguise Slots   1 / 1"
 retire 166 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -2076,7 +2076,7 @@ retire 179 property EmptyStateTitle "No Available Disguises"
 retire 180 engine NuiSetBind <player>, 1, EmptyStateTitle, "No Available Disguises"
 retire 181 property EmptyStateText "Create a disguise to begin."
 retire 182 engine NuiSetBind <player>, 1, EmptyStateText, "Create a disguise to begin."
-retire 183 engine NuiSetGroupLayout <player>, 1, _window_, <3785 chars hash ba396b701f8486cefb056ee892e656ef> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+retire 183 engine NuiSetGroupLayout <player>, 1, _window_, <3673 chars hash f92d6250e8d464dfde645f2daca8c0d6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 retire 184 engine NuiSetBind <player>, 1, Geometry, {"h":632.0,"w":792.0,"x":0.0,"y":0.0}
 retire 185 property SlotBarLabel "Disguise Slots   1 / 1"
 retire 186 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -2096,7 +2096,7 @@ retire 199 property EmptyStateTitle "No Available Disguises"
 retire 200 engine NuiSetBind <player>, 1, EmptyStateTitle, "No Available Disguises"
 retire 201 property EmptyStateText "Create a disguise to begin."
 retire 202 engine NuiSetBind <player>, 1, EmptyStateText, "Create a disguise to begin."
-retire 203 engine NuiSetGroupLayout <player>, 1, _window_, <3785 chars hash ba396b701f8486cefb056ee892e656ef> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+retire 203 engine NuiSetGroupLayout <player>, 1, _window_, <3673 chars hash f92d6250e8d464dfde645f2daca8c0d6> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 retire 204 engine NuiSetBind <player>, 1, Geometry, {"h":633.0,"w":792.0,"x":0.0,"y":0.0}
 retire 205 property SlotBarLabel "Disguise Slots   1 / 1"
 retire 206 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -2235,7 +2235,7 @@ retired-tab-with-disguise 112 property StatusText "Retired"
 retired-tab-with-disguise 113 engine NuiSetBind <player>, 1, StatusText, "Retired"
 retired-tab-with-disguise 114 property StatusColor {"a":255,"b":138,"g":162,"r":170}
 retired-tab-with-disguise 115 engine NuiSetBind <player>, 1, StatusColor, {"a":255,"b":138,"g":162,"r":170}
-retired-tab-with-disguise 116 engine NuiSetGroupLayout <player>, 1, _window_, <8311 chars hash f70af18635ebeb9bcc435e098b505fcc> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+retired-tab-with-disguise 116 engine NuiSetGroupLayout <player>, 1, _window_, <8037 chars hash 2db8d8465ccac690d4b080a273b12bd9> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 retired-tab-with-disguise 117 engine NuiSetBind <player>, 1, Geometry, {"h":634.0,"w":792.0,"x":0.0,"y":0.0}
 retired-tab-with-disguise 118 property SlotBarLabel "Disguise Slots   1 / 1"
 retired-tab-with-disguise 119 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -2284,7 +2284,7 @@ unretire 4 property ModalConfirmButtonText "Yes"
 unretire 5 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 unretire 6 property ModalCancelButtonText "No"
 unretire 7 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-unretire 8 engine NuiSetGroupLayout <player>, 1, _window_, <1128 chars hash 5d2134781bf89094d42f777e1032e260> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
+unretire 8 engine NuiSetGroupLayout <player>, 1, _window_, <1072 chars hash ed42bfc782722e0642845520e0283bc2> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"border":false,"enabled":true,"label":n
 unretire 9 engine NuiSetBind <player>, 1, Geometry, {"h":635.0,"w":792.0,"x":0.0,"y":0.0}
 unretire 10 property ModalPromptText "Restoring this disguise will move it back to your available disguises. Are you sure?"
 unretire 11 engine NuiSetBind <player>, 1, ModalPromptText, "Restoring this disguise will move it back to your available disguises. Are you sure?"
@@ -2292,7 +2292,7 @@ unretire 12 property ModalConfirmButtonText "Yes"
 unretire 13 engine NuiSetBind <player>, 1, ModalConfirmButtonText, "Yes"
 unretire 14 property ModalCancelButtonText "No"
 unretire 15 engine NuiSetBind <player>, 1, ModalCancelButtonText, "No"
-unretire 16 engine NuiSetGroupLayout <player>, 1, _window_, <8311 chars hash f70af18635ebeb9bcc435e098b505fcc> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+unretire 16 engine NuiSetGroupLayout <player>, 1, _window_, <8037 chars hash 2db8d8465ccac690d4b080a273b12bd9> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 unretire 17 engine NuiSetBind <player>, 1, Geometry, {"h":636.0,"w":792.0,"x":0.0,"y":0.0}
 unretire 18 property SlotBarLabel "Disguise Slots   1 / 1"
 unretire 19 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -2435,7 +2435,7 @@ unretire 155 property StatusText "Inactive"
 unretire 156 engine NuiSetBind <player>, 1, StatusText, "Inactive"
 unretire 157 property StatusColor {"a":255,"b":138,"g":162,"r":170}
 unretire 158 engine NuiSetBind <player>, 1, StatusColor, {"a":255,"b":138,"g":162,"r":170}
-unretire 159 engine NuiSetGroupLayout <player>, 1, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+unretire 159 engine NuiSetGroupLayout <player>, 1, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 unretire 160 engine NuiSetBind <player>, 1, Geometry, {"h":637.0,"w":792.0,"x":0.0,"y":0.0}
 unretire 161 property SlotBarLabel "Disguise Slots   1 / 1"
 unretire 162 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -2477,7 +2477,7 @@ unretire 197 property SelectedSoundSetIndex 0
 unretire 198 engine NuiSetBind <player>, 1, SelectedSoundSetIndex, 0
 unretire 199 property SoundSetName "Bear, Dire"
 unretire 200 engine NuiSetBind <player>, 1, SoundSetName, "Bear, Dire"
-unretire 201 engine NuiSetGroupLayout <player>, 1, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+unretire 201 engine NuiSetGroupLayout <player>, 1, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 unretire 202 engine NuiSetBind <player>, 1, Geometry, {"h":638.0,"w":792.0,"x":0.0,"y":0.0}
 unretire 203 property SlotBarLabel "Disguise Slots   1 / 1"
 unretire 204 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -2509,7 +2509,7 @@ unretire 229 property ActivateButtonText "Activate"
 unretire 230 engine NuiSetBind <player>, 1, ActivateButtonText, "Activate"
 unretire 231 property ActivationDelayNote "Activating starts a 30-minute cooldown before you can activate another disguise."
 unretire 232 engine NuiSetBind <player>, 1, ActivationDelayNote, "Activating starts a 30-minute cooldown before you can activate another disguise."
-unretire 233 engine NuiSetGroupLayout <player>, 1, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+unretire 233 engine NuiSetGroupLayout <player>, 1, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 unretire 234 engine NuiSetBind <player>, 1, Geometry, {"h":639.0,"w":792.0,"x":0.0,"y":0.0}
 unretire 235 property SlotBarLabel "Disguise Slots   1 / 1"
 unretire 236 engine NuiSetBind <player>, 1, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -2614,7 +2614,7 @@ close-and-reopen 46 property ModalInputText ""
 close-and-reopen 47 engine NuiSetBind <player>, 2, ModalInputText, ""
 close-and-reopen 48 engine NuiSetBind <player>, 2, ModalInputText, ""
 close-and-reopen 49 engine NuiSetBindWatch <player>, 2, ModalInputText, True
-close-and-reopen 50 engine NuiSetGroupLayout <player>, 2, _window_, <2511 chars hash 68332132f9b63b8f745e0bc65165c438> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+close-and-reopen 50 engine NuiSetGroupLayout <player>, 2, _window_, <2399 chars hash 963b35d5e04df7266e3b02c4746faee1> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 close-and-reopen 51 engine NuiSetBind <player>, 2, Geometry, {"h":640.0,"w":792.0,"x":0.0,"y":0.0}
 close-and-reopen 52 property SlotBarLabel "Disguise Slots   1 / 1"
 close-and-reopen 53 engine NuiSetBind <player>, 2, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -2808,7 +2808,7 @@ close-and-reopen 240 property StatusText "Inactive"
 close-and-reopen 241 engine NuiSetBind <player>, 2, StatusText, "Inactive"
 close-and-reopen 242 property StatusColor {"a":255,"b":138,"g":162,"r":170}
 close-and-reopen 243 engine NuiSetBind <player>, 2, StatusColor, {"a":255,"b":138,"g":162,"r":170}
-close-and-reopen 244 engine NuiSetGroupLayout <player>, 2, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+close-and-reopen 244 engine NuiSetGroupLayout <player>, 2, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 close-and-reopen 245 engine NuiSetBind <player>, 2, Geometry, {"h":641.0,"w":792.0,"x":0.0,"y":0.0}
 close-and-reopen 246 property SlotBarLabel "Disguise Slots   1 / 1"
 close-and-reopen 247 engine NuiSetBind <player>, 2, SlotBarLabel, "Disguise Slots   1 / 1"
@@ -2850,7 +2850,7 @@ close-and-reopen 282 property SelectedSoundSetIndex 0
 close-and-reopen 283 engine NuiSetBind <player>, 2, SelectedSoundSetIndex, 0
 close-and-reopen 284 property SoundSetName "Bear, Dire"
 close-and-reopen 285 engine NuiSetBind <player>, 2, SoundSetName, "Bear, Dire"
-close-and-reopen 286 engine NuiSetGroupLayout <player>, 2, _window_, <8637 chars hash d6a68e60b8bc8847da538a24073d537e> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
+close-and-reopen 286 engine NuiSetGroupLayout <player>, 2, _window_, <8306 chars hash 805b74e26fa4346304694c2e05af9cbd> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
 close-and-reopen 287 engine NuiSetBind <player>, 2, Geometry, {"h":642.0,"w":792.0,"x":0.0,"y":0.0}
 close-and-reopen 288 property SlotBarLabel "Disguise Slots   1 / 1"
 close-and-reopen 289 engine NuiSetBind <player>, 2, SlotBarLabel, "Disguise Slots   1 / 1"

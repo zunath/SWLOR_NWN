@@ -378,13 +378,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 Stat.ReduceStamina(caster, 50);
                 stamina = Stat.GetCurrentStamina(caster);
+                // Hit rewards refund the stamina this activation paid, so record the cost as the activation does.
+                Combat.ApplyAbilityStaminaCostFPRestore(caster, area, 50);
                 Ability.BeginAbilityImpact(caster, area);
                 try
                 {
                     ScheduleChannel(CombatDamageType.Physical, 6f);
                     ScheduleChannel(CombatDamageType.Electrical, 6f);
                 }
-                finally { Ability.EndAbilityImpact(caster); }
+                finally
+                {
+                    Ability.EndAbilityImpact(caster);
+                    // The cast ends here; the scheduled channels must keep the paid cost for their later pulses.
+                    Combat.CompleteAbilityStaminaCostContext(caster, area);
+                }
             });
             Combat.GrantNextAbilityDamageBonus(caster, (int)PerkType.KillzoneBeacon, 100, 30);
 
@@ -419,6 +426,96 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 finally { Ability.EndAbilityImpact(caster); }
             });
             await ctx.WaitUntilAsync(() => GetCurrentHitPoints(first) == firstHP - 16, 8f, "a new cast to receive its own bonus pulse");
+        }
+
+        [EngineTest("Scheduled device pulses refund from the activation that scheduled them after a recast", Category = "PerkTracker", TimeoutSeconds = 30f)]
+        public static async Task ScheduledDevicePulsesKeepTheirOwnActivationCost(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001", -1f);
+            var first = ctx.SpawnCreature("nw_rat001", 1f);
+            var second = ctx.SpawnCreature("nw_rat001", 3f);
+            await ctx.WaitFrameAsync();
+            foreach (var creature in new[] { caster, first, second })
+                PrepareStationaryCreature(ctx, creature);
+            ctx.MakeHostile(first);
+            ctx.MakeHostile(second);
+            ctx.SetNPCResources(caster, 100, 100);
+            TemporaryStatModifier.Add(caster, StatType.AreaAbilityPulseRadiusMeters, 5, 30f, "pulse");
+            TemporaryStatModifier.Add(caster, StatType.AreaHitStaminaRestorePerTarget, 2, 30f, "reward");
+            TemporaryStatModifier.Add(caster, StatType.AreaHitStaminaRestoreMaximum, 6, 30f, "reward");
+            var area = Ability.GetAbilityDetail(FeatType.KillzoneBeacon1);
+            var stamina = 0;
+
+            // Two casts of the same ability while the first one's pulses are still scheduled, as a recast of a
+            // long field does. Each pays 10 stamina, so each may refund at most 9; one shared budget would stop at 9.
+            await ctx.ExecuteInCreatureContextAsync(caster, () =>
+            {
+                foreach (var damageType in new[] { CombatDamageType.Physical, CombatDamageType.Electrical })
+                {
+                    Stat.ReduceStamina(caster, 10);
+                    Combat.ApplyAbilityStaminaCostFPRestore(caster, area, 10);
+                    Ability.BeginAbilityImpact(caster, area);
+                    try
+                    {
+                        DeviceAbilityEffects.ScheduleAreaHostilePulses(caster, GetLocation(first), SkillType.Devices,
+                            0, 0, null, 5f, 6f, damageType, SWLOR.NWN.API.NWScript.Enum.VisualEffect.VisualEffect.None,
+                            appliesBeaconPulseBonuses: true, showAreaIndicator: false);
+                    }
+                    finally
+                    {
+                        Ability.EndAbilityImpact(caster);
+                        Combat.CompleteAbilityStaminaCostContext(caster, area);
+                    }
+                }
+
+                stamina = Stat.GetCurrentStamina(caster);
+            });
+
+            // Each channel pulses twice and refunds 2 STM per target for both targets: 8 per activation.
+            await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(caster) >= stamina + 16, 10f,
+                "each activation's pulses to refund from its own paid stamina");
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(stamina + 16, Stat.GetCurrentStamina(caster), "neither activation spends the other's refund budget");
+        }
+
+        [EngineTest("Scheduled device pulses keep refunding after the cost context's ordinary lifetime", Category = "PerkTracker", TimeoutSeconds = 30f)]
+        public static async Task ScheduledDevicePulsesOutliveTheCostContextLifetime(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            await ctx.WaitFrameAsync();
+            PrepareStationaryCreature(ctx, caster);
+            ctx.SetNPCResources(caster, 100, 100);
+            var area = Ability.GetAbilityDetail(FeatType.KillzoneBeacon1);
+
+            // Ages the paid cost past the 35 second window, as a long field's late pulse sees it.
+            void AgeCostContext(int seconds)
+            {
+                var costs = (System.Collections.IDictionary)typeof(Combat)
+                    .GetField("_abilityStaminaCosts", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)!
+                    .GetValue(null);
+                var state = costs[(caster, area)]!;
+                state.GetType().GetProperty("SpentAt")!.SetValue(state, DateTime.UtcNow.AddSeconds(-seconds));
+            }
+
+            Stat.ReduceStamina(caster, 10);
+            var before = Stat.GetCurrentStamina(caster);
+            Combat.ApplyAbilityStaminaCostFPRestore(caster, area, 10);
+            var inCostContext = Combat.CaptureAbilityStaminaCostContext(caster, area);
+            AgeCostContext(40);
+            Combat.CompleteAbilityStaminaCostContext(caster, area);
+            ctx.Assert(inCostContext != null, "an activation that paid stamina can be captured");
+
+            var refunded = 0;
+            inCostContext(() => refunded = Combat.RestoreAbilityHitStamina(caster, area, 2));
+            ctx.AssertEqual(2, refunded, "a scheduled pulse 40 seconds after the cast still refunds from the paid cost");
+            ctx.AssertEqual(before + 2, Stat.GetCurrentStamina(caster), "the refund reaches the caster");
+            ctx.AssertEqual(0, Combat.RestoreAbilityHitStamina(caster, area, 2), "outside a captured pulse the context stays removed");
+
+            // An ordinary uncaptured cost still expires after 35 seconds.
+            Combat.ApplyAbilityStaminaCostFPRestore(caster, area, 10);
+            AgeCostContext(40);
+            ctx.AssertEqual(0, Combat.RestoreAbilityHitStamina(caster, area, 2), "an uncaptured paid cost expires after its ordinary lifetime");
+            Combat.CompleteAbilityStaminaCostContext(caster, area);
         }
 
         [EngineTest("Deadeye Reload builds from non-critical abilities of every ranged weapon skill only", Category = "PerkTracker", TimeoutSeconds = 30f)]

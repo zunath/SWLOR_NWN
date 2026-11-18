@@ -2377,32 +2377,49 @@ namespace SWLOR.Game.Server.Domain.Character
         protected virtual AbilityImpactSummary GetActiveAbilityImpactSummary(uint activator) => _activeImpact.GetActiveAbilityImpactSummary(activator);
         private void NotifyStanceChanged(uint creature)
         {
+            RequireMeleeListeners();
             foreach (var listener in _meleeListeners)
                 listener.OnStanceChanged(creature);
         }
 
         private void NotifyBeforeDirectDamage(uint attacker, uint defender, CombatDamageDeliveryType deliveryType)
         {
+            RequireMeleeListeners();
             foreach (var listener in _meleeListeners)
                 listener.OnBeforeDirectDamage(attacker, defender, deliveryType);
         }
 
         private void NotifyStatusApplied(uint source, uint creature, StatusEffectCategory categories)
         {
+            RequireAppliedListeners();
             foreach (var listener in _appliedListeners)
                 listener.OnStatusApplied(source, creature, categories);
         }
 
         private void NotifyHostileDebuffApplied(uint source, AbilityDetail ability)
         {
+            RequireAppliedListeners();
             foreach (var listener in _appliedListeners)
                 listener.OnHostileDebuffApplied(source, ability);
         }
 
         private void NotifyApplicationCompleted(uint source, uint creature, Type statusEffectType, AbilityDetail ability)
         {
+            RequireAppliedListeners();
             foreach (var listener in _appliedListeners)
                 listener.OnApplicationCompleted(source, creature, statusEffectType, ability);
+        }
+
+        private void RequireMeleeListeners()
+        {
+            if (_meleeListeners.Count == 0)
+                throw new InvalidOperationException("No melee listener is registered with the status effects.");
+        }
+
+        private void RequireAppliedListeners()
+        {
+            if (_appliedListeners.Count == 0)
+                throw new InvalidOperationException("No applied listener is registered with the status effects.");
         }
 
         protected virtual bool IsAttackDelayReductionSuppressed(uint creature) => GetCreatureStatAdjustment(creature, StatType.AttackDelayReductionSuppressed) > 0;

@@ -71,4 +71,25 @@ public class StatusEffectListenerTests : StatusEffectServiceTestBase
             $"PrepareDirectDamage:{Caster}:{Target}:{CombatDamageDeliveryType.Direct}",
             "Tagged:Damage");
     }
+
+    [Test]
+    public void AnAppliedNoticeWithNoListenerRegisteredThrows()
+    {
+        var bare = Bench.CreateServiceWithoutListeners();
+        var effect = Probe<ProbeEffect>();
+
+        var apply = () => bare.ApplyStatusEffect(Caster, Target, effect, 10f);
+
+        apply.Should().Throw<InvalidOperationException>().WithMessage("*applied listener*");
+    }
+
+    [Test]
+    public void AMeleeNoticeWithNoListenerRegisteredThrows()
+    {
+        var bare = Bench.CreateServiceWithoutListeners();
+
+        var notify = () => bare.NotifyPreDamageStatusEffects(Caster, Target, 7, CombatDamageType.Fire, CombatDamageDeliveryType.Direct);
+
+        notify.Should().Throw<InvalidOperationException>().WithMessage("*melee listener*");
+    }
 }

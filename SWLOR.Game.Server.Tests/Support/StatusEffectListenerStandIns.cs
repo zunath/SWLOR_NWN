@@ -58,4 +58,33 @@ public static class StatusEffectListenerStandIns
         public void OnApplicationCompleted(uint source, uint creature, Type statusEffectType, AbilityDetail ability) =>
             _log.Add($"CapstoneProof:{source}:{creature}:{statusEffectType.Name}:{ability?.Name}");
     }
+
+    /// <summary>
+    /// For a fixture that applies status effects through the container without the boot handlers: it is told every notice and
+    /// does nothing, so the empty-list check of the service is met and no real implementer runs.
+    /// </summary>
+    public sealed class Silent : IStatusEffectMeleeListener, IStatusEffectAppliedListener
+    {
+        public static readonly Silent Instance = new();
+
+        public void OnStanceChanged(uint creature)
+        {
+        }
+
+        public void OnBeforeDirectDamage(uint attacker, uint defender, CombatDamageDeliveryType deliveryType)
+        {
+        }
+
+        public void OnStatusApplied(uint source, uint creature, StatusEffectCategory categories)
+        {
+        }
+
+        public void OnHostileDebuffApplied(uint source, AbilityDetail ability)
+        {
+        }
+
+        public void OnApplicationCompleted(uint source, uint creature, Type statusEffectType, AbilityDetail ability)
+        {
+        }
+    }
 }

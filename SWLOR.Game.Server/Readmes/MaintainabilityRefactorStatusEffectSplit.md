@@ -596,7 +596,7 @@ parameters, so the Character -> Combat and Character -> Quests references of the
 
 - **Interfaces** (Character, one file each): `IStatusEffectMeleeListener` (`OnStanceChanged`, `OnBeforeDirectDamage`) and `IStatusEffectAppliedListener`
   (`OnStatusApplied`, `OnHostileDebuffApplied`, `OnApplicationCompleted`). `IStatusEffectService` gains `RegisterMeleeListener` and `RegisterAppliedListener`; each
-  list is `[ReloadState(Runtime)]` and a repeat registration keeps one entry. An empty list does nothing (unlike the stat list, which throws).
+  list is `[ReloadState(Runtime)]` and a repeat registration keeps one entry. A notice with an empty list throws `InvalidOperationException` (`RequireMeleeListeners`, `RequireAppliedListeners`), as the stat list does: an empty list means a registration was missed. No notice can fire before the registrations: they run in `OnModuleCacheBefore` after the data caches, and nothing before them applies or removes a stance (`ResetProfiles` walks an `Owners` table that is empty after boot or a reload).
 - **Implementers:** `MeleeTechniqueService` (`PrepareDirectDamage` renamed `OnBeforeDirectDamage`; it and `OnStanceChanged` left `IMeleeTechniqueService`, which no other
   type called them through), `CombatAbilityImpactService` (the stamina drain and the hostile party buff; its `OnApplicationCompleted` is empty) and `CapstoneProofService`
   (forwards `OnApplicationCompleted` to `RecordStatusEffect`; the other two are empty; gains `IStatusEffectService`, 2 -> 3 services). Bodies are unchanged; the three

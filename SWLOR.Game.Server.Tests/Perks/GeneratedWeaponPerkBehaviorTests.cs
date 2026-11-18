@@ -27,7 +27,11 @@ public class GeneratedWeaponPerkBehaviorTests
     private IDisposable _facadeScope = null!;
 
     [OneTimeSetUp]
-    public void BuildFacades() => _facades = new FacadeContainer();
+    public void BuildFacades()
+    {
+        _facades = new FacadeContainer();
+        _facades.Get<IStatusEffectService>().RegisterAppliedListener(StatusEffectListenerStandIns.Silent.Instance);
+    }
 
     [OneTimeTearDown]
     public void DisposeFacades() => _facades.Dispose();

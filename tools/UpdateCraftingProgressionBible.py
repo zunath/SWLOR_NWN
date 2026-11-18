@@ -3,7 +3,7 @@
 Edits only the target cells of design/bible/SWLOR Design Bible.xlsx at the zip/XML level and copies every other
 workbook entry byte-for-byte. Safe to rerun, also after the perk-line tools (UpdateEngineeringPerkBible.py,
 UpdateFabricationPerkBible.py, UpdateGatheringPerkBible.py, UpdateAgriculturePerkBible.py) have added their lines: those
-tools then own the tab's Total SP, total rows and description tail, so this tool leaves them alone.
+tools then own the tab's Total SP and total rows, so this tool leaves them alone.
 
   python tools/UpdateCraftingProgressionBible.py [--workbook PATH]
 
@@ -16,7 +16,6 @@ Changes:
     too. Once UpdateAgriculturePerkBible.py has replaced them with the Farmer line and the crop table, it owns the tab and
     this tool leaves the rows, totals and Total SP alone. AgriculturePerkBibleTests runs both tools to check they agree.
   - General: Treasure Hunter I-III and Creditfinder I-III with their Armor requirements.
-  - System Changes & Migrations: the refund and rebuild token entry.
 """
 from __future__ import annotations
 
@@ -82,18 +81,6 @@ LINE_LABELS = {
     "Gathering": {"Prospector", "Treasure Seeker"},
     "Agriculture": {"Chef", "Angler"},
 }
-GATHERING_DESCRIPTION = (
-    " Harvester, ore, scavenge-site and Hard Look tiers unlock for every character at Gathering 0/10/20/30/40, and power cores"
-    " refine one more item at Gathering 0/10/20/30/40/45, so the Harvesting, Refining, Refinery Management, Scavenging and Hard Look"
-    " perks are retired. Treasure Hunter and Creditfinder moved to the General tab. Total SP counts only purchasable perks.")
-FABRICATION_DESCRIPTION = (
-    " Research tiers unlock for every character at Fabrication 10/20/30/40/50, and Fabrication 25 and 50 each add one concurrent"
-    " research job and one licensed run on new blueprints, so the Research, Research Projects and Scientific Networking perks"
-    " are retired. Total SP counts only purchasable perks.")
-ENGINEERING_DESCRIPTION = (
-    " Droid tiers unlock for every character at Engineering 0/10/20/30/40, so the Droid Assembly perk is retired."
-    " Total SP counts only purchasable perks.")
-
 TREASURE_HUNTER_DESCRIPTION = ("Rare items are more likely to be chosen when loot is rolled, and rare loot tables gain up to "
                                "+{n}0% drop chance.")
 GENERAL_ROWS = [
@@ -107,17 +94,6 @@ GENERAL_ROWS = [
 GENERAL_FIRST_ROW = 19
 SHARED_STRINGS = {672: "General", 692: "All", 706: "Trait", 623: "None", 695: "-", 698: "Implemented"}
 GENERAL_NOTE = "Moved from the Gathering tab. Requires Armor instead of Gathering; previous owners were refunded and buy it again."
-
-SYSTEM_CHANGE_NUMBER = 12
-SYSTEM_CHANGE_ROW = 14
-SYSTEM_CHANGE_TEXT = (
-    "Harvesting, Refining, Refinery Management, Scavenging, Hard Look, Research, Research Projects, Scientific Networking and"
-    " Droid Assembly are no longer perks. Their tiers unlock for every character by skill rank: harvesters, ores, scavenge sites"
-    " and droid tiers at ranks 0/10/20/30/40 of Gathering (Engineering for droids), power cores refine one more item at Gathering"
-    " 0/10/20/30/40/45, research tiers at Fabrication 10/20/30/40/50, and Fabrication 25 and 50 each add one research job and one"
-    " licensed run on new blueprints. Treasure Hunter and Creditfinder moved to General and require Armor (Treasure Hunter"
-    " 20/40/50, Creditfinder 15/30/45). All SP spent on these perks is refunded automatically, and every character receives"
-    " one optional Rebuild Token.")
 
 
 def col_index(letters: str) -> int:
@@ -261,17 +237,6 @@ def has_lines(sheet: Sheet) -> bool:
                for number in range(9, sheet.last_data_row() + 1))
 
 
-def set_description(sheet: Sheet, suffix: str) -> None:
-    cell = sheet.row_cells(3)["B"]
-    text = sheet.text_of(cell)
-    if suffix in text:
-        return  # already current; cutting at the marker would drop the text a perk-line tool appended after it
-    marker = suffix.split(".")[0].strip()
-    if marker in text:
-        text = text[:text.index(marker)].rstrip()
-    sheet.set_cell(3, "B", text_cell("B3", cell_style(cell), text + suffix))
-
-
 def set_formula(sheet: Sheet, ref: str, formula: str, value) -> None:
     number = int(re.search(r"\d+", ref).group(0))
     col = re.match(r"[A-Z]+", ref).group(0)
@@ -288,21 +253,19 @@ def update_gathering(sheet: Sheet) -> None:
     last = GATHERING_LAST_PERK_ROW
     if not has_lines(sheet):  # UpdateGatheringPerkBible.py widens this total to its line rows
         set_formula(sheet, "D4", f'SUMIFS(B9:B{last},{status}9:{status}{last},"<>Retired",{status}9:{status}{last},"<>Moved")', 0)
-    set_description(sheet, GATHERING_DESCRIPTION)
 
 
-def update_fabrication_like(sheet: Sheet, spec: dict, description: str, total_row: int, total_cached: int = 0) -> None:
+def update_fabrication_like(sheet: Sheet, spec: dict, total_row: int, total_cached: int = 0) -> None:
     numeric_sp_cells(sheet, 9)
     cols = sheet.header_columns(8)
     status, notes = cols["Dev Status"], cols["Notes"]
     mark_rows(sheet, spec, "Retired", status, notes)
     first, last = 9, total_row - 1
     # The Engineering line tool writes its first perk over the old total row and moves the total below its lines.
-    if sheet.text_of(sheet.row_cells(total_row).get("A", "")).strip() == "Total":
+    if sheet.text_of(sheet.row_cells(total_row).get("A", "")).strip() == "Total" and not has_lines(sheet):
         set_formula(sheet, f"B{total_row}", f'SUMIFS(B{first}:B{last},{status}{first}:{status}{last},"<>Retired")', total_cached)
     if not has_lines(sheet):  # the line tools add their line totals to Total SP
         set_formula(sheet, "D4", f"SUM(B{total_row})", total_cached)
-    set_description(sheet, description)
 
 
 def update_agriculture(sheet: Sheet) -> None:
@@ -355,15 +318,6 @@ def update_general(sheet: Sheet) -> None:
     set_formula(sheet, "D4", f"SUM(B8:B{last})", total)
 
 
-def update_system_changes(sheet: Sheet) -> None:
-    template_number, template_text = sheet.row_cells(13)["A"], sheet.row_cells(13)["B"]
-    cells = {
-        "A": num_cell(f"A{SYSTEM_CHANGE_ROW}", cell_style(template_number), f"{SYSTEM_CHANGE_NUMBER}.0"),
-        "B": text_cell(f"B{SYSTEM_CHANGE_ROW}", cell_style(template_text), SYSTEM_CHANGE_TEXT),
-    }
-    sheet.write_row(SYSTEM_CHANGE_ROW, cells, after=13)
-
-
 def resolve_sheets(archive: zipfile.ZipFile) -> dict[str, str]:
     workbook = ET.fromstring(archive.read("xl/workbook.xml"))
     relationships = {r.get("Id"): r.get("Target") for r in ET.fromstring(archive.read("xl/_rels/workbook.xml.rels"))}
@@ -392,11 +346,10 @@ def update_workbook(path: Path) -> None:
         strings = read_strings(source)
 
     edits = {
-        "System Changes & Migrations": update_system_changes,
         "General": update_general,
         "Gathering": update_gathering,
-        "Fabrication": lambda s: update_fabrication_like(s, FABRICATION_RETIRED, FABRICATION_DESCRIPTION, 18),
-        "Engineering": lambda s: update_fabrication_like(s, ENGINEERING_RETIRED, ENGINEERING_DESCRIPTION, 14),
+        "Fabrication": lambda s: update_fabrication_like(s, FABRICATION_RETIRED, 18),
+        "Engineering": lambda s: update_fabrication_like(s, ENGINEERING_RETIRED, 14),
         "Agriculture": update_agriculture,
     }
     changed = {}

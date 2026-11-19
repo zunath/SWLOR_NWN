@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-/// <summary>Server migration 33's garden step: the Tend Gardens permission on existing House and City permission records.</summary>
+/// <summary>Server migration 34's garden step: the Tend Gardens permission on existing House and City permission records.</summary>
 public class GardenPermissionMigrationTests
 {
     private static WorldPropertyPermission Record(string playerId) => new()
@@ -99,13 +99,13 @@ public class GardenPermissionMigrationTests
     }
 
     [Test]
-    public void Migration32RunsTheGardenStepBesideTheElectionStep()
+    public void CityRevampMigrationRunsTheGardenStepBesideTheElectionStep()
     {
         var folder = Path.Combine(FindRoot(), "SWLOR.Game.Server", "Feature", "MigrationDefinition", "ServerMigration");
-        var source = File.ReadAllText(Path.Combine(folder, "_33_PlayerCityRevamp.cs"));
+        var source = File.ReadAllText(Path.Combine(folder, "_34_PlayerCityRevamp.cs"));
 
         source.Should().Contain("ElectionMigration.Run(Version)").And.Contain("GardenPermissionMigration.Run(Version)");
-        Directory.GetFiles(folder, "_32_*.cs").Should().ContainSingle("a release has one migration class per version");
+        Directory.GetFiles(folder, "_34_*.cs").Should().ContainSingle("a release has one migration class per version");
     }
 
     private static string FindRoot()

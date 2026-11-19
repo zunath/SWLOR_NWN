@@ -277,7 +277,7 @@ public class SpaceItemMigrationTests
         player.UnlockedPerks[PerkType.Starships] = DateTime.UtcNow;
         player.UnlockedRecipes[RecipeType.AurekStrikefighter] = DateTime.UtcNow;
 
-        var migration = Activator.CreateInstance(CharacterMigrations.Named("_27_ConvertSpaceItems"))!;
+        var migration = Activator.CreateInstance(CharacterMigrations.Named("_28_ConvertSpaceItems"))!;
         migration.GetType().GetMethod("MigratePlayerData")!.Invoke(migration, new object[] { player });
 
         player.UnallocatedSP.Should().Be(1 + 11 + 4 + 10 + 3);
@@ -307,7 +307,7 @@ public class SpaceItemMigrationTests
         var characterType = typeof(Migration).Assembly.GetType("SWLOR.Game.Server.Service.MigrationService.SavedCharacter")!;
         var character = Activator.CreateInstance(characterType, Members, null, new object?[] { file, record }, null)!;
 
-        var migration = Activator.CreateInstance(CharacterMigrations.Named("_27_ConvertSpaceItems"))!;
+        var migration = Activator.CreateInstance(CharacterMigrations.Named("_28_ConvertSpaceItems"))!;
         migration.GetType().GetMethod("Migrate")!.Invoke(migration, new[] { character });
 
         var saved = GffReader.Read((byte[])characterType.GetMethod("Serialize", Members)!.Invoke(character, null)!).RootStruct;

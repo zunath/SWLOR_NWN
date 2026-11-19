@@ -16,11 +16,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 /// modules move to their new rows, configuration modules are refunded into the owner's market till, modules that no
 /// longer fit go to the owner's overflow storage, and the ship's stats are rebuilt. Then the stored-item sweep
 /// converts deeds and modules in banks, storage, the market, saved creatures and contracts. Characters' own items,
-/// perks and Rebuild Token follow in the character upgrade (<c>_27_ConvertSpaceItems</c>).
+/// perks and Rebuild Token follow in the character upgrade (<c>_28_ConvertSpaceItems</c>).
 /// </summary>
-public sealed class _32_ConvertSpaceItems : IServerMigration
+public sealed class _33_ConvertSpaceItems : IServerMigration
 {
-    public int Version => 32;
+    public int Version => 33;
     public MigrationExecutionType ExecutionType => MigrationExecutionType.PostCacheLoad;
 
     public void Migrate()

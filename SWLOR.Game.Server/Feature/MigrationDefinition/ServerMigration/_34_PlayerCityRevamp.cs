@@ -16,9 +16,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 /// <item>Acting Mayor (<see cref="ActingMayorMigration"/>): the Acting Mayor and step-down started empty.</item>
 /// </list>
 /// </summary>
-public sealed class _33_PlayerCityRevamp : IServerMigration
+public sealed class _34_PlayerCityRevamp : IServerMigration
 {
-    public int Version => 33;
+    public int Version => 34;
     public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
 
     public void Migrate()

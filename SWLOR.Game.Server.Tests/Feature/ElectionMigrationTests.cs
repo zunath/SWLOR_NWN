@@ -8,17 +8,17 @@ using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-/// <summary>Server migration 33's election step: stage dates for an open election and citizen-since for citizens.</summary>
+/// <summary>Server migration 34's election step: stage dates for an open election and citizen-since for citizens.</summary>
 public class ElectionMigrationTests
 {
     private static readonly DateTime ElectionStart = new(2026, 10, 20, 8, 0, 0, DateTimeKind.Utc);
 
     [Test]
-    public void Migration32_RunsAfterTheDatabaseLoads()
+    public void CityRevampMigration_RunsAfterTheDatabaseLoads()
     {
-        var migration = new _33_PlayerCityRevamp();
+        var migration = new _34_PlayerCityRevamp();
 
-        migration.Version.Should().Be(33);
+        migration.Version.Should().Be(34);
         migration.ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);
     }
 

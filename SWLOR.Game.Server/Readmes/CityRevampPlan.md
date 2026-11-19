@@ -860,7 +860,7 @@ Every open question now has a decision for the player review. The rules behind t
 ### Delivery and coordination
 
 - Branch `feature/city-revamp`, cut from `feature/space-revamp` at d690216. Order to master: the crafting revamp (#2873) first, then the space revamp, then this plan. Merge space forward into this branch as it lands; space merges crafting forward.
-- Combined launch (owner, 2026-11-03): the city revamp merges into `feature/space-revamp` (#3146) and reaches master with the space revamp's pull request (#3003) in one release. Server migrations 32 (space) and 33 (city) run in that release (master's beast revamp took 31).
+- Combined launch (owner, 2026-11-03): the city revamp merges into `feature/space-revamp` (#3146) and reaches master with the space revamp's pull request (#3003) in one release. Server migrations 33 (space) and 34 (city) run in that release (31 shipped with the crafting release, and master's next release owns 32).
 - One branch and pull request per slice into `feature/city-revamp`. Never into master.
 - Migrations: server 33. Crafting holds player 26 and master's beast revamp server 31; space holds player 27 and server 32.
 - Reserved IDs:

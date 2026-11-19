@@ -16,7 +16,7 @@ public class PlayerMigrationTests
     // items or quickbar, so the migrations they reach read and write the file without the game engine.
     private const int RebuildTokens = 3;
 
-    // Migrations 15 (combat upgrade), 24 (Unarmed and Twin Pistol release), 26 (crafting perk conversion) and 27 (space revamp) each grant one rebuild token.
+    // Migrations 15 (combat upgrade), 24 (Unarmed and Twin Pistol release), 26 (crafting perk conversion) and 28 (space revamp) each grant one rebuild token.
     private const int UnarmedTwinPistolTokenVersion = 24;
     private const int PerkConversionTokenVersion = 26;
 
@@ -38,7 +38,7 @@ public class PlayerMigrationTests
 
         upgraded.Should().NotBeNull("the file and the record are behind the latest migration");
         upgraded!.Record.Version.Should().Be(Latest);
-        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 3, "only the tokens of migrations 24, 26 and 27 are still ahead of the record");
+        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 3, "only the tokens of migrations 24, 26 and 28 are still ahead of the record");
         CharacterMigrations.ReadFileVersion(upgraded.File).Should().Be(Latest);
     }
 
@@ -63,7 +63,7 @@ public class PlayerMigrationTests
 
         upgraded.Should().NotBeNull();
         upgraded!.Record.Version.Should().Be(Latest);
-        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 4, "migrations 15, 24, 26 and 27 each grant one");
+        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 4, "migrations 15, 24, 26 and 28 each grant one");
         upgraded.File.Should().Equal(file, "a file that is not behind any migration is not changed");
         CharacterMigrations.Upgrade(upgraded.File, upgraded.Record).Should().BeNull("a retry finds nothing left to upgrade");
         upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 4);
@@ -77,7 +77,7 @@ public class PlayerMigrationTests
         var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(Latest), Record(version));
 
         upgraded.Should().NotBeNull("the record is behind the latest migration");
-        upgraded!.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 3, "migrations 24, 26 and 27 each grant one");
+        upgraded!.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 3, "migrations 24, 26 and 28 each grant one");
         CharacterMigrations.Upgrade(upgraded.File, upgraded.Record).Should().BeNull("a retry finds nothing left to upgrade");
         upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 3, "each token is granted once");
     }
@@ -88,7 +88,7 @@ public class PlayerMigrationTests
         var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(Latest), Record(UnarmedTwinPistolTokenVersion));
 
         upgraded.Should().NotBeNull("the record is behind the latest migration");
-        upgraded!.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 2, "migrations 26 and 27 each grant one");
+        upgraded!.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 2, "migrations 26 and 28 each grant one");
     }
 
     [Test]
@@ -98,7 +98,23 @@ public class PlayerMigrationTests
 
         var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(Latest), record);
 
-        (upgraded?.Record ?? record).Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 1, "only migration 27's token is ahead of the record");
+        (upgraded?.Record ?? record).Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 1, "only migration 28's token is ahead of the record");
+    }
+
+    [Test]
+    public void PlayersUpgradedByMastersNextReleaseStillReceiveTheSpaceConversion()
+    {
+        // Master's next release owns player migration 27. When it ships before the space revamp, characters already
+        // stand at 27, and the space conversion (28) must still run on them.
+        const int mastersNextRelease = 27;
+        var record = Record(mastersNextRelease);
+
+        var upgraded = CharacterMigrations.Upgrade(SavedCharacterFile.Create(mastersNextRelease), record);
+
+        upgraded.Should().NotBeNull("the space conversion is ahead of a character at master's next release");
+        upgraded!.Record.Version.Should().Be(Latest);
+        CharacterMigrations.ReadFileVersion(upgraded.File).Should().Be(Latest);
+        upgraded.Record.Currencies[CurrencyType.RebuildToken].Should().Be(RebuildTokens + 1, "the space conversion grants its token");
     }
 
     [Test]

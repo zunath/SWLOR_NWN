@@ -144,8 +144,7 @@ namespace SWLOR.Game.Server.Service.ScavengeService
                 dbPlayer.PendingScavengeFinds = split.Delivered.ToDictionary(find => find.Key, find => find.Value);
                 dbPlayer.PendingScavengeReturnSequence = sequence;
                 DB.Set(dbPlayer);
-                ExportSingleCharacter(player);
-                SetLocalInt(player, CraftSessionFileSequence.ExportedVariable, sequence);
+                NwnCraftSessionWorld.Instance.FlushCharacter(player);
             }
 
             ClearDeliveredFinds(dbPlayer);

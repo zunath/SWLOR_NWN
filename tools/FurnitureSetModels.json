@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "notes": "Furniture Work Stool and Wall Banner placeables with their own Meshy model, for the sets whose existing-placeable picks were chairs or shared a banner design. Same format as StationModels.json: each blueprint (resref = model) points at its own placeables.2da row, appended by PlaceableAppearanceTool install-haks.",
+  "stations": [
+    {
+      "blueprint": "swc_stl_ash",
+      "structure_type": "AshmarkWorkStool",
+      "model": "swc_stl_ash",
+      "label": "[SWLOR] Furniture - Ashmark Work Stool",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_stl_veil",
+      "structure_type": "VeilcarvedWorkStool",
+      "model": "swc_stl_veil",
+      "label": "[SWLOR] Furniture - Veilcarved Work Stool",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_stl_surge",
+      "structure_type": "SurgewakeWorkStool",
+      "model": "swc_stl_surge",
+      "label": "[SWLOR] Furniture - Surgewake Work Stool",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_stl_field",
+      "structure_type": "FieldlineWorkStool",
+      "model": "swc_stl_field",
+      "label": "[SWLOR] Furniture - Fieldline Work Stool",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_stl_cmd",
+      "structure_type": "CommandlineWorkStool",
+      "model": "swc_stl_cmd",
+      "label": "[SWLOR] Furniture - Commandline Work Stool",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_ban_gutter",
+      "structure_type": "GuttermarkWallBanner",
+      "model": "swc_ban_gutter",
+      "label": "[SWLOR] Furniture - Guttermark Wall Banner",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_ban_trail",
+      "structure_type": "TrailmarkWallBanner",
+      "model": "swc_ban_trail",
+      "label": "[SWLOR] Furniture - Trailmark Wall Banner",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_ban_surge",
+      "structure_type": "SurgewakeWallBanner",
+      "model": "swc_ban_surge",
+      "label": "[SWLOR] Furniture - Surgewake Wall Banner",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_ban_reson",
+      "structure_type": "ResonantWallBanner",
+      "model": "swc_ban_reson",
+      "label": "[SWLOR] Furniture - Resonant Wall Banner",
+      "sound_app_type": null
+    }
+  ]
+}

@@ -155,7 +155,8 @@ public class FurnitureSetPlaceableTests
     }
 
     // Each set's blueprint for the pieces in OwnLookPieces: an existing placeable no other structure shows, a Meshy Field Cot
-    // (swc_cot_*, resref = model), or a sittable seat blueprint for an existing model (swc_seat_*).
+    // or Work Stool or Wall Banner (swc_cot_*, swc_stl_*, swc_ban_*: resref = model), or a sittable seat blueprint for an existing
+    // model (swc_seat_*).
     private static readonly Dictionary<StructureType, string> SetPieceResrefs = new()
     {
         [StructureType.AshmarkFieldCot] = "swc_cot_ash",
@@ -192,13 +193,13 @@ public class FurnitureSetPlaceableTests
         [StructureType.CommandlineLowTable] = "_mdrn_pl_table05",
 
         [StructureType.AshmarkWallBanner] = "swp_banner0001",
-        [StructureType.GuttermarkWallBanner] = "swd3_czs003",
-        [StructureType.TrailmarkWallBanner] = "swd3_czs004",
+        [StructureType.GuttermarkWallBanner] = "swc_ban_gutter",
+        [StructureType.TrailmarkWallBanner] = "swc_ban_trail",
         [StructureType.StonewakeWallBanner] = "_mdrn_pl_bannr02",
         [StructureType.AegislineWallBanner] = "swd3_ban005",
         [StructureType.VeilcarvedWallBanner] = "_mdrn_pl_bannr05",
-        [StructureType.SurgewakeWallBanner] = "swd3_ban004",
-        [StructureType.ResonantWallBanner] = "swd3_ban003",
+        [StructureType.SurgewakeWallBanner] = "swc_ban_surge",
+        [StructureType.ResonantWallBanner] = "swc_ban_reson",
         [StructureType.FieldlineWallBanner] = "swd3_ban006",
         [StructureType.CommandlineWallBanner] = "swlor_1846",
 
@@ -235,16 +236,16 @@ public class FurnitureSetPlaceableTests
         [StructureType.FieldlineDataConsole] = "_mdrn_pl_conso07",
         [StructureType.CommandlineDataConsole] = "swd3_comp009",
 
-        [StructureType.AshmarkWorkStool] = "_mdrn_pl_chairir",
+        [StructureType.AshmarkWorkStool] = "swc_stl_ash",
         [StructureType.GuttermarkWorkStool] = "_mdrn_pl_stool05",
         [StructureType.TrailmarkWorkStool] = "_mdrn_pl_stool04",
         [StructureType.StonewakeWorkStool] = "_mdrn_pl_stool",
         [StructureType.AegislineWorkStool] = "swc_seat_steel",
-        [StructureType.VeilcarvedWorkStool] = "_mdrn_pl_chaircu",
-        [StructureType.SurgewakeWorkStool] = "_mdrn_pl_chairgr",
+        [StructureType.VeilcarvedWorkStool] = "swc_stl_veil",
+        [StructureType.SurgewakeWorkStool] = "swc_stl_surge",
         [StructureType.ResonantWorkStool] = "zep_logsit001",
-        [StructureType.FieldlineWorkStool] = "_mdrn_pl_chairca",
-        [StructureType.CommandlineWorkStool] = "_mdrn_pl_chair35",
+        [StructureType.FieldlineWorkStool] = "swc_stl_field",
+        [StructureType.CommandlineWorkStool] = "swc_stl_cmd",
     };
 
     // Each set's Trophy Stand blueprint; the blueprint resref is also its model and placeables.2da model name.

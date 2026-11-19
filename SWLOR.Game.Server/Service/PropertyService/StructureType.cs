@@ -2047,7 +2047,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         AshmarkAltar = 339,
 
         [Structure("Ashmark Work Stool",
-            "_mdrn_pl_chairir",
+            "swc_stl_ash",
             "",
             true,
             1)]
@@ -2082,7 +2082,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         GuttermarkLowTable = 344,
 
         [Structure("Guttermark Wall Banner",
-            "swd3_czs003",
+            "swc_ban_gutter",
             "",
             true,
             1)]
@@ -2152,7 +2152,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         TrailmarkLowTable = 354,
 
         [Structure("Trailmark Wall Banner",
-            "swd3_czs004",
+            "swc_ban_trail",
             "",
             true,
             1)]
@@ -2397,7 +2397,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         VeilcarvedRunePillar = 389,
 
         [Structure("Veilcarved Work Stool",
-            "_mdrn_pl_chaircu",
+            "swc_stl_veil",
             "",
             true,
             1)]
@@ -2432,7 +2432,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         SurgewakeLowTable = 394,
 
         [Structure("Surgewake Wall Banner",
-            "swd3_ban004",
+            "swc_ban_surge",
             "",
             true,
             1)]
@@ -2467,7 +2467,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         SurgewakeHoloProjector = 399,
 
         [Structure("Surgewake Work Stool",
-            "_mdrn_pl_chairgr",
+            "swc_stl_surge",
             "",
             true,
             1)]
@@ -2502,7 +2502,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         ResonantLowTable = 404,
 
         [Structure("Resonant Wall Banner",
-            "swd3_ban003",
+            "swc_ban_reson",
             "",
             true,
             1)]
@@ -2607,7 +2607,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         FieldlineDisplayCase = 419,
 
         [Structure("Fieldline Work Stool",
-            "_mdrn_pl_chairca",
+            "swc_stl_field",
             "",
             true,
             1)]
@@ -2677,7 +2677,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         CommandlineBust = 429,
 
         [Structure("Commandline Work Stool",
-            "_mdrn_pl_chair35",
+            "swc_stl_cmd",
             "",
             true,
             1)]

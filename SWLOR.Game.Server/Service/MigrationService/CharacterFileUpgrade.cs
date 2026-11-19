@@ -25,11 +25,11 @@ internal static class CharacterFileUpgrade
     private const int LastPlayerVersionWithoutFileCheckpoint = 12;
 
     /// <summary>
-    /// The oldest character file this build upgrades. Migration 13's droid boost conversion is retired, so a file
-    /// below it (including any file without a checkpoint) is refused and kept as saved instead of being marked
-    /// current without that conversion. Upgrade such a file with an older build first.
+    /// The oldest character this build upgrades. Player migrations up to this version ran on every production character
+    /// and are deleted, so a file or record below it (including a file without a checkpoint) is refused and kept as
+    /// saved instead of being marked current without them. Upgrade such a character with an older build first.
     /// </summary>
-    internal const int OldestUpgradableFileVersion = 13;
+    internal const int OldestUpgradableVersion = 25;
 
     private static readonly Lazy<ICharacterMigration[]> _migrations = new(() => typeof(ICharacterMigration).Assembly.GetTypes()
         .Where(type => !type.IsAbstract && !type.IsInterface && typeof(ICharacterMigration).IsAssignableFrom(type))
@@ -72,15 +72,13 @@ internal static class CharacterFileUpgrade
         var start = Math.Min(record.Version, fileVersion);
         if (start >= LatestVersion)
             return null;
-        if (fileVersion < OldestUpgradableFileVersion)
+        if (fileVersion < OldestUpgradableVersion || recordVersion < OldestUpgradableVersion)
             throw new InvalidOperationException(
-                $"The character file is at version {fileVersion}; this build upgrades files from version {OldestUpgradableFileVersion}. Upgrade it with an older build first.");
+                $"The character file is at version {fileVersion} and its record at {recordVersion}; this build upgrades characters from version {OldestUpgradableVersion}. Upgrade it with an older build first.");
         // A record that reached a version received that migration's record changes with the file it was saved with
         // (at login before this upgrade existed), so an older file restored beside it changes only the file.
         var recordEffectsThrough = Math.Max(record.CharacterFileVersion, recordVersion);
 
-        // Loading a character changes some saved items before login-time migrations saw them.
-        Feature.MigrationDefinition.CharacterMigration.SavedCharacterLoad.Apply(character);
 
         foreach (var migration in Migrations.Where(migration => migration.Version > start))
         {

@@ -137,66 +137,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
-        [EngineTest("Migration revises a player's droid loot saved on the controller and the summoned droid counts it", Category = "DroidInventory", TimeoutSeconds = 120f)]
-        public static async Task LootRevisionPlayerDroid(EngineTestContext ctx)
-        {
-            using var player = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
-            var owner = player.Creature;
-            var controller = await CreateController(ctx, owner);
-            var droid = await Spawn(ctx, owner, controller);
-            var baseline = 0;
-            try
-            {
-                baseline = SkinAttack(droid);
-                var pistol = await CreateLoot(ctx, owner, MigrationEngineTests.RevisedPistol);
-                var gloves = await CreateLoot(ctx, owner, MigrationEngineTests.RevisedGloves);
-                await ctx.ExecuteInCreatureContextAsync(owner, () => MigrationEngineTests.RemoveRequirement(pistol));
-                await Transfer(ctx, owner, pistol, droid);
-                await Transfer(ctx, owner, gloves, droid);
-                await Equip(ctx, droid, pistol, InventorySlot.RightHand);
-                await StampEquippedLegacyPistol(ctx, droid, pistol);
-                await ctx.ExecuteInCreatureContextAsync(droid, () => MigrationEngineTests.StampLegacyLoot(gloves, GloveLootEnhancements));
-                ctx.AssertEqual(baseline + LegacyPistolAttack(), SkinAttack(droid), "The legacy fixture adds its shipped Attack");
-            }
-            finally
-            {
-                // Dismissing the droid saves its legacy gear on the controller, which the character file carries.
-                if (GetIsObjectValid(droid))
-                    await Dismiss(ctx, owner, droid);
-            }
-
-            SavedCharacterMigration.Upgraded upgraded = null;
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                upgraded = SavedCharacterMigration.Run(owner, DB.Get<Player>(player.Id), "_22_ReviseLootStats");
-                var character = SavedCharacterMigration.Load(ctx, upgraded);
-                var saved = Droid.LoadConstructedDroid(SavedCharacterMigration.FindItem(character, Droid.DroidControlItemResref));
-                AssertSavedLoot(ctx, saved.EquippedItems[InventorySlot.RightHand], NoLootEnhancements);
-                AssertSavedLoot(ctx, saved.Inventory.Values.Single(), GloveLootEnhancements);
-                var retried = SavedCharacterMigration.Run(upgraded.File, upgraded.Record, "_22_ReviseLootStats");
-                ctx.Assert(retried.File.SequenceEqual(upgraded.File), "A retry makes no further change");
-            });
-
-            // The upgraded player summons the droid from the revised controller.
-            using var login = await PlayerAbilityFixture.CreateFromCharacterAsync(ctx, upgraded.File, upgraded.Record, 8f);
-            var newOwner = login.Creature;
-            var newController = SavedCharacterMigration.FindItem(newOwner, Droid.DroidControlItemResref);
-            droid = await Spawn(ctx, newOwner, newController);
-            try
-            {
-                MigrationEngineTests.AssertRevisedLoot(ctx, GetItemInSlot(InventorySlot.RightHand, droid), NoLootEnhancements);
-                ctx.AssertEqual(baseline + RevisedPistolAttack(), SkinAttack(droid), "The droid's skin counts the revised Attack");
-                var carried = Items(droid).Where(item => GetResRef(item) == MigrationEngineTests.RevisedGloves).ToList();
-                ctx.AssertEqual(1, carried.Count, "Exactly one pair of gloves returns on summon");
-                MigrationEngineTests.AssertRevisedLoot(ctx, carried[0], GloveLootEnhancements);
-            }
-            finally
-            {
-                if (GetIsObjectValid(droid))
-                    await Dismiss(ctx, newOwner, droid);
-            }
-        }
-
         private static async Task<uint> CreateLoot(EngineTestContext ctx, uint owner, string resref)
         {
             var item = OBJECT_INVALID;

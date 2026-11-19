@@ -34,63 +34,6 @@ public class CombatUpgradeMigrationCoverageTests
     }
 
     [Test]
-    public void CharacterMigrations_RunTheSavedDataCombatUpgradeMigrations()
-    {
-        var root = FindRepositoryRoot();
-        var characterMigrationRoot = Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "CharacterMigration");
-        var requirementMigration = File.ReadAllText(Path.Combine(characterMigrationRoot, "_13_UpdateItemRequirements.cs"));
-        var combatUpgradeMigrations = File.ReadAllText(Path.Combine(characterMigrationRoot, "_14_15_CombatUpgradeMigrations.cs"));
-
-        CharacterMigrations.VersionOf("_13_UpdateItemRequirements").Should().Be(13);
-        requirementMigration.Should().Contain("SavedEquipmentRequirementMigration.MigrateCharacter(character);");
-        CharacterMigrations.VersionOf("_14_MigrateResistanceItemProperties").Should().Be(14);
-        combatUpgradeMigrations.Should().Contain("SavedItemResistanceMigration.MigrateCharacter(character);");
-        combatUpgradeMigrations.Should().Contain("SavedWeaponDamageTypeMigration.MigrateCharacter(character);");
-        combatUpgradeMigrations.Should().Contain("SavedCombatUpgradeItemMigrations.MigrateCombatReadiness(character);");
-        combatUpgradeMigrations.Should().Contain("SavedCombatUpgradeItemMigrations.MigratePistols(character);");
-        combatUpgradeMigrations.Should().Contain("SavedCombatUpgradeItemMigrations.MigrateAccuracy(character);");
-        CharacterMigrations.VersionOf("_15_RemoveObsoleteCombatInstructionDiscs").Should().Be(15);
-        combatUpgradeMigrations.Should().Contain("SavedObsoleteItemMigration.MigrateCharacter(character);");
-        combatUpgradeMigrations.Should().Contain("CharacterRecalculation.ResetFeatsToBaseline(character);");
-    }
-
-    /// <summary>
-    /// Guards player and nested droid entry points for pistol and ammunition conversion.
-    /// </summary>
-    [Test]
-    public void PistolBaseItemMigration_CoversPlayerSurfaces()
-    {
-        var root = FindRepositoryRoot();
-        var migrationRoot = Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition");
-        var pistolMigration = File.ReadAllText(Path.Combine(
-            migrationRoot,
-            "PistolBaseItemMigration.cs"));
-
-        pistolMigration.Should().Contain("PistolBaseItemCompatibility.Normalize(obj)");
-        pistolMigration.Should().Contain("GetEquippedItem(creature, InventorySlot.Arrows)");
-        pistolMigration.Should().Contain("CreaturePlugin.RunUnequip(creature, legacyAmmo)");
-        pistolMigration.Should().Contain("CreaturePlugin.RunEquip(creature, legacyAmmo, InventorySlot.Bullets)");
-        pistolMigration.Should().Contain("ConstructedDroidVariable");
-        pistolMigration.Should().Contain("droid.SerializedCPU");
-        pistolMigration.Should().Contain("droid.SerializedHead");
-        pistolMigration.Should().Contain("droid.SerializedBody");
-        pistolMigration.Should().Contain("droid.SerializedArms");
-        pistolMigration.Should().Contain("droid.SerializedLegs");
-        pistolMigration.Should().Contain("droid.EquippedItems");
-        pistolMigration.Should().Contain("droid.Inventory");
-        pistolMigration.Should().Contain("MoveEquippedItemToDroidInventory(droid, existingBulletAmmo)");
-    }
-
-    [Test]
     public void ServerMigrationsFrom22_ReportCurrentMigrationStartWithoutOverallProgress()
     {
         var root = FindRepositoryRoot();
@@ -104,25 +47,6 @@ public class CombatUpgradeMigrationCoverageTests
         migrationService.Should().Contain("Starting server migration");
         migrationService.Should().NotContain("migrations 22+ pending");
         migrationService.Should().NotContain("migrations 22+ complete");
-    }
-
-    [Test]
-    public void WeaponDamageMigration_CollapsesConflictingBlueprintElementalDamageBonuses()
-    {
-        var root = FindRepositoryRoot();
-        var migrationSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "SerializedItemWeaponDamageTypeMigration.cs"));
-
-        migrationSource.Should().Contain("BlueprintRecipeIdVariable = \"BLUEPRINT_RECIPE_ID\"");
-        migrationSource.Should().Contain("ItemPropertyType.Blueprint");
-        migrationSource.Should().Contain("SelectBlueprintDamageEnhancements(selectedEnhancements)");
-        migrationSource.Should().Contain("DamageType.IsElementalDamageType()");
-        migrationSource.Should().Contain("SWLOR.Game.Server.Service.Random.Next(elementalDamageTypes.Count)");
-        migrationSource.Should().Contain("damageEnhancement.DamageType == selectedElementalDamageType");
     }
 
     [Test]
@@ -232,43 +156,6 @@ public class CombatUpgradeMigrationCoverageTests
             .Select(match => match.Groups[1].Value)
             .Should()
             .Equal("Invalid", "ExplicitPerk", "ImplicitPerk", "FinalImplicit");
-    }
-
-    [Test]
-    public void SharedItemMigrationServices_RecurseThroughEquippedItemsInventoryAndNestedDroidItems()
-    {
-        var root = FindRepositoryRoot();
-        var migrationRoot = Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition");
-        var recursiveObjectMigrations = new[]
-        {
-            "EquipmentRequirementMigration.cs",
-            "SerializedItemResistanceMigration.cs",
-            "SerializedItemWeaponDamageTypeMigration.cs",
-            "CombatReadinessMigration.cs",
-        };
-
-        foreach (var file in recursiveObjectMigrations)
-        {
-            var source = File.ReadAllText(Path.Combine(migrationRoot, file));
-            source.Should().Contain("GetHasInventory(obj)", file);
-            source.Should().Contain("GetFirstItemInInventory(obj)", file);
-            source.Should().Contain("GetItemInSlot((InventorySlot)index, creature)", file);
-        }
-
-        var obsoleteItemMigration = File.ReadAllText(Path.Combine(migrationRoot, "ObsoleteItemMigration.cs"));
-        obsoleteItemMigration.Should().Contain("GetHasInventory(obj)");
-        obsoleteItemMigration.Should().Contain("GetFirstItemInInventory(obj)");
-        obsoleteItemMigration.Should().Contain("GetItemInSlot((InventorySlot)index, obj)");
-        obsoleteItemMigration.Should().Contain("droid.EquippedItems");
-        obsoleteItemMigration.Should().Contain("droid.Inventory");
-
-        var combatReadinessMigration = File.ReadAllText(Path.Combine(migrationRoot, "CombatReadinessMigration.cs"));
-        combatReadinessMigration.Should().Contain("droid.EquippedItems");
-        combatReadinessMigration.Should().Contain("droid.Inventory");
     }
 
     private static int GetJsonFieldValue(JObject obj, string field)

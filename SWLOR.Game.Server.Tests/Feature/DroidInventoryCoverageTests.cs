@@ -10,7 +10,6 @@ public class DroidInventoryCoverageTests
 {
     [TestCase(nameof(DroidInventoryEngineTests.LootRevisionSavedController))]
     [TestCase(nameof(DroidInventoryEngineTests.LootRevisionSummonedDroid))]
-    [TestCase(nameof(DroidInventoryEngineTests.LootRevisionPlayerDroid))]
     [TestCase(nameof(DroidInventoryEngineTests.HeadgearSavedSlotFirst))]
     [TestCase(nameof(DroidInventoryEngineTests.HeadgearSavedStatsFirst))]
     [TestCase(nameof(DroidInventoryEngineTests.HeadgearSavedFreeHead))]
@@ -18,9 +17,6 @@ public class DroidInventoryCoverageTests
     [TestCase(nameof(DroidInventoryEngineTests.HeadgearSavedPendingChest))]
     [TestCase(nameof(DroidInventoryEngineTests.HeadgearSummonedDroid))]
     [TestCase(nameof(DroidInventoryEngineTests.HeadgearSummonedDroidOccupiedHead))]
-    [TestCase(nameof(DroidInventoryEngineTests.AppearanceSavedController))]
-    [TestCase(nameof(DroidInventoryEngineTests.WeaponSkillsPlayerController))]
-    [TestCase(nameof(DroidInventoryEngineTests.WeaponSkillsStoredController))]
     public void EquipmentPersistenceScenariosKeepBothDiscoveryLabels(string scenario)
     {
         var attribute = typeof(DroidInventoryEngineTests)

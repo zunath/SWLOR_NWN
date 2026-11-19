@@ -13,10 +13,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     {
         private const string VaultVariable = "SWLOR_SERVERVAULT_DIRECTORY";
 
-        // Files and records start at version 22, so migration 23 corrects the legacy cowl worn on the arms. Its head
-        // slot is taken and the inventory is full, so the cowl goes to overflow storage.
-        private const int StartVersion = 22;
-        private const string StowedItem = "absdef_l3";
+        // Files and records start at the oldest version the upgrade accepts. Each file holds one more ring than its
+        // full bag fits, so the upgrade's placement repair moves it, and with the inventory full it goes to overflow.
+        private const int StartVersion = 25;
+        private const string StowedItem = "advent_ring";
+        private const string BagResref = "bag_sm";
+        private const int InventoryCells = 10 * 36;
 
         /// <summary>
         /// The boot-time pass over a server vault: it upgrades a character file and its record together, keeps the
@@ -30,13 +32,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var owner = fixture.Creature;
-            await WearLegacyCowlBesideOccupiedHead(ctx, owner);
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                // A 2x3 outfit fills six cells; sixty of them cover the 10x36 inventory a character file holds.
-                for (var filler = 0; filler < 60; filler++)
-                    CreateItemOnObject("nw_maletatcivout", owner);
-            });
+            await FillInventoryAroundFullBag(ctx, owner);
 
             var root = Path.Combine(Path.GetTempPath(), "swlor-character-upgrade-" + Guid.NewGuid().ToString("N"));
             var vault = Path.Combine(root, "servervault");
@@ -48,7 +44,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 await ctx.ExecuteInCreatureContextAsync(owner, () =>
                 {
-                    var original = SavedCharacterMigration.WithFileVersion(SavedCharacterMigration.SaveFile(owner), StartVersion);
+                    var original = SavedCharacterMigration.WithMisplacedContainerItem(
+                        SavedCharacterMigration.WithFileVersion(SavedCharacterMigration.SaveFile(owner), StartVersion), BagResref);
                     Directory.CreateDirectory(Path.GetDirectoryName(path)!);
                     File.WriteAllBytes(path, original);
                     previousRecord = SavedCharacterMigration.CopyRecord(DB.Get<Player>(fixture.Id));
@@ -70,7 +67,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(File.ReadAllBytes(backups[0]).SequenceEqual(original), "The backup holds the original file");
                     ctx.Assert(!File.Exists(path + ".upgrade"), "No upgraded file is left beside the character file");
                     var overflow = OverflowRecords(fixture.Id);
-                    ctx.Assert(overflow.Any(item => item.Resref == StowedItem), "The unequipped weapon waits in overflow storage");
+                    ctx.Assert(overflow.Any(item => item.Resref == StowedItem), "The ring the full bag cannot hold waits in overflow storage");
                     ctx.AssertEqual(latest, DB.Get<ServerConfiguration>("SWLOR_CONFIG").CharacterFileVersion,
                         "The vault is marked current");
 
@@ -179,12 +176,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var first = await PlayerAbilityFixture.CreateAsync(ctx);
             using var second = await PlayerAbilityFixture.CreateAsync(ctx);
             var owner = first.Creature;
-            await WearLegacyCowlBesideOccupiedHead(ctx, owner);
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                for (var filler = 0; filler < 60; filler++)
-                    CreateItemOnObject("nw_maletatcivout", owner);
-            });
+            await FillInventoryAroundFullBag(ctx, owner);
 
             var root = Path.Combine(Path.GetTempPath(), "swlor-character-upgrade-" + Guid.NewGuid().ToString("N"));
             var vault = Path.Combine(root, "servervault");
@@ -200,7 +192,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 await ctx.ExecuteInCreatureContextAsync(owner, () =>
                 {
-                    var firstFile = SavedCharacterMigration.WithFileVersion(SavedCharacterMigration.SaveFile(owner), StartVersion);
+                    var savedFile = SavedCharacterMigration.WithFileVersion(SavedCharacterMigration.SaveFile(owner), StartVersion);
+                    var firstFile = SavedCharacterMigration.WithMisplacedContainerItem(savedFile, BagResref);
                     Directory.CreateDirectory(firstFolder);
                     Directory.CreateDirectory(Path.GetDirectoryName(secondPath)!);
                     File.WriteAllBytes(firstPath, firstFile);
@@ -251,7 +244,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     // A different (older) file restored at the same path keeps its own overflow items: a failed save of it neither
                     // replaces nor removes the items the earlier upgrade stored.
                     var earlier = OverflowRecords(first.Id).OrderBy(item => item.Id).Select(item => (item.Id, item.Data)).ToList();
-                    File.WriteAllBytes(firstPath, SavedCharacterMigration.WithFileVersion(firstFile, StartVersion - 1));
+                    File.WriteAllBytes(firstPath, SavedCharacterMigration.WithMisplacedContainerItem(savedFile, BagResref, 1));
                     StartUpgrade(first.Id, firstRecord);
                     Directory.CreateDirectory(firstPath + ".upgrade");
                     ctx.Assert(!SavedCharacterMigration.UpgradeServerVault(), "The restored file's failed save is reported");
@@ -289,46 +282,40 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         /// <summary>
-        /// Wears a cowl with its legacy gloves type on the arms beside a helmet on the head, so migration 23 must stow
-        /// the corrected cowl instead of moving it to the occupied head slot.
+        /// Fills a bag and then the character's inventory, so an item the upgrade must move out of the bag has nowhere
+        /// to go but overflow storage.
         /// </summary>
-        private static async Task WearLegacyCowlBesideOccupiedHead(EngineTestContext ctx, uint owner)
+        private static async Task FillInventoryAroundFullBag(EngineTestContext ctx, uint owner)
         {
-            var helmet = OBJECT_INVALID;
-            var cowl = OBJECT_INVALID;
+            var bag = OBJECT_INVALID;
+            await ctx.ExecuteInCreatureContextAsync(owner, () => bag = CreateItemOnObject(BagResref, owner));
+            ctx.Assert(GetIsObjectValid(bag), "The bag is created");
+            // The bag takes its inventory cells a frame later; filling the inventory first would leave it no room.
+            await ctx.WaitUntilAsync(() => GetItemPossessor(bag) == owner, 5f, "the bag to reach the inventory");
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                helmet = CreateItemOnObject("charm_cowl", owner);
-                cowl = CreateItemOnObject(StowedItem, owner);
-            });
-            // Let the acquisition handlers run first; they would convert the cowl back to its current type.
-            await ctx.WaitFrameAsync();
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                MigrationEngineTests.RemoveRequirement(helmet);
-                MigrationEngineTests.RemoveRequirement(cowl);
-                SWLOR.NWN.API.NWNX.ItemPlugin.SetBaseItemType(cowl, BaseItem.Gloves);
-                SWLOR.NWN.API.NWNX.ItemPlugin.SetItemAppearance(cowl, ItemAppearanceType.SimpleModel, 0, 198);
-                SetLocalString(cowl, "CRAFTED_BY", "character-upgrade-fixture");
-            });
-            ctx.Assert(GetIsObjectValid(helmet) && GetIsObjectValid(cowl), "The head and arms fixtures are created");
-            ctx.Track(helmet);
-            ctx.Track(cowl);
-            foreach (var (item, slot) in new[] { (helmet, InventorySlot.Head), (cowl, InventorySlot.Arms) })
-            {
-                var existing = GetItemInSlot(slot, owner);
-                if (GetIsObjectValid(existing))
+                // A full bag: rings until the bag takes no more.
+                for (var count = 0; count < 100; count++)
                 {
-                    AssignCommand(owner, () => ActionUnequipItem(existing));
-                    await ctx.WaitUntilAsync(() => GetItemInSlot(slot, owner) != existing, 10f, $"{slot} to be emptied");
+                    var ring = CreateItemOnObject(StowedItem, bag);
+                    if (GetIsObjectValid(ring) && GetItemPossessor(ring, true) == bag)
+                        continue;
+                    if (GetIsObjectValid(ring))
+                        DestroyObject(ring);
+                    break;
                 }
-                AssignCommand(owner, () =>
-                {
-                    ClearAllActions();
-                    ActionEquipItem(item, slot);
-                });
-                await ctx.WaitUntilAsync(() => GetItemInSlot(slot, owner) == item, 10f, $"{GetResRef(item)} to be equipped");
-            }
+                // Then exactly the rest of the 10x36 inventory: 2x3 outfits, then rings for the cells they leave.
+                var baseItem = (int)GetBaseItemType(bag);
+                var bagCells = int.Parse(Get2DAString("baseitems", "InvSlotWidth", baseItem)) *
+                               int.Parse(Get2DAString("baseitems", "InvSlotHeight", baseItem));
+                var free = InventoryCells - bagCells;
+                for (var outfit = 0; outfit < free / 6; outfit++)
+                    CreateItemOnObject("nw_maletatcivout", owner);
+                for (var ring = 0; ring < free % 6; ring++)
+                    CreateItemOnObject(StowedItem, owner);
+            });
+            await ctx.WaitFrameAsync();
+            ctx.Assert(SavedCharacterMigration.Carried(owner).Contains(bag), "The bag stays in the full inventory");
         }
 
         /// <summary>Makes a folder and every folder inside it writable or read-only for the server.</summary>

@@ -275,6 +275,37 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         }
 
         /// <summary>
+        /// A copy of a character file with one more copy of an item from a carried container, placed past that
+        /// container's grid. The upgrade's placement repair has to move it; with the container and the inventory full,
+        /// it goes to overflow storage. <paramref name="copyIndex"/> picks which item is copied, so calls with different
+        /// indexes give different files.
+        /// </summary>
+        public static byte[] WithMisplacedContainerItem(byte[] file, string containerResref, int copyIndex = 0)
+        {
+            var characterType = GameType(ServiceNamespace + "SavedCharacter");
+            var gff = GameType(ServiceNamespace + "SavedGff");
+            object Parse() => Activator.CreateInstance(characterType, Members, null, new object[] { file, null }, null);
+            System.Collections.IList Contents(object character)
+            {
+                var carried = ((System.Collections.IEnumerable)characterType.GetProperty("Carried", Members).GetValue(character))
+                    .Cast<object>().ToList();
+                string ResRef(object item) => (string)item.GetType().GetProperty("ResRef", Members).GetValue(item);
+                var container = carried.FirstOrDefault(item => string.Equals(ResRef(item), containerResref, StringComparison.OrdinalIgnoreCase))
+                    ?? throw new InvalidOperationException(
+                        $"No carried '{containerResref}' in the file; it carries {string.Join(", ", carried.Select(ResRef).Distinct())}.");
+                var node = container.GetType().GetProperty("Node", Members).GetValue(container);
+                var list = gff.GetMethod("List", Members).Invoke(null, new[] { node, "ItemList", (object)false });
+                return (System.Collections.IList)list.GetType().GetField("Children").GetValue(list);
+            }
+            var target = Parse();
+            // A second parse gives an independent copy of the item's node.
+            var copy = Contents(Parse())[copyIndex];
+            gff.GetMethod("WriteScalar", Members).Invoke(null, new object[] { copy, "Repos_PosX", 2u, 100 });
+            Contents(target).Add(copy);
+            return (byte[])characterType.GetMethod("Serialize", Members).Invoke(target, null);
+        }
+
+        /// <summary>
         /// The server's boot-time pass over every character file in the server vault (<c>CharacterFileUpgrade.UpgradeServerVault</c>).
         /// Returns false when any character could not be upgraded. Must run inside an engine script.
         /// </summary>

@@ -64,13 +64,61 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return item;
         }
 
+        /// <summary>A CPU blueprint with both the martial and ranged groups at 25.</summary>
+        internal const string LegacyDroidCpu = "d_jg_cpu3_m";
+        private const int LegacyControllerKatar = 30;
+        private const int LegacyControllerStaff = 25;
+
+        /// <summary>A CPU saved before the Unarmed and Twin Pistol skills existed.</summary>
+        internal static void StampLegacyDroidCpu(uint cpu)
+        {
+            RemoveDroidStats(cpu, DroidStatSubType.Unarmed, DroidStatSubType.TwinPistol);
+        }
+
+        /// <summary>
+        /// A controller assembled before the new skills: a boosted Katar, the ranged group at zero as assembly saves
+        /// skills no part grants, and the CPU saved inside it.
+        /// </summary>
+        internal static void StampLegacyDroidController(uint controller, string serializedCpu)
+        {
+            RemoveDroidStats(controller, DroidStatSubType.Katar, DroidStatSubType.Staff, DroidStatSubType.Pistol, DroidStatSubType.Rifle,
+                DroidStatSubType.Throwing, DroidStatSubType.Unarmed, DroidStatSubType.TwinPistol);
+            foreach (var (skill, value) in new[]
+                     {
+                         (DroidStatSubType.Katar, LegacyControllerKatar), (DroidStatSubType.Staff, LegacyControllerStaff),
+                         (DroidStatSubType.Pistol, 0), (DroidStatSubType.Rifle, 0), (DroidStatSubType.Throwing, 0),
+                     })
+                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DroidStat, (int)skill, value), controller);
+            Droid.SaveConstructedDroid(controller, new ConstructedDroid { Name = "Weapon skill fixture", SerializedCPU = serializedCpu });
+        }
+
+        private static void RemoveDroidStats(uint item, params DroidStatSubType[] skills)
+        {
+            var matches = new List<SWLOR.NWN.API.Engine.ItemProperty>();
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                if (GetItemPropertyType(ip) == ItemPropertyType.DroidStat && skills.Contains((DroidStatSubType)GetItemPropertySubType(ip)))
+                    matches.Add(ip);
+            foreach (var ip in matches)
+                Invoke("MigrationObject", "RemoveProperty", item, ip);
+        }
+
+        private static int FindFlatFiveDamageBonusRow()
+        {
+            for (var row = 0; row < Get2DARowCount("iprp_damagecost"); row++)
+            {
+                if (Get2DAString("iprp_damagecost", "NumDice", row) != "0" ||
+                    Get2DAString("iprp_damagecost", "Die", row) != "5")
+                    continue;
+
+                return row;
+            }
+
+            throw new System.InvalidOperationException("iprp_damagecost has no flat 5 damage row.");
+        }
+
         private static object Invoke(string type, string method, params object[] args) =>
             typeof(SWLOR.Game.Server.Service.Migration).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition." + type)
                 .GetMethod(method, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, args);
-
-        private static bool ContainsIdentity(string serializedObject, string identity) =>
-            System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(serializedObject))
-                .Contains(identity, System.StringComparison.Ordinal);
 
         // Read Redis directly so these assertions cannot pass on a mutated cache object
         // whose database write was omitted.

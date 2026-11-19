@@ -20,24 +20,6 @@ public class MigrationDataTests
     private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Service.Migration).Assembly;
 
     [Test]
-    public void CharacterMigrationsHaveUniqueVersionsAndOneCombinedItemUpdate()
-    {
-        var migrations = CharacterMigrations.ImplementationTypes
-            .Select(type => Activator.CreateInstance(type)!).ToArray();
-        migrations.Select(CharacterMigrations.VersionOf).Should().OnlyHaveUniqueItems();
-        CharacterMigrations.VersionOf("_17_RemoveWeaponStatOverrides").Should().BeGreaterThan(CharacterMigrations.VersionOf("_16_RetireForceWeaponEnhancements"));
-        migrations.Where(migration => CharacterMigrations.VersionOf(migration) >= 22).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes"),
-                CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConsolidatePelvisAppearance"),
-                CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks") });
-        migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks") },
-                "the crafting revamp's release receives one player pass, the crafting perk conversion");
-        CharacterMigrations.VersionOf("_26_ConvertCraftingPerksToRanks").Should().Be(NextPlayerVersion);
-        CharacterMigrations.LatestVersion.Should().Be(NextPlayerVersion);
-    }
-
-    [Test]
     public void TheCharacterUpgradeRunsEveryMigrationInVersionOrder()
     {
         var registered = CharacterMigrations.Registered.Select(CharacterMigrations.VersionOf).ToArray();
@@ -47,15 +29,6 @@ public class MigrationDataTests
             CharacterMigrations.ImplementationTypes.Select(type => CharacterMigrations.VersionOf(Activator.CreateInstance(type)!)),
             "every migration class is registered");
         CharacterMigrations.LatestVersion.Should().Be(registered[^1]);
-    }
-
-    [TestCase(112, -12)]
-    [TestCase(200, -100)]
-    [TestCase(15, 15)]
-    public void ResistanceRowsAreDecodedBeforeMigrationMerges(int encoded, int expected)
-    {
-        Invoke("SerializedItemResistanceMigration", "GetMigrationPropertyValue", ItemPropertyType.Resistance, encoded)
-            .Should().Be(expected);
     }
 
     [Test]

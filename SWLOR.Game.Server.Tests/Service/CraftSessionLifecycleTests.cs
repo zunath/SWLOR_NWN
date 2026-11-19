@@ -1128,6 +1128,53 @@ public class CraftSessionLifecycleTests
         saved.PendingCraftReturns.Should().BeEmpty();
     }
 
+    /// <summary>
+    /// Finishes a craft, then logs out and back in twice in the same server run. The engine copies the locals of the earlier login over a
+    /// relogging player, so before the fix every relog read the first login's loaded sequence (0) instead of the file's.
+    /// </summary>
+    private void CraftThenRelogTwice(Func<int, int> loadedAtRelog)
+    {
+        _world.ExportNow();
+        var lifecycle = Lifecycle();
+        var session = StartSession(lifecycle);
+        _world.RunQueuedExport();
+        lifecycle.SucceedAtPace(_world, FakeCraftSessionWorld.PlayerHandle, _player, session, new MinigameMeter(100, 100)).Should().NotBeNull();
+        _world.Crafted.Should().Equal("crafted test_item");
+
+        for (var relog = 0; relog < 2; relog++)
+        {
+            _world.LogOutAndRelog(loadedAtRelog);
+            LogIn(_player);
+        }
+    }
+
+    [Test]
+    public void RecoverAtLogin_WithTheStaleLoadedSequenceOfAnEarlierLogin_GaveTheLastCraftAgainOnEveryRelog()
+    {
+        // The reported bug: the stale 0 makes the finished item look missing from the file at every relog.
+        CraftThenRelogTwice(_ => 0);
+
+        _world.Returned.Should().Equal("crafted test_item", "crafted test_item");
+    }
+
+    [Test]
+    public void RecoverAtLogin_WithTheLoadedFilesSequence_NeverGivesTheLastCraftAgain_HoweverOftenThePlayerRelogs()
+    {
+        // What the login applies now: the sequence the file carried, recorded at load under the character's UUID.
+        LoadedCraftFileSequences.Clear();
+        CraftThenRelogTwice(file =>
+        {
+            var locals = new Dictionary<string, int> { [CraftSessionFileSequence.LoadedVariable] = 0 };
+            LoadedCraftFileSequences.Record("pc", file, DateTime.UtcNow);
+            LoadedCraftFileSequences.Apply("pc", name => locals.GetValueOrDefault(name), (name, value) => locals[name] = value);
+            return locals[CraftSessionFileSequence.LoadedVariable];
+        });
+
+        _world.Crafted.Should().Equal("crafted test_item");
+        _world.Returned.Should().BeEmpty("the file holds the finished item at both relogs");
+        _player.PendingCraftReturns.Should().BeEmpty();
+    }
+
     [Test]
     public void Fail_BeforeTheDebitWasExported_WritesTheFileFirst_SoACrashCannotDuplicateTheRefund()
     {

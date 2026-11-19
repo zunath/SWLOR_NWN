@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Service.ScavengeService
             var returned = dbPlayer.PendingScavengeReturnSequence;
             if (returned > 0 && dbPlayer.PendingScavengeFinds.Count > 0)
             {
-                var inFile = GetLocalInt(player, atLogin ? CraftSessionFileSequence.LoadedVariable : CraftSessionFileSequence.ExportedVariable);
+                var inFile = atLogin ? NwnCraftSessionWorld.Instance.LoadedSequence(player) : NwnCraftSessionWorld.Instance.ExportedSequence(player);
                 if (inFile >= returned)
                 {
                     // A file already holds the delivered finds: only the stamp and the delivered portion go. Waiting finds are not covered.
@@ -140,8 +140,7 @@ namespace SWLOR.Game.Server.Service.ScavengeService
             var exportable = GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player);
             if (split.Delivered.Count > 0 && exportable)
             {
-                var sequence = GetLocalInt(player, CraftSessionFileSequence.Variable) + 1;
-                SetLocalInt(player, CraftSessionFileSequence.Variable, sequence);
+                var sequence = NwnCraftSessionWorld.Instance.AdvanceFileSequence(player);
                 dbPlayer.PendingScavengeFinds = split.Delivered.ToDictionary(find => find.Key, find => find.Value);
                 dbPlayer.PendingScavengeReturnSequence = sequence;
                 DB.Set(dbPlayer);

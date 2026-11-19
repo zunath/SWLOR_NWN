@@ -18,6 +18,28 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     {
         private const string ShipTag = "sd_striker";
 
+        [EngineTest("A Sensors crew member who keeps their own ship ID slices from the ship they crew", Category = "SpaceSlicing", TimeoutSeconds = 30f)]
+        public static async Task SensorsCrewSliceFromTheirHostShip(EngineTestContext ctx)
+        {
+            using var pilot = await PlayerAbilityFixture.CreateAsync(ctx);
+            using var crew = await PlayerAbilityFixture.CreateAsync(ctx, 2f);
+            // The crew member's own ship stays docked elsewhere, so they are in space mode without flying it.
+            crew.Update(p => p.ActiveShipId = "engine-slicing-crew-own-ship/" + crew.Id);
+            try
+            {
+                ctx.Assert(Space.IsPlayerInSpaceMode(crew.Creature), "the crew member keeps their own ship ID");
+                ctx.AssertEqual(OBJECT_INVALID, Space.GetSlicingShip(crew.Creature), "a player not flying and not seated slices from no ship");
+
+                ctx.Assert(SpaceCrew.AssignSeat(pilot.Creature, ShipCrewSeat.Sensors, crew.Creature), "the Sensors seat is free");
+                ctx.AssertEqual(pilot.Creature, Space.GetSlicingShip(crew.Creature), "the Sensors crew member slices from the host ship");
+
+                SpaceCrew.ReleaseSeat(crew.Creature);
+                ctx.Assert(SpaceCrew.AssignSeat(pilot.Creature, ShipCrewSeat.Engineer, crew.Creature), "the Engineer seat is free");
+                ctx.AssertEqual(OBJECT_INVALID, Space.GetSlicingShip(crew.Creature), "another seat does not slice");
+            }
+            finally { SpaceCrew.ReleaseSeat(crew.Creature); }
+        }
+
         [EngineTest("A data site's cans need the Slicing rank and spawn the site cache once sliced", Category = "SpaceSlicing", TimeoutSeconds = 30f)]
         public static async Task DataSiteCansGateOnRankAndLeadToTheCache(EngineTestContext ctx)
         {

@@ -28,19 +28,18 @@ namespace SWLOR.Game.Server.Service
         // The ship a slicer works from
 
         /// <summary>
-        /// The ship a player slices from: their own ship while piloting it, the ship whose Sensors seat they hold,
-        /// otherwise OBJECT_INVALID.
+        /// The ship a player slices from: the ship whose Sensors seat they hold, their own ship while flying it,
+        /// otherwise OBJECT_INVALID. The seat comes first: a crew member keeps their own ship ID while aboard another
+        /// ship, so space mode alone does not mean they are flying.
         /// </summary>
         public static uint GetSlicingShip(uint slicer)
         {
             if (!GetIsObjectValid(slicer))
                 return OBJECT_INVALID;
-            if (IsPlayerInSpaceMode(slicer))
-                return slicer;
+            if (SpaceCrew.TryGetSeat(slicer, out var ship, out var seat))
+                return seat == ShipCrewSeat.Sensors ? ship : OBJECT_INVALID;
 
-            return SpaceCrew.TryGetSeat(slicer, out var ship, out var seat) && seat == ShipCrewSeat.Sensors
-                ? ship
-                : OBJECT_INVALID;
+            return IsPlayerInSpaceMode(slicer) && IsShipInSpace(slicer) ? slicer : OBJECT_INVALID;
         }
 
         /// <summary>Whether the ship a player slices from is in combat.</summary>

@@ -1,0 +1,14 @@
+[Unit]
+Description=Neverwinter Nights EE docker compose runner
+Requires=docker.service
+After=docker.service
+
+[Service]
+WorkingDirectory=/cool/path/to/docker/compose/config
+ExecStart=/usr/bin/docker compose up
+ExecStop=/usr/bin/docker compose down
+User=something
+Group=something
+
+[Install]
+WantedBy=multi-user.target

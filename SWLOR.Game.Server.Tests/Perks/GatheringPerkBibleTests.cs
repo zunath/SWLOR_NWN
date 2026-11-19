@@ -57,7 +57,7 @@ public class GatheringPerkBibleTests
     }
 
     [Test]
-    public void TheGatheringTabTotalsTheTwoLinesAtFiftySp_AndRetiredRowsStayOutOfIt()
+    public void TheGatheringTabTotalsTheTwoLinesAtFiftySp()
     {
         var rows = ReadGatheringRows().ToList();
         var perkRows = rows.Where(row => Lines.Contains(row.GetValueOrDefault("A"))).ToList();
@@ -67,7 +67,7 @@ public class GatheringPerkBibleTests
             perkRows.Where(row => row["A"] == line).Sum(row => decimal.Parse(row["B"], CultureInfo.InvariantCulture)).Should().Be(25m, line);
 
         var header = rows.Single(row => row.GetValueOrDefault("C") == "Total SP");
-        decimal.Parse(header["D"], CultureInfo.InvariantCulture).Should().Be(50m, "the cached total counts the purchasable rows and not the retired or moved ones");
+        decimal.Parse(header["D"], CultureInfo.InvariantCulture).Should().Be(50m, "the cached total counts every purchasable row");
     }
 
     private static void Compare(List<string> failures, string name, string column, string actual, string expected)

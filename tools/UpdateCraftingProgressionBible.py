@@ -1,17 +1,19 @@
-"""Record the crafting rank milestones, the retired perks and the Treasure Hunter / Creditfinder move in the Design Bible.
+"""Keep the crafting tabs of the Design Bible free of the perks that rank milestones replaced, and keep Treasure Hunter
+and Creditfinder on the General tab.
 
-Edits only the target cells of design/bible/SWLOR Design Bible.xlsx at the zip/XML level and copies every other
+Edits only the target worksheets of design/bible/SWLOR Design Bible.xlsx at the zip/XML level and copies every other
 workbook entry byte-for-byte. Safe to rerun, also after the perk-line tools (UpdateEngineeringPerkBible.py,
 UpdateFabricationPerkBible.py, UpdateGatheringPerkBible.py, UpdateAgriculturePerkBible.py) have added their lines: those
-tools then own the tab's Total SP and total rows, so this tool leaves them alone.
+tools own the tab's Total SP and total rows, so this tool leaves them alone.
 
   python tools/UpdateCraftingProgressionBible.py [--workbook PATH]
 
 Changes:
-  - Gathering, Fabrication and Engineering: the retired perk rows stay as history with Dev Status "Retired" (or "Moved"
-    for Treasure Hunter and Creditfinder) and a note naming the rank milestone that replaced them.
-  - Total SP on those tabs counts only the purchasable rows, and SP Price cells stored as text become numbers on the
-    Engineering, Fabrication, Agriculture and Gathering tabs.
+  - Gathering, Fabrication and Engineering: the rows of the retired perks (Harvesting, Refining, Refinery Management,
+    Scavenging, Hard Look, Research, Scientific Networking, Research Projects, Droid Assembly) and of the perks that moved
+    to General (Treasure Hunter, Creditfinder) are removed, with the blank and Total rows that only served them. The rows
+    below move up and the tab's formulas follow them.
+  - SP Price cells stored as text become numbers on the Engineering, Fabrication, Agriculture and Gathering tabs.
   - Agriculture: while the tab still has the old Farming rows (row 9 reads Farming), their total and Total SP are written
     too. Once UpdateAgriculturePerkBible.py has replaced them with the Farmer line and the crop table, it owns the tab and
     this tool leaves the rows, totals and Total SP alone. AgriculturePerkBibleTests runs both tools to check they agree.
@@ -37,43 +39,14 @@ REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 ROW_RE = r'<row r="{n}"(?P<attrs>(?: [^>]*?)?)(?:/>|>(?P<body>.*?)</row>)'
 CELL_RE = re.compile(r'<c [^>]*?/>|<c [^>]*?>.*?</c>', re.S)
 
-# Perk rows by tab. Each entry: perk name prefix -> (rank requirement per rank, SP per rank, note per rank).
-ROMAN = ["I", "II", "III", "IV", "V", "VI"]
-
-
-def tier_notes(template: str, ranks: list[int]) -> list[str]:
-    return [template.format(n=i + 1, r=r) for i, r in enumerate(ranks)]
-
-
-GATHERING_RETIRED = {
-    "Harvesting": ([1, 1, 2, 3, 4], tier_notes("Tier {n} harvesters unlock for every character at Gathering {r}.", [0, 10, 20, 30, 40])),
-    "Refining": ([1, 1, 2, 3, 4], tier_notes("Tier {n} ores can be refined by every character at Gathering {r}.", [0, 10, 20, 30, 40])),
-    "Refinery Management": ([1, 1, 2, 2, 3, 4], [
-        f"Power cores refine {n} additional item{'s' if n > 1 else ''} for every character from Gathering {r} ({3 + n} items per core)."
-        for n, r in zip(range(1, 7), [0, 10, 20, 30, 40, 45])]),
-    "Scavenging": ([1, 1, 2, 3, 4], tier_notes("Tier {n} scavenge sites unlock for every character at Gathering {r}.", [0, 10, 20, 30, 40])),
-    "Hard Look": ([1, 1, 2, 3, 3], [
-        f"Counts as Hard Look {n} for every character from Gathering {r}: a {10 * n}% base chance of a second search until the Search board replaces it."
-        for n, r in zip(range(1, 6), [0, 10, 20, 30, 40])]),
+# Perks that no longer belong on these tabs: retired for rank milestones, or moved to the General tab.
+REMOVED_PERKS = {
+    "Gathering": {"Harvesting", "Refining", "Refinery Management", "Scavenging", "Hard Look", "Treasure Hunter", "Creditfinder"},
+    "Fabrication": {"Research", "Scientific Networking", "Research Projects"},
+    "Engineering": {"Droid Assembly"},
 }
-GATHERING_MOVED = {
-    "Treasure Hunter": ([3, 3, 4], ["Armor 20", "Armor 40", "Armor 50"]),
-    "Creditfinder": ([3, 3, 4], ["Armor 15", "Armor 30", "Armor 45"]),
-}
-FABRICATION_RETIRED = {
-    "Research": ([2, 2, 3, 3, 4], tier_notes("Tier {n} blueprints can be researched by every character at Fabrication {r}.", [10, 20, 30, 40, 50])),
-    "Scientific Networking": ([3, 4], [
-        "New blueprints gain one more licensed run for every character at Fabrication 25.",
-        "New blueprints gain another licensed run for every character at Fabrication 50."]),
-    "Research Projects": ([2, 3], [
-        "Every character can run one more concurrent research job at Fabrication 25 (2 in total).",
-        "Every character can run another concurrent research job at Fabrication 50 (3 in total)."]),
-}
-ENGINEERING_RETIRED = {
-    "Droid Assembly": ([1, 1, 2, 3, 4], tier_notes("Tier {n} droids unlock for every character at Engineering {r}.", [0, 10, 20, 30, 40])),
-}
-
-GATHERING_LAST_PERK_ROW = 45
+FIRST_DATA_ROW = 9
+RANK_SUFFIX = re.compile(r" (I|II|III|IV|V|VI)$")
 # Column A labels the perk-line tools write. Once a tab has them, that tool owns the tab's Total SP (D4).
 LINE_LABELS = {
     "Engineering": {"Overclocker", "Technician"},
@@ -200,34 +173,76 @@ def numeric_sp_cells(sheet: Sheet, first_row: int, price_col: str = "B") -> None
             sheet.set_cell(number, price_col, num_cell(f"{price_col}{number}", cell_style(cell), value))
 
 
-def perk_rows(sheet: Sheet, first_row: int = 9):
-    """(row number, perk name, rank index) for each ranked perk row."""
-    for number in range(first_row, sheet.last_data_row() + 1):
-        name = sheet.text_of(sheet.row_cells(number).get("C", "")).strip()
-        match = re.fullmatch(r"(.+?) (I|II|III|IV|V|VI)", name)
+def shift_refs(formula: str, removed: list[int]) -> str:
+    """Moves the row numbers of a same-sheet formula or range up past the removed rows. A range keeps its surviving rows."""
+    def above(row: int, inclusive: bool) -> int:
+        return sum(1 for r in removed if r < row or (inclusive and r == row))
+
+    def one(match: re.Match) -> str:
+        col1, row1, col2, row2 = match.group(1), int(match.group(2)), match.group(3), match.group(4)
+        if col2 is None:
+            if row1 in removed:
+                raise ValueError(f"{formula!r} points at removed row {row1}")
+            return f"{col1}{row1 - above(row1, False)}"
+        return f"{col1}{row1 - above(row1, False)}:{col2}{int(row2) - above(int(row2), True)}"
+
+    return re.sub(r"(?<![A-Za-z!$])\$?([A-Z]{1,3})\$?(\d+)(?::\$?([A-Z]{1,3})\$?(\d+))?(?![\d(])", one, formula)
+
+
+def remove_rows(sheet: Sheet, removed: list[int]) -> None:
+    """Deletes the rows and moves every row below them up, with their cell references, formulas and merged ranges."""
+    removed = sorted(set(removed))
+    if not removed:
+        return
+
+    def new_number(row: int) -> int:
+        return row - sum(1 for r in removed if r < row)
+
+    for number in removed:
+        match = find_row(sheet.xml, number)
         if match:
-            yield number, match.group(1), ROMAN.index(match.group(2))
+            sheet.xml = sheet.xml[:match.start()] + sheet.xml[match.end():]
+
+    head, data, tail = re.split(r"(<sheetData>.*</sheetData>)", sheet.xml, maxsplit=1, flags=re.S)
+    data = re.sub(r'<row r="(\d+)"', lambda m: f'<row r="{new_number(int(m.group(1)))}"', data)
+    data = re.sub(r'<c r="([A-Z]+)(\d+)"', lambda m: f'<c r="{m.group(1)}{new_number(int(m.group(2)))}"', data)
+    data = re.sub(r"(<f(?: [^>]*)?>)(.*?)(</f>)",
+                  lambda m: m.group(1) + escape(shift_refs(unescape(m.group(2)), removed)) + m.group(3), data, flags=re.S)
+    tail = re.sub(r'(<mergeCell ref=")([^"]+)(")', lambda m: m.group(1) + shift_refs(m.group(2), removed) + m.group(3), tail)
+    sheet.xml = head + data + tail
 
 
-def mark_rows(sheet: Sheet, spec: dict, status: str, status_col: str, notes_col: str, moved: bool = False) -> int:
-    marked = 0
-    for number, perk, rank in perk_rows(sheet):
-        if perk not in spec:
+def removable_rows(sheet: Sheet) -> list[int]:
+    """The rows of the removed perks, plus the Total and blank rows that would be left with nothing to serve."""
+    perks = REMOVED_PERKS[sheet.name]
+    last = sheet.last_data_row()
+    names = {n: sheet.text_of(sheet.row_cells(n).get("C", "")).strip() for n in range(FIRST_DATA_ROW, last + 1)}
+    labels = {n: sheet.text_of(sheet.row_cells(n).get("A", "")).strip() for n in range(FIRST_DATA_ROW, last + 1)}
+    removed = {n for n, name in names.items() if RANK_SUFFIX.sub("", name) in perks}
+    if not removed:
+        return []
+
+    # A Total row whose block (the rows above it, up to the previous blank row) was removed entirely.
+    for n in range(FIRST_DATA_ROW, last + 1):
+        if labels[n] != "Total":
             continue
-        prices, notes = spec[perk]
-        cells = sheet.row_cells(number)
-        sheet.set_cell(number, status_col, text_cell(f"{status_col}{number}", cell_style(cells[status_col]), status))
-        refunded = f"Refunded {prices[rank]} SP."
-        if moved:
-            note = f"Moved to the General tab with the requirement {notes[rank]}. {refunded} Owners buy it again."
-        else:
-            note = f"Retired. {notes[rank]} {refunded}"
-        style = cell_style(cells.get(notes_col, cells[status_col]))
-        sheet.set_cell(number, notes_col, text_cell(f"{notes_col}{number}", style, note))
-        marked += 1
-    expected = sum(len(prices) for prices, _ in spec.values())
-    assert marked == expected, f"{sheet.name}: marked {marked} perk rows, expected {expected}"
-    return marked
+        block, above = [], n - 1
+        while above >= FIRST_DATA_ROW and (names[above] or labels[above]):
+            block.append(above)
+            above -= 1
+        if block and all(r in removed for r in block):
+            removed.add(n)
+
+    # Blank rows left at the top of the table or doubled up once the perks are gone.
+    previous_blank = True
+    for n in range(FIRST_DATA_ROW, last + 1):
+        if n in removed:
+            continue
+        blank = not names[n] and not labels[n]
+        if blank and previous_blank:
+            removed.add(n)
+        previous_blank = blank
+    return sorted(removed)
 
 
 def has_lines(sheet: Sheet) -> bool:
@@ -244,28 +259,10 @@ def set_formula(sheet: Sheet, ref: str, formula: str, value) -> None:
     sheet.set_cell(number, col, num_cell(ref, cell_style(cell), value, formula))
 
 
-def update_gathering(sheet: Sheet) -> None:
-    numeric_sp_cells(sheet, 9)
-    cols = sheet.header_columns(8)
-    status, notes = cols["Dev Status"], cols["Notes"]
-    mark_rows(sheet, GATHERING_RETIRED, "Retired", status, notes)
-    mark_rows(sheet, GATHERING_MOVED, "Moved", status, notes, moved=True)
-    last = GATHERING_LAST_PERK_ROW
-    if not has_lines(sheet):  # UpdateGatheringPerkBible.py widens this total to its line rows
-        set_formula(sheet, "D4", f'SUMIFS(B9:B{last},{status}9:{status}{last},"<>Retired",{status}9:{status}{last},"<>Moved")', 0)
-
-
-def update_fabrication_like(sheet: Sheet, spec: dict, total_row: int, total_cached: int = 0) -> None:
-    numeric_sp_cells(sheet, 9)
-    cols = sheet.header_columns(8)
-    status, notes = cols["Dev Status"], cols["Notes"]
-    mark_rows(sheet, spec, "Retired", status, notes)
-    first, last = 9, total_row - 1
-    # The Engineering line tool writes its first perk over the old total row and moves the total below its lines.
-    if sheet.text_of(sheet.row_cells(total_row).get("A", "")).strip() == "Total" and not has_lines(sheet):
-        set_formula(sheet, f"B{total_row}", f'SUMIFS(B{first}:B{last},{status}{first}:{status}{last},"<>Retired")', total_cached)
-    if not has_lines(sheet):  # the line tools add their line totals to Total SP
-        set_formula(sheet, "D4", f"SUM(B{total_row})", total_cached)
+def update_removed_perks(sheet: Sheet) -> None:
+    """Removes the retired and moved perk rows. The perk-line tools then rewrite the tab's totals."""
+    numeric_sp_cells(sheet, FIRST_DATA_ROW)
+    remove_rows(sheet, removable_rows(sheet))
 
 
 def update_agriculture(sheet: Sheet) -> None:
@@ -347,9 +344,9 @@ def update_workbook(path: Path) -> None:
 
     edits = {
         "General": update_general,
-        "Gathering": update_gathering,
-        "Fabrication": lambda s: update_fabrication_like(s, FABRICATION_RETIRED, 18),
-        "Engineering": lambda s: update_fabrication_like(s, ENGINEERING_RETIRED, 14),
+        "Gathering": update_removed_perks,
+        "Fabrication": update_removed_perks,
+        "Engineering": update_removed_perks,
         "Agriculture": update_agriculture,
     }
     changed = {}

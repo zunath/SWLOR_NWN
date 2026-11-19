@@ -3,13 +3,13 @@
 Reads the two lines from the perk definitions (FabricationBuilderPerkDefinition.cs and FabricationResearcherPerkDefinition.cs), so the
 Bible's names, prices, requirements, descriptions and stats cannot drift from the code, and edits only the target cells of
 design/bible/SWLOR Design Bible.xlsx at the zip/XML level, copying every other workbook entry byte-for-byte. Safe to rerun: the line
-rows are rewritten in place from the first free row after the retired perks, and the totals and their cached values are rewritten.
+rows are rewritten in place from the first row under the header, and the totals and their cached values are rewritten.
 
   python tools/UpdateFabricationPerkBible.py [--workbook PATH]
 
 Each line is ten purchases at Fabrication 5/10/15/20/25/30/35/40/45/50 for 1/1/2/2/3/3/3/3/3/4 SP (25 SP). The rank-20 purchase is a
 choice of two styles, so a line lists eleven rows and its Total subtracts the alternative style. The tab's Total SP is the sum of the
-two lines' totals; the retired block's Total adds up its own rows and is left out of it.
+two lines' totals.
 """
 from __future__ import annotations
 
@@ -31,10 +31,8 @@ PERK_DEFINITIONS = ROOT / "SWLOR.Game.Server" / "Feature" / "PerkDefinition"
 SHEET = "Fabrication"
 
 TEMPLATE_PERK_ROW = 9
-RETIRED_TOTAL_ROW = 18
-RETIRED_TOTAL_NOTE = "Retired perks. Not counted in Total SP."
 STYLE_TOTAL_NOTE = "Counts one of the two rank-20 styles; they exclude each other."
-FIRST_LINE_ROW = 20
+FIRST_LINE_ROW = 9
 
 LINES = (
     ("Builder", "FabricationBuilderPerkDefinition.cs", "Fabricator"),
@@ -116,7 +114,7 @@ def perk_cells(row: int, purchase: dict, line: str, engine: str, names: dict[str
 
 def update_sheet(sheet: Bible.Sheet, lines: list[tuple[str, str, list[dict]]]) -> dict:
     styles = {col: Bible.cell_style(cell) for col, cell in sheet.row_cells(TEMPLATE_PERK_ROW).items()}
-    total_styles = {col: Bible.cell_style(cell) for col, cell in sheet.row_cells(RETIRED_TOTAL_ROW).items()}
+    total_styles = {col: Bible.cell_style(cell) for col, cell in sheet.row_cells(first_total_row(sheet)).items()}
     names = {purchase["perk"]: purchase["name"] for _line, _engine, purchases in lines for purchase in purchases}
     notes_col = sheet.header_columns(8)["Notes"]
     notes_style = styles.get(notes_col, styles["G"])
@@ -146,18 +144,20 @@ def update_sheet(sheet: Bible.Sheet, lines: list[tuple[str, str, list[dict]]]) -
         summary[line] = {"first": first, "last": last, "total_row": row, "sp": total}
         row += 2  # one blank row between the lines
 
-    # The retired block's Total adds up its rows; Total SP leaves it out.
-    retired_last = RETIRED_TOTAL_ROW - 1
-    retired = sum(int(sheet.text_of(sheet.row_cells(number)["B"]).split(".")[0]) for number in range(TEMPLATE_PERK_ROW, retired_last + 1))
-    Bible.set_formula(sheet, f"B{RETIRED_TOTAL_ROW}", f"SUM(B{TEMPLATE_PERK_ROW}:B{retired_last})", retired)
-    sheet.set_cell(RETIRED_TOTAL_ROW, notes_col, Bible.text_cell(f"{notes_col}{RETIRED_TOTAL_ROW}", notes_style, RETIRED_TOTAL_NOTE))
-
     refs = ",".join(f"B{number}" for number in total_rows)
     grand = sum(totals)
     Bible.set_formula(sheet, "D4", f"SUM({refs})", grand)
 
     summary["total_sp"] = grand
     return summary
+
+
+def first_total_row(sheet: Bible.Sheet) -> int:
+    """The first line's Total row, whose styles every Total row takes."""
+    for number in range(FIRST_LINE_ROW, sheet.last_data_row() + 1):
+        if sheet.text_of(sheet.row_cells(number).get("A", "")).strip() == "Total":
+            return number
+    raise ValueError("The Fabrication tab has no Total row to copy styles from.")
 
 
 def check(line: str, purchases: list[dict]) -> None:

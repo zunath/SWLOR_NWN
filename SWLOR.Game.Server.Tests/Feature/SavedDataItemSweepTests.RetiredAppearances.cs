@@ -132,7 +132,7 @@ public partial class SavedDataItemSweepTests
     }
 
     [Test]
-    public void RetiredAppearances_MoveAConstructedDroidsSavedBody()
+    public void RetiredAppearances_KeepARestoredHeadOnAConstructedDroidsSavedBody()
     {
         var droid = new JObject
         {
@@ -144,10 +144,9 @@ public partial class SavedDataItemSweepTests
 
         EnzymeBaseItemMigration.MigrateSavedObject(controller, out var migrated).Should().BeTrue();
         var saved = JObject.Parse((string)Value(Children(Read(migrated), "VarTable").Single(), "Value"));
-        RacialAppearanceRegistry.TryGet(AppearanceType.Droid, out var droidBody).Should().BeTrue();
         saved["AppearanceParts"]!.ToObject<Dictionary<string, int>>().Should().BeEquivalentTo(new Dictionary<string, int>
         {
-            ["Head"] = droidBody.MaleHeads[0], ["Neck"] = 1, ["RightHand"] = 1, ["LeftFoot"] = 1, ["Torso"] = 200,
+            ["Head"] = 23, ["Neck"] = 1, ["RightHand"] = 1, ["LeftFoot"] = 1, ["Torso"] = 200,
         });
         saved["Name"]!.Value<string>().Should().Be("Unit");
         EnzymeBaseItemMigration.MigrateSavedObject(migrated, out _).Should().BeFalse();

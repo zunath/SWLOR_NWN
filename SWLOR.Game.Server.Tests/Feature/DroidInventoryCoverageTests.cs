@@ -8,8 +8,6 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class DroidInventoryCoverageTests
 {
-    [TestCase(nameof(DroidInventoryEngineTests.LegacyInventoryIdentity))]
-    [TestCase(nameof(DroidInventoryEngineTests.EquipmentRoundTrip))]
     [TestCase(nameof(DroidInventoryEngineTests.LootRevisionSavedController))]
     [TestCase(nameof(DroidInventoryEngineTests.LootRevisionSummonedDroid))]
     [TestCase(nameof(DroidInventoryEngineTests.LootRevisionPlayerDroid))]

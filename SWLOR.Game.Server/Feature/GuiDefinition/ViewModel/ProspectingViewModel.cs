@@ -106,8 +106,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public static string ActionColorProperty(int index) => $"ActionColor{index}";
         public static string ActionEnabledProperty(int index) => $"ActionEnabled{index}";
 
+        protected override float MinimumWindowWidth => ProspectingDefinition.WindowWidth;
+
         protected override void Initialize(ProspectingPayload initialPayload)
         {
+            KeepMinimumWidth();
             _session = initialPayload.Session;
 
             // The record holds the selected style; a death, a login or a trip to space may have cost the harvester its effect.

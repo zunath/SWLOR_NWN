@@ -3,7 +3,7 @@
 Reads the rows from the JSON that the game's own perk definitions export
 (`SWLOR.CraftSim gathering-perks --part bible --out design/testing/crafting-revamp/gathering-perk-bible-rows.json`), so the Bible cannot
 drift from the code, and edits only the target cells of design/bible/SWLOR Design Bible.xlsx at the zip/XML level, copying every other
-workbook entry byte-for-byte. Safe to rerun: the perk rows go on the rows after the retired Hard Look rows and a rerun writes the same
+workbook entry byte-for-byte. Safe to rerun: the perk rows start on the first row under the header and a rerun writes the same
 cells. After a merge conflict on the workbook, take the base's workbook and run this again.
 
   python tools/UpdateGatheringPerkBible.py [--workbook PATH] [--data PATH]
@@ -29,8 +29,8 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_WORKBOOK = ROOT / "design" / "bible" / "SWLOR Design Bible.xlsx"
 DEFAULT_DATA = ROOT / "design" / "testing" / "crafting-revamp" / "gathering-perk-bible-rows.json"
 SHEET = "Gathering"
-FIRST_PERK_ROW = 47
-TEMPLATE_ROW = 16
+FIRST_PERK_ROW = 9
+TEMPLATE_ROW = 9
 HEADER_ROW = 8
 
 # What each perk's notes say besides the stats the row grants (the export lists the stats).
@@ -89,8 +89,7 @@ def update_sheet(sheet: Bible.Sheet, rows: list[dict]) -> int:
         sheet.write_row(number, cells)
 
     last = FIRST_PERK_ROW + len(rows) - 1
-    Bible.set_formula(
-        sheet, "D4", f'SUMIFS(B9:B{last},{status}9:{status}{last},"<>Retired",{status}9:{status}{last},"<>Moved")', total)
+    Bible.set_formula(sheet, "D4", f"SUM(B{FIRST_PERK_ROW}:B{last})", total)
     return total
 
 

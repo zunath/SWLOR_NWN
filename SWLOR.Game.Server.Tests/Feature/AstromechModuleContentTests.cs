@@ -3,6 +3,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -123,7 +124,7 @@ public class AstromechModuleContentTests
         var itemFields = item.EnumerateObject().Where(field => Copied(field.Name)).ToDictionary(field => field.Name, field => field.Value.GetRawText());
         itemFields.Should().BeEquivalentTo(sourceFields);
         if (plating)
-            PartModels(item).Should().OnlyContain(part => part.Value == 0, "the chassis shows through plating");
+            ShouldHaveThePartModelsOfPlating(item);
 
         var expected = Properties(source).Select(property =>
             property.PropertyName == (int)ItemPropertyType.RequiresSkill && property.Subtype == (int)SkillType.Armor
@@ -161,7 +162,7 @@ public class AstromechModuleContentTests
         Text(item, "Tag").Should().Be(Astromech.StarterPlatingResref);
         Text(item, "TemplateResRef").Should().Be(Astromech.StarterPlatingResref);
         Number(item, "BaseItem").Should().Be((int)BaseItem.Armor);
-        PartModels(item).Should().NotBeEmpty().And.OnlyContain(part => part.Value == 0, "the chassis shows through plating");
+        ShouldHaveThePartModelsOfPlating(item);
         Properties(item).Should().Equal(
             new PropertyShape((int)ItemPropertyType.UseLimitationRacialType, AstromechRace, 0, 0, 255, 0, 100));
         var name = item.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString();
@@ -246,6 +247,15 @@ public class AstromechModuleContentTests
     private static int Number(JsonElement element, string name) => element.GetProperty(name).GetProperty("value").GetInt32();
 
     private static bool IsPartModel(string field) => field.StartsWith("ArmorPart_") || field.StartsWith("xArmorPart_");
+
+    // Plating draws nothing: every part is 0 but the torso, whose number has no model and carries the plating icon.
+    private static void ShouldHaveThePartModelsOfPlating(JsonElement item)
+    {
+        var parts = PartModels(item);
+        parts.Should().NotBeEmpty();
+        foreach (var (field, value) in parts)
+            value.Should().Be(field.EndsWith("_Torso") ? AstromechBody.PlatingTorso : 0, field);
+    }
 
     private static Dictionary<string, int> PartModels(JsonElement item) =>
         item.EnumerateObject().Where(field => IsPartModel(field.Name))

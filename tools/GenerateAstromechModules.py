@@ -198,13 +198,21 @@ def renamed(source: str, resref: str, name: str) -> str:
 ARMOR_MODEL_FIELD = re.compile(r'(  "x?ArmorPart_\w+": \{\r\n    "type": "(?:byte|word)",\r\n    "value": )\d+(\r\n  \})')
 
 
+# The torso number every plating carries. No body has a model under it, so the chassis still shows through; it exists
+# for its inventory icon (ip?_chest240, drawn by tools/BuildAstromechIcons.py). An armor icon is built from the part
+# numbers, and an armor with none shows a bare torso.
+PLATING_TORSO = 240
+TORSO_FIELD = re.compile(r'(  "x?ArmorPart_Torso": \{\r\n    "type": "(?:byte|word)",\r\n    "value": )\d+(\r\n  \})')
+
+
 def without_part_models(text: str, source: str) -> str:
-    """A copied armor blueprint with every part model cleared. An astromech module has no models of its own; a part
-    number left over from the humanoid piece can name a chassis part (thigh 6 is the legs of design 6) and would
-    replace the part the wearer chose."""
-    if not ARMOR_MODEL_FIELD.search(text):
-        raise SystemExit(f"{source}: no armor part fields")
-    return ARMOR_MODEL_FIELD.sub(lambda m: f"{m.group(1)}0{m.group(2)}", text)
+    """A copied armor blueprint with the part models of plating: none but the plating torso. An astromech module has
+    no models of its own; a part number left over from the humanoid piece can name a chassis part (thigh 6 is the
+    legs of design 6) and would replace the part the wearer chose."""
+    if not ARMOR_MODEL_FIELD.search(text) or len(TORSO_FIELD.findall(text)) != 2:
+        raise SystemExit(f"{source}: unexpected armor part fields")
+    text = ARMOR_MODEL_FIELD.sub(lambda m: f"{m.group(1)}0{m.group(2)}", text)
+    return TORSO_FIELD.sub(lambda m: f"{m.group(1)}{PLATING_TORSO}{m.group(2)}", text)
 
 
 def painted(text: str, source: str, job: tuple) -> str:

@@ -535,6 +535,11 @@ Done on 2026-11-18, on the owner's rule that every playable species has a dynami
   leftover number could name a chassis part), and the stat-less `Basic Chassis Plating` a new astromech starts in
   (`tools/GenerateAstromechModules.py`).
 - Helmet- and cloak-slot modules are hidden on an astromech; the dome keeps its size (`/headscale` refuses).
+- Inventory icons drawn from the models (`tools/BuildAstromechIcons.py`). Chassis Plating stayed an armor item:
+  a base item of its own would have meant teaching every armor rule and the editor's dye controls about it. It
+  carries torso 240 instead, a number with no model on any body and an icon of its own, a chassis body that wears
+  the plating's dyes. The shock prod and blaster mount show the held tool; before, they showed the top of the
+  staff and rifle icons they copied.
 - Removed: the Chassis Workshop (window, view model, service, snippet action, conversation choice), the chassis
   catalog, paint zones, `Player.AstromechPaint`, the simple chassis models and their pictures.
 
@@ -553,10 +558,8 @@ Done on 2026-11-18, on the owner's rule that every playable species has a dynami
 
 **Left as it is**
 
-- Inventory icons. Chassis Plating is an armor item with no part models, so it shows the armor base item's empty
-  icon, a bare torso; humanoid armor uses torso 0 too, so that icon cannot simply be replaced, and plating would
-  need a base item of its own. The prod and blaster mount show the staff and rifle icons they copy (the prod is a
-  thin sliver); they have icon files of their own now, so proper icons are possible.
+- The other modules (sensor package, servo, drive unit and so on) still show the icons of the humanoid pieces they
+  copy.
 - Module descriptions are still the text of the humanoid piece they copy.
 - The editor shows the Skin, Hair and Tattoo swatches and the Show Helmet and Show Cloak boxes to an astromech, as it
   does to everyone; they change nothing on a chassis.

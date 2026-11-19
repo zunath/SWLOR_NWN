@@ -637,8 +637,8 @@ loads:
   one point at the front of the barrel; the clip that slid a built-in tool out now slides the hand, and whatever it
   holds, out of the barrel.
 - **Held tools.** The shock prod and blaster mount are items with their own item classes (`WAmPr`, `WAmBl`), cut
-  from the tool meshes of chassis 1. Each blueprint part number gets a model and a copy of the icon of the staff or
-  rifle part it was made from, so adding a tool tier needs a rerun (`--tools-only`).
+  from the tool meshes of chassis 1. Each blueprint part number gets a model, so adding a tool tier needs a rerun
+  (`--tools-only`).
 - **Tint bindings.** The parts name the chassis materials (`c_astro_NN`), which are marked `explicitMeshMaterial` in
   `TintMapSources.json` so the part loader's palette does not replace them. After installing parts, run
   `python -B tools/GenerateTintMapAssets.py --refresh-model-bindings` from the hak root: it gives each part folder
@@ -646,7 +646,15 @@ loads:
   `git diff --ignore-cr-at-eol` is empty.
 - **Paint.** The chassis shows through every module and takes the dyes of the worn Chassis Plating: cloth 2 is the
   main paint, cloth 1 the accent panels, metal 2 the trim. `tools/GenerateAstromechModules.py` gives each plating a
-  paint job and clears the part models it copied (thigh 6 would otherwise draw the legs of design 6); `AstromechBody` holds the paint of a chassis with no plating on.
+  paint job and clears the part models it copied (thigh 6 would otherwise draw the legs of design 6); `AstromechBody`
+  holds the paint of a chassis with no plating on.
+- **Inventory icons.** `tools/BuildAstromechIcons.py` draws them from the packed models with the Appearance
+  Editor's renderer. An armor icon is built from the armor's part numbers, and an armor with none shows a bare
+  torso, so every plating carries torso 240 (`AstromechBody.PlatingTorso`): no body has a model under it, so the
+  chassis still shows through, and its icon (`ip?_chest240.plt`) is a chassis body as a palette picture that wears
+  the plating's dyes. Never give any body a chest model numbered 240. The prod and blaster mount get the picture
+  of the held tool on their bottom part icon and empty middle and top icons, as DDS inside the 32x64 slot with the
+  8x8 registration TGA. Rerun it after a tool tier adds part numbers or the tool models change.
 
 The rest of this section is the exporter:
 

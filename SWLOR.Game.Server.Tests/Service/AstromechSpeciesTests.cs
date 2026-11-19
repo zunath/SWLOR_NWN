@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
@@ -351,12 +352,39 @@ public class AstromechSpeciesTests
 
         foreach (var styles in new[]
                  {
-                     definition.Helmet, definition.Cloak, definition.Neck, definition.Torso, definition.Belt,
+                     definition.Helmet, definition.Cloak, definition.Neck, definition.Belt,
                      definition.Pelvis, definition.Shoulder, definition.Bicep, definition.Forearm, definition.Hand,
                      definition.Thigh, definition.Shin, definition.Foot, definition.Robe
                  })
         {
             styles.Should().Equal(0);
+        }
+
+        // The torso is the plating number: it draws nothing either, and exists for the plating's inventory icon.
+        definition.Torso.Should().Equal(AstromechBody.PlatingTorso);
+    }
+
+    [Test]
+    public void ThePlatingTorsoHasAnIconAndAPictureButNoModel()
+    {
+        var haks = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks");
+        var number = AstromechBody.PlatingTorso.ToString("D3");
+
+        var row = Row(Path.Combine(haks, "sw_2da", "parts_chest.2da"), AstromechBody.PlatingTorso);
+        row.Skip(1).Should().OnlyContain(cell => cell != "****", "the engine reads the part row of a worn torso");
+
+        // No body may have a model under the number, or plating would draw it in place of the wearer's own body.
+        Directory.GetFiles(Path.Combine(haks, "sw_pt_chest"), $"p???_chest{number}.mdl").Should().BeEmpty();
+        new GeneralArmorAppearanceDefinition().Torso.Should().NotContain(AstromechBody.PlatingTorso);
+        new DroidArmorAppearanceDefinition().Torso.Should().NotContain(AstromechBody.PlatingTorso);
+
+        foreach (var gender in new[] { "m", "f" })
+        {
+            File.Exists(Path.Combine(haks, "sw_pt_root", $"ip{gender}_chest{number}.plt")).Should().BeTrue(
+                "an armor icon is built from its part numbers");
+            foreach (var view in new[] { "f", "b", "a" })
+                File.Exists(Path.Combine(haks, "sw_part_previews", $"ap{gender}r0_chest{number}{view}.dds")).Should().BeTrue();
+            AppearancePartNames.Get($"p{gender}r0_chest{number}", "?").Should().Be("Plating");
         }
     }
 

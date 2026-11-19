@@ -95,9 +95,12 @@ public class AstromechRewardContentTests
         to.GetProperty("BaseItem").GetProperty("value").GetInt32().Should().Be(expectedBase);
 
         // A plating twin keeps no part models of the humanoid piece: a leftover number can name a chassis part.
-        to.EnumerateObject().Where(field => field.Name.StartsWith("ArmorPart_") || field.Name.StartsWith("xArmorPart_"))
-            .Select(field => field.Value.GetProperty("value").GetInt32())
-            .Should().OnlyContain(part => part == 0, twin);
+        foreach (var field in to.EnumerateObject()
+                     .Where(field => field.Name.StartsWith("ArmorPart_") || field.Name.StartsWith("xArmorPart_")))
+        {
+            field.Value.GetProperty("value").GetInt32()
+                .Should().Be(field.Name.EndsWith("_Torso") ? AstromechBody.PlatingTorso : 0, $"{twin} {field.Name}");
+        }
 
         var expected = Properties(from).Select(property => property.Number == RequiresSkillProperty
             ? property with

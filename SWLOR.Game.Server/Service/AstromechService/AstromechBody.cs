@@ -18,6 +18,12 @@ namespace SWLOR.Game.Server.Service.AstromechService
         /// <summary>The design a new astromech starts in.</summary>
         public const int DefaultDesign = 1;
 
+        /// <summary>
+        /// The armor torso number every Chassis Plating carries. No body has a model under it, so the chassis shows
+        /// through; an armor icon is built from its part numbers, and this one's icon is a painted chassis body.
+        /// </summary>
+        public const int PlatingTorso = 240;
+
         // The height in metres at which the dome of each design meets its own barrel, measured on the models.
         // A dome on another design's barrel is raised or lowered by the difference.
         private static readonly float[] DomeSeats = { 0.758f, 0.710f, 0.720f, 0.642f, 0.639f, 0.676f, 0.734f, 0.676f };

@@ -18,9 +18,9 @@ and two legs as rigid meshes) on a shared clip model (`c_astromech`). This tool 
   against the one skeleton and each part mesh is moved by the difference, so a matched set stands exactly as its
   chassis did. The tool meshes and the built-in rod are left out.
 - `wampr_*` and `wambl_*`: the shock prod and the blaster mount as held items, cut from the tools of chassis 1. A
-  weapon is three stacked part models with three stacked icons. The tool is the bottom part; the middle and top
-  parts are empty. One set is written for every part number an `am_w_*` blueprint uses, with the icons copied from
-  the staff or rifle the blueprint was made from (GenerateAstromechTools.py), so no icon changes.
+  weapon is three stacked part models. The tool is the bottom part; the middle and top parts are empty. One set is
+  written for every part number an `am_w_*` blueprint uses. Their inventory icons, and the icon of Chassis Plating,
+  are drawn from these models by BuildAstromechIcons.py once the haks are packed.
 
 DIR holds `c_astro_01.mdl` .. `c_astro_08.mdl` and `c_astromech.mdl`, compiled or ASCII. Everything is compiled with
 CleanModels and copied into the hak folders. Rows in appearance.2da and the pictures are separate steps. The parts
@@ -65,9 +65,9 @@ PARTS = {
 ROOT_FOLDER = 'sw_pt_root'
 BANK_FOLDER = 'sw_cr_creature'
 
-# Held tools: base item -> (item class, tool mesh of chassis 1, item class whose icons it borrows).
+# Held tools: base item -> (item class, tool mesh of chassis 1).
 TOOL_CHASSIS = 1
-TOOL_ITEMS = {545: ('wampr', 'toolr', 'iwdbqs'), 546: ('wambl', 'tooll', 'iwbwxl')}
+TOOL_ITEMS = {545: ('wampr', 'toolr'), 546: ('wambl', 'tooll')}
 TOOL_FOLDER = 'sw_weapon'
 TOOL_BLUEPRINTS = 'Module/uti/am_w_*.uti.json'
 
@@ -355,7 +355,7 @@ def tool_models(text: str) -> dict:
     shift = CHASSIS_SHIFT.get(TOOL_CHASSIS, (0.0, 0.0, 0.0))
     result = {}
     for base, slots in tool_part_numbers().items():
-        item_class, mesh, _ = TOOL_ITEMS[base]
+        item_class, mesh = TOOL_ITEMS[base]
         if nodes.get(mesh, {}).get('kind') != 'trimesh':
             raise SystemExit(f'c_astro_{TOOL_CHASSIS:02d} has no {mesh} mesh')
         offset = (0.0, world_position(nodes, mesh)[1] + shift[1] - HAND[1], 0.0)
@@ -367,22 +367,6 @@ def tool_models(text: str) -> dict:
                 name = f'{item_class}_{slot}_{number:03d}'
                 result[name] = empty_model(name)
     return result
-
-
-def copy_tool_icons(haks: Path) -> int:
-    """Each tool part number keeps the icon of the weapon part it was made from."""
-    folder, copied = haks / TOOL_FOLDER, 0
-    for base, slots in tool_part_numbers().items():
-        item_class, _, icon_class = TOOL_ITEMS[base]
-        for slot, numbers in slots.items():
-            for number in sorted(numbers):
-                sources = sorted(folder.glob(f'{icon_class}_{slot}_{number:03d}.*'))
-                if not sources:
-                    raise SystemExit(f'{TOOL_FOLDER} has no icon {icon_class}_{slot}_{number:03d}')
-                for source in sources:
-                    shutil.copyfile(source, folder / f'i{item_class}_{slot}_{number:03d}{source.suffix}')
-                    copied += 1
-    return copied
 
 
 # ---------------------------------------------------------------- compiling
@@ -473,7 +457,6 @@ def main(argv=None):
     if not args.no_install:
         for name, folder in folders.items():
             shutil.copyfile(compiled / f'{name}.mdl', args.haks / folder / f'{name}.mdl')
-        copy_tool_icons(args.haks)
     print(f'{len(folders)} models ({len(animation_sources)} animations)',
           'built' if args.no_install else f'installed under {args.haks}')
     return 0

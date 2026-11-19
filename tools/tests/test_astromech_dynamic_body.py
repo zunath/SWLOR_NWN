@@ -178,9 +178,9 @@ class HeldToolTests(unittest.TestCase):
                 self.assertNotIn("trimesh", text, name)
 
     def test_names_fit_a_resource_name(self):
-        for item_class, _, icon_class in body.TOOL_ITEMS.values():
+        for item_class, _ in body.TOOL_ITEMS.values():
             self.assertLessEqual(len(f"i{item_class}_b_000"), 16)
-            self.assertNotEqual(f"i{item_class}", icon_class)
+            self.assertRegex(item_class, r"^w[a-z]{4}$", "FixWeaponInventoryIcons.py audits icons of this shape")
 
 
 if __name__ == "__main__":

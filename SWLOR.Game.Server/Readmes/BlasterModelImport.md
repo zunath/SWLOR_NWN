@@ -179,10 +179,26 @@ output selects complete authored `source_nodes` for each part and shares maps
 across roles. Node selectors cannot overlap or be combined with clipping.
 Each envelope must stay within the part's own cut section (or, where the surfaces stop
 short of the cut, their end section); the tool rejects a wider or off-axis one. A sleeve
-outside the part reads as a metal bar: the fitted vibroblades sit 20 mm off the stock axis,
+outside the part reads as a metal bar: the fitted vibroblades sat 20 mm off the stock axis,
 and their stock-centred 48 x 72 mm sleeves stuck out of every part, as did most fitted
 greatsword, knife, polearm and twinblade sleeves, until
-`tools/FitBladeJointInterfaces.py` removed them from the compiled parts. The flat cut caps
+`tools/FitBladeJointInterfaces.py` removed them from the compiled parts.
+Every top, middle and bottom must meet on the stock axis (X = Z = 0), where the stock parts
+and the hand sit, so any combination lines up. Fit the source so the core of its grip (the
+shaft for a polearm) is on that axis, not its blade or guard. The first fitted vibroblades
+and greatswords sat 20 mm off in X and some knife, polearm and vibroblade sources up to
+47 mm off in Z, so mixed parts met off-centre at every joint (November 2026 reports).
+`tools/AlignWeaponPartJoints.py` moves each source, as one rigid piece, onto the axis (it
+groups parts into sources by shared cuts and textures), and
+`tools/tests/test_align_weapon_part_joints.py` audits every shipped source.
+Keep a guard inside its family's middle band (greatsword Y 0.111 to 0.17). Most fitted
+greatsword guards are taller, so the stock cuts left guard slices on tops and bottoms that
+showed as plates under any other middle. `AlignWeaponPartJoints.py` `GUARD_PIECES` lists
+each such part and the height its guard reaches; the tool gives those pieces back to the
+middle cut from the same source in the same texture (or drops them where that middle was
+never shipped), shrinks the middle's cap to the surfaces that still end at the joint, and
+closes a top or bottom that now stops short with a collar of its own end outline. Run it on
+every new fitted import and add any guard that crosses a cut. The flat cut caps
 close each cut; four vibroblade bottoms that stop 3.5 mm short keep a collar of their own
 grip end. Quarterstaffs are left as they are: a few of their sleeves stick out 1-5 mm, too
 little to see, and the staff widening left some caps partly open behind them. Add a new family's measured joint planes to `FAMILIES` (or `PAIRED` for

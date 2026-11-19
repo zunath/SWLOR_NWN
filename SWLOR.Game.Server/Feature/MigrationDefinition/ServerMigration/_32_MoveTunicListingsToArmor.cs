@@ -1,7 +1,4 @@
-using System.Linq;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 
@@ -9,7 +6,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 
 /// <summary>
 /// The next release's server migration. Moves market listings still saved under the removed Tunic category (20) to
-/// Armor so the market's Armor filter finds them; the combat upgrade's category remap missed that id.
+/// Armor so the market's Armor filter finds them; the combat upgrade's category remap missed that id. It checks each
+/// listing's saved record rather than its search entry, so a listing whose search entry already says Armor but whose
+/// record does not is still corrected.
 /// </summary>
 public sealed class _32_MoveTunicListingsToArmor : IServerMigration
 {
@@ -20,23 +19,16 @@ public sealed class _32_MoveTunicListingsToArmor : IServerMigration
 
     public void Migrate()
     {
-        var query = BuildTunicListingQuery();
-        var count = (int)DB.SearchCount(query);
-        var progress = new ServerMigrationProgress(Version, (nameof(MarketItem), count));
-        progress.BeginSection<MarketItem>();
-        if (count > 0)
-        {
-            foreach (var listing in DB.Search(query.AddPaging(count, 0)).ToList())
-            {
-                listing.Category = MarketCategoryType.Armor;
-                DB.Set(listing);
-                progress.RecordProcessed(true);
-            }
-        }
-
-        progress.FinishSection();
+        var progress = new ServerMigrationProgress(Version, ServerMigrationProgress.CountRecords<MarketItem>());
+        new ParallelStoredItemPass(progress).Process<MarketItem>(MoveTunicToArmor);
     }
 
-    public static DBQuery<MarketItem> BuildTunicListingQuery() =>
-        new DBQuery<MarketItem>().AddFieldSearch(nameof(MarketItem.Category), RemovedTunicCategory);
+    public static bool MoveTunicToArmor(MarketItem listing)
+    {
+        if ((int)listing.Category != RemovedTunicCategory)
+            return false;
+
+        listing.Category = MarketCategoryType.Armor;
+        return true;
+    }
 }

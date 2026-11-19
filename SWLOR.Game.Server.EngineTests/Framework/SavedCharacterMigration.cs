@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         /// <summary>
         /// Saves <paramref name="creature"/>, then runs the named character migrations over the saved file and a copy
         /// of <paramref name="record"/> in order, as the boot-time upgrade does. Names are the migration classes,
-        /// for example <c>_22_ReviseLootStats</c>. Must run inside an engine script (<c>ExecuteInCreatureContextAsync</c>).
+        /// for example <c>_26_ConvertCraftingPerksToRanks</c>. Must run inside an engine script (<c>ExecuteInCreatureContextAsync</c>).
         /// </summary>
         public static Upgraded Run(uint creature, Player record, params string[] migrations) =>
             Run(SaveFile(creature), record, migrations);
@@ -154,7 +154,6 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             var copy = CopyRecord(record);
             var characterType = GameType(ServiceNamespace + "SavedCharacter");
             var character = Activator.CreateInstance(characterType, Members, null, new object[] { file, copy }, null);
-            GameType(MigrationNamespace + "SavedCharacterLoad").GetMethod("Apply", Members).Invoke(null, new[] { character });
             characterType.GetProperty("AppliesRecordEffects", Members).SetValue(character, appliesRecordEffects);
             foreach (var name in migrations)
             {

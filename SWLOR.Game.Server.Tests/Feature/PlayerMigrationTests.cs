@@ -7,6 +7,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CurrencyService;
+using SWLOR.Game.Server.Service.MigrationService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -52,9 +53,35 @@ public class PlayerMigrationTests
 
         var upgrade = () => CharacterMigrations.Upgrade(SavedCharacterFile.Create(checkpoint), record);
 
-        upgrade.Should().Throw<TargetInvocationException>().WithInnerException<InvalidOperationException>(
-            "a character older than the retired migrations would otherwise be marked current without them");
+        upgrade.Should().Throw<TargetInvocationException>().WithInnerException<UnsupportedCharacterVersionException>(
+            "a character older than the retired migrations is refused for good, not retried, and never marked current without them");
         JsonConvert.SerializeObject(record).Should().Be(json, "a refused character's record is not touched");
+    }
+
+    private static readonly Type Upgrade = typeof(Migration).Assembly.GetType("SWLOR.Game.Server.Service.MigrationService.CharacterFileUpgrade")!;
+
+    [TestCase(new int[0], OldestUpgradableVersion)]
+    [TestCase(new[] { 20 }, OldestUpgradableVersion)]
+    [TestCase(new[] { 26 }, 26)]
+    [TestCase(new[] { 26, 27 }, 27)]
+    public void TheLatestVersionNeverDropsBelowTheOldestUpgradableVersion(int[] registered, int expected)
+    {
+        // With every migration retired the registry is empty; characters must still be held to the floor and new
+        // characters must not get version 0, which player initialization treats as uninitialized.
+        Upgrade.GetMethod("LatestOf", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { registered })
+            .Should().Be(expected);
+    }
+
+    [TestCase(OldestUpgradableVersion - 1, OldestUpgradableVersion, true)]
+    [TestCase(OldestUpgradableVersion, OldestUpgradableVersion - 1, true)]
+    [TestCase(OldestUpgradableVersion, OldestUpgradableVersion, false)]
+    [TestCase(OldestUpgradableVersion + 1, OldestUpgradableVersion + 1, false)]
+    public void OnlyCharactersBelowTheOldestUpgradableVersionAreRefusedForGood(int fileVersion, int recordVersion, bool refused)
+    {
+        Upgrade.GetMethod("IsBelowOldestUpgradableVersion", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { fileVersion, recordVersion })
+            .Should().Be(refused);
     }
 
     [Test]

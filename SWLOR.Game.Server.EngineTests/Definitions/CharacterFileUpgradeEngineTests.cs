@@ -282,6 +282,65 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         /// <summary>
+        /// A character older than this build can upgrade is refused for good: it keeps its file and record, and it does
+        /// not fail the pass, so the vault is still marked current and later boots do not reread it.
+        /// </summary>
+        [EngineTest("A character too old to upgrade is refused without keeping the vault on the retry path",
+            Category = "CharacterFileUpgrade", TimeoutSeconds = 120)]
+        public static async Task TooOldCharacterIsRefusedForGood(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var owner = fixture.Creature;
+            var root = Path.Combine(Path.GetTempPath(), "swlor-character-upgrade-" + Guid.NewGuid().ToString("N"));
+            var vault = Path.Combine(root, "servervault");
+            var path = Path.Combine(vault, "TESTKEY1", "old.bic");
+            var previousVault = Environment.GetEnvironmentVariable(VaultVariable);
+            var previousFileVersion = 0;
+            Player previousRecord = null;
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                {
+                    var tooOld = StartVersion - 1;
+                    var old = SavedCharacterMigration.WithFileVersion(SavedCharacterMigration.SaveFile(owner), tooOld);
+                    Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                    File.WriteAllBytes(path, old);
+                    previousRecord = SavedCharacterMigration.CopyRecord(DB.Get<Player>(fixture.Id));
+                    previousFileVersion = DB.Get<ServerConfiguration>("SWLOR_CONFIG")?.CharacterFileVersion ?? 0;
+                    Environment.SetEnvironmentVariable(VaultVariable, vault);
+                    var record = SavedCharacterMigration.CopyRecord(previousRecord);
+                    record.Version = tooOld;
+                    record.CharacterFileVersion = 0;
+                    DB.Set(record);
+                    ResetVaultMarker();
+
+                    ctx.Assert(SavedCharacterMigration.UpgradeServerVault(), "A character too old to upgrade does not fail the pass");
+                    ctx.Assert(File.ReadAllBytes(path).SequenceEqual(old), "The refused character keeps its file");
+                    ctx.AssertEqual(tooOld, DB.Get<Player>(fixture.Id).Version, "The refused character keeps its record");
+                    ctx.AssertEqual(SavedCharacterMigration.LatestVersion, DB.Get<ServerConfiguration>("SWLOR_CONFIG").CharacterFileVersion,
+                        "The vault is marked current, so later boots do not reread it for the refused character");
+                });
+            }
+            finally
+            {
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                {
+                    Environment.SetEnvironmentVariable(VaultVariable, previousVault);
+                    if (previousRecord != null)
+                        DB.Set(previousRecord);
+                    var config = DB.Get<ServerConfiguration>("SWLOR_CONFIG");
+                    if (config != null)
+                    {
+                        config.CharacterFileVersion = previousFileVersion;
+                        DB.Set(config);
+                    }
+                });
+                if (Directory.Exists(root))
+                    Directory.Delete(root, true);
+            }
+        }
+
+        /// <summary>
         /// Fills a bag and then the character's inventory, so an item the upgrade must move out of the bag has nowhere
         /// to go but overflow storage.
         /// </summary>

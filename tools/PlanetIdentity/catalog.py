@@ -81,11 +81,11 @@ SETS = [
         decor=[
             dict(enum="KorribanSithObelisk", name="Sith Obelisk", placeable="_mdrn_pl_obelisk", copies="RunePillar",
                  text="A black obelisk carved with Sith glyphs, copied from the monuments of the Valley of the Dark Lords."),
-            dict(enum="KorribanSithStandard", name="Sith Standard", placeable="_mdrn_pl_bannr05", copies="BannerStanding",
+            dict(enum="KorribanSithStandard", name="Sith Standard", placeable="_mdrn_pl_bannr06", copies="BannerStanding",
                  text="A standing banner in Sith colors, hung from a dark iron frame."),
             dict(enum="KorribanSithPedestal", name="Sith Pedestal", placeable="swlor_0838", copies="AltarEvil",
                  text="A carved pedestal for relics and trophies of the dark side."),
-            dict(enum="KorribanTombBrazier", name="Tomb Brazier", placeable="swlor_1054", copies="BrazierRound",
+            dict(enum="KorribanTombBrazier", name="Tomb Brazier", placeable="zep_firebowl003", copies="BrazierRound",
                  text="A heavy brazier that burns with a low red flame, like those that light the tombs."),
         ]),
     dict(
@@ -165,7 +165,7 @@ SETS = [
                  text="The skull of a rancor, big enough to sit in."),
             dict(enum="DathomirBoneTree", name="Bone Tree", placeable="_mdrn_pl_bonetr2", copies="RunePillar",
                  text="A tree of pale bone, lashed together as a clan totem."),
-            dict(enum="DathomirCovenBrazier", name="Coven Brazier", placeable="_mdrn_pl_brazier", copies="BrazierRound",
+            dict(enum="DathomirCovenBrazier", name="Coven Brazier", placeable="zep_firebowl002", copies="BrazierRound",
                  text="A squat iron brazier where a coven burns herbs and bones."),
         ]),
     dict(

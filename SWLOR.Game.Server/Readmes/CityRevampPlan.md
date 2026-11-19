@@ -1015,7 +1015,7 @@ Staff and stores live in the building layout templates, and outdoor NPCs anchor 
     | Cantina | House Sunrise Cream | level 3 | 8 | 750 | Pineapple au Lait (tier 3) |
     | Cantina | House Reserve Cream | level 5 | 5 | 1,250 | Tomato au Lait (tier 5) |
     | City Hall | City Banner, Blue and City Banner, Gold (5190, 5191) | city level 1 | 6 each | 250 | `swlor_0117`, `swlor_0118` |
-    | City Hall | Civic Wall Crest and Archive Crest (5192, 5193) | city level 2 | 4 each | 400 | `swlor_0880`, `swlor_0121` |
+    | City Hall | Civic Wall Crest and Archive Crest (5192, 5193) | city level 2 | 4 each | 400 | `swd3_ban003`, `swlor_0121` |
     | Medical Center | Clinic Display Panel (5194) | level 1 | 4 | 250 | `swlor_0643` |
     | Medical Center | Clinic Bacta Tank (5195) | level 3 | 3 | 400 | `swlor_1417` |
     | Starport | Spaceport Signpost (5196) | level 1 | 4 | 250 | `_mdrn_pl_signp14` |

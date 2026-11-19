@@ -315,7 +315,7 @@ ACES = [
     dict(key="MidRim2", tag="ace_midrim2", name="Commander Raine Kardos", short="Kardos", area="space_midrim2",
          area_text="the Outer Rim approach", table="SPACE_MIDRIM_2", tier=6, role="Fighter", design=10090,
          maker="Sith", named="MissileLauncher", rare=("EnergyEmitter", "SithTuned"),
-         trophy=("Captured Flight Recorder", "_mdrn_pl_holocon",
+         trophy=("Captured Flight Recorder", "_mdrn_pl_baserds",
                  "An Imperial flight recorder that still projects the last seconds of its fighter's final sortie."),
          lore="An Imperial squadron commander who guards the approach to Korriban and has never lost a duel."),
     dict(key="Korriban", tag="ace_korriban", name="Lord Malakor Venn", short="Malakor", area="space_korriban",
@@ -463,7 +463,7 @@ DECOR_STORAGE = 1
 DECOR_ENHANCEMENT_SLOTS = 2
 # enum, name, placeable, description, level, perk tier, components, the furniture recipe it copies
 DECOR = [
-    ("CaptainsHolotable", "Captain's Holotable", "swlor_1268",
+    ("CaptainsHolotable", "Captain's Holotable", "_mdrn_pl_table17",
      "A command holotable that projects star charts and fleet positions above the captain's console.",
      49, 5, [("ref_jasioclase", 5), ("elec_high", 5)], "ConsoleCircularCommand"),
     ("StarMapPedestal", "Star Map Pedestal", "_mdrn_pl_basestm",

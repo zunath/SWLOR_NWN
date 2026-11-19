@@ -43,7 +43,7 @@ DECOR = [
          text="A blue civic banner to hang in a hall or a front room. Sold only at a city's City Hall."),
     dict(enum="CityBannerGold", name="City Banner, Gold", placeable="swlor_0118", price=DECOR_SMALL, store="CityHall", level=1, limit=6,
          text="A gold civic banner to hang in a hall or a front room. Sold only at a city's City Hall."),
-    dict(enum="CivicWallCrest", name="Civic Wall Crest", placeable="swlor_0880", price=DECOR_LARGE, store="CityHall", level=2, limit=4,
+    dict(enum="CivicWallCrest", name="Civic Wall Crest", placeable="swd3_ban003", price=DECOR_LARGE, store="CityHall", level=2, limit=4,
          text="A decorative wall hanging that bears a city's crest, for a hall or a study. Sold only at a city's City Hall."),
     dict(enum="ArchiveCrest", name="Archive Crest", placeable="swlor_0121", price=DECOR_LARGE, store="CityHall", level=2, limit=4,
          text="A banner that bears the crest of a city archive, for a study or a library. Sold only at a city's City Hall."),

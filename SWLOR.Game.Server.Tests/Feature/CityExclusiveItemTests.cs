@@ -38,7 +38,7 @@ public class CityExclusiveItemTests
     {
         new(StructureType.CityBannerBlue, "City Banner, Blue", "swlor_0117", 250, CityStoreKind.CityHall, 1, 6),
         new(StructureType.CityBannerGold, "City Banner, Gold", "swlor_0118", 250, CityStoreKind.CityHall, 1, 6),
-        new(StructureType.CivicWallCrest, "Civic Wall Crest", "swlor_0880", 400, CityStoreKind.CityHall, 2, 4),
+        new(StructureType.CivicWallCrest, "Civic Wall Crest", "swd3_ban003", 400, CityStoreKind.CityHall, 2, 4),
         new(StructureType.ArchiveCrest, "Archive Crest", "swlor_0121", 400, CityStoreKind.CityHall, 2, 4),
         new(StructureType.ClinicDisplayPanel, "Clinic Display Panel", "swlor_0643", 250, CityStoreKind.MedicalCenter, 1, 4),
         new(StructureType.ClinicBactaTank, "Clinic Bacta Tank", "swlor_1417", 400, CityStoreKind.MedicalCenter, 3, 3),

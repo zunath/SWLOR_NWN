@@ -208,11 +208,11 @@
         },
         "Color_Hair": {
           "type": "byte",
-          "value": 63
+          "value": 18
         },
         "Color_Skin": {
           "type": "byte",
-          "value": 0
+          "value": 16
         },
         "Color_Tattoo1": {
           "type": "byte",
@@ -1222,11 +1222,11 @@
         },
         "Color_Hair": {
           "type": "byte",
-          "value": 7
+          "value": 18
         },
         "Color_Skin": {
           "type": "byte",
-          "value": 0
+          "value": 16
         },
         "Color_Tattoo1": {
           "type": "byte",

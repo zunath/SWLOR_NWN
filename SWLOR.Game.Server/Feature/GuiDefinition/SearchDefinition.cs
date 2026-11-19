@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// <summary>The Search window: the board a scavenge site opens.</summary>
     public class SearchDefinition : IGuiWindowDefinition
     {
-        private const float PanelWidth = 560f;
+        /// <summary>The default width, and the narrowest the window can be made: its text boxes are sized for this width.</summary>
+        public const float WindowWidth = 620f;
+
         private const float StatusTextHeight = 66f;
         private const float SpotWidth = 170f;
         private const float SpotHeight = 56f;
@@ -22,7 +24,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float QuickSearchButtonHeight = 40f;
         private const float MeterLabelHeight = 20f;
         private const float MeterBarHeight = 18f;
-        private const float StyleRowHeight = 40f;
+        private const float FindsLabelWidth = 120f;
+        /// <summary>Three wrapped lines: the Careful Hands description beside its Select button.</summary>
+        private const float StyleRowHeight = 66f;
+        /// <summary>Three wrapped lines: the Quick Search summary beside its wide button.</summary>
+        private const float QuickSearchTextHeight = 66f;
+        /// <summary>Two wrapped lines: an action's summary beside its button, or a heading that runs past one line.</summary>
+        private const float TwoLineTextHeight = 44f;
         private const float StyleListHeight = 2 * StyleRowHeight + 8f;
 
         private static readonly string ActionSecondsText = SearchRules.ActionSeconds.ToString("0", System.Globalization.CultureInfo.InvariantCulture);
@@ -61,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Search)
-                .SetInitialGeometry(0, 0, 620f, 660f)
+                .SetInitialGeometry(0, 0, WindowWidth, 660f)
                 .SetTitle("Search the Site")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -81,14 +89,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 col.AddRow(row =>
                 {
+                    // No fixed width: the panel takes the window's width, so the wrapped sentences reflow when the window is resized.
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
                         // Auto: the host group only hands this panel the viewport height, so the panel is what scrolls on a short screen.
                         panel.SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(AddContent);
-                    })
-                        .SetWidth(PanelWidth);
+                    });
                 });
             });
         }
@@ -126,20 +134,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindOnClicked(model => model.OnClickQuickSearch())
                     .SetWidth(QuickSearchButtonWidth)
                     .SetHeight(QuickSearchButtonHeight);
-                row.AddLabel()
-                    .BindText(model => model.QuickSearchSummary)
-                    .BindColor(model => model.QuickSearchColor)
-                    .SetHeight(QuickSearchButtonHeight)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                AddWrappedText(row, model => model.QuickSearchSummary, QuickSearchTextHeight)
+                    .BindColor(model => model.QuickSearchColor);
             });
-            content.AddRow(row =>
-            {
-                row.AddLabel()
-                    .BindText(model => model.StyleHeader)
-                    .SetHeight(MeterLabelHeight)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
-            });
+            content.AddRow(row => AddWrappedText(row, model => model.StyleHeader, TwoLineTextHeight));
             content.AddRow(row => row.AddList(template =>
                 {
                     template.AddCell(cell => cell.AddText()
@@ -159,13 +157,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindRowCount(model => model.StyleLabels)
                 .SetRowHeight(StyleRowHeight)
                 .SetHeight(StyleListHeight));
-            content.AddRow(row =>
-            {
-                row.AddLabel()
-                    .BindText(model => model.BoardLabelText)
-                    .SetHeight(24f)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
-            });
+            content.AddRow(row => AddWrappedText(row, model => model.BoardLabelText, TwoLineTextHeight));
 
             content.AddRow(row =>
             {
@@ -173,8 +165,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindText(model => model.SearchesText)
                     .SetHeight(MeterLabelHeight)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                // A width of its own: without one the searches line takes the row and this label is cut down to its first letter.
                 row.AddLabel()
                     .BindText(model => model.FindsText)
+                    .SetWidth(FindsLabelWidth)
                     .SetHeight(MeterLabelHeight)
                     .SetHorizontalAlign(NuiHorizontalAlign.Right);
             });
@@ -209,13 +203,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
             }
 
-            content.AddRow(row =>
-            {
-                row.AddLabel()
-                    .BindText(model => model.SelectedText)
-                    .SetHeight(24f)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
-            });
+            content.AddRow(row => AddWrappedText(row, model => model.SelectedText, TwoLineTextHeight));
 
             for (var action = 0; action < SearchViewModel.ActionCount; action++)
             {
@@ -231,12 +219,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindOnClicked(model => model.OnClickAction(index))
                         .SetWidth(ActionButtonWidth)
                         .SetHeight(ActionButtonHeight);
-                    row.AddLabel()
-                        .BindText(Binding<string>(SearchViewModel.ActionSummaryProperty(index)))
-                        .BindColor(Binding<GuiColor>(SearchViewModel.ActionColorProperty(index)))
-                        .SetHeight(ActionButtonHeight)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                        .SetVerticalAlign(NuiVerticalAlign.Middle);
+                    AddWrappedText(row, Binding<string>(SearchViewModel.ActionSummaryProperty(index)), TwoLineTextHeight)
+                        .BindColor(Binding<GuiColor>(SearchViewModel.ActionColorProperty(index)));
                 });
             }
 
@@ -251,6 +235,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindOnClicked(model => model.OnClickClose());
                 row.AddSpacer();
             });
+        }
+
+        /// <summary>A borderless, unscrolled text box: it wraps a sentence to the panel's width, where a label cuts it off at one line.</summary>
+        private static GuiText<SearchViewModel> AddWrappedText(
+            GuiRow<SearchViewModel> row,
+            Expression<Func<SearchViewModel, string>> text,
+            float height)
+        {
+            return row.AddText()
+                .BindText(text)
+                .SetHeight(height)
+                .SetShowBorder(false)
+                .SetScrollbars(NuiScrollbars.None);
         }
 
         private static Expression<Func<SearchViewModel, TProperty>> Binding<TProperty>(string propertyName)

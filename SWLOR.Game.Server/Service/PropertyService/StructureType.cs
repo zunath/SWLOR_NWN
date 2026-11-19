@@ -2047,7 +2047,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         AshmarkAltar = 339,
 
         [Structure("Ashmark Work Stool",
-            "swc_seat_foot",
+            "_mdrn_pl_chairir",
             "",
             true,
             1)]
@@ -2677,7 +2677,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         CommandlineBust = 429,
 
         [Structure("Commandline Work Stool",
-            "swc_seat_ottom",
+            "_mdrn_pl_chair35",
             "",
             true,
             1)]

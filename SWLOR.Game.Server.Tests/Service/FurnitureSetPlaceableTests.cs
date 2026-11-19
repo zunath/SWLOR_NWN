@@ -92,18 +92,34 @@ public class FurnitureSetPlaceableTests
     {
         var root = FindRoot();
         var placeables = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
+        var baseGame = BaseGamePlaceableBlueprints.AppearanceByResref;
+        var unresolved = new List<string>();
         string? ModelOf(StructureType type)
         {
-            using var blueprint = ReadBlueprint(root, ResrefOf(type));
-            if (blueprint == null)
-                return null; // A base-game blueprint, such as the plain Cot's plc_cot.
-            var appearance = blueprint.RootElement.GetProperty("Appearance").GetProperty("value").GetInt32();
+            var resref = ResrefOf(type).Trim();
+            if (resref.Length == 0)
+                return null; // StructureType.Invalid
+            int appearance;
+            using (var blueprint = ReadBlueprint(root, resref))
+            {
+                if (blueprint != null)
+                    appearance = blueprint.RootElement.GetProperty("Appearance").GetProperty("value").GetInt32();
+                else if (baseGame != null && baseGame.TryGetValue(resref, out var baseAppearance))
+                    appearance = baseAppearance; // A base-game blueprint, such as the plain Footstool's plc_footstool.
+                else
+                {
+                    unresolved.Add(resref);
+                    return null;
+                }
+            }
             return placeables.GetValue(appearance, "ModelName").ToLowerInvariant();
         }
 
         var pieces = PiecesOf(piece);
         var pieceModels = pieces.Select(ModelOf).ToList();
         var otherModels = Enum.GetValues<StructureType>().Except(pieces).Select(ModelOf).Where(model => model != null).ToHashSet();
+        if (unresolved.Count > 0)
+            TestContext.Out.WriteLine($"Not compared (base-game blueprints need an NWN:EE install): {string.Join(", ", unresolved.Distinct())}");
 
         pieceModels.Should().NotContainNulls($"every {piece} uses a module blueprint");
         pieceModels.Should().OnlyHaveUniqueItems("two blueprints can show one model");
@@ -219,7 +235,7 @@ public class FurnitureSetPlaceableTests
         [StructureType.FieldlineDataConsole] = "_mdrn_pl_conso07",
         [StructureType.CommandlineDataConsole] = "swd3_comp009",
 
-        [StructureType.AshmarkWorkStool] = "swc_seat_foot",
+        [StructureType.AshmarkWorkStool] = "_mdrn_pl_chairir",
         [StructureType.GuttermarkWorkStool] = "_mdrn_pl_stool05",
         [StructureType.TrailmarkWorkStool] = "_mdrn_pl_stool04",
         [StructureType.StonewakeWorkStool] = "_mdrn_pl_stool",
@@ -228,7 +244,7 @@ public class FurnitureSetPlaceableTests
         [StructureType.SurgewakeWorkStool] = "_mdrn_pl_chairgr",
         [StructureType.ResonantWorkStool] = "zep_logsit001",
         [StructureType.FieldlineWorkStool] = "_mdrn_pl_chairca",
-        [StructureType.CommandlineWorkStool] = "swc_seat_ottom",
+        [StructureType.CommandlineWorkStool] = "_mdrn_pl_chair35",
     };
 
     // Each set's Trophy Stand blueprint; the blueprint resref is also its model and placeables.2da model name.

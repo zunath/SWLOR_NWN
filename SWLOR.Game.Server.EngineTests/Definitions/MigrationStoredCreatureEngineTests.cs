@@ -86,43 +86,5 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "The standalone effect survives while the removed equipment bonus does not");
         }
 
-        /// <summary>
-        /// Verifies that stored creature items migrate without replacing a retired appearance.
-        /// </summary>
-        [EngineTest("Stored creature items migrate without replacing a retired appearance", Category = "MigrationStoredCreature")]
-        public static async Task RetiredCreatureAppearance(EngineTestContext ctx)
-        {
-            var owner = ctx.SpawnCreature("nw_rat001");
-            await ctx.WaitFrameAsync();
-            await CreateItemAsync(ctx, owner, "recipe_staffupg1", owner);
-            await CreateItemAsync(ctx, owner, "b_longsword", owner);
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                SetLocalString(owner, "PRESERVED_CREATURE_NOTE", "Saved creature state");
-                var original = Invoke("StoredObjectData", "ReadCreature", ObjectPlugin.Serialize(owner));
-                string TemporaryAppearance(object document, ushort appearance) => (string)document.GetType()
-                    .GetMethod("WithTemporaryAppearance").Invoke(document, new object[] { appearance });
-                var saved = TemporaryAppearance(original, ushort.MaxValue);
-                ctx.Assert(!GetIsObjectValid(ObjectPlugin.Deserialize(saved)), "The retired appearance must reproduce native loading failure");
-
-                var result = Invoke("ServerMigration.StoredItemDataMigration", "MigrateSerializedObject", saved);
-                var migrated = (string)result.GetType().GetProperty("Data").GetValue(result);
-                ctx.AssertEqual(true, (bool)result.GetType().GetProperty("Changed").GetValue(result), "The retired recipe was migrated");
-                var document = Invoke("StoredObjectData", "ReadCreature", migrated);
-                ctx.AssertEqual((int)ushort.MaxValue, (int)document.GetType().GetProperty("Appearance").GetValue(document), "The saved appearance is preserved");
-                var view = Deserialize(ctx, TemporaryAppearance(document, (ushort)AppearanceType.Human));
-                ctx.AssertEqual("Saved creature state", GetLocalString(view, "PRESERVED_CREATURE_NOTE"), "Unrelated creature data is preserved");
-                var count = 0;
-                for (var item = GetFirstItemInInventory(view); GetIsObjectValid(item); item = GetNextItemInInventory(view))
-                {
-                    count++;
-                    ctx.AssertEqual("b_longsword", GetResRef(item), "Only the intended retired item was removed");
-                }
-                ctx.AssertEqual(1, count, "The surviving inventory is preserved");
-                var retry = Invoke("ServerMigration.StoredItemDataMigration", "MigrateSerializedObject", migrated);
-                ctx.AssertEqual(false, (bool)retry.GetType().GetProperty("Changed").GetValue(retry), "Retry needs no further item changes");
-                ctx.AssertEqual(migrated, (string)retry.GetType().GetProperty("Data").GetValue(retry), "Retry retains the saved payload exactly");
-            });
-        }
     }
 }

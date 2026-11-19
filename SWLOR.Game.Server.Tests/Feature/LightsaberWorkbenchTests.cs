@@ -225,8 +225,6 @@ public class LightsaberWorkbenchTests
         var root = FindRepositoryRoot();
         var migrationRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "MigrationDefinition");
 
-        var storedItemMigration = File.ReadAllText(Path.Combine(migrationRoot, "ServerMigration", "StoredItemDataMigration.cs"));
-        storedItemMigration.Should().Contain("LegacySaberMigration.MigrateStoredObject(obj, out var normalizedSabers)");
 
         // Legacy sabers are normalized in place - never removed or swapped.
         var saberMigration = File.ReadAllText(Path.Combine(migrationRoot, "LegacySaberMigration.cs"));

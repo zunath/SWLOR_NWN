@@ -98,7 +98,7 @@ public class RecipeLearningSourceTests
     private static string ExpandStoredTrainingBook(string resref, string recipes)
     {
         var method = typeof(IRecipeListDefinition).Assembly
-            .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration.StoredItemDataMigration")!
+            .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration.SavedDroidBoostItemMigration")!
             .GetMethod("ExpandTrainingRecipeBook", BindingFlags.NonPublic | BindingFlags.Static)!;
         return (string)method.Invoke(null, new object[] { resref, recipes })!;
     }

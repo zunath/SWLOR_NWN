@@ -1888,13 +1888,6 @@ public class CombatDamageTests
             "MigrationDefinition",
             "CharacterMigration",
             "_14_15_CombatUpgradeMigrations.cs"));
-        var serverMigrationSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration",
-            "StoredItemDataMigration.cs"));
         var weaponMigrationSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -1903,7 +1896,6 @@ public class CombatDamageTests
             "SerializedItemWeaponDamageTypeMigration.cs"));
 
         playerMigrationSource.Should().Contain("SavedWeaponDamageTypeMigration.MigrateCharacter(character);");
-        serverMigrationSource.Should().Contain("SerializedItemWeaponDamageTypeMigration.MigrateObject(obj)");
         weaponMigrationSource.Should().Contain("ItemPropertyType.DMG");
         weaponMigrationSource.Should().Contain("WeaponDamageScales");
         weaponMigrationSource.Should().Contain("BuildWeaponBaseItemTypes");
@@ -1938,13 +1930,6 @@ public class CombatDamageTests
             "MigrationDefinition",
             "CharacterMigration",
             "_14_15_CombatUpgradeMigrations.cs"));
-        var serverMigrationSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration",
-            "StoredItemDataMigration.cs"));
         var resistanceMigrationSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -1953,7 +1938,6 @@ public class CombatDamageTests
             "SerializedItemResistanceMigration.cs"));
 
         playerMigrationSource.Should().Contain("SavedItemResistanceMigration.MigrateCharacter(character);");
-        serverMigrationSource.Should().Contain("SerializedItemResistanceMigration.MigrateObject(obj)");
         resistanceMigrationSource.Should().Contain("RebalanceResistanceEnhancementItem");
         resistanceMigrationSource.Should().Contain("ArmorAndFoodResistanceAmountByRank");
         resistanceMigrationSource.Should().Contain("[5] = 15");
@@ -1975,13 +1959,6 @@ public class CombatDamageTests
             "MigrationDefinition",
             "CharacterMigration",
             "_14_15_CombatUpgradeMigrations.cs"));
-        var serverMigrationSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration",
-            "StoredItemDataMigration.cs"));
         var combatReadinessMigrationSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -1991,12 +1968,6 @@ public class CombatDamageTests
 
         playerMigrationSource.Should().Contain("SavedCombatUpgradeItemMigrations.MigrateCombatReadiness(character);");
         playerMigrationSource.Should().NotContain("SerializedItemCombatReadinessMigration");
-        serverMigrationSource.Should().Contain("CombatReadinessMigration.MigrateObject(obj)");
-        serverMigrationSource.Should().NotContain("SerializedItemCombatReadinessMigration");
-        serverMigrationSource.Should().Contain("MigrateEntityItems");
-        serverMigrationSource.Should().Contain("SearchAll<InventoryItem>()");
-        serverMigrationSource.Should().Contain("SearchAll<MarketItem>()");
-        serverMigrationSource.Should().Contain("TryMigrateCombatReadinessName(item.Resref, item.Name");
         File.ReadAllText(Path.Combine(
                 root.FullName,
                 "SWLOR.Game.Server",

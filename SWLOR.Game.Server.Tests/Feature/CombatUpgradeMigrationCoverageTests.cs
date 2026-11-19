@@ -60,10 +60,10 @@ public class CombatUpgradeMigrationCoverageTests
     }
 
     /// <summary>
-    /// Guards player, database, ship, and nested droid entry points for pistol and ammunition conversion.
+    /// Guards player and nested droid entry points for pistol and ammunition conversion.
     /// </summary>
     [Test]
-    public void PistolBaseItemMigration_CoversPlayersAndStoredItemSurfaces()
+    public void PistolBaseItemMigration_CoversPlayerSurfaces()
     {
         var root = FindRepositoryRoot();
         var migrationRoot = Path.Combine(
@@ -74,12 +74,7 @@ public class CombatUpgradeMigrationCoverageTests
         var pistolMigration = File.ReadAllText(Path.Combine(
             migrationRoot,
             "PistolBaseItemMigration.cs"));
-        var storedMigration = File.ReadAllText(Path.Combine(
-            migrationRoot,
-            "ServerMigration",
-            "StoredItemDataMigration.cs"));
 
-        storedMigration.Should().Contain("PistolBaseItemMigration.MigrateStoredObject(obj)");
         pistolMigration.Should().Contain("PistolBaseItemCompatibility.Normalize(obj)");
         pistolMigration.Should().Contain("GetEquippedItem(creature, InventorySlot.Arrows)");
         pistolMigration.Should().Contain("CreaturePlugin.RunUnequip(creature, legacyAmmo)");
@@ -93,18 +88,6 @@ public class CombatUpgradeMigrationCoverageTests
         pistolMigration.Should().Contain("droid.EquippedItems");
         pistolMigration.Should().Contain("droid.Inventory");
         pistolMigration.Should().Contain("MoveEquippedItemToDroidInventory(droid, existingBulletAmmo)");
-
-        AssertMigrationCalls(storedMigration,
-            "MigrateInventoryItems(progress, disposal);",
-            "MigrateMarketItems(progress, disposal);",
-            "MigrateWorldPropertyCategories(categories, progress, disposal);",
-            "MigrateEntityItems(SearchAll<WorldProperty>()",
-            "MigrateEntityItems(researchJobs",
-            "MigrateEntityItems(SearchAll<PlayerOutfit>()",
-            "MigrateEntityItems(SearchAll<DMCreature>()",
-            "MigratePlayerShips(ships, progress, disposal);");
-        AssertStoredEntitySurfaces(storedMigration);
-        AssertShipSurfaces(storedMigration);
     }
 
     [Test]
@@ -121,54 +104,6 @@ public class CombatUpgradeMigrationCoverageTests
         migrationService.Should().Contain("Starting server migration");
         migrationService.Should().NotContain("migrations 22+ pending");
         migrationService.Should().NotContain("migrations 22+ complete");
-    }
-
-    [Test]
-    public void SerializedRequirementMigration_ReportsCurrentMigrationRecordProgress()
-    {
-        var root = FindRepositoryRoot();
-        var migration = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration",
-            "StoredItemDataMigration.cs"));
-
-        migration.Should().Contain("Migration #22:");
-        migration.Should().Contain("Current migration progress");
-        migration.Should().Contain("serialized objects");
-        migration.Should().Contain("Current surface");
-        migration.Should().Contain("RecordReportStep");
-        migration.Should().Contain("PercentReportStep");
-        migration.Should().Contain("new MigrationProgress(itemCount, \"records\")");
-        migration.Should().Contain("new MigrationProgress(jobCount, \"records\")");
-        migration.Should().Contain("new MigrationProgress(totalSerializedObjects, \"serialized objects\")");
-        migration.Should().Contain("MigrateDroidBoostSerializedObject(serializedItem, out var migratedData)");
-        migration.Should().Contain("false))");
-        foreach (var message in new[]
-                 {
-                     "BeginSection(\"market category records\"",
-                     "market category records changed",
-                     "BeginSection(\"research job recipe records\"",
-                     "research job records written",
-                     "BeginSection(\"inventory items\"",
-                     "inventory item records changed",
-                     "BeginSection(\"market items\"",
-                     "market item records changed",
-                     "BeginSection(\"world property category storage\"",
-                     "category items changed",
-                     "\"world property structure items\"",
-                     "\"research jobs\"",
-                     "\"player outfits\"",
-                     "\"DM creatures\"",
-                     "{sectionName} records changed",
-                     "BeginSection(\"player ships\"",
-                     "player ship records changed",
-                 })
-        {
-            migration.Should().Contain(message);
-        }
     }
 
     [Test]
@@ -287,8 +222,8 @@ public class CombatUpgradeMigrationCoverageTests
             "SWLOR.Game.Server",
             "Feature",
             "MigrationDefinition",
-            "ServerMigration",
-            "StoredItemDataMigration.cs"));
+            "CharacterMigration",
+            "SavedDroidBoostItemMigration.cs"));
         migration.Should().Contain("DroidStatSubType.Armor");
         migration.Should().Contain("DroidPartItemPropertySubType.CPU");
         migration.Should().Contain("Droid.DroidControlItemResref");
@@ -346,39 +281,6 @@ public class CombatUpgradeMigrationCoverageTests
         var combatReadinessMigration = File.ReadAllText(Path.Combine(migrationRoot, "CombatReadinessMigration.cs"));
         combatReadinessMigration.Should().Contain("droid.EquippedItems");
         combatReadinessMigration.Should().Contain("droid.Inventory");
-    }
-
-    private static void AssertMigrationCalls(string source, params string[] calls)
-    {
-        foreach (var call in calls)
-        {
-            source.Should().Contain(call);
-        }
-    }
-
-    private static void AssertStoredEntitySurfaces(string source)
-    {
-        foreach (var entityType in new[]
-                 {
-                     "InventoryItem",
-                     "MarketItem",
-                     "WorldPropertyCategory",
-                     "WorldProperty",
-                     "ResearchJob",
-                     "PlayerOutfit",
-                     "DMCreature",
-                 })
-        {
-            source.Should().Contain(entityType);
-        }
-    }
-
-    private static void AssertShipSurfaces(string source)
-    {
-        source.Should().Contain("PlayerShip");
-        source.Should().Contain("HighPowerModules");
-        source.Should().Contain("LowPowerModules");
-        source.Should().Contain("ConfigurationModules");
     }
 
     private static int GetJsonFieldValue(JObject obj, string field)

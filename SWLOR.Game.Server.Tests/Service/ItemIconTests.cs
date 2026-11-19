@@ -128,12 +128,10 @@ public class ItemIconTests
         File.ReadAllText(Path.Combine(migrations, "CharacterMigration", "_23_CorrectEquipmentTypes.cs"))
             .Should().Contain("CharacterLootRevision.Migrate(character, updateArtwork: true)");
         File.ReadAllText(Path.Combine(migrations, "StoredItemSweep.cs"))
-            .Should().Contain("SavedDataStoredItemConverter.Instance").And.NotContain("StoredItemDataMigration.Migrate()");
+            .Should().Contain("SavedDataStoredItemConverter.Instance");
         File.ReadAllText(Path.Combine(migrations, "StoredItemConverters.cs"))
             .Should().Contain("LootStatRevisionMigration.MigrateStoredObjectData");
         File.ReadAllText(Path.Combine(migrations, "CharacterMigration", "_14_15_CombatUpgradeMigrations.cs"))
-            .Should().NotContain("ItemIconMigration");
-        File.ReadAllText(Path.Combine(migrations, "ServerMigration", "StoredItemDataMigration.cs"))
             .Should().NotContain("ItemIconMigration");
     }
 

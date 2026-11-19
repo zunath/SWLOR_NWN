@@ -61,10 +61,10 @@ public class MigrationDataTests
     [Test]
     public void RecipeVariantIdsAreStableAndDistinct()
     {
-        var first = Invoke("ServerMigration.StoredItemDataMigration", "GetVariantId", "source", 4800);
-        first.Should().Be(Invoke("ServerMigration.StoredItemDataMigration", "GetVariantId", "source", 4800));
-        first.Should().NotBe(Invoke("ServerMigration.StoredItemDataMigration", "GetVariantId", "source", 4801));
-        first.Should().NotBe(Invoke("ServerMigration.StoredItemDataMigration", "GetVariantId", "other", 4800));
+        var first = Invoke("CharacterMigration.SavedDroidBoostItemMigration", "GetVariantId", "source", 4800);
+        first.Should().Be(Invoke("CharacterMigration.SavedDroidBoostItemMigration", "GetVariantId", "source", 4800));
+        first.Should().NotBe(Invoke("CharacterMigration.SavedDroidBoostItemMigration", "GetVariantId", "source", 4801));
+        first.Should().NotBe(Invoke("CharacterMigration.SavedDroidBoostItemMigration", "GetVariantId", "other", 4800));
         first.Should().Be("source-recipe-4800");
     }
 

@@ -17,7 +17,7 @@ using Node = SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData.Node
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
 /// <summary>
-/// Saved-data <see cref="StoredItemDataMigration.MigrateDroidItems(uint)"/>: replaces retired droid weapon boost
+/// Saved-data conversion that replaces retired droid weapon boost
 /// blueprints and recipe books, converts legacy droid stat and enhancement properties, adds the Armor skill rank
 /// droid CPUs and controllers lack, and applies the same changes to the droid saved on a controller item (its
 /// parts, equipment and inventory, which are saved items kept on their own).
@@ -27,7 +27,7 @@ internal static class SavedDroidBoostItemMigration
     private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
     private const string DroidItemIdVariable = "DROID_ITEM_ID";
     private const string RecipesVariable = "RECIPES";
-    private const string BlueprintRecipeIdVariable = StoredItemDataMigration.DroidBoostStoredItemMigration.BlueprintRecipeIdVariable;
+    private const string BlueprintRecipeIdVariable = "BLUEPRINT_RECIPE_ID";
 
     private static IReadOnlyDictionary<int, string> _blueprintNames;
 
@@ -169,11 +169,11 @@ internal static class SavedDroidBoostItemMigration
                 else if (subType == (int)DroidStatSubType.Armor)
                     hasArmorStat = true;
 
-                if (StoredItemDataMigration.DroidBoostStoredItemMigration.LegacyDroidStatMap.TryGetValue(subType, out var droidStatSubTypes))
+                if (LegacyDroidStatMap.TryGetValue(subType, out var droidStatSubTypes))
                     replacements.Add((property, propertyType, value, droidStatSubTypes));
             }
             else if (propertyType == ItemPropertyType.DroidEnhancement &&
-                     StoredItemDataMigration.DroidBoostStoredItemMigration.LegacyDroidEnhancementMap.TryGetValue(subType, out var enhancementSubTypes))
+                     LegacyDroidEnhancementMap.TryGetValue(subType, out var enhancementSubTypes))
             {
                 replacements.Add((property, propertyType, value, enhancementSubTypes));
             }
@@ -210,7 +210,7 @@ internal static class SavedDroidBoostItemMigration
         if (!isDroidStatSource || hasArmorStat)
             return false;
 
-        var armorRank = StoredItemDataMigration.DroidBoostStoredItemMigration.GetTierArmorSkillRank(tier);
+        var armorRank = GetTierArmorSkillRank(tier);
         if (armorRank <= 0)
             return false;
 
@@ -261,7 +261,7 @@ internal static class SavedDroidBoostItemMigration
                     droid.Inventory[key] = variants[0];
                     for (var index = 1; index < variants.Count; index++)
                     {
-                        var variantId = StoredItemDataMigration.GetVariantId(key, recipeIds[index]);
+                        var variantId = GetVariantId(key, recipeIds[index]);
                         var variant = new SavedItemDocument(variants[index]);
                         variant.Root.SetLocalString(DroidItemIdVariable, variantId);
                         droid.Inventory[variantId] = variant.Serialize();
@@ -352,7 +352,7 @@ internal static class SavedDroidBoostItemMigration
     private static bool MigrateRecipeLocalVariable(SavedItem item)
     {
         var previousRecipeList = item.GetLocalString(RecipesVariable);
-        var recipeList = StoredItemDataMigration.ExpandTrainingRecipeBook(item.ResRef, previousRecipeList);
+        var recipeList = ExpandTrainingRecipeBook(item.ResRef, previousRecipeList);
         if (string.IsNullOrWhiteSpace(recipeList))
             return false;
 
@@ -421,4 +421,76 @@ internal static class SavedDroidBoostItemMigration
             : throw new InvalidOperationException($"No blueprint name is loaded for recipe {recipeId}.");
     }
 
+    private static readonly Dictionary<int, int[]> LegacyDroidStatMap = new()
+    {
+        { 12, new[] { 115, 116, 117 } },
+        { 13, new[] { 118, 119, 120, 121 } },
+        { 14, new[] { 122, 123 } },
+        { 15, new[] { 124, 125, 126 } },
+    };
+
+    private static readonly Dictionary<int, int[]> LegacyDroidEnhancementMap = new()
+    {
+        { 111, new[] { 115, 116, 117 } },
+        { 112, new[] { 118, 119, 120, 121 } },
+        { 113, new[] { 122, 123 } },
+        { 114, new[] { 124, 125, 126 } },
+    };
+
+    private static int GetTierArmorSkillRank(int tier)
+    {
+        return tier switch
+        {
+            1 => 5,
+            2 => 15,
+            3 => 25,
+            4 => 35,
+            5 => 45,
+            _ => 0
+        };
+    }
+
+    internal static string GetVariantId(string sourceId, int recipeId)
+    {
+        // Entity and droid item IDs are opaque strings. Deriving the ID directly
+        // avoids loading a native cryptography provider inside the NWN host.
+        return $"{sourceId}-recipe-{recipeId}";
+    }
+
+    internal static string ExpandTrainingRecipeBook(string resref, string recipeList)
+    {
+        var recipes = resref switch
+        {
+            "recipe_trnsabers" => new[]
+            {
+                RecipeType.TrainingSaber1, RecipeType.TrainingSaber2, RecipeType.TrainingSaber3,
+                RecipeType.TrainingSaber4, RecipeType.TrainingSaber5, RecipeType.FieldTrainingSaber,
+                RecipeType.VeteranTrainingSaber, RecipeType.PrimeTrainingSaber, RecipeType.AscendantTrainingSaber
+            },
+            "recipe_trnsabstf" => new[]
+            {
+                RecipeType.TrainingSaberstaff1, RecipeType.TrainingSaberstaff2, RecipeType.TrainingSaberstaff3,
+                RecipeType.TrainingSaberstaff4, RecipeType.TrainingSaberstaff5, RecipeType.FieldTrainingSaberstaff,
+                RecipeType.VeteranTrainingSaberstaff, RecipeType.PrimeTrainingSaberstaff, RecipeType.AscendantTrainingSaberstaff
+            },
+            _ => null
+        };
+        if (recipes == null)
+            return recipeList;
+
+        // Preserve any extra recipes a DM added to the saved book. Only append missing tiers.
+        var entries = (recipeList ?? string.Empty).Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+        var existingIds = entries.Where(entry => int.TryParse(entry, out _)).Select(int.Parse).ToHashSet();
+        var changed = false;
+        foreach (var recipe in recipes)
+        {
+            if (!existingIds.Add((int)recipe))
+                continue;
+
+            entries.Add(((int)recipe).ToString());
+            changed = true;
+        }
+
+        return changed ? string.Join(",", entries) : recipeList;
+    }
 }

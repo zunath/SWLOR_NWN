@@ -162,6 +162,30 @@ public class EchaniTempleMonksTests
         }
     }
 
+    [TestCase("es_monk_path_002", "es_monk_path_silver_out_01")]
+    [TestCase("es_monk_path_silver_ret_03", "es_monk_path_silver_ret_04")]
+    public void SilverGate_RouteCrossesThroughTheModularDoorway(string startTag, string endTag)
+    {
+        var area = Read("Module/git/pw_ar_sc_eshanci.git.json");
+        var doorway = Value(area, "Placeable List").EnumerateArray()
+            .Single(item => Value(item, "Appearance").GetInt32() == 30255);
+        var waypoints = Value(area, "WaypointList").EnumerateArray().ToArray();
+        var start = waypoints.Single(point => Value(point, "Tag").GetString() == startTag);
+        var end = waypoints.Single(point => Value(point, "Tag").GetString() == endTag);
+
+        Variables(start)["ECHANI_NEXT"].GetString().Should().Be(endTag);
+
+        var doorwayX = Value(doorway, "X").GetDouble();
+        Value(start, "XPosition").GetDouble().Should().BeApproximately(doorwayX, 0.1);
+        Value(end, "XPosition").GetDouble().Should().BeApproximately(doorwayX, 0.1);
+
+        var doorwayY = Value(doorway, "Y").GetDouble();
+        var startY = Value(start, "YPosition").GetDouble();
+        var endY = Value(end, "YPosition").GetDouble();
+        Math.Min(startY, endY).Should().BeLessThan(doorwayY - 2);
+        Math.Max(startY, endY).Should().BeGreaterThan(doorwayY + 2);
+    }
+
     [Test]
     public void MonkObjects_HaveEditorMetadataAtTheirMatchingIndices()
     {

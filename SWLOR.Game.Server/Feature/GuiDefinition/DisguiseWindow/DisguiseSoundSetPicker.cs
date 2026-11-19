@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.DisguiseWindow
         private int _soundSetPageIndex;
         private int _selectedSoundSetId = -1;
 
-        public DisguiseSoundSetPicker(IDisguiseHost host, ICacheService cache)
+        public DisguiseSoundSetPicker(ICacheService cache, IDisguiseHost host)
         {
             _host = host;
             Cache = cache;

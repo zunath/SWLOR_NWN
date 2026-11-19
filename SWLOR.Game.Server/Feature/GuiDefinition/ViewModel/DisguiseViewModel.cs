@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DisguiseColors = new GuiBindingList<GuiColor>();
             SoundSetPageNumbers = new GuiBindingList<GuiComboEntry>();
 
-            _soundSets = new DisguiseSoundSetPicker(this, Cache);
+            _soundSets = new DisguiseSoundSetPicker(Cache, this);
             _soundSets.LoadSoundSetOptions();
             _soundSets.SelectSoundSet(_soundSets.GetDefaultSoundSetId());
             LoadList();

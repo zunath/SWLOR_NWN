@@ -57,7 +57,7 @@ FIT_TOLERANCE = 0.0005
 SLEEVE_DEPTH = MeshyWeaponParts.MAX_JOINT_DEPTH + FIT_TOLERANCE
 # A collar closes the gap left where a part's surfaces stop short of a joint
 # (AlignWeaponPartJoints.py gives a guard piece cut into a top or bottom back to its middle).
-COLLAR_DEPTH = 0.05
+COLLAR_DEPTH = 0.06
 CAP_COVERAGE = 0.98  # Share of the cut outline a cap must fill.
 PLANE = 1e-5
 POSITION, UV, NORMAL, TANGENT, SIGN = 444, 452, 468, 488, 496

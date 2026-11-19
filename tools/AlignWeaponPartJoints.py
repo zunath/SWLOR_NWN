@@ -137,8 +137,8 @@ def core_centre(positions, faces, near=None):
 
 def sources(parts):
     """Lists of part names cut from one source: parts whose surfaces meet a joint plane at the
-    same points, or that bind the same texture (each fitted source has its own atlas, and each
-    colour variant its own copy)."""
+    same points, or that bind the same single texture (each fitted source has its own atlas,
+    and each colour variant its own copy)."""
     names = sorted(parts)
     parent = {name: name for name in names}
 
@@ -151,6 +151,8 @@ def sources(parts):
     textures = {}
     for name in names:
         part = parts[name]
+        if len(part.sources) != 1:
+            continue  # Twinblade parts mix a grip texture every source shares with their own.
         key = (part.family, texture(part.data, part.sources[0]))
         if key in textures:
             parent[find(name)] = find(textures[key])
@@ -248,13 +250,15 @@ def validate_translation(before, after, shift):
 
 
 # ---------------------------------------------------------------- guard pieces
-# Fitted greatsword sources have guards taller than the stock middle band (Y 0.111 to 0.17), so
-# the stock cuts left slices of the guard on the bottom or top (the November 2026 greatsword
-# report). Each entry names a top or bottom and the height its guard reaches: every surface
-# piece of that part lying wholly between this height and the part's joint is the guard's.
-# Those pieces go back to the middle cut from the same source and bound to the same texture,
-# or are dropped where that middle was never shipped. Reviewed against side views of every
-# fitted greatsword source; grip ferrules and blade shoulders that only touch a joint stay.
+# Many fitted sources have guards taller than their family's middle band (greatsword Y 0.111
+# to 0.17, vibroblade 0.085 to 0.135, knife 0.075 to 0.098, twinblade ends 45 mm), so the stock
+# cuts left slices of the guard on the bottom or top (the November 2026 greatsword report).
+# Each entry names a top or bottom and the height its guard reaches (one per joint, for a
+# twinblade end): every surface piece of that part lying wholly between this height and the
+# joint is the guard's. Those pieces go back to the middle cut from the same source and bound
+# to the same texture, or are dropped where that middle was never shipped. Reviewed against
+# side views of every fitted source; grip ferrules and blade shoulders that only touch a joint
+# stay.
 GUARD_PIECES = {
     "wswgs_b_012": 0.095, "wswgs_b_013": 0.095, "wswgs_b_014": 0.095,  # Guard's lower rim
     "wswgs_t_012": 0.19, "wswgs_t_013": 0.19,  # Crossguard tips
@@ -265,6 +269,16 @@ GUARD_PIECES = {
     "wswgs_t_014": 0.175,  # Guard slivers
     "wswgs_t_044": 0.218, "wswgs_t_104": 0.218,  # Crossbar, knobs and guard collar
     "wswgs_b_051": 0.06, "wswgs_b_052": 0.06, "wswgs_b_053": 0.06, "wswgs_b_054": 0.06,  # Guard plate
+    "wswls_b_012": 0.045, "wswls_b_013": 0.045,  # Guard wings
+    "wswls_b_022": 0.03, "wswls_b_023": 0.03,  # Guard core and curled quillon
+    "wswls_b_031": 0.045, "wswls_b_032": 0.045, "wswls_b_033": 0.045, "wswls_b_034": 0.045,  # Guard slab
+    "wswls_b_062": 0.04, "wswls_b_063": 0.04, "wswls_b_064": 0.04,  # Tip of the hooked guard
+    "wswls_b_082": 0.05, "wswls_b_083": 0.05, "wswls_b_084": 0.05,  # Guard arm
+    "wswdg_b_042": 0.045, "wswdg_b_043": 0.045, "wswdg_b_044": 0.045,  # Lower guard block
+    "wswdg_b_052": 0.028, "wswdg_b_053": 0.028, "wswdg_b_054": 0.028,  # Guard core and quillon
+    "wswdg_b_061": 0.02, "wswdg_b_062": 0.02, "wswdg_b_063": 0.02, "wswdg_b_064": 0.02,  # Guard horns
+    "wdbsw_t_031": (-0.215, 0.88), "wdbsw_t_033": (-0.215, 0.88), "wdbsw_t_034": (-0.215, 0.88),  # Guard horns
+    "wdbsw_t_032": -0.136,  # Guard tips
 }
 GAP_TOLERANCE = 0.0005  # A part that stops this far short of its joint gets a collar.
 
@@ -300,21 +314,35 @@ def flat(triangles):
     return indexed(corners)
 
 
-def guard_pieces(part, bound):
-    """Face indices of the part's source mesh lying wholly between `bound` and its joint."""
+def bounds(entry):
+    """The guard heights listed for a part: one per joint its guard crosses."""
+    return entry if isinstance(entry, tuple) else (entry,)
+
+
+def guard_joint(part, bound):
+    """The joint whose guard reaches `bound`: the nearest one with `bound` on the part's side."""
+    candidates = [joint for joint in fit.JOINTS[part.joint_role] if joint[1] * (bound - joint[0]) > 0]
+    if not candidates:
+        raise ValueError(f"{part.name}: y={bound} lies past every joint")
+    return min(candidates, key=lambda joint: abs(bound - joint[0]))
+
+
+def guard_pieces(part, bound, faces=None):
+    """(joint, face mask) of the part's source mesh pieces lying wholly between `bound` and the
+    joint they touch."""
     if len(part.sources) != 1:
         raise ValueError(f"{part.name}: expected one source mesh")
-    (joint,) = fit.JOINTS[part.joint_role]
+    joint = guard_joint(part, bound)
     y, side = joint
-    mesh = part.sources[0]
-    positions, faces = mesh["streams"][POSITION].astype(float), mesh["faces"].astype(int)
+    positions = part.sources[0]["streams"][POSITION].astype(float)
+    faces = part.sources[0]["faces"].astype(int) if faces is None else faces
     labels = fit.components(positions, faces)
     pieces = np.zeros(len(faces), dtype=bool)
     reach = side * (bound - y)
     for label in np.unique(labels):
         members = labels == label
         d = side * (positions[np.unique(faces[members])][:, 1] - y)
-        if d.max() <= reach + fit.PLANE:
+        if d.min() >= -fit.PLANE and d.max() <= reach + fit.PLANE:
             pieces |= members
     return joint, pieces
 
@@ -350,59 +378,77 @@ def give_back_guards(parts, guards=None):
     """{part name: new compiled bytes} with every listed guard piece moved to its middle.
 
     Each top or bottom keeps only its own surfaces and is closed again at its joint (a cap,
-    or a collar where it now stops short). Each middle takes the pieces in its own texture,
-    and its cap at that joint shrinks to the surfaces that still end there.
+    or a collar where it now stops short). The pieces go to each middle that shares the part's
+    cut at that joint and has a source mesh in the same texture, and that middle's cap at the
+    joint shrinks to the surfaces that still end there. With no such middle they are dropped.
     """
     guards = GUARD_PIECES if guards is None else guards
     group_of = {name: group for group in sources(parts) for name in group}
-    meshes = {}  # part name: [source (streams, faces), interface (streams, faces)]
-    received = {}  # (middle, joint): per-corner streams of the pieces it takes back
+    cuts = {}
+    meshes = {}  # part name: {mesh index: (streams, faces)}
+    received = {}  # (middle, mesh index, joint y): per-corner streams of the pieces it takes back
 
     def current(name):
-        part = parts[name]
         if name not in meshes:
-            if len(part.sources) != 1:
-                raise ValueError(f"{name}: expected one source mesh")
-            meshes[name] = [mesh_arrays(part.sources[0]), mesh_arrays(part.meshes[part.interface])]
+            meshes[name] = {i: mesh_arrays(mesh) for i, mesh in enumerate(parts[name].meshes)}
         return meshes[name]
 
-    for name, bound in sorted(guards.items()):
+    def cut(name):
+        if name not in cuts:
+            cuts[name] = parts[name].cuts()
+        return cuts[name]
+
+    for name, entry in sorted(guards.items()):
         if name not in parts:
             raise ValueError(f"{name}: not a fitted part")
         part = parts[name]
         if part.role == "m":
             raise ValueError(f"{name}: guard pieces are listed on tops and bottoms")
-        joint, pieces = guard_pieces(part, bound)
-        if not pieces.any():
-            raise ValueError(f"{name}: no guard piece between y={bound} and its joint")
-        (streams, faces), interface = current(name)
-        moved = {field: values[faces[pieces]] for field, values in streams.items()}
-        kept = (streams, faces[~pieces])
-        interface = merged(*without_joint(*interface, joint, part.joint_role),
-                           *flat(closing(*kept, joint, part.joint_role)))
-        meshes[name] = [kept, interface]
+        source_index = next(i for i in range(len(part.meshes)) if i != part.interface)
         own = texture(part.data, part.sources[0])
-        for middle in group_of[name]:
-            if parts[middle].role != "m" or texture(parts[middle].data, parts[middle].sources[0]) != own:
-                continue
-            previous = received.setdefault((middle, joint[0]), moved)
-            if previous is not moved and not all(np.array_equal(previous[f], moved[f]) for f in moved):
-                raise ValueError(f"{middle}: different guard pieces come back at y={joint[0]}")
-    for (name, y), moved in sorted(received.items()):
-        role = parts[name].joint_role
-        joint = next(j for j in fit.JOINTS[role] if j[0] == y)
-        source, interface = current(name)
-        source = merged(*source, *indexed(moved))
-        interface = without_joint(*interface, joint, role)
-        rim = fit.rim_points([{"streams": source[0], "faces": source[1]}], joint)
-        if len(rim):
-            interface = merged(*interface, *flat(fit.MeshyWeaponParts.cap_triangles(rim.tolist(), joint[0], -joint[1])))
-        meshes[name] = [source, interface]
+        for bound in bounds(entry):
+            state = current(name)
+            streams, faces = state[source_index]
+            joint, pieces = guard_pieces(part, bound, faces)
+            if not pieces.any():
+                raise ValueError(f"{name}: no guard piece between y={bound} and its joint")
+            moved = {field: values[faces[pieces]] for field, values in streams.items()}
+            kept = (streams, faces[~pieces])
+            state[source_index] = kept
+            state[part.interface] = merged(*without_joint(*state[part.interface], joint, part.joint_role),
+                                           *flat(closing(*kept, joint, part.joint_role)))
+            for middle in group_of[name]:
+                other = parts[middle]
+                if other.role != "m" or joint[0] not in cut(middle) or joint[0] not in cut(name):
+                    continue
+                if len(cut(middle)[joint[0]] & cut(name)[joint[0]]) < SHARED_CUT_POINTS:
+                    continue
+                for index, mesh in enumerate(other.meshes):
+                    if index == other.interface or texture(other.data, mesh) != own:
+                        continue
+                    previous = received.setdefault((middle, index, joint[0]), moved)
+                    if previous is not moved and not all(np.array_equal(previous[f], moved[f]) for f in moved):
+                        raise ValueError(f"{middle}: different guard pieces come back at y={joint[0]}")
+    for (name, index, y), moved in sorted(received.items()):
+        state = current(name)
+        state[index] = merged(*state[index], *indexed(moved))
+    for name in sorted({key[0] for key in received}):
+        part, state = parts[name], current(name)
+        sources_now = [{"streams": state[i][0], "faces": state[i][1]} for i in state if i != part.interface]
+        for y in sorted({key[2] for key in received if key[0] == name}):
+            joint = next(j for j in fit.JOINTS[part.joint_role] if j[0] == y)
+            interface = without_joint(*state[part.interface], joint, part.joint_role)
+            rim = fit.rim_points(sources_now, joint)
+            if len(rim):
+                interface = merged(*interface, *flat(fit.MeshyWeaponParts.cap_triangles(rim.tolist(), joint[0], -joint[1])))
+            state[part.interface] = interface
     result = {}
-    for name, (source, interface) in sorted(meshes.items()):
-        part = parts[name]
-        index = next(i for i, mesh in enumerate(part.meshes) if i != part.interface)
-        result[name] = rewrite(part.data, {index: source, part.interface: interface})
+    for name, state in sorted(meshes.items()):
+        original = {i: mesh_arrays(mesh) for i, mesh in enumerate(parts[name].meshes)}
+        changed = {i: arrays for i, arrays in state.items()
+                   if not (np.array_equal(arrays[1], original[i][1]) and all(
+                       np.array_equal(arrays[0][f], original[i][0][f]) for f in arrays[0]))}
+        result[name] = rewrite(parts[name].data, changed)
     return result
 
 
@@ -511,7 +557,8 @@ def align(parts):
                 raise ValueError(f"{name}: {error}") from error
         report["sources"].append({"parts": group, "offset_mm": [round(float(v) * 1000, 2) for v in offset]})
     parts = {name: Part(name, changed[name]) if name in changed else part for name, part in parts.items()}
-    pending = {name: bound for name, bound in GUARD_PIECES.items() if name in parts and guard_pieces(parts[name], bound)[1].any()}
+    pending = {name: entry for name, entry in GUARD_PIECES.items()
+               if name in parts and all(guard_pieces(parts[name], bound)[1].any() for bound in bounds(entry))}
     guarded = give_back_guards(parts, pending) if pending else {}
     changed.update(guarded)
     report["guard_parts"] = sorted(guarded)

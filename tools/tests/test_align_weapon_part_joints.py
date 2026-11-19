@@ -34,13 +34,17 @@ def disc(y, radii, side, centre=OFF_AXIS):
     return positions, np.asarray(faces)
 
 
-def named(data, role, texture):
-    """Bind the source mesh to a texture and the interface to another, as the shipped parts do."""
+def named(data, role, *textures):
+    """Bind the source meshes to textures (in compile order) and the interface to another, as
+    the shipped parts do."""
     found = seams.mesh_headers(data)[1]
     interface = fit.interface_index(found, role)
     data = bytearray(data)
+    # The native node walk visits the compiled meshes last first.
+    order = [i for i in reversed(range(len(found))) if i != interface]
+    names = {index: texture for index, texture in zip(order, textures)}
     for index, mesh in enumerate(found):
-        name = "interface" if index == interface else texture
+        name = "interface" if index == interface else names[index]
         for field in (120, 312):
             data[mesh["header"] + field:mesh["header"] + field + 32] = name.encode().ljust(32, b"\0")
     return bytes(data)
@@ -61,6 +65,29 @@ def middle(texture="steel", centre=OFF_AXIS):
     source = combine([tube(LOW, 0.1, GUARD, centre), tube(LOW, HIGH, GRIP, centre)])
     interface = combine([disc(LOW, GUARD, 1, centre), disc(HIGH, GRIP, -1, centre)])
     return named(compiled([source, interface]), "wswls_m", texture)
+
+
+OUTER_LOW, INNER_LOW, INNER_HIGH, OUTER_HIGH = fit.PAIRED["wdbsw"]
+CENTRE = np.zeros(2)
+
+
+def twin_end():
+    """A twinblade top: both blades, and guard horns over the upper blade that the cut left on it."""
+    source = combine([tube(OUTER_LOW - 0.1, OUTER_LOW, GRIP, CENTRE, closed=True),
+                      tube(OUTER_HIGH, OUTER_HIGH + 0.1, GRIP, CENTRE, closed=True),
+                      tube(OUTER_HIGH, OUTER_HIGH + 0.04, GUARD, CENTRE)])
+    interface = combine([disc(OUTER_LOW, GRIP, -1, CENTRE), disc(OUTER_HIGH, GUARD, 1, CENTRE)])
+    return named(compiled([source, interface]), "wdbsw_t", "steel")
+
+
+def twin_bands():
+    """A twinblade middle: grip bands in the texture every source shares, and its own guard over
+    the upper band in the source's texture."""
+    shared = combine([tube(OUTER_LOW, INNER_LOW, GRIP, CENTRE), tube(INNER_HIGH, OUTER_HIGH, GRIP, CENTRE)])
+    own = tube(INNER_HIGH + 0.01, OUTER_HIGH, GUARD, CENTRE)
+    interface = combine([disc(OUTER_LOW, GRIP, 1, CENTRE), disc(INNER_LOW, GRIP, -1, CENTRE),
+                         disc(INNER_HIGH, GRIP, 1, CENTRE), disc(OUTER_HIGH, GUARD, -1, CENTRE)])
+    return named(compiled([shared, own, interface]), "wdbsw_m", "grip", "steel")
 
 
 def parts(**models):
@@ -158,6 +185,26 @@ class GuardTests(unittest.TestCase):
             align.GUARD_PIECES.clear()
             align.GUARD_PIECES.update(original)
 
+    def test_a_twinblade_end_gives_its_horns_to_the_band_in_its_own_texture(self):
+        found = parts(wdbsw_t_031=twin_end(), wdbsw_m_031=twin_bands())
+        self.assertEqual((OUTER_HIGH, 1), align.guard_joint(found["wdbsw_t_031"], OUTER_HIGH + 0.05))
+        self.assertEqual((OUTER_LOW, -1), align.guard_joint(found["wdbsw_t_031"], OUTER_LOW - 0.01))
+        edited = align.give_back_guards(found, {"wdbsw_t_031": OUTER_HIGH + 0.05})
+        end, bands = meshes(edited["wdbsw_t_031"]), meshes(edited["wdbsw_m_031"])
+        self.assertEqual([], fit.interface_problems(end, "wdbsw_t"))
+        self.assertEqual([], fit.interface_problems(bands, "wdbsw_m"))
+        index = fit.interface_index(end, "wdbsw_t")
+        self.assertLess(np.abs(end[1 - index]["streams"][fit.POSITION][:, 0]).max(), GUARD[0] - 1e-3)
+        original = meshes(twin_bands())
+        before = {align.texture(twin_bands(), m): len(m["faces"]) for m in original}
+        after = {align.texture(edited["wdbsw_m_031"], m): len(m["faces"]) for m in bands}
+        self.assertEqual(before["grip"], after["grip"])
+        self.assertGreater(after["steel"], before["steel"])
+        # The upper cap now covers only the blade that still ends at the joint.
+        cap = bands[fit.interface_index(bands, "wdbsw_m")]["streams"][fit.POSITION]
+        cap = cap[np.abs(cap[:, 1] - OUTER_HIGH) < 1e-6]
+        self.assertLessEqual(np.abs(cap[:, 0]).max(), GRIP[0] + 1e-4)
+
     def test_a_surface_running_through_a_joint_has_no_rim_there(self):
         through = {"streams": {fit.POSITION: tube(0.06, 0.1, GUARD)[0]}, "faces": tube(0.06, 0.1, GUARD)[1]}
         self.assertEqual(0, len(fit.rim_points([through], (LOW, 1))))
@@ -179,7 +226,7 @@ class ShippedJointAlignmentTests(unittest.TestCase):
         self.assertEqual({}, off)
 
     def test_no_guard_piece_is_left_on_a_top_or_bottom(self):
-        left = [name for name, bound in align.GUARD_PIECES.items()
+        left = [name for name, entry in align.GUARD_PIECES.items() for bound in align.bounds(entry)
                 if align.guard_pieces(self.parts[name], bound)[1].any()]
         self.assertEqual([], left)
 

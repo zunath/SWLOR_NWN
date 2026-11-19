@@ -191,13 +191,16 @@ and greatswords sat 20 mm off in X and some knife, polearm and vibroblade source
 `tools/AlignWeaponPartJoints.py` moves each source, as one rigid piece, onto the axis (it
 groups parts into sources by shared cuts and textures), and
 `tools/tests/test_align_weapon_part_joints.py` audits every shipped source.
-Keep a guard inside its family's middle band (greatsword Y 0.111 to 0.17). Most fitted
-greatsword guards are taller, so the stock cuts left guard slices on tops and bottoms that
-showed as plates under any other middle. `AlignWeaponPartJoints.py` `GUARD_PIECES` lists
-each such part and the height its guard reaches; the tool gives those pieces back to the
-middle cut from the same source in the same texture (or drops them where that middle was
-never shipped), shrinks the middle's cap to the surfaces that still end at the joint, and
-closes a top or bottom that now stops short with a collar of its own end outline. Run it on
+Keep a guard inside its family's middle band (greatsword Y 0.111 to 0.17, vibroblade 0.085
+to 0.135, knife 0.075 to 0.098, the twinblade end bands). Most fitted greatsword guards and
+several vibroblade, knife and twinblade guards are taller, so the stock cuts left guard
+slices on tops and bottoms that showed as plates, horns and hooks under any other middle.
+`AlignWeaponPartJoints.py` `GUARD_PIECES` lists each such part and the height its guard
+reaches (one per joint for a twinblade end); the tool gives those pieces back to each middle
+that shares the part's cut and has a source mesh in the same texture (or drops them where
+that middle was never shipped), shrinks the middle's cap to the surfaces that still end at
+the joint, and closes a top or bottom that now stops short with a collar (up to 60 mm) of
+its own end outline. Run it on
 every new fitted import and add any guard that crosses a cut. The flat cut caps
 close each cut; four vibroblade bottoms that stop 3.5 mm short keep a collar of their own
 grip end. Quarterstaffs are left as they are: a few of their sleeves stick out 1-5 mm, too

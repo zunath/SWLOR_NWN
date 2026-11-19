@@ -126,7 +126,9 @@ def twin_blueprint(twin: Twin) -> str:
     tail = '      }\r\n    ]\r\n  },\r\n  "StackSize"'
     if text.count(tail) != 1:
         raise SystemExit(f"{twin.source}: PropertiesList has an unexpected end")
-    return text.replace(tail, '      },\r\n' + mod.NEW_PROPERTY + '\r\n    ]\r\n  },\r\n  "StackSize"')
+    text = text.replace(tail, '      },\r\n' + mod.NEW_PROPERTY + '\r\n    ]\r\n  },\r\n  "StackSize"')
+    # A plating twin keeps the dyes of the piece it copies (they are its paint) but none of its part models.
+    return mod.without_part_models(text, twin.source) if mod.ARMOR_MODEL_FIELD.search(text) else text
 
 
 # ---------------------------------------------------------------- stores

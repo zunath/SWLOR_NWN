@@ -646,7 +646,7 @@ loads:
   `git diff --ignore-cr-at-eol` is empty.
 - **Paint.** The chassis shows through every module and takes the dyes of the worn Chassis Plating: cloth 2 is the
   main paint, cloth 1 the accent panels, metal 2 the trim. `tools/GenerateAstromechModules.py` gives each plating a
-  paint job; `AstromechBody` holds the paint of a chassis with no plating on.
+  paint job and clears the part models it copied (thigh 6 would otherwise draw the legs of design 6); `AstromechBody` holds the paint of a chassis with no plating on.
 
 The rest of this section is the exporter:
 

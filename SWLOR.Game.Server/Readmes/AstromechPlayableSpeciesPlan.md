@@ -531,7 +531,8 @@ Done on 2026-11-18, on the owner's rule that every playable species has a dynami
   parts), part pictures and part names (`Classic Dome`, `Courier Body`, `Scout Leg`, ...).
 - `AstromechBody`: seats the dome of one design on the body of another (a head-scope visual transform, applied
   whenever the body is redrawn) and holds the paint of a bare chassis.
-- Chassis Plating paint jobs and the stat-less `Basic Chassis Plating` a new astromech starts in
+- Chassis Plating paint jobs, plating blueprints without the part models of the humanoid piece they copy (a
+  leftover number could name a chassis part), and the stat-less `Basic Chassis Plating` a new astromech starts in
   (`tools/GenerateAstromechModules.py`).
 - Helmet- and cloak-slot modules are hidden on an astromech; the dome keeps its size (`/headscale` refuses).
 - Removed: the Chassis Workshop (window, view model, service, snippet action, conversation choice), the chassis

@@ -11,6 +11,7 @@ requirement in place of the Armor (skill 6) rank, and the astromech-only propert
 Writes (all derived from the source blueprints and the source Smithery recipes, so a change to a humanoid item is
 picked up by rerunning, and caught by AstromechModuleContentTests):
   - Module/uti/am_<h|t>_<code>_<01..10>.uti.json, 160 blueprints; each Chassis Plating wears a paint job (PAINT_JOBS)
+    and has the part models of its source cleared
   - Module/uti/am_plat_start.uti.json, the stat-less plating a new astromech starts in
   - SWLOR.Game.Server/Feature/RecipeDefinition/EngineeringRecipeDefinition/AstromechModuleRecipes.cs
     (the .CircuitParameters(...) values are written by tools/SWLOR.RecipeParameters and kept across reruns)
@@ -194,6 +195,18 @@ def renamed(source: str, resref: str, name: str) -> str:
     return text
 
 
+ARMOR_MODEL_FIELD = re.compile(r'(  "x?ArmorPart_\w+": \{\r\n    "type": "(?:byte|word)",\r\n    "value": )\d+(\r\n  \})')
+
+
+def without_part_models(text: str, source: str) -> str:
+    """A copied armor blueprint with every part model cleared. An astromech module has no models of its own; a part
+    number left over from the humanoid piece can name a chassis part (thigh 6 is the legs of design 6) and would
+    replace the part the wearer chose."""
+    if not ARMOR_MODEL_FIELD.search(text):
+        raise SystemExit(f"{source}: no armor part fields")
+    return ARMOR_MODEL_FIELD.sub(lambda m: f"{m.group(1)}0{m.group(2)}", text)
+
+
 def painted(text: str, source: str, job: tuple) -> str:
     """The blueprint with a paint job in place of the dyes its source wore."""
     for field, row in zip(PAINT_FIELDS, job):
@@ -217,7 +230,7 @@ def starter_blueprint() -> str:
         raise SystemExit(f"{STARTER_SOURCE}: expected no item properties")
     text = text.replace(empty, '  "PropertiesList": {\r\n    "type": "list",\r\n    "value": [\r\n'
                         + NEW_PROPERTY + '\r\n    ]\r\n  },')
-    return painted(text, STARTER_SOURCE, PAINT_JOBS[0])
+    return painted(without_part_models(text, STARTER_SOURCE), STARTER_SOURCE, PAINT_JOBS[0])
 
 
 def module_blueprint(module: Module) -> str:
@@ -246,7 +259,7 @@ def module_blueprint(module: Module) -> str:
     text = text.replace(tail, '      },\r\n' + NEW_PROPERTY + '\r\n    ]\r\n  },\r\n  "StackSize"')
     if module.slot_key == "chest":
         job = module.tier + (len(PAINT_JOBS) // 2 if module.letter == "t" else 0)
-        text = painted(text, module.source, PAINT_JOBS[job % len(PAINT_JOBS)])
+        text = painted(without_part_models(text, module.source), module.source, PAINT_JOBS[job % len(PAINT_JOBS)])
     return text
 
 

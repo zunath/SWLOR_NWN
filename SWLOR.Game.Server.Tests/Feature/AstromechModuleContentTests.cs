@@ -117,9 +117,13 @@ public class AstromechModuleContentTests
         var changed = new[] { "LocalizedName", "Tag", "TemplateResRef", "PropertiesList" }
             .Concat(plating ? paint : Array.Empty<string>())
             .ToArray();
-        var sourceFields = source.EnumerateObject().Where(field => !changed.Contains(field.Name)).ToDictionary(field => field.Name, field => field.Value.GetRawText());
-        var itemFields = item.EnumerateObject().Where(field => !changed.Contains(field.Name)).ToDictionary(field => field.Name, field => field.Value.GetRawText());
+        // Plating also drops the part models of the piece it copies: a leftover number can name a chassis part.
+        bool Copied(string field) => !changed.Contains(field) && !(plating && IsPartModel(field));
+        var sourceFields = source.EnumerateObject().Where(field => Copied(field.Name)).ToDictionary(field => field.Name, field => field.Value.GetRawText());
+        var itemFields = item.EnumerateObject().Where(field => Copied(field.Name)).ToDictionary(field => field.Name, field => field.Value.GetRawText());
         itemFields.Should().BeEquivalentTo(sourceFields);
+        if (plating)
+            PartModels(item).Should().OnlyContain(part => part.Value == 0, "the chassis shows through plating");
 
         var expected = Properties(source).Select(property =>
             property.PropertyName == (int)ItemPropertyType.RequiresSkill && property.Subtype == (int)SkillType.Armor
@@ -157,6 +161,7 @@ public class AstromechModuleContentTests
         Text(item, "Tag").Should().Be(Astromech.StarterPlatingResref);
         Text(item, "TemplateResRef").Should().Be(Astromech.StarterPlatingResref);
         Number(item, "BaseItem").Should().Be((int)BaseItem.Armor);
+        PartModels(item).Should().NotBeEmpty().And.OnlyContain(part => part.Value == 0, "the chassis shows through plating");
         Properties(item).Should().Equal(
             new PropertyShape((int)ItemPropertyType.UseLimitationRacialType, AstromechRace, 0, 0, 255, 0, 100));
         var name = item.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString();
@@ -239,6 +244,12 @@ public class AstromechModuleContentTests
     private static string Text(JsonElement element, string name) => element.GetProperty(name).GetProperty("value").GetString()!;
 
     private static int Number(JsonElement element, string name) => element.GetProperty(name).GetProperty("value").GetInt32();
+
+    private static bool IsPartModel(string field) => field.StartsWith("ArmorPart_") || field.StartsWith("xArmorPart_");
+
+    private static Dictionary<string, int> PartModels(JsonElement item) =>
+        item.EnumerateObject().Where(field => IsPartModel(field.Name))
+            .ToDictionary(field => field.Name, field => field.Value.GetProperty("value").GetInt32());
 
     private static JsonElement ReadBlueprint(string resref)
     {

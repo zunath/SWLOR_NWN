@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "notes": "Furniture Work Stool and Wall Banner placeables with their own Meshy model, for the sets whose existing-placeable picks were chairs or shared a banner design. Same format as StationModels.json: each blueprint (resref = model) points at its own placeables.2da row, appended by PlaceableAppearanceTool install-haks.",
+  "notes": "Furniture Work Stool and Wall Banner placeables with their own Meshy model, for the sets whose existing-placeable picks were chairs or shared a banner design, and the Aegisline Sword Pedestal, which had no unused sword display. Same format as StationModels.json: each blueprint (resref = model) points at its own placeables.2da row, appended by PlaceableAppearanceTool install-haks.",
   "stations": [
     {
       "blueprint": "swc_stl_ash",
@@ -63,6 +63,13 @@
       "structure_type": "ResonantWallBanner",
       "model": "swc_ban_reson",
       "label": "[SWLOR] Furniture - Resonant Wall Banner",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_ped_aegis",
+      "structure_type": "AegislineSwordPedestal",
+      "model": "swc_ped_aegis",
+      "label": "[SWLOR] Furniture - Aegisline Sword Pedestal",
       "sound_app_type": null
     }
   ]

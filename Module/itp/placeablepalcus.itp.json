@@ -50236,6 +50236,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Aegisline Sword Pedestal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_ped_aegis"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Commandline Bust"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_bust_cmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Personal Shield Device"
                     },
                     "RESREF": {

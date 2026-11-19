@@ -88,7 +88,15 @@ public class FurnitureSetPlaceableTests
     }
 
     [TestCaseSource(nameof(OwnLookPieces))]
-    public void SetPieces_ShowModelsNoOtherStructureShows(string piece)
+    public void SetPieces_ShowModelsNoOtherStructureShows(string piece) =>
+        AssertShowModelsNoOtherStructureShows(PiecesOf(piece), piece);
+
+    [Test]
+    public void DisplayPieces_ShowModelsNoOtherStructureShows() =>
+        AssertShowModelsNoOtherStructureShows(DisplayPieceResrefs.Keys.ToList(), "display piece");
+
+    // Each piece shows its own placeables.2da model, which no other structure shows through any blueprint.
+    private static void AssertShowModelsNoOtherStructureShows(List<StructureType> pieces, string label)
     {
         var root = FindRoot();
         var placeables = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
@@ -112,11 +120,10 @@ public class FurnitureSetPlaceableTests
             return placeables.GetValue(appearance, "ModelName").ToLowerInvariant();
         }
 
-        var pieces = PiecesOf(piece);
         var pieceModels = pieces.Select(ModelOf).ToList();
         var otherModels = Enum.GetValues<StructureType>().Except(pieces).Select(ModelOf).Where(model => model != null).ToHashSet();
 
-        pieceModels.Should().NotContainNulls($"every {piece} uses a module blueprint");
+        pieceModels.Should().NotContainNulls($"every {label} resolves to a model");
         pieceModels.Should().OnlyHaveUniqueItems("two blueprints can show one model");
         pieceModels.Should().NotIntersectWith(otherModels, "a different blueprint can still show another structure's model");
     }
@@ -296,12 +303,12 @@ public class FurnitureSetPlaceableTests
         [StructureType.AshmarkAltar] = "_mdrn_pl_altarsi",
         [StructureType.GuttermarkEasel] = "x3_plc_stand001",
         [StructureType.TrailmarkWaystone] = "x0_runestone1",
-        [StructureType.StonewakeStoneAltar] = "x0_altar",
-        [StructureType.AegislineSwordPedestal] = "x3_plc_pedsword",
-        [StructureType.VeilcarvedRunePillar] = "x0_runepillar",
-        [StructureType.SurgewakeHoloProjector] = "_mdrn_pl_holobas",
+        [StructureType.StonewakeStoneAltar] = "zep_stones018",
+        [StructureType.AegislineSwordPedestal] = "swc_ped_aegis",
+        [StructureType.VeilcarvedRunePillar] = "_mdrn_pl_pillr13",
+        [StructureType.SurgewakeHoloProjector] = "_mdrn_pl_holocon",
         [StructureType.ResonantCrystal] = "x2_plc_crystal",
         [StructureType.FieldlineDisplayCase] = "zep_displaycase1",
-        [StructureType.CommandlineBust] = "_mdrn_pl_bust",
+        [StructureType.CommandlineBust] = "swc_bust_cmd",
     };
 }

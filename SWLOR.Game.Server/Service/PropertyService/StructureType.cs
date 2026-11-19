@@ -2250,7 +2250,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         StonewakeDataConsole = 368,
 
         [Structure("Stonewake Stone Altar",
-            "x0_altar",
+            "zep_stones018",
             "",
             true,
             1)]
@@ -2320,7 +2320,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         AegislineDataConsole = 378,
 
         [Structure("Aegisline Sword Pedestal",
-            "x3_plc_pedsword",
+            "swc_ped_aegis",
             "",
             true,
             1)]
@@ -2390,7 +2390,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         VeilcarvedDataConsole = 388,
 
         [Structure("Veilcarved Rune Pillar",
-            "x0_runepillar",
+            "_mdrn_pl_pillr13",
             "",
             true,
             1)]
@@ -2460,7 +2460,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         SurgewakeDataConsole = 398,
 
         [Structure("Surgewake Holo Projector",
-            "_mdrn_pl_holobas",
+            "_mdrn_pl_holocon",
             "",
             true,
             1)]
@@ -2670,7 +2670,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         CommandlineDataConsole = 428,
 
         [Structure("Commandline Bust",
-            "_mdrn_pl_bust",
+            "swc_bust_cmd",
             "",
             true,
             1)]

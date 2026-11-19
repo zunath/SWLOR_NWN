@@ -40,6 +40,9 @@ namespace SWLOR.Game.Server.Feature
             // Already been initialized. Don't do it again.
             if (!dbPlayer.CharacterInitializationPending && (dbPlayer.Version >= 1 || dbPlayer.Version == -1)) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
             {
+                if (ReconcileBodyFrame(dbPlayer, Race.GetBodyFrame(player)))
+                    DB.Set(dbPlayer);
+
                 if (PlayerDescriptor.EnsureUnknownDisplayName(player))
                     PlayerName.RefreshNameOverridesForPlayer(player);
 
@@ -68,6 +71,21 @@ namespace SWLOR.Game.Server.Feature
                 PlayerName.RefreshNameOverridesForPlayer(player);
 
             ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
+        }
+
+        /// <summary>
+        /// Brings the saved body frame in line with the frame of the character's species; true when it changed.
+        /// A record restored or imported without the field reads as Humanoid. The socket and rebuild checks read the
+        /// species while skill gains and the perk window read the saved frame, so a stale value would give one
+        /// character two sets of skills.
+        /// </summary>
+        public static bool ReconcileBodyFrame(Player dbPlayer, BodyFrame frame)
+        {
+            if (dbPlayer.BodyFrame == frame)
+                return false;
+
+            dbPlayer.BodyFrame = frame;
+            return true;
         }
 
         internal static bool RequiresExistingPlayerRecord(Player player)

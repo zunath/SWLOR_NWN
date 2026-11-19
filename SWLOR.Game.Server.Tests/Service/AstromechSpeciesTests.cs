@@ -448,6 +448,24 @@ public class AstromechSpeciesTests
     }
 
     [Test]
+    public void ASavedFrameThatDiffersFromTheSpeciesIsCorrectedAtLogin()
+    {
+        // A record restored or imported without the field reads as Humanoid.
+        var restored = new Player();
+        SWLOR.Game.Server.Feature.PlayerInitialization.ReconcileBodyFrame(restored, BodyFrame.Astromech).Should().BeTrue();
+        restored.BodyFrame.Should().Be(BodyFrame.Astromech);
+        SWLOR.Game.Server.Feature.PlayerInitialization.ReconcileBodyFrame(restored, BodyFrame.Astromech).Should()
+            .BeFalse("a record that agrees is not saved again");
+
+        var humanoid = new Player();
+        SWLOR.Game.Server.Feature.PlayerInitialization.ReconcileBodyFrame(humanoid, BodyFrame.Humanoid).Should().BeFalse();
+        humanoid.BodyFrame.Should().Be(BodyFrame.Humanoid);
+
+        var login = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Feature", "PlayerInitialization.cs"));
+        login.Should().Contain("if (ReconcileBodyFrame(dbPlayer, Race.GetBodyFrame(player)))");
+    }
+
+    [Test]
     public void TheChassisPlaysOnlyTheClipsItHas()
     {
         AstromechAnimations.CanPlay(Animation.FireForgetTaunt).Should().BeTrue();

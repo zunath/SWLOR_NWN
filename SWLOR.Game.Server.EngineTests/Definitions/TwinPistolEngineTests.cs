@@ -560,7 +560,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ActionAttack(target);
                 });
                 await ctx.WaitUntilAsync(() => Hits.Any(x => x.Weapon == companion), 8f, "a physical companion shot through Guard");
-                ctx.Assert(GameServices.CombatDamageTaken.HasRecentGuardedHit(target, 10f), "Guard reduces landed physical damage instead of negating the roll");
+                ctx.Assert(GameServices.CombatDefenseMemory.HasRecentGuardedHit(target, 10f), "Guard reduces landed physical damage instead of negating the roll");
                 ctx.Assert(Hits.All(x => x.Damage > 0), "Guard leaves damage on the landed shot");
             }
             finally { Stop(actor); }

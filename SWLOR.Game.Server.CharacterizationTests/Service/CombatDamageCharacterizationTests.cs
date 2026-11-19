@@ -115,7 +115,7 @@ public class CombatDamageCharacterizationTests
             var (min, max) = CombatRules.CalculateDamageRange(c[0], c[1], c[2], c[3], c[4], c[5], c[6]);
             var rolls = new int[DamageRollsPerCase];
             for (var i = 0; i < rolls.Length; i++)
-                rolls[i] = GameServices.Combat.CalculateDamage(c[0], c[1], c[2], c[3], c[4], c[5], c[6]);
+                rolls[i] = GameServices.CombatDamageRoll.CalculateDamage(c[0], c[1], c[2], c[3], c[4], c[5], c[6]);
 
             table.Add(c[0], c[1], c[2], c[3], c[4], c[5], c[6], min, max, rolls);
         }
@@ -143,7 +143,7 @@ public class CombatDamageCharacterizationTests
             {
                 var rolls = new int[LongRunChunk];
                 for (var i = 0; i < rolls.Length; i++)
-                    rolls[i] = GameServices.Combat.CalculateDamage(100, 45, 40, 100, 10, critical, 5);
+                    rolls[i] = GameServices.CombatDamageRoll.CalculateDamage(100, 45, 40, 100, 10, critical, 5);
 
                 table.Add(label, start, rolls);
             }

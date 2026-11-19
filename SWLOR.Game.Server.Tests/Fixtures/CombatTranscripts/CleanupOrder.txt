@@ -44,7 +44,7 @@ table _stealthOpeningWindows: [Ally, Attacker, Defender, Other]
 == step 3 exit of the attacker
 Resources.ForgetResourceTriggerState(Attacker)
 Activity.ForgetActivityState(Attacker)
-DamageTaken.ForgetDamageTakenState(Attacker)
+DefenseMemory.ForgetDefenseMemory(Attacker)
 Suppression.ForgetSuppressionState(Attacker)
 Stat.GetStatAdjustment(Attacker, RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment)
 StatusEffect.RemoveStatusEffect(Attacker, OverwatchStatusEffect, False, True)
@@ -156,7 +156,7 @@ Stat.GetStatAdjustment(Other, DefeatedEnemyNearbyAllyPhysicalDefenseDurationSeco
 Stat.GetStatAdjustment(Other, HeavyVibrobladeOffenseSoulAscension)
 Resources.ForgetResourceTriggerState(Defender)
 Activity.ForgetActivityState(Defender)
-DamageTaken.ForgetDamageTakenState(Defender)
+DefenseMemory.ForgetDefenseMemory(Defender)
 Suppression.ForgetSuppressionState(Defender)
 Stat.GetStatAdjustment(Defender, RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment)
 StatusEffect.RemoveStatusEffect(Defender, OverwatchStatusEffect, False, True)
@@ -214,7 +214,7 @@ table _stealthOpeningWindows: [Ally, Attacker, Other]
 == step 9 exit of a creature that holds nothing
 Resources.ForgetResourceTriggerState(Master)
 Activity.ForgetActivityState(Master)
-DamageTaken.ForgetDamageTakenState(Master)
+DefenseMemory.ForgetDefenseMemory(Master)
 Suppression.ForgetSuppressionState(Master)
 Activation.ForgetActivationState(Master)
 HitEffects.ForgetHitEffectState(Master)

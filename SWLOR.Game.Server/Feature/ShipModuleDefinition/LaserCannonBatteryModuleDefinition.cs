@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                     var nearbyDefenseBonus = nearbyShipStatus.ThermalDefense * 2;
                                     var nearbyDefense = Space.GetShipDefense(nearbyTarget, nearbyDefenseBonus);
                                     var nearbyDefenderStat = GetAbilityScore(nearbyTarget, AbilityType.Vitality);
-                                    var damage = GameServices.Combat.CalculateDamage(
+                                    var damage = GameServices.CombatDamageRoll.CalculateDamage(
                                         attack,
                                         moduleDMG,
                                         attackerStat,

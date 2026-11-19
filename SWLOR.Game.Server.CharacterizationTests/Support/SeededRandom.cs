@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.CharacterizationTests.Support;
 /// when it is disposed. The generator is shared by the whole process, so a fixture that uses this scope must be
 /// <c>[NonParallelizable]</c>.
 /// </summary>
-/// <example><code>using var random = new SeededRandom(1234); var roll = Combat.CalculateDamage(...);</code></example>
+/// <example><code>using var random = new SeededRandom(1234); var roll = CombatDamageRoll.CalculateDamage(...);</code></example>
 public sealed class SeededRandom : IDisposable
 {
     public SeededRandom(int seed)

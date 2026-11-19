@@ -33,6 +33,46 @@ namespace SWLOR.Game.Server.Domain.Combat
             switch (e.Type)
             {
                 case CombatRecordEventType.RecordingStarted:
+                case CombatRecordEventType.RecordingStopped:
+                case CombatRecordEventType.Participant:
+                    WriteLifecycleEvent(writer, e);
+                    break;
+                case CombatRecordEventType.AbilityCast:
+                case CombatRecordEventType.AbilityQueued:
+                case CombatRecordEventType.AbilityDenied:
+                case CombatRecordEventType.AbilityInterrupted:
+                case CombatRecordEventType.AbilityImpact:
+                case CombatRecordEventType.AbilityCost:
+                    WriteAbilityEvent(writer, e);
+                    break;
+                case CombatRecordEventType.Attack:
+                case CombatRecordEventType.Damage:
+                case CombatRecordEventType.TemporaryHitPointsAbsorbed:
+                case CombatRecordEventType.TemporaryHitPointsTrimmed:
+                case CombatRecordEventType.Healing:
+                case CombatRecordEventType.TemporaryHitPointsGranted:
+                    WriteDamageEvent(writer, e);
+                    break;
+                case CombatRecordEventType.Resource:
+                case CombatRecordEventType.StatusApplied:
+                case CombatRecordEventType.StatusRefreshed:
+                case CombatRecordEventType.StatusRemoved:
+                case CombatRecordEventType.Death:
+                case CombatRecordEventType.Resurrection:
+                case CombatRecordEventType.Subdual:
+                case CombatRecordEventType.Snapshot:
+                    WriteStateEvent(writer, e);
+                    break;
+            }
+
+            writer.WriteEndObject();
+        }
+
+        private static void WriteLifecycleEvent(Utf8JsonWriter writer, in CombatRecordEvent e)
+        {
+            switch (e.Type)
+            {
+                case CombatRecordEventType.RecordingStarted:
                     writer.WriteString("label", e.Text);
                     writer.WriteString("area_name", e.Text2);
                     writer.WriteString("area_resref", e.SourceName);
@@ -50,6 +90,13 @@ namespace SWLOR.Game.Server.Domain.Combat
                     if (!string.IsNullOrEmpty(e.Text2))
                         writer.WriteString("resref", e.Text2);
                     break;
+            }
+        }
+
+        private static void WriteAbilityEvent(Utf8JsonWriter writer, in CombatRecordEvent e)
+        {
+            switch (e.Type)
+            {
                 case CombatRecordEventType.AbilityCast:
                 case CombatRecordEventType.AbilityQueued:
                     WriteParticipant(writer, "caster", e.ActorId);
@@ -98,6 +145,13 @@ namespace SWLOR.Game.Server.Domain.Combat
                     writer.WriteNumber("fp", e.Value0);
                     writer.WriteNumber("stm", e.Value1);
                     break;
+            }
+        }
+
+        private static void WriteDamageEvent(Utf8JsonWriter writer, in CombatRecordEvent e)
+        {
+            switch (e.Type)
+            {
                 case CombatRecordEventType.Attack:
                     WriteParticipant(writer, "attacker", e.ActorId);
                     WriteParticipant(writer, "defender", e.TargetId);
@@ -161,6 +215,13 @@ namespace SWLOR.Game.Server.Domain.Combat
                     writer.WriteNumber("amount", e.Value0);
                     writer.WriteNumber("duration_s", e.Value1 / 1000.0);
                     break;
+            }
+        }
+
+        private static void WriteStateEvent(Utf8JsonWriter writer, in CombatRecordEvent e)
+        {
+            switch (e.Type)
+            {
                 case CombatRecordEventType.Resource:
                     WriteParticipant(writer, "creature", e.ActorId);
                     writer.WriteString("resource", CombatRecordNames.GetResourceName((CombatRecordResource)e.Value0));
@@ -218,8 +279,6 @@ namespace SWLOR.Game.Server.Domain.Combat
                     writer.WriteBoolean("dead", e.Value7 != 0);
                     break;
             }
-
-            writer.WriteEndObject();
         }
 
         private static void WriteParticipant(Utf8JsonWriter writer, string propertyName, int participantId)

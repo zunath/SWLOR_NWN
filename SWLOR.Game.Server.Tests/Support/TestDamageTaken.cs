@@ -48,9 +48,11 @@ internal sealed partial class TestDamageTaken : CombatDamageTakenService
         IPvpCombatService pvpCombat,
         IEnmityService enmity,
         IMessagingService messaging,
-        IPlayerNameService playerName)
+        IPlayerNameService playerName,
+        ICombatDefenseMemoryService defenseMemory)
         : base(feedback, queries, resources, attackTiming, combatActivity, damageModifiers, abilityHit, hitEffects, stat, combatRating,
-            statusEffect, statusApplication, statusCombat, temporaryStatModifier, combatRecorder, pvpCombat, enmity, messaging, playerName, FacadeForwarder.LazyFor<ICombatService>())
+            statusEffect, statusApplication, statusCombat, temporaryStatModifier, combatRecorder, pvpCombat, enmity, messaging, playerName,
+            FacadeForwarder.For<ICombatDamageRollService>(), defenseMemory)
     {
         _log = log;
         _calculated = calculated;

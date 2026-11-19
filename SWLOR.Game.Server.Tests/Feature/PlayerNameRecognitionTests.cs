@@ -716,6 +716,13 @@ public class PlayerNameRecognitionTests
             "GuiDefinition",
             "ViewModel",
             "DisguiseViewModel.cs"));
+        var pickerSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "DisguiseWindow",
+            "DisguiseSoundSetPicker.cs"));
         var cacheSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -850,39 +857,39 @@ public class PlayerNameRecognitionTests
         viewModelSource.Should().Contain("Disguise.Unretire(Player, _selectedDisguiseId)");
         viewModelSource.Should().Contain("Restoring this disguise will move it back to your available disguises. Are you sure?");
         viewModelSource.Should().Contain("public Action OnClickPreviewSoundSet()");
-        viewModelSource.Should().Contain("Cache.GetSoundSetPreviewSoundResref(_selectedSoundSetId)");
-        viewModelSource.Should().Contain("PlayerPlugin.PlaySound(Player, previewSoundResref, OBJECT_INVALID)");
+        pickerSource.Should().Contain("Cache.GetSoundSetPreviewSoundResref(_selectedSoundSetId)");
+        pickerSource.Should().Contain("PlayerPlugin.PlaySound(player, previewSoundResref, OBJECT_INVALID)");
         viewModelSource.Should().NotContain("PlayVoiceChat(VoiceChat.Hello, Player)");
         viewModelSource.Should().Contain("public int SelectedSoundSetIndex");
-        viewModelSource.Should().Contain("private readonly Dictionary<int, int> _soundSetIndexesById");
-        viewModelSource.Should().Contain("private readonly List<GuiBindingList<GuiComboEntry>> _soundSetOptionPages");
-        viewModelSource.Should().Contain("currentPage.Add(new GuiComboEntry(label, optionIndex));");
-        viewModelSource.Should().Contain("private const int SoundSetPageSize");
+        pickerSource.Should().Contain("private readonly Dictionary<int, int> _soundSetIndexesById");
+        pickerSource.Should().Contain("private readonly List<GuiBindingList<GuiComboEntry>> _soundSetOptionPages");
+        pickerSource.Should().Contain("currentPage.Add(new GuiComboEntry(label, optionIndex));");
+        pickerSource.Should().Contain("private const int SoundSetPageSize");
         viewModelSource.Should().Contain("public GuiBindingList<GuiComboEntry> SoundSetPageNumbers");
         viewModelSource.Should().Contain("public int SelectedSoundSetPageIndex");
-        viewModelSource.Should().Contain("private bool _suppressSoundSetPageChange");
-        viewModelSource.Should().Contain("private int _selectedSoundSetId");
+        pickerSource.Should().Contain("private bool _suppressSoundSetPageChange");
+        pickerSource.Should().Contain("private int _selectedSoundSetId");
         viewModelSource.Should().Contain("SelectSoundSet(disguise.SoundSetId);");
         viewModelSource.Should().Contain("Biography = disguise.Biography ?? string.Empty;");
         viewModelSource.Should().Contain("WatchOnClient(model => model.Biography);");
         ExtractMethod(viewModelSource, "public Action OnClickSave()")
             .Should().Contain("Biography,");
-        viewModelSource.Should().Contain("private void LoadSoundSetPageOptions");
-        viewModelSource.Should().Contain("private void LoadSoundSetPageNumbers");
-        viewModelSource.Should().Contain("private int GetSelectedSoundSetIndexOnCurrentPage");
-        viewModelSource.Should().Contain("_soundSetPageIndex = absoluteIndex / SoundSetPageSize;");
-        viewModelSource.Should().Contain("SoundSetOptions = _soundSetOptionPages[_soundSetPageIndex];");
-        viewModelSource.Should().Contain("SoundSetPageNumbers = pageNumbers;");
+        pickerSource.Should().Contain("public void LoadSoundSetPageOptions");
+        pickerSource.Should().Contain("private void LoadSoundSetPageNumbers");
+        pickerSource.Should().Contain("public int GetSelectedSoundSetIndexOnCurrentPage");
+        pickerSource.Should().Contain("_soundSetPageIndex = absoluteIndex / SoundSetPageSize;");
+        pickerSource.Should().Contain("SoundSetOptions = _soundSetOptionPages[_soundSetPageIndex];");
+        pickerSource.Should().Contain("SoundSetPageNumbers = pageNumbers;");
         viewModelSource.Should().Contain("WatchOnClient(model => model.SelectedSoundSetPageIndex)");
-        viewModelSource.Should().Contain("_soundSetIndexesById.TryGetValue");
-        viewModelSource.Should().Contain("private void SetSelectedSoundSetFromPageIndex");
+        pickerSource.Should().Contain("_soundSetIndexesById.TryGetValue");
+        pickerSource.Should().Contain("public void SetSelectedSoundSetFromPageIndex");
         viewModelSource.Should().Contain("public Action OnClickPreviousSoundSetPage()");
         viewModelSource.Should().Contain("public Action OnClickNextSoundSetPage()");
-        viewModelSource.Should().Contain("private int SanitizeSoundSetIndex");
-        viewModelSource.Should().Contain("if (index < 0)");
-        viewModelSource.Should().Contain("LoadSoundSetPageOptions(GetSelectedSoundSetIndexOnCurrentPage(), true);");
-        viewModelSource.Should().Contain("selectedPageIndex = GetCurrentSoundSetPageSize() > 0 ? 0 : -1;");
-        viewModelSource.Should().Contain("private void RefreshSoundSetBindings");
+        pickerSource.Should().Contain("public int SanitizeSoundSetIndex");
+        pickerSource.Should().Contain("if (index < 0)");
+        viewModelSource.Should().Contain("_soundSets.LoadSoundSetPageOptions(_soundSets.GetSelectedSoundSetIndexOnCurrentPage(), true);");
+        pickerSource.Should().Contain("selectedPageIndex = GetCurrentSoundSetPageSize() > 0 ? 0 : -1;");
+        pickerSource.Should().Contain("public void RefreshSoundSetBindings");
         viewModelSource.Should().NotContain("SetSoundset(Player, _soundSetIds[SelectedSoundSetIndex])");
         viewModelSource.Should().Contain("DelayCommand(0.0f, () => PortraitInternalId = sanitizedValue)");
         viewModelSource.Should().Contain("PortraitInternalId = _activePortraitInternalId.ToString();");

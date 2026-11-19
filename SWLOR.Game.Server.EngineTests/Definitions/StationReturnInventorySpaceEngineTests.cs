@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.GuiDefinition.DroidAssemblyWindow;
 using SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
@@ -85,9 +86,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     {
                         var part = CreateItemOnObject(resref, player);
                         ctx.Assert(GetIsObjectValid(part), $"The player carries a '{resref}' part");
-                        Call(model, "AddPart", Droid.LoadDroidPartItemPropertyDetails(part), part);
+                        Call(Get(Get(model, "DroidAssemblyActionService"), "DroidAssemblyStatsService"), "AddPart", model, Droid.LoadDroidPartItemPropertyDetails(part), part);
                     }
-                    ctx.Assert(!string.IsNullOrEmpty((string)Get(model, "_cpuItem")) && !string.IsNullOrEmpty((string)Get(model, "_headItem")),
+                    ctx.Assert(!string.IsNullOrEmpty(((IDroidAssemblyHost)model).Session.CpuItem) && !string.IsNullOrEmpty(((IDroidAssemblyHost)model).Session.HeadItem),
                         "The CPU and head are installed");
                 });
                 await ctx.WaitFrameAsync();
@@ -99,18 +100,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                     model.OnClickHead()();
                     model.OnModalConfirmClick()();
-                    ctx.Assert(!string.IsNullOrEmpty((string)Get(model, "_headItem")), "A removed head without room stays installed");
+                    ctx.Assert(!string.IsNullOrEmpty(((IDroidAssemblyHost)model).Session.HeadItem), "A removed head without room stays installed");
                     ctx.AssertEqual(ItemService.InventoryFullMessage, model.Error, "The window says the inventory is full");
 
                     model.OnClickReset()();
                     model.OnModalConfirmClick()();
-                    ctx.Assert(!string.IsNullOrEmpty((string)Get(model, "_cpuItem")) && !string.IsNullOrEmpty((string)Get(model, "_headItem")),
+                    ctx.Assert(!string.IsNullOrEmpty(((IDroidAssemblyHost)model).Session.CpuItem) && !string.IsNullOrEmpty(((IDroidAssemblyHost)model).Session.HeadItem),
                         "Reset keeps the parts without room installed");
 
                     model.OnWindowClosed()();
                     model = ReopenWindow<DroidAssemblyViewModel>(fixture, GuiWindowType.DroidAssembly, null);
                     AssertCarriedIntact(ctx, player, carried);
-                    ctx.Assert(!string.IsNullOrEmpty((string)Get(model, "_cpuItem")) && !string.IsNullOrEmpty((string)Get(model, "_headItem")),
+                    ctx.Assert(!string.IsNullOrEmpty(((IDroidAssemblyHost)model).Session.CpuItem) && !string.IsNullOrEmpty(((IDroidAssemblyHost)model).Session.HeadItem),
                         "A closed assembly keeps the parts that did not fit");
                     ctx.Assert(model.HeadResref != "Blank", "The reopened assembly shows the kept head");
                     ctx.Assert(model.IsBuildInProgress, "The reopened assembly lets the kept parts be removed");
@@ -121,7 +122,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     var model = (DroidAssemblyViewModel)Gui.GetPlayerWindow(player, GuiWindowType.DroidAssembly).ViewModel;
                     model.OnWindowClosed()();
-                    ctx.Assert(string.IsNullOrEmpty((string)Get(model, "_cpuItem")) && string.IsNullOrEmpty((string)Get(model, "_headItem")),
+                    ctx.Assert(string.IsNullOrEmpty(((IDroidAssemblyHost)model).Session.CpuItem) && string.IsNullOrEmpty(((IDroidAssemblyHost)model).Session.HeadItem),
                         "Closing with room returns every part");
                     ctx.AssertEqual(1, CountCarried(player, Cpu), "The CPU returns to the inventory");
                     ctx.AssertEqual(1, CountCarried(player, Head), "The head returns to the inventory");
@@ -213,7 +214,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     // Walking away from a station or changing areas closes its window from the server.
                     var droid = OpenWindow<DroidAssemblyViewModel>(fixture, GuiWindowType.DroidAssembly, null);
                     var cpu = CreateItemOnObject(Cpu, player);
-                    Call(droid, "AddPart", Droid.LoadDroidPartItemPropertyDetails(cpu), cpu);
+                    Call(Get(Get(droid, "DroidAssemblyActionService"), "DroidAssemblyStatsService"), "AddPart", droid, Droid.LoadDroidPartItemPropertyDetails(cpu), cpu);
 
                     var incubator = OpenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, incubatorPayload);
                     ((IIncubatorHost)incubator).Session.DnaItem = SerializeNewItem(ctx, Dna);
@@ -226,7 +227,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var incubator = (IncubatorViewModel)Gui.GetPlayerWindow(player, GuiWindowType.Incubator).ViewModel;
                     Gui.ClosePlayerWindow(player, GuiWindowType.DroidAssembly);
                     Gui.ClosePlayerWindow(player, GuiWindowType.Incubator);
-                    ctx.Assert(string.IsNullOrEmpty((string)Get(droid, "_cpuItem")), "A server close returns the droid parts");
+                    ctx.Assert(string.IsNullOrEmpty(((IDroidAssemblyHost)droid).Session.CpuItem), "A server close returns the droid parts");
                     ctx.AssertEqual(1, CountCarried(player, Cpu), "The CPU reaches the inventory");
                     ctx.Assert(string.IsNullOrEmpty(((IIncubatorHost)incubator).Session.DnaItem), "A server close returns the incubator items");
                     ctx.AssertEqual(1, CountCarried(player, Dna), "The DNA reaches the inventory");

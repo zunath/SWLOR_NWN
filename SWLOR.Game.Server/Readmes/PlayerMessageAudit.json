@@ -3983,6 +3983,13 @@
     "Call": "SendMessageToPC(player, ColorToken.Cyan(message))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/DisguiseWindow/DisguiseSoundSetPicker.cs",
+    "Line": 220,
+    "Member": "PreviewSelectedSoundSet",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"No preview sound is available for this sound set.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/IncubatorWindow/IncubatorItemService.cs",
     "Line": 192,
     "Member": "OnClickDNA",
@@ -4334,73 +4341,66 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DisguiseViewModel.cs",
-    "Line": 376,
+    "Line": 382,
     "Member": "OnClickNew",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have any available disguise slots.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DisguiseViewModel.cs",
-    "Line": 423,
+    "Line": 429,
     "Member": "OnClickSave",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(result.ErrorMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DisguiseViewModel.cs",
-    "Line": 429,
+    "Line": 435,
     "Member": "OnClickSave",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Green(\"Disguise saved.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DisguiseViewModel.cs",
-    "Line": 451,
+    "Line": 457,
     "Member": "OnClickActivateOrDeactivate",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Green(\"Disguise deactivated.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DisguiseViewModel.cs",
-    "Line": 465,
+    "Line": 471,
     "Member": "OnClickActivateOrDeactivate",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(result.ErrorMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DisguiseViewModel.cs",
-    "Line": 469,
+    "Line": 475,
     "Member": "OnClickActivateOrDeactivate",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Green(\"Disguise activated.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DisguiseViewModel.cs",
-    "Line": 486,
+    "Line": 492,
     "Member": "OnClickRetire",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Green(\"Disguise retired.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DisguiseViewModel.cs",
-    "Line": 503,
+    "Line": 509,
     "Member": "OnClickUnretire",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Unable to restore that disguise.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DisguiseViewModel.cs",
-    "Line": 507,
+    "Line": 513,
     "Member": "OnClickUnretire",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Green(\"Disguise restored.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DisguiseViewModel.cs",
-    "Line": 566,
-    "Member": "OnClickPreviewSoundSet",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Red(\"No preview sound is available for this sound set.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
@@ -4614,7 +4614,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAssemblyViewModel.cs",
-    "Line": 649,
+    "Line": 284,
     "Member": "OnWindowClosed",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ItemService.ItemsHeldMessage)"
@@ -4747,7 +4747,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
-    "Line": 302,
+    "Line": 301,
     "Member": "OnWindowClosed",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ItemService.ItemsHeldMessage)"

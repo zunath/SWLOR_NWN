@@ -50,11 +50,27 @@ def _placed_item(blueprint: dict, source_item: dict, struct_id: int, x: int, y: 
     return ordered
 
 
+def _refresh(tabs: list, resref: str, blueprint: dict) -> bool:
+    """Bring the placed copies of an item up to its blueprint, in place; true when one changed."""
+    changed = False
+    for tab in tabs:
+        for index, item in enumerate(tab):
+            if item["TemplateResRef"]["value"] != resref:
+                continue
+            current = _placed_item(blueprint, item, item["__struct_id"],
+                                   item["Repos_PosX"]["value"], item["Repos_Posy"]["value"])
+            if current != item:
+                tab[index] = current
+                changed = True
+    return changed
+
+
 def stock(additions: dict, blueprint, git: Path | None = None) -> dict:
-    """{path: new bytes} for every area file whose placed stores need an item added.
+    """{path: new bytes} for every area file whose placed stores need an item added or brought up to date.
 
     `additions` maps a store tag to (source resref, new resref) pairs. In each placed store of that tag the new item
-    is added to the tab that holds the source, once. A placed store that does not sell the source is left alone.
+    is added to the tab that holds the source, once; a copy already there is rewritten when its blueprint has changed.
+    A placed store that does not sell the source is left alone.
     `blueprint` returns the bytes of an item blueprint by resref.
     """
     git = git or GIT
@@ -74,6 +90,8 @@ def stock(additions: dict, blueprint, git: Path | None = None) -> dict:
             present = {item["TemplateResRef"]["value"] for tab in tabs for item in tab}
             for source, new in pairs:
                 if new in present:
+                    # A placed copy holds the item in full, so it follows its blueprint only when rewritten here.
+                    changed |= _refresh(tabs, new, load(blueprint(new)))
                     continue
                 homes = [tab for tab in tabs if any(item["TemplateResRef"]["value"] == source for item in tab)]
                 if not homes:

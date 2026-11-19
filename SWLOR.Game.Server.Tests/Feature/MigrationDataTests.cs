@@ -11,8 +11,9 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class MigrationDataTests
 {
     // Production has run player migration 26 and server migration 31. The next release adds player migration
-    // NextPlayerVersion and server migration NextServerVersion, stubbed until a change needs them; update these at
-    // each post-release cleanup.
+    // NextPlayerVersion and server migration NextServerVersion. Neither is registered until it holds real work, because
+    // booting a build records the highest registered version and an empty one would skip work later folded into it.
+    // Update these at each post-release cleanup.
     private const int ReleasedPlayerVersion = 26;
     private const int ReleasedServerVersion = 31;
     private const int NextPlayerVersion = ReleasedPlayerVersion + 1;
@@ -29,12 +30,10 @@ public class MigrationDataTests
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) >= 22).Select(migration => migration.GetType())
             .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes"),
                 CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConsolidatePelvisAppearance"),
-                CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks"), CharacterMigrations.Named("_27_NextReleaseCharacterMigration") });
-        migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_27_NextReleaseCharacterMigration") },
-                "the next release receives one player pass");
-        CharacterMigrations.VersionOf("_27_NextReleaseCharacterMigration").Should().Be(NextPlayerVersion);
-        CharacterMigrations.LatestVersion.Should().Be(NextPlayerVersion);
+                CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks") });
+        migrations.Select(CharacterMigrations.VersionOf).Where(version => version > NextPlayerVersion).Should().BeEmpty(
+            $"the next release receives at most one player pass, as migration {NextPlayerVersion}");
+        CharacterMigrations.LatestVersion.Should().BeInRange(ReleasedPlayerVersion, NextPlayerVersion);
     }
 
     [Test]
@@ -124,10 +123,9 @@ public class MigrationDataTests
         var remaining = ServerAssembly.GetTypes()
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
-        remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
-        remaining.Select(server => server.GetType().Name).Should().BeEquivalentTo(new[] { "_32_NextReleaseServerMigration" },
-            $"the next release adds one combined stored-item pass as server migration {NextServerVersion}");
-        remaining.Single().Version.Should().Be(NextServerVersion);
+        remaining.Where(server => server.Version <= baseline).Should().BeEmpty("retired migrations are removed, not kept beside the baseline");
+        remaining.Where(server => server.Version != NextServerVersion).Should().BeEmpty(
+            $"the next release adds at most one combined stored-item pass, as server migration {NextServerVersion}");
     }
 
     private static object? Invoke(string type, string method, params object[] args) =>

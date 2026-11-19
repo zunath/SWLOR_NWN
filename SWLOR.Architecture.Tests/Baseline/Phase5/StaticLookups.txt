@@ -798,10 +798,8 @@ SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMToolsViewModel.cs | 8
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DebugEnmityViewModel.cs | 5
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DebugNuiGalleryViewModel.cs | 2
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DiceViewModel.cs | 4
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DisguiseViewModel.cs | 19
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs | 28
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAIViewModel.cs | 21
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAssemblyViewModel.cs | 31
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.cs | 21
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/EmotesViewModel.cs | 5
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ExamineItemViewModel.cs | 6

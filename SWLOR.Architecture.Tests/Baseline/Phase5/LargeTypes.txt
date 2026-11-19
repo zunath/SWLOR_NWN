@@ -30,8 +30,6 @@ SWLOR.Game.Server.Domain.Items.ItemService | 1605
 SWLOR.Game.Server.Domain.Space.SpaceService | 2768
 SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase | 2332
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel | 1516
-SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DisguiseViewModel | 1029
-SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DroidAssemblyViewModel | 1023
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerksViewModel | 1544
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel | 2081
 SWLOR.Game.Server.Feature.UsePerkFeat | 1687

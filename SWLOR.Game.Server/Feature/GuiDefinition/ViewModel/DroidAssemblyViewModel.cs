@@ -1,61 +1,19 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.UI;
-using SWLOR.Game.Server.Domain.Crafting;
-using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Domain.Items;
-using SWLOR.Game.Server.Domain.Foundation;
-using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Feature.GuiDefinition.DroidAssemblyWindow;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class DroidAssemblyViewModel : GuiViewModelBase<DroidAssemblyViewModel, GuiPayloadBase>
+    public class DroidAssemblyViewModel : GuiViewModelBase<DroidAssemblyViewModel, GuiPayloadBase>, IDroidAssemblyHost
     {
-        private const string BlankTexture = "Blank";
+        private DroidAssemblyActionService DroidAssemblyActionService { get; }
 
-        private string _cpuItem;
-        private string _headItem;
-        private string _bodyItem;
-        private string _armsItem;
-        private string _legsItem;
+        public DroidAssemblyViewModel(DroidAssemblyActionService droidAssemblyActionService)
+        {
+            DroidAssemblyActionService = droidAssemblyActionService;
+        }
 
-        private int _tier;
-        private int _level;
-        private int _aiSlots;
-        private int _hp;
-        private int _stamina;
-        private int _might;
-        private int _vitality;
-        private int _perception;
-        private int _agility;
-        private int _willpower;
-        private int _social;
-        private int _vibroblade;
-        private int _vibroknife;
-        private int _heavyVibroblade;
-        private int _spear;
-        private int _twinBlade;
-        private int _katar;
-        private int _staff;
-        private int _pistol;
-        private int _rifle;
-        private int _throwing;
-        private int _unarmed;
-        private int _twinPistol;
-        private int _armor;
-        private int _fireResistance;
-        private int _poisonResistance;
-        private int _electricalResistance;
-        private int _iceResistance;
-        private int _mindResistance;
-        private int _mobilityResistance;
-        private int _traumaResistance;
-        private int _disruptionResistance;
+        private readonly DroidAssemblySession _session = new();
 
         public string Error
         {
@@ -311,713 +269,82 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
-            Reset();
+            DroidAssemblyActionService.Reset(this);
 
             WatchOnClient(model => model.Name);
             WatchOnClient(model => model.PersonalityIndex);
         }
 
-        /// <summary>
-        /// Returns the installed parts and clears the assembly. A part without room stays installed with its stats.
-        /// </summary>
-        /// <returns>False when a part stayed installed.</returns>
-        private bool Reset()
-        {
-            Error = string.Empty;
-            Name = string.Empty;
-            PersonalityIndex = 0;
-
-            if (!ReturnParts())
-            {
-                // The build stays open so the parts that stayed can be removed once there is room.
-                ProcessNotStarted = false;
-                IsBuildInProgress = true;
-                return false;
-            }
-
-            ProcessNotStarted = true;
-            IsBuildInProgress = false;
-            IsCPUSelected = false;
-
-            _tier = 0;
-            _level = 0;
-            _aiSlots = 0;
-            _hp = 0;
-            _stamina = 0;
-            _might = 0;
-            _vitality = 0;
-            _perception = 0;
-            _agility = 0;
-            _willpower = 0;
-            _social = 0;
-            _vibroblade = 0;
-            _vibroknife = 0;
-            _heavyVibroblade = 0;
-            _spear = 0;
-            _twinBlade = 0;
-            _katar = 0;
-            _staff = 0;
-            _pistol = 0;
-            _rifle = 0;
-            _throwing = 0;
-            _unarmed = 0;
-            _twinPistol = 0;
-            _armor = 0;
-            _fireResistance = 0;
-            _poisonResistance = 0;
-            _electricalResistance = 0;
-            _iceResistance = 0;
-            _mindResistance = 0;
-            _mobilityResistance = 0;
-            _traumaResistance = 0;
-            _disruptionResistance = 0;
-
-            RefreshStats();
-
-            CPUResref = BlankTexture;
-            HeadResref = BlankTexture;
-            BodyResref = BlankTexture;
-            ArmsResref = BlankTexture;
-            LegsResref = BlankTexture;
-            return true;
-        }
-
-        /// <summary>
-        /// Returns each installed part that fits and removes its stats. The CPU is returned last, and only once the other
-        /// parts are out, because it holds them.
-        /// </summary>
-        /// <returns>True when no part is left installed.</returns>
-        private bool ReturnParts()
-        {
-            foreach (var serialized in new[] { _headItem, _bodyItem, _armsItem, _legsItem })
-                ReturnPart(serialized);
-
-            if (string.IsNullOrWhiteSpace(_headItem) && string.IsNullOrWhiteSpace(_bodyItem) &&
-                string.IsNullOrWhiteSpace(_armsItem) && string.IsNullOrWhiteSpace(_legsItem))
-                ReturnPart(_cpuItem);
-
-            return string.IsNullOrWhiteSpace(_cpuItem) && string.IsNullOrWhiteSpace(_headItem) &&
-                   string.IsNullOrWhiteSpace(_bodyItem) && string.IsNullOrWhiteSpace(_armsItem) &&
-                   string.IsNullOrWhiteSpace(_legsItem);
-        }
-
-        private void ReturnPart(string serialized)
-        {
-            if (string.IsNullOrWhiteSpace(serialized))
-                return;
-
-            var item = ObjectPlugin.Deserialize(serialized);
-            var part = Droid.LoadDroidPartItemPropertyDetails(item);
-            if (Item.TryAcquireItem(Player, item))
-                RemovePart(part);
-        }
-
-        private void ShowError(string text)
-        {
-            Error = text;
-        }
-
-        private void ClearError()
-        {
-            Error = string.Empty;
-        }
-
-        private void RefreshStats()
-        {
-            ClearError();
-
-            Tier = $"Tier: {_tier}";
-            Level = $"Level: {_level}";
-            AISlots = $"AI Slots: {_aiSlots}";
-            HP = $"HP: {_hp}";
-            Stamina = $"STM: {_stamina}";
-            Might = $"MGT: {_might}";
-            Perception = $"PER: {_perception}";
-            Vitality = $"VIT: {_vitality}";
-            Willpower = $"WIL: {_willpower}";
-            Agility = $"AGI: {_agility}";
-            Social = $"SOC: {_social}";
-            Vibroblade = $"Vibroblade: {_vibroblade}";
-            Vibroknife = $"Vibroknife: {_vibroknife}";
-            HeavyVibroblade = $"Heavy Vibroblade: {_heavyVibroblade}";
-            Spear = $"Spear: {_spear}";
-            TwinBlade = $"Twin Blade: {_twinBlade}";
-            Katar = $"Katar: {_katar}";
-            Staff = $"Staff: {_staff}";
-            Pistol = $"Pistol: {_pistol}";
-            Rifle = $"Rifle: {_rifle}";
-            Throwing = $"Throwing: {_throwing}";
-            Unarmed = $"Unarmed: {_unarmed}";
-            TwinPistol = $"Twin Pistol: {_twinPistol}";
-            Armor = $"Armor: {_armor}";
-            FireResistance = $"Fire RES: {_fireResistance}";
-            PoisonResistance = $"Poison RES: {_poisonResistance}";
-            ElectricalResistance = $"Elec. RES: {_electricalResistance}";
-            IceResistance = $"Ice RES: {_iceResistance}";
-            MindResistance = $"Mind RES: {_mindResistance}";
-            MobilityResistance = $"Mob. RES: {_mobilityResistance}";
-            TraumaResistance = $"Trauma RES: {_traumaResistance}";
-            DisruptionResistance = $"Disr. RES: {_disruptionResistance}";
-        }
-
-        private void AdjustResistances(IReadOnlyDictionary<ResistanceType, int> resistances, int multiplier)
-        {
-            foreach (var (type, value) in resistances)
-            {
-                var adjusted = value * multiplier;
-                switch (type)
-                {
-                    case ResistanceType.Fire:
-                        _fireResistance += adjusted;
-                        break;
-                    case ResistanceType.Poison:
-                        _poisonResistance += adjusted;
-                        break;
-                    case ResistanceType.Electrical:
-                        _electricalResistance += adjusted;
-                        break;
-                    case ResistanceType.Ice:
-                        _iceResistance += adjusted;
-                        break;
-                    case ResistanceType.Mind:
-                        _mindResistance += adjusted;
-                        break;
-                    case ResistanceType.Mobility:
-                        _mobilityResistance += adjusted;
-                        break;
-                    case ResistanceType.Trauma:
-                        _traumaResistance += adjusted;
-                        break;
-                    case ResistanceType.Disruption:
-                        _disruptionResistance += adjusted;
-                        break;
-                }
-            }
-        }
-
-        private void AddPart(DroidPartItemPropertyDetails part, uint item)
-        {
-            var assemblyTier = CraftRankMilestones.GetDroidAssemblyTier(Player);
-
-            var serialized = ObjectPlugin.Serialize(item);
-            var icon = Item.GetIconResref(item);
-            switch (part.PartType)
-            {
-                case DroidPartItemPropertySubType.CPU:
-
-                    if (assemblyTier < part.Tier)
-                    {
-                        ShowError($"Engineering rank too low for a tier {part.Tier} CPU. (Required: {CraftRankMilestones.RequiredRankForTier(part.Tier)})");
-                        return;
-                    }
-
-                    _cpuItem = serialized;
-                    _level = part.Level;
-                    _tier = part.Tier;
-                    IsCPUSelected = true;
-                    CPUResref = icon;
-                    break;
-                case DroidPartItemPropertySubType.Head:
-                    if (part.Tier > _tier)
-                    {
-                        ShowError($"Head part tier must be less than or equal to CPU tier ({_tier}).");
-                        return;
-                    }
-                    _headItem = serialized;
-                    HeadResref = icon;
-                    break;
-                case DroidPartItemPropertySubType.Body:
-                    if (part.Tier > _tier)
-                    {
-                        ShowError($"Body part tier must be less than or equal to CPU tier ({_tier}).");
-                        return;
-                    }
-                    _bodyItem = serialized;
-                    BodyResref = icon;
-                    break;
-                case DroidPartItemPropertySubType.Arms:
-                    if (part.Tier > _tier)
-                    {
-                        ShowError($"Arms part tier must be less than or equal to CPU tier ({_tier}).");
-                        return;
-                    }
-                    _armsItem = serialized;
-                    ArmsResref = icon;
-                    break;
-                case DroidPartItemPropertySubType.Legs:
-                    if (part.Tier > _tier)
-                    {
-                        ShowError($"Legs part tier must be less than or equal to CPU tier ({_tier}).");
-                        return;
-                    }
-                    _legsItem = serialized;
-                    LegsResref = icon;
-                    break;
-            }
-            DestroyObject(item);
-
-            _aiSlots += part.AISlots;
-            _hp += part.HP;
-            _stamina += part.STM;
-            _might += part.MGT;
-            _perception += part.PER;
-            _vitality += part.VIT;
-            _willpower += part.WIL;
-            _agility += part.AGI;
-            _social += part.SOC;
-            _vibroblade += part.Vibroblade;
-            _vibroknife += part.Vibroknife;
-            _heavyVibroblade += part.HeavyVibroblade;
-            _spear += part.Spear;
-            _twinBlade += part.TwinBlade;
-            _katar += part.Katar;
-            _staff += part.Staff;
-            _pistol += part.Pistol;
-            _rifle += part.Rifle;
-            _throwing += part.Throwing;
-            _unarmed += part.Unarmed;
-            _twinPistol += part.TwinPistol;
-            _armor += part.Armor;
-            AdjustResistances(part.Resistances, 1);
-
-            RefreshStats();
-        }
-
-        private void RemovePart(DroidPartItemPropertyDetails part)
-        {
-            switch (part.PartType)
-            {
-                case DroidPartItemPropertySubType.CPU:
-                    _cpuItem = string.Empty;
-                    _level = 0;
-                    _tier = 0;
-                    IsCPUSelected = false;
-                    CPUResref = BlankTexture;
-                    break;
-                case DroidPartItemPropertySubType.Head:
-                    _headItem = string.Empty;
-                    HeadResref = BlankTexture;
-                    break;
-                case DroidPartItemPropertySubType.Body:
-                    _bodyItem = string.Empty;
-                    BodyResref = BlankTexture;
-                    break;
-                case DroidPartItemPropertySubType.Arms:
-                    _armsItem = string.Empty;
-                    ArmsResref = BlankTexture;
-                    break;
-                case DroidPartItemPropertySubType.Legs:
-                    _legsItem = string.Empty;
-                    LegsResref = BlankTexture;
-                    break;
-            }
-
-            _aiSlots -= part.AISlots;
-            _hp -= part.HP;
-            _stamina -= part.STM;
-            _might -= part.MGT;
-            _perception -= part.PER;
-            _vitality -= part.VIT;
-            _willpower -= part.WIL;
-            _agility -= part.AGI;
-            _social -= part.SOC;
-            _vibroblade -= part.Vibroblade;
-            _vibroknife -= part.Vibroknife;
-            _heavyVibroblade -= part.HeavyVibroblade;
-            _spear -= part.Spear;
-            _twinBlade -= part.TwinBlade;
-            _katar -= part.Katar;
-            _staff -= part.Staff;
-            _pistol -= part.Pistol;
-            _rifle -= part.Rifle;
-            _throwing -= part.Throwing;
-            _unarmed -= part.Unarmed;
-            _twinPistol -= part.TwinPistol;
-            _armor -= part.Armor;
-            AdjustResistances(part.Resistances, -1);
-
-            RefreshStats();
-        }
-
         /// <summary>Runs whenever the window closes, whether the player closes it or the server does.</summary>
         public override Action OnWindowClosed() => () =>
         {
-            if (!Reset())
+            if (!DroidAssemblyActionService.Reset(this))
                 SendMessageToPC(Player, ItemService.ItemsHeldMessage);
         };
 
-        public Action OnClickCPU() => () =>
-        {
-            ClearError();
+        public Action OnClickCPU() => () => DroidAssemblyActionService.OnClickCPU(this);
 
-            if (!string.IsNullOrWhiteSpace(_cpuItem))
-            {
-                ShowModal("Will you remove the CPU part?", () =>
-                {
-                    if (!string.IsNullOrWhiteSpace(_headItem) ||
-                        !string.IsNullOrWhiteSpace(_bodyItem) ||
-                        !string.IsNullOrWhiteSpace(_armsItem) ||
-                        !string.IsNullOrWhiteSpace(_legsItem))
-                    {
-                        ShowError("Remove all parts first.");
-                    }
-                    else
-                    {
-                        var item = ObjectPlugin.Deserialize(_cpuItem);
-                        var part = Droid.LoadDroidPartItemPropertyDetails(item);
-                        if (!Item.TryAcquireItem(Player, item))
-                        {
-                            ShowError(ItemService.InventoryFullMessage);
-                            return;
-                        }
+        public Action OnClickHead() => () => DroidAssemblyActionService.OnClickHead(this);
 
-                        CPUResref = BlankTexture;
-                        RemovePart(part);
-                    }
-                });
-            }
-            else
-            {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a CPU part from your inventory.", item =>
-                {
-                    var error = Item.CanBePersistentlyStored(Player, item);
-                    if (!string.IsNullOrWhiteSpace(error))
-                    {
-                        ShowError(error);
-                        return;
-                    }
+        public Action OnClickBody() => () => DroidAssemblyActionService.OnClickBody(this);
 
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
+        public Action OnClickArms() => () => DroidAssemblyActionService.OnClickArms(this);
 
-                    if (part.PartType != DroidPartItemPropertySubType.CPU)
-                    {
-                        ShowError("Select a CPU part.");
-                        return;
-                    }
+        public Action OnClickLegs() => () => DroidAssemblyActionService.OnClickLegs(this);
 
-                    AddPart(part, item);
-                });
-            }
-        };
+        public Action OnClickNewDroid() => () => DroidAssemblyActionService.OnClickNewDroid(this);
 
-        public Action OnClickHead() => () =>
-        {
-            ClearError();
+        public Action OnClickReset() => () => DroidAssemblyActionService.OnClickReset(this);
 
-            if (!string.IsNullOrWhiteSpace(_headItem))
-            {
-                ShowModal("Will you remove the Head part?", () =>
-                {
-                    var item = ObjectPlugin.Deserialize(_headItem);
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
-                    if (!Item.TryAcquireItem(Player, item))
-                    {
-                        ShowError(ItemService.InventoryFullMessage);
-                        return;
-                    }
+        public Action OnClickConstruct() => () => DroidAssemblyActionService.OnClickConstruct(this);
 
-                    HeadResref = BlankTexture;
-                    RemovePart(part);
-                });
-            }
-            else
-            {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a Head part from your inventory.", item =>
-                {
-                    var error = Item.CanBePersistentlyStored(Player, item);
-                    if (!string.IsNullOrWhiteSpace(error))
-                    {
-                        ShowError(error);
-                        return;
-                    }
-
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
-
-                    if (part.PartType != DroidPartItemPropertySubType.Head)
-                    {
-                        ShowError("Select a Head part.");
-                        return;
-                    }
-
-                    AddPart(part, item);
-                });
-            }
-        };
-        public Action OnClickBody() => () =>
-        {
-            ClearError();
-
-            if (!string.IsNullOrWhiteSpace(_bodyItem))
-            {
-                ShowModal("Will you remove the Body part?", () =>
-                {
-                    var item = ObjectPlugin.Deserialize(_bodyItem);
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
-                    if (!Item.TryAcquireItem(Player, item))
-                    {
-                        ShowError(ItemService.InventoryFullMessage);
-                        return;
-                    }
-
-                    BodyResref = BlankTexture;
-                    RemovePart(part);
-                });
-            }
-            else
-            {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a Body part from your inventory.", item =>
-                {
-                    var error = Item.CanBePersistentlyStored(Player, item);
-                    if (!string.IsNullOrWhiteSpace(error))
-                    {
-                        ShowError(error);
-                        return;
-                    }
-
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
-
-                    if (part.PartType != DroidPartItemPropertySubType.Body)
-                    {
-                        ShowError("Select a Body part.");
-                        return;
-                    }
-
-                    AddPart(part, item);
-                });
-            }
-        };
-        public Action OnClickArms() => () =>
-        {
-            ClearError();
-
-            if (!string.IsNullOrWhiteSpace(_armsItem))
-            {
-                ShowModal("Will you remove the Arms part?", () =>
-                {
-                    var item = ObjectPlugin.Deserialize(_armsItem);
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
-                    if (!Item.TryAcquireItem(Player, item))
-                    {
-                        ShowError(ItemService.InventoryFullMessage);
-                        return;
-                    }
-
-                    ArmsResref = BlankTexture;
-                    RemovePart(part);
-                });
-            }
-            else
-            {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select an Arms part from your inventory.", item =>
-                {
-                    var error = Item.CanBePersistentlyStored(Player, item);
-                    if (!string.IsNullOrWhiteSpace(error))
-                    {
-                        ShowError(error);
-                        return;
-                    }
-
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
-
-                    if (part.PartType != DroidPartItemPropertySubType.Arms)
-                    {
-                        ShowError("Select an Arms part.");
-                        return;
-                    }
-
-                    AddPart(part, item);
-                });
-            }
-        };
-        public Action OnClickLegs() => () =>
-        {
-            ClearError();
-
-            if (!string.IsNullOrWhiteSpace(_legsItem))
-            {
-                ShowModal("Will you remove the Legs part?", () =>
-                {
-                    var item = ObjectPlugin.Deserialize(_legsItem);
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
-                    if (!Item.TryAcquireItem(Player, item))
-                    {
-                        ShowError(ItemService.InventoryFullMessage);
-                        return;
-                    }
-
-                    LegsResref = BlankTexture;
-                    RemovePart(part);
-                });
-            }
-            else
-            {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a Legs part from your inventory.", item =>
-                {
-                    var error = Item.CanBePersistentlyStored(Player, item);
-                    if (!string.IsNullOrWhiteSpace(error))
-                    {
-                        ShowError(error);
-                        return;
-                    }
-
-                    var part = Droid.LoadDroidPartItemPropertyDetails(item);
-
-                    if (part.PartType != DroidPartItemPropertySubType.Legs)
-                    {
-                        ShowError("Select a Legs part.");
-                        return;
-                    }
-
-                    AddPart(part, item);
-                });
-            }
-        };
-
-        public Action OnClickNewDroid() => () =>
-        {
-            ClearError();
-
-            IsBuildInProgress = true;
-            ProcessNotStarted = false;
-        };
-
-        public Action OnClickReset() => () =>
-        {
-            ClearError();
-
-            ShowModal("Are you sure you want to reset everything?", () =>
-            {
-                if (!Reset())
-                    ShowError(ItemService.InventoryFullMessage);
-            });
-        };
-
-        public Action OnClickConstruct() => () =>
-        {
-            if (ProcessNotStarted)
-                return;
-
-            ClearError();
-
-            if (string.IsNullOrWhiteSpace(_cpuItem) ||
-                string.IsNullOrWhiteSpace(_headItem) ||
-                string.IsNullOrWhiteSpace(_bodyItem) ||
-                string.IsNullOrWhiteSpace(_armsItem) ||
-                string.IsNullOrWhiteSpace(_legsItem))
-            {
-                ShowError("Missing required part!");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(Name))
-            {
-                ShowError("Enter droid name.");
-                return;
-            }
-
-            if (PersonalityIndex == 0)
-            {
-                ShowError("Select droid personality.");
-                return;
-            }
-
-            ShowModal("You are about to construct the droid. Are you sure you want to continue?", () =>
-            {
-                var controller = CreateItemOnObject(DroidService.DroidControlItemResref, Player);
-                SetName(controller, $"Droid Controller: {Name}");
-
-                var constructedDroid = Droid.LoadConstructedDroid(controller);
-                constructedDroid.Name = Name;
-
-                var ipPersonality = ItemPropertyCustom(ItemPropertyType.DroidPersonality, PersonalityIndex);
-                var ipTier = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Tier, _tier);
-                var ipAISlots = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.AISlots, _aiSlots);
-
-                var ipHP = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.HP, _hp); ;
-                var ipSTM = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.STM, _stamina); ;
-
-                var ipAgility = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.AGI, _agility);
-                var ipMight = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.MGT, _might);
-                var ipPerception = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.PER, _perception);
-                var ipVitality = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.VIT, _vitality);
-                var ipWillpower = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.WIL, _willpower);
-                var ipSocial = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.SOC, _social);
-
-                var ipVibroblade = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Vibroblade, _vibroblade);
-                var ipVibroknife = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Vibroknife, _vibroknife);
-                var ipHeavyVibroblade = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.HeavyVibroblade, _heavyVibroblade);
-                var ipSpear = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Spear, _spear);
-                var ipTwinBlade = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.TwinBlade, _twinBlade);
-                var ipKatar = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Katar, _katar);
-                var ipStaff = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Staff, _staff);
-                var ipPistol = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Pistol, _pistol);
-                var ipRifle = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Rifle, _rifle);
-                var ipThrowing = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Throwing, _throwing);
-                var ipUnarmed = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Unarmed, _unarmed);
-                var ipTwinPistol = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.TwinPistol, _twinPistol);
-                var ipArmor = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Armor, _armor);
-                var ipFireResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceFire, _fireResistance);
-                var ipPoisonResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistancePoison, _poisonResistance);
-                var ipElectricalResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceElectrical, _electricalResistance);
-                var ipIceResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceIce, _iceResistance);
-                var ipMindResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceMind, _mindResistance);
-                var ipMobilityResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceMobility, _mobilityResistance);
-                var ipTraumaResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceTrauma, _traumaResistance);
-                var ipDisruptionResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceDisruption, _disruptionResistance);
-
-                BiowareXP2.IPSafeAddItemProperty(controller, ipPersonality, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipTier, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipAISlots, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipHP, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipSTM, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipAgility, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipMight, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipPerception, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipVitality, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipWillpower, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipSocial, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipVibroblade, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipVibroknife, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipHeavyVibroblade, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipSpear, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipTwinBlade, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipKatar, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipStaff, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipPistol, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipRifle, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipThrowing, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipUnarmed, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipTwinPistol, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipArmor, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipFireResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipPoisonResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipElectricalResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipIceResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipMindResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipMobilityResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipTraumaResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                BiowareXP2.IPSafeAddItemProperty(controller, ipDisruptionResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-
-                constructedDroid.SerializedCPU = _cpuItem;
-                constructedDroid.SerializedHead = _headItem;
-                constructedDroid.SerializedBody = _bodyItem;
-                constructedDroid.SerializedArms = _armsItem;
-                constructedDroid.SerializedLegs = _legsItem;
-
-                Droid.SaveConstructedDroid(controller, constructedDroid);
-
-                _cpuItem = string.Empty;
-                _headItem = string.Empty;
-                _bodyItem = string.Empty;
-                _armsItem = string.Empty;
-                _legsItem = string.Empty;
-
-                Reset();
-            });
-        };
-
+        DroidAssemblySession IDroidAssemblyHost.Session => _session;
+        uint IDroidAssemblyHost.Player => Player;
+        void IDroidAssemblyHost.ShowModal(string prompt, Action confirmAction) => ShowModal(prompt, confirmAction);
+        string IDroidAssemblyHost.Error { get => Error; set => Error = value; }
+        string IDroidAssemblyHost.Name { get => Name; set => Name = value; }
+        int IDroidAssemblyHost.PersonalityIndex { get => PersonalityIndex; set => PersonalityIndex = value; }
+        bool IDroidAssemblyHost.ProcessNotStarted { get => ProcessNotStarted; set => ProcessNotStarted = value; }
+        bool IDroidAssemblyHost.IsBuildInProgress { get => IsBuildInProgress; set => IsBuildInProgress = value; }
+        bool IDroidAssemblyHost.IsCPUSelected { get => IsCPUSelected; set => IsCPUSelected = value; }
+        string IDroidAssemblyHost.Tier { get => Tier; set => Tier = value; }
+        string IDroidAssemblyHost.Level { get => Level; set => Level = value; }
+        string IDroidAssemblyHost.AISlots { get => AISlots; set => AISlots = value; }
+        string IDroidAssemblyHost.HP { get => HP; set => HP = value; }
+        string IDroidAssemblyHost.Stamina { get => Stamina; set => Stamina = value; }
+        string IDroidAssemblyHost.Might { get => Might; set => Might = value; }
+        string IDroidAssemblyHost.Perception { get => Perception; set => Perception = value; }
+        string IDroidAssemblyHost.Vitality { get => Vitality; set => Vitality = value; }
+        string IDroidAssemblyHost.Willpower { get => Willpower; set => Willpower = value; }
+        string IDroidAssemblyHost.Agility { get => Agility; set => Agility = value; }
+        string IDroidAssemblyHost.Social { get => Social; set => Social = value; }
+        string IDroidAssemblyHost.Vibroblade { get => Vibroblade; set => Vibroblade = value; }
+        string IDroidAssemblyHost.Vibroknife { get => Vibroknife; set => Vibroknife = value; }
+        string IDroidAssemblyHost.HeavyVibroblade { get => HeavyVibroblade; set => HeavyVibroblade = value; }
+        string IDroidAssemblyHost.Spear { get => Spear; set => Spear = value; }
+        string IDroidAssemblyHost.TwinBlade { get => TwinBlade; set => TwinBlade = value; }
+        string IDroidAssemblyHost.Katar { get => Katar; set => Katar = value; }
+        string IDroidAssemblyHost.Staff { get => Staff; set => Staff = value; }
+        string IDroidAssemblyHost.Pistol { get => Pistol; set => Pistol = value; }
+        string IDroidAssemblyHost.Rifle { get => Rifle; set => Rifle = value; }
+        string IDroidAssemblyHost.Throwing { get => Throwing; set => Throwing = value; }
+        string IDroidAssemblyHost.Unarmed { get => Unarmed; set => Unarmed = value; }
+        string IDroidAssemblyHost.TwinPistol { get => TwinPistol; set => TwinPistol = value; }
+        string IDroidAssemblyHost.Armor { get => Armor; set => Armor = value; }
+        string IDroidAssemblyHost.FireResistance { get => FireResistance; set => FireResistance = value; }
+        string IDroidAssemblyHost.PoisonResistance { get => PoisonResistance; set => PoisonResistance = value; }
+        string IDroidAssemblyHost.ElectricalResistance { get => ElectricalResistance; set => ElectricalResistance = value; }
+        string IDroidAssemblyHost.IceResistance { get => IceResistance; set => IceResistance = value; }
+        string IDroidAssemblyHost.MindResistance { get => MindResistance; set => MindResistance = value; }
+        string IDroidAssemblyHost.MobilityResistance { get => MobilityResistance; set => MobilityResistance = value; }
+        string IDroidAssemblyHost.TraumaResistance { get => TraumaResistance; set => TraumaResistance = value; }
+        string IDroidAssemblyHost.DisruptionResistance { get => DisruptionResistance; set => DisruptionResistance = value; }
+        string IDroidAssemblyHost.CPUResref { get => CPUResref; set => CPUResref = value; }
+        string IDroidAssemblyHost.HeadResref { get => HeadResref; set => HeadResref = value; }
+        string IDroidAssemblyHost.BodyResref { get => BodyResref; set => BodyResref = value; }
+        string IDroidAssemblyHost.ArmsResref { get => ArmsResref; set => ArmsResref = value; }
+        string IDroidAssemblyHost.LegsResref { get => LegsResref; set => LegsResref = value; }
     }
 }

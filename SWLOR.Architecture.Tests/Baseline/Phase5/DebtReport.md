@@ -7,8 +7,8 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,094 | 13,367 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 25 | 37,641 lines | none over 1,000 lines |
+| 1. Static service lookup | `StaticLookups.txt` | 1,092 | 13,317 uses | none: GameServices and FacadeAccessor deleted |
+| 2. Large types | `LargeTypes.txt` | 23 | 35,589 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 9 | 2,708 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 17 | 278 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 33 | 43 parameters | none |
@@ -20,8 +20,8 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 ## 1. Static service lookup
 
-- 1,094 files, 13,367 uses: 829 using directives and 12,538 uses in code (7,518 in a static context).
-- SWLOR.Game.Server: 645 file(s), 5,819 use(s) (Feature/ 535, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
+- 1,092 files, 13,317 uses: 827 using directives and 12,490 uses in code (7,516 in a static context).
+- SWLOR.Game.Server: 643 file(s), 5,769 use(s) (Feature/ 533, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 241 file(s), 5,353 use(s).
 - SWLOR.Game.Server.Tests: 179 file(s), 2,037 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
@@ -33,10 +33,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - SWLOR.CLI: 1 file(s), 5 use(s).
 - SWLOR.CombatSim: 1 file(s), 2 use(s).
 - SWLOR.Toolset.Tests: 1 file(s), 2 use(s).
-- Content (Feature/) uses in code: 4,533 (1,681 in a static context).
-- Content (Feature/) types that use it: 533. Static classes: 75. Instance classes that use it from a static member: 202 (156 only from static members).
+- Content (Feature/) uses in code: 4,485 (1,679 in a static context).
+- Content (Feature/) types that use it: 531. Static classes: 75. Instance classes that use it from a static member: 201 (156 only from static members).
 
-Largest 15 of 1,094 (all in `StaticLookups.txt`):
+Largest 15 of 1,092 (all in `StaticLookups.txt`):
 
 | Entry | Uses | Detail |
 |---|---:|---|
@@ -58,11 +58,11 @@ Largest 15 of 1,094 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 25 types over 1,000 lines, 37,641 lines in all.
+- 23 types over 1,000 lines, 35,589 lines in all.
 - Exempt and over the limit: 191 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1, owner exception 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
-Largest 15 of 25 (all in `LargeTypes.txt`):
+Largest 15 of 23 (all in `LargeTypes.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|

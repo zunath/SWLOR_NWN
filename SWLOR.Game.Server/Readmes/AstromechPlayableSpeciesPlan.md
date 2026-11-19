@@ -553,9 +553,10 @@ Done on 2026-11-18, on the owner's rule that every playable species has a dynami
 
 **Left as it is**
 
-- Module and tool inventory icons are still the icons of the humanoid pieces they copy (a tunic for plating, a
-  staff sliver for the prod). The tools now have icon files of their own, so drawing proper icons is possible; it
-  was not part of this rebuild.
+- Inventory icons. Chassis Plating is an armor item with no part models, so it shows the armor base item's empty
+  icon, a bare torso; humanoid armor uses torso 0 too, so that icon cannot simply be replaced, and plating would
+  need a base item of its own. The prod and blaster mount show the staff and rifle icons they copy (the prod is a
+  thin sliver); they have icon files of their own now, so proper icons are possible.
 - Module descriptions are still the text of the humanoid piece they copy.
 - The editor shows the Skin, Hair and Tattoo swatches and the Show Helmet and Show Cloak boxes to an astromech, as it
   does to everyone; they change nothing on a chassis.

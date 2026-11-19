@@ -59,35 +59,6 @@ public class MigrationDataTests
     }
 
     [Test]
-    public void RecipeVariantIdsAreStableAndDistinct()
-    {
-        var first = Invoke("CharacterMigration.SavedDroidBoostItemMigration", "GetVariantId", "source", 4800);
-        first.Should().Be(Invoke("CharacterMigration.SavedDroidBoostItemMigration", "GetVariantId", "source", 4800));
-        first.Should().NotBe(Invoke("CharacterMigration.SavedDroidBoostItemMigration", "GetVariantId", "source", 4801));
-        first.Should().NotBe(Invoke("CharacterMigration.SavedDroidBoostItemMigration", "GetVariantId", "other", 4800));
-        first.Should().Be("source-recipe-4800");
-    }
-
-    [TestCase(3488, new[] { 4799, 4800 })]
-    [TestCase(3489, new[] { 4802, 4803, 4804 })]
-    [TestCase(3490, new[] { 4806, 4807 })]
-    [TestCase(3491, new[] { 4808, 4809, 4810 })]
-    [TestCase(3492, new[] { 4811, 4812 })]
-    [TestCase(3493, new[] { 4814, 4815, 4816 })]
-    public void LegacyBoostBlueprintsExpandOnlyIntoRegisteredReplacements(int legacyRecipeId, int[] expected)
-    {
-        // The saber replacements (4801, 4805, 4813, 4817) were retired and have no registered recipe.
-        var migration = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration.DroidBoostRecipeMigration")!;
-        var tryGetNames = migration.GetMethod("TryGetReplacementRecipeNames",
-            BindingFlags.Public | BindingFlags.Static, new[] { typeof(string), typeof(string[]).MakeByRefType() })!;
-        var arguments = new object?[] { legacyRecipeId.ToString(), null };
-        ((bool)tryGetNames.Invoke(null, arguments)!).Should().BeTrue();
-
-        var ids = (IEnumerable<int>)migration.GetMethod("GetReplacementRecipeIds")!.Invoke(null, new[] { arguments[1] })!;
-        ids.Should().Equal(expected);
-    }
-
-    [Test]
     public void AFailedLaterPhaseCannotCheckpointAnEarlierHigherVersion()
     {
         var type = ServerAssembly.GetType("SWLOR.Game.Server.Service.MigrationService.ServerMigrationState")!;

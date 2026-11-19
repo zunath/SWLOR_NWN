@@ -24,6 +24,13 @@ internal static class CharacterFileUpgrade
     /// <summary>Files without the checkpoint predate it; their record version stands in, up to this version.</summary>
     private const int LastPlayerVersionWithoutFileCheckpoint = 12;
 
+    /// <summary>
+    /// The oldest character file this build upgrades. Migration 13's droid boost conversion is retired, so a file
+    /// below it (including any file without a checkpoint) is refused and kept as saved instead of being marked
+    /// current without that conversion. Upgrade such a file with an older build first.
+    /// </summary>
+    internal const int OldestUpgradableFileVersion = 13;
+
     private static readonly Lazy<ICharacterMigration[]> _migrations = new(() => typeof(ICharacterMigration).Assembly.GetTypes()
         .Where(type => !type.IsAbstract && !type.IsInterface && typeof(ICharacterMigration).IsAssignableFrom(type))
         .Select(type => (ICharacterMigration)Activator.CreateInstance(type))
@@ -65,6 +72,9 @@ internal static class CharacterFileUpgrade
         var start = Math.Min(record.Version, fileVersion);
         if (start >= LatestVersion)
             return null;
+        if (fileVersion < OldestUpgradableFileVersion)
+            throw new InvalidOperationException(
+                $"The character file is at version {fileVersion}; this build upgrades files from version {OldestUpgradableFileVersion}. Upgrade it with an older build first.");
         // A record that reached a version received that migration's record changes with the file it was saved with
         // (at login before this upgrade existed), so an older file restored beside it changes only the file.
         var recordEffectsThrough = Math.Max(record.CharacterFileVersion, recordVersion);

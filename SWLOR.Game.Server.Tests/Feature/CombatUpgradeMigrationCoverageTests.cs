@@ -216,18 +216,6 @@ public class CombatUpgradeMigrationCoverageTests
             if (GetTsvInt(row, 17) > 0)
                 stats.Should().ContainKey((int)DroidStatSubType.TwinPistol, $"{templateResref} ranged CPUs should grant Twin Pistol like Pistol, Rifle, and Throwing");
         }
-
-        var migration = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "CharacterMigration",
-            "SavedDroidBoostItemMigration.cs"));
-        migration.Should().Contain("DroidStatSubType.Armor");
-        migration.Should().Contain("DroidPartItemPropertySubType.CPU");
-        migration.Should().Contain("Droid.DroidControlItemResref");
-        migration.Should().Contain("GetTierArmorSkillRank");
     }
 
     [Test]

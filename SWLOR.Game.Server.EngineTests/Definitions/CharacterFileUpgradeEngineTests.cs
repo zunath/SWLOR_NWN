@@ -5,12 +5,18 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class CharacterFileUpgradeEngineTests
     {
         private const string VaultVariable = "SWLOR_SERVERVAULT_DIRECTORY";
+
+        // Files and records start at version 22, so migration 23 corrects the legacy cowl worn on the arms. Its head
+        // slot is taken and the inventory is full, so the cowl goes to overflow storage.
+        private const int StartVersion = 22;
+        private const string StowedItem = "absdef_l3";
 
         /// <summary>
         /// The boot-time pass over a server vault: it upgrades a character file and its record together, keeps the
@@ -24,7 +30,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var owner = fixture.Creature;
-            await ctx.EquipItemAsync(owner, "nw_wswls001", InventorySlot.RightHand);
+            await WearLegacyCowlBesideOccupiedHead(ctx, owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 // A 2x3 outfit fills six cells; sixty of them cover the 10x36 inventory a character file holds.
@@ -42,7 +48,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 await ctx.ExecuteInCreatureContextAsync(owner, () =>
                 {
-                    var original = SavedCharacterMigration.SaveFile(owner);
+                    var original = SavedCharacterMigration.WithFileVersion(SavedCharacterMigration.SaveFile(owner), StartVersion);
                     Directory.CreateDirectory(Path.GetDirectoryName(path)!);
                     File.WriteAllBytes(path, original);
                     previousRecord = SavedCharacterMigration.CopyRecord(DB.Get<Player>(fixture.Id));
@@ -50,8 +56,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     Environment.SetEnvironmentVariable(VaultVariable, vault);
                     var latest = SavedCharacterMigration.LatestVersion;
 
-                    // A record that last migrated at version 5 and a file without a checkpoint: migration 6 unequips
-                    // everything, and the full inventory leaves no room for it.
+                    // A record and a file at version 22: migration 23 stows the legacy cowl, and the full inventory
+                    // leaves no room for it.
                     StartUpgrade(fixture.Id, previousRecord);
                     ctx.Assert(SavedCharacterMigration.UpgradeServerVault(), "Every character in the vault is upgraded");
                     var upgraded = File.ReadAllBytes(path);
@@ -64,7 +70,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(File.ReadAllBytes(backups[0]).SequenceEqual(original), "The backup holds the original file");
                     ctx.Assert(!File.Exists(path + ".upgrade"), "No upgraded file is left beside the character file");
                     var overflow = OverflowRecords(fixture.Id);
-                    ctx.Assert(overflow.Any(item => item.Resref == "nw_wswls001"), "The unequipped weapon waits in overflow storage");
+                    ctx.Assert(overflow.Any(item => item.Resref == StowedItem), "The unequipped weapon waits in overflow storage");
                     ctx.AssertEqual(latest, DB.Get<ServerConfiguration>("SWLOR_CONFIG").CharacterFileVersion,
                         "The vault is marked current");
 
@@ -127,8 +133,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(File.ReadAllBytes(path).SequenceEqual(original), "A character still being created keeps its file");
                     ctx.AssertEqual(5, DB.Get<Player>(fixture.Id).Version, "A character still being created keeps its record");
 
-                    // Two files without a checkpoint that share a record are both judged by the record's version before
-                    // this boot advanced it, so each runs every migration and keeps its own overflow items.
+                    // Two files that share a record are both upgraded from their own checkpoint, so each runs migration
+                    // 23 and keeps its own overflow items.
                     foreach (var item in OverflowRecords(fixture.Id))
                         DB.Delete<OverflowItem>(item.Id);
                     var second = Path.Combine(vault, "TESTKEY2", "fixture.bic");
@@ -173,7 +179,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var first = await PlayerAbilityFixture.CreateAsync(ctx);
             using var second = await PlayerAbilityFixture.CreateAsync(ctx);
             var owner = first.Creature;
-            await ctx.EquipItemAsync(owner, "nw_wswls001", InventorySlot.RightHand);
+            await WearLegacyCowlBesideOccupiedHead(ctx, owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 for (var filler = 0; filler < 60; filler++)
@@ -194,11 +200,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 await ctx.ExecuteInCreatureContextAsync(owner, () =>
                 {
-                    var firstFile = SavedCharacterMigration.SaveFile(owner);
+                    var firstFile = SavedCharacterMigration.WithFileVersion(SavedCharacterMigration.SaveFile(owner), StartVersion);
                     Directory.CreateDirectory(firstFolder);
                     Directory.CreateDirectory(Path.GetDirectoryName(secondPath)!);
                     File.WriteAllBytes(firstPath, firstFile);
-                    File.WriteAllBytes(secondPath, SavedCharacterMigration.SaveFile(second.Creature));
+                    File.WriteAllBytes(secondPath, SavedCharacterMigration.WithFileVersion(SavedCharacterMigration.SaveFile(second.Creature), StartVersion));
                     firstRecord = SavedCharacterMigration.CopyRecord(DB.Get<Player>(first.Id));
                     secondRecord = SavedCharacterMigration.CopyRecord(DB.Get<Player>(second.Id));
                     previousFileVersion = DB.Get<ServerConfiguration>("SWLOR_CONFIG")?.CharacterFileVersion ?? 0;
@@ -213,7 +219,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(!SavedCharacterMigration.UpgradeServerVault(), "The pass reports the character it could not upgrade");
                     ctx.AssertEqual(latest, SavedCharacterMigration.ReadFileVersion(File.ReadAllBytes(secondPath)), "The other character's file is upgraded");
                     ctx.AssertEqual(latest, DB.Get<Player>(second.Id).Version, "The other character's record is upgraded");
-                    ctx.AssertEqual(5, DB.Get<Player>(first.Id).Version, "The failed character keeps its record");
+                    ctx.AssertEqual(StartVersion, DB.Get<Player>(first.Id).Version, "The failed character keeps its record");
                     ctx.Assert(File.ReadAllBytes(firstPath).SequenceEqual(firstFile), "The failed character keeps its file");
                     File.SetUnixFileMode(firstFolder, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
                     File.Delete(firstPath + ".upgrade");
@@ -223,7 +229,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ResetVaultMarker();
                     ctx.Assert(!SavedCharacterMigration.UpgradeServerVault(), "The failed save is reported");
                     ctx.AssertEqual(0, OverflowRecords(first.Id).Count, "No overflow item can be claimed while the original file holds it");
-                    ctx.AssertEqual(5, DB.Get<Player>(first.Id).Version, "The record is unchanged");
+                    ctx.AssertEqual(StartVersion, DB.Get<Player>(first.Id).Version, "The record is unchanged");
                     ctx.Assert(File.ReadAllBytes(firstPath).SequenceEqual(firstFile), "The file is unchanged");
 
                     Directory.Delete(firstPath + ".upgrade");
@@ -235,17 +241,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(!SavedCharacterMigration.UpgradeServerVault(), "The failed backup is reported");
                     ctx.Assert(!File.Exists(firstPath + ".upgrade"), "The upgraded file is removed with its overflow items");
                     ctx.AssertEqual(0, OverflowRecords(first.Id).Count, "The overflow items are removed with the upgraded file");
-                    ctx.AssertEqual(5, DB.Get<Player>(first.Id).Version, "The record is still unchanged");
+                    ctx.AssertEqual(StartVersion, DB.Get<Player>(first.Id).Version, "The record is still unchanged");
                     SetWritable(backups, true);
 
                     ResetVaultMarker();
                     ctx.Assert(SavedCharacterMigration.UpgradeServerVault(), "The next boot upgrades the character");
-                    ctx.Assert(OverflowRecords(first.Id).Any(item => item.Resref == "nw_wswls001"), "Its overflow items are stored once it is saved");
+                    ctx.Assert(OverflowRecords(first.Id).Any(item => item.Resref == StowedItem), "Its overflow items are stored once it is saved");
 
-                    // A different file restored at the same path keeps its own overflow items: a failed save of it neither
+                    // A different (older) file restored at the same path keeps its own overflow items: a failed save of it neither
                     // replaces nor removes the items the earlier upgrade stored.
                     var earlier = OverflowRecords(first.Id).OrderBy(item => item.Id).Select(item => (item.Id, item.Data)).ToList();
-                    File.WriteAllBytes(firstPath, SavedCharacterMigration.WithFileVersion(firstFile, 5));
+                    File.WriteAllBytes(firstPath, SavedCharacterMigration.WithFileVersion(firstFile, StartVersion - 1));
                     StartUpgrade(first.Id, firstRecord);
                     Directory.CreateDirectory(firstPath + ".upgrade");
                     ctx.Assert(!SavedCharacterMigration.UpgradeServerVault(), "The restored file's failed save is reported");
@@ -282,6 +288,49 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        /// <summary>
+        /// Wears a cowl with its legacy gloves type on the arms beside a helmet on the head, so migration 23 must stow
+        /// the corrected cowl instead of moving it to the occupied head slot.
+        /// </summary>
+        private static async Task WearLegacyCowlBesideOccupiedHead(EngineTestContext ctx, uint owner)
+        {
+            var helmet = OBJECT_INVALID;
+            var cowl = OBJECT_INVALID;
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                helmet = CreateItemOnObject("charm_cowl", owner);
+                cowl = CreateItemOnObject(StowedItem, owner);
+            });
+            // Let the acquisition handlers run first; they would convert the cowl back to its current type.
+            await ctx.WaitFrameAsync();
+            await ctx.ExecuteInCreatureContextAsync(owner, () =>
+            {
+                MigrationEngineTests.RemoveRequirement(helmet);
+                MigrationEngineTests.RemoveRequirement(cowl);
+                SWLOR.NWN.API.NWNX.ItemPlugin.SetBaseItemType(cowl, BaseItem.Gloves);
+                SWLOR.NWN.API.NWNX.ItemPlugin.SetItemAppearance(cowl, ItemAppearanceType.SimpleModel, 0, 198);
+                SetLocalString(cowl, "CRAFTED_BY", "character-upgrade-fixture");
+            });
+            ctx.Assert(GetIsObjectValid(helmet) && GetIsObjectValid(cowl), "The head and arms fixtures are created");
+            ctx.Track(helmet);
+            ctx.Track(cowl);
+            foreach (var (item, slot) in new[] { (helmet, InventorySlot.Head), (cowl, InventorySlot.Arms) })
+            {
+                var existing = GetItemInSlot(slot, owner);
+                if (GetIsObjectValid(existing))
+                {
+                    AssignCommand(owner, () => ActionUnequipItem(existing));
+                    await ctx.WaitUntilAsync(() => GetItemInSlot(slot, owner) != existing, 10f, $"{slot} to be emptied");
+                }
+                AssignCommand(owner, () =>
+                {
+                    ClearAllActions();
+                    ActionEquipItem(item, slot);
+                });
+                await ctx.WaitUntilAsync(() => GetItemInSlot(slot, owner) == item, 10f, $"{GetResRef(item)} to be equipped");
+            }
+        }
+
         /// <summary>Makes a folder and every folder inside it writable or read-only for the server.</summary>
         private static void SetWritable(string folder, bool writable)
         {
@@ -295,7 +344,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static void StartUpgrade(string playerId, Player original)
         {
             var record = SavedCharacterMigration.CopyRecord(original);
-            record.Version = 5;
+            record.Version = StartVersion;
             record.CharacterFileVersion = 0;
             DB.Set(record);
             ResetVaultMarker();

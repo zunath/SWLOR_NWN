@@ -42,6 +42,21 @@ public class PlayerMigrationTests
         CharacterMigrations.ReadFileVersion(upgraded.File).Should().Be(Latest);
     }
 
+    [TestCase(0)]
+    [TestCase(1)]
+    [TestCase(12)]
+    public void FilesOlderThanTheOldestUpgradableVersionAreRefusedAndLeftUntouched(int checkpoint)
+    {
+        var record = Record(Latest);
+        var json = JsonConvert.SerializeObject(record);
+
+        var upgrade = () => CharacterMigrations.Upgrade(SavedCharacterFile.Create(checkpoint), record);
+
+        upgrade.Should().Throw<TargetInvocationException>().WithInnerException<InvalidOperationException>(
+            "a file older than migration 13 would otherwise be marked current without its retired droid boost conversion");
+        JsonConvert.SerializeObject(record).Should().Be(json, "a refused character's record is not touched");
+    }
+
     [Test]
     public void ACurrentCharacterIsNotUpgradedAgain()
     {

@@ -221,6 +221,21 @@ internal sealed partial class StoredObjectData
         return required;
     }
 
+    /// <summary>Saved-data <see cref="Service.Space.GetShipBonuses"/>: the deed's Starship Bonus properties summed, or null when it has none.</summary>
+    internal static ShipBonuses ReadShipBonuses(string data)
+    {
+        ShipBonuses bonuses = null;
+        var properties = ParseItem(data).Fields.SingleOrDefault(x => x.Name == "PropertiesList" && x.Type == 15);
+        foreach (var property in properties?.Children ?? new List<Node>())
+        {
+            if (ReadInteger(property, "PropertyName") != (int)ItemPropertyType.StarshipBonus)
+                continue;
+            bonuses ??= new ShipBonuses();
+            bonuses.Add(ReadInteger(property, "Subtype"), ReadInteger(property, "CostValue"));
+        }
+        return bonuses;
+    }
+
     /// <summary>A saved item's resref, tag and first localized name.</summary>
     internal static (string Resref, string Tag, string Name) ReadItemIdentity(string data)
     {

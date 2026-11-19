@@ -211,6 +211,28 @@ public class SpaceItemMigrationTests
     }
 
     [Test]
+    public void AConvertedShip_KeepsItsDeedEnhancementsInItsStats()
+    {
+        PlayerShip Ship(params object[] properties)
+        {
+            var ship = LegacyShip();
+            ship.SerializedItem = Item("sdeed_mule", extraProperties: properties);
+            return ship;
+        }
+
+        var plain = Ship();
+        var enhanced = Ship(Property(StarshipBonus, 46, 0, 12), Property(StarshipBonus, 48, 0, 5), Property(StarshipBonus, 53, 0, 3));
+        PlayerShipConversion.Convert(plain, 10);
+        PlayerShipConversion.Convert(enhanced, 10);
+
+        enhanced.Status.DeedBonuses.Should().BeEquivalentTo(new ShipBonuses { Hull = 12, Shield = 5, Accuracy = 3 });
+        plain.Status.DeedBonuses.Should().BeNull("the deed has no enhancements");
+        enhanced.Status.MaxHull.Should().BeGreaterThan(plain.Status.MaxHull, "12 hull points stay on the converted ship");
+        enhanced.Status.MaxShield.Should().BeGreaterThan(plain.Status.MaxShield);
+        enhanced.Status.Accuracy.Should().BeGreaterThan(plain.Status.Accuracy);
+    }
+
+    [Test]
     public void ARevampShip_KeepsItsSlotsAndOnlyRebuildsItsStats()
     {
         var ship = new PlayerShip

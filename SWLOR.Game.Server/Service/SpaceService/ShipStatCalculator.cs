@@ -91,21 +91,26 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// hull, shield, capacitor and capacitor regen, as the balance model does. Their best-of Defense, Evasion
         /// and Accuracy, speed, resistances and damage bonuses apply in full while the seat works them. With no
         /// <paramref name="stationEffectiveness"/>, every station slot is empty (a solo pilot runs the Helm only).
+        /// The deed's starship enhancements (<paramref name="deedBonuses"/>) count flat on the matching stat: hull, shield
+        /// and capacitor as points before the hull's percent bonuses, Accuracy and Evasion as points, damage as percent
+        /// points of its type, defense as resistance points of its type, and Shield Recharge Rate as shield regen percent.
         /// </summary>
         public static ShipStatResult Calculate(
             ShipHullEntry hull,
             IEnumerable<ShipFittedModule> modules,
             int willpower,
             Func<int, double> stationEffectiveness = null,
-            IReadOnlyCollection<ShipComponentTraitType> hullTraits = null)
+            IReadOnlyCollection<ShipComponentTraitType> hullTraits = null,
+            ShipBonuses deedBonuses = null)
         {
+            var deed = deedBonuses ?? new ShipBonuses();
             var tags = BuildSlotTags(hull);
             var size = hull.Size == ShipSize.Invalid ? ShipSize.Small : hull.Size;
             var moduleMultiplier = ModuleSizeMultiplier(size);
 
-            double hullPoints = hull.Hull;
-            double shieldPoints = hull.Shield;
-            double capacitor = hull.Capacitor + CapacitorPerWillpower * willpower;
+            double hullPoints = hull.Hull + deed.Hull;
+            double shieldPoints = hull.Shield + deed.Shield;
+            double capacitor = hull.Capacitor + deed.Capacitor + CapacitorPerWillpower * willpower;
             var capacitorRegen = hull.CapacitorRegen;
 
             var bestDefense = 0;
@@ -114,12 +119,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
             var bestAccuracy = 0;
             var speedPercent = 0;
             var resistAll = hull.ResistAll;
-            var resistThermal = 0;
-            var resistEm = 0;
-            var resistExplosive = 0;
-            var damageThermal = hull.DamagePercent;
-            var damageEm = hull.DamagePercent;
-            var damageExplosive = hull.DamagePercent + hull.ExplosivePercent;
+            var resistThermal = deed.ThermalDefense;
+            var resistEm = deed.EMDefense;
+            var resistExplosive = deed.ExplosiveDefense;
+            var damageThermal = hull.DamagePercent + deed.ThermalDamage;
+            var damageEm = hull.DamagePercent + deed.EMDamage;
+            var damageExplosive = hull.DamagePercent + hull.ExplosivePercent + deed.ExplosiveDamage;
 
             var traitEvasion = 0;
             foreach (var fitted in modules ?? Enumerable.Empty<ShipFittedModule>())
@@ -186,10 +191,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 MaxCapacitor = (int)Round(capacitor * (1 + (hull.CapacitorPercent + H(ShipTraitStat.Capacitor)) / 100.0)),
                 CapacitorRegenPerSecond = capacitorRegen,
                 Attack = hull.Attack,
-                Accuracy = Percent(hull.Accuracy + bestAccuracy, ShipTraitStat.Accuracy),
+                Accuracy = Percent(hull.Accuracy + bestAccuracy + deed.Accuracy, ShipTraitStat.Accuracy),
                 Defense = Percent(hull.Defense + bestDefense, ShipTraitStat.Defense),
-                Evasion = hull.Evasion + bestEvasion + evasionPenalty + traitEvasion + H(ShipTraitStat.Evasion),
-                ShieldRegenBonusPercent = hull.ShieldRegenPercent,
+                Evasion = hull.Evasion + bestEvasion + evasionPenalty + traitEvasion + H(ShipTraitStat.Evasion) + deed.Evasion,
+                ShieldRegenBonusPercent = hull.ShieldRegenPercent + deed.ShieldRechargeRate,
                 CriticalBonus = hull.CriticalBonus,
                 Speed = hull.Speed * (1 + speedPercent / 100.0),
                 Resistances = new Dictionary<ResistanceType, int>

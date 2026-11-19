@@ -63,6 +63,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// the ship was registered. Null when it had none; older records load null.
         /// </summary>
         public List<ShipComponentTraitType> HullTraits { get; set; }
+
+        /// <summary>
+        /// The starship enhancements on the ship's deed, read when the ship was registered or converted. Every stat rebuild
+        /// adds them (<see cref="ShipStatCalculator.Calculate"/>). Null when the deed had none; older records load null.
+        /// </summary>
+        public ShipBonuses DeedBonuses { get; set; }
         public int Shield { get; set; }
         public int Hull { get; set; }
         public int Capacitor { get; set; }

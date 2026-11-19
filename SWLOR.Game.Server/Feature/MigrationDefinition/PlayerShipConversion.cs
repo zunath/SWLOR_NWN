@@ -51,6 +51,9 @@ public static class PlayerShipConversion
         if (!_hulls.TryGetValue(status.ItemTag ?? string.Empty, out var hull))
             return result;
         result.ShipTag = hull.Tag;
+        // The deed keeps its starship enhancements through the conversion, and every stat rebuild counts them.
+        if (!string.IsNullOrWhiteSpace(ship.SerializedItem))
+            status.DeedBonuses = StoredObjectData.ReadShipBonuses(ship.SerializedItem);
 
         var needsRefit = result.HullConverted || status.ConfigurationModules.Count > 0 ||
             AllModules(status).Any(x => !_steps.ContainsKey(x.Module.ItemTag ?? string.Empty));
@@ -65,7 +68,7 @@ public static class PlayerShipConversion
             Traits = entry.Value.Traits,
         })).ToList();
         result.ModulesKept = fitted.Count;
-        var stats = ShipStatCalculator.Calculate(hull, fitted, willpower, null, status.HullTraits);
+        var stats = ShipStatCalculator.Calculate(hull, fitted, willpower, null, status.HullTraits, status.DeedBonuses);
         ShipStatCalculator.Apply(stats, status, result.HullConverted);
         status.ActiveModules?.Clear();
         ship.PlayerHotBars?.Clear();

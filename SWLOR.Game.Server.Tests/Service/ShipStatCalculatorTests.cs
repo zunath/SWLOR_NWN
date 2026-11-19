@@ -474,6 +474,47 @@ public class ShipStatCalculatorTests
     }
 
     [Test]
+    public void DeedEnhancements_CountFlatOnTheMatchingStat()
+    {
+        var hull = Hull(change: h => { h.HullPercent = 10; h.ShieldPercent = 0; h.CapacitorPercent = 0; });
+        var plain = ShipStatCalculator.Calculate(hull, Array.Empty<ShipFittedModule>(), 10);
+        var deed = new ShipBonuses
+        {
+            Hull = 10, Shield = 4, Capacitor = 3, ShieldRechargeRate = 5, Accuracy = 2, Evasion = 1,
+            ThermalDamage = 5, EMDamage = 4, ExplosiveDamage = 3, ThermalDefense = 2, EMDefense = 1, ExplosiveDefense = 5,
+        };
+        var enhanced = ShipStatCalculator.Calculate(hull, Array.Empty<ShipFittedModule>(), 10, null, null, deed);
+
+        enhanced.MaxHull.Should().Be(plain.MaxHull + 11, "10 hull points before the hull's +10%");
+        enhanced.MaxShield.Should().Be(plain.MaxShield + 4);
+        enhanced.MaxCapacitor.Should().Be(plain.MaxCapacitor + 3);
+        enhanced.ShieldRegenBonusPercent.Should().Be(plain.ShieldRegenBonusPercent + 5, "Shield Recharge Rate counts as shield regen percent");
+        enhanced.Accuracy.Should().Be(plain.Accuracy + 2);
+        enhanced.Evasion.Should().Be(plain.Evasion + 1);
+        enhanced.DamageBonusPercent[CombatDamageType.Thermal].Should().Be(plain.DamageBonusPercent[CombatDamageType.Thermal] + 5);
+        enhanced.DamageBonusPercent[CombatDamageType.EM].Should().Be(plain.DamageBonusPercent[CombatDamageType.EM] + 4);
+        enhanced.DamageBonusPercent[CombatDamageType.Explosive].Should().Be(plain.DamageBonusPercent[CombatDamageType.Explosive] + 3);
+        enhanced.Resistances[ResistanceType.Thermal].Should().Be(plain.Resistances[ResistanceType.Thermal] + 2);
+        enhanced.Resistances[ResistanceType.EM].Should().Be(plain.Resistances[ResistanceType.EM] + 1);
+        enhanced.Resistances[ResistanceType.Explosive].Should().Be(plain.Resistances[ResistanceType.Explosive] + 5);
+        ShipStatCalculator.Calculate(hull, Array.Empty<ShipFittedModule>(), 10, null, null, new ShipBonuses())
+            .Should().BeEquivalentTo(plain, "a deed with no enhancements changes nothing");
+    }
+
+    [Test]
+    public void DeedEnhancements_ReachEveryStatRebuild()
+    {
+        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (!File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
+            root = root.Parent!;
+        string Source(params string[] parts) => File.ReadAllText(Path.Combine(new[] { root.FullName, "SWLOR.Game.Server" }.Concat(parts).ToArray()));
+
+        Source("Service", "SpaceRevamp.cs").Should().Contain("status.HullTraits, status.DeedBonuses);", "every rebuild counts the deed's enhancements");
+        Source("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs").Should().Contain("DeedBonuses = bonuses,",
+            "registration keeps the deed's enhancements on the ship");
+    }
+
+    [Test]
     public void HullTraits_SumBeforeTheyHalveAndModuleNumbersDoNothing()
     {
         ShipTraitRules.HullSum(new[] { ShipComponentTraitType.CorellianModified }, ShipTraitStat.Evasion).Should().Be(2);
@@ -503,7 +544,7 @@ public class ShipStatCalculatorTests
         File.ReadAllText(Path.Combine(server, "Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs"))
             .Should().Contain("HullTraits = ShipComponents.GetTraitsOrNull(item),");
         File.ReadAllText(Path.Combine(server, "Service", "SpaceRevamp.cs"))
-            .Should().Contain("willpower, stationEffectiveness, status.HullTraits)");
+            .Should().Contain("willpower, stationEffectiveness, status.HullTraits, status.DeedBonuses)");
 
         var status = Newtonsoft.Json.JsonConvert.DeserializeObject<ShipStatus>(
             Newtonsoft.Json.JsonConvert.SerializeObject(new ShipStatus { HullTraits = new() { ShipComponentTraitType.Reinforced } }));

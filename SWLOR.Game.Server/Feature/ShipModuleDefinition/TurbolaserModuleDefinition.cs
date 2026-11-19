@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             {
                                 var roll = Random.D100(1);
                                 var isHit = roll <= chanceToHit;
-                                var damage = GameServices.Combat.CalculateDamage(
+                                var damage = GameServices.CombatDamageRoll.CalculateDamage(
                                     attack,
                                     moduleDamage,
                                     attackerStat,

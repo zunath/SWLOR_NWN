@@ -17,15 +17,12 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// The damage taken part of <c>Combat</c>: the modifiers of an incoming hit (immunity, PvP, the Leadership and generic
     /// reductions, the redirect and share to a status source, fatal damage prevention), the effects of damage taken and of
     /// low HP, Guard and its riders, avoided attacks, deflection and Deflecting Return, and the incoming physical-to-Force
-    /// conversion. The recent guarded hits and deflections are this instance's own tables.
+    /// conversion. The recent guarded hits and deflections are remembered by the defense memory part.
     /// </summary>
     public class CombatDamageTakenService : ICombatDamageTakenService
     {
         public const int BaseGuardDamageReductionPercent = 20;
         public const int MaximumGuardDamageReductionPercent = 55;
-
-        private readonly Dictionary<uint, DateTime> _recentGuardedHits = new();
-        private readonly Dictionary<(uint Creature, DeflectionSource Source), DateTime> _recentDeflections = new();
 
         private readonly ICombatFeedbackService _feedback;
         private readonly ICombatQueriesService _queries;
@@ -46,7 +43,8 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IEnmityService _enmity;
         private readonly IMessagingService _messaging;
         private readonly IPlayerNameService _playerName;
-        private readonly Lazy<ICombatService> _combat;
+        private readonly ICombatDamageRollService _damageRoll;
+        private readonly ICombatDefenseMemoryService _defenseMemory;
 
         public CombatDamageTakenService(
             ICombatFeedbackService feedback,
@@ -68,7 +66,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             IEnmityService enmity,
             IMessagingService messaging,
             IPlayerNameService playerName,
-            Lazy<ICombatService> combat)
+            ICombatDamageRollService damageRoll,
+            ICombatDefenseMemoryService defenseMemory)
         {
             _feedback = feedback;
             _queries = queries;
@@ -89,10 +88,11 @@ namespace SWLOR.Game.Server.Domain.Combat
             _enmity = enmity;
             _messaging = messaging;
             _playerName = playerName;
-            _combat = combat;
+            _damageRoll = damageRoll;
+            _defenseMemory = defenseMemory;
         }
 
-        // CalculateDamage stays on Combat because it rolls the shared Random; guard retaliation damage reaches it through Combat.
+        // CalculateDamage lives on the damage roll part because it rolls the shared Random; guard retaliation damage reaches it there.
         protected virtual int CalculateDamage(
             int attackerAttack,
             int attackerDMG,
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             int defenderStat,
             int critical,
             int deltaCap = 0) =>
-            _combat.Value.CalculateDamage(attackerAttack, attackerDMG, attackerStat, defenderDefense, defenderStat, critical, deltaCap);
+            _damageRoll.CalculateDamage(attackerAttack, attackerDMG, attackerStat, defenderDefense, defenderStat, critical, deltaCap);
 
         public int ApplyDamageTakenModifiers(
             uint defender,
@@ -810,7 +810,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (!GetIsObjectValid(creature))
                 return;
 
-            _recentGuardedHits[creature] = Clock.UtcNow;
+            _defenseMemory.NoteGuardedHit(creature);
             _abilityHit.ApplyGuardedHitNextAttackEffects(creature);
             ApplyGuardedHitNextSkillAbilityEffects(creature);
             ApplyGuardedHitNextSkillAbilityStatusEffects(creature);
@@ -1200,27 +1200,12 @@ namespace SWLOR.Game.Server.Domain.Combat
             _enmity.ModifyEnmity(defender, attacker, enmity);
         }
 
-        public bool HasRecentGuardedHit(uint creature, float windowSeconds)
-        {
-            if (!GetIsObjectValid(creature) || windowSeconds <= 0f)
-                return false;
-
-            if (!_recentGuardedHits.TryGetValue(creature, out var lastGuardedHit))
-                return false;
-
-            var isRecent = (Clock.UtcNow - lastGuardedHit).TotalSeconds <= windowSeconds;
-            if (!isRecent)
-                _recentGuardedHits.Remove(creature);
-
-            return isRecent;
-        }
-
         public void TrackDeflection(uint creature, DeflectionSource source)
         {
             if (!GetIsObjectValid(creature) || source == DeflectionSource.None)
                 return;
 
-            _recentDeflections[(creature, source)] = Clock.UtcNow;
+            _defenseMemory.NoteDeflection(creature, source);
             ApplyDeflectionNearbyAllyGuard(creature, source);
         }
 
@@ -1247,22 +1232,6 @@ namespace SWLOR.Game.Server.Domain.Combat
                 guard,
                 duration,
                 StatType.DeflectionNearbyAllyGuard);
-        }
-
-        public bool HasRecentDeflection(uint creature, DeflectionSource source, float windowSeconds)
-        {
-            if (!GetIsObjectValid(creature) || source == DeflectionSource.None || windowSeconds <= 0f)
-                return false;
-
-            var key = (creature, source);
-            if (!_recentDeflections.TryGetValue(key, out var lastDeflection))
-                return false;
-
-            var isRecent = (Clock.UtcNow - lastDeflection).TotalSeconds <= windowSeconds;
-            if (!isRecent)
-                _recentDeflections.Remove(key);
-
-            return isRecent;
         }
 
         private void ApplyGuardedHitNextSkillAbilityEffects(uint creature)
@@ -1635,15 +1604,6 @@ namespace SWLOR.Game.Server.Domain.Combat
                 activator, StatType.AbilityGrantedAttackDeflectionFPRestore);
             if (_stat.RestoreFP(activator, fpRestore) > 0)
                 _resources.ApplyAbilityRestoredFPEffects(activator);
-        }
-
-        public void ForgetDamageTakenState(uint creature)
-        {
-            _recentGuardedHits.Remove(creature);
-            foreach (var key in _recentDeflections.Keys.Where(x => x.Creature == creature).ToList())
-            {
-                _recentDeflections.Remove(key);
-            }
         }
     }
 }

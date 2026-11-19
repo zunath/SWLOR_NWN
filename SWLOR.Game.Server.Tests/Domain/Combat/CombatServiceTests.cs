@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Combat;
 /// <summary>
 /// What is left of <c>Combat</c> after its parts were split out (<c>CombatService</c>): the death and exit handlers, which
 /// apply the defeated-enemy effects and forget a creature's combat state in every part in a fixed order, the refresh of the
-/// stat-driven trackers, the six-second facing cleanup and the damage roll. The parts and services it calls are scripted and
+/// stat-driven trackers, and the six-second facing cleanup. The parts and services it calls are scripted and
 /// write to one log, so a test sees every call and its order; the last tests run the real parts of a container.
 /// </summary>
 [TestFixture]
@@ -37,7 +37,7 @@ public class CombatServiceTests
     {
         $"Resources.ForgetResourceTriggerState {creature}",
         $"Activity.ForgetActivityState {creature}",
-        $"DamageTaken.ForgetDamageTakenState {creature}",
+        $"DefenseMemory.ForgetDefenseMemory {creature}",
         $"Suppression.ForgetSuppressionState {creature}",
         $"Activation.ForgetActivationState {creature}",
         $"HitEffects.ForgetHitEffectState {creature}",
@@ -92,7 +92,7 @@ public class CombatServiceTests
                 nameof(ICombatDamageModifiersService.ClearAutoAttackCycleCriticalRateTracker)),
             Logged<ICombatHitEffectsService>("HitEffects", out _, nameof(ICombatHitEffectsService.ForgetHitEffectState),
                 nameof(ICombatHitEffectsService.ApplyDefeatedEnemyEffects), nameof(ICombatHitEffectsService.ApplyRecentDamagerDefeatedEnemyEffects)),
-            Logged<ICombatDamageTakenService>("DamageTaken", out _, nameof(ICombatDamageTakenService.ForgetDamageTakenState)),
+            Logged<ICombatDefenseMemoryService>("DefenseMemory", out _, nameof(ICombatDefenseMemoryService.ForgetDefenseMemory)),
             Logged<ICombatAbilityActivationService>("Activation", out _, nameof(ICombatAbilityActivationService.ForgetActivationState)),
             Logged<ICombatAbilityImpactService>("Impact", out _, nameof(ICombatAbilityImpactService.ForgetImpactState)),
             stat,
@@ -301,36 +301,6 @@ public class CombatServiceTests
         _log.Should().BeEmpty();
     }
 
-    // ------------------------------------------------------------------ the damage roll
-
-    [TestCase(100, 45, 40, 100, 10, 0, 0)]
-    [TestCase(100, 45, 40, 100, 10, 120, 5)]
-    [TestCase(60, 8, 14, 90, 30, 0, 2)]
-    public void TheDamageRollDrawsOneValueBetweenTheRuleBounds(int attack, int dmg, int attackStat, int defense, int defenseStat, int critical, int deltaCap)
-    {
-        const int seed = 4242;
-        var (minimum, maximum) = CombatRules.CalculateDamageRange(attack, dmg, attackStat, defense, defenseStat, critical, deltaCap);
-        Random.SetSeed(seed);
-        var expected = (int)Random.NextFloat(minimum, maximum);
-        var next = Random.Next();
-
-        Random.SetSeed(seed);
-        _service.CalculateDamage(attack, dmg, attackStat, defense, defenseStat, critical, deltaCap).Should().Be(expected);
-        Random.Next().Should().Be(next, "the roll draws exactly one value from the shared generator");
-        _log.Should().BeEmpty();
-    }
-
-    [Test]
-    public void TheDamageRollCapsTheStatDeltaAtZeroByDefault()
-    {
-        const int seed = 99;
-        Random.SetSeed(seed);
-        var withDefault = _service.CalculateDamage(100, 45, 40, 100, 10, 0);
-        Random.SetSeed(seed);
-
-        _service.CalculateDamage(100, 45, 40, 100, 10, 0, 0).Should().Be(withDefault);
-    }
-
     // ------------------------------------------------------------------ the real parts
 
     [Test]
@@ -359,19 +329,5 @@ public class CombatServiceTests
         attacks.Should().BeEmpty();
         cooldowns.Should().BeEmpty();
         recentTargets.Count.Should().Be(0, "a record where the creature was the target is forgotten too");
-    }
-
-    [Test]
-    public void TheDamageRollThroughCombatIsTheServicesRoll()
-    {
-        using var facades = new FacadeContainer();
-        using var installed = facades.Install();
-        const int seed = 7;
-
-        Random.SetSeed(seed);
-        var direct = facades.Get<ICombatService>().CalculateDamage(100, 45, 40, 100, 10, 0, 5);
-        Random.SetSeed(seed);
-
-        GameServices.Combat.CalculateDamage(100, 45, 40, 100, 10, 0, 5).Should().Be(direct);
     }
 }

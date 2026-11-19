@@ -20,7 +20,7 @@
     { "name": "CasinoSlot", "domain": "Economy" },
     { "name": "ChatCommand", "domain": "Social" },
     { "name": "ChatPortraitTells", "domain": "Social" },
-    { "name": "Combat", "domain": "Combat", "extras": [ { "part": "CombatAbilityActivation" }, { "part": "CombatAbilityBonus" }, { "part": "CombatAbilityHit" }, { "part": "CombatAbilityImpact" }, { "part": "CombatAbilityMagnitude" }, { "part": "CombatActivity" }, { "part": "CombatAttackTiming" }, { "part": "CombatDamageCatalog" }, { "part": "CombatDamageModifiers" }, { "part": "CombatDamageTaken" }, { "part": "CombatFeedback" }, { "part": "CombatHitEffects" }, { "part": "CombatImpactGeometry" }, { "part": "CombatQueries" }, { "part": "CombatResources" }, { "part": "CombatSuppression" } ] },
+    { "name": "Combat", "domain": "Combat", "extras": [ { "part": "CombatAbilityActivation" }, { "part": "CombatAbilityBonus" }, { "part": "CombatAbilityHit" }, { "part": "CombatAbilityImpact" }, { "part": "CombatAbilityMagnitude" }, { "part": "CombatActivity" }, { "part": "CombatAttackTiming" }, { "part": "CombatDamageCatalog" }, { "part": "CombatDamageModifiers" }, { "part": "CombatDamageRoll" }, { "part": "CombatDamageTaken" }, { "part": "CombatDefenseMemory" }, { "part": "CombatFeedback" }, { "part": "CombatHitEffects" }, { "part": "CombatImpactGeometry" }, { "part": "CombatQueries" }, { "part": "CombatResources" }, { "part": "CombatSuppression" } ] },
     { "name": "CombatDeflectionReaction", "domain": "Combat" },
     { "name": "CombatPoint", "domain": "Combat" },
     { "name": "CombatRating", "domain": "Combat" },

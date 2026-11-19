@@ -7,11 +7,11 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,093 | 13,367 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 25 | 37,681 lines | none over 1,000 lines |
-| 3. Long methods | `LongMethods.txt` | 10 | 2,906 lines | none over 150 lines (400 for layout) |
-| 4. Services per type | `ServicesPerType.txt` | 17 | 276 services | none over 10 services |
-| 5. Deferred resolution | `DeferredResolution.txt` | 35 | 45 parameters | none |
+| 1. Static service lookup | `StaticLookups.txt` | 1,094 | 13,367 uses | none: GameServices and FacadeAccessor deleted |
+| 2. Large types | `LargeTypes.txt` | 25 | 37,641 lines | none over 1,000 lines |
+| 3. Long methods | `LongMethods.txt` | 9 | 2,708 lines | none over 150 lines (400 for layout) |
+| 4. Services per type | `ServicesPerType.txt` | 17 | 278 services | none over 10 services |
+| 5. Deferred resolution | `DeferredResolution.txt` | 33 | 43 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 103 | 224 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 30 | 103 edges | none |
 | 8. Static entry points and static state | `StaticState.txt` | 135 | 250 members | each kept with an approved reason, or removed |
@@ -20,10 +20,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 ## 1. Static service lookup
 
-- 1,093 files, 13,367 uses: 829 using directives and 12,538 uses in code (7,518 in a static context).
+- 1,094 files, 13,367 uses: 829 using directives and 12,538 uses in code (7,518 in a static context).
 - SWLOR.Game.Server: 645 file(s), 5,819 use(s) (Feature/ 535, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 241 file(s), 5,353 use(s).
-- SWLOR.Game.Server.Tests: 178 file(s), 2,037 use(s).
+- SWLOR.Game.Server.Tests: 179 file(s), 2,037 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
 - SWLOR.CraftSim.Tests: 5 file(s), 15 use(s).
 - SWLOR.Game.Server.IntegrationTests: 4 file(s), 20 use(s).
@@ -36,7 +36,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - Content (Feature/) uses in code: 4,533 (1,681 in a static context).
 - Content (Feature/) types that use it: 533. Static classes: 75. Instance classes that use it from a static member: 202 (156 only from static members).
 
-Largest 15 of 1,093 (all in `StaticLookups.txt`):
+Largest 15 of 1,094 (all in `StaticLookups.txt`):
 
 | Entry | Uses | Detail |
 |---|---:|---|
@@ -58,7 +58,7 @@ Largest 15 of 1,093 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 25 types over 1,000 lines, 37,681 lines in all.
+- 25 types over 1,000 lines, 37,641 lines in all.
 - Exempt and over the limit: 191 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1, owner exception 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
@@ -74,7 +74,7 @@ Largest 15 of 25 (all in `LargeTypes.txt`):
 | `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 1,716 | CombatHitEffectsService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatRecorderService` | 1,691 | CombatRecorderService.cs |
 | `SWLOR.Game.Server.Feature.UsePerkFeat` | 1,687 | UsePerkFeat.cs |
-| `SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService` | 1,649 | CombatDamageTakenService.cs |
+| `SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService` | 1,609 | CombatDamageTakenService.cs |
 | `SWLOR.Game.Server.Domain.Items.ItemService` | 1,605 | ItemService.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerksViewModel` | 1,544 | PerksViewModel.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel` | 1,516 | CharacterSheetViewModel.cs |
@@ -84,10 +84,10 @@ Largest 15 of 25 (all in `LargeTypes.txt`):
 
 ## 3. Long methods
 
-- 9 methods over 150 lines and 1 GUI layout methods over 400.
+- 8 methods over 150 lines and 1 GUI layout methods over 400.
 - Exempt and over the limit: 82 (content data 76, data catalog member 6).
 
-Largest 10 of 10 (all in `LongMethods.txt`):
+Largest 9 of 9 (all in `LongMethods.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
@@ -97,7 +97,6 @@ Largest 10 of 10 (all in `LongMethods.txt`):
 | `SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase.ConfigureWeaponAbility` | 291 | WeaponActiveAbilityDefinitionBase.cs |
 | `SWLOR.Game.Server.Domain.Companions.DroidService.SpawnDroid` | 272 | DroidService.cs |
 | `SWLOR.Game.Server.Domain.Character.SkillService.GiveSkillXP` | 237 | SkillService.cs |
-| `SWLOR.Game.Server.Domain.Combat.CombatRecordSerializer.Write` | 198 | CombatRecordSerializer.cs |
 | `SWLOR.Game.Server.Domain.Items.ItemService.UseItem` | 189 | ItemService.cs |
 | `SWLOR.Game.Server.Feature.DialogDefinition.StarportDockDialog.MainPageInit` | 186 | StarportDockDialog.cs |
 | `SWLOR.Game.Server.Domain.Space.SpaceService.ActivateShipModule` | 155 | SpaceService.cs |
@@ -112,9 +111,9 @@ Largest 15 of 17 (all in `ServicesPerType.txt`):
 | Entry | Services | Detail |
 |---|---:|---|
 | `SWLOR.Game.Server.Feature.UsePerkFeat` | 31 | constructor 0, lookup 31 |
-| `SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase` | 24 | constructor 0, lookup 24 |
+| `SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase` | 25 | constructor 0, lookup 25 |
+| `SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService` | 21 | constructor 21, lookup 0 |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel` | 21 | constructor 0, lookup 21 |
-| `SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService` | 20 | constructor 20, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 20 | constructor 20, lookup 0 |
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 18 | constructor 18, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 16 | constructor 16, lookup 0 |
@@ -129,12 +128,12 @@ Largest 15 of 17 (all in `ServicesPerType.txt`):
 
 ## 5. Deferred resolution
 
-- 45 deferred constructor parameters in 24 files (Lazy 45, Func 0), taken by 24 types, deferring 28 distinct services.
-- By direction in the domain order: up 2, down 25, inside one domain 18.
+- 43 deferred constructor parameters in 22 files (Lazy 43, Func 0), taken by 22 types, deferring 28 distinct services.
+- By direction in the domain order: up 2, down 25, inside one domain 16.
 - Up: Character -> Combat 1, Items -> Combat 1.
 - IServiceProvider outside Composition/: 0 uses.
 
-Largest 15 of 35 (all in `DeferredResolution.txt`):
+Largest 15 of 33 (all in `DeferredResolution.txt`):
 
 | Entry | Parameters | Detail |
 |---|---:|---|
@@ -184,7 +183,7 @@ Largest 15 of 103 (all in `LogicToContent.txt`):
 
 - 30 pairs of domains depend on each other: 26 between logic (8 of them with Foundation or Platform), 4 between content.
 - Foundation's logic is in a pair with 3 domains, Platform with 6.
-- Members both ways: 4,249.
+- Members both ways: 4,251.
 
 Largest 15 of 30 (all in `DomainCycles.txt`):
 
@@ -204,7 +203,7 @@ Largest 15 of 30 (all in `DomainCycles.txt`):
 | `Abilities content <-> Character content` | 3 | Abilities content -> Character content: 1 edge(s), 445 member(s); Character content -> Abilities content: 2 edge(s), 10 member(s) |
 | `Abilities <-> Character` | 2 | Abilities -> Character: 1 edge(s), 331 member(s); Character -> Abilities: 1 edge(s), 4 member(s) |
 | `Abilities <-> Combat` | 2 | Abilities -> Combat: 1 edge(s), 277 member(s); Combat -> Abilities: 1 edge(s), 10 member(s) |
-| `Character <-> Combat` | 2 | Character -> Combat: 1 edge(s), 7 member(s); Combat -> Character: 1 edge(s), 979 member(s) |
+| `Character <-> Combat` | 2 | Character -> Combat: 1 edge(s), 7 member(s); Combat -> Character: 1 edge(s), 981 member(s) |
 
 ## 8. Static entry points and static state
 
@@ -256,7 +255,7 @@ Largest 15 of 124 (all in `UpwardEdges.txt`):
 | `SWLOR.Game.Server/Domain/Combat/RecastService.cs: Combat -> Abilities` | 4 | IAbilityCooldownVisualService |
 | `SWLOR.Game.Server/Domain/Combat/StealthService.cs: Combat -> Creatures` | 4 | IAIService |
 | `SWLOR.Game.Server/Native/GetDamageRoll.cs: Platform -> Character` | 4 | ISkillService, IStatService, IStatusEffectCombatEventService, StatType |
-| `SWLOR.Game.Server/Native/GetDamageRoll.cs: Platform -> Combat` | 4 | CombatRules, ICombatDamageTakenService, ICombatHitEffectsService, ICombatPointService, ICombatRatingService and 6 more |
+| `SWLOR.Game.Server/Native/GetDamageRoll.cs: Platform -> Combat` | 4 | CombatRules, ICombatDamageRollService, ICombatDamageTakenService, ICombatHitEffectsService, ICombatPointService and 6 more |
 | `SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs: Platform -> Character` | 4 | IStatusEffectCombatEventService |
 | `SWLOR.Game.Server/Native/PairedRangedPresentation.cs: Platform -> Combat` | 4 | ITwinPistolEquipmentService |
 

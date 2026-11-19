@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Combat;
 /// Guard and its riders, avoided attacks, deflection and Deflecting Return, and the incoming physical-to-Force conversion.
 /// Stats come from tables, every other part and service is scripted and writes what it was asked into one log (so a test
 /// sees the order), the clock is held still and the shared <c>Random</c> is seeded where a chance is rolled. The one call
-/// that stays on <c>Combat</c>, the guard retaliation damage roll, is overridden.
+/// that lives on the damage roll part, the guard retaliation damage roll, is overridden; the defense memory is the real part.
 /// </summary>
 [TestFixture]
 public class CombatDamageTakenServiceTests
@@ -46,6 +46,7 @@ public class CombatDamageTakenServiceTests
     private FacadeContainer _facades = null!;
     private FakeNWScript _engine = null!;
     private TestDamageTaken _service = null!;
+    private CombatDefenseMemoryService _defenseMemory = null!;
     private DateTime _now;
     private Dictionary<(uint, StatType), int> _stats = null!;
     private Dictionary<(uint, StatType), int> _permanent = null!;
@@ -185,6 +186,7 @@ public class CombatDamageTakenServiceTests
         objects.SetReturnHandler("GetCurrentHitPoints", args => _hitPoints.TryGetValue((uint)args[0]!, out var hp) ? hp.Current : 0);
         _scopes.Add(ObjectPluginRuntime.Override(objects));
 
+        _defenseMemory = new CombatDefenseMemoryService();
         _service = BuildService();
     }
 
@@ -359,7 +361,7 @@ public class CombatDamageTakenServiceTests
         playerNameCalls.On(nameof(IPlayerNameService.GetColoredDisplayName), args => $"<{args[0]}:{args[1]}>");
 
         return new TestDamageTaken(_log, () => _calculated, feedback, queries, resources, timing, activity, modifiers, abilityHit, hitEffects,
-            stat, rating, statusEffect, statusApplication, statusCombat, temporary, recorder, pvp, enmity, messaging, playerName);
+            stat, rating, statusEffect, statusApplication, statusCombat, temporary, recorder, pvp, enmity, messaging, playerName, _defenseMemory);
     }
 
     [TearDown]
@@ -402,12 +404,12 @@ public class CombatDamageTakenServiceTests
             arguments.Select(argument => argument.GetType()).ToArray(), null)!.Invoke(_service, arguments);
 
     private Dictionary<uint, DateTime> GuardedHits() =>
-        (Dictionary<uint, DateTime>)typeof(CombatDamageTakenService)
-            .GetField("_recentGuardedHits", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(_service)!;
+        (Dictionary<uint, DateTime>)typeof(CombatDefenseMemoryService)
+            .GetField("_recentGuardedHits", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(_defenseMemory)!;
 
     private Dictionary<(uint Creature, DeflectionSource Source), DateTime> Deflections() =>
-        (Dictionary<(uint Creature, DeflectionSource Source), DateTime>)typeof(CombatDamageTakenService)
-            .GetField("_recentDeflections", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(_service)!;
+        (Dictionary<(uint Creature, DeflectionSource Source), DateTime>)typeof(CombatDefenseMemoryService)
+            .GetField("_recentDeflections", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(_defenseMemory)!;
 
     // The rolls the shared Random gives after this seed, so a test can tell how many a call drew.
     private static int[] Rolls(int seed, int count)
@@ -1421,22 +1423,6 @@ public class CombatDamageTakenServiceTests
     }
 
     [Test]
-    public void ARecentGuardedHitIsReadWithinItsWindowAndForgottenAfter()
-    {
-        _service.HasRecentGuardedHit(Defender, 6f).Should().BeFalse();
-        _service.TrackGuardedHit(Defender);
-        _invalid.Add(Gone);
-        _service.HasRecentGuardedHit(Gone, 6f).Should().BeFalse();
-        _service.HasRecentGuardedHit(Defender, 0f).Should().BeFalse();
-
-        _now = _now.AddSeconds(6);
-        _service.HasRecentGuardedHit(Defender, 6f).Should().BeTrue();
-        _now = _now.AddSeconds(1);
-        _service.HasRecentGuardedHit(Defender, 6f).Should().BeFalse();
-        GuardedHits().Should().NotContainKey(Defender);
-    }
-
-    [Test]
     public void ACounterOfOneSkillStacksBothGuardedHitSourcesAndTellsAPlayer()
     {
         _players.Add(Defender);
@@ -1783,38 +1769,6 @@ public class CombatDamageTakenServiceTests
     }
 
     [Test]
-    public void ARecentDeflectionIsReadPerSourceWithinItsWindowAndForgottenAfter()
-    {
-        _service.HasRecentDeflection(Defender, DeflectionSource.Melee, 6f).Should().BeFalse();
-        _service.TrackDeflection(Defender, DeflectionSource.Melee);
-        _invalid.Add(Gone);
-        _service.HasRecentDeflection(Gone, DeflectionSource.Melee, 6f).Should().BeFalse();
-        _service.HasRecentDeflection(Defender, DeflectionSource.None, 6f).Should().BeFalse();
-        _service.HasRecentDeflection(Defender, DeflectionSource.Melee, 0f).Should().BeFalse();
-        _service.HasRecentDeflection(Defender, DeflectionSource.Ranged, 6f).Should().BeFalse();
-
-        _now = _now.AddSeconds(6);
-        _service.HasRecentDeflection(Defender, DeflectionSource.Melee, 6f).Should().BeTrue();
-        _now = _now.AddSeconds(1);
-        _service.HasRecentDeflection(Defender, DeflectionSource.Melee, 6f).Should().BeFalse();
-        Deflections().Should().BeEmpty();
-    }
-
-    [Test]
-    public void ForgettingACreatureDropsOnlyItsGuardedHitAndDeflections()
-    {
-        _service.TrackGuardedHit(Defender);
-        _service.TrackGuardedHit(Other);
-        _service.TrackDeflection(Defender, DeflectionSource.Melee);
-        _service.TrackDeflection(Defender, DeflectionSource.Ranged);
-        _service.TrackDeflection(Other, DeflectionSource.Melee);
-
-        _service.ForgetDamageTakenState(Defender);
-        GuardedHits().Keys.Should().Equal(Other);
-        Deflections().Keys.Should().Equal((Other, DeflectionSource.Melee));
-    }
-
-    [Test]
     public void AnAbilityGrantedDeflectionRestoresFPOnceItsTriggerIsReady()
     {
         _deflectionSources[StatType.AbilityGrantedAttackDeflectionFPRestore] = DeflectionSource.Melee;
@@ -2041,23 +1995,23 @@ public class CombatDamageTakenServiceTests
         _log.Should().BeEmpty();
     }
 
-    // ------------------------------------------------------------------ the call that stays on Combat
+    // ------------------------------------------------------------------ the call that lives on the damage roll part
 
     [Test]
-    public void TheDamageRollRunsOnCombatWithTheSharedRandom()
+    public void TheDamageRollRunsOnTheDamageRollPartWithTheSharedRandom()
     {
         Random.SetSeed(21);
-        var expected = GameServices.Combat.CalculateDamage(100, 8, 14, 60, 12, 0);
+        var expected = GameServices.CombatDamageRoll.CalculateDamage(100, 8, 14, 60, 12, 0);
         Random.SetSeed(21);
 
         _service.BaseCalculateDamage(100, 8, 14, 60, 12, 0).Should().Be(expected);
     }
 
     [Test]
-    public void TheDamageRollWrapperKeepsTheDefaultsOfCombat()
+    public void TheDamageRollWrapperKeepsTheDefaultsOfTheDamageRollPart()
     {
         var wrapper = typeof(CombatDamageTakenService).GetMethod("CalculateDamage", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        var target = typeof(ICombatService).GetMethod("CalculateDamage")!;
+        var target = typeof(ICombatDamageRollService).GetMethod("CalculateDamage")!;
 
         wrapper.IsVirtual.Should().BeTrue();
         wrapper.GetParameters().Select(parameter => (parameter.Name, parameter.ParameterType, parameter.HasDefaultValue, parameter.DefaultValue))
@@ -2067,12 +2021,10 @@ public class CombatDamageTakenServiceTests
     // ------------------------------------------------------------------ construction
 
     [Test]
-    public void TheContainerBuildsThePartWithEmptyTables()
+    public void TheContainerBuildsThePart()
     {
         var part = _facades.Get<ICombatDamageTakenService>();
         part.Should().BeOfType<CombatDamageTakenService>();
-        part.HasRecentGuardedHit(Defender, 6f).Should().BeFalse();
-        part.HasRecentDeflection(Defender, DeflectionSource.Melee, 6f).Should().BeFalse();
         CombatDamageTakenService.BaseGuardDamageReductionPercent.Should().Be(CombatDamageTakenService.BaseGuardDamageReductionPercent);
         CombatDamageTakenService.MaximumGuardDamageReductionPercent.Should().Be(CombatDamageTakenService.MaximumGuardDamageReductionPercent).And.Be(55);
     }

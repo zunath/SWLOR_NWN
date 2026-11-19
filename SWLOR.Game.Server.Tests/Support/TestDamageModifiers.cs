@@ -32,7 +32,7 @@ internal sealed partial class TestDamageModifiers : CombatDamageModifiersService
         ITemporaryStatModifierService temporaryStatModifier,
         IAbilityImpactState ability,
         IPlayerFeedbackService playerFeedback)
-        : base(queries, resources, stat, statusEffect, statusApplication, temporaryStatModifier, ability, playerFeedback, FacadeForwarder.LazyFor<ICombatDamageTakenService>())
+        : base(queries, resources, stat, statusEffect, statusApplication, temporaryStatModifier, ability, playerFeedback, FacadeForwarder.For<ICombatDefenseMemoryService>())
     {
     }
 

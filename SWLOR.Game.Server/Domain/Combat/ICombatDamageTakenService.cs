@@ -75,11 +75,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <returns>The damage reduction percentage applied on a guarded hit.</returns>
         int GetGuardDamageReductionPercent(uint defender);
 
-        bool HasRecentGuardedHit(uint creature, float windowSeconds);
-
         void TrackDeflection(uint creature, DeflectionSource source);
-
-        bool HasRecentDeflection(uint creature, DeflectionSource source, float windowSeconds);
 
         int ConsumeGuardedHitNextSkillAbilityExposedDamageBonus(uint creature, SkillType skillType);
 
@@ -145,7 +141,5 @@ namespace SWLOR.Game.Server.Domain.Combat
             StatType deflectionFPRestoreStatType = StatType.Invalid);
 
         void ApplyAbilityGrantedAttackDeflectionEffects(uint activator, DeflectionSource source);
-
-        void ForgetDamageTakenState(uint creature);
     }
 }

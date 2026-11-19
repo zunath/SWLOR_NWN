@@ -380,10 +380,10 @@ public class CombatSourceTests
 
     [TestCase("_recentGuardedHits")]
     [TestCase("_recentDeflections")]
-    public void ReflectionReachesTheDamageTakenTablesOfTheInstalledContainer(string name)
+    public void ReflectionReachesTheDefenseMemoryTablesOfTheInstalledContainer(string name)
     {
         // The recent guarded hits and deflections moved from static fields of Combat to the instance; a test that reads one by
-        // name gets the installed container's table, which Combat's forwarders write.
+        // name gets the installed container's table, which the defense memory part writes.
         using var facades = new FacadeContainer();
         using var installed = facades.Install();
 
@@ -391,9 +391,9 @@ public class CombatSourceTests
         field.Should().NotBeNull();
         field!.IsStatic.Should().BeFalse();
         field.IsInitOnly.Should().BeTrue();
-        field.DeclaringType.Should().Be(typeof(CombatDamageTakenService));
+        field.DeclaringType.Should().Be(typeof(CombatDefenseMemoryService));
         var table = CombatMembers.FieldValue<System.Collections.IDictionary>(name);
-        table.Should().BeSameAs(field.GetValue(facades.Get<ICombatDamageTakenService>()));
+        table.Should().BeSameAs(field.GetValue(facades.Get<ICombatDefenseMemoryService>()));
 
         // A record put into the reflected table is the one Combat's forwarder reads.
         var engine = new SWLOR.NWN.API.Testing.FakeNWScript();
@@ -404,12 +404,12 @@ public class CombatSourceTests
         if (name == "_recentGuardedHits")
         {
             table[creature] = SWLOR.Game.Server.Core.Clock.UtcNow;
-            GameServices.CombatDamageTaken.HasRecentGuardedHit(creature, 6f).Should().BeTrue();
+            GameServices.CombatDefenseMemory.HasRecentGuardedHit(creature, 6f).Should().BeTrue();
         }
         else
         {
             table[(creature, shield)] = SWLOR.Game.Server.Core.Clock.UtcNow;
-            GameServices.CombatDamageTaken.HasRecentDeflection(creature, shield, 6f).Should().BeTrue();
+            GameServices.CombatDefenseMemory.HasRecentDeflection(creature, shield, 6f).Should().BeTrue();
         }
     }
 

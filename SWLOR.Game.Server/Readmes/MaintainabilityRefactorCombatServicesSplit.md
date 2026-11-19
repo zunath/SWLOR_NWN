@@ -727,7 +727,7 @@ coordinator decisions that take this guide's recommendation.
 
 ## Progress
 
-P5-7a: this guide (2026-11-18), revised after the coordinator's review. P5-7b: the proof (2026-11-18, "P5-7b as built" below). Next: P5-7c.
+P5-7a: this guide (2026-11-18), revised after the coordinator's review. P5-7b: the proof (2026-11-18, "P5-7b as built" below). P5-7c: the damage roll, the defense memory and the serializer cut (2026-11-18, "P5-7c as built" below). Next: P5-7d, P5-7e1, P5-7g and P5-7i1 can start (P5-7d also waits for P5-16h PRs 7 and 8).
 
 ### P5-7b as built (2026-11-18)
 
@@ -786,3 +786,35 @@ concrete class where a handler is not on an interface).
   that splits each still re-points its constructor calls. The path-reading tests of `CombatRecorderService.cs` (`CombatSourceTests`,
   `DMPossessionPlayerLoopTests`) and `CombatDamageModifiersService.cs` (`MeleeRepeatedTargetStackTests`) were not re-pointed here: the coordinator's list for this PR was the Enmity and Death readers, and the
   recorder and damage modifiers readers move with their PRs (P5-7j1, P5-7d).
+
+### P5-7c as built (2026-11-18)
+
+- **`CombatDamageRollService`** (`ICombatDamageRollService`, 45 lines, 0 services): `CalculateDamage` verbatim, with its default `deltaCap = 0`.
+  `ICombatService` loses the member; `CombatService` loses the `CombatRules` and `Random` usings and 36 lines (198 to 162).
+- **`CombatDefenseMemoryService`** (`ICombatDefenseMemoryService`, 67 lines, 0 services): the two tables `_recentGuardedHits` and `_recentDeflections`,
+  `HasRecentGuardedHit` and `HasRecentDeflection` verbatim, `NoteGuardedHit` and `NoteDeflection` (the one table write cut out of `TrackGuardedHit`
+  and `TrackDeflection`), and `ForgetDefenseMemory` (the body of `ForgetDamageTakenState`, which is gone). It reads the clock, so it is in `ClockSeamFiles.txt`.
+- **`Lazy<>` parameters removed (2):** `CombatDamageModifiersService -> Lazy<ICombatDamageTakenService>` (plain `ICombatDefenseMemoryService`) and
+  `CombatDamageTakenService -> Lazy<ICombatService>` (plain `ICombatDamageRollService`). The third of the three (`CombatHitEffectsService ->
+  Lazy<ICombatDamageTakenService>`) is P5-7f1's, as the map says.
+- **Departure: `CombatDamageTakenService` is at 21 services, not 20.** It swaps the `Lazy<ICombatService>` for the roll part and also takes the
+  defense memory (the two writes of `TrackGuardedHit` and `TrackDeflection`). The `ServicesPerType.txt` line goes from 20 to 21; the guarded-hit
+  effects part (P5-7e2) and the effects part (P5-7e1) take the two parts and the count falls with those moves. `CombatService` stays at 12
+  (the defense memory replaces damage taken, which it held only for the forget; the roll was never a field of it).
+- **Cleanup order unchanged.** `CombatService` calls `_defenseMemory.ForgetDefenseMemory` where it called `_damageTaken.ForgetDamageTakenState` (third).
+  `CombatCleanupOrderTests` decorates the defense memory part instead of damage taken and lists it in the same table slot; its fixture changes in the three
+  lines that name the call (`DefenseMemory.ForgetDefenseMemory`), every other line is byte-identical.
+- **`CombatRecordSerializer.Write` cut:** a dispatcher of 44 lines (the three header writes, then one `switch` that sends each of the 23 labels to a
+  method) and four private static methods, each holding the original `case` bodies verbatim: `WriteLifecycleEvent` (3 labels, 24 lines), `WriteAbilityEvent` (6, 54),
+  `WriteDamageEvent` (6, 69, with the temporary hit point and healing events) and `WriteStateEvent` (8, 62). The dispatcher is 44 lines, not the
+  map's 30, because it lists the 23 labels. The 23 goldens and the 13 variants pass unchanged.
+- **Call sites.** By hand, with `sed` on the exact text (the facade tool only rewrites the removed facade's own `Combat.X` text, not the
+  `GameServices.Combat.X` that earlier PRs wrote; `RemovedFacades.json` is updated and `-Check` is clean): `GameServices.Combat.CalculateDamage` to
+  `GameServices.CombatDamageRoll.CalculateDamage` in 10 ship module definitions, `Native/GetDamageRoll.cs` (2) and the two characterization test
+  files (text only, snapshots untouched); `GameServices.CombatDamageTaken.HasRecent*` to `GameServices.CombatDefenseMemory.HasRecent*` in
+  `WeaponActiveAbilityDefinitionBase.cs` (4), `CombatPerkRegressionEngineTests`, `TwinPistolEngineTests`, `CombatSourceTests` (2) and
+  `CombatFacadeAllocationTests` (2). Holders: `CombatDamageModifiersService` (9 services, unchanged: the `Lazy<>` became the plain part),
+  `CombatService` (12, unchanged), `CombatDamageTakenService` (20 to 21).
+- **Tests.** `CombatDamageRollServiceTests` and `CombatDefenseMemoryServiceTests` are new (the window, purge and forget tests moved out of
+  `CombatDamageTakenServiceTests` and `CombatServiceTests`); the doubles `TestDamageTaken` and `TestDamageModifiers` take the new parts; the
+  allocation pins keep their bytes (`ForgetDefenseMemory` 184); `CombatPartForwardingTests` lists the two new interfaces.

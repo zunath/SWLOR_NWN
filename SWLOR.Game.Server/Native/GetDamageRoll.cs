@@ -383,12 +383,12 @@ namespace SWLOR.Game.Server.Native
 
                 case (int)ObjectType.Placeable:
                     var plc = CNWSPlaceable.FromPointer(pTarget);
-                    return GameServices.Combat.CalculateDamage(attackerAttack, damageProfile.Damage, attackerStat,
+                    return GameServices.CombatDamageRoll.CalculateDamage(attackerAttack, damageProfile.Damage, attackerStat,
                         plc.m_nHardness, plc.m_nHardness, critical);
 
                 case (int)ObjectType.Door:
                     var door = CNWSDoor.FromPointer(pTarget);
-                    return GameServices.Combat.CalculateDamage(attackerAttack, damageProfile.Damage, attackerStat,
+                    return GameServices.CombatDamageRoll.CalculateDamage(attackerAttack, damageProfile.Damage, attackerStat,
                         door.m_nHardness, door.m_nHardness, critical);
 
                 default:

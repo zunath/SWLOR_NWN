@@ -16,6 +16,7 @@ Domain/Combat/CombatAbilityImpactService.cs
 Domain/Combat/CombatDamageModifiersService.cs
 Domain/Combat/CombatHitEffectsService.cs
 Domain/Combat/CombatDamageTakenService.cs
+Domain/Combat/CombatDefenseMemoryService.cs
 Domain/Combat/CombatAbilityActivationService.cs
 Domain/Combat/BossCreature.cs
 Domain/Foundation/CombatDamageCategoryType.cs

@@ -10,7 +10,6 @@
 # SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
 
 SWLOR.Game.Server.Domain.Character.SkillService.GiveSkillXP | 237
-SWLOR.Game.Server.Domain.Combat.CombatRecordSerializer.Write | 198
 SWLOR.Game.Server.Domain.Companions.DroidService.SpawnDroid | 272
 SWLOR.Game.Server.Domain.Items.ItemService.UseItem | 189
 SWLOR.Game.Server.Domain.Space.SpaceService.ActivateShipModule | 155

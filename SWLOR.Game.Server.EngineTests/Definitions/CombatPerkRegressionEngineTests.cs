@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             var defense = Stat.GetStatAdjustment(caster, StatType.PhysicalDefensePercentAdjustment);
-            ctx.Assert(!GameServices.CombatDamageTaken.HasRecentGuardedHit(caster, 30f), "the caster starts without a guarded hit");
+            ctx.Assert(!GameServices.CombatDefenseMemory.HasRecentGuardedHit(caster, 30f), "the caster starts without a guarded hit");
             await ApplyGuardCounter(unguardedTarget);
             ctx.Assert(!StatusEffect.HasStatusEffect<DazedStatusEffect>(unguardedTarget),
                 "without a guarded hit Guard Counter III inflicts no Daze");

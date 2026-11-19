@@ -155,7 +155,7 @@ public class CombatDeathTranscriptTests
                 bench.Engine.SetReturn("GetIsInCombat", true);
                 ((CombatService)combat).ClearCombatState();
             });
-            bench.Step("damage roll" + tag, () => combat.CalculateDamage(100, 45, 40, 100, 10, 120, 5));
+            bench.Step("damage roll" + tag, () => bench.Get<ICombatDamageRollService>().CalculateDamage(100, 45, 40, 100, 10, 120, 5));
         }
 
         AssertGolden("SWLOR.Game.Server.Tests/Fixtures/CombatTranscripts/CombatService.txt", bench.Text);

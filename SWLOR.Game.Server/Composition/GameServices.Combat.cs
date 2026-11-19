@@ -51,6 +51,12 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The damage taken part of combat, a part of combat.</summary>
         public static ICombatDamageTakenService CombatDamageTaken => FacadeAccessor.Resolve<ICombatDamageTakenService>();
 
+        /// <summary>The random damage roll, a part of combat.</summary>
+        public static ICombatDamageRollService CombatDamageRoll => FacadeAccessor.Resolve<ICombatDamageRollService>();
+
+        /// <summary>Who was guarded or deflected recently, a part of combat.</summary>
+        public static ICombatDefenseMemoryService CombatDefenseMemory => FacadeAccessor.Resolve<ICombatDefenseMemoryService>();
+
         /// <summary>The combat log lines, a part of combat.</summary>
         public static ICombatFeedbackService CombatFeedback => FacadeAccessor.Resolve<ICombatFeedbackService>();
 

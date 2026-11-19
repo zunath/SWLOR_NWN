@@ -1,14 +1,11 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
-using static SWLOR.Game.Server.Domain.Combat.CombatRules;
-using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 
 namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// What is left of <c>Combat</c> once its parts are split out: the death, exit and six-second handlers, the cleanup that
-    /// forgets a creature's combat state in every part in a fixed order, the refresh of the stat-driven trackers, and the
-    /// damage roll that draws from the shared <c>Random</c>.
+    /// forgets a creature's combat state in every part in a fixed order, and the refresh of the stat-driven trackers.
     /// It holds no state; every table it clears belongs to a part.
     /// </summary>
     public class CombatService : ICombatService
@@ -19,7 +16,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatAttackTimingService _attackTiming;
         private readonly ICombatDamageModifiersService _damageModifiers;
         private readonly ICombatHitEffectsService _hitEffects;
-        private readonly ICombatDamageTakenService _damageTaken;
+        private readonly ICombatDefenseMemoryService _defenseMemory;
         private readonly ICombatAbilityActivationService _abilityActivation;
         private readonly ICombatAbilityImpactService _abilityImpact;
         private readonly IStatService _stat;
@@ -33,7 +30,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatAttackTimingService attackTiming,
             ICombatDamageModifiersService damageModifiers,
             ICombatHitEffectsService hitEffects,
-            ICombatDamageTakenService damageTaken,
+            ICombatDefenseMemoryService defenseMemory,
             ICombatAbilityActivationService abilityActivation,
             ICombatAbilityImpactService abilityImpact,
             IStatService stat,
@@ -46,7 +43,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _attackTiming = attackTiming;
             _damageModifiers = damageModifiers;
             _hitEffects = hitEffects;
-            _damageTaken = damageTaken;
+            _defenseMemory = defenseMemory;
             _abilityActivation = abilityActivation;
             _abilityImpact = abilityImpact;
             _stat = stat;
@@ -85,7 +82,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             _resources.ForgetResourceTriggerState(creature);
             _combatActivity.ForgetActivityState(creature);
-            _damageTaken.ForgetDamageTakenState(creature);
+            _defenseMemory.ForgetDefenseMemory(creature);
             _suppression.ForgetSuppressionState(creature);
             _abilityActivation.ForgetActivationState(creature);
             _hitEffects.ForgetHitEffectState(creature);
@@ -160,39 +157,6 @@ namespace SWLOR.Game.Server.Domain.Combat
                 DeleteLocalFloat(player, "ATTACK_ORIENTATION_X");
                 DeleteLocalFloat(player, "ATTACK_ORIENTATION_Y");
             }
-        }
-
-        // Not a rule of CombatRules: it draws from the shared Random generator, so it is not pure.
-        /// <summary>
-        /// Calculates a random damage amount based on the provided stats of the attacker and defender.
-        /// </summary>
-        /// <param name="attackerAttack">The attacker's attack rating.</param>
-        /// <param name="attackerDMG">The attacker's DMG rating</param>
-        /// <param name="attackerStat">The attacker's attack stat value</param>
-        /// <param name="defenderDefense">The defender's defense rating.</param>
-        /// <param name="defenderStat">The defender's raw defend stat value</param>
-        /// <param name="critical">the critical rating of the attack, or 0 if the attack is not critical.</param>
-        /// <param name="deltaCap">Value to cap the lower and upper bounds of stat delta to. For weapons, should be weapon rank.</param>
-        /// <returns>A damage value to apply to the target.</returns>
-        public int CalculateDamage(
-            int attackerAttack,
-            int attackerDMG,
-            int attackerStat,
-            int defenderDefense,
-            int defenderStat,
-            int critical,
-            int deltaCap = 0)
-        {
-            var (minDamage, maxDamage) = CalculateDamageRange(
-                attackerAttack,
-                attackerDMG,
-                attackerStat,
-                defenderDefense,
-                defenderStat,
-                critical,
-                deltaCap);
-
-            return (int)Random.NextFloat(minDamage, maxDamage);
         }
     }
 }

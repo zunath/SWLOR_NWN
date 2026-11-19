@@ -24,6 +24,7 @@ public class CombatDamageTakenTranscriptTests
     {
         using var bench = new CombatTranscriptBench();
         var taken = bench.Get<ICombatDamageTakenService>();
+        var memory = bench.Get<ICombatDefenseMemoryService>();
 
         foreach (var stat in new[] { 0, 5 })
         {
@@ -78,7 +79,7 @@ public class CombatDamageTakenTranscriptTests
                 var physical = 60;
                 taken.ApplyIncomingPhysicalToForceConversion(Attacker, Defender, CombatDamageType.Physical, ref physical, 0, null);
             });
-            bench.Step("forget the defender" + tag, () => taken.ForgetDamageTakenState(Defender));
+            bench.Step("forget the defender" + tag, () => memory.ForgetDefenseMemory(Defender));
         }
 
         AssertGolden(FixturePath, bench.Text);

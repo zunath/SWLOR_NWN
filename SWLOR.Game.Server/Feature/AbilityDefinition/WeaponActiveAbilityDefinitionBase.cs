@@ -383,7 +383,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 if (ExtraDamageIfRecentGuardedHit != 0 &&
                     RecentGuardedHitWindowSeconds > 0f &&
-                    GameServices.CombatDamageTaken.HasRecentGuardedHit(activator, RecentGuardedHitWindowSeconds))
+                    GameServices.CombatDefenseMemory.HasRecentGuardedHit(activator, RecentGuardedHitWindowSeconds))
                 {
                     bonus += ExtraDamageIfRecentGuardedHit;
                 }
@@ -484,7 +484,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             {
                 if (RecentGuardedHitStatusEffect == null ||
                     RecentGuardedHitStatusDurationSeconds <= 0 ||
-                    !GameServices.CombatDamageTaken.HasRecentGuardedHit(activator, RecentGuardedHitWindowSeconds))
+                    !GameServices.CombatDefenseMemory.HasRecentGuardedHit(activator, RecentGuardedHitWindowSeconds))
                 {
                     return (statusEffect, durationSeconds);
                 }
@@ -711,7 +711,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (RestoreFPAfterRangedDeflection > 0 &&
                     RestoreFPAfterRangedDeflectionWindowSeconds > 0 &&
                     (summary?.ImpactedTargetCount ?? 0) > 0 &&
-                    GameServices.CombatDamageTaken.HasRecentDeflection(
+                    GameServices.CombatDefenseMemory.HasRecentDeflection(
                         activator,
                         DeflectionSource.Ranged,
                         RestoreFPAfterRangedDeflectionWindowSeconds))
@@ -1151,7 +1151,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (ConditionalStatusEffect == null ||
                     ConditionalStatusDurationSeconds <= 0 ||
                     ConditionalStatusAfterDeflectionWindowSeconds <= 0 ||
-                    !GameServices.CombatDamageTaken.HasRecentDeflection(activator, DeflectionSource.Ranged, ConditionalStatusAfterDeflectionWindowSeconds))
+                    !GameServices.CombatDefenseMemory.HasRecentDeflection(activator, DeflectionSource.Ranged, ConditionalStatusAfterDeflectionWindowSeconds))
                 {
                     return null;
                 }

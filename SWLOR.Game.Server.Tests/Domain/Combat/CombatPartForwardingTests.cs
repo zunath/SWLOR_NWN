@@ -31,7 +31,9 @@ public class CombatPartForwardingTests
         typeof(ICombatActivityService),
         typeof(ICombatAttackTimingService),
         typeof(ICombatDamageModifiersService),
+        typeof(ICombatDamageRollService),
         typeof(ICombatDamageTakenService),
+        typeof(ICombatDefenseMemoryService),
         typeof(ICombatFeedbackService),
         typeof(ICombatHitEffectsService),
         typeof(ICombatQueriesService),
@@ -120,11 +122,11 @@ public class CombatPartForwardingTests
     public void TheMovedImpactDefaultsKeepTheirValues(Type part, string expected) =>
         AssertMovedDefaults(part, expected, 2, typeof(ICombatAbilityImpactService));
 
-    // The one member of what is left of Combat (CombatService) that has a default argument, with the default it had as a static
-    // member of Combat, on the interface and the instance class alike.
-    [TestCase(typeof(ICombatService), "CalculateDamage(deltaCap=0)")]
+    // The one member of the damage roll part that has a default argument, with the default it had as a static member of
+    // Combat, on the interface and the instance class alike.
+    [TestCase(typeof(ICombatDamageRollService), "CalculateDamage(deltaCap=0)")]
     public void TheMovedServiceDefaultsKeepTheirValues(Type part, string expected) =>
-        AssertMovedDefaults(part, expected, 1, typeof(ICombatService));
+        AssertMovedDefaults(part, expected, 1, typeof(ICombatDamageRollService));
 
     private static string Defaults(MethodInfo method) => $"{method.Name}(" + string.Join(", ", method.GetParameters()
         .Where(parameter => parameter.HasDefaultValue)

@@ -36,6 +36,13 @@ public static class MeleeWeaponCarry
         Apply(OBJECT_SELF, UsesLoweredCarry(item, (int)GetCreatureSize(OBJECT_SELF)));
     }
 
+    /// <summary>
+    /// Applies lowered carry to NPCs that spawn with a two-handed melee weapon
+    /// already equipped, without requiring a later equipment change.
+    /// </summary>
+    [NWNEventHandler(ScriptName.OnCreatureSpawnAfter)]
+    public static void OnCreatureSpawn() => Synchronize(OBJECT_SELF);
+
     [NWNEventHandler(ScriptName.OnModuleEquip)]
     public static void OnEquip() => Synchronize(GetPCItemLastEquippedBy());
 

@@ -30,9 +30,11 @@ namespace SWLOR.Game.Server.Feature
                 ReplaceObjectAnimation(player, source);
             }
 
+            // Clear any stale lowered-carry state before the katar/Power Glove
+            // remap installs its own movement mappings.
+            MeleeWeaponCarry.Synchronize(player);
             KatarAnimationRemap.SynchronizeOnLogin(player);
             PistolAnimationRemap.SynchronizeOnLogin(player);
-            MeleeWeaponCarry.Synchronize(player);
         }
     }
 }

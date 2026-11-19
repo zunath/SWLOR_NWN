@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.CraftService.Research;
 
 namespace SWLOR.Game.Server.Feature
@@ -27,6 +28,8 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
+            // Whichever login handler runs first applies the file's sequence; see CraftFileLoginSequences.
+            PlayerFileCheckpoint.ApplyLoginCraftSequence(player);
             ResearchExperimentService.RecoverAtLogin(player);
             ResearchExperimentService.SettleOpenExperiments(GetObjectUUID(player));
         }

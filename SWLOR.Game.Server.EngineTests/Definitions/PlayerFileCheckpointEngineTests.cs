@@ -2,6 +2,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NWN.Native.API;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -22,6 +23,53 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var owner = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
             await ctx.ExecuteInCreatureContextAsync(owner, () => VerifyCraftSequence(ctx, owner));
+        }
+
+        [EngineTest("A relog applies the craft file sequence of the loaded file to the entering player", Category = "PlayerFileCheckpoint")]
+        public static async Task RelogAppliesFileCraftSequence(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("nw_rat001");
+            await ctx.WaitFrameAsync();
+            await ctx.ExecuteInCreatureContextAsync(owner, () => VerifyRelogCraftSequence(ctx, owner));
+        }
+
+        private static unsafe void VerifyRelogCraftSequence(EngineTestContext ctx, uint owner)
+        {
+            var characterId = GetObjectUUID(owner);
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(owner).AsNWSCreature();
+            var wasPlayer = native.m_bPlayerCharacter;
+            SetLocalInt(owner, CraftSessionFileSequence.Variable, 9);
+
+            using var file = new CResGFF();
+            using var root = new CResStruct();
+            using var fileType = new CExoString("BIC ");
+            using var format = new CExoString("V2.0");
+            ctx.Assert(file.CreateGFFFile(root, fileType, format) != 0, "Create character export");
+            native.m_bPlayerCharacter = 1;
+            ctx.Assert(native.SaveCreature(file, root, 0, 0, 1, 0) != 0, "Export the character as a player BIC at sequence 9");
+            native.m_bPlayerCharacter = wasPlayer;
+
+            // The engine keeps a player's locals across relogs until a restart: here, the 0s of the first login since the restart.
+            SetLocalInt(owner, CraftSessionFileSequence.Variable, 0);
+            SetLocalInt(owner, CraftSessionFileSequence.ExportedVariable, 0);
+            SetLocalInt(owner, CraftSessionFileSequence.LoadedVariable, 0);
+
+            // A relog reads the file into a temporary creature through the player stats path, never into the creature that enters.
+            using var loading = new CNWSCreature(OBJECT_INVALID, 1, 1);
+            ctx.AssertEqual(0u, loading.m_pStats.ReadStatsFromGff(file, root, loading.m_cAppearance, 0, 1, 0, 1),
+                "Native player stats load succeeds (zero is success)");
+            ctx.AssertEqual(0, GetLocalInt(owner, CraftSessionFileSequence.LoadedVariable), "Loading alone does not reach the entering creature");
+
+            PlayerFileCheckpoint.ApplyLoginCraftSequence(owner);
+            ctx.AssertEqual(9, GetLocalInt(owner, CraftSessionFileSequence.LoadedVariable), "Login compares with the sequence the file loaded with");
+            ctx.AssertEqual(9, GetLocalInt(owner, CraftSessionFileSequence.ExportedVariable), "The file is known to hold sequence 9");
+            ctx.AssertEqual(9, GetLocalInt(owner, CraftSessionFileSequence.Variable), "New transfers continue after the file's sequence");
+
+            // A later login check of the same login must not reset what an earlier one advanced.
+            SetLocalInt(owner, CraftSessionFileSequence.Variable, 10);
+            PlayerFileCheckpoint.ApplyLoginCraftSequence(owner);
+            ctx.AssertEqual(10, GetLocalInt(owner, CraftSessionFileSequence.Variable), "The sequence is applied once per login");
+            ctx.Assert(!CraftFileLoginSequences.TryTake(characterId, out _), "Nothing is left pending for the character");
         }
 
         private static unsafe void VerifyCraftSequence(EngineTestContext ctx, uint owner)

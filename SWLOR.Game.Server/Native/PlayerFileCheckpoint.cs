@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Native
         internal const string CraftSequenceFieldName = "CraftFileSeq";
         private static readonly byte[] FieldLabel = System.Text.Encoding.ASCII.GetBytes(FieldName + "\0");
         private static readonly byte[] CraftSequenceLabel = System.Text.Encoding.ASCII.GetBytes(CraftSequenceFieldName + "\0");
+        private static readonly byte[] UuidLabel = System.Text.Encoding.ASCII.GetBytes("UUID\0");
         private static FunctionHook* _saveHook;
         private static FunctionHook* _loadHook;
         private static FunctionHook* _readStatsHook;
@@ -116,7 +117,10 @@ namespace SWLOR.Game.Server.Native
                 // CNWSPlayer.LoadCreatureData bypasses LoadCreature and reads stats directly.
                 // Its return convention is zero on success, unlike LoadCreature.
                 if (result == 0 && playerCharacter != 0)
+                {
                     RestoreCheckpoint(CNWSCreatureStats.FromPointer(stats).m_pBaseCreature, resource, structure);
+                    RecordLoginCraftSequence(resource, structure);
+                }
                 return result;
             }
             catch (Exception exception)
@@ -124,6 +128,48 @@ namespace SWLOR.Game.Server.Native
                 Log.WriteError(exception, "Player login checkpoint deserialization failed");
                 return uint.MaxValue;
             }
+        }
+
+        /// <summary>
+        /// Remembers the craft file sequence of a character file a player is logging in with, by the file's UUID, for
+        /// <see cref="ApplyLoginCraftSequence"/>. A relog loads the file into a temporary creature while the creature that enters keeps
+        /// the locals of its last session, so the sequence cannot be restored onto it here.
+        /// </summary>
+        private static void RecordLoginCraftSequence(void* resource, void* structure)
+        {
+            var file = CResGFF.FromPointer(resource);
+            var root = CResStruct.FromPointer(structure);
+            var found = 0;
+            using var empty = new CExoString(string.Empty);
+            CExoString uuid;
+            fixed (byte* field = UuidLabel)
+                uuid = file.ReadFieldCExoString(root, field, &found, empty);
+            using (uuid)
+            {
+                if (found == 0)
+                    return;
+
+                found = 0;
+                int craftSequence;
+                fixed (byte* field = CraftSequenceLabel)
+                    craftSequence = file.ReadFieldINT(root, field, &found, 0);
+                CraftFileLoginSequences.Record(uuid.ToString(), found != 0 ? craftSequence : 0);
+            }
+        }
+
+        /// <summary>
+        /// Sets the entering player's craft file sequence locals to the sequence the character file they logged in with carried. Every
+        /// login check that compares a record with the file calls it first; it acts once per login, so the later calls leave the
+        /// sequence the earlier checks advanced. A file with no sequence sets them to 0.
+        /// </summary>
+        public static void ApplyLoginCraftSequence(uint player)
+        {
+            if (!CraftFileLoginSequences.TryTake(GetObjectUUID(player), out var sequence))
+                return;
+
+            SetLocalInt(player, CraftSessionFileSequence.Variable, sequence);
+            SetLocalInt(player, CraftSessionFileSequence.ExportedVariable, sequence);
+            SetLocalInt(player, CraftSessionFileSequence.LoadedVariable, sequence);
         }
 
         private static void RestoreCheckpoint(CNWSCreature creature, void* resource, void* structure)

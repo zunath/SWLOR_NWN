@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.ProspectingService;
 using SWLOR.Game.Server.Service.ScavengeService;
@@ -24,6 +25,8 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
+            // The sequence the character file loaded with, not the locals a relog kept from the last session (see CraftFileLoginSequences).
+            PlayerFileCheckpoint.ApplyLoginCraftSequence(player);
             CraftSessionService.RecoverAtLogin(player);
             NwnProspectingWorld.Instance.ReturnPendingHarvest(player);
             NwnScavengeWorld.Instance.ReturnPendingFinds(player, atLogin: true);

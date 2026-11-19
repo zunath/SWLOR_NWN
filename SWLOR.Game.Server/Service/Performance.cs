@@ -358,6 +358,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
+            // Whichever login handler runs first applies the file's sequence; see CraftFileLoginSequences.
+            Native.PlayerFileCheckpoint.ApplyLoginCraftSequence(player);
             RecoverInterruptedPerformance(player, atLogin: true);
         }
 

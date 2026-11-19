@@ -425,13 +425,15 @@ public class AstromechSpeciesTests
         classes[(int)BaseItem.ShockProd].Should().Be("wampr");
         classes[(int)BaseItem.BlasterMount].Should().Be("wambl");
 
-        var blueprints = Directory.GetFiles(Path.Combine(root, "Module", "uti"), "am_w_*.uti.json");
-        blueprints.Should().NotBeEmpty();
-        foreach (var blueprint in blueprints)
+        // Crafted, reward and looted tools alike.
+        var tools = 0;
+        foreach (var blueprint in Directory.GetFiles(Path.Combine(root, "Module", "uti"), "am_*.uti.json"))
         {
-            using var item = System.Text.Json.JsonDocument.Parse(File.ReadAllText(blueprint));
+            using var item = System.Text.Json.JsonDocument.Parse(File.ReadAllText(blueprint, System.Text.Encoding.Latin1));
             var fields = item.RootElement;
-            var itemClass = classes[fields.GetProperty("BaseItem").GetProperty("value").GetInt32()];
+            if (!classes.TryGetValue(fields.GetProperty("BaseItem").GetProperty("value").GetInt32(), out var itemClass))
+                continue;
+            tools++;
             foreach (var (letter, field) in new[] { ("b", "ModelPart1"), ("m", "ModelPart2"), ("t", "ModelPart3") })
             {
                 var part = $"{itemClass}_{letter}_{fields.GetProperty(field).GetProperty("value").GetInt32():D3}";
@@ -441,6 +443,8 @@ public class AstromechSpeciesTests
                     $"{Path.GetFileName(blueprint)} shows the icon i{part}");
             }
         }
+
+        tools.Should().BeGreaterThan(30, "the crafted, reward and looted tools are all checked");
     }
 
     [Test]

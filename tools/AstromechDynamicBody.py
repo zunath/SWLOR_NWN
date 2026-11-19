@@ -19,7 +19,7 @@ and two legs as rigid meshes) on a shared clip model (`c_astromech`). This tool 
   chassis did. The tool meshes and the built-in rod are left out.
 - `wampr_*` and `wambl_*`: the shock prod and the blaster mount as held items, cut from the tools of chassis 1. A
   weapon is three stacked part models. The tool is the bottom part; the middle and top parts are empty. One set is
-  written for every part number an `am_w_*` blueprint uses. Their inventory icons, and the icon of Chassis Plating,
+  written for every part number an astromech tool blueprint uses. Their inventory icons, and the icon of Chassis Plating,
   are drawn from these models by BuildAstromechIcons.py once the haks are packed.
 
 DIR holds `c_astro_01.mdl` .. `c_astro_08.mdl` and `c_astromech.mdl`, compiled or ASCII. Everything is compiled with
@@ -69,7 +69,7 @@ BANK_FOLDER = 'sw_cr_creature'
 TOOL_CHASSIS = 1
 TOOL_ITEMS = {545: ('wampr', 'toolr'), 546: ('wambl', 'tooll')}
 TOOL_FOLDER = 'sw_weapon'
-TOOL_BLUEPRINTS = 'Module/uti/am_w_*.uti.json'
+TOOL_BLUEPRINTS = 'Module/uti/am_*.uti.json'   # the tools among them: crafted, reward and looted
 
 
 def relative(point, origin):
@@ -333,10 +333,10 @@ def tool_part_numbers() -> dict:
     """Base item -> the bottom, middle and top part numbers its blueprints use."""
     used = {base: {'b': set(), 'm': set(), 't': set()} for base in TOOL_ITEMS}
     for path in sorted(REPO.glob(TOOL_BLUEPRINTS)):
-        item = json.loads(path.read_text(encoding='utf-8'))
+        item = json.loads(path.read_bytes().decode('latin-1'))
         base = item['BaseItem']['value']
         if base not in used:
-            raise SystemExit(f'{path.name} is not a shock prod or a blaster mount')
+            continue
         for slot, field in (('b', 'ModelPart1'), ('m', 'ModelPart2'), ('t', 'ModelPart3')):
             used[base][slot].add(item[field]['value'])
     return used

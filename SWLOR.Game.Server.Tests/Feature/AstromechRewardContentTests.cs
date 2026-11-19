@@ -127,6 +127,12 @@ public class AstromechRewardContentTests
                 continue;
             if (field.Name.StartsWith("ArmorPart_") || field.Name.StartsWith("xArmorPart_"))
                 continue;
+            if (field.Name == "VarTable")
+            {
+                // The stat migrations find items by resref; a form carries none of their revision markers.
+                LocalVariables(to).Should().Equal(LocalVariables(from).Where(name => !name.EndsWith("_STATS_REVISION")), twin);
+                continue;
+            }
             to.GetProperty(field.Name).GetRawText().Should().Be(field.Value.GetRawText(), field.Name);
         }
     }
@@ -243,6 +249,11 @@ public class AstromechRewardContentTests
         process.WaitForExit();
         process.ExitCode.Should().Be(0, output);
     }
+
+    private static List<string> LocalVariables(JsonElement blueprint) =>
+        blueprint.GetProperty("VarTable").GetProperty("value").EnumerateArray()
+            .Select(variable => variable.GetProperty("Name").GetProperty("value").GetString()!)
+            .ToList();
 
     private record Property(int Number, int Subtype, int CostTable, int CostValue, int Param1, int Param1Value);
 

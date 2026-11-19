@@ -1,15 +1,22 @@
-"""Generate the astromech forms of humanoid quest rewards and guild store weapons.
+"""Generate the astromech forms of humanoid quest rewards, guild store weapons and looted gear.
 
-An astromech equips only astromech modules and tools, so a quest or guild store that hands out a humanoid necklace,
-bracer, staff or rifle would hand it something it cannot use. Each such item gets an astromech form here: a stat copy
-with a new name, the Chassis (skill 61) or Armaments (skill 63) rank requirement in place of the Armor, Staff or Rifle
-rank, the tool base item for a weapon, and the astromech-only property. No balance number is introduced.
+An astromech equips only astromech modules and tools, so a quest, guild store or loot table that hands out a humanoid
+necklace, bracer, staff or rifle would hand it something it cannot use. Each such item gets an astromech form here: a
+stat copy with a new name, the Chassis (skill 61) or Armaments (skill 63) rank requirement in place of the Armor, Staff
+or Rifle rank, the tool base item for a weapon, and the astromech-only property. No balance number is introduced.
+
+Looted gear is found by reading the loot tables (Feature/LootTableDefinition): every armor-slot piece, staff and rifle a
+table can drop gets a form, named by putting the module name in place of the humanoid slot word ("Overcharge Sash"
+becomes "Overcharge Power Cell"; tools/AstromechLootNames.json names the pieces that rule cannot). The game drops a
+form wherever its humanoid piece drops (Service/AstromechService/AstromechLoot.cs), so no loot table is edited.
+Weapons of other kinds have no astromech tool to become and get no form.
 
   python tools/GenerateAstromechRewards.py            write everything
   python tools/GenerateAstromechRewards.py --check    write nothing, exit 1 and list what differs
 
 Writes:
   - Module/uti/am_q_*.uti.json (quest reward modules) and am_w_*_cap / am_w_*_h<1..5>.uti.json (reward and guild tools)
+  - Module/uti/am_<looted piece>.uti.json, one per looted piece
   - the Hunter tools in Module/utm/gp_hunt_<1..5>.utm.json, next to the Hunter Staff and Hunter Rifle they copy,
     and in every copy of those stores placed in an area (Module/git), which is what the game opens
   - SWLOR.Game.Server/Service/AstromechService/AstromechItemTwins.Generated.cs: the humanoid resref to astromech resref
@@ -41,12 +48,13 @@ ROMAN = ["I", "II", "III", "IV", "V"]
 
 
 class Twin:
-    def __init__(self, source, resref, name, weapon=None, store=None):
+    def __init__(self, source, resref, name, weapon=None, store=None, looted=False):
         self.source = source
         self.resref = resref
         self.name = name
         self.weapon = weapon      # None for a module, STAFF or RIFLE for a tool
         self.store = store        # the store blueprint that sells the source, if any
+        self.looted = looted      # found in a loot table (loot_twins), not listed by hand
         assert len(resref) <= 16, resref
 
 
@@ -73,7 +81,120 @@ for _rank in range(1, 6):
                       f"gp_hunt_{_rank}"))
 
 
+# ---------------------------------------------------------------- looted gear
+
+LOOT_TABLES = ROOT / "SWLOR.Game.Server" / "Feature" / "LootTableDefinition"
+LOOT_NAMES = Path(__file__).resolve().parent / "AstromechLootNames.json"
+DROID_RACE = 167
+# Skills a looted piece may ask for besides Armor that an astromech trains too; the requirement is kept as it is.
+SHARED_SKILLS = (9,)  # Smithery
+# Base item of a looted piece -> (module name its astromech form takes, the humanoid slot words that name replaces).
+LOOT_MODULES = {
+    17: ("Sensor Package", "Visor Cowl Mask Cap Helm Helmet Hood Lens Goggles Headdress Respirator Crown Headwrap Wrap"),
+    16: ("Chassis Plating", "Plating Harness Tunic Plate Armor Robe Coat Vest Robes Wrap Protection Coveralls Longcoat "
+                            "Cuirass Hide Vestments"),
+    36: ("Manipulator Servo", "Bracer Gloves Vambrace Gauntlets Wraps Rig Shroud Guard Cestus Grip Array Gauntlet Frame "
+                              "Charm"),
+    78: ("Manipulator Servo", "Bracer Gloves Vambrace Gauntlets Wraps Rig Shroud Guard Cestus Grip Array Gauntlet Frame "
+                              "Charm"),
+    26: ("Drive Unit", "Boots Leggings Trailboots Shoes Treads Clawboots"),
+    21: ("Power Cell", "Sash Belt Wrap Coil Rig"),
+    19: ("Logic Module", "Necklace Charm Fetish Totem Relic Core Pendant Keyloop Lens Talisman Sigil Beads Amulet"),
+    52: ("Expansion Socket", "Band Ring Signet"),
+    80: ("Deflector Emitter", "Mantle Cloak Cape Shawl Shroud"),
+    STAFF[0]: ("Shock Prod", "Staff Rod Pole Conductor Gaderffii Pike"),
+    RIFLE[0]: ("Blaster Mount", "Rifle Carbine"),
+}
+LOOT_WEAPONS = {STAFF[0]: STAFF, RIFLE[0]: RIFLE}
+# A looted tool keeps no part numbers of the staff or rifle it copies: every tool is drawn from one model set.
+LOOT_TOOL_PART = 11
+RESERVED_PREFIXES = ("am_h_", "am_t_", "am_w_", "am_q_", "am_plat_")
+
+
+def looted_resrefs() -> list:
+    """Every item resref a loot table names, in order of first appearance."""
+    found = {}
+    for path in sorted(LOOT_TABLES.glob("*.cs")):
+        for resref in re.findall(r'\.AddItem\(\s*"([^"]+)"', path.read_text(encoding="utf-8-sig")):
+            found.setdefault(resref.lower(), None)
+    return list(found)
+
+
+def loot_resref(source: str) -> str:
+    """am_<source>, squeezed to a resource name: underscores go first, then the middle (the last two characters tell
+    the pieces of a set apart)."""
+    room = 16 - len("am_")
+    body = source if len(source) <= room else source.replace("_", "")
+    if len(body) > room:
+        body = body[:room - 2] + body[-2:]
+    return "am_" + body
+
+
+def loot_name(name: str, base: int, overrides: dict, source: str) -> str:
+    if source in overrides:
+        return overrides[source]
+    module, slot_words = LOOT_MODULES[base]
+    words = name.split()
+    if len(words) > 1 and words[-1] in slot_words.split():
+        return " ".join(words[:-1] + [module])
+    return f"{name} {module}"
+
+
+def loot_twins(taken: list) -> list:
+    """The astromech form of every looted armor-slot piece, staff and rifle that has none yet."""
+    overrides = json.loads(LOOT_NAMES.read_text(encoding="utf-8"))
+    have_form = {t.source for t in taken} | {m.source for m in mod.MODULES} | {t.source for t in tools.TOOLS}
+    used = {t.resref for t in taken} | {m.resref for m in mod.MODULES} | {t.resref for t in tools.TOOLS}
+    used.add(mod.STARTER_RESREF)
+    names = {t.name for t in taken} | {m.name for m in mod.MODULES} | {t.name for t in tools.TOOLS}
+    twins = []
+    for source in sorted(looted_resrefs()):
+        path = UTI / f"{source}.uti.json"
+        if source in have_form or source.startswith("am_") or not path.exists():
+            continue
+        item = json.loads(path.read_bytes().decode("latin-1"))
+        base = item["BaseItem"]["value"]
+        if base not in LOOT_MODULES:
+            continue
+        name = loot_name(item["LocalizedName"]["value"]["0"], base, overrides, source)
+        resref = loot_resref(source)
+        if resref in used or resref.startswith(RESERVED_PREFIXES):
+            raise SystemExit(f"{source}: the resref {resref} is taken or reserved")
+        if name in names:
+            raise SystemExit(f"{source}: the name '{name}' is taken; add one to {LOOT_NAMES.name}")
+        if not name.isascii() or '"' in name or "\\" in name:
+            raise SystemExit(f"{source}: the name '{name}' is not plain ASCII")
+        used.add(resref)
+        names.add(name)
+        twins.append(Twin(source, resref, name, LOOT_WEAPONS.get(base), looted=True))
+    unused = sorted(set(overrides) - {t.source for t in twins})
+    if unused:
+        raise SystemExit(f"{LOOT_NAMES.name} names pieces that are not looted gear: {', '.join(unused)}")
+    return twins
+
+
+TWINS += loot_twins(TWINS)
+
+
 # ---------------------------------------------------------------- blueprints
+
+VAR_TABLE = re.compile(r'(  "VarTable": \{\r\n    "type": "list",\r\n    "value": )(\[\]|\[\r\n.*?\r\n    \])(\r\n  \})', re.S)
+REVISION_MARKER = "_STATS_REVISION"
+
+
+def without_revision_markers(text: str) -> str:
+    """The blueprint without the local variables that mark a humanoid piece as already carrying revised stats.
+    The stat migrations find items by resref, and no astromech form existed before any of them, so a form needs none."""
+    table = VAR_TABLE.search(text)
+    if not table or table.group(2) == "[]":
+        return text
+    entries = json.loads(table.group(2))
+    kept = [entry for entry in entries if not entry["Name"]["value"].endswith(REVISION_MARKER)]
+    if len(kept) == len(entries):
+        return text
+    body = "[]" if not kept else json.dumps(kept, indent=2, ensure_ascii=False).replace("\n", "\r\n    ")
+    return text[:table.start(2)] + body + text[table.end(2):]
+
 
 def twin_blueprint(twin: Twin) -> str:
     path = UTI / f"{twin.source}.uti.json"
@@ -106,27 +227,45 @@ def twin_blueprint(twin: Twin) -> str:
             raise SystemExit(f"{twin.source}: BaseItem is not {source_base}")
         text = base_pattern.sub(lambda m: f"{m.group(1)}{new_base}{m.group(3)}", text)
 
-    changed = 0
-    for match in mod.PROPERTY_BLOCK.finditer(text):
+    subtype = r'("Subtype": \{\r\n          "type": "word",\r\n          "value": )%d(\r\n)'
+    skills = droid_only = 0
+    # Each change keeps the length of the text before it, so the blocks are walked from the last to the first.
+    for match in reversed(list(mod.PROPERTY_BLOCK.finditer(text))):
         block = match.group(1)
-        number = int(re.search(r'"PropertyName": \{\r\n          "type": "word",\r\n          "value": (\d+)', block).group(1))
+        found = re.search(r'"PropertyName": \{\r\n          "type": "word",\r\n          "value": (\d+)', block)
+        if not found:
+            continue  # a list entry that is not an item property (a local variable)
+        number = int(found.group(1))
+        new_block = block
         if number == mod.RACIAL_PROPERTY:
-            raise SystemExit(f"{twin.source} already carries a racial limitation")
-        if number == mod.REQUIRES_SKILL_PROPERTY:
-            pattern = re.compile(r'("Subtype": \{\r\n          "type": "word",\r\n          "value": )%d(\r\n)' % source_skill)
-            if len(pattern.findall(block)) != 1:
+            # Gear made for the humanoid Droid species: its astromech form is limited to astromechs instead.
+            pattern = re.compile(subtype % DROID_RACE)
+            if not twin.looted or len(pattern.findall(block)) != 1:
+                raise SystemExit(f"{twin.source} already carries a racial limitation")
+            new_block = pattern.sub(lambda m: f"{m.group(1)}{mod.ASTROMECH_RACE}{m.group(2)}", block)
+            droid_only += 1
+        elif number == mod.REQUIRES_SKILL_PROPERTY:
+            skills += 1
+            pattern = re.compile(subtype % source_skill)
+            if len(pattern.findall(block)) == 1:
+                new_block = pattern.sub(lambda m: f"{m.group(1)}{new_skill}{m.group(2)}", block)
+            elif not (twin.looted and any(re.search(subtype % skill, block) for skill in SHARED_SKILLS)):
                 raise SystemExit(f"{twin.source}: RequiresSkill is not skill {source_skill}")
-            new_block = pattern.sub(lambda m: f"{m.group(1)}{new_skill}{m.group(2)}", block)
-            text = text[:match.start(1)] + new_block + text[match.end(1):]
-            changed += 1
-            break
-    if changed != 1:
-        raise SystemExit(f"{twin.source}: expected exactly one RequiresSkill property of skill {source_skill}")
+        text = text[:match.start(1)] + new_block + text[match.end(1):]
+    if skills != 1 or droid_only > 1:
+        raise SystemExit(f"{twin.source}: expected exactly one RequiresSkill property and at most one racial limit")
 
-    tail = '      }\r\n    ]\r\n  },\r\n  "StackSize"'
-    if text.count(tail) != 1:
-        raise SystemExit(f"{twin.source}: PropertiesList has an unexpected end")
-    text = text.replace(tail, '      },\r\n' + mod.NEW_PROPERTY + '\r\n    ]\r\n  },\r\n  "StackSize"')
+    if not droid_only:
+        tail = '      }\r\n    ]\r\n  },\r\n  "StackSize"'
+        if text.count(tail) != 1:
+            raise SystemExit(f"{twin.source}: PropertiesList has an unexpected end")
+        text = text.replace(tail, '      },\r\n' + mod.NEW_PROPERTY + '\r\n    ]\r\n  },\r\n  "StackSize"')
+    if twin.looted and twin.weapon:
+        parts = re.compile(r'(  "x?ModelPart[123]": \{\r\n    "type": "(?:byte|word)",\r\n    "value": )\d+(\r\n  \})')
+        if len(parts.findall(text)) != 6:
+            raise SystemExit(f"{twin.source}: unexpected weapon part fields")
+        text = parts.sub(lambda m: f"{m.group(1)}{LOOT_TOOL_PART}{m.group(2)}", text)
+    text = without_revision_markers(text)
     # A plating twin keeps the dyes of the piece it copies (they are its paint) but none of its part models.
     return mod.without_part_models(text, twin.source) if mod.ARMOR_MODEL_FIELD.search(text) else text
 

@@ -566,6 +566,16 @@ Done on 2026-11-18, on the owner's rule that every playable species has a dynami
 - Legs are not fitted to the body they are worn with. The eight designs share one leg joint, and the mixes looked
   right in the client.
 
+## Looted gear
+
+Done on 2026-11-19, at the owner's request that astromechs have their own equipment in loot.
+
+- **The gap.** The loot tables drop 937 distinct pieces of gear and an astromech could equip none of them. 618 of them ask for rank 45, a tier that exists only as loot, so an astromech had no gear between the crafted Mk IX (40) and Mk X (50).
+- **The forms.** `tools/GenerateAstromechRewards.py` reads the loot tables and writes an astromech form of every looted armor-slot piece, staff and rifle: 781 items (748 modules, 17 shock prods, 16 blaster mounts). A form is a stat copy with the Chassis or Armaments requirement and the astromech race limit, like the crafted gear. Its name puts the module name in place of the humanoid slot word (`Overcharge Sash` becomes `Overcharge Power Cell`); `tools/AstromechLootNames.json` names the 48 pieces that rule cannot. Gear made for the humanoid Droid species has its race limit changed to astromech. No balance number is introduced.
+- **How it drops.** No loot table lists astromech gear. After a table is rolled for its own items, it is rolled again at the same chance, and that second roll drops the astromech form of the piece it picks and nothing for any other pick (`AstromechLoot`). A form is therefore exactly as likely as the piece it copies, humanoid drop rates do not change, and a new looted piece only needs the generator rerun. The second roll applies everywhere the loot code spawns from a table: creature corpses, steal loot, treasure containers, prospecting and scavenging.
+- **Consequence to know.** Every kill can now drop a second piece of gear, whoever makes it, so more gear enters the world than before. Forms can be traded or sold like any item.
+- **Not covered.** 155 looted weapons of other kinds (pistols, blades, lightsabers and so on) have no astromech tool to become. Gear that reaches players outside the loot tables is listed in the pull request.
+
 ## Phases
 
 Each phase is its own pull request into a `feature/astromech` branch cut from `feature/space-revamp`; the owner decides when it merges. It releases after the space revamp, with its own migration versions if any turn out to be needed.

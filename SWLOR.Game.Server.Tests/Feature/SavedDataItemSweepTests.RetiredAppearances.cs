@@ -72,7 +72,7 @@ public partial class SavedDataItemSweepTests
     {
         var helmet = Item("custom_helmet", BaseItem.Helmet, 256);
         var original = Encode(Node(0, Parts(("BodyPart_LBicep", 18), ("BodyPart_RBicep", 1), ("ArmorPart_RFoot", 13),
-                ("BodyPart_LShoul", 255), ("Appearance_Head", 258))
+                ("BodyPart_LShoul", 255), ("Appearance_Head", 63))
             .Concat(new[]
             {
                 Scalar(2, "Appearance_Type", (int)AppearanceType.Human), Scalar(0, "Gender", 1),
@@ -97,12 +97,12 @@ public partial class SavedDataItemSweepTests
     [Test]
     public void RetiredAppearances_LeaveHeadsAloneOnBodiesThatStillShipThem()
     {
-        // Male human head 258 still ships; only the female one was retired.
-        var male = Encode(Node(0, Parts(("Appearance_Head", 258)).Concat(new[]
+        // Male human head 63 still ships; only the female one was retired.
+        var male = Encode(Node(0, Parts(("Appearance_Head", 63)).Concat(new[]
             { Scalar(2, "Appearance_Type", (int)AppearanceType.Human), Scalar(0, "Gender", 0) }).ToArray()), "BIC ");
         EnzymeBaseItemMigration.MigrateSavedObject(male, out _).Should().BeFalse();
         // A non-parts appearance has no head model to retire.
-        var creature = Encode(Node(0, Parts(("Appearance_Head", 258)).Concat(new[]
+        var creature = Encode(Node(0, Parts(("Appearance_Head", 63)).Concat(new[]
             { Scalar(2, "Appearance_Type", 2143), Scalar(0, "Gender", 1) }).ToArray()), "UTC ");
         EnzymeBaseItemMigration.MigrateSavedObject(creature, out _).Should().BeFalse();
     }
@@ -117,7 +117,7 @@ public partial class SavedDataItemSweepTests
             "a character on foot keeps its saved species");
         RetiredAppearanceMigration.SpeciesAppearance(ship, null).Should().Be(ship);
 
-        var file = Encode(Node(0, Parts(("Appearance_Head", 258)).Concat(new[]
+        var file = Encode(Node(0, Parts(("Appearance_Head", 63)).Concat(new[]
             { Scalar(2, "Appearance_Type", ship), Scalar(0, "Gender", 1) }).ToArray()), "BIC ");
         var assembly = typeof(EnzymeBaseItemMigration).Assembly;
         var characterType = assembly.GetType("SWLOR.Game.Server.Service.MigrationService.SavedCharacter", true)!;
@@ -128,11 +128,11 @@ public partial class SavedDataItemSweepTests
         var saved = Convert.ToBase64String((byte[])characterType.GetMethod("Serialize")!.Invoke(character, null)!);
         RacialAppearanceRegistry.TryGet(AppearanceType.Human, out var human).Should().BeTrue();
         PartFields(Read(saved), "Appearance_Head").Should().Be((human.FemaleHeads[0], human.FemaleHeads[0]),
-            "leaving space restores the human body, which no longer has head 258");
+            "leaving space restores the human body, which no longer has head 63");
     }
 
     [Test]
-    public void RetiredAppearances_MoveAConstructedDroidsSavedBody()
+    public void RetiredAppearances_KeepARestoredHeadOnAConstructedDroidsSavedBody()
     {
         var droid = new JObject
         {
@@ -144,10 +144,9 @@ public partial class SavedDataItemSweepTests
 
         EnzymeBaseItemMigration.MigrateSavedObject(controller, out var migrated).Should().BeTrue();
         var saved = JObject.Parse((string)Value(Children(Read(migrated), "VarTable").Single(), "Value"));
-        RacialAppearanceRegistry.TryGet(AppearanceType.Droid, out var droidBody).Should().BeTrue();
         saved["AppearanceParts"]!.ToObject<Dictionary<string, int>>().Should().BeEquivalentTo(new Dictionary<string, int>
         {
-            ["Head"] = droidBody.MaleHeads[0], ["Neck"] = 1, ["RightHand"] = 1, ["LeftFoot"] = 1, ["Torso"] = 200,
+            ["Head"] = 23, ["Neck"] = 1, ["RightHand"] = 1, ["LeftFoot"] = 1, ["Torso"] = 200,
         });
         saved["Name"]!.Value<string>().Should().Be("Unit");
         EnzymeBaseItemMigration.MigrateSavedObject(migrated, out _).Should().BeFalse();

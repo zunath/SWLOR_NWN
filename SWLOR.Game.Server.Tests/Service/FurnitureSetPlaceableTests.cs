@@ -92,8 +92,7 @@ public class FurnitureSetPlaceableTests
     {
         var root = FindRoot();
         var placeables = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
-        var baseGame = BaseGamePlaceableBlueprints.AppearanceByResref;
-        var unresolved = new List<string>();
+        var baseGame = ReadBaseGameFixture(root);
         string? ModelOf(StructureType type)
         {
             var resref = ResrefOf(type).Trim();
@@ -104,13 +103,11 @@ public class FurnitureSetPlaceableTests
             {
                 if (blueprint != null)
                     appearance = blueprint.RootElement.GetProperty("Appearance").GetProperty("value").GetInt32();
-                else if (baseGame != null && baseGame.TryGetValue(resref, out var baseAppearance))
+                else if (baseGame.TryGetValue(resref, out var baseAppearance))
                     appearance = baseAppearance; // A base-game blueprint, such as the plain Footstool's plc_footstool.
                 else
-                {
-                    unresolved.Add(resref);
-                    return null;
-                }
+                    throw new AssertionException(
+                        $"{type} uses {resref}, which is neither a module blueprint nor in {BaseGameFixtureName}; add its appearance row");
             }
             return placeables.GetValue(appearance, "ModelName").ToLowerInvariant();
         }
@@ -118,8 +115,6 @@ public class FurnitureSetPlaceableTests
         var pieces = PiecesOf(piece);
         var pieceModels = pieces.Select(ModelOf).ToList();
         var otherModels = Enum.GetValues<StructureType>().Except(pieces).Select(ModelOf).Where(model => model != null).ToHashSet();
-        if (unresolved.Count > 0)
-            TestContext.Out.WriteLine($"Not compared (base-game blueprints need an NWN:EE install): {string.Join(", ", unresolved.Distinct())}");
 
         pieceModels.Should().NotContainNulls($"every {piece} uses a module blueprint");
         pieceModels.Should().OnlyHaveUniqueItems("two blueprints can show one model");
@@ -140,6 +135,38 @@ public class FurnitureSetPlaceableTests
                 new[] { "x2_plc_used_sit", "zep_use_chair", "x0_o2_use_chair" }, $"{stool} sits its user when used");
         }
     }
+
+    [Test]
+    public void BaseGameFixture_CoversEveryBaseGameStructureBlueprint()
+    {
+        var root = FindRoot();
+        var fixture = ReadBaseGameFixture(root);
+        var baseGameResrefs = Enum.GetValues<StructureType>().Select(type => ResrefOf(type).Trim())
+            .Where(resref => resref.Length > 0 && !File.Exists(Path.Combine(root, "Module", "utp", resref + ".utp.json")))
+            .Select(resref => resref.ToLowerInvariant()).ToHashSet();
+
+        fixture.Keys.Should().BeEquivalentTo(baseGameResrefs,
+            $"{BaseGameFixtureName} lists exactly the base-game blueprints that structures use, so model comparisons need no NWN:EE install");
+    }
+
+    [Test]
+    public void BaseGameFixture_MatchesTheInstalledGame()
+    {
+        var installed = BaseGamePlaceableBlueprints.AppearanceByResref;
+        if (installed == null)
+            Assert.Ignore("No NWN:EE install found to check the fixture against.");
+
+        foreach (var (resref, appearance) in ReadBaseGameFixture(FindRoot()))
+            installed!.Should().ContainKey(resref).WhoseValue.Should().Be(appearance, $"{resref}'s appearance row in the base game");
+    }
+
+    private const string BaseGameFixtureName = "BaseGameStructureBlueprintAppearances.json";
+
+    // Appearance rows of the base-game blueprints that structures use, read from the NWN:EE templates (checked above).
+    private static Dictionary<string, int> ReadBaseGameFixture(string root) =>
+        new(JsonSerializer.Deserialize<Dictionary<string, int>>(
+                File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server.Tests", "Service", BaseGameFixtureName)))!,
+            StringComparer.OrdinalIgnoreCase);
 
     private static JsonDocument? ReadBlueprint(string root, string resref)
     {

@@ -1,4 +1,5 @@
 using System.Reflection;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -11,6 +12,34 @@ namespace SWLOR.Game.Server.Tests.Feature;
 [TestFixture]
 public class AppearanceEditorColorStateTests
 {
+    [TestCase(0, 0, AppearanceArmorColor.Cloth1)]
+    [TestCase(0, 1, AppearanceArmorColor.Cloth2)]
+    [TestCase(1, 0, AppearanceArmorColor.Leather1)]
+    [TestCase(1, 1, AppearanceArmorColor.Leather2)]
+    [TestCase(2, 0, AppearanceArmorColor.Metal1)]
+    [TestCase(2, 1, AppearanceArmorColor.Metal2)]
+    [TestCase(-1, 0, null)]
+    [TestCase(3, 0, null)]
+    [TestCase(0, 2, null)]
+    public void EquipmentListEventsSelectTheCorrectChannel(int row, int column, AppearanceArmorColor? expected)
+    {
+        var method = typeof(AppearanceEditorViewModel).GetMethod("EquipmentSwatchChannel", BindingFlags.NonPublic | BindingFlags.Static)!;
+        method.Invoke(null, new object[] { row, column }).Should().Be(expected);
+    }
+
+    [Test]
+    public void EquipmentSwatchDeduplicationKeepsActualColorAndRegionEdits()
+    {
+        var method = typeof(AppearanceEditorViewModel).GetMethod("SameEquipmentSwatchValue", BindingFlags.NonPublic | BindingFlags.Static)!;
+        bool Same(object first, object second) => (bool)method.Invoke(null, new[] { first, second })!;
+        Same(new GuiRectangle(0, 16, 16, 16), new GuiRectangle(0, 16, 16, 16)).Should().BeTrue();
+        Same(new GuiRectangle(0, 16, 16, 16), new GuiRectangle(16, 16, 16, 16)).Should().BeFalse();
+        Same(new GuiColor(12, 34, 56), new GuiColor(12, 34, 56)).Should().BeTrue();
+        Same(new GuiColor(12, 34, 56), new GuiColor(13, 34, 56)).Should().BeFalse();
+        Same(false, false).Should().BeTrue();
+        Same(false, true).Should().BeFalse();
+    }
+
     [TestCase(255, false, 0, 0, null, 255)]
     [TestCase(0, false, 0, 0, null, 255)]
     [TestCase(0, true, 0, 0, null, 0)]
@@ -65,6 +94,17 @@ public class AppearanceEditorColorStateTests
         refresh.Should().Contain("if (refreshItemParts)");
         refresh.IndexOf("LoadItemParts()", StringComparison.Ordinal).Should()
             .BeLessThan(refresh.IndexOf("LoadTintMapEditor()", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void ChangingHeadsCapturesExtraColorsBeforeReplacingTheModel()
+    {
+        var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
+        var load = FindMethod(root, "LoadBodyPart").ToString();
+        load.IndexOf("CaptureCurrentHeadColors(_target)", StringComparison.Ordinal).Should().BeGreaterThan(0)
+            .And.BeLessThan(load.IndexOf("SetCreatureBodyPart(CreaturePart.Head", StringComparison.Ordinal));
+        FindMethod(root, "LoadBodyParts").ToString().Should().NotContain("CaptureCurrentHeadColors",
+            "opening or repopulating the picker must not write appearance state");
     }
 
     [Test]

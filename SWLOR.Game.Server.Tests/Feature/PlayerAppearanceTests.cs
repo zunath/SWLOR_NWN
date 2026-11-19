@@ -39,10 +39,19 @@ public class PlayerAppearanceTests
         var player = JsonConvert.DeserializeObject<Player>("{\"AppearanceScale\":0.92}")!;
         player.AppearanceScale.Should().Be(0.92f);
         player.HeadAppearanceScale.Should().Be(1f);
+        player.HeadAppearancePositionX.Should().Be(0f);
+        player.HeadAppearancePositionY.Should().Be(0f);
+        player.HeadAppearancePositionZ.Should().Be(0f);
 
         player.HeadAppearanceScale = 1.08f;
+        player.HeadAppearancePositionX = -0.05f;
+        player.HeadAppearancePositionY = 0.05f;
+        player.HeadAppearancePositionZ = 0.09f;
         var saved = JsonConvert.DeserializeObject<Player>(JsonConvert.SerializeObject(player))!;
         saved.AppearanceScale.Should().Be(0.92f);
         saved.HeadAppearanceScale.Should().Be(1.08f);
+        saved.HeadAppearancePositionX.Should().Be(-0.05f);
+        saved.HeadAppearancePositionY.Should().Be(0.05f);
+        saved.HeadAppearancePositionZ.Should().Be(0.09f);
     }
 }

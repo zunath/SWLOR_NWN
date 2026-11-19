@@ -96,7 +96,7 @@ public static class RetiredAppearances
             },
             ["pfo"] = new HashSet<int>
             {
-                15, 21, 22, 23, 192, 193, 194,
+                15, 192, 193, 194,
             },
             ["pma"] = new HashSet<int>
             {

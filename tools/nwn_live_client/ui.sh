@@ -53,6 +53,16 @@ case "$action" in
         xdotool mousemove --window "$w" "$1" "$2"
         sleep 1
         ;;
+    scroll)
+        [ $# -eq 2 ] || die "Usage: scroll up|down COUNT"
+        case "$1" in up) button=4;; down) button=5;; *) die "Scroll direction must be up or down";; esac
+        [[ "$2" =~ ^[0-9]+$ ]] && [ "$2" -ge 1 ] && [ "$2" -le 20 ] || die "Scroll count must be 1..20"
+        w=$(window)
+        xdotool windowfocus --sync "$w"
+        xdotool mousemove --window "$w" 640 360
+        xdotool click --repeat "$2" --delay 200 "$button"
+        sleep 1
+        ;;
     click|rightclick)
         [ $# -eq 2 ] || die "Usage: $action X Y"
         point "$1" "$2"; w=$(window)

@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.ShipComponentDefinition;
 using SWLOR.Game.Server.Feature.ShipRewardDefinition;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Service.SlicingService
@@ -58,6 +60,18 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 RollSupplies(source, tier, suppliesRoll),
                 Roll(source, tier, categoryRoll, itemRoll)
             };
+        }
+
+        /// <summary>
+        /// The items a slicer of this body receives for these rewards. An astromech cannot wear a humanoid piece,
+        /// so it receives the astromech form of every piece that has one.
+        /// </summary>
+        public static IReadOnlyList<(string Resref, int Quantity)> ItemsFor(
+            IEnumerable<SlicingRewardEntry> rewards, BodyFrame frame)
+        {
+            return rewards
+                .Select(reward => (AstromechItemTwins.Resolve(reward.Resref, frame), reward.Quantity))
+                .ToList();
         }
 
         private static SlicingRewardEntry RollSupplies(SlicingSourceType source, int tier, int suppliesRoll)

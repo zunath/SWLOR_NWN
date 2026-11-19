@@ -6063,7 +6063,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Loot.cs",
-    "Line": 427,
+    "Line": 440,
     "Member": "DisturbCorpseContainer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(looter, \"You cannot place items inside of corpses.\")"
@@ -7799,14 +7799,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SlicingService/SlicingSession.cs",
-    "Line": 635,
+    "Line": 636,
     "Member": "Complete",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(session.Player, $\"You recover {reward.Quantity}x {Cache.GetItemNameByResref(reward.Resref)}.\")"
+    "Call": "SendMessageToPC(session.Player, $\"You recover {quantity}x {Cache.GetItemNameByResref(resref)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SlicingService/SlicingSession.cs",
-    "Line": 666,
+    "Line": 667,
     "Member": "Fail",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(session.Player, destroyed\n                    ? \"The intrusion overloads the target. Its contents are destroyed.\"\n                    : $\"The attempt fails. The next failed attempt has a {nextChance}% destruction risk.\")"

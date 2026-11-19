@@ -1,10 +1,11 @@
 """Record the astromech loot and reward forms in the Design Bible.
 
-Adds one equipment row per form in GenerateAstromechRewards.TWINS (looted forms plus the hand-listed quest-reward and
-guild-store forms): "Equipment - Armor" for armor-slot modules and "Equipment - Weapons" for Shock Prod and Blaster Mount
-tools. Each row copies the humanoid row the form copies (stats, level, slot, credits and the sources columns, since the form
-drops wherever the piece drops) and changes the name, resref and required skill (Chassis, or Armaments with the tool's base
-item). Source resrefs with no row on their tab are skipped and listed at the end.
+Adds one equipment row per form in GenerateAstromechRewards.TWINS (the forms of gear found in loot, stores and slicing
+rewards, and the hand-listed quest-reward and Hunters Guild forms): "Equipment - Armor" for armor-slot modules and
+"Equipment - Weapons" for Shock Prod and Blaster Mount tools. Each row copies the humanoid row the form copies (stats,
+level, slot, credits and the sources columns, since the form is found wherever the piece is) and changes the name,
+resref and required skill (Chassis, or Armaments with the tool's base item). Source resrefs with no row on their tab
+are skipped and listed at the end.
 
 Edits only the two target tabs at the zip/XML level and copies every other workbook entry byte-for-byte. Safe to rerun:
 rows are found by resref and rewritten in place, new ones are appended.

@@ -32,17 +32,17 @@ def instance(resref: str, torso: int, struct_id: int, x: int, y: int) -> dict:
     }
 
 
-def area(items: list) -> bytes:
-    store = {"Tag": {"type": "cexostring", "value": "shop"},
+def area(items: list, tag: str = "shop") -> bytes:
+    store = {"Tag": {"type": "cexostring", "value": tag}, "ResRef": {"type": "resref", "value": "shop"},
              "StoreList": {"type": "list", "value": [{"ItemList": {"type": "list", "value": items}}]}}
     return (json.dumps({"StoreList": {"type": "list", "value": [store]}}, indent=2) + "\n").encode("latin-1")
 
 
 class PlacedStoreTests(unittest.TestCase):
-    def stock(self, items, blueprints):
+    def stock(self, items, blueprints, tag="shop"):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "area.git.json"
-            path.write_bytes(area(items))
+            path.write_bytes(area(items, tag))
             outputs = placed.stock({"shop": [("tunic", "plating")]}, lambda resref: blueprints[resref], Path(folder))
             return {name.name: json.loads(data.decode("latin-1")) for name, data in outputs.items()}
 
@@ -56,6 +56,11 @@ class PlacedStoreTests(unittest.TestCase):
         self.assertEqual(added["ArmorPart_Torso"]["value"], 240)
         self.assertEqual((added["Repos_PosX"]["value"], added["Repos_Posy"]["value"]), (2, 0))
         self.assertNotIn("PaletteID", added)
+
+    def test_a_placed_store_is_found_by_its_blueprint_name_whatever_its_tag(self):
+        outputs = self.stock([instance("tunic", 53, 0, 0, 0)], {"plating": blueprint("plating", 240)},
+                             tag="GENERAL_STORE_MERCHANT")
+        self.assertEqual([item["TemplateResRef"]["value"] for item in self.items(outputs)], ["tunic", "plating"])
 
     def test_a_copy_already_there_follows_its_blueprint(self):
         stale = instance("plating", 222, 1, 4, 2)

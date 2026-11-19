@@ -216,7 +216,8 @@ public class AstromechRewardContentTests
 
             foreach (var store in stores.GetProperty("value").EnumerateArray())
             {
-                var tag = store.GetProperty("Tag").GetProperty("value").GetString()!;
+                // A placed store keeps the name of its blueprint in ResRef; its tag is often another name.
+                var tag = store.GetProperty("ResRef").GetProperty("value").GetString()!;
                 if (!blueprints.TryGetValue(tag, out var gear))
                     continue;
 

@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
@@ -11,14 +12,17 @@ using SWLOR.Game.Server.Service.LootService;
 namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
-/// Astromech gear in loot: every armor-slot piece, staff and rifle a loot table drops has an astromech form with the
-/// same stats (tools/GenerateAstromechRewards.py), and the form drops wherever the piece does (AstromechLoot). These
-/// tests fail when a loot table gains a piece, or a looted piece changes, until the generator is rerun.
+/// Astromech forms of found gear: every armor-slot piece, staff and rifle that asks for a rank and is found in a loot
+/// table, a store or the slicing rewards has an astromech form with the same stats (tools/GenerateAstromechRewards.py),
+/// and the form drops wherever a looted piece does (AstromechLoot). AstromechStoreContentTests covers how stores and
+/// slicing hand the forms out. These tests fail when a source gains a piece, or a piece changes, until the generator
+/// is rerun.
 /// </summary>
 public class AstromechLootContentTests
 {
     private const int AstromechRace = 170, DroidRace = 167;
     private const int RacialProperty = 64, RequiresSkillProperty = 131;
+    private const int FabricationSkill = 10, AgricultureSkill = 31, EngineeringSkill = 32;
     private const int ArmorSkill = 6, SmitherySkill = 9, StaffSkill = 44, RifleSkill = 46, ChassisSkill = 61, ArmamentsSkill = 63;
     private const int ArmorBaseItem = 16, StaffBaseItem = 50, RifleBaseItem = 7, ShockProdBaseItem = 545, BlasterMountBaseItem = 546;
     private const int PlainToolPart = 11;
@@ -33,26 +37,33 @@ public class AstromechLootContentTests
 
     private static readonly string Root = FindRepositoryRoot();
     private static readonly Lazy<Dictionary<string, JsonElement>> LootedGear = new(ReadLootedGear);
+    private static readonly Lazy<Dictionary<string, JsonElement>> FoundGear = new(ReadFoundGear);
+
+    // Forms of crafted gear and forms listed by hand: AstromechModuleContentTests and AstromechRewardContentTests cover them.
+    private static readonly string[] OtherForms = { "am_h_", "am_t_", "am_w_", "am_q_", "am_plat_" };
 
     [Test]
-    public void EveryLootedPieceAnAstromechCouldWear_HasAnAstromechForm()
+    public void EveryFoundPieceAnAstromechCouldWear_HasAnAstromechForm()
     {
-        LootedGear.Value.Should().NotBeEmpty();
-        var missing = LootedGear.Value.Keys.Where(resref => !AstromechItemTwins.HasTwin(resref)).OrderBy(resref => resref).ToList();
+        LootedGear.Value.Count.Should().BeGreaterThan(700);
+        FoundGear.Value.Count.Should().BeGreaterThan(LootedGear.Value.Count + 250, "stores and slicing rewards hold gear of their own");
+        var missing = FoundGear.Value.Keys.Where(resref => !AstromechItemTwins.HasTwin(resref)).OrderBy(resref => resref).ToList();
 
         missing.Should().BeEmpty("rerun tools/GenerateAstromechRewards.py");
     }
 
     [Test]
-    public void EveryLootFormCopiesItsSource()
+    public void EveryFoundFormCopiesItsSource()
     {
         var problems = new List<string>();
         var names = new Dictionary<string, string>();
-        foreach (var (source, from) in LootedGear.Value)
+        foreach (var (source, from) in FoundGear.Value)
         {
             var form = AstromechItemTwins.Resolve(source, BodyFrame.Astromech);
             if (form == source)
-                continue; // reported by EveryLootedPieceAnAstromechCouldWear_HasAnAstromechForm
+                continue; // reported by EveryFoundPieceAnAstromechCouldWear_HasAnAstromechForm
+            if (OtherForms.Any(form.StartsWith))
+                continue;
             AstromechItemTwins.Resolve(source, BodyFrame.Humanoid).Should().Be(source);
             if (form.Length > 16)
                 problems.Add($"{form}: a resource name holds 16 characters");
@@ -99,7 +110,7 @@ public class AstromechLootContentTests
             if (actual.Count(property => property.Number == RacialProperty && property.Subtype == AstromechRace) != 1)
                 problems.Add($"{form}: is not limited to astromechs exactly once");
             var skill = actual.Single(property => property.Number == RequiresSkillProperty).Subtype;
-            if (skill is not (ChassisSkill or ArmamentsSkill or SmitherySkill))
+            if (skill is not (ChassisSkill or ArmamentsSkill or SmitherySkill or FabricationSkill or AgricultureSkill or EngineeringSkill))
                 problems.Add($"{form}: asks for skill {skill}, which an astromech cannot train");
 
             // Everything else is the source's, but the model numbers a chassis has no use for.
@@ -207,6 +218,46 @@ public class AstromechLootContentTests
         return gear;
     }
 
+    /// <summary>
+    /// The looted gear, and every piece of gear a store sells or the slicing rewards name. Gear asks for a skill rank.
+    /// A droid-only piece counts only when looted: the droid gear of a store copies humanoid gear, whose form the store
+    /// sells beside it (AstromechStoreContentTests).
+    /// </summary>
+    private static Dictionary<string, JsonElement> ReadFoundGear()
+    {
+        var gear = new Dictionary<string, JsonElement>(LootedGear.Value, StringComparer.OrdinalIgnoreCase);
+        var named = new List<string>();
+        foreach (var file in Directory.GetFiles(Path.Combine(Root, "Module", "utm"), "*.utm.json"))
+        {
+            using var store = JsonDocument.Parse(File.ReadAllText(file, Encoding.Latin1));
+            named.AddRange(store.RootElement.GetProperty("StoreList").GetProperty("value").EnumerateArray()
+                .Where(tab => tab.TryGetProperty("ItemList", out _))
+                .SelectMany(tab => tab.GetProperty("ItemList").GetProperty("value").EnumerateArray())
+                .Select(item => Text(item, "InventoryRes")));
+        }
+
+        foreach (var file in new[] { "SlicingRewardCatalog.cs", "SlicingReward.cs" })
+        {
+            var source = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "Service", "SlicingService", file));
+            named.AddRange(Regex.Matches(source, "\"([a-z0-9_]{2,16})\"").Select(match => match.Groups[1].Value));
+        }
+
+        foreach (var resref in named.Select(resref => resref.ToLowerInvariant()).Distinct())
+        {
+            var path = Path.Combine(Root, "Module", "uti", resref + ".uti.json");
+            if (gear.ContainsKey(resref) || resref.StartsWith("am_") || !File.Exists(path))
+                continue;
+            var blueprint = ReadBlueprint(path);
+            var properties = Properties(blueprint);
+            if (ModuleNames.ContainsKey(Number(blueprint, "BaseItem")) &&
+                properties.Any(property => property.Number == RequiresSkillProperty) &&
+                !properties.Any(property => property is { Number: RacialProperty, Subtype: DroidRace }))
+                gear[resref] = blueprint;
+        }
+
+        return gear;
+    }
+
     private static List<string> LocalVariables(JsonElement blueprint) =>
         blueprint.GetProperty("VarTable").GetProperty("value").EnumerateArray()
             .Select(variable => variable.GetProperty("Name").GetProperty("value").GetString()!)
@@ -218,6 +269,7 @@ public class AstromechLootContentTests
     {
         int Read(JsonElement property, string name) => property.GetProperty(name).GetProperty("value").GetInt32();
         return blueprint.GetProperty("PropertiesList").GetProperty("value").EnumerateArray()
+            .Where(property => property.TryGetProperty("PropertyName", out _))
             .Select(property => new Property(Read(property, "PropertyName"), Read(property, "Subtype"), Read(property, "CostTable"),
                 Read(property, "CostValue"), Read(property, "Param1"), Read(property, "Param1Value")))
             .ToList();

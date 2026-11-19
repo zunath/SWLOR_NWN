@@ -11,7 +11,7 @@ import UpdateCraftingProgressionBible as bible  # noqa: E402
 
 class FakeTwin:
     def __init__(self, weapon=None):
-        self.name, self.resref, self.source, self.weapon, self.looted = "Form Name", "am_form", "src_item", weapon, True
+        self.name, self.resref, self.source, self.weapon, self.found = "Form Name", "am_form", "src_item", weapon, True
 
 
 def source_row(columns):

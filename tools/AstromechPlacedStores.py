@@ -68,7 +68,8 @@ def _refresh(tabs: list, resref: str, blueprint: dict) -> bool:
 def stock(additions: dict, blueprint, git: Path | None = None) -> dict:
     """{path: new bytes} for every area file whose placed stores need an item added or brought up to date.
 
-    `additions` maps a store tag to (source resref, new resref) pairs. In each placed store of that tag the new item
+    `additions` maps a store blueprint name to (source resref, new resref) pairs. In each placed copy of that store
+    (found by its ResRef, or by its tag when it has none) the new item
     is added to the tab that holds the source, once; a copy already there is rewritten when its blueprint has changed.
     A placed store that does not sell the source is left alone.
     `blueprint` returns the bytes of an item blueprint by resref.
@@ -83,7 +84,8 @@ def stock(additions: dict, blueprint, git: Path | None = None) -> dict:
         data = load(raw)
         changed = False
         for store in data.get("StoreList", {}).get("value", []):
-            pairs = additions.get(store.get("Tag", {}).get("value"))
+            # A placed store keeps the name of its blueprint in ResRef; its tag is often another name.
+            pairs = additions.get(store.get("ResRef", {}).get("value")) or additions.get(store.get("Tag", {}).get("value"))
             if not pairs:
                 continue
             tabs = [tab.get("ItemList", {}).get("value", []) for tab in store["StoreList"]["value"]]

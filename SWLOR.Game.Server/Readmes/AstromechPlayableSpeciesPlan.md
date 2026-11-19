@@ -574,7 +574,18 @@ Done on 2026-11-19, at the owner's request that astromechs have their own equipm
 - **The forms.** `tools/GenerateAstromechRewards.py` reads the loot tables and writes an astromech form of every looted armor-slot piece, staff and rifle: 781 items (748 modules, 17 shock prods, 16 blaster mounts). A form is a stat copy with the Chassis or Armaments requirement and the astromech race limit, like the crafted gear. Its name puts the module name in place of the humanoid slot word (`Overcharge Sash` becomes `Overcharge Power Cell`); `tools/AstromechLootNames.json` names the 48 pieces that rule cannot. Gear made for the humanoid Droid species has its race limit changed to astromech. No balance number is introduced.
 - **How it drops.** No loot table lists astromech gear. After a table is rolled for its own items, it is rolled again at the same chance, and that second roll drops the astromech form of the piece it picks and nothing for any other pick (`AstromechLoot`). A form is therefore exactly as likely as the piece it copies, humanoid drop rates do not change, and a new looted piece only needs the generator rerun. The second roll applies everywhere the loot code spawns from a table: creature corpses, steal loot, treasure containers, prospecting and scavenging.
 - **Consequence to know.** Every kill can now drop a second piece of gear, whoever makes it, so more gear enters the world than before. Forms can be traded or sold like any item.
-- **Not covered.** 155 looted weapons of other kinds (pistols, blades, lightsabers and so on) have no astromech tool to become. Gear that reaches players outside the loot tables is listed in the pull request.
+- **Not covered.** 155 looted weapons of other kinds (pistols, blades, lightsabers and so on) have no astromech tool to become.
+
+## Store and slicing gear
+
+Done on 2026-11-19, at the owner's request for astromech versions of the store gear and slicing rewards.
+
+- **The forms.** `tools/GenerateAstromechRewards.py` now also reads every store (`Module/utm`) and the slicing rewards (`Service/SlicingService`) and writes a form of every armor-slot piece, staff and rifle there that asks for a skill rank: 264 new items (232 store pieces, 32 slicing pieces; 7 of them tools). The guild stores sell gear that asks for Smithery, Fabrication, Agriculture or Engineering ranks; an astromech trains those skills, so those forms keep the requirement and gain only the astromech limit.
+- **Stores.** Every store that sells a piece sells its form beside it: 28 store blueprints and the 261 copies of them placed in areas, which are what the game opens. A placed copy is found by the blueprint name in its `ResRef`; its tag is often another name. Existing stock is not touched.
+- **Droid gear in stores.** The general merchants and guild stores also sell 304 droid-only pieces. Each has exactly the stats of a humanoid piece that already has a form, so it gets no form of its own; the store sells the form of that humanoid piece beside it. An astromech can therefore buy an equal of every piece of gear a store sells. Looted droid-only gear keeps the forms it had.
+- **Slicing.** A slicing cache rolls its rewards as before; an astromech slicer receives the form of a piece that has one (`SlicingReward.ItemsFor`), like a quest reward. Ship slicing hands out no gear.
+- **Not covered.** Clothing and other pieces that ask for no rank (the starting items store, the Republic armor store, two training pieces) and weapons of other kinds.
+- **Cost.** A placed store holds every item in full, so the area files grew by about 40 MB of JSON.
 
 ## Phases
 

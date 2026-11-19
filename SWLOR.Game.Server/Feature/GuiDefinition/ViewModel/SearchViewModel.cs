@@ -114,6 +114,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiColor ActionColor0 => Get<GuiColor>();
         public GuiColor ActionColor1 => Get<GuiColor>();
         public GuiColor ActionColor2 => Get<GuiColor>();
+        public GuiColor ActionButtonColor0 => Get<GuiColor>();
+        public GuiColor ActionButtonColor1 => Get<GuiColor>();
+        public GuiColor ActionButtonColor2 => Get<GuiColor>();
         public bool ActionEnabled0 => Get<bool>();
         public bool ActionEnabled1 => Get<bool>();
         public bool ActionEnabled2 => Get<bool>();
@@ -125,10 +128,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public static string ActionSummaryProperty(int index) => $"ActionSummary{index}";
         public static string ActionTooltipProperty(int index) => $"ActionTooltip{index}";
         public static string ActionColorProperty(int index) => $"ActionColor{index}";
+        public static string ActionButtonColorProperty(int index) => $"ActionButtonColor{index}";
         public static string ActionEnabledProperty(int index) => $"ActionEnabled{index}";
+
+        protected override float MinimumWindowWidth => SearchDefinition.WindowWidth;
 
         protected override void Initialize(SearchPayload initialPayload)
         {
+            KeepMinimumWidth();
             _session = initialPayload.Session;
             _selected = -1;
 
@@ -342,7 +349,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 SelectedText = "Choose a spot, then an action.";
                 for (var index = 0; index < ActionCount; index++)
-                    SetActionRow(index, ActionNames[index], "Choose a spot on the board.", string.Empty, GuiColor.Grey, false);
+                    SetActionRow(index, ActionNames[index], "Choose a spot on the board.", string.Empty, GuiColor.Grey, SearchActionButton.For(true, null));
 
                 return;
             }
@@ -351,7 +358,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             for (var index = 0; index < ActionCount; index++)
             {
                 var view = SearchActionText.Describe(engine, _selected, ActionIds[index]);
-                SetActionRow(index, ActionNames[index], view.Summary, view.Tooltip, KindColor(view.Kind), view.Kind != SearchActionKind.Unavailable);
+                SetActionRow(index, ActionNames[index], view.Summary, view.Tooltip, KindColor(view.Kind), SearchActionButton.For(true, view));
             }
         }
 
@@ -375,7 +382,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SetStatus(message, GuiColor.Green);
 
             for (var index = 0; index < ActionCount; index++)
-                SetActionRow(index, ActionNames[index], string.Empty, string.Empty, GuiColor.Grey, false);
+                SetActionRow(index, ActionNames[index], string.Empty, string.Empty, GuiColor.Grey, SearchActionButton.For(false, null));
         }
 
         private void ClearDisplay()
@@ -406,16 +413,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             for (var index = 0; index < ActionCount; index++)
-                SetActionRow(index, ActionNames[index], string.Empty, string.Empty, GuiColor.White, false);
+                SetActionRow(index, ActionNames[index], string.Empty, string.Empty, GuiColor.White, SearchActionButton.For(false, null));
         }
 
-        private void SetActionRow(int index, string text, string summary, string tooltip, GuiColor color, bool enabled)
+        private void SetActionRow(int index, string text, string summary, string tooltip, GuiColor color, SearchActionButton button)
         {
             Set(text, ActionTextProperty(index));
             Set(summary, ActionSummaryProperty(index));
             Set(tooltip, ActionTooltipProperty(index));
             Set(color, ActionColorProperty(index));
-            Set(enabled, ActionEnabledProperty(index));
+            Set(button.LooksAvailable ? GuiColor.White : GuiColor.Grey, ActionButtonColorProperty(index));
+            Set(button.Enabled, ActionEnabledProperty(index));
         }
 
         private void SetStatus(string text, GuiColor color)

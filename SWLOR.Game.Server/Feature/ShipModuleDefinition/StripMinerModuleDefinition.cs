@@ -66,7 +66,18 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                     DelayCommand(18f, () =>
                     {
-                        var industrialBonus = Space.GetShipStatus(activator).Industrial;
+                        // The asteroid can be destroyed or despawn while it is mined; a missing asteroid yields nothing.
+                        if (!GetIsObjectValid(activator) || !GetIsObjectValid(target))
+                            return;
+
+                        // A pilot whose ship was destroyed or who left space during the mine has no ship to load.
+                        var activatorStatus = Space.GetShipStatus(activator);
+                        if (activatorStatus == null)
+                            return;
+
+                        var lootTableId = GetLocalString(target, "STRIPMINE_LOOT_TABLE_ID");
+                        var asteroidLevel = GetLocalInt(target, "ASTEROID_TIER") * 10;
+                        var industrialBonus = activatorStatus.Industrial;
 
                         var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 6) + (moduleBonus / 6);
 
@@ -77,7 +88,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                         Loot.SpawnLoot(target, activator, "LOOT_TABLE_");
 
-                        var lootTableId = GetLocalString(target, "STRIPMINE_LOOT_TABLE_ID");
                         var lootTable = Loot.GetLootTableByName(lootTableId);
 
                         for (var count = 1; count <= amountToMine; count++)
@@ -91,7 +101,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             var playerId = GetObjectUUID(activator);
                             var dbPlayer = DB.Get<Player>(playerId);
                             var rank = dbPlayer.Skills[SkillType.Piloting].Rank;
-                            var asteroidLevel = GetLocalInt(target, "ASTEROID_TIER") * 10;
                             var delta = asteroidLevel - rank;
                             var xp = Skill.GetDeltaXP(delta);
 

@@ -1,6 +1,8 @@
 using System.Numerics;
+using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.AnimationDrafts;
 using Nwn.Formats.NativeModels;
 using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.Animation;
@@ -10,6 +12,8 @@ namespace SWLOR.Toolset.Tests;
 public class PerformancePropMotionTests
 {
     private static readonly string[] States = ["Loop", "Low", "Mid", "High", "Flourish"];
+    // The Wookiee sets have no middle accent: the body bank is full, and the server plays the low one for it.
+    private static readonly string[] WookieeStates = ["Loop", "Low", "High", "Flourish"];
     // Measured on the native bow hair and the fingerboard-to-bridge string surface.
     private static readonly Vector3 BowHairStart = new(.0023665f, .0244655f, .0301885f);
     private static readonly Vector3 BowHairEnd = new(-.344768f, .213982f, .4864385f);
@@ -79,11 +83,91 @@ public class PerformancePropMotionTests
     }
 
     [TestCaseSource(nameof(States))]
-    public void MicrophoneWristsFollowTheirForearmsAndTheMicrophoneStaysAtTheLips(string state)
+    public void MicrophoneWristsFollowTheirForearmsAndTheMicrophoneStaysAtTheLips(string state) =>
+        MicrophoneStaysAtTheLips("Vocals", state, 1.63f);
+
+    [TestCaseSource(nameof(States))]
+    public void LowMouthMicrophoneSitsTenCentimetresLowerAndStaysThere(string state) =>
+        MicrophoneStaysAtTheLips("VocalsLowMouth", state, 1.53f);
+
+    [TestCaseSource(nameof(WookieeStates))]
+    public void MidMouthMicrophoneSitsFiveCentimetresLowerAndStaysThere(string state) =>
+        MicrophoneStaysAtTheLips("VocalsMidMouth", state, 1.58f);
+
+    [TestCaseSource(nameof(States))]
+    public void LowMouthSingingDiffersFromOrdinarySingingOnlyInTheMicrophoneArm(string state) =>
+        VariantMovesOnly("Vocals", "VocalsLowMouth", state, "lbicep_g", "lforearm_g", "lhand_g");
+
+    [TestCaseSource(nameof(WookieeStates))]
+    public void MidMouthSingingDiffersFromOrdinarySingingOnlyInTheMicrophoneArm(string state) =>
+        VariantMovesOnly("Vocals", "VocalsMidMouth", state, "lbicep_g", "lforearm_g", "lhand_g");
+
+    [TestCaseSource(nameof(WookieeStates))]
+    public void WidePipesDifferFromOrdinaryPipesOnlyInTheArms(string state) =>
+        VariantMovesOnly("Pipes", "PipesWide", state, "lbicep_g", "lforearm_g", "lhand_g", "rbicep_g", "rforearm_g", "rhand_g");
+
+    [TestCaseSource(nameof(WookieeStates))]
+    public void WideTambourineDiffersFromTheOrdinaryTambourineOnlyInTheArms(string state) =>
+        VariantMovesOnly("Tambourine", "TambourineWide", state, "lbicep_g", "lforearm_g", "lhand_g", "rbicep_g", "rforearm_g", "rhand_g");
+
+    [TestCaseSource(nameof(WookieeStates))]
+    public void WidePipesHoldTheHandsFiveCentimetresFurtherOutOnEachSide(string state) =>
+        HandsAreFurtherOut("Pipes", "PipesWide", state, .05f, .012f);
+
+    [TestCaseSource(nameof(WookieeStates))]
+    public void WideTambourineHoldsTheHandsFourteenCentimetresFurtherOutOnEachSide(string state) =>
+        HandsAreFurtherOut("Tambourine", "TambourineWide", state, .14f, .03f);
+
+    private static void HandsAreFurtherOut(string family, string variant, string state, float distance, float tolerance)
     {
-        var project = Project("Vocals", state);
+        var ordinary = Project(family, state);
+        var wide = Project(variant, state);
+        foreach (var (hand, direction) in new[] { ("rhand_g", 1f), ("lhand_g", -1f) })
+        {
+            var joint = ordinary.Joints.FindIndex(j => j.Name == hand);
+            for (var key = 0; key < ordinary.Keys.Count; key++)
+            {
+                var from = AnimationRig.World(ordinary.Joints, ordinary.Keys[key].Pose)[joint].Translation;
+                var to = AnimationRig.World(wide.Joints, wide.Keys[key].Pose)[joint].Translation;
+                ((to.X - from.X) * direction).Should().BeApproximately(distance, tolerance, hand);
+                MathF.Abs(to.Z - from.Z).Should().BeLessThan(tolerance, hand);
+            }
+        }
+    }
+
+    private static void VariantMovesOnly(string family, string variant, string state, params string[] joints)
+    {
+        // The robe layers copy the ordinary clip's garment tracks, so nothing else may move.
+        var ordinary = Project(family, state);
+        var lowered = Project(variant, state);
+        lowered.Keys.Count.Should().Be(ordinary.Keys.Count);
+        var arm = new HashSet<string>(joints);
+        var moved = new HashSet<string>();
+        for (var key = 0; key < ordinary.Keys.Count; key++)
+        {
+            lowered.Keys[key].Time.Should().Be(ordinary.Keys[key].Time);
+            for (var joint = 0; joint < ordinary.Joints.Count; joint++)
+            {
+                var expected = ordinary.Keys[key].Pose[joint];
+                var actual = lowered.Keys[key].Pose[joint];
+                Vector3.Distance(actual.Position, expected.Position).Should().BeLessThan(.000001f, ordinary.Joints[joint].Name);
+                if (MathF.Abs(Quaternion.Dot(actual.Orientation, expected.Orientation)) < .999999f)
+                    moved.Add(ordinary.Joints[joint].Name);
+            }
+        }
+        moved.Should().BeSubsetOf(arm);
+        moved.Should().Contain(joints[0]);
+    }
+
+    private static void MicrophoneStaysAtTheLips(string family, string state, float height)
+    {
+        var project = Project(family, state);
         var wrist = project.Joints.FindIndex(j => j.Name == "rhand_g");
         var microphone = project.Joints.FindIndex(j => j.Name == "lhand_g");
+        var head = project.Joints.FindIndex(j => j.Name == "head_g");
+        var hold = AnimationRig.World(project.Joints, project.Keys[0].Pose);
+        Vector3.Distance(hold[microphone].Translation, new(-.11f, .225f, height)).Should().BeLessThan(.001f);
+        var atLips = InHeadSpace(hold[microphone].Translation, hold[head]);
         foreach (var key in project.Keys)
         {
             WristAngle(project, key.Pose[wrist].Orientation, wrist).Should().BeLessThan(.1f,
@@ -91,7 +175,133 @@ public class PerformancePropMotionTests
             WristAngle(project, key.Pose[microphone].Orientation, microphone).Should().BeLessThan(60,
                 "forearm roll must carry the gripping hand's twist");
             var world = AnimationRig.World(project.Joints, key.Pose);
-            Vector3.Distance(world[microphone].Translation, new(-.11f, .22f, 1.64f)).Should().BeLessThan(.001f);
+            Vector3.Distance(InHeadSpace(world[microphone].Translation, world[head]), atLips).Should().BeLessThan(.003f,
+                "the microphone must stay at the lips while the head turns, nods and sways");
+        }
+    }
+
+    [TestCaseSource(nameof(States))]
+    public void PipesStayAtTheMouthWithBothElbowsBelowTheHands(string state)
+    {
+        var project = Project("Pipes", state);
+        var right = project.Joints.FindIndex(j => j.Name == "rhand_g");
+        var left = project.Joints.FindIndex(j => j.Name == "lhand_g");
+        var head = project.Joints.FindIndex(j => j.Name == "head_g");
+        var rightElbow = project.Joints.FindIndex(j => j.Name == "rforearm_g");
+        var leftElbow = project.Joints.FindIndex(j => j.Name == "lforearm_g");
+        var hold = AnimationRig.World(project.Joints, project.Keys[0].Pose);
+        var rightAtLips = InHeadSpace(hold[right].Translation, hold[head]);
+        var leftAtLips = InHeadSpace(hold[left].Translation, hold[head]);
+        var fitted = RelativeRotation(hold[right], hold[head]);
+        foreach (var key in project.Keys)
+        {
+            var world = AnimationRig.World(project.Joints, key.Pose);
+            var slide = InHeadSpace(world[right].Translation, world[head]) - rightAtLips;
+            MathF.Abs(slide.X).Should().BeLessThan(.05f, "the pipes only slide across the lips from note to note");
+            MathF.Abs(slide.Y).Should().BeLessThan(.004f, "the pipes must not drift away from the mouth");
+            MathF.Abs(slide.Z).Should().BeLessThan(.012f, "the pipes must stay level with the lips");
+            Vector3.Distance(InHeadSpace(world[left].Translation, world[head]) - leftAtLips, slide).Should().BeLessThan(.003f,
+                "both hands carry the pipes together");
+            MathF.Abs(Quaternion.Dot(RelativeRotation(world[right], world[head]), fitted)).Should().BeGreaterThan(.9999f,
+                "the pipes keep their fitted angle at the mouth");
+            world[rightElbow].Translation.Z.Should().BeLessThan(world[right].Translation.Z - .08f,
+                "a raised elbow beside the head reads as a chicken wing, not a pipe player");
+            world[leftElbow].Translation.Z.Should().BeLessThan(world[left].Translation.Z - .08f);
+            WristAngle(project, key.Pose[right].Orientation, right).Should().BeLessThan(60,
+                "lowering the elbow must not break the wrist that holds the pipes");
+        }
+    }
+
+    [TestCase("Vocals", .05f)]
+    [TestCase("Pipes", .035f)]
+    [TestCase("Tambourine", .05f)]
+    public void LoopsShiftWeightTurnTheHeadAndLiftAHeel(string family, float sway)
+    {
+        // A performer who only moves the hands looks like a statue holding a prop.
+        var project = Project(family, "Loop");
+        var root = project.Joints.FindIndex(j => j.Name == "rootdummy");
+        var head = project.Joints.FindIndex(j => j.Name == "head_g");
+        var foot = project.Joints.FindIndex(j => j.Name == "lfoot_g");
+        var worlds = project.Keys.Select(key => AnimationRig.World(project.Joints, key.Pose)).ToArray();
+        var across = worlds.Select(world => world[root].Translation.X).ToArray();
+        (across.Max() - across.Min()).Should().BeGreaterThan(sway, "the weight shifts from foot to foot");
+        var level = Quaternion.CreateFromRotationMatrix(worlds[0][head]);
+        worlds.Max(world => 2 * MathF.Acos(Math.Clamp(MathF.Abs(Quaternion.Dot(Quaternion.CreateFromRotationMatrix(world[head]), level)), 0, 1))
+            * 180 / MathF.PI).Should().BeGreaterThan(4, "the head turns and nods with the music");
+        (worlds.Max(world => world[foot].Translation.Z) - worlds[0][foot].Translation.Z).Should().BeGreaterThan(.008f,
+            "a heel lifts in time");
+    }
+
+    [TestCase(90f, false)]
+    [TestCase(360f, true)]
+    public void AWholeBodyTurnCarriesTheMicrophoneWithTheHeadOnce(float yaw, bool ramp)
+    {
+        var folder = Path.Combine(Root, "design/animations/performance");
+        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(folder, "props-recipe.json")), Recipe.Json)!;
+        var motion = recipe.Motions.Single(m => m.Id == "VocalsLoop");
+        motion.LeftHandFollowsHead.Should().BeTrue();
+        var duration = motion.Beats[^1].Time;
+        var turning = motion with
+        {
+            Beats = motion.Beats.Select(beat =>
+            {
+                var pose = System.Text.Json.Nodes.JsonNode.Parse(beat.Pose.ToJsonString())!.AsObject();
+                pose["rootYaw"] = ramp ? yaw * beat.Time / duration : yaw;
+                return beat with { Pose = pose };
+            }).ToArray()
+        };
+        var rig = Project("Vocals", "Loop");
+        var still = MotionAuthor.Bake(rig, rig.Sample(0), recipe, motion);
+        var turned = MotionAuthor.Bake(rig, rig.Sample(0), recipe, turning);
+        var microphone = rig.Joints.FindIndex(j => j.Name == "lhand_g");
+        var head = rig.Joints.FindIndex(j => j.Name == "head_g");
+        Matrix4x4 InHead(AnimationProject project, int key)
+        {
+            var world = AnimationRig.World(project.Joints, project.Keys[key].Pose);
+            Matrix4x4.Invert(world[head], out var inverse).Should().BeTrue();
+            return world[microphone] * inverse;
+        }
+        turned.Keys.Count.Should().Be(still.Keys.Count);
+        for (var key = 0; key < still.Keys.Count; key++)
+        {
+            var expected = InHead(still, key);
+            var actual = InHead(turned, key);
+            Vector3.Distance(actual.Translation, expected.Translation).Should().BeLessThan(.003f,
+                $"a turn must not move the microphone off the lips at {still.Keys[key].Time:0.000}s");
+            foreach (var axis in new[] { Vector3.UnitX, Vector3.UnitY, Vector3.UnitZ })
+                Vector3.Distance(Vector3.TransformNormal(axis, actual), Vector3.TransformNormal(axis, expected)).Should().BeLessThan(.02f,
+                    $"a turn must not twist the grip at {still.Keys[key].Time:0.000}s");
+        }
+    }
+
+    [Test]
+    public void TheRecipeBakesEveryCommittedProject()
+    {
+        // Covers the unchanged violin clips too: controls a recipe omits must not change its bake.
+        var folder = Path.Combine(Root, "design/animations/performance");
+        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(folder, "props-recipe.json")), Recipe.Json)!;
+        recipe.Motions.Select(motion => motion.Id).Should().BeEquivalentTo(
+            new[] { "Vocals", "Pipes", "Violin", "Tambourine", "VocalsLowMouth" }
+                .SelectMany(family => States.Select(state => family + state))
+                .Concat(new[] { "VocalsMidMouth", "PipesWide", "TambourineWide" }
+                    .SelectMany(family => WookieeStates.Select(state => family + state))));
+        foreach (var motion in recipe.Motions)
+        {
+            var committed = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(folder, motion.Id + ".swlanim")));
+            var baked = MotionAuthor.Bake(committed, committed.Sample(0), recipe, motion);
+            baked.Keys.Count.Should().Be(committed.Keys.Count, motion.Id);
+            for (var key = 0; key < baked.Keys.Count; key++)
+            {
+                baked.Keys[key].Time.Should().BeApproximately(committed.Keys[key].Time, .000001f, motion.Id);
+                for (var joint = 0; joint < committed.Joints.Count; joint++)
+                {
+                    var expected = committed.Keys[key].Pose[joint];
+                    var actual = baked.Keys[key].Pose[joint];
+                    if (Vector3.Distance(actual.Position, expected.Position) > .00001f ||
+                        MathF.Abs(Quaternion.Dot(actual.Orientation, expected.Orientation)) < .999999f)
+                        Assert.Fail($"{motion.Id} differs from its recipe at {committed.Keys[key].Time:0.000}s on {committed.Joints[joint].Name}.");
+                }
+            }
         }
     }
 
@@ -129,12 +339,17 @@ public class PerformancePropMotionTests
     }
 
     [TestCase("Vocals")]
+    [TestCase("VocalsLowMouth")]
+    [TestCase("VocalsMidMouth")]
+    [TestCase("Pipes")]
+    [TestCase("PipesWide")]
+    [TestCase("TambourineWide")]
     [TestCase("Violin")]
     [TestCase("Tambourine")]
     public void AccentsReturnToTheLoopHoldWithoutAnArmSnap(string family)
     {
         var loop = Project(family, "Loop");
-        foreach (var state in States)
+        foreach (var state in family is "VocalsMidMouth" or "PipesWide" or "TambourineWide" ? WookieeStates : States)
         {
             var project = Project(family, state);
             foreach (var time in new[] { 0f, project.Duration })
@@ -149,6 +364,15 @@ public class PerformancePropMotionTests
             }
         }
     }
+
+    private static Vector3 InHeadSpace(Vector3 point, Matrix4x4 head)
+    {
+        Matrix4x4.Invert(head, out var inverse);
+        return Vector3.Transform(point, inverse);
+    }
+
+    private static Quaternion RelativeRotation(Matrix4x4 joint, Matrix4x4 head) => Quaternion.Normalize(
+        Quaternion.Inverse(Quaternion.CreateFromRotationMatrix(head)) * Quaternion.CreateFromRotationMatrix(joint));
 
     private static float WristAngle(AnimationProject project, Quaternion actual, int wrist) =>
         2 * MathF.Acos(Math.Clamp(MathF.Abs(Quaternion.Dot(Quaternion.Normalize(actual),

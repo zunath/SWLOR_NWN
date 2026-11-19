@@ -58,9 +58,27 @@ public class AppearancePartNamesTests
             caption.First.Length.Should().BeLessThanOrEqualTo(AppearancePartNames.MaxLength, key);
             caption.Second.Length.Should().BeLessThanOrEqualTo(AppearancePartNames.MaxLength, key);
             (caption.First + (caption.Second.Length > 0 ? " " + caption.Second : string.Empty)).Should().Be(name, key);
+            if (!head)
+                AppearancePartNames.Width(name).Should().BeLessThanOrEqualTo(AppearancePartNames.MaxWidth, key);
             name.Should().Be(name.Trim(), key);
             name.Should().NotContain("  ", key);
         }
+    }
+
+    [TestCase("Long Mustache", 102)]
+    [TestCase("Goatee", 50)]
+    [TestCase("Jawa's Hood-Cap", 109)]
+    public void WidthMatchesTheGameLabelFont(string name, int expected)
+    {
+        AppearancePartNames.Width(name).Should().Be(expected);
+    }
+
+    [TestCase("Bare Fists (Invisible)", "Bare Fists")]
+    [TestCase("Power Glove", "Power Glove")]
+    [TestCase("Pad (Thin)", "Pad (Thin)")]
+    public void TileNameDropsABracketedNoteOnlyWhenTheNameIsTooWide(string name, string expected)
+    {
+        AppearancePartNames.TileName(name).Should().Be(expected);
     }
 
     [Test]

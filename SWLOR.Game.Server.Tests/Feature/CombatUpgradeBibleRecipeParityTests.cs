@@ -94,8 +94,8 @@ public class CombatUpgradeBibleRecipeParityTests
         "Missile45",
     };
 
-    private static readonly Regex Droid005VariantPattern =
-        new(@"^D[A-Z]{3}00\d[AC]$", RegexOptions.Compiled);
+    private static readonly Regex Droid005AVariantPattern =
+        new(@"^D[A-Z]{3}005A$", RegexOptions.Compiled);
 
     [Test]
     public void RecipeBibleRows_MatchLiveRecipeRegistry()
@@ -314,8 +314,9 @@ public class CombatUpgradeBibleRecipeParityTests
             return true;
         }
 
-        // Top-tier (005) droid-equipment A/C variants are documented ahead of implementation.
-        if (Droid005VariantPattern.IsMatch(enumName))
+        // Top-tier (005) droid-equipment A variants are documented ahead of implementation.
+        // The Chiro (005 C) variants are live and must keep their recipes.
+        if (Droid005AVariantPattern.IsMatch(enumName))
             return true;
 
         // Legacy grouped droid boosts, replaced by per-weapon droid boosts.

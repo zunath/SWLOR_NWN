@@ -4,6 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.PerformanceService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -138,5 +139,88 @@ public class PerformanceAnimationsTests
     public void AdditionalInstrumentsOpenInTheirOwnPlayingPose(PerformanceInstrumentFamily family, string expected)
     {
         PerformanceAnimations.GetOpeningClip(PerformanceKind.Music, family).Name.Should().Be(expected);
+    }
+
+    [Test]
+    public void UgnaughtsSingWithTheMicrophoneLoweredToTheirMouth()
+    {
+        var sung = new[]
+        {
+            (PerformanceAnimations.GetOpeningClip(PerformanceKind.Music, PerformanceInstrumentFamily.Vocals), "sw_vlm_loop"),
+            (PerformanceAnimations.GetLoopClip(PerformanceKind.Music, PerformanceInstrumentFamily.Vocals, PerformanceRoutineType.CantinaShuffle), "sw_vlm_loop"),
+            (PerformanceAnimations.GetCueClip(PerformanceKind.Music, PerformanceInstrumentFamily.Vocals, PerformanceCue.Low), "sw_vlm_low"),
+            (PerformanceAnimations.GetCueClip(PerformanceKind.Music, PerformanceInstrumentFamily.Vocals, PerformanceCue.Mid), "sw_vlm_mid"),
+            (PerformanceAnimations.GetCueClip(PerformanceKind.Music, PerformanceInstrumentFamily.Vocals, PerformanceCue.High), "sw_vlm_high"),
+            (PerformanceAnimations.GetFlourishClip(PerformanceKind.Music, PerformanceInstrumentFamily.Vocals, 0), "sw_vlm_flour"),
+        };
+        foreach (var (clip, lowered) in sung)
+        {
+            foreach (var gender in new[] { Gender.Male, Gender.Female })
+            {
+                var fitted = PerformanceAnimations.FitToBody(clip, AppearanceType.Ugnaught, gender);
+                fitted.Name.Should().Be(lowered);
+                fitted.Duration.Should().Be(clip.Duration, "the lowered copy keeps the clip's timing");
+            }
+        }
+    }
+
+    [TestCase(PerformanceCue.Low, "sw_vmm_low")]
+    [TestCase(PerformanceCue.Mid, "sw_vmm_low")]
+    [TestCase(PerformanceCue.High, "sw_vmm_high")]
+    public void OnlyFemaleWookieesSingWithTheMicrophoneHalfLowered(PerformanceCue cue, string lowered)
+    {
+        var clip = PerformanceAnimations.GetCueClip(PerformanceKind.Music, PerformanceInstrumentFamily.Vocals, cue);
+        var fitted = PerformanceAnimations.FitToBody(clip, AppearanceType.Wookiee, Gender.Female);
+        fitted.Name.Should().Be(lowered);
+        fitted.Duration.Should().Be(clip.Duration, "the middle accent borrows the low one, which lasts as long");
+        PerformanceAnimations.FitToBody(AuthoredAnimation.VocalsLoop, AppearanceType.Wookiee, Gender.Female).Name.Should().Be("sw_vmm_loop");
+        PerformanceAnimations.FitToBody(AuthoredAnimation.VocalsFlourish, AppearanceType.Wookiee, Gender.Female).Name.Should().Be("sw_vmm_flour");
+        PerformanceAnimations.FitToBody(clip, AppearanceType.Wookiee, Gender.Male).Should().BeSameAs(clip);
+    }
+
+    [TestCase(Gender.Male)]
+    [TestCase(Gender.Female)]
+    public void WookieesPlayThePipesAndTheTambourineWithTheirHandsApart(Gender gender)
+    {
+        var played = new[]
+        {
+            (AuthoredAnimation.PipesLoop, "sw_pwd_loop"), (AuthoredAnimation.PipesLow, "sw_pwd_low"),
+            (AuthoredAnimation.PipesMid, "sw_pwd_low"), (AuthoredAnimation.PipesHigh, "sw_pwd_high"),
+            (AuthoredAnimation.PipesFlourish, "sw_pwd_flour"),
+            (AuthoredAnimation.TambourineLoop, "sw_twd_loop"), (AuthoredAnimation.TambourineLow, "sw_twd_low"),
+            (AuthoredAnimation.TambourineMid, "sw_twd_low"), (AuthoredAnimation.TambourineHigh, "sw_twd_high"),
+            (AuthoredAnimation.TambourineFlourish, "sw_twd_flour"),
+        };
+        foreach (var (clip, wide) in played)
+        {
+            var fitted = PerformanceAnimations.FitToBody(clip, AppearanceType.Wookiee, gender);
+            fitted.Name.Should().Be(wide);
+            fitted.Duration.Should().Be(clip.Duration, "the wide copy keeps the clip's timing");
+            PerformanceAnimations.FitToBody(clip, AppearanceType.Bothan, gender).Should().BeSameAs(clip);
+        }
+        PerformanceAnimations.FitToBody(AuthoredAnimation.ViolinLoop, AppearanceType.Wookiee, gender)
+            .Should().BeSameAs(AuthoredAnimation.ViolinLoop);
+    }
+
+    [TestCase(AppearanceType.Human)]
+    [TestCase(AppearanceType.Ewok)]
+    [TestCase(AppearanceType.Cathar)]
+    [TestCase(AppearanceType.Droid)]
+    public void BodiesWhoseMouthMeetsTheMicrophoneKeepTheOrdinarySingingClips(AppearanceType appearance)
+    {
+        foreach (var clip in new[] { AuthoredAnimation.VocalsLoop, AuthoredAnimation.VocalsLow, AuthoredAnimation.VocalsMid,
+                     AuthoredAnimation.VocalsHigh, AuthoredAnimation.VocalsFlourish })
+        foreach (var gender in new[] { Gender.Male, Gender.Female })
+            PerformanceAnimations.FitToBody(clip, appearance, gender).Should().BeSameAs(clip);
+    }
+
+    [Test]
+    public void OnlySingingIsRefittedForUgnaughts()
+    {
+        foreach (var clip in new[] { AuthoredAnimation.PipesLoop, AuthoredAnimation.TambourineFlourish, AuthoredAnimation.HornLoop,
+                     AuthoredAnimation.CantinaShuffle, AuthoredAnimation.PerformanceBow })
+            PerformanceAnimations.FitToBody(clip, AppearanceType.Ugnaught, Gender.Male).Should().BeSameAs(clip);
+        PerformanceAnimations.FitToBody(null, AppearanceType.Ugnaught, Gender.Male).Should().BeNull();
+        PerformanceAnimations.FitToBody(null, AppearanceType.Wookiee, Gender.Female).Should().BeNull();
     }
 }

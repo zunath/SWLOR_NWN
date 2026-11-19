@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.PerformanceService
 {
@@ -8,6 +10,70 @@ namespace SWLOR.Game.Server.Service.PerformanceService
     /// </summary>
     public static class PerformanceAnimations
     {
+        // The same singing motion with the microphone hand lowered.
+        private static readonly Dictionary<AnimationClip, AnimationClip> _lowMouthVocals = new()
+        {
+            [AuthoredAnimation.VocalsLoop] = AuthoredAnimation.VocalsLowMouthLoop,
+            [AuthoredAnimation.VocalsLow] = AuthoredAnimation.VocalsLowMouthLow,
+            [AuthoredAnimation.VocalsMid] = AuthoredAnimation.VocalsLowMouthMid,
+            [AuthoredAnimation.VocalsHigh] = AuthoredAnimation.VocalsLowMouthHigh,
+            [AuthoredAnimation.VocalsFlourish] = AuthoredAnimation.VocalsLowMouthFlourish,
+        };
+
+        // The same singing motion with the microphone hand lowered half as far. The Wookiee sets have no middle accent
+        // of their own and play the low one for it.
+        private static readonly Dictionary<AnimationClip, AnimationClip> _midMouthVocals = new()
+        {
+            [AuthoredAnimation.VocalsLoop] = AuthoredAnimation.VocalsMidMouthLoop,
+            [AuthoredAnimation.VocalsLow] = AuthoredAnimation.VocalsMidMouthLow,
+            [AuthoredAnimation.VocalsMid] = AuthoredAnimation.VocalsMidMouthLow,
+            [AuthoredAnimation.VocalsHigh] = AuthoredAnimation.VocalsMidMouthHigh,
+            [AuthoredAnimation.VocalsFlourish] = AuthoredAnimation.VocalsMidMouthFlourish,
+        };
+
+        // The same pipes motion with the hands set apart.
+        private static readonly Dictionary<AnimationClip, AnimationClip> _widePipes = new()
+        {
+            [AuthoredAnimation.PipesLoop] = AuthoredAnimation.PipesWideLoop,
+            [AuthoredAnimation.PipesLow] = AuthoredAnimation.PipesWideLow,
+            [AuthoredAnimation.PipesMid] = AuthoredAnimation.PipesWideLow,
+            [AuthoredAnimation.PipesHigh] = AuthoredAnimation.PipesWideHigh,
+            [AuthoredAnimation.PipesFlourish] = AuthoredAnimation.PipesWideFlourish,
+        };
+
+        // The same tambourine motion with the holding hand and the striking palm set apart.
+        private static readonly Dictionary<AnimationClip, AnimationClip> _wideTambourine = new()
+        {
+            [AuthoredAnimation.TambourineLoop] = AuthoredAnimation.TambourineWideLoop,
+            [AuthoredAnimation.TambourineLow] = AuthoredAnimation.TambourineWideLow,
+            [AuthoredAnimation.TambourineMid] = AuthoredAnimation.TambourineWideLow,
+            [AuthoredAnimation.TambourineHigh] = AuthoredAnimation.TambourineWideHigh,
+            [AuthoredAnimation.TambourineFlourish] = AuthoredAnimation.TambourineWideFlourish,
+        };
+
+        /// <summary>
+        /// One clip serves every body, and the singing clips hold the microphone at a Human-height mouth. An Ugnaught's
+        /// mouth sits lower on its head, where that hand lands over the eyes, so Ugnaughts play the lowered copies; a
+        /// female Wookiee's mouth sits between the two, so she plays the half-lowered ones. A Wookiee's large hands
+        /// overlap at the mouth and push the pipes aside, and their thick forearms cross over the tambourine's skin, so
+        /// Wookiees play both with the hands apart. Held instruments are otherwise fitted per species by moving the item
+        /// (<c>HornFit</c>); a hand in the wrong place needs its own clips.
+        /// </summary>
+        public static AnimationClip FitToBody(AnimationClip clip, AppearanceType appearance, Gender gender)
+        {
+            if (clip == null)
+                return null;
+            if (appearance == AppearanceType.Wookiee &&
+                (_widePipes.TryGetValue(clip, out var wide) || _wideTambourine.TryGetValue(clip, out wide)))
+                return wide;
+            if (appearance == AppearanceType.Wookiee && gender == Gender.Female &&
+                _midMouthVocals.TryGetValue(clip, out var halfLowered))
+                return halfLowered;
+            return appearance == AppearanceType.Ugnaught && _lowMouthVocals.TryGetValue(clip, out var lowered)
+                ? lowered
+                : clip;
+        }
+
         /// <summary>
         /// Performance clips loop for minutes, so they stay on the looping carrier. The instruments' base item is wielded
         /// like a polearm: horns and the new held props pose their arms themselves, while the plucked strings were authored

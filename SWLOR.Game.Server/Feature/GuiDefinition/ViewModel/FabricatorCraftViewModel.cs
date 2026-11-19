@@ -77,8 +77,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// <summary>The actions the engine has resolved, which hold the XP of a craft the window ends to the modeled pace.</summary>
         protected override int? CraftActionsTaken => _engine?.Turn;
 
+        protected override float MinimumWindowWidth => FabricatorCraftDefinition.WindowWidth;
+
         protected override void Initialize(CraftPayload initialPayload)
         {
+            KeepMinimumWidth();
             _recipe = initialPayload.Recipe;
             _blueprintItem = initialPayload.BlueprintItem;
             _session = null;

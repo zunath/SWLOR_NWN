@@ -411,7 +411,8 @@ namespace SWLOR.Game.Server.Service
             // reservation names the collection, the stock saves without the ore and with the collection pending, the
             // character file saves the ore with its mark at once, and the pending collection and reservation go. A login
             // after a restart in between keeps the collection when the character file has its mark and otherwise returns the
-            // ore to the stock (SettleDrillCollections). A save that fails leaves the collection pending for that login.
+            // ore to the stock (SettleDrillCollections). A save that fails takes the ore back out of the inventory and returns
+            // it to the stock at once, so ore the character file never saved cannot be banked or traded and then returned again.
             DB.Set(new DrillCollectionReservation { Id = collection.Id, OwnerPlayerId = GetObjectUUID(player), BuildingId = buildingId });
             collection.TakeFrom(state.DrillStorage);
             state.PendingDrillCollections ??= new Dictionary<string, string>();
@@ -419,13 +420,23 @@ namespace SWLOR.Game.Server.Service
             DB.Set(state);
             ObjectPlugin.SetString(player, DrillCollectionVariable,
                 DrillCollection.AddMark(ObjectPlugin.GetString(player, DrillCollectionVariable), collection.Id), true);
-            if (CharacterCheckpoint.Save(player))
+            var saved = CharacterCheckpoint.Save(player);
+            if (!saved)
             {
-                state.PendingDrillCollections.Remove(collection.Id);
-                DB.Set(state);
-                DB.Delete<DrillCollectionReservation>(collection.Id);
-                ObjectPlugin.SetString(player, DrillCollectionVariable,
-                    DrillCollection.RemoveMark(ObjectPlugin.GetString(player, DrillCollectionVariable), collection.Id), true);
+                foreach (var (resref, units) in collection.Units)
+                    FarmItems.Take(player, resref, units);
+                collection.ReturnTo(state.DrillStorage);
+            }
+
+            state.PendingDrillCollections.Remove(collection.Id);
+            DB.Set(state);
+            DB.Delete<DrillCollectionReservation>(collection.Id);
+            ObjectPlugin.SetString(player, DrillCollectionVariable,
+                DrillCollection.RemoveMark(ObjectPlugin.GetString(player, DrillCollectionVariable), collection.Id), true);
+            if (!saved)
+            {
+                SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so the ore stays in the Asteroid Drill. Try again in a moment."));
+                return;
             }
 
             var collected = collection.Units.Select(x => $"{x.Value}x {Cache.GetItemNameByResref(x.Key)}");

@@ -144,18 +144,40 @@ public class SpaceTransferCrashSafetyTests
         collection.ReturnTo(storage);
         storage.Should().BeEquivalentTo(new Dictionary<string, int> { ["ore_a"] = 5, ["ore_b"] = 2 });
 
-        // Collection c1's save failed; c2 is then collected from another drill and saved. c1 stays marked, so the login keeps
-        // the ore the character holds instead of returning it to c1's drill as well.
+        // Collection c1 is still marked (a restart came before its drill cleared it); c2 is then collected from another drill and
+        // saved. c1 stays marked, so the login keeps the ore the character holds instead of returning it to c1's drill as well.
         var mark = DrillCollection.AddMark(string.Empty, "c1");
         mark = DrillCollection.AddMark(mark, "c2");
         DrillCollection.IsMarked(mark, "c1").Should().BeTrue();
         mark = DrillCollection.RemoveMark(mark, "c2");
-        DrillCollection.IsMarked(mark, "c1").Should().BeTrue("a later collection never hides an earlier one whose save failed");
+        DrillCollection.IsMarked(mark, "c1").Should().BeTrue("a later collection never hides an earlier one still pending");
         DrillCollection.IsMarked(mark, "c2").Should().BeFalse();
         DrillCollection.AddMark(mark, "c1").Should().Be(mark);
         DrillCollection.RemoveMark(mark, "c1").Should().BeEmpty();
         DrillCollection.IsMarked(string.Empty, "c1").Should().BeFalse();
         new StationBuildingState().PendingDrillCollections.Should().BeEmpty("older drills have no pending collection");
+    }
+
+    [Test]
+    public void ADrillCollectionWhoseSaveFails_ReturnsItsOreToTheStockAtOnce()
+    {
+        // CollectDrill: the ore leaves the stock with a pending collection, the checkpoint fails, and the ore taken back out
+        // of the inventory returns to the stock with nothing left pending, so no unsaved ore can be banked and returned again.
+        var collection = new DrillCollection { Id = "c1", BuildingId = "b1", Units = new Dictionary<string, int> { ["ore_a"] = 3, ["ore_b"] = 1 } };
+        var state = new StationBuildingState { DrillStorage = new Dictionary<string, int> { ["ore_a"] = 5, ["ore_b"] = 1 } };
+        collection.TakeFrom(state.DrillStorage);
+        state.PendingDrillCollections[collection.Id] = collection.Serialize();
+        var mark = DrillCollection.AddMark(string.Empty, collection.Id);
+
+        const bool saved = false;
+        if (!saved)
+            collection.ReturnTo(state.DrillStorage);
+        state.PendingDrillCollections.Remove(collection.Id);
+        mark = DrillCollection.RemoveMark(mark, collection.Id);
+
+        state.DrillStorage.Should().BeEquivalentTo(new Dictionary<string, int> { ["ore_a"] = 5, ["ore_b"] = 1 });
+        state.PendingDrillCollections.Should().BeEmpty("a login has nothing left to settle");
+        DrillCollection.IsMarked(mark, collection.Id).Should().BeFalse();
     }
 
     [TestCase(false, false, 5, Description = "Restart before the character file saved the ore: the ore goes back to the stock")]
@@ -200,12 +222,16 @@ public class SpaceTransferCrashSafetyTests
             "state.PendingDrillCollections[collection.Id] = collection.Serialize();",
             "DB.Set(state);",
             "DrillCollection.AddMark(ObjectPlugin.GetString(player, DrillCollectionVariable), collection.Id), true);",
-            "if (CharacterCheckpoint.Save(player))",
+            "var saved = CharacterCheckpoint.Save(player);",
+            "FarmItems.Take(player, resref, units);",
+            "collection.ReturnTo(state.DrillStorage);",
             "state.PendingDrillCollections.Remove(collection.Id);",
             "DB.Set(state);",
             "DB.Delete<DrillCollectionReservation>(collection.Id);",
-            "DrillCollection.RemoveMark(ObjectPlugin.GetString(player, DrillCollectionVariable), collection.Id), true);");
-        collect.Should().NotContain("ExportSingleCharacter(", "a save that fails leaves the collection pending, so the pending entry goes only after a saved file");
+            "DrillCollection.RemoveMark(ObjectPlugin.GetString(player, DrillCollectionVariable), collection.Id), true);",
+            "if (!saved)",
+            "return;");
+        collect.Should().NotContain("ExportSingleCharacter(", "only the checkpoint decides whether the ore stays with the character");
         service.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleDrillCollections()");
         InOrder(Method(service, "public static void SettleDrillCollections("),
             ".AddFieldSearch(nameof(DrillCollectionReservation.OwnerPlayerId), GetObjectUUID(player), false);",

@@ -33,6 +33,50 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(owner, () => VerifyRelogCraftSequence(ctx, owner));
         }
 
+        [EngineTest("A relog with a file that has no craft file sequence clears the entering player's", Category = "PlayerFileCheckpoint")]
+        public static async Task RelogWithoutFileCraftSequence(EngineTestContext ctx)
+        {
+            var owner = ctx.SpawnCreature("nw_rat001");
+            await ctx.WaitFrameAsync();
+            await ctx.ExecuteInCreatureContextAsync(owner, () => VerifyRelogWithoutCraftSequence(ctx, owner));
+        }
+
+        private static unsafe void VerifyRelogWithoutCraftSequence(EngineTestContext ctx, uint owner)
+        {
+            var characterId = GetObjectUUID(owner);
+            var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(owner).AsNWSCreature();
+            var wasPlayer = native.m_bPlayerCharacter;
+            DeleteLocalInt(owner, CraftSessionFileSequence.Variable);
+
+            using var file = new CResGFF();
+            using var root = new CResStruct();
+            using var fileType = new CExoString("BIC ");
+            using var format = new CExoString("V2.0");
+            ctx.Assert(file.CreateGFFFile(root, fileType, format) != 0, "Create character export");
+            native.m_bPlayerCharacter = 1;
+            ctx.Assert(native.SaveCreature(file, root, 0, 0, 1, 0) != 0, "Export the character as a player BIC with no sequence");
+            native.m_bPlayerCharacter = wasPlayer;
+            var found = 0;
+            fixed (byte* field = Encoding.ASCII.GetBytes("CraftFileSeq\0"))
+                file.ReadFieldINT(root, field, &found, 0);
+            ctx.AssertEqual(0, found, "The export has no craft file sequence field");
+
+            // Locals left over from an earlier session of this server run.
+            SetLocalInt(owner, CraftSessionFileSequence.Variable, 6);
+            SetLocalInt(owner, CraftSessionFileSequence.ExportedVariable, 5);
+            SetLocalInt(owner, CraftSessionFileSequence.LoadedVariable, 4);
+
+            using var loading = new CNWSCreature(OBJECT_INVALID, 1, 1);
+            ctx.AssertEqual(0u, loading.m_pStats.ReadStatsFromGff(file, root, loading.m_cAppearance, 0, 1, 0, 1),
+                "Native player stats load succeeds (zero is success)");
+
+            PlayerFileCheckpoint.ApplyLoginCraftSequence(owner);
+            ctx.AssertEqual(0, GetLocalInt(owner, CraftSessionFileSequence.Variable), "The sequence starts over with the file");
+            ctx.AssertEqual(0, GetLocalInt(owner, CraftSessionFileSequence.ExportedVariable), "The file is known to hold sequence 0");
+            ctx.AssertEqual(0, GetLocalInt(owner, CraftSessionFileSequence.LoadedVariable), "Login compares with the file's missing sequence as 0");
+            ctx.Assert(!CraftFileLoginSequences.TryTake(characterId, out _), "Nothing is left pending for the character");
+        }
+
         private static unsafe void VerifyRelogCraftSequence(EngineTestContext ctx, uint owner)
         {
             var characterId = GetObjectUUID(owner);

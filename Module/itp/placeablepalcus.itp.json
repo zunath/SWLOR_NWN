@@ -50159,6 +50159,138 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Stool, Steel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_seat_steel"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ashmark Work Stool"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_stl_ash"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veilcarved Work Stool"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_stl_veil"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Surgewake Work Stool"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_stl_surge"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Fieldline Work Stool"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_stl_field"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Commandline Work Stool"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_stl_cmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Guttermark Wall Banner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_ban_gutter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Trailmark Wall Banner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_ban_trail"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Surgewake Wall Banner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_ban_surge"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Resonant Wall Banner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_ban_reson"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aegisline Sword Pedestal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_ped_aegis"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Commandline Bust"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_bust_cmd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Personal Shield Device"
                     },
                     "RESREF": {

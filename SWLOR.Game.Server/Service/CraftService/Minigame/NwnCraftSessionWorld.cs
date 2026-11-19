@@ -454,18 +454,38 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
     public string SerializeItem(uint item) => ObjectPlugin.Serialize(item);
 
-    public int FileSequence(uint player) => GetLocalInt(player, CraftSessionFileSequence.Variable);
+    /// <summary>
+    /// Sets the player's craft locals from the sequence their character file loaded with, when that load is still waiting to be applied
+    /// (see <see cref="LoadedCraftFileSequences"/>). Every read of the craft locals below calls it first.
+    /// </summary>
+    public static void ApplyLoadedSequence(uint player) =>
+        LoadedCraftFileSequences.Apply(GetObjectUUID(player), name => GetLocalInt(player, name), (name, value) => SetLocalInt(player, name, value));
+
+    public int FileSequence(uint player)
+    {
+        ApplyLoadedSequence(player);
+        return GetLocalInt(player, CraftSessionFileSequence.Variable);
+    }
 
     public int AdvanceFileSequence(uint player)
     {
+        ApplyLoadedSequence(player);
         var next = GetLocalInt(player, CraftSessionFileSequence.Variable) + 1;
         SetLocalInt(player, CraftSessionFileSequence.Variable, next);
         return next;
     }
 
-    public int LoadedSequence(uint player) => GetLocalInt(player, CraftSessionFileSequence.LoadedVariable);
+    public int LoadedSequence(uint player)
+    {
+        ApplyLoadedSequence(player);
+        return GetLocalInt(player, CraftSessionFileSequence.LoadedVariable);
+    }
 
-    public int ExportedSequence(uint player) => GetLocalInt(player, CraftSessionFileSequence.ExportedVariable);
+    public int ExportedSequence(uint player)
+    {
+        ApplyLoadedSequence(player);
+        return GetLocalInt(player, CraftSessionFileSequence.ExportedVariable);
+    }
 
     public void FlushCharacter(uint player)
     {
@@ -492,6 +512,7 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
     private static void ExportAndRecord(uint player)
     {
         // The sequence is read at the moment of the export: the file written carries the value the local has now.
+        ApplyLoadedSequence(player);
         var sequence = GetLocalInt(player, CraftSessionFileSequence.Variable);
         ExportSingleCharacter(player);
         SetLocalInt(player, CraftSessionFileSequence.ExportedVariable, sequence);

@@ -65,44 +65,70 @@ public class FurnitureSetPlaceableTests
             "each stand has its own Meshy model for its set's theme, checked in the client");
     }
 
-    [Test]
-    public void FieldCots_EachHaveTheirOwnPlaceable()
-    {
-        var cots = Enum.GetValues<StructureType>().Where(t => t.ToString().EndsWith("FieldCot")).ToList();
-        var otherStructureResrefs = Enum.GetValues<StructureType>().Except(cots).Select(ResrefOf).ToHashSet();
+    // Template pieces that every set once showed with one shared model, which a plain craftable also used.
+    private static readonly string[] OwnLookPieces =
+        { "FieldCot", "SignalLamp", "LowTable", "WallBanner", "SupplyLocker", "FloorMat", "DataConsole", "WorkStool" };
 
-        cots.Should().HaveCount(10);
-        cots.Select(ResrefOf).Should().OnlyHaveUniqueItems("each set's Field Cot has its own look");
-        cots.Select(ResrefOf).Should().NotContain(ResrefOf(StructureType.Cot),
-            "the cots used to share the plain Cot's look");
-        cots.Select(ResrefOf).Should().NotIntersectWith(otherStructureResrefs,
-            "no Field Cot may look like any other craftable structure");
-        cots.ToDictionary(type => type, ResrefOf).Should().BeEquivalentTo(FieldCotResrefs,
-            "each cot was chosen for its set's theme, checked in the client");
+    private static List<StructureType> PiecesOf(string piece) =>
+        Enum.GetValues<StructureType>().Where(t => t.ToString().EndsWith(piece)).ToList();
+
+    [TestCaseSource(nameof(OwnLookPieces))]
+    public void SetPieces_EachHaveTheirOwnPlaceable(string piece)
+    {
+        var pieces = PiecesOf(piece);
+        var otherStructureResrefs = Enum.GetValues<StructureType>().Except(pieces).Select(ResrefOf).ToHashSet();
+
+        pieces.Should().HaveCount(10);
+        pieces.Select(ResrefOf).Should().OnlyHaveUniqueItems($"each set's {piece} has its own look");
+        pieces.Select(ResrefOf).Should().NotIntersectWith(otherStructureResrefs,
+            $"no {piece} may look like any other craftable structure, such as the plain one the sets used to share");
+        pieces.ToDictionary(type => type, ResrefOf).Should().BeEquivalentTo(
+            SetPieceResrefs.Where(entry => pieces.Contains(entry.Key)).ToDictionary(entry => entry.Key, entry => entry.Value),
+            "each piece was chosen for its set's theme, checked in the client");
     }
 
-    [Test]
-    public void FieldCots_ShowModelsNoOtherStructureShows()
+    [TestCaseSource(nameof(OwnLookPieces))]
+    public void SetPieces_ShowModelsNoOtherStructureShows(string piece)
     {
         var root = FindRoot();
         var placeables = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
         string? ModelOf(StructureType type)
         {
-            var path = Path.Combine(root, "Module", "utp", ResrefOf(type) + ".utp.json");
-            if (!File.Exists(path))
+            using var blueprint = ReadBlueprint(root, ResrefOf(type));
+            if (blueprint == null)
                 return null; // A base-game blueprint, such as the plain Cot's plc_cot.
-            using var blueprint = JsonDocument.Parse(File.ReadAllText(path));
             var appearance = blueprint.RootElement.GetProperty("Appearance").GetProperty("value").GetInt32();
             return placeables.GetValue(appearance, "ModelName").ToLowerInvariant();
         }
 
-        var cots = FieldCotResrefs.Keys.ToList();
-        var cotModels = cots.Select(ModelOf).ToList();
-        var otherModels = Enum.GetValues<StructureType>().Except(cots).Select(ModelOf).Where(model => model != null).ToHashSet();
+        var pieces = PiecesOf(piece);
+        var pieceModels = pieces.Select(ModelOf).ToList();
+        var otherModels = Enum.GetValues<StructureType>().Except(pieces).Select(ModelOf).Where(model => model != null).ToHashSet();
 
-        cotModels.Should().NotContainNulls("every Field Cot uses a module blueprint");
-        cotModels.Should().OnlyHaveUniqueItems("two blueprints can show one model");
-        cotModels.Should().NotIntersectWith(otherModels, "a different blueprint can still show another structure's model");
+        pieceModels.Should().NotContainNulls($"every {piece} uses a module blueprint");
+        pieceModels.Should().OnlyHaveUniqueItems("two blueprints can show one model");
+        pieceModels.Should().NotIntersectWith(otherModels, "a different blueprint can still show another structure's model");
+    }
+
+    [Test]
+    public void WorkStools_CanBeSatOn()
+    {
+        var root = FindRoot();
+        foreach (var stool in PiecesOf("WorkStool"))
+        {
+            using var document = ReadBlueprint(root, ResrefOf(stool));
+            document.Should().NotBeNull($"{stool} uses a module blueprint");
+            var blueprint = document!.RootElement;
+            blueprint.GetProperty("Useable").GetProperty("value").GetInt32().Should().Be(1, $"{stool} must stay usable to sit on");
+            blueprint.GetProperty("OnUsed").GetProperty("value").GetString().Should().BeOneOf(
+                new[] { "x2_plc_used_sit", "zep_use_chair", "x0_o2_use_chair" }, $"{stool} sits its user when used");
+        }
+    }
+
+    private static JsonDocument? ReadBlueprint(string root, string resref)
+    {
+        var path = Path.Combine(root, "Module", "utp", resref + ".utp.json");
+        return File.Exists(path) ? JsonDocument.Parse(File.ReadAllText(path)) : null;
     }
 
     private static string FindRoot()
@@ -112,8 +138,9 @@ public class FurnitureSetPlaceableTests
         return root?.FullName ?? throw new DirectoryNotFoundException("Repository root not found.");
     }
 
-    // Each set's Field Cot blueprint: a Meshy model (swc_cot_*, resref = model) or an existing bed no other structure uses.
-    private static readonly Dictionary<StructureType, string> FieldCotResrefs = new()
+    // Each set's blueprint for the pieces in OwnLookPieces: an existing placeable no other structure shows, a Meshy Field Cot
+    // (swc_cot_*, resref = model), or a sittable seat blueprint for an existing model (swc_seat_*).
+    private static readonly Dictionary<StructureType, string> SetPieceResrefs = new()
     {
         [StructureType.AshmarkFieldCot] = "swc_cot_ash",
         [StructureType.GuttermarkFieldCot] = "swc_cot_gutter",
@@ -125,6 +152,83 @@ public class FurnitureSetPlaceableTests
         [StructureType.ResonantFieldCot] = "swc_cot_reson",
         [StructureType.FieldlineFieldCot] = "_mdrn_pl_bedenli",
         [StructureType.CommandlineFieldCot] = "swlor_0622",
+
+        [StructureType.AshmarkSignalLamp] = "zep_firebowl001",
+        [StructureType.GuttermarkSignalLamp] = "_mdrn_pl_lampd05",
+        [StructureType.TrailmarkSignalLamp] = "_mdrn_pl_lamp5",
+        [StructureType.StonewakeSignalLamp] = "zep_ostnlntrn002",
+        [StructureType.AegislineSignalLamp] = "aswtor_130",
+        [StructureType.VeilcarvedSignalLamp] = "_mdrn_pl_brazier",
+        [StructureType.SurgewakeSignalLamp] = "_mdrn_pl_lamp3",
+        [StructureType.ResonantSignalLamp] = "zep_ostnlntrn004",
+        [StructureType.FieldlineSignalLamp] = "_mdrn_pl_lghtpl1",
+        [StructureType.CommandlineSignalLamp] = "_mdrn_pl_lampd08",
+
+        [StructureType.AshmarkLowTable] = "_mdrn_pl_tableir",
+        [StructureType.GuttermarkLowTable] = "_mdrn_pl_rustedt",
+        [StructureType.TrailmarkLowTable] = "zep_table012",
+        [StructureType.StonewakeLowTable] = "swp_table03",
+        [StructureType.AegislineLowTable] = "swp_table04",
+        [StructureType.VeilcarvedLowTable] = "_mdrn_pl_table07",
+        [StructureType.SurgewakeLowTable] = "swp_table01",
+        [StructureType.ResonantLowTable] = "_mdrn_pl_df_tblr",
+        [StructureType.FieldlineLowTable] = "_mdrn_pl_table08",
+        [StructureType.CommandlineLowTable] = "_mdrn_pl_table05",
+
+        [StructureType.AshmarkWallBanner] = "swp_banner0001",
+        [StructureType.GuttermarkWallBanner] = "swd3_czs003",
+        [StructureType.TrailmarkWallBanner] = "swd3_czs004",
+        [StructureType.StonewakeWallBanner] = "_mdrn_pl_bannr02",
+        [StructureType.AegislineWallBanner] = "swd3_ban005",
+        [StructureType.VeilcarvedWallBanner] = "_mdrn_pl_bannr05",
+        [StructureType.SurgewakeWallBanner] = "swd3_ban004",
+        [StructureType.ResonantWallBanner] = "swd3_ban003",
+        [StructureType.FieldlineWallBanner] = "swd3_ban006",
+        [StructureType.CommandlineWallBanner] = "swlor_1846",
+
+        [StructureType.AshmarkSupplyLocker] = "_mdrn_pl_mtllkrs",
+        [StructureType.GuttermarkSupplyLocker] = "_mdrn_pl_mtllkgg",
+        [StructureType.TrailmarkSupplyLocker] = "_mdrn_pl_canten2",
+        [StructureType.StonewakeSupplyLocker] = "_mdrn_pl_chest04",
+        [StructureType.AegislineSupplyLocker] = "_mdrn_pl_conta48",
+        [StructureType.VeilcarvedSupplyLocker] = "daf_sw309",
+        [StructureType.SurgewakeSupplyLocker] = "aswtor_134",
+        [StructureType.ResonantSupplyLocker] = "_mdrn_pl_rustdcr",
+        [StructureType.FieldlineSupplyLocker] = "_mdrn_pl_mtllkcr",
+        [StructureType.CommandlineSupplyLocker] = "swd_ward01",
+
+        [StructureType.AshmarkFloorMat] = "zep_skin001",
+        [StructureType.GuttermarkFloorMat] = "zep_throwrug050",
+        [StructureType.TrailmarkFloorMat] = "wookiee_rug",
+        [StructureType.StonewakeFloorMat] = "zep_throwrug058",
+        [StructureType.AegislineFloorMat] = "_mdrn_pl_matpurp",
+        [StructureType.VeilcarvedFloorMat] = "zep_throwrug052",
+        [StructureType.SurgewakeFloorMat] = "_mdrn_pl_carpt03",
+        [StructureType.ResonantFloorMat] = "zep_throwrug054",
+        [StructureType.FieldlineFloorMat] = "_mdrn_pl_carpt04",
+        [StructureType.CommandlineFloorMat] = "_mdrn_pl_carpt02",
+
+        [StructureType.AshmarkDataConsole] = "_mdrn_pl_conso05",
+        [StructureType.GuttermarkDataConsole] = "swlor_1119",
+        [StructureType.TrailmarkDataConsole] = "swlor_1080",
+        [StructureType.StonewakeDataConsole] = "_mdrn_pl_conso32",
+        [StructureType.AegislineDataConsole] = "swd2_comp005",
+        [StructureType.VeilcarvedDataConsole] = "daf_sw315",
+        [StructureType.SurgewakeDataConsole] = "swd3_upter01",
+        [StructureType.ResonantDataConsole] = "_mdrn_pl_conso33",
+        [StructureType.FieldlineDataConsole] = "_mdrn_pl_conso07",
+        [StructureType.CommandlineDataConsole] = "swd3_comp009",
+
+        [StructureType.AshmarkWorkStool] = "swc_seat_foot",
+        [StructureType.GuttermarkWorkStool] = "_mdrn_pl_stool05",
+        [StructureType.TrailmarkWorkStool] = "_mdrn_pl_stool04",
+        [StructureType.StonewakeWorkStool] = "_mdrn_pl_stool",
+        [StructureType.AegislineWorkStool] = "swc_seat_steel",
+        [StructureType.VeilcarvedWorkStool] = "_mdrn_pl_chaircu",
+        [StructureType.SurgewakeWorkStool] = "_mdrn_pl_chairgr",
+        [StructureType.ResonantWorkStool] = "zep_logsit001",
+        [StructureType.FieldlineWorkStool] = "_mdrn_pl_chairca",
+        [StructureType.CommandlineWorkStool] = "swc_seat_ottom",
     };
 
     // Each set's Trophy Stand blueprint; the blueprint resref is also its model and placeables.2da model name.

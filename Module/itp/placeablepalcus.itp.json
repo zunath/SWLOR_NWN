@@ -50126,6 +50126,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Footstool"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_seat_foot"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ottoman"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_seat_ottom"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stool, Steel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_seat_steel"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Personal Shield Device"
                     },
                     "RESREF": {

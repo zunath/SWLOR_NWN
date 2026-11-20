@@ -4018,6 +4018,48 @@
     "Call": "SendMessageToPC(player, ColorToken.Cyan(message))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/CharacterSheetWindow/CharacterSheetAttributesTab.cs",
+    "Line": 62,
+    "Member": "UpgradeAttribute",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"Stats cannot be upgraded in this area.\", host.Target, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/CharacterSheetWindow/CharacterSheetAttributesTab.cs",
+    "Line": 76,
+    "Member": "UpgradeAttribute",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxRacialAttributeScore} with a racial bonus.\", host.Target, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/CharacterSheetWindow/CharacterSheetAttributesTab.cs",
+    "Line": 86,
+    "Member": "UpgradeAttribute",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxPurchasedAttributeScore} with AP.\", host.Target, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/CharacterSheetWindow/CharacterSheetAttributesTab.cs",
+    "Line": 92,
+    "Member": "UpgradeAttribute",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxRacialAttributeScore}.\", host.Target, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/CharacterSheetWindow/CharacterSheetAttributesTab.cs",
+    "Line": 98,
+    "Member": "UpgradeAttribute",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\"You do not have enough AP to purchase this upgrade.\", host.Target, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/CharacterSheetWindow/CharacterSheetAttributesTab.cs",
+    "Line": 109,
+    "Member": "UpgradeAttribute",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"Your {abilityName} attribute has increased!\", host.Target, false)"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/DisguiseWindow/DisguiseSoundSetPicker.cs",
     "Line": 220,
     "Member": "PreviewSelectedSoundSet",
@@ -4296,48 +4338,6 @@
     "Member": "OnClickSave",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green(\"Character rebuild complete!\"), Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 626,
-    "Member": "UpgradeAttribute",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"Stats cannot be upgraded in this area.\", _target, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 640,
-    "Member": "UpgradeAttribute",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxRacialAttributeScore} with a racial bonus.\", _target, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 650,
-    "Member": "UpgradeAttribute",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxPurchasedAttributeScore} with AP.\", _target, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 656,
-    "Member": "UpgradeAttribute",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxRacialAttributeScore}.\", _target, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 662,
-    "Member": "UpgradeAttribute",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"You do not have enough AP to purchase this upgrade.\", _target, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 673,
-    "Member": "UpgradeAttribute",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"Your {abilityName} attribute has increased!\", _target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterStatRebuildViewModel.cs",

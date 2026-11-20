@@ -87,9 +87,9 @@ public class PlayerAttributeRestorationTests
     [Test]
     public void AttributePurchasesApplySavedTotalInsteadOfIncrementingStaleCharacterScore()
     {
-        var source = ReadSource("Feature", "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs");
+        var source = ReadSource("Feature", "GuiDefinition", "CharacterSheetWindow", "CharacterSheetAttributesTab.cs");
         source.Should().NotContain("ModifyRawAbilityScore");
-        source.Should().Contain("DB.Set(dbPlayer);\n                CreatureStat.ApplyPlayerStat(dbPlayer, _target, ability);");
+        source.Should().Contain("DB.Set(dbPlayer);\n                CreatureStat.ApplyPlayerStat(dbPlayer, host.Target, ability);");
     }
 
     private static void Restore(Player player, Action<AbilityType, int> setScore)

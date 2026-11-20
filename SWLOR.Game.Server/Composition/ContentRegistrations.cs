@@ -24,6 +24,10 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearanceSwatchService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearanceTintEditorService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.MigrationDefinition.CharacterLoginRestoration>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow.CharacterSheetAttributesTab>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow.CharacterSheetDamageEstimate>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow.CharacterSheetWeaponRatings>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow.CharacterSheetWeaponTiming>();
             services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.DroidAssemblyWindow.DroidAssemblyActionService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.DroidAssemblyWindow.DroidAssemblyStatsService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow.IncubatorItemService>();

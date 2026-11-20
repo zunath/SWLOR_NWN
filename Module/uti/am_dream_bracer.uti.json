@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A smooth, lightweight bracer that feels almost weightless on the arm."
+      "0": "A smooth, lightweight servo that feels almost weightless on the droid's arm."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A smooth, lightweight bracer that feels almost weightless on the arm."
+      "0": "A smooth, lightweight servo that feels almost weightless on the droid's arm."
     }
   },
   "Identified": {

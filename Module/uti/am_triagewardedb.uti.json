@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Triage Plating"
+      "0": "Reinforced chassis plating recovered from Triage Warden Kessa."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Reinforced plating recovered from Triage Warden Kessa."
+      "0": "Reinforced chassis plating recovered from Triage Warden Kessa."
     }
   },
   "Identified": {

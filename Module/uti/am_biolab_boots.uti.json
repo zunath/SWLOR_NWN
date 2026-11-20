@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sealed laboratory boots from the station's research wing. They guard against Force attacks and help the wearer recover Force energy."
+      "0": "A sealed laboratory drive unit from the station's research wing. It guards against Force attacks and helps the droid recover Force energy."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sealed laboratory boots from the station's research wing. They guard against Force attacks and help the wearer recover Force energy."
+      "0": "A sealed laboratory drive unit from the station's research wing. It guards against Force attacks and helps the droid recover Force energy."
     }
   },
   "Identified": {

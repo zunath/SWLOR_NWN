@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A band with a hairline emitter that swallows the sound of footsteps a half-second after they land. Found only in sealed lockboxes."
+      "0": "A socket plug with a hairline emitter that swallows the sound of steps a half-second after they land. Found only in sealed lockboxes."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A band with a hairline emitter that swallows the sound of footsteps a half-second after they land. Found only in sealed lockboxes."
+      "0": "A socket plug with a hairline emitter that swallows the sound of steps a half-second after they land. Found only in sealed lockboxes."
     }
   },
   "Identified": {

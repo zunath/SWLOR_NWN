@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A grease-darkened sash that never snags and never jingles. Found only in sealed lockboxes."
+      "0": "A grease-darkened power cell that seats without a click and never hums. Found only in sealed lockboxes."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A grease-darkened sash that never snags and never jingles. Found only in sealed lockboxes."
+      "0": "A grease-darkened power cell that seats without a click and never hums. Found only in sealed lockboxes."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Additional stitching reinforces the pockets of this field tunic. Its hem has been kept short enough to stay clear of equipment hanging from the belt."
+      "0": "Additional welds reinforce the equipment bays of this field plating. Its lower edge has been kept short enough to stay clear of gear hanging from the power rail."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Additional stitching reinforces the pockets of this field tunic. Its hem has been kept short enough to stay clear of equipment hanging from the belt."
+      "0": "Additional welds reinforce the equipment bays of this field plating. Its lower edge has been kept short enough to stay clear of gear hanging from the power rail."
     }
   },
   "Identified": {

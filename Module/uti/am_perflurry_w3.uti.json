@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A light vambrace that leaves the hands free for rapid casting."
+      "0": "A light servo that leaves the manipulator arm free for rapid casting."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A light vambrace that leaves the hands free for rapid casting."
+      "0": "A light servo that leaves the manipulator arm free for rapid casting."
     }
   },
   "Identified": {

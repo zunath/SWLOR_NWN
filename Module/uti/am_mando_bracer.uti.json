@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Mandalorian-style bracer built to guard the forearm in close combat."
+      "0": "A Mandalorian-style servo built to guard the manipulator arm in close combat."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A Mandalorian-style bracer built to guard the forearm in close combat."
+      "0": "A Mandalorian-style servo built to guard the manipulator arm in close combat."
     }
   },
   "Identified": {

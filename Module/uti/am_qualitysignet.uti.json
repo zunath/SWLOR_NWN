@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A signet stamped with the foundry's quality seal. Its embedded field emitter steadies the wearer's focus."
+      "0": "A socket plug stamped with the foundry's quality seal. Its embedded field emitter steadies the droid's focus."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A signet stamped with the foundry's quality seal. Its embedded field emitter steadies the wearer's focus."
+      "0": "A socket plug stamped with the foundry's quality seal. Its embedded field emitter steadies the droid's focus."
     }
   },
   "Identified": {

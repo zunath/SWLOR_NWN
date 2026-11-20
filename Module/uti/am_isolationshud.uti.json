@@ -35,13 +35,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A layered isolation cloak worn by researchers handling live infection samples. Its weave dampens incoming Force attacks."
+      "0": "A layered isolation emitter fitted to the droids of researchers handling live infection samples. Its field dampens incoming Force attacks."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A layered isolation cloak worn by researchers handling live infection samples. Its weave dampens incoming Force attacks."
+      "0": "A layered isolation emitter fitted to the droids of researchers handling live infection samples. Its field dampens incoming Force attacks."
     }
   },
   "Identified": {

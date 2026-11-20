@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A bracer built around a salvaged grapple-arm servo. It steadies the wearer's strikes and soaks up a share of incoming blows."
+      "0": "A servo built around a salvaged grapple-arm motor. It steadies the droid's strikes and soaks up a share of incoming blows."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A bracer built around a salvaged grapple-arm servo. It steadies the wearer's strikes and soaks up a share of incoming blows."
+      "0": "A servo built around a salvaged grapple-arm motor. It steadies the droid's strikes and soaks up a share of incoming blows."
     }
   },
   "Identified": {

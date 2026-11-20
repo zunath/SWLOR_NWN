@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "The shoulder of this marksman's harness has been worked softer than the rest. A previous owner repeatedly altered the fit until their familiar stance stopped fighting the armor."
+      "0": "The upper mount of this marksman's plating has been worked smoother than the rest. A previous owner repeatedly altered the fit until the unit's familiar stance stopped fighting the plating."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The shoulder of this marksman's harness has been worked softer than the rest. A previous owner repeatedly altered the fit until their familiar stance stopped fighting the armor."
+      "0": "The upper mount of this marksman's plating has been worked smoother than the rest. A previous owner repeatedly altered the fit until the unit's familiar stance stopped fighting the plating."
     }
   },
   "Identified": {

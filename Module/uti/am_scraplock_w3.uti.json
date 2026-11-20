@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace driven by a small hydraulic press that locks the arm in place on impact."
+      "0": "A servo driven by a small hydraulic press that locks the arm in place on impact."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace driven by a small hydraulic press that locks the arm in place on impact."
+      "0": "A servo driven by a small hydraulic press that locks the arm in place on impact."
     }
   },
   "Identified": {

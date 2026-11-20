@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Cyclone Plating"
+      "0": "Reinforced chassis plating recovered from Cyclone Training Droid."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Reinforced plating recovered from Cyclone Training Droid."
+      "0": "Reinforced chassis plating recovered from Cyclone Training Droid."
     }
   },
   "Identified": {

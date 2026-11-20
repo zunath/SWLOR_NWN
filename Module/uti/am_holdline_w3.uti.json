@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A thick vambrace meant to brace a shield arm against a charging foe."
+      "0": "A thick servo meant to brace a shield arm against a charging foe."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A thick vambrace meant to brace a shield arm against a charging foe."
+      "0": "A thick servo meant to brace a shield arm against a charging foe."
     }
   },
   "Identified": {

@@ -123,7 +123,7 @@ public class AstromechRewardContentTests
         // Everything but the name, the identifiers, the base item, the properties and the part models is the source's.
         foreach (var field in from.EnumerateObject())
         {
-            if (field.Name is "LocalizedName" or "Tag" or "TemplateResRef" or "BaseItem" or "PropertiesList")
+            if (field.Name is "LocalizedName" or "Tag" or "TemplateResRef" or "BaseItem" or "PropertiesList" or "Description" or "DescIdentified")
                 continue;
             if (field.Name.StartsWith("ArmorPart_") || field.Name.StartsWith("xArmorPart_"))
                 continue;

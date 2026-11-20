@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A blaster rifle from the station's armory, issued to the teams that held the quarantine line. Its sights steady the wielder's aim."
+      "0": "A blaster mount from the station's armory, issued to the units that held the quarantine line. Its sights steady the droid's aim."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A blaster rifle from the station's armory, issued to the teams that held the quarantine line. Its sights steady the wielder's aim."
+      "0": "A blaster mount from the station's armory, issued to the units that held the quarantine line. Its sights steady the droid's aim."
     }
   },
   "Identified": {

@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Eclipse Plating"
+      "0": "Reinforced chassis plating recovered from Umbral Relic Broker."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Reinforced plating recovered from Umbral Relic Broker."
+      "0": "Reinforced chassis plating recovered from Umbral Relic Broker."
     }
   },
   "Identified": {

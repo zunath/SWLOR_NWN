@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Reinforced work coveralls from the station's docking gantries. They protect the wearer, build stamina, and let them twist away from blows."
+      "0": "Reinforced work plating from the station's docking gantries. It protects the droid, builds stamina, and lets the unit twist away from blows."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Reinforced work coveralls from the station's docking gantries. They protect the wearer, build stamina, and let them twist away from blows."
+      "0": "Reinforced work plating from the station's docking gantries. It protects the droid, builds stamina, and lets the unit twist away from blows."
     }
   },
   "Identified": {

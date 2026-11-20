@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A stabilized bipod harness that steadies aim and footing."
+      "0": "A stabilized bipod servo that steadies aim and balance."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A stabilized bipod harness that steadies aim and footing."
+      "0": "A stabilized bipod servo that steadies aim and balance."
     }
   },
   "Identified": {

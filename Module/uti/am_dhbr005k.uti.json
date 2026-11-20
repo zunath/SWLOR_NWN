@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A reinforced forearm plate engineered to bolt onto a droid chassis, upgraded with improved shielding."
+      "0": "A reinforced servo housing engineered to bolt onto a droid chassis, upgraded with improved shielding."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A reinforced forearm plate engineered to bolt onto a droid chassis, upgraded with improved shielding."
+      "0": "A reinforced servo housing engineered to bolt onto a droid chassis, upgraded with improved shielding."
     }
   },
   "Identified": {

@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A bracer with a built-in chronometer that keeps perfect time."
+      "0": "A servo with a built-in chronometer that keeps perfect time."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A bracer with a built-in chronometer that keeps perfect time."
+      "0": "A servo with a built-in chronometer that keeps perfect time."
     }
   },
   "Identified": {

@@ -587,6 +587,14 @@ Done on 2026-11-19, at the owner's request for astromech versions of the store g
 - **Not covered.** Clothing and other pieces that ask for no rank (the starting items store, the Republic armor store, two training pieces) and weapons of other kinds.
 - **Cost.** A placed store holds every item in full, so the area files grew by about 40 MB of JSON.
 
+## Descriptions
+
+Done on 2026-11-20, after the owner asked that plating stop reading as a tunic.
+
+- **The problem.** A form copied its humanoid piece whole, description included, so 484 of the 1,248 forms described a tunic, a ring, boots or a rifle.
+- **The fix.** Each of those forms has a description of its own in `tools/AstromechDescriptions.json`, keyed by the humanoid resref and written by hand: the same lore, names and stated effects, describing the droid part. The three gear generators write it into both description fields (`GenerateAstromechModules.described`) and stop on a described piece that has none. Gear that says it "requires Armor training" says Chassis training, which is what its form asks for.
+- **Not changed.** The 764 forms whose humanoid piece has no description still have none, and no item name changed.
+
 ## Phases
 
 Each phase is its own pull request into a `feature/astromech` branch cut from `feature/space-revamp`; the owner decides when it merges. It releases after the space revamp, with its own migration versions if any turn out to be needed.

@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A heavy bracer reinforced with thick plates, made to protect the forearm during close combat."
+      "0": "A heavy servo housing reinforced with thick plates, made to protect the manipulator arm during close combat."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A heavy bracer reinforced with thick plates, made to protect the forearm during close combat."
+      "0": "A heavy servo housing reinforced with thick plates, made to protect the manipulator arm during close combat."
     }
   },
   "Identified": {

@@ -35,13 +35,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Purpose-built clandestine equipment recovered from a sealed lockbox. Ashline Hushcloak follows a fixed infiltrator profile and requires Armor training rather than Espionage rank."
+      "0": "Purpose-built clandestine equipment recovered from a sealed lockbox. Ashline Hushcloak Deflector Emitter follows a fixed infiltrator profile and requires Chassis training rather than Espionage rank."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Purpose-built clandestine equipment recovered from a sealed lockbox. Ashline Hushcloak follows a fixed infiltrator profile and requires Armor training rather than Espionage rank."
+      "0": "Purpose-built clandestine equipment recovered from a sealed lockbox. Ashline Hushcloak Deflector Emitter follows a fixed infiltrator profile and requires Chassis training rather than Espionage rank."
     }
   },
   "Identified": {

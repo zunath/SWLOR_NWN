@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A slim vambrace that keeps the gun arm free for a fast draw."
+      "0": "A slim servo that keeps the gun arm free for a fast draw."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A slim vambrace that keeps the gun arm free for a fast draw."
+      "0": "A slim servo that keeps the gun arm free for a fast draw."
     }
   },
   "Identified": {

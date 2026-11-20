@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace pulled from a beast's den, scored with claw marks."
+      "0": "A servo pulled from a beast's den, scored with claw marks."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace pulled from a beast's den, scored with claw marks."
+      "0": "A servo pulled from a beast's den, scored with claw marks."
     }
   },
   "Identified": {

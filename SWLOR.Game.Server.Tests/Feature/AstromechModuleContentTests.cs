@@ -115,7 +115,7 @@ public class AstromechModuleContentTests
         // Chassis Plating paints the chassis with its dyes, so it wears a paint job in place of its source's dyes.
         var paint = new[] { "Cloth2Color", "Cloth1Color", "Metal2Color" };
         var plating = module.Resref.Contains("_plat_");
-        var changed = new[] { "LocalizedName", "Tag", "TemplateResRef", "PropertiesList" }
+        var changed = new[] { "LocalizedName", "Tag", "TemplateResRef", "PropertiesList", "Description", "DescIdentified" }
             .Concat(plating ? paint : Array.Empty<string>())
             .ToArray();
         // Plating also drops the part models of the piece it copies: a leftover number can name a chassis part.

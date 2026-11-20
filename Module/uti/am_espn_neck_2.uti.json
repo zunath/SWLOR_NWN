@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A miniature prybar cast in durasteel, worn as a pendant by dockyard thieves for luck and, occasionally, for work. Found only in sealed lockboxes."
+      "0": "A miniature prybar cast in durasteel, mounted on a logic board by dockyard thieves for luck and, occasionally, for work. Found only in sealed lockboxes."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A miniature prybar cast in durasteel, worn as a pendant by dockyard thieves for luck and, occasionally, for work. Found only in sealed lockboxes."
+      "0": "A miniature prybar cast in durasteel, mounted on a logic board by dockyard thieves for luck and, occasionally, for work. Found only in sealed lockboxes."
     }
   },
   "Identified": {

@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A massive bracer built for those with the strength to wear it."
+      "0": "A massive servo built for units with the strength to carry it."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A massive bracer built for those with the strength to wear it."
+      "0": "A massive servo built for units with the strength to carry it."
     }
   },
   "Identified": {

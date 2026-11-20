@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A wrap woven from light-drinking thread; edges of the wearer seem to smudge into shadow. Found only in sealed lockboxes."
+      "0": "A power cell wrapped in light-drinking filament; the edges of the unit seem to smudge into shadow. Found only in sealed lockboxes."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A wrap woven from light-drinking thread; edges of the wearer seem to smudge into shadow. Found only in sealed lockboxes."
+      "0": "A power cell wrapped in light-drinking filament; the edges of the unit seem to smudge into shadow. Found only in sealed lockboxes."
     }
   },
   "Identified": {

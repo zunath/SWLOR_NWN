@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A double layer of cloth covers the backs of these gloves, while the palms remain supple from use. Their most precise repairs sit around the fingers, where cold and impatience are equally unwelcome."
+      "0": "A double layer of plating covers the backs of these servos, while the gripper pads remain supple from use. Their most precise repairs sit around the gripper digits, where cold and impatience are equally unwelcome."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A double layer of cloth covers the backs of these gloves, while the palms remain supple from use. Their most precise repairs sit around the fingers, where cold and impatience are equally unwelcome."
+      "0": "A double layer of plating covers the backs of these servos, while the gripper pads remain supple from use. Their most precise repairs sit around the gripper digits, where cold and impatience are equally unwelcome."
     }
   },
   "Identified": {

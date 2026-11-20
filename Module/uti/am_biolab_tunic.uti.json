@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A long lab coat from the station's reanimation trials, still stiff with dried reagents. It wards off Force attacks and sharpens the wearer's Force techniques."
+      "0": "A long casing from the station's reanimation trials, still stiff with dried reagents. It wards off Force attacks and sharpens the droid's Force techniques."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A long lab coat from the station's reanimation trials, still stiff with dried reagents. It wards off Force attacks and sharpens the wearer's Force techniques."
+      "0": "A long casing from the station's reanimation trials, still stiff with dried reagents. It wards off Force attacks and sharpens the droid's Force techniques."
     }
   },
   "Identified": {

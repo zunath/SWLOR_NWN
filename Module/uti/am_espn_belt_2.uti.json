@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A webbing belt with padded loops sized for charges, primers, and wire spools. Found only in sealed lockboxes."
+      "0": "A power cell in a webbing housing with padded bays sized for charges, primers, and wire spools. Found only in sealed lockboxes."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A webbing belt with padded loops sized for charges, primers, and wire spools. Found only in sealed lockboxes."
+      "0": "A power cell in a webbing housing with padded bays sized for charges, primers, and wire spools. Found only in sealed lockboxes."
     }
   },
   "Identified": {

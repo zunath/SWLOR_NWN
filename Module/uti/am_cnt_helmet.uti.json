@@ -35,13 +35,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A sealed helmet issued to the station's containment teams. Its armored shell turns aside heavy blows, and the visor's threat overlay sharpens the wearer's strikes."
+      "0": "A sealed sensor package issued to the station's containment teams. Its armored shell turns aside heavy blows, and the lens array's threat overlay sharpens the droid's strikes."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A sealed helmet issued to the station's containment teams. Its armored shell turns aside heavy blows, and the visor's threat overlay sharpens the wearer's strikes."
+      "0": "A sealed sensor package issued to the station's containment teams. Its armored shell turns aside heavy blows, and the lens array's threat overlay sharpens the droid's strikes."
     }
   },
   "Identified": {

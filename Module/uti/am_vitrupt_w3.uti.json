@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace fitted with restraints that bind a foe who gets too close."
+      "0": "A manipulator servo fitted with restraints that bind a foe who gets too close."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace fitted with restraints that bind a foe who gets too close."
+      "0": "A manipulator servo fitted with restraints that bind a foe who gets too close."
     }
   },
   "Identified": {

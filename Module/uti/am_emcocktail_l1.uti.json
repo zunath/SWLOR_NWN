@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "This cowl's pale lining has been carefully scrubbed, though the outer cloth retains the marks of hard service. Its ties are long enough to knot with tired hands in a cramped triage ward."
+      "0": "This sensor package's pale underside has been carefully scrubbed, though the outer casing retains the marks of hard service. Its mounting straps are long enough to fasten quickly, even by a tired technician in a cramped triage ward."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "This cowl's pale lining has been carefully scrubbed, though the outer cloth retains the marks of hard service. Its ties are long enough to knot with tired hands in a cramped triage ward."
+      "0": "This sensor package's pale underside has been carefully scrubbed, though the outer casing retains the marks of hard service. Its mounting straps are long enough to fasten quickly, even by a tired technician in a cramped triage ward."
     }
   },
   "Identified": {

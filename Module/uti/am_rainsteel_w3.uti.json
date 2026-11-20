@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace with a built-in dart launcher along the forearm."
+      "0": "A servo with a built-in dart launcher along the manipulator arm."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace with a built-in dart launcher along the forearm."
+      "0": "A servo with a built-in dart launcher along the manipulator arm."
     }
   },
   "Identified": {

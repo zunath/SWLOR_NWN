@@ -35,13 +35,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A sealed medical respirator from a plague containment ward. Its filters keep the wearer's head clear while focusing the Force."
+      "0": "A sealed medical sensor package from a plague containment ward. Its filters keep the droid's processors clear while focusing the Force."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A sealed medical respirator from a plague containment ward. Its filters keep the wearer's head clear while focusing the Force."
+      "0": "A sealed medical sensor package from a plague containment ward. Its filters keep the droid's processors clear while focusing the Force."
     }
   },
   "Identified": {

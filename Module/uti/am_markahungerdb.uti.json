@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hunger Plating"
+      "0": "Reinforced chassis plating recovered from Vitae Reaver Vark."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Reinforced plating recovered from Vitae Reaver Vark."
+      "0": "Reinforced chassis plating recovered from Vitae Reaver Vark."
     }
   },
   "Identified": {

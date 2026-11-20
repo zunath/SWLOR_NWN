@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A servo-driven vambrace that adds crushing force to every swing."
+      "0": "A servo-driven gripper arm that adds crushing force to every swing."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A servo-driven vambrace that adds crushing force to every swing."
+      "0": "A servo-driven gripper arm that adds crushing force to every swing."
     }
   },
   "Identified": {

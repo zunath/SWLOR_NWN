@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "The station director's command signet, still keyed to the research wing's locks. It guards its wearer and sharpens their Force techniques."
+      "0": "The station director's command plug, still keyed to the research wing's locks. It guards the droid and sharpens its Force techniques."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The station director's command signet, still keyed to the research wing's locks. It guards its wearer and sharpens their Force techniques."
+      "0": "The station director's command plug, still keyed to the research wing's locks. It guards the droid and sharpens its Force techniques."
     }
   },
   "Identified": {

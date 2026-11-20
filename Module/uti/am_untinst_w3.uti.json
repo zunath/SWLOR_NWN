@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A light vambrace that never slows a fighter's instincts."
+      "0": "A light manipulator servo that never slows a fighter's instincts."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A light vambrace that never slows a fighter's instincts."
+      "0": "A light manipulator servo that never slows a fighter's instincts."
     }
   },
   "Identified": {

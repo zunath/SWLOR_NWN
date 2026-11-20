@@ -35,13 +35,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A sealed hood worn in the station's research labs. Its filters keep the wearer's mind clear, deepening their Force reserves and sharpening their Force techniques."
+      "0": "A sealed sensor package used in the station's research labs. Its filters keep the droid's processors clear, deepening its Force reserves and sharpening its Force techniques."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A sealed hood worn in the station's research labs. Its filters keep the wearer's mind clear, deepening their Force reserves and sharpening their Force techniques."
+      "0": "A sealed sensor package used in the station's research labs. Its filters keep the droid's processors clear, deepening its Force reserves and sharpening its Force techniques."
     }
   },
   "Identified": {

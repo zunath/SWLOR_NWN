@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hide strips fringe this hunting cowl's lower edge. The loose ends mingle with shadows and undergrowth, moving just a little after the wearer has stopped."
+      "0": "Hide strips fringe this hunting sensor package's lower edge. The loose ends mingle with shadows and undergrowth, moving just a little after the droid has stopped."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hide strips fringe this hunting cowl's lower edge. The loose ends mingle with shadows and undergrowth, moving just a little after the wearer has stopped."
+      "0": "Hide strips fringe this hunting sensor package's lower edge. The loose ends mingle with shadows and undergrowth, moving just a little after the droid has stopped."
     }
   },
   "Identified": {

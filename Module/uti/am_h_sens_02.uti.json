@@ -35,13 +35,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "It's rusty and junky and hard to see out of."
+      "0": "It's rusty and junky and hard to see through."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "It's rusty and junky and hard to see out of."
+      "0": "It's rusty and junky and hard to see through."
     }
   },
   "Identified": {

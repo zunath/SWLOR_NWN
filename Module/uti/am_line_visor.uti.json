@@ -35,13 +35,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "An assembly-line calibration visor that overlays aim corrections on the wearer's view."
+      "0": "An assembly-line calibration sensor package that overlays aim corrections on the droid's view."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "An assembly-line calibration visor that overlays aim corrections on the wearer's view."
+      "0": "An assembly-line calibration sensor package that overlays aim corrections on the droid's view."
     }
   },
   "Identified": {

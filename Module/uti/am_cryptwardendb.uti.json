@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Crypt Plating"
+      "0": "Reinforced chassis plating recovered from Expedition Raider Nihl."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Reinforced plating recovered from Expedition Raider Nihl."
+      "0": "Reinforced chassis plating recovered from Expedition Raider Nihl."
     }
   },
   "Identified": {

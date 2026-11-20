@@ -87,7 +87,7 @@ public class AstromechToolContentTests
         Int(source, "BaseItem").Should().Be(tool.BaseItem == BaseItem.ShockProd ? (int)BaseItem.QuarterStaff : (int)BaseItem.Rifle);
         Int(item, "BaseItem").Should().Be((int)tool.BaseItem);
 
-        var changed = new[] { "LocalizedName", "Tag", "TemplateResRef", "BaseItem", "PropertiesList" };
+        var changed = new[] { "LocalizedName", "Tag", "TemplateResRef", "BaseItem", "PropertiesList", "Description", "DescIdentified" };
         var sourceFields = source.EnumerateObject().Where(field => !changed.Contains(field.Name)).ToDictionary(field => field.Name, field => field.Value.GetRawText());
         var itemFields = item.EnumerateObject().Where(field => !changed.Contains(field.Name)).ToDictionary(field => field.Name, field => field.Value.GetRawText());
         itemFields.Should().BeEquivalentTo(sourceFields);

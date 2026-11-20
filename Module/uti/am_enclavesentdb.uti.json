@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sentinel Plating"
+      "0": "Reinforced chassis plating recovered from Enclave Security Droid."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Reinforced plating recovered from Enclave Security Droid."
+      "0": "Reinforced chassis plating recovered from Enclave Security Droid."
     }
   },
   "Identified": {

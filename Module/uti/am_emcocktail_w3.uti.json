@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace laced with conductive filaments that crackle with stray charge."
+      "0": "A servo laced with conductive filaments that crackle with stray charge."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace laced with conductive filaments that crackle with stray charge."
+      "0": "A servo laced with conductive filaments that crackle with stray charge."
     }
   },
   "Identified": {

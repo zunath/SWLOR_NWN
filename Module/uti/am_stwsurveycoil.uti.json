@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A fixed-pattern surveyor coil rifle recovered from a burned field terminal. Its tuned internals favor decisive field handling without relying on unstable random modifications."
+      "0": "A fixed-pattern surveyor coil blaster mount recovered from a burned field terminal. Its tuned internals favor decisive field handling without relying on unstable random modifications."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A fixed-pattern surveyor coil rifle recovered from a burned field terminal. Its tuned internals favor decisive field handling without relying on unstable random modifications."
+      "0": "A fixed-pattern surveyor coil blaster mount recovered from a burned field terminal. Its tuned internals favor decisive field handling without relying on unstable random modifications."
     }
   },
   "Identified": {

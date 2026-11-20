@@ -85,7 +85,7 @@ def tool_blueprint(tool: Tool) -> str:
         raise SystemExit(f"{tool.source}: LocalizedName is {found}, expected {tool.source_name}")
     new_name = ('  "LocalizedName": {\r\n    "type": "cexolocstring",\r\n    "value": {\r\n'
                 f'      "0": "{tool.name}"\r\n    }}\r\n  }},')
-    text = name_pattern.sub(lambda _m: new_name, text)
+    text = mod.described(name_pattern.sub(lambda _m: new_name, text), tool.source)
 
     base_pattern = re.compile(r'(  "BaseItem": \{\r\n    "type": "int",\r\n    "value": )(\d+)(\r\n  \})')
     base = base_pattern.findall(text)

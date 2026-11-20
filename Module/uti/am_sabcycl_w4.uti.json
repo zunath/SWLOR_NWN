@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "The cuffs of these gauntlets turn back in smooth, continuous curves. Fine scratches cross their plates at changing angles, the accumulated record of a blade kept moving."
+      "0": "The housing plates of these servos turn back in smooth, continuous curves. Fine scratches cross the casing at changing angles, the accumulated record of a blade kept moving."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The cuffs of these gauntlets turn back in smooth, continuous curves. Fine scratches cross their plates at changing angles, the accumulated record of a blade kept moving."
+      "0": "The housing plates of these servos turn back in smooth, continuous curves. Fine scratches cross the casing at changing angles, the accumulated record of a blade kept moving."
     }
   },
   "Identified": {

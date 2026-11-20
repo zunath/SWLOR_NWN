@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A compact bracer threaded with tiny, faintly humming circuits."
+      "0": "A compact servo threaded with tiny, faintly humming circuits."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A compact bracer threaded with tiny, faintly humming circuits."
+      "0": "A compact servo threaded with tiny, faintly humming circuits."
     }
   },
   "Identified": {

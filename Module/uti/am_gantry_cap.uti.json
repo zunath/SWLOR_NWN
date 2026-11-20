@@ -35,13 +35,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A padded cap worn by the station's dock and maintenance crews. It keeps the wearer alert, tireless, and quick to slip out of harm's way."
+      "0": "A padded sensor package used by the station's dock and maintenance crews. It keeps the droid alert, tireless, and quick to slip out of harm's way."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A padded cap worn by the station's dock and maintenance crews. It keeps the wearer alert, tireless, and quick to slip out of harm's way."
+      "0": "A padded sensor package used by the station's dock and maintenance crews. It keeps the droid alert, tireless, and quick to slip out of harm's way."
     }
   },
   "Identified": {

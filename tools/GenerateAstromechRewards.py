@@ -4,7 +4,8 @@ An astromech equips only astromech modules and tools, so a quest, store, loot ta
 humanoid necklace, bracer, staff or rifle would hand it something it cannot use. Each such item gets an astromech form
 here: a stat copy with a new name, the Chassis (skill 61) or Armaments (skill 63) rank requirement in place of the
 Armor, Staff or Rifle rank, the tool base item for a weapon, and the astromech-only property. A piece that asks for a
-crafting skill keeps that requirement. No balance number is introduced.
+crafting skill keeps that requirement. No balance number is introduced. The description is the form's own, from
+tools/AstromechDescriptions.json (GenerateAstromechModules.described).
 
 Gear is found by reading its sources: the loot tables (Feature/LootTableDefinition), every store (Module/utm) and the
 slicing rewards (Service/SlicingService). Every armor-slot piece, staff and rifle found there that asks for a skill
@@ -275,7 +276,7 @@ def twin_blueprint(twin: Twin) -> str:
         raise SystemExit(f"{twin.source}: LocalizedName has an unexpected shape")
     new_name = ('  "LocalizedName": {\r\n    "type": "cexolocstring",\r\n    "value": {\r\n'
                 f'      "0": "{twin.name}"\r\n    }}\r\n  }},')
-    text = name_pattern.sub(lambda _m: new_name, text)
+    text = mod.described(name_pattern.sub(lambda _m: new_name, text), twin.source)
 
     for key, kind in (("Tag", "cexostring"), ("TemplateResRef", "resref")):
         pattern = re.compile(rf'  "{key}": \{{\r\n    "type": "{kind}",\r\n    "value": "[^"\r\n]*"\r\n  \}}')
@@ -443,6 +444,9 @@ def expected_outputs() -> dict:
     # Every store that sells a piece is stocked with its form: in the blueprint, and in the copies of the store
     # placed in areas, which hold their own item lists and are what the game opens.
     forms = dict(all_forms())
+    unused = sorted(set(mod.descriptions()) - set(forms))
+    if unused:
+        raise SystemExit(f"{mod.DESCRIPTIONS.name} describes pieces that have no astromech form: {', '.join(unused)}")
     additions = {}
     for store, stock in store_stock().items():
         stock = list(dict.fromkeys(stock))

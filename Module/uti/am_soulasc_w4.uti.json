@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "These gauntlets smell faintly of old leather warmed too close to a furnace. Their broad plates have been polished by handling rather than a craftsman's finishing cloth."
+      "0": "These servos smell faintly of old hide warmed too close to a furnace. Their broad plates have been polished by use rather than a craftsman's finishing rag."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "These gauntlets smell faintly of old leather warmed too close to a furnace. Their broad plates have been polished by handling rather than a craftsman's finishing cloth."
+      "0": "These servos smell faintly of old hide warmed too close to a furnace. Their broad plates have been polished by use rather than a craftsman's finishing rag."
     }
   },
   "Identified": {

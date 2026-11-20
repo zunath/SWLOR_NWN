@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace pieced together from riveted salvage plates. Crude, but it holds."
+      "0": "A servo pieced together from riveted salvage plates. Crude, but it holds."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace pieced together from riveted salvage plates. Crude, but it holds."
+      "0": "A servo pieced together from riveted salvage plates. Crude, but it holds."
     }
   },
   "Identified": {

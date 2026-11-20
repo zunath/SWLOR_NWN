@@ -239909,13 +239909,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "It's rusty and junky and hard to see out of."
+                        "0": "It's rusty and junky and hard to see through."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "It's rusty and junky and hard to see out of."
+                        "0": "It's rusty and junky and hard to see through."
                       }
                     },
                     "Identified": {
@@ -240561,13 +240561,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "The plates of this armor have been refitted around old dents rather than replaced outright. Their careful alignment suggests a veteran who knows exactly which pieces are worth keeping."
+                        "0": "The plates of this shell have been refitted around old dents rather than replaced outright. Their careful alignment suggests a veteran who knows exactly which pieces are worth keeping."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "The plates of this armor have been refitted around old dents rather than replaced outright. Their careful alignment suggests a veteran who knows exactly which pieces are worth keeping."
+                        "0": "The plates of this shell have been refitted around old dents rather than replaced outright. Their careful alignment suggests a veteran who knows exactly which pieces are worth keeping."
                       }
                     },
                     "Identified": {
@@ -240994,13 +240994,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "This service tunic keeps its fastenings close and its excess fabric to a minimum. It is the sort of garment that gets packed before a journey and stays on when the journey stops going to plan."
+                        "0": "This service plating keeps its fasteners close and its excess bulk to a minimum. It is the sort of part that gets packed before a journey and stays on when the journey stops going to plan."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "This service tunic keeps its fastenings close and its excess fabric to a minimum. It is the sort of garment that gets packed before a journey and stays on when the journey stops going to plan."
+                        "0": "This service plating keeps its fasteners close and its excess bulk to a minimum. It is the sort of part that gets packed before a journey and stays on when the journey stops going to plan."
                       }
                     },
                     "Identified": {
@@ -241374,13 +241374,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A bracer worn by seasoned fighters who have outlasted many battles."
+                        "0": "A servo favored by seasoned fighters who have outlasted many battles."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A bracer worn by seasoned fighters who have outlasted many battles."
+                        "0": "A servo favored by seasoned fighters who have outlasted many battles."
                       }
                     },
                     "Identified": {
@@ -241608,13 +241608,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Stout palm patches and closely fitted cuffs give these gloves the practical finish of field equipment. Their only decoration is the grain of the leather, visible where repeated handling has burnished it."
+                        "0": "Stout grip pads and closely fitted housings give this servo the practical finish of field equipment. Its only decoration is the grain of the leather, visible where repeated use has burnished it."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Stout palm patches and closely fitted cuffs give these gloves the practical finish of field equipment. Their only decoration is the grain of the leather, visible where repeated handling has burnished it."
+                        "0": "Stout grip pads and closely fitted housings give this servo the practical finish of field equipment. Its only decoration is the grain of the leather, visible where repeated use has burnished it."
                       }
                     },
                     "Identified": {
@@ -243307,13 +243307,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "This armor's broad outer panels are scarred most heavily along the sides and shoulders. It has the look of equipment that spent long hours standing where somebody else needed a barrier."
+                        "0": "This plating's broad outer panels are scarred most heavily along the sides and upper edges. It has the look of equipment that spent long hours standing where somebody else needed a barrier."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "This armor's broad outer panels are scarred most heavily along the sides and shoulders. It has the look of equipment that spent long hours standing where somebody else needed a barrier."
+                        "0": "This plating's broad outer panels are scarred most heavily along the sides and upper edges. It has the look of equipment that spent long hours standing where somebody else needed a barrier."
                       }
                     },
                     "Identified": {
@@ -243740,13 +243740,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "The folds of this tunic settle easily when the wearer sits or stands. A patient pattern of hidden stitching gives an otherwise modest garment the feeling of something prepared for long contemplation."
+                        "0": "The panels of this plating settle easily whether the unit is at rest or in motion. A patient pattern of hidden welds gives an otherwise modest shell the feeling of something prepared for long contemplation."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "The folds of this tunic settle easily when the wearer sits or stands. A patient pattern of hidden stitching gives an otherwise modest garment the feeling of something prepared for long contemplation."
+                        "0": "The panels of this plating settle easily whether the unit is at rest or in motion. A patient pattern of hidden welds gives an otherwise modest shell the feeling of something prepared for long contemplation."
                       }
                     },
                     "Identified": {
@@ -244204,13 +244204,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Loose outer folds hide the ties of this tunic, leaving its front unusually uninterrupted. Its quiet construction recalls the travelling dress of someone who values a little distance from the crowd."
+                        "0": "Loose outer panels hide the fasteners of this plating, leaving its front unusually uninterrupted. Its quiet construction recalls the travelling kit of someone who values a little distance from the crowd."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Loose outer folds hide the ties of this tunic, leaving its front unusually uninterrupted. Its quiet construction recalls the travelling dress of someone who values a little distance from the crowd."
+                        "0": "Loose outer panels hide the fasteners of this plating, leaving its front unusually uninterrupted. Its quiet construction recalls the travelling kit of someone who values a little distance from the crowd."
                       }
                     },
                     "Identified": {
@@ -244699,13 +244699,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A serviceable tunic built around robust shoulder seams and uncomplicated fastenings. Its cut favors the first person through a doorway over the last person to finish dressing for it."
+                        "0": "A serviceable plating built around robust upper seams and uncomplicated fasteners. Its cut favors the first droid through a doorway over the last droid to finish being fitted for it."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A serviceable tunic built around robust shoulder seams and uncomplicated fastenings. Its cut favors the first person through a doorway over the last person to finish dressing for it."
+                        "0": "A serviceable plating built around robust upper seams and uncomplicated fasteners. Its cut favors the first droid through a doorway over the last droid to finish being fitted for it."
                       }
                     },
                     "Identified": {
@@ -245118,13 +245118,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "It's rusty and junky and hard to see out of."
+                        "0": "It's rusty and junky and hard to see through."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "It's rusty and junky and hard to see out of."
+                        "0": "It's rusty and junky and hard to see through."
                       }
                     },
                     "Identified": {
@@ -248678,13 +248678,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A practical bracer issued to wardens who hold the line in the field."
+                        "0": "A practical servo issued to wardens who hold the line in the field."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A practical bracer issued to wardens who hold the line in the field."
+                        "0": "A practical servo issued to wardens who hold the line in the field."
                       }
                     },
                     "Identified": {
@@ -250157,13 +250157,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "These field gloves have reinforced palms and cuffs worn thin by repeated adjustment. They look ready to be pulled on while everyone else is still deciding who should go first."
+                        "0": "This field servo has reinforced gripper pads and casing edges thinned by repeated adjustment. It looks ready to be bolted on while everyone else is still deciding who should go first."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "These field gloves have reinforced palms and cuffs worn thin by repeated adjustment. They look ready to be pulled on while everyone else is still deciding who should go first."
+                        "0": "This field servo has reinforced gripper pads and casing edges thinned by repeated adjustment. It looks ready to be bolted on while everyone else is still deciding who should go first."
                       }
                     },
                     "Identified": {
@@ -250453,13 +250453,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Soft inner seams make these gloves comfortable even when held motionless for a long time. Their modest cuff markings recall a practice in which attention matters more than display."
+                        "0": "Soft inner seals keep these servos quiet even when held motionless for a long time. Their modest housing markings recall a practice in which attention matters more than display."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Soft inner seams make these gloves comfortable even when held motionless for a long time. Their modest cuff markings recall a practice in which attention matters more than display."
+                        "0": "Soft inner seals keep these servos quiet even when held motionless for a long time. Their modest housing markings recall a practice in which attention matters more than display."
                       }
                     },
                     "Identified": {
@@ -250656,13 +250656,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "These gloves carry restrained markings worked almost invisibly into their cuffs. Their meaning matters more to the wearer than to anyone trying to decipher them across a room."
+                        "0": "This servo carries restrained markings etched almost invisibly into its casing. Their meaning matters more to the droid than to anyone trying to decipher them across a room."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "These gloves carry restrained markings worked almost invisibly into their cuffs. Their meaning matters more to the wearer than to anyone trying to decipher them across a room."
+                        "0": "This servo carries restrained markings etched almost invisibly into its casing. Their meaning matters more to the droid than to anyone trying to decipher them across a room."
                       }
                     },
                     "Identified": {

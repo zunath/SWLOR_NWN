@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace forged under high voltage, its metal still faintly charged."
+      "0": "A servo forged under high voltage, its metal still faintly charged."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace forged under high voltage, its metal still faintly charged."
+      "0": "A servo forged under high voltage, its metal still faintly charged."
     }
   },
   "Identified": {

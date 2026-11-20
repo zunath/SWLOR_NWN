@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace that thrums faintly with a steady, heartbeat-like pulse."
+      "0": "A servo that thrums faintly with a steady, heartbeat-like pulse."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace that thrums faintly with a steady, heartbeat-like pulse."
+      "0": "A servo that thrums faintly with a steady, heartbeat-like pulse."
     }
   },
   "Identified": {

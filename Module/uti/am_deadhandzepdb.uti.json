@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "DeadHand Plating"
+      "0": "Reinforced chassis plating recovered from Dead Hand Zeph."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Reinforced plating recovered from Dead Hand Zeph."
+      "0": "Reinforced chassis plating recovered from Dead Hand Zeph."
     }
   },
   "Identified": {

@@ -35,13 +35,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A station security helmet with a scarred riot visor. Its padded shell absorbs heavy blows, and the visor's targeting overlay steadies the wearer's strikes."
+      "0": "A station security sensor package with a scarred riot visor. Its padded shell absorbs heavy blows, and the visor's targeting overlay steadies the droid's strikes."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A station security helmet with a scarred riot visor. Its padded shell absorbs heavy blows, and the visor's targeting overlay steadies the wearer's strikes."
+      "0": "A station security sensor package with a scarred riot visor. Its padded shell absorbs heavy blows, and the visor's targeting overlay steadies the droid's strikes."
     }
   },
   "Identified": {

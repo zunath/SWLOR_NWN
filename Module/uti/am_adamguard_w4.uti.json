@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "These gloves have been patched where metal edges repeatedly cut the palms. The repairs are ugly, but a scavenger hauling another load out of CZ-220 has little reason to admire the stitching."
+      "0": "This servo has been patched where metal edges repeatedly cut the gripper pads. The repairs are ugly, but a scavenger hauling another load out of CZ-220 has little reason to admire the welds."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "These gloves have been patched where metal edges repeatedly cut the palms. The repairs are ugly, but a scavenger hauling another load out of CZ-220 has little reason to admire the stitching."
+      "0": "This servo has been patched where metal edges repeatedly cut the gripper pads. The repairs are ugly, but a scavenger hauling another load out of CZ-220 has little reason to admire the welds."
     }
   },
   "Identified": {

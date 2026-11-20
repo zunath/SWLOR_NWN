@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Boots soled with conveyor-belt tread. They grip any floor and keep the wearer moving out of harm's way."
+      "0": "A drive unit fitted with conveyor-line tread. It grips any floor and keeps the droid moving out of harm's way."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Boots soled with conveyor-belt tread. They grip any floor and keep the wearer moving out of harm's way."
+      "0": "A drive unit fitted with conveyor-line tread. It grips any floor and keeps the droid moving out of harm's way."
     }
   },
   "Identified": {

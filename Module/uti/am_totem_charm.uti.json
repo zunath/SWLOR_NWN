@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A bound totem that focuses the wearer while rattling prey."
+      "0": "A servo bound with a totem that focuses the droid while rattling prey."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A bound totem that focuses the wearer while rattling prey."
+      "0": "A servo bound with a totem that focuses the droid while rattling prey."
     }
   },
   "Identified": {

@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace fitted with a relay module that can override nearby command signals."
+      "0": "A servo fitted with a relay module that can override nearby command signals."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace fitted with a relay module that can override nearby command signals."
+      "0": "A servo fitted with a relay module that can override nearby command signals."
     }
   },
   "Identified": {

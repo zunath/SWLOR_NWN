@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A targeting rig that sharpens aim and keeps the wearer light on their feet."
+      "0": "A targeting servo that sharpens aim and keeps the unit light on its treads."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A targeting rig that sharpens aim and keeps the wearer light on their feet."
+      "0": "A targeting servo that sharpens aim and keeps the unit light on its treads."
     }
   },
   "Identified": {

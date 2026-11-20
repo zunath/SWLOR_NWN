@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Plated body armor worn by the station's containment teams when the outbreak began. It absorbs heavy blows and steadies the wearer's strikes."
+      "0": "Plating bolted onto the station's containment droids when the outbreak began. It absorbs heavy blows and steadies the droid's strikes."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Plated body armor worn by the station's containment teams when the outbreak began. It absorbs heavy blows and steadies the wearer's strikes."
+      "0": "Plating bolted onto the station's containment droids when the outbreak began. It absorbs heavy blows and steadies the droid's strikes."
     }
   },
   "Identified": {

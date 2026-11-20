@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace hiding a kill switch that can freeze hostile machinery."
+      "0": "A servo hiding a kill switch that can freeze hostile machinery."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace hiding a kill switch that can freeze hostile machinery."
+      "0": "A servo hiding a kill switch that can freeze hostile machinery."
     }
   },
   "Identified": {

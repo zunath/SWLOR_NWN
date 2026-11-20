@@ -111,13 +111,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body plating woven with a fault-detection lattice that hardens where it is struck."
+      "0": "Body plating threaded with a fault-detection lattice that hardens where it is struck."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Body plating woven with a fault-detection lattice that hardens where it is struck."
+      "0": "Body plating threaded with a fault-detection lattice that hardens where it is struck."
     }
   },
   "Identified": {

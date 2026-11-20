@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace crusted with cooled slag from the forge it once guarded."
+      "0": "A servo crusted with cooled slag from the forge it once guarded."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace crusted with cooled slag from the forge it once guarded."
+      "0": "A servo crusted with cooled slag from the forge it once guarded."
     }
   },
   "Identified": {

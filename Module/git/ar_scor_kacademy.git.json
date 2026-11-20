@@ -198151,13 +198151,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A plainly made work bracer, carefully fastened so that it does not interfere with the wrist. It has the earnest finish of an apprentice learning that useful equipment need not look complicated."
+                        "0": "A plainly made work servo, carefully fitted so that it does not interfere with the joint. It has the earnest finish of an apprentice learning that useful equipment need not look complicated."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A plainly made work bracer, carefully fastened so that it does not interfere with the wrist. It has the earnest finish of an apprentice learning that useful equipment need not look complicated."
+                        "0": "A plainly made work servo, carefully fitted so that it does not interfere with the joint. It has the earnest finish of an apprentice learning that useful equipment need not look complicated."
                       }
                     },
                     "Identified": {
@@ -199130,13 +199130,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A straightforward workshop tunic with seams that show the maker's careful first decisions. A few extra stitches reinforce the pockets, where tools have a habit of teaching an apprentice what a pattern book omitted."
+                        "0": "A straightforward workshop plating with seams that show the maker's careful first decisions. A few extra welds reinforce the tool bays, where tools have a habit of teaching an apprentice what a pattern book omitted."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A straightforward workshop tunic with seams that show the maker's careful first decisions. A few extra stitches reinforce the pockets, where tools have a habit of teaching an apprentice what a pattern book omitted."
+                        "0": "A straightforward workshop plating with seams that show the maker's careful first decisions. A few extra welds reinforce the tool bays, where tools have a habit of teaching an apprentice what a pattern book omitted."
                       }
                     },
                     "Identified": {
@@ -206811,13 +206811,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Tough fabric and an uncomplicated closure make this bracer easy to keep in service. The inside is smoother than the outside, giving a worker one small comfort during a long shift."
+                        "0": "Tough casing and an uncomplicated latch make this servo easy to keep in service. The inside is smoother than the outside, giving a worker one small comfort over a long shift."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Tough fabric and an uncomplicated closure make this bracer easy to keep in service. The inside is smoother than the outside, giving a worker one small comfort during a long shift."
+                        "0": "Tough casing and an uncomplicated latch make this servo easy to keep in service. The inside is smoother than the outside, giving a worker one small comfort over a long shift."
                       }
                     },
                     "Identified": {
@@ -207790,13 +207790,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "This work tunic has broad pockets and fastenings easy to manage with tired hands. Its modest finish suits the technician who would rather have another useful tool than another unnecessary ornament."
+                        "0": "This work plating has broad tool bays and fasteners easy to manage with tired manipulators. Its modest finish suits the technician who would rather have another useful tool than another unnecessary ornament."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "This work tunic has broad pockets and fastenings easy to manage with tired hands. Its modest finish suits the technician who would rather have another useful tool than another unnecessary ornament."
+                        "0": "This work plating has broad tool bays and fasteners easy to manage with tired manipulators. Its modest finish suits the technician who would rather have another useful tool than another unnecessary ornament."
                       }
                     },
                     "Identified": {
@@ -215519,13 +215519,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "This mechanic's bracer keeps loose sleeves clear of moving parts. Its outer surface has room to accumulate the small scuffs that any honest piece of workshop equipment eventually earns."
+                        "0": "This mechanic's servo keeps loose cables clear of moving parts. Its outer surface has room to accumulate the small scuffs that any honest piece of workshop equipment eventually earns."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "This mechanic's bracer keeps loose sleeves clear of moving parts. Its outer surface has room to accumulate the small scuffs that any honest piece of workshop equipment eventually earns."
+                        "0": "This mechanic's servo keeps loose cables clear of moving parts. Its outer surface has room to accumulate the small scuffs that any honest piece of workshop equipment eventually earns."
                       }
                     },
                     "Identified": {
@@ -216498,13 +216498,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "The pockets of this mechanic's tunic have been arranged within easy reach of both hands. Sturdy stitching follows their lower edges, anticipating the weight of whatever the next repair requires."
+                        "0": "The tool bays of this mechanic's plating have been arranged within easy reach of both manipulator arms. Sturdy welds follow their lower edges, anticipating the weight of whatever the next repair requires."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "The pockets of this mechanic's tunic have been arranged within easy reach of both hands. Sturdy stitching follows their lower edges, anticipating the weight of whatever the next repair requires."
+                        "0": "The tool bays of this mechanic's plating have been arranged within easy reach of both manipulator arms. Sturdy welds follow their lower edges, anticipating the weight of whatever the next repair requires."
                       }
                     },
                     "Identified": {
@@ -226926,13 +226926,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Patient stitching follows the edge of this workshop bracer. Its construction suggests a maker who returned to every seam until the work felt right, even where no buyer would think to look."
+                        "0": "Patient welding follows the edge of this workshop servo. Its construction suggests a maker who returned to every seam until the work felt right, even where no buyer would think to look."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Patient stitching follows the edge of this workshop bracer. Its construction suggests a maker who returned to every seam until the work felt right, even where no buyer would think to look."
+                        "0": "Patient welding follows the edge of this workshop servo. Its construction suggests a maker who returned to every seam until the work felt right, even where no buyer would think to look."
                       }
                     },
                     "Identified": {
@@ -227936,13 +227936,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A workshop tunic whose restrained finish conceals unusually patient sewing. It reflects the kind of devotion found in doing a difficult job properly even when no customer will see the inside."
+                        "0": "Workshop plating whose restrained finish conceals unusually patient welding. It reflects the kind of devotion found in doing a difficult job properly even when no customer will see the inside."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A workshop tunic whose restrained finish conceals unusually patient sewing. It reflects the kind of devotion found in doing a difficult job properly even when no customer will see the inside."
+                        "0": "Workshop plating whose restrained finish conceals unusually patient welding. It reflects the kind of devotion found in doing a difficult job properly even when no customer will see the inside."
                       }
                     },
                     "Identified": {
@@ -236068,13 +236068,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "The seams of this bracer are dressed so closely that the fastening almost disappears into its outline. Its refined finish offers a craftsman a rare piece of work they need not immediately improve upon."
+                        "0": "The seams of this servo are dressed so closely that the fastening almost disappears into its outline. Its refined finish offers a craftsman a rare piece of work they need not immediately improve upon."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "The seams of this bracer are dressed so closely that the fastening almost disappears into its outline. Its refined finish offers a craftsman a rare piece of work they need not immediately improve upon."
+                        "0": "The seams of this servo are dressed so closely that the fastening almost disappears into its outline. Its refined finish offers a craftsman a rare piece of work they need not immediately improve upon."
                       }
                     },
                     "Identified": {
@@ -237202,13 +237202,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "This finely worked tunic keeps a craftsman's practical cut while giving its seams an almost immaculate finish. The result would survive inspection at a formal presentation without looking out of place beside an open droid chassis."
+                        "0": "This finely worked plating keeps a craftsman's practical cut while giving its seams an almost immaculate finish. The result would survive inspection at a formal presentation without looking out of place beside an open droid chassis."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "This finely worked tunic keeps a craftsman's practical cut while giving its seams an almost immaculate finish. The result would survive inspection at a formal presentation without looking out of place beside an open droid chassis."
+                        "0": "This finely worked plating keeps a craftsman's practical cut while giving its seams an almost immaculate finish. The result would survive inspection at a formal presentation without looking out of place beside an open droid chassis."
                       }
                     },
                     "Identified": {
@@ -247754,13 +247754,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Several close layers of cloth make this unassuming bracer more substantial than it appears. Its stitched edges are easy to maintain, the practical beginning of a fabricator's wardrobe."
+                        "0": "Several close layers of padding make this unassuming servo more substantial than it appears. Its welded edges are easy to maintain, the practical beginning of a maker's kit."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Several close layers of cloth make this unassuming bracer more substantial than it appears. Its stitched edges are easy to maintain, the practical beginning of a fabricator's wardrobe."
+                        "0": "Several close layers of padding make this unassuming servo more substantial than it appears. Its welded edges are easy to maintain, the practical beginning of a maker's kit."
                       }
                     },
                     "Identified": {
@@ -248733,13 +248733,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A plain cloth tunic made with the steady economy of a working tailor. The weave is easy to follow, leaving little doubt about where a future repair will need to begin."
+                        "0": "A plain plating made with the steady economy of a working fabricator. The seams are easy to follow, leaving little doubt about where a future repair will need to begin."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A plain cloth tunic made with the steady economy of a working tailor. The weave is easy to follow, leaving little doubt about where a future repair will need to begin."
+                        "0": "A plain plating made with the steady economy of a working fabricator. The seams are easy to follow, leaving little doubt about where a future repair will need to begin."
                       }
                     },
                     "Identified": {
@@ -253926,13 +253926,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "The natural grain of linen gives this work bracer a modest texture. Its cleanly bound edges keep the fibers orderly around a wrist that is unlikely to remain idle for long."
+                        "0": "The natural grain of its linen-fiber casing gives this work servo a modest texture. Its cleanly bound edges keep the fibers orderly around a joint that is unlikely to remain idle for long."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "The natural grain of linen gives this work bracer a modest texture. Its cleanly bound edges keep the fibers orderly around a wrist that is unlikely to remain idle for long."
+                        "0": "The natural grain of its linen-fiber casing gives this work servo a modest texture. Its cleanly bound edges keep the fibers orderly around a joint that is unlikely to remain idle for long."
                       }
                     },
                     "Identified": {
@@ -254905,13 +254905,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "The linen of this tunic has a pleasing, irregular grain. Its practical cut gives the fabric room to settle with use, trading a stiff new appearance for the comfort of something worn often."
+                        "0": "The linen finish of this plating has a pleasing, irregular grain. Its practical cut gives the panels room to settle with use, trading a stiff new appearance for the comfort of something used often."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "The linen of this tunic has a pleasing, irregular grain. Its practical cut gives the fabric room to settle with use, trading a stiff new appearance for the comfort of something worn often."
+                        "0": "The linen finish of this plating has a pleasing, irregular grain. Its practical cut gives the panels room to settle with use, trading a stiff new appearance for the comfort of something used often."
                       }
                     },
                     "Identified": {
@@ -260222,13 +260222,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "This bracer uses the placement of its seams as its principal decoration. It is a small example of a designer finding something worth admiring in a piece meant for daily work."
+                        "0": "This servo uses the placement of its seams as its principal decoration. It is a small example of a designer finding something worth admiring in a piece meant for daily work."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "This bracer uses the placement of its seams as its principal decoration. It is a small example of a designer finding something worth admiring in a piece meant for daily work."
+                        "0": "This servo uses the placement of its seams as its principal decoration. It is a small example of a designer finding something worth admiring in a piece meant for daily work."
                       }
                     },
                     "Identified": {
@@ -261201,13 +261201,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Carefully placed seams give this tunic its distinctive outline without depending on lavish decoration. Its designer seems to have understood that an interesting silhouette still needs to remain wearable."
+                        "0": "Carefully placed seams give this plating its distinctive outline without depending on lavish decoration. Its designer seems to have understood that an interesting silhouette still needs to remain serviceable."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Carefully placed seams give this tunic its distinctive outline without depending on lavish decoration. Its designer seems to have understood that an interesting silhouette still needs to remain wearable."
+                        "0": "Carefully placed seams give this plating its distinctive outline without depending on lavish decoration. Its designer seems to have understood that an interesting silhouette still needs to remain serviceable."
                       }
                     },
                     "Identified": {
@@ -266673,13 +266673,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Light cloth and a softly bound inner edge make this bracer comfortable against the wrist. Its relaxed finish suggests a brief patch of shade in the middle of a demanding working day."
+                        "0": "A light casing and a softly padded inner edge make this servo gentle on the arm joint. Its relaxed finish suggests a brief patch of shade in the middle of a demanding working day."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Light cloth and a softly bound inner edge make this bracer comfortable against the wrist. Its relaxed finish suggests a brief patch of shade in the middle of a demanding working day."
+                        "0": "A light casing and a softly padded inner edge make this servo gentle on the arm joint. Its relaxed finish suggests a brief patch of shade in the middle of a demanding working day."
                       }
                     },
                     "Identified": {
@@ -267683,13 +267683,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "The light, easy folds of this tunic recall shade reached after a long walk in the heat. Its tailoring leaves room to move without allowing the cloth to collect in an untidy burden."
+                        "0": "The light, easy curves of this plating recall shade reached after a long walk in the heat. Its fabrication leaves room to move without allowing the panels to collect in an untidy burden."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "The light, easy folds of this tunic recall shade reached after a long walk in the heat. Its tailoring leaves room to move without allowing the cloth to collect in an untidy burden."
+                        "0": "The light, easy curves of this plating recall shade reached after a long walk in the heat. Its fabrication leaves room to move without allowing the panels to collect in an untidy burden."
                       }
                     },
                     "Identified": {
@@ -273434,13 +273434,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A narrow floral border follows this bracer's outer edge, kept well clear of the fastening. It lends a personal touch to practical equipment without asking the wearer to treat it delicately."
+                        "0": "A narrow floral border follows this servo's outer edge, kept well clear of the fastening. It lends a personal touch to practical equipment without asking the droid to treat it delicately."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A narrow floral border follows this bracer's outer edge, kept well clear of the fastening. It lends a personal touch to practical equipment without asking the wearer to treat it delicately."
+                        "0": "A narrow floral border follows this servo's outer edge, kept well clear of the fastening. It lends a personal touch to practical equipment without asking the droid to treat it delicately."
                       }
                     },
                     "Identified": {
@@ -274568,13 +274568,13 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A delicate border follows this tunic's folds, lending a floral suggestion without turning the garment into a costume. The restrained pattern rewards a closer look rather than demanding one."
+                        "0": "A delicate border follows this plating's seams, lending a floral suggestion without turning the part into a costume. The restrained pattern rewards a closer look rather than demanding one."
                       }
                     },
                     "Description": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A delicate border follows this tunic's folds, lending a floral suggestion without turning the garment into a costume. The restrained pattern rewards a closer look rather than demanding one."
+                        "0": "A delicate border follows this plating's seams, lending a floral suggestion without turning the part into a costume. The restrained pattern rewards a closer look rather than demanding one."
                       }
                     },
                     "Identified": {

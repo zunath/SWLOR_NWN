@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Narrow channels have been stitched into this cowl to keep loose leads clear of the neck. A faint smell of warm insulation lingers in the lining."
+      "0": "Narrow channels have been welded into this sensor package to keep loose leads clear of the dome joint. A faint smell of warm insulation lingers in the housing."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Narrow channels have been stitched into this cowl to keep loose leads clear of the neck. A faint smell of warm insulation lingers in the lining."
+      "0": "Narrow channels have been welded into this sensor package to keep loose leads clear of the dome joint. A faint smell of warm insulation lingers in the housing."
     }
   },
   "Identified": {

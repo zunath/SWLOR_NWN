@@ -116,7 +116,7 @@ public class AstromechLootContentTests
             // Everything else is the source's, but the model numbers a chassis has no use for.
             foreach (var field in from.EnumerateObject())
             {
-                if (field.Name is "LocalizedName" or "Tag" or "TemplateResRef" or "BaseItem" or "PropertiesList")
+                if (field.Name is "LocalizedName" or "Tag" or "TemplateResRef" or "BaseItem" or "PropertiesList" or "Description" or "DescIdentified")
                     continue;
                 var value = to.GetProperty(field.Name);
                 if (field.Name == "VarTable")

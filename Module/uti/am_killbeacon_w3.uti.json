@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace fitted with a strike relay that paints targets for allied fire."
+      "0": "A servo fitted with a strike relay that paints targets for allied fire."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace fitted with a strike relay that paints targets for allied fire."
+      "0": "A servo fitted with a strike relay that paints targets for allied fire."
     }
   },
   "Identified": {

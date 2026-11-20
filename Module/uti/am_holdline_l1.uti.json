@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "The front edge of this field cowl has been patched with whatever cloth was nearest at hand. No two repairs match, but each kept it in service through one more turn on the line."
+      "0": "The front edge of this field sensor package has been patched with whatever plate was nearest to the bench. No two repairs match, but each kept it in service through one more turn on the line."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The front edge of this field cowl has been patched with whatever cloth was nearest at hand. No two repairs match, but each kept it in service through one more turn on the line."
+      "0": "The front edge of this field sensor package has been patched with whatever plate was nearest to the bench. No two repairs match, but each kept it in service through one more turn on the line."
     }
   },
   "Identified": {

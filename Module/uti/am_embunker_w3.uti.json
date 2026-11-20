@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace built around a compact pulse generator that hums when braced for impact."
+      "0": "A servo built around a compact pulse generator that hums when braced for impact."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A vambrace built around a compact pulse generator that hums when braced for impact."
+      "0": "A servo built around a compact pulse generator that hums when braced for impact."
     }
   },
   "Identified": {

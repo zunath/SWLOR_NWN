@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A talisman engraved with the lock-sigils of nine plundered vaults, one for each the maker opened. Found only in sealed lockboxes."
+      "0": "A logic module engraved with the lock-sigils of nine plundered vaults, one for each the maker opened. Found only in sealed lockboxes."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A talisman engraved with the lock-sigils of nine plundered vaults, one for each the maker opened. Found only in sealed lockboxes."
+      "0": "A logic module engraved with the lock-sigils of nine plundered vaults, one for each the maker opened. Found only in sealed lockboxes."
     }
   },
   "Identified": {

@@ -3,7 +3,8 @@
 An astromech cannot wear humanoid gear. Its gear is "modules": ordinary items in the normal equipment slots that only
 astromechs can equip (item property UseLimitationRacialType, subtype 170). Modules introduce no balance numbers: each one
 is a stat copy of the humanoid armor-slot item of the same slot and tier, with a new name, a Chassis (skill 61) rank
-requirement in place of the Armor (skill 6) rank, and the astromech-only property.
+requirement in place of the Armor (skill 6) rank, and the astromech-only property. Its description is its own: a piece
+that has one needs the description of its astromech form in tools/AstromechDescriptions.json (`described`).
 
   python tools/GenerateAstromechModules.py            write everything
   python tools/GenerateAstromechModules.py --check    write nothing, exit 1 and list what differs
@@ -195,6 +196,40 @@ def renamed(source: str, resref: str, name: str) -> str:
     return text
 
 
+DESCRIPTIONS = Path(__file__).resolve().parent / "AstromechDescriptions.json"
+DESCRIPTION_FIELD = re.compile(
+    r'(  "(?:DescIdentified|Description)": \{\r\n    "type": "cexolocstring",\r\n    "value": \{)'
+    r'(?:\r\n      "0": "((?:[^"\\\r\n]|\\.)*)"\r\n    )?(\}\r\n  \})')
+_descriptions: dict = {}
+
+
+def descriptions() -> dict:
+    """Humanoid resref -> the description of its astromech form (tools/AstromechDescriptions.json)."""
+    if not _descriptions:
+        _descriptions.update(json.loads(DESCRIPTIONS.read_text(encoding="utf-8")))
+    return _descriptions
+
+
+def described(text: str, source: str, description: str | None = None) -> str:
+    """A copied blueprint with the description of the astromech part in place of the humanoid piece's. The copied
+    text describes a tunic, a ring or a rifle; the part's own is written by hand in AstromechDescriptions.json. The
+    text shown for an unidentified item is the same one. A piece with no description gives its form none."""
+    fields = DESCRIPTION_FIELD.findall(text)
+    if len(fields) != 2:
+        raise SystemExit(f"{source}: the description fields have an unexpected shape")
+    if description is None:
+        description = descriptions().get(source)
+    if not any(field[1] for field in fields):
+        if description:
+            raise SystemExit(f"{source} has no description, but {DESCRIPTIONS.name} gives its form one")
+        return text
+    if not description:
+        raise SystemExit(f"{source}: its astromech form needs a description in {DESCRIPTIONS.name}")
+    if not description.isascii() or not description.isprintable() or '"' in description or "\\" in description:
+        raise SystemExit(f"{source}: its description in {DESCRIPTIONS.name} is not plain ASCII on one line")
+    return DESCRIPTION_FIELD.sub(lambda m: f'{m.group(1)}\r\n      "0": "{description}"\r\n    {m.group(3)}', text)
+
+
 ARMOR_MODEL_FIELD = re.compile(r'(  "x?ArmorPart_\w+": \{\r\n    "type": "(?:byte|word)",\r\n    "value": )\d+(\r\n  \})')
 
 
@@ -226,13 +261,7 @@ def painted(text: str, source: str, job: tuple) -> str:
 
 
 def starter_blueprint() -> str:
-    text = renamed(STARTER_SOURCE, STARTER_RESREF, STARTER_NAME)
-    for key in ("DescIdentified", "Description"):
-        pattern = re.compile(
-            rf'(  "{key}": \{{\r\n    "type": "cexolocstring",\r\n    "value": \{{\r\n      "0": ")[^"\r\n]*("\r\n    \}}\r\n  \}})')
-        if len(pattern.findall(text)) != 1:
-            raise SystemExit(f"{STARTER_SOURCE}: {key} has an unexpected shape")
-        text = pattern.sub(lambda m: f"{m.group(1)}{STARTER_DESCRIPTION}{m.group(2)}", text)
+    text = described(renamed(STARTER_SOURCE, STARTER_RESREF, STARTER_NAME), STARTER_SOURCE, STARTER_DESCRIPTION)
     empty = '  "PropertiesList": {\r\n    "type": "list",\r\n    "value": []\r\n  },'
     if text.count(empty) != 1:
         raise SystemExit(f"{STARTER_SOURCE}: expected no item properties")
@@ -242,7 +271,7 @@ def starter_blueprint() -> str:
 
 
 def module_blueprint(module: Module) -> str:
-    text = renamed(module.source, module.resref, module.name)
+    text = described(renamed(module.source, module.resref, module.name), module.source)
 
     changed = 0
     for match in PROPERTY_BLOCK.finditer(text):

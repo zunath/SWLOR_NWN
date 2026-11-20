@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A bracer cut from the armor plate of the Hutlar foundry's overseer and fitted for a living arm."
+      "0": "A servo cut from the armor plate of the Hutlar foundry's overseer and fitted to a droid arm."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A bracer cut from the armor plate of the Hutlar foundry's overseer and fitted for a living arm."
+      "0": "A servo cut from the armor plate of the Hutlar foundry's overseer and fitted to a droid arm."
     }
   },
   "Identified": {

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -45,15 +47,26 @@ public sealed class _32_MoveTunicListingsToArmor : IServerMigration
         if (count == 0)
             return;
 
-        var ids = DB.SearchIds(query.AddPaging(count, 0)).ToList();
-        foreach (var id in ids)
+        // A failed save does not stop the rest; the migration still fails afterward so version 32 is not recorded.
+        var failures = new List<Exception>();
+        foreach (var id in DB.SearchIds(query.AddPaging(count, 0)).ToList())
         {
-            var listing = DB.Get<MarketItem>(id);
-            if (listing == null)
-                continue;
+            try
+            {
+                var listing = DB.Get<MarketItem>(id);
+                if (listing == null)
+                    continue;
 
-            MoveTunicToArmor(listing);
-            DB.Set(listing);
+                MoveTunicToArmor(listing);
+                DB.Set(listing);
+            }
+            catch (Exception ex)
+            {
+                failures.Add(new InvalidOperationException($"Could not move the search entry of MarketItem {id} to Armor.", ex));
+            }
         }
+
+        if (failures.Count > 0)
+            throw new AggregateException($"{failures.Count} tunic listing search entries could not be moved to Armor.", failures);
     }
 }

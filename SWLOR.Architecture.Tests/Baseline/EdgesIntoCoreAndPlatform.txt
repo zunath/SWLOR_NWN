@@ -3,10 +3,10 @@
 # Same format as CrossDomainEdges.txt. Regenerate with SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build.
 
 # Abilities -> Foundation (5 edges)
-Domain/Abilities -> Domain/Foundation | 234
+Domain/Abilities -> Domain/Foundation | 227
 Domain/Abilities -> Platform/Entity | 42
 Domain/Abilities -> Platform/Enumeration | 1
-Feature/AbilityDefinition -> Domain/Foundation | 85
+Feature/AbilityDefinition -> Domain/Foundation | 89
 Feature/AbilityDefinition -> Platform/Entity | 6
 
 # Abilities -> Platform (8 edges)
@@ -15,7 +15,7 @@ Domain/Abilities -> Platform/Core | 56
 Domain/Abilities -> Platform/Extension | 1
 Domain/Abilities -> Platform/Native | 3
 Domain/Abilities -> Platform/Root | 1
-Feature/AbilityDefinition -> Platform/Composition | 396
+Feature/AbilityDefinition -> Platform/Composition | 403
 Feature/AbilityDefinition -> Platform/Core | 31
 Feature/AbilityDefinition -> Platform/Native | 1
 
@@ -27,7 +27,7 @@ Domain/Administration -> Platform/Entity | 21
 Domain/Administration -> Platform/Core | 10
 
 # Character -> Foundation (8 edges)
-Domain/Character -> Domain/Foundation | 556
+Domain/Character -> Domain/Foundation | 537
 Domain/Character -> Platform/Entity | 179
 Domain/Character -> Platform/Enumeration | 13
 Feature/AppearanceDefinition -> Domain/Foundation | 2
@@ -38,9 +38,9 @@ Feature/StatusEffectDefinition -> Platform/Entity | 3
 
 # Character -> Platform (9 edges)
 Domain/Character -> Platform/Composition | 26
-Domain/Character -> Platform/Core | 93
+Domain/Character -> Platform/Core | 89
 Domain/Character -> Platform/Extension | 6
-Domain/Character -> Platform/Native | 2
+Domain/Character -> Platform/Native | 1
 Feature/AppearanceDefinition -> Platform/Composition | 7
 Feature/AppearanceDefinition -> Platform/Core | 18
 Feature/PerkDefinition -> Platform/Composition | 8
@@ -48,19 +48,19 @@ Feature/StatusEffectDefinition -> Platform/Composition | 115
 Feature/StatusEffectDefinition -> Platform/Core | 5
 
 # Combat -> Foundation (3 edges)
-Domain/Combat -> Domain/Foundation | 768
+Domain/Combat -> Domain/Foundation | 767
 Domain/Combat -> Feature/MigrationDefinition | 2
 Domain/Combat -> Platform/Entity | 33
 
 # Combat -> Platform (5 edges)
 Domain/Combat -> Platform/Composition | 21
-Domain/Combat -> Platform/Core | 204
+Domain/Combat -> Platform/Core | 202
 Domain/Combat -> Platform/Extension | 3
 Domain/Combat -> Platform/Native | 4
 Domain/Combat -> Platform/Root | 1
 
 # Companions -> Foundation (3 edges)
-Domain/Companions -> Domain/Foundation | 186
+Domain/Companions -> Domain/Foundation | 184
 Domain/Companions -> Platform/Entity | 49
 Feature/BeastDefinition -> Domain/Foundation | 174
 
@@ -70,7 +70,7 @@ Domain/Companions -> Platform/Core | 70
 Domain/Companions -> Platform/Extension | 1
 
 # Crafting -> Foundation (3 edges)
-Domain/Crafting -> Domain/Foundation | 399
+Domain/Crafting -> Domain/Foundation | 398
 Domain/Crafting -> Platform/Entity | 97
 Feature/RecipeDefinition -> Domain/Foundation | 89
 
@@ -172,7 +172,7 @@ Feature.TrashCan -> Domain/Foundation | 1
 Feature.TwinPistolEquipmentValidation -> Domain/Foundation | 3
 Feature.TwinPistolEquipmentValidation -> Feature/MigrationDefinition | 1
 Feature.UnarmedMastery -> Domain/Foundation | 1
-Feature.UsePerkFeat -> Domain/Foundation | 12
+Feature.UsePerkFeat -> Domain/Foundation | 11
 Feature/EquipmentStatActions -> Domain/Foundation | 20
 Feature/EquipmentStatActions -> Platform/Entity | 20
 
@@ -189,7 +189,7 @@ Feature.ArmorDisplay -> Platform/Core | 1
 Feature.Auditing -> Platform/Composition | 3
 Feature.Auditing -> Platform/Core | 3
 Feature.BeastStableTrials -> Platform/Composition | 1
-Feature.BuffTimer -> Platform/Composition | 2
+Feature.BuffTimer -> Platform/Composition | 3
 Feature.BuffTimer -> Platform/Core | 1
 Feature.CZ220FlightsTerminal -> Platform/Composition | 1
 Feature.CZ220FlightsTerminal -> Platform/Core | 1
@@ -316,7 +316,7 @@ Feature/LootTableDefinition -> Domain/Foundation | 2
 Domain/Items -> Platform/Composition | 20
 Domain/Items -> Platform/Core | 25
 Domain/Items -> Platform/Extension | 2
-Feature/ItemDefinition -> Platform/Composition | 34
+Feature/ItemDefinition -> Platform/Composition | 33
 Feature/ItemDefinition -> Platform/Core | 8
 Feature/LootTableDefinition -> Platform/Core | 1
 
@@ -334,7 +334,7 @@ Feature/QuestDefinition -> Platform/Entity | 21
 
 # Quests -> Platform (4 edges)
 Domain/Quests -> Platform/Composition | 46
-Domain/Quests -> Platform/Core | 33
+Domain/Quests -> Platform/Core | 32
 Domain/Quests -> Platform/Extension | 1
 Feature/QuestDefinition -> Platform/Composition | 145
 
@@ -356,7 +356,7 @@ Feature/ChatCommandDefinition -> Platform/Core | 14
 Feature/ChatCommandDefinition -> Platform/Root | 7
 
 # Space -> Foundation (5 edges)
-Domain/Space -> Domain/Foundation | 108
+Domain/Space -> Domain/Foundation | 107
 Domain/Space -> Platform/Entity | 30
 Domain/Space -> Platform/Enumeration | 10
 Feature/ShipModuleDefinition -> Domain/Foundation | 43
@@ -372,10 +372,10 @@ Feature/ShipModuleDefinition -> Platform/Core | 4
 Domain/UI -> Domain/Foundation | 169
 Domain/UI -> Platform/Entity | 3
 Domain/UI -> Platform/Enumeration | 7
-Feature/AppearanceEditing -> Domain/Foundation | 34
+Feature/AppearanceEditing -> Domain/Foundation | 1
 Feature/AppearanceEditing -> Platform/Entity | 15
-Feature/GuiDefinition -> Domain/Foundation | 757
-Feature/GuiDefinition -> Platform/Entity | 370
+Feature/GuiDefinition -> Domain/Foundation | 743
+Feature/GuiDefinition -> Platform/Entity | 380
 Feature/GuiDefinition -> Platform/Enumeration | 11
 
 # UI -> Platform (9 edges)
@@ -384,8 +384,8 @@ Domain/UI -> Platform/Core | 132
 Domain/UI -> Platform/Properties | 1
 Domain/UI -> Platform/Root | 1
 Feature/AppearanceEditing -> Platform/Core | 3
-Feature/GuiDefinition -> Platform/Composition | 630
-Feature/GuiDefinition -> Platform/Core | 279
+Feature/GuiDefinition -> Platform/Composition | 691
+Feature/GuiDefinition -> Platform/Core | 269
 Feature/GuiDefinition -> Platform/Extension | 3
 Feature/GuiDefinition -> Platform/Root | 9
 

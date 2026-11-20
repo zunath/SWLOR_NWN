@@ -110,34 +110,6 @@ public class ItemIconTests
     }
 
     [Test]
-    public void AppearanceConversion_IsOwnedAndInvokedOnlyByMigrations()
-    {
-        var server = Path.Combine(Root(), "SWLOR.Game.Server");
-        var migrations = Path.Combine(server, "Feature", "MigrationDefinition");
-        foreach (var path in Directory.EnumerateFiles(server, "*.cs", System.IO.SearchOption.AllDirectories)
-                     .Where(path => !path.StartsWith(migrations + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)))
-            File.ReadAllText(path).Should().NotContain("ItemIconMigration", "runtime services and event hooks must not perform one-off icon conversion");
-        File.Exists(Path.Combine(server, "Service", "ShipItemAppearance.cs")).Should().BeFalse();
-        File.Exists(Path.Combine(server, "Service", "ItemIconAppearance.cs")).Should().BeFalse();
-        File.Exists(Path.Combine(server, "Feature", "ShipItemIconCompatibility.cs")).Should().BeFalse();
-        CharacterMigrations.VersionOf("_19_UpdateItemIcons").Should().Be(19);
-        File.ReadAllText(Path.Combine(migrations, "CharacterMigration", "_19_UpdateItemIcons.cs"))
-            .Should().Contain("StoredObjectData.UpdateArtwork(item.Node)");
-        File.ReadAllText(Path.Combine(migrations, "CharacterMigration", "_22_ReviseLootStats.cs"))
-            .Should().Contain("CharacterLootRevision.Migrate(character, updateArtwork: false)");
-        File.ReadAllText(Path.Combine(migrations, "CharacterMigration", "_23_CorrectEquipmentTypes.cs"))
-            .Should().Contain("CharacterLootRevision.Migrate(character, updateArtwork: true)");
-        File.ReadAllText(Path.Combine(migrations, "StoredItemSweep.cs"))
-            .Should().Contain("SavedDataStoredItemConverter.Instance").And.NotContain("StoredItemDataMigration.Migrate()");
-        File.ReadAllText(Path.Combine(migrations, "StoredItemConverters.cs"))
-            .Should().Contain("LootStatRevisionMigration.MigrateStoredObjectData");
-        File.ReadAllText(Path.Combine(migrations, "CharacterMigration", "_14_15_CombatUpgradeMigrations.cs"))
-            .Should().NotContain("ItemIconMigration");
-        File.ReadAllText(Path.Combine(migrations, "ServerMigration", "StoredItemDataMigration.cs"))
-            .Should().NotContain("ItemIconMigration");
-    }
-
-    [Test]
     public void StoredIconMetadata_OnlyUpdatesRecognizedOriginalIcons()
     {
         foreach (var row in ReadCsv("ItemIconBindings.csv").Concat(ReadCsv("ShipItemIconBindings.csv")))

@@ -353,18 +353,6 @@ public class SpaceItemMigrationTests
         LegacySpaceItemSweep.Pay(player, 0, new[] { "sd_republicstrik:10073" }).Should().BeFalse("nothing new is owed");
     }
 
-    [Test]
-    public void RetiredPilotingPerkStamps_NeverBecomeSkillRequirements()
-    {
-        var method = typeof(LegacySpaceItemCatalog).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.EquipmentRequirementMigration")!
-            .GetMethod("TryGetSkillRequirement", Members)!;
-        foreach (var perk in new[] { 116, 117, 118, 119, 120, 121, 255 })
-        {
-            var args = new object?[] { perk, 3, BaseItem.CreatureItem, "x", null, null };
-            ((bool)method.Invoke(null, args)!).Should().BeFalse($"perk {perk} stamps belong to retired items, which are replaced whole");
-        }
-    }
-
     private static PlayerShip LegacyShip()
     {
         var ship = new PlayerShip

@@ -236,6 +236,9 @@ internal sealed partial class StoredObjectData
         return bonuses;
     }
 
+    /// <summary>The root structure of a saved item (UTI, base64).</summary>
+    internal static Node ParseItem(string data) => new StoredObjectData(Convert.FromBase64String(data))._root;
+
     /// <summary>A saved item's resref, tag and first localized name.</summary>
     internal static (string Resref, string Tag, string Name) ReadItemIdentity(string data)
     {

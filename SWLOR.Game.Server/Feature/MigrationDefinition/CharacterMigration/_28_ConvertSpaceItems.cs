@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -89,13 +91,28 @@ internal sealed class _28_ConvertSpaceItems : ICharacterMigration
         return tally;
     }
 
+    /// <summary>
+    /// Returns a retired perk's purchase price as skill points and tells the player. Its definition is gone, so the
+    /// prices players paid per level come from <see cref="RetiredPerks"/>.
+    /// </summary>
+    private static void RefundPerk(Player record, PerkType perkType, string name, IReadOnlyList<int> prices)
+    {
+        if (record.Perks == null || !record.Perks.TryGetValue(perkType, out var perkLevel))
+            return;
+        var refundAmount = prices.Take(perkLevel).Sum();
+        record.UnallocatedSP += refundAmount;
+        record.Perks.Remove(perkType);
+        Log.Write(LogGroup.Migration, $"{record.Name} ({record.Id}) refunded {refundAmount} SP for perk '{perkType}'.");
+        record.UpgradeNotices.Add($"Perk '{name}' was automatically refunded. You reclaimed {refundAmount} SP.");
+    }
+
     public void MigratePlayerData(Player player)
     {
         player.UpgradeNotices ??= new List<string>();
         player.UpgradeNotices.Add(LoginNotice);
         foreach (var (type, name, prices, _) in RetiredPerks)
         {
-            CharacterRecalculation.RefundPerk(player, player.UpgradeNotices, type, name, prices);
+            RefundPerk(player, type, name, prices);
             player.UnlockedPerks?.Remove(type);
         }
 

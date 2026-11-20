@@ -28,7 +28,22 @@ namespace SWLOR.Game.Server.Service
 
         public static bool IsDM(uint member) => DMPresence.IsControlledByDM(member);
 
+        /// <summary>
+        /// Returns the tracker a member has joined. A member no longer acting in its area is taken off it first:
+        /// a DM can possess a creature elsewhere without either object leaving the tracker's area.
+        /// </summary>
         public static InitiativeTrackerSession GetSession(uint member)
+        {
+            var session = FindSession(member);
+            if (session == null || session.Area == GetActingArea(member))
+                return session;
+
+            Leave(member);
+            return null;
+        }
+
+        // The joined tracker as recorded, without the area check GetSession makes.
+        private static InitiativeTrackerSession FindSession(uint member)
         {
             return _sessionIdByMember.TryGetValue(member, out var sessionId) &&
                    _sessions.TryGetValue(sessionId, out var session)
@@ -238,7 +253,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var member = GetMember(exiting);
-            var session = GetSession(member);
+            var session = FindSession(member);
             if (session == null || session.Area != OBJECT_SELF)
                 return;
 
@@ -249,12 +264,27 @@ namespace SWLOR.Game.Server.Service
             Leave(member);
         }
 
+        /// <summary>
+        /// Takes a DM off a tracker when possession moves them to another area, so its other members see them leave.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
+        public static void CheckAreaOnPossession()
+        {
+            var member = GetMember(OBJECT_SELF);
+            if (!_sessionIdByMember.ContainsKey(member))
+                return;
+
+            // Possession has not settled while the event runs, so check on the next tick.
+            Scheduler.Schedule(() => GetSession(member), TimeSpan.FromSeconds(0.1));
+        }
+
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void LeaveOnModuleExit()
         {
             var exiting = GetExitingObject();
             var member = GetMember(exiting);
-            if (GetSession(member) == null)
+            if (FindSession(member) == null)
                 return;
 
             // The leaving player is still listed by GetFirstPC until the event finishes.
@@ -264,7 +294,7 @@ namespace SWLOR.Game.Server.Service
 
         private static bool LeaveCurrent(uint member)
         {
-            var session = GetSession(member);
+            var session = FindSession(member);
             _sessionIdByMember.Remove(member);
             if (session == null)
                 return false;

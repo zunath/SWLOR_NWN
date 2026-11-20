@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -53,10 +54,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             NamedEntryValue = string.Empty;
             HasOwnEntry = entry != null;
 
-            WatchOnClient(model => model.ValueText);
-            WatchOnClient(model => model.NamedEntryName);
-            WatchOnClient(model => model.NamedEntryValue);
-
             Load();
         }
 
@@ -87,6 +84,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _currentPartial = partial;
             ChangePartialView(MainContentElement, partial);
+
+            // The client drops input values that arrive before their text edits exist, and the base class
+            // does not resend them after a layout (NuiLayoutRules R7). Watching sends each value again,
+            // so start watching one tick after the swap, once the controls are on screen.
+            var windowToken = WindowToken;
+            Scheduler.Schedule(() => SendInputs(windowToken), TimeSpan.Zero);
+        }
+
+        private void SendInputs(int windowToken)
+        {
+            if (WindowToken != windowToken || !Gui.IsWindowOpen(Player, GuiWindowType.InitiativeTrackerEdit))
+                return;
+
+            WatchOnClient(model => model.ValueText);
+            WatchOnClient(model => model.NamedEntryName);
+            WatchOnClient(model => model.NamedEntryValue);
         }
 
         private bool TryParseValue(string text, out int value)

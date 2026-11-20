@@ -2,14 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
-using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.NWN.API.Engine;
-using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Domain.Administration
 {
@@ -17,36 +16,66 @@ namespace SWLOR.Game.Server.Domain.Administration
     /// DM-hosted events: DMs schedule, start and end them; players see them with /events, join them when
     /// the host allows it, and go back to where they joined from with /leaveevent.
     /// </summary>
-    public static class HostedEvents
+    public class HostedEventsService : IHostedEventsService
     {
         // The exact spot a player joined from. Kept for the session so a player who joined from an
         // instance (an apartment, a starship) returns there while it still exists.
         private const string ReturnLocationVariable = "HOSTED_EVENT_RETURN_LOCATION";
         private const string ReturnEventIdVariable = "HOSTED_EVENT_RETURN_EVENT_ID";
         private const float ReturnArrivalRadius = 5f;
-        private static readonly TimeSpan ReturnCheckInterval = TimeSpan.FromSeconds(1);
+        private readonly TimeSpan ReturnCheckInterval = TimeSpan.FromSeconds(1);
         private const int ReturnChecks = 120;
 
-        private static readonly HashSet<string> OutOfCharacterAreaResrefs = new() { "ooc_area", "char_migration", "spending_area" };
+        private readonly HashSet<string> OutOfCharacterAreaResrefs = new() { "ooc_area", "char_migration", "spending_area" };
         // Written by the background service (DiscordEventSync.SnapshotKey): the Discord server's Events tab.
         private const string DiscordSnapshotKey = "swlor:discord:scheduled-events";
         private const string DiscordCreatedBy = "Discord";
         private const int DiscordPostColor = 3447003;
 
-        private static readonly Dictionary<string, HostedEvent> Events = new();
+        private readonly Dictionary<string, HostedEvent> Events = new();
         // Discord event ID -> the start time of the occurrence a DM cancelled or ended in game.
-        private static readonly Dictionary<string, DateTime> DiscordDismissals = new();
-        private static bool _sweepScheduled;
+        private readonly Dictionary<string, DateTime> DiscordDismissals = new();
+        private bool _sweepScheduled;
 
+        private readonly IDBService _db;
+        private readonly IGuiRefreshPublisher _gui;
+        private readonly IDMPresenceService _dmPresence;
+        private readonly IAreaService _area;
+        private readonly IEnmityService _enmity;
+        private readonly ISpaceModeQuery _space;
+        private readonly IBackgroundJobService _backgroundJob;
+        private readonly IDeathService _death;
+
+        public HostedEventsService(
+            IDBService db,
+            IGuiRefreshPublisher gui,
+            IDMPresenceService dmPresence,
+            IAreaService area,
+            IEnmityService enmity,
+            ISpaceModeQuery space,
+            IBackgroundJobService backgroundJob,
+            IDeathService death)
+        {
+            _db = db;
+            _gui = gui;
+            _dmPresence = dmPresence;
+            _area = area;
+            _enmity = enmity;
+            _space = space;
+            _backgroundJob = backgroundJob;
+            _death = death;
+        }
+
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
-        public static void LoadEvents()
+        public void LoadEvents()
         {
             Events.Clear();
-            foreach (var hostedEvent in DB.Search(new DBQuery<HostedEvent>().AddPaging(500, 0)))
+            foreach (var hostedEvent in _db.Search(new DBQuery<HostedEvent>().AddPaging(500, 0)))
                 Events[hostedEvent.Id] = hostedEvent;
 
             DiscordDismissals.Clear();
-            foreach (var dismissal in DB.Search(new DBQuery<DiscordEventDismissal>().AddPaging(500, 0)))
+            foreach (var dismissal in _db.Search(new DBQuery<DiscordEventDismissal>().AddPaging(500, 0)))
                 DiscordDismissals[dismissal.Id] = dismissal.ScheduledStartUtc;
 
             SyncFromDiscord();
@@ -61,12 +90,12 @@ namespace SWLOR.Game.Server.Domain.Administration
         /// <summary>
         /// Every event that is scheduled or running, running events first.
         /// </summary>
-        public static List<HostedEvent> GetEvents()
+        public List<HostedEvent> GetEvents()
         {
             return HostedEventRules.OrderForDisplay(Events.Values);
         }
 
-        public static HostedEvent GetEvent(string eventId)
+        public HostedEvent GetEvent(string eventId)
         {
             return !string.IsNullOrEmpty(eventId) && Events.TryGetValue(eventId, out var hostedEvent)
                 ? hostedEvent
@@ -76,18 +105,18 @@ namespace SWLOR.Game.Server.Domain.Administration
         /// <summary>
         /// The return point of the event a player is at, or null when they are not at one.
         /// </summary>
-        public static HostedEventReturnPoint GetReturnPoint(uint player)
+        public HostedEventReturnPoint GetReturnPoint(uint player)
         {
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return null;
 
-            return DB.Get<Player>(GetObjectUUID(player))?.EventReturnPoint;
+            return _db.Get<Player>(GetObjectUUID(player))?.EventReturnPoint;
         }
 
         /// <summary>
         /// Creates an event, or updates one, from the DM Events window. Returns an error, or an empty string.
         /// </summary>
-        public static string SaveDetails(
+        public string SaveDetails(
             uint dm,
             string eventId,
             string name,
@@ -108,7 +137,7 @@ namespace SWLOR.Game.Server.Domain.Administration
                 synced.IsJoinOpen = isJoinOpen;
                 synced.AnnounceOnStart = announceOnStart;
                 Store(synced);
-                Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(dm)} updated the options of Discord event '{synced.Name}' ({synced.Id}).");
+                Log.Write(LogGroup.DM, $"{_dmPresence.DescribeDM(dm)} updated the options of Discord event '{synced.Name}' ({synced.Id}).");
                 saved = synced;
                 return string.Empty;
             }
@@ -118,12 +147,12 @@ namespace SWLOR.Game.Server.Domain.Administration
                 return error;
 
             var isNew = string.IsNullOrEmpty(eventId);
-            var hostedEvent = isNew ? new HostedEvent { CreatedBy = DMPresence.DescribeDM(dm) } : GetEvent(eventId);
+            var hostedEvent = isNew ? new HostedEvent { CreatedBy = _dmPresence.DescribeDM(dm) } : GetEvent(eventId);
             if (hostedEvent == null)
                 return HostedEventRules.EventNotFound;
 
             hostedEvent.Name = name.Trim();
-            hostedEvent.HostName = string.IsNullOrWhiteSpace(hostName) ? GetName(DMPresence.GetDM(dm)) : hostName.Trim();
+            hostedEvent.HostName = string.IsNullOrWhiteSpace(hostName) ? GetName(_dmPresence.GetDM(dm)) : hostName.Trim();
             hostedEvent.Description = description ?? string.Empty;
             hostedEvent.ScheduledStartUtc = HostedEventRules.GetStartToSave(
                 shownStartUtc ?? (isNew ? null : hostedEvent.ScheduledStartUtc), startText, zone, startUtc);
@@ -131,7 +160,7 @@ namespace SWLOR.Game.Server.Domain.Administration
             hostedEvent.AnnounceOnStart = announceOnStart;
 
             Store(hostedEvent);
-            Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(dm)} {(isNew ? "created" : "updated")} event '{hostedEvent.Name}' ({hostedEvent.Id}).");
+            Log.Write(LogGroup.DM, $"{_dmPresence.DescribeDM(dm)} {(isNew ? "created" : "updated")} event '{hostedEvent.Name}' ({hostedEvent.Id}).");
             saved = hostedEvent;
             return string.Empty;
         }
@@ -139,13 +168,13 @@ namespace SWLOR.Game.Server.Domain.Administration
         /// <summary>
         /// Sets an event's arrival point to where the DM, or the creature they possess, is standing.
         /// </summary>
-        public static string SetArrivalPoint(uint dm, string eventId)
+        public string SetArrivalPoint(uint dm, string eventId)
         {
             var hostedEvent = GetEvent(eventId);
             if (hostedEvent == null)
                 return HostedEventRules.EventNotFound;
 
-            var controlled = DMPresence.GetControlledCreature(dm);
+            var controlled = _dmPresence.GetControlledCreature(dm);
             var area = GetArea(controlled);
             if (!IsPersistentArea(area))
                 return "Players cannot be sent here. Stand in a regular area, not an instance, space, or an out-of-character area.";
@@ -157,11 +186,11 @@ namespace SWLOR.Game.Server.Domain.Administration
             hostedEvent.ArrivalZ = position.Z;
             hostedEvent.ArrivalFacing = GetFacing(controlled);
             Store(hostedEvent);
-            Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(dm)} set the arrival point of event '{hostedEvent.Name}' ({hostedEvent.Id}) to {hostedEvent.ArrivalAreaResref}.");
+            Log.Write(LogGroup.DM, $"{_dmPresence.DescribeDM(dm)} set the arrival point of event '{hostedEvent.Name}' ({hostedEvent.Id}) to {hostedEvent.ArrivalAreaResref}.");
             return string.Empty;
         }
 
-        public static string ClearArrivalPoint(uint dm, string eventId)
+        public string ClearArrivalPoint(uint dm, string eventId)
         {
             var hostedEvent = GetEvent(eventId);
             if (hostedEvent == null)
@@ -169,14 +198,14 @@ namespace SWLOR.Game.Server.Domain.Administration
 
             hostedEvent.ArrivalAreaResref = string.Empty;
             Store(hostedEvent);
-            Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(dm)} cleared the arrival point of event '{hostedEvent.Name}' ({hostedEvent.Id}).");
+            Log.Write(LogGroup.DM, $"{_dmPresence.DescribeDM(dm)} cleared the arrival point of event '{hostedEvent.Name}' ({hostedEvent.Id}).");
             return string.Empty;
         }
 
         /// <summary>
         /// The arrival point's area name, or an empty string when none is set or its area is gone.
         /// </summary>
-        public static string GetArrivalAreaName(HostedEvent hostedEvent)
+        public string GetArrivalAreaName(HostedEvent hostedEvent)
         {
             var area = GetArrivalArea(hostedEvent);
             return GetIsObjectValid(area) ? GetName(area) : string.Empty;
@@ -185,7 +214,7 @@ namespace SWLOR.Game.Server.Domain.Administration
         /// <summary>
         /// Moves the DM, or the creature they possess, to an event's arrival point.
         /// </summary>
-        public static string GoToArrivalPoint(uint dm, string eventId)
+        public string GoToArrivalPoint(uint dm, string eventId)
         {
             var hostedEvent = GetEvent(eventId);
             if (hostedEvent == null)
@@ -193,14 +222,14 @@ namespace SWLOR.Game.Server.Domain.Administration
             if (!GetIsObjectValid(GetArrivalArea(hostedEvent)))
                 return HostedEventRules.NoArrivalPoint;
 
-            DMPresence.JumpTo(dm, GetArrivalLocation(hostedEvent), $"the arrival point of event '{hostedEvent.Name}'");
+            _dmPresence.JumpTo(dm, GetArrivalLocation(hostedEvent), $"the arrival point of event '{hostedEvent.Name}'");
             return string.Empty;
         }
 
         /// <summary>
         /// Starts a scheduled event and, when the host chose to, tells every player who wants event announcements.
         /// </summary>
-        public static string Start(uint dm, string eventId)
+        public string Start(uint dm, string eventId)
         {
             var hostedEvent = GetEvent(eventId);
             if (hostedEvent == null)
@@ -211,7 +240,7 @@ namespace SWLOR.Game.Server.Domain.Administration
             hostedEvent.Status = HostedEventStatus.Running;
             hostedEvent.StartedUtc = DateTime.UtcNow;
             Store(hostedEvent);
-            Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(dm)} started event '{hostedEvent.Name}' ({hostedEvent.Id}).");
+            Log.Write(LogGroup.DM, $"{_dmPresence.DescribeDM(dm)} started event '{hostedEvent.Name}' ({hostedEvent.Id}).");
 
             if (hostedEvent.AnnounceOnStart)
             {
@@ -226,7 +255,7 @@ namespace SWLOR.Game.Server.Domain.Administration
         /// Ends a running event or cancels a scheduled one. Players at the event stay where they are
         /// and keep /leaveevent until they use it.
         /// </summary>
-        public static string End(uint dm, string eventId)
+        public string End(uint dm, string eventId)
         {
             var hostedEvent = GetEvent(eventId);
             if (hostedEvent == null)
@@ -235,7 +264,7 @@ namespace SWLOR.Game.Server.Domain.Administration
             var wasRunning = hostedEvent.Status == HostedEventStatus.Running;
             Remove(hostedEvent);
             DismissDiscordEvent(hostedEvent);
-            Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(dm)} {(wasRunning ? "ended" : "cancelled")} event '{hostedEvent.Name}' ({hostedEvent.Id}).");
+            Log.Write(LogGroup.DM, $"{_dmPresence.DescribeDM(dm)} {(wasRunning ? "ended" : "cancelled")} event '{hostedEvent.Name}' ({hostedEvent.Id}).");
 
             if (wasRunning)
                 TellParticipantsEnded(hostedEvent);
@@ -247,7 +276,7 @@ namespace SWLOR.Game.Server.Domain.Administration
         /// Sends every online player at an event back to where they joined from, even in combat.
         /// Returns a summary for the DM.
         /// </summary>
-        public static string SendEveryoneBack(uint dm, string eventId)
+        public string SendEveryoneBack(uint dm, string eventId)
         {
             var hostedEvent = GetEvent(eventId);
             if (hostedEvent == null)
@@ -272,7 +301,7 @@ namespace SWLOR.Game.Server.Domain.Administration
                 }
             }
 
-            Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(dm)} sent {sent} players back from event '{hostedEvent.Name}' ({hostedEvent.Id}).");
+            Log.Write(LogGroup.DM, $"{_dmPresence.DescribeDM(dm)} sent {sent} players back from event '{hostedEvent.Name}' ({hostedEvent.Id}).");
 
             var summary = $"Sent {sent} {(sent == 1 ? "player" : "players")} back.";
             if (refused.Count > 0)
@@ -285,7 +314,7 @@ namespace SWLOR.Game.Server.Domain.Administration
         /// <summary>
         /// The number of players at an event and how many of them are online.
         /// </summary>
-        public static (int Total, int Online) CountParticipants(HostedEvent hostedEvent)
+        public (int Total, int Online) CountParticipants(HostedEvent hostedEvent)
         {
             return (hostedEvent.ParticipantPlayerIds.Count, GetOnlineParticipants(hostedEvent).Count);
         }
@@ -293,7 +322,7 @@ namespace SWLOR.Game.Server.Domain.Administration
         /// <summary>
         /// Sends a player to an event's arrival point, remembering where they came from.
         /// </summary>
-        public static string Join(uint player, string eventId)
+        public string Join(uint player, string eventId)
         {
             var hostedEvent = GetEvent(eventId);
             var error = HostedEventRules.GetJoinRefusal(hostedEvent, GetTravelState(player));
@@ -308,9 +337,9 @@ namespace SWLOR.Game.Server.Domain.Administration
                 return "The arrival point is blocked. Let the host know.";
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             dbPlayer.EventReturnPoint = BuildReturnPoint(player, dbPlayer, hostedEvent);
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
             SetLocalLocation(player, ReturnLocationVariable, GetLocation(player));
             SetLocalString(player, ReturnEventIdVariable, hostedEvent.Id);
 
@@ -329,17 +358,17 @@ namespace SWLOR.Game.Server.Domain.Administration
         /// <summary>
         /// Sends a player back to where they joined their event from.
         /// </summary>
-        public static string Leave(uint player, bool ignoreCombat = false)
+        public string Leave(uint player, bool ignoreCombat = false)
         {
             var error = HostedEventRules.GetLeaveRefusal(GetTravelState(player), ignoreCombat);
             if (!string.IsNullOrEmpty(error))
                 return error;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var returnPoint = dbPlayer.EventReturnPoint;
             var destination = FindLanding(player, GetReturnLocation(player, dbPlayer, returnPoint))
-                              ?? FindLanding(player, Death.GetRespawnLocation(dbPlayer));
+                              ?? FindLanding(player, _death.GetRespawnLocation(dbPlayer));
             if (destination == null)
                 return "Your way back is blocked right now. Try again shortly, or ask a DM for help.";
 
@@ -354,7 +383,7 @@ namespace SWLOR.Game.Server.Domain.Administration
         }
 
         // Clears the return point once the player stands at their destination. A player who never gets there keeps it.
-        private static void ConfirmReturn(uint player, string playerId, string eventId, Location destination, int checksLeft)
+        private void ConfirmReturn(uint player, string playerId, string eventId, Location destination, int checksLeft)
         {
             if (!GetIsObjectValid(player) || GetObjectUUID(player) != playerId)
                 return;
@@ -368,12 +397,12 @@ namespace SWLOR.Game.Server.Domain.Administration
                 return;
             }
 
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             if (dbPlayer?.EventReturnPoint?.EventId != eventId)
                 return;
 
             dbPlayer.EventReturnPoint = null;
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
             DeleteLocalLocation(player, ReturnLocationVariable);
             DeleteLocalString(player, ReturnEventIdVariable);
 
@@ -387,35 +416,35 @@ namespace SWLOR.Game.Server.Domain.Administration
         /// <summary>
         /// Reads what blocks a player from traveling to or from an event.
         /// </summary>
-        public static HostedEventTravelState GetTravelState(uint player)
+        public HostedEventTravelState GetTravelState(uint player)
         {
             var isDM = GetIsDM(player) || GetIsDMPossessed(player) || !GetIsPC(player);
             return new HostedEventTravelState
             {
                 IsDM = isDM,
                 IsDead = GetIsDead(player),
-                IsInCombat = GetIsInCombat(player) || Enmity.HasEnmity(player),
-                IsInSpace = !isDM && GameServices.Space.IsPlayerInSpaceMode(player),
+                IsInCombat = GetIsInCombat(player) || _enmity.HasEnmity(player),
+                IsInSpace = !isDM && _space.IsPlayerInSpaceMode(player),
                 IsInOutOfCharacterArea = OutOfCharacterAreaResrefs.Contains(GetResRef(GetArea(player))),
                 CurrentEventId = isDM ? string.Empty : GetReturnPoint(player)?.EventId ?? string.Empty,
             };
         }
 
-        private static void Store(HostedEvent hostedEvent)
+        private void Store(HostedEvent hostedEvent)
         {
             Events[hostedEvent.Id] = hostedEvent;
-            DB.Set(hostedEvent);
+            _db.Set(hostedEvent);
             RefreshWindows();
         }
 
-        private static void Remove(HostedEvent hostedEvent)
+        private void Remove(HostedEvent hostedEvent)
         {
             Events.Remove(hostedEvent.Id);
-            DB.Delete<HostedEvent>(hostedEvent.Id);
+            _db.Delete<HostedEvent>(hostedEvent.Id);
             RefreshWindows();
         }
 
-        private static void SweepEvents()
+        private void SweepEvents()
         {
             SyncFromDiscord();
 
@@ -437,12 +466,12 @@ namespace SWLOR.Game.Server.Domain.Administration
         /// Lists new Discord events, copies changes to the ones no DM has started, and removes those Discord no longer lists.
         /// Does nothing until the background service has stored a snapshot.
         /// </summary>
-        private static void SyncFromDiscord()
+        private void SyncFromDiscord()
         {
             List<DiscordScheduledEvent> discordEvents;
             try
             {
-                discordEvents = DiscordEventImport.Parse(DB.StringGet(DiscordSnapshotKey));
+                discordEvents = DiscordEventImport.Parse(_db.StringGet(DiscordSnapshotKey));
             }
             catch (Exception ex)
             {
@@ -458,7 +487,7 @@ namespace SWLOR.Game.Server.Domain.Administration
             {
                 var hostedEvent = new HostedEvent { CreatedBy = DiscordCreatedBy };
                 DiscordEventImport.Apply(hostedEvent, discord);
-                DB.Set(hostedEvent);
+                _db.Set(hostedEvent);
                 Events[hostedEvent.Id] = hostedEvent;
                 Log.Write(LogGroup.DM, $"Listed Discord event '{hostedEvent.Name}' ({hostedEvent.Id}, Discord {discord.Id}).");
             }
@@ -468,20 +497,20 @@ namespace SWLOR.Game.Server.Domain.Administration
             {
                 var updated = hostedEvent.Copy();
                 DiscordEventImport.Apply(updated, discord);
-                DB.Set(updated);
+                _db.Set(updated);
                 Events[updated.Id] = updated;
             }
 
             foreach (var hostedEvent in plan.Remove)
             {
-                DB.Delete<HostedEvent>(hostedEvent.Id);
+                _db.Delete<HostedEvent>(hostedEvent.Id);
                 Events.Remove(hostedEvent.Id);
                 Log.Write(LogGroup.DM, $"Removed Discord event '{hostedEvent.Name}' ({hostedEvent.Id}): Discord no longer lists it.");
             }
 
             foreach (var discordId in plan.DropDismissals)
             {
-                DB.Delete<DiscordEventDismissal>(discordId);
+                _db.Delete<DiscordEventDismissal>(discordId);
                 DiscordDismissals.Remove(discordId);
             }
 
@@ -490,13 +519,13 @@ namespace SWLOR.Game.Server.Domain.Administration
         }
 
         // A Discord event a DM cancelled or ended stays off the list until Discord moves it to another start time.
-        private static void DismissDiscordEvent(HostedEvent hostedEvent)
+        private void DismissDiscordEvent(HostedEvent hostedEvent)
         {
             if (string.IsNullOrEmpty(hostedEvent.DiscordEventId))
                 return;
 
             var occurrenceStart = DiscordEventImport.GetOccurrenceStart(hostedEvent);
-            DB.Set(new DiscordEventDismissal
+            _db.Set(new DiscordEventDismissal
             {
                 Id = hostedEvent.DiscordEventId,
                 ScheduledStartUtc = occurrenceStart,
@@ -504,7 +533,7 @@ namespace SWLOR.Game.Server.Domain.Administration
             DiscordDismissals[hostedEvent.DiscordEventId] = occurrenceStart;
         }
 
-        private static void PostStartToDiscord(HostedEvent hostedEvent)
+        private void PostStartToDiscord(HostedEvent hostedEvent)
         {
             var url = ApplicationSettings.Get().EventWebhookUrl;
             if (string.IsNullOrWhiteSpace(url))
@@ -515,11 +544,11 @@ namespace SWLOR.Game.Server.Domain.Administration
             _ = PostToDiscordAsync(url, message);
         }
 
-        private static async Task PostToDiscordAsync(string url, string message)
+        private async Task PostToDiscordAsync(string url, string message)
         {
             try
             {
-                if (!await BackgroundJob.EnqueueDiscordWebhook(url, "SWLOR Events", message, DiscordPostColor))
+                if (!await _backgroundJob.EnqueueDiscordWebhook(url, "SWLOR Events", message, DiscordPostColor))
                     Log.Write(LogGroup.Error, $"Could not queue the Discord post: {message}");
             }
             catch (Exception ex)
@@ -528,36 +557,36 @@ namespace SWLOR.Game.Server.Domain.Administration
             }
         }
 
-        private static void Announce(HostedEvent hostedEvent)
+        private void Announce(HostedEvent hostedEvent)
         {
             var action = HostedEventRules.IsJoinable(hostedEvent) ? "join" : "see the details";
             var message = ColorToken.Cyan($"Event started: {hostedEvent.Name}, hosted by {hostedEvent.HostName}. Use /events to {action}.");
             foreach (var player in GetOnlinePCs())
             {
-                if (!DMPresence.IsControlledByDM(player) &&
-                    !(DB.Get<Player>(GetObjectUUID(player))?.Settings?.DisplayEventAnnouncements ?? true))
+                if (!_dmPresence.IsControlledByDM(player) &&
+                    !(_db.Get<Player>(GetObjectUUID(player))?.Settings?.DisplayEventAnnouncements ?? true))
                     continue;
 
-                SendMessageToPC(DMPresence.GetControlledCreature(player), message);
+                SendMessageToPC(_dmPresence.GetControlledCreature(player), message);
             }
         }
 
-        private static void TellParticipantsEnded(HostedEvent hostedEvent)
+        private void TellParticipantsEnded(HostedEvent hostedEvent)
         {
             foreach (var player in GetOnlineParticipants(hostedEvent))
                 SendMessageToPC(player, ColorToken.Cyan($"{hostedEvent.Name} has ended. Use /leaveevent when you are ready to go back."));
         }
 
         // Returned as a list: callers leave or refresh players, which walks the same native PC cursor.
-        private static List<uint> GetOnlineParticipants(HostedEvent hostedEvent)
+        private List<uint> GetOnlineParticipants(HostedEvent hostedEvent)
         {
             return GetOnlinePCs()
-                .Where(player => !DMPresence.IsControlledByDM(player) &&
+                .Where(player => !_dmPresence.IsControlledByDM(player) &&
                                  hostedEvent.ParticipantPlayerIds.Contains(GetObjectUUID(player)))
                 .ToList();
         }
 
-        private static List<uint> GetOnlinePCs()
+        private List<uint> GetOnlinePCs()
         {
             var players = new List<uint>();
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
@@ -568,37 +597,37 @@ namespace SWLOR.Game.Server.Domain.Administration
         /// <summary>
         /// Redraws one player's open event windows, for example after they pick another time zone.
         /// </summary>
-        public static void RefreshWindows(uint player)
+        public void RefreshWindows(uint player)
         {
-            Gui.PublishRefreshEvent(player, new HostedEventsChangedRefreshEvent(), DMPresence.GetControlledCreature(player));
+            _gui.PublishRefreshEvent(player, new HostedEventsChangedRefreshEvent(), _dmPresence.GetControlledCreature(player));
         }
 
-        private static void RefreshWindows()
+        private void RefreshWindows()
         {
             var refresh = new HostedEventsChangedRefreshEvent();
             foreach (var player in GetOnlinePCs())
-                Gui.PublishRefreshEvent(player, refresh, DMPresence.GetControlledCreature(player));
+                _gui.PublishRefreshEvent(player, refresh, _dmPresence.GetControlledCreature(player));
         }
 
         // Regular areas only: instances and space areas are not found by resref after a restart.
-        private static bool IsPersistentArea(uint area)
+        private bool IsPersistentArea(uint area)
         {
             if (!GetIsObjectValid(area))
                 return false;
 
             var resref = GetResRef(area);
             var isSpace = GetLocalBool(area, "SPACE") || GetName(area).StartsWith("Space -");
-            return !isSpace && !OutOfCharacterAreaResrefs.Contains(resref) && Area.GetAreaByResref(resref) == area;
+            return !isSpace && !OutOfCharacterAreaResrefs.Contains(resref) && _area.GetAreaByResref(resref) == area;
         }
 
-        private static uint GetArrivalArea(HostedEvent hostedEvent)
+        private uint GetArrivalArea(HostedEvent hostedEvent)
         {
             return HostedEventRules.HasArrivalPoint(hostedEvent)
-                ? Area.GetAreaByResref(hostedEvent.ArrivalAreaResref)
+                ? _area.GetAreaByResref(hostedEvent.ArrivalAreaResref)
                 : OBJECT_INVALID;
         }
 
-        private static Location GetArrivalLocation(HostedEvent hostedEvent)
+        private Location GetArrivalLocation(HostedEvent hostedEvent)
         {
             return Location(
                 GetArrivalArea(hostedEvent),
@@ -607,7 +636,7 @@ namespace SWLOR.Game.Server.Domain.Administration
         }
 
         // Players spread out around the arrival point instead of stacking, and never into a spot the engine refuses.
-        private static Location FindLanding(uint player, Location arrival)
+        private Location FindLanding(uint player, Location arrival)
         {
             var area = GetAreaFromLocation(arrival);
             var position = GetPositionFromLocation(arrival);
@@ -619,7 +648,7 @@ namespace SWLOR.Game.Server.Domain.Administration
             // The engine's own landing spot, so the jump and the arrival check agree on where the player ends up.
             foreach (var candidate in nearby.Prepend(arrival))
             {
-                if (DMPresence.TryGetLanding(player, candidate, out var landing))
+                if (_dmPresence.TryGetLanding(player, candidate, out var landing))
                     return landing;
             }
 
@@ -628,7 +657,7 @@ namespace SWLOR.Game.Server.Domain.Administration
 
         // Instances and space are not found again after a restart, so their return point is the player's last saved
         // regular location; the exact spot is kept for this session in a local variable.
-        private static HostedEventReturnPoint BuildReturnPoint(uint player, Player dbPlayer, HostedEvent hostedEvent)
+        private HostedEventReturnPoint BuildReturnPoint(uint player, Player dbPlayer, HostedEvent hostedEvent)
         {
             var returnPoint = new HostedEventReturnPoint
             {
@@ -658,7 +687,7 @@ namespace SWLOR.Game.Server.Domain.Administration
             return returnPoint;
         }
 
-        private static Location GetReturnLocation(uint player, Player dbPlayer, HostedEventReturnPoint returnPoint)
+        private Location GetReturnLocation(uint player, Player dbPlayer, HostedEventReturnPoint returnPoint)
         {
             if (GetLocalString(player, ReturnEventIdVariable) == returnPoint.EventId)
             {
@@ -669,11 +698,11 @@ namespace SWLOR.Game.Server.Domain.Administration
 
             var area = string.IsNullOrWhiteSpace(returnPoint.AreaResref)
                 ? OBJECT_INVALID
-                : Area.GetAreaByResref(returnPoint.AreaResref);
+                : _area.GetAreaByResref(returnPoint.AreaResref);
             if (GetIsObjectValid(area))
                 return Location(area, Vector3(returnPoint.X, returnPoint.Y, returnPoint.Z), returnPoint.Facing);
 
-            return Death.GetRespawnLocation(dbPlayer);
+            return _death.GetRespawnLocation(dbPlayer);
         }
     }
 }

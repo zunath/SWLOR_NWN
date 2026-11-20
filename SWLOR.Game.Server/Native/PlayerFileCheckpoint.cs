@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Native
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ApplyLoadedCraftSequence()
         {
-            NwnCraftSessionWorld.ApplyLoadedSequence(GetEnteringObject());
+            NwnCraftSessionWorld.Instance.ApplyLoadedSequence(GetEnteringObject());
         }
     }
 }

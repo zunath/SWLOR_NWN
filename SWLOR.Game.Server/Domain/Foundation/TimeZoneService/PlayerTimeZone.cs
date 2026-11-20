@@ -3,7 +3,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
     /// <summary>
     /// A time zone a player can pick in Settings. Times convert through the IANA zone, so daylight saving is applied.
     /// </summary>
-    public class PlayerTimeZone
+    public sealed record PlayerTimeZone
     {
         /// <summary>The IANA zone id, saved on the player.</summary>
         public string Id { get; }

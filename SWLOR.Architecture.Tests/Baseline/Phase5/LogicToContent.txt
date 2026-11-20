@@ -19,6 +19,7 @@ SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Feature.UsePerkFeat | 
 SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Abilities/TwinPistolAbilityService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Administration/DMBlueprintCatalogService.cs -> Feature.DMActions | 1
+SWLOR.Game.Server/Domain/Administration/HostedEventsService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Character/CreatureStatService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Character/RobeModelRenderer.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Feature/AbilityDefinition | 1
@@ -65,7 +66,7 @@ SWLOR.Game.Server/Domain/Companions/DroidService.cs -> Feature/StatusEffectDefin
 SWLOR.Game.Server/Domain/Companions/NeckModelRenderer.cs -> Feature/AppearanceDefinition | 2
 SWLOR.Game.Server/Domain/Companions/PartSkinModelRenderer.cs -> Feature/AppearanceDefinition | 2
 SWLOR.Game.Server/Domain/Companions/ShoulderModelRenderer.cs -> Feature/AppearanceDefinition | 2
-SWLOR.Game.Server/Domain/Companions/TintMapApplyService.cs -> Feature/AppearanceDefinition | 2
+SWLOR.Game.Server/Domain/Companions/TintMapApplyService.cs -> Feature/AppearanceDefinition | 3
 SWLOR.Game.Server/Domain/Companions/TintMapModelResolver.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Companions/TintMapService.cs -> Feature/AppearanceDefinition | 4
 SWLOR.Game.Server/Domain/Crafting/CraftDeviceService.cs -> Feature/GuiDefinition | 2

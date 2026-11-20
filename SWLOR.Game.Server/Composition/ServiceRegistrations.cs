@@ -118,6 +118,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IDMObjectDetailsService, DMObjectDetailsService>();
             services.AddSingleton<IDMObjectSearchService, DMObjectSearchService>();
             services.AddSingleton<IDMPlayerDirectoryService, DMPlayerDirectoryService>();
+            services.AddSingleton<IHostedEventsService, HostedEventsService>();
             services.AddSingleton<IDMPreferenceService, DMPreferenceService>();
             services.AddSingleton<IDMPresenceService, DMPresenceService>();
             // The same instance, seen through the DM avatar read the disguise and the item trash own (P5-15a).

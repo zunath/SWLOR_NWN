@@ -9,18 +9,18 @@ namespace SWLOR.Game.Server.Domain.Crafting.Minigame;
 /// earlier login. Every transfer made since then (a research job's start, a craft's debit) would then look missing from a file that
 /// holds it. The load records the true value here, and <see cref="Apply"/> puts it back on the creature once the player is in.
 /// </summary>
-public static class LoadedCraftFileSequences
+public sealed class LoadedCraftFileSequences
 {
     /// <summary>A record no login claims within this time (a load that never entered the module) is dropped at the next record.</summary>
     public static readonly TimeSpan Lifetime = TimeSpan.FromMinutes(30);
 
-    private static readonly Dictionary<string, (int Sequence, DateTime Recorded)> Loads = new();
+    private readonly Dictionary<string, (int Sequence, DateTime Recorded)> Loads = new();
 
     /// <summary>
     /// Records the sequence the file carried (0 when it carried none) under the character's UUID from that file. The UUID, not the
     /// object id, links the load to the login: a player logging back in gets their earlier object id back after the file loads.
     /// </summary>
-    public static void Record(string characterId, int sequence, DateTime now)
+    public void Record(string characterId, int sequence, DateTime now)
     {
         if (string.IsNullOrWhiteSpace(characterId))
             return;
@@ -39,7 +39,7 @@ public static class LoadedCraftFileSequences
     }
 
     /// <summary>Takes the recorded sequence for the character, once. False when there is none (already applied, or no file was loaded).</summary>
-    public static bool TryTake(string characterId, out int sequence)
+    public bool TryTake(string characterId, out int sequence)
     {
         if (!string.IsNullOrWhiteSpace(characterId) && Loads.Remove(characterId, out var load))
         {
@@ -63,7 +63,7 @@ public static class LoadedCraftFileSequences
     /// Sets the character's craft locals from the sequence its file loaded with, when one is waiting. Call it before anything reads them
     /// at login; later calls do nothing.
     /// </summary>
-    public static void Apply(string characterId, Func<string, int> getInt, Action<string, int> setInt)
+    public void Apply(string characterId, Func<string, int> getInt, Action<string, int> setInt)
     {
         if (!TryTake(characterId, out var file))
             return;
@@ -75,5 +75,5 @@ public static class LoadedCraftFileSequences
     }
 
     /// <summary>Forgets every record. For tests.</summary>
-    public static void Clear() => Loads.Clear();
+    public void Clear() => Loads.Clear();
 }

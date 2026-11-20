@@ -51,7 +51,7 @@ public class CraftFileSequenceReaderTests
     [TestCase("Native", "PlayerFileCheckpoint.cs", "public static void ApplyLoadedCraftSequence()")]
     public void TheModuleEnterHandler_AppliesTheFilesSequence(string folder, string file, string signature)
     {
-        Method(Source(folder, file), signature).Should().Contain("NwnCraftSessionWorld.ApplyLoadedSequence(GetEnteringObject());");
+        Method(Source(folder, file), signature).Should().Contain("NwnCraftSessionWorld.Instance.ApplyLoadedSequence(GetEnteringObject());");
     }
 
     private static string Source(params string[] relative) =>

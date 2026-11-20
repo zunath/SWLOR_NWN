@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetWidth(290f)
                                 .SetHeight(32f)
                                 .BindSelectedIndex(model => model.TimeZoneIndex);
-                            for (var index = 0; index < PlayerTimeZones.All.Count; index++)
+                            for (var index = 0; index < PlayerTimeZones.All.Length; index++)
                                 timeZones.AddOption(PlayerTimeZones.All[index].Label, index);
                         });
 

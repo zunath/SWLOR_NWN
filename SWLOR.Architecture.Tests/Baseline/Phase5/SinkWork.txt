@@ -20,7 +20,7 @@ SWLOR.Game.Server.NativeSinks.LegacyItemPropertiesSink | 146
 SWLOR.Game.Server.NativeSinks.NeckAppearanceSerializationSink | 44
 SWLOR.Game.Server.NativeSinks.OnAIActionAttackObjectSink | 879
 SWLOR.Game.Server.NativeSinks.PlayerCreationSink | 35
-SWLOR.Game.Server.NativeSinks.PlayerFileCheckpointSink | 106
+SWLOR.Game.Server.NativeSinks.PlayerFileCheckpointSink | 124
 SWLOR.Game.Server.NativeSinks.PlayerListNamePrivacySink | 35
 SWLOR.Game.Server.NativeSinks.PlayerSlotAssignmentSink | 109
 SWLOR.Game.Server.NativeSinks.QuickbarFeatLoadingSink | 10

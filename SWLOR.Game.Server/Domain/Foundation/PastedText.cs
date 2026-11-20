@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         private const int ColorStartTokenLength = 6;
 
         // Code points rather than literals, so the game-text encoding test keeps this file free of typographic punctuation.
-        private static readonly Dictionary<int, string> Replacements = new()
+        private static readonly FrozenDictionary<int, string> Replacements = new Dictionary<int, string>
         {
             // Single quotes and apostrophes.
             [0x2018] = "'", [0x2019] = "'", [0x201A] = "'", [0x201B] = "'", [0x2032] = "'", [0x02BC] = "'",
@@ -28,15 +29,15 @@ namespace SWLOR.Game.Server.Domain.Foundation
             // Line and paragraph separators.
             [0x0085] = "\n", [0x2028] = "\n", [0x2029] = "\n", ['\v'] = "\n", ['\f'] = "\n",
             ['\t'] = "    ",
-        };
+        }.ToFrozenDictionary();
 
         // The characters Windows-1252 places in 0x80-0x9F; with Latin-1 they make up the game's character set.
-        private static readonly HashSet<int> Windows1252HighCharacters = new()
+        private static readonly FrozenSet<int> Windows1252HighCharacters = new HashSet<int>
         {
             0x20AC, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021, 0x02C6, 0x2030, 0x0160, 0x2039, 0x0152, 0x017D,
             0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014, 0x02DC, 0x2122, 0x0161, 0x203A, 0x0153, 0x017E,
             0x0178,
-        };
+        }.ToFrozenSet();
 
         /// <summary>
         /// Returns the text with line endings changed to '\n', typographic punctuation changed to ASCII, special

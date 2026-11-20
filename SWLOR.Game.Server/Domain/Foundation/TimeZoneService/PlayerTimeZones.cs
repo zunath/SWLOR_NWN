@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         public const string UtcId = "UTC";
 
         // UTC first (the default), then by standard offset. Labels show the standard offset; daylight saving applies on its own.
-        public static readonly IReadOnlyList<PlayerTimeZone> All = new List<PlayerTimeZone>
+        public static readonly ImmutableArray<PlayerTimeZone> All = new PlayerTimeZone[]
         {
             new(UtcId, "UTC", "UTC"),
             new("Pacific/Honolulu", "UTC-10 Hawaii", "HST"),
@@ -45,11 +46,9 @@ namespace SWLOR.Game.Server.Domain.Foundation
             new("Australia/Sydney", "UTC+10 Australia East", "AEST", "AEDT"),
             new("Australia/Brisbane", "UTC+10 Queensland", "AEST"),
             new("Pacific/Auckland", "UTC+12 New Zealand", "NZST", "NZDT"),
-        };
+        }.ToImmutableArray();
 
         public static PlayerTimeZone Utc => All[0];
-
-        private static readonly Dictionary<string, TimeZoneInfo> Resolved = new();
 
         /// <summary>
         /// The zone with this id, or UTC when the id is empty or not in the list.
@@ -67,7 +66,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
 
         public static PlayerTimeZone GetByIndex(int index)
         {
-            return index >= 0 && index < All.Count ? All[index] : Utc;
+            return index >= 0 && index < All.Length ? All[index] : Utc;
         }
 
         /// <summary>
@@ -88,24 +87,15 @@ namespace SWLOR.Game.Server.Domain.Foundation
             if (zone == null || zone.Id == UtcId)
                 return TimeZoneInfo.Utc;
 
-            lock (Resolved)
+            // A host without the zone in its time zone database shows UTC rather than failing the window. The runtime caches
+            // the lookup, so nothing is kept here.
+            try
             {
-                if (!Resolved.TryGetValue(zone.Id, out var info))
-                {
-                    // A host without the zone in its time zone database shows UTC rather than failing the window.
-                    try
-                    {
-                        info = TimeZoneInfo.FindSystemTimeZoneById(zone.Id);
-                    }
-                    catch (Exception ex) when (ex is TimeZoneNotFoundException or InvalidTimeZoneException)
-                    {
-                        info = TimeZoneInfo.Utc;
-                    }
-
-                    Resolved[zone.Id] = info;
-                }
-
-                return info;
+                return TimeZoneInfo.FindSystemTimeZoneById(zone.Id);
+            }
+            catch (Exception ex) when (ex is TimeZoneNotFoundException or InvalidTimeZoneException)
+            {
+                return TimeZoneInfo.Utc;
             }
         }
 

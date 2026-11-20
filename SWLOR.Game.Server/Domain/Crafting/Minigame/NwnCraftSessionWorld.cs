@@ -23,6 +23,9 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
     /// <summary>The one world of the process. <see cref="SWLOR.Game.Server.Domain.Crafting.CraftService"/> owns it, because it keeps the properties of the item being crafted.</summary>
     public static NwnCraftSessionWorld Instance => Craft.SessionWorld;
 
+    /// <summary>The craft file sequence each character file carried when a player logged in with it, until they enter the module.</summary>
+    public LoadedCraftFileSequences LoadedFileSequences { get; } = new();
+
     private readonly BlueprintBonuses BlueprintBonusPicker = new();
 
     /// <summary>
@@ -373,8 +376,8 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
     /// Sets the player's craft locals from the sequence their character file loaded with, when that load is still waiting to be applied
     /// (see <see cref="LoadedCraftFileSequences"/>). Every read of the craft locals below calls it first.
     /// </summary>
-    public static void ApplyLoadedSequence(uint player) =>
-        LoadedCraftFileSequences.Apply(GetObjectUUID(player), name => GetLocalInt(player, name), (name, value) => SetLocalInt(player, name, value));
+    public void ApplyLoadedSequence(uint player) =>
+        LoadedFileSequences.Apply(GetObjectUUID(player), name => GetLocalInt(player, name), (name, value) => SetLocalInt(player, name, value));
 
     public int FileSequence(uint player)
     {
@@ -408,7 +411,7 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
             ExportAndRecord(player);
     }
 
-    private static void ExportAndRecord(uint player)
+    private void ExportAndRecord(uint player)
     {
         // The sequence is read at the moment of the export: the file written carries the value the local has now.
         ApplyLoadedSequence(player);
@@ -451,7 +454,7 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
             DeleteLocalBool(player, PersistPendingVariable);
             if (IsExportable(player))
-                ExportAndRecord(player);
+                Instance.ExportAndRecord(player);
         }
     }
 

@@ -22,6 +22,9 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The DM player search (the facade <c>Service.DMPlayerDirectory</c> until P2-ZN).</summary>
         public static IDMPlayerDirectoryService DMPlayerDirectory => FacadeAccessor.Resolve<IDMPlayerDirectoryService>();
 
+        /// <summary>DM-hosted events: the schedule, joining and the way back (the facade <c>Service.HostedEvents</c> until the cutover).</summary>
+        public static IHostedEventsService HostedEvents => FacadeAccessor.Resolve<IHostedEventsService>();
+
         /// <summary>The DM chat and display preferences (the facade <c>Service.DMPreference</c> until P2-ZN).</summary>
         public static IDMPreferenceService DMPreference => FacadeAccessor.Resolve<IDMPreferenceService>();
 

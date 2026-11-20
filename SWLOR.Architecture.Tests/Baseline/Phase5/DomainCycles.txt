@@ -17,6 +17,9 @@ Abilities <-> Combat | 2
 Abilities <-> Platform | 6
 Abilities content <-> Character content | 3
 Abilities content <-> Gameplay content | 4
+Administration <-> Combat | 2
+Administration <-> Foundation | 4
+Administration <-> World | 2
 Character <-> Combat | 2
 Character <-> Companions | 2
 Character <-> Creatures | 2
@@ -33,6 +36,7 @@ Combat <-> Social | 2
 Combat <-> World | 2
 Companions <-> Items | 2
 Crafting <-> Items | 2
+Crafting <-> Platform | 4
 Creatures <-> Platform | 5
 Economy <-> Quests | 2
 Foundation <-> Platform | 9

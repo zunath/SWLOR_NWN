@@ -136,7 +136,7 @@
     "Administration": {
       "services": [
         "DMBlueprintCatalog", "DMCreatorFavorite", "DMCreatureManagerFavorite", "DMObjectDetails",
-        "DMObjectSearch", "DMPlayerDirectory", "DMPreference", "DMPresence", "HostedEvent"
+        "DMObjectSearch", "DMPlayerDirectory", "DMPreference", "DMPresence", "HostedEvent", "HostedEvents"
       ],
       "featureFolders": []
     },

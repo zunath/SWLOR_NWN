@@ -1163,12 +1163,12 @@ public class CraftSessionLifecycleTests
     public void RecoverAtLogin_WithTheLoadedFilesSequence_NeverGivesTheLastCraftAgain_HoweverOftenThePlayerRelogs()
     {
         // What the login applies now: the sequence the file carried, recorded at load under the character's UUID.
-        LoadedCraftFileSequences.Clear();
+        var loads = new LoadedCraftFileSequences();
         CraftThenRelogTwice(file =>
         {
             var locals = new Dictionary<string, int> { [CraftSessionFileSequence.LoadedVariable] = 0 };
-            LoadedCraftFileSequences.Record("pc", file, DateTime.UtcNow);
-            LoadedCraftFileSequences.Apply("pc", name => locals.GetValueOrDefault(name), (name, value) => locals[name] = value);
+            loads.Record("pc", file, DateTime.UtcNow);
+            loads.Apply("pc", name => locals.GetValueOrDefault(name), (name, value) => locals[name] = value);
             return locals[CraftSessionFileSequence.LoadedVariable];
         });
 

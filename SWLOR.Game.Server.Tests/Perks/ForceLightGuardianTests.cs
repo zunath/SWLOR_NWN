@@ -533,11 +533,11 @@ public class ForceLightGuardianTests
     public void ForceAffinity_IsShownWhileBrowsingPerksNotOnlyInMyPerks()
     {
         var root = FindRepositoryRoot();
-        var viewModel = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "GuiDefinition" / "ViewModel" / "PerksViewModel.cs").FullName);
+        var viewModel = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "GuiDefinition" / "PerksWindow" / "PerkListBuilder.cs").FullName);
 
-        viewModel.Should().Contain("IsForceAffinityVisible = !IsInBeastPerksMode &&",
+        viewModel.Should().Contain("host.IsForceAffinityVisible = !host.IsInBeastPerksMode &&",
             "affinity decides whether an opposing power lands at half strength, so it belongs on the browse screen too");
-        viewModel.Should().NotContain("IsForceAffinityVisible = IsInMyPerksMode");
+        viewModel.Should().NotContain("IsForceAffinityVisible = host.IsInMyPerksMode");
     }
 
     private static PathInfo FindRepositoryRoot()

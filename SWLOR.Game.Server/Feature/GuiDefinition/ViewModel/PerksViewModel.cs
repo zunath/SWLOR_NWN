@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Economy;
@@ -13,7 +14,6 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
-using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Core;
 
@@ -22,30 +22,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class PerksViewModel : GuiViewModelBase<PerksViewModel, GuiPayloadBase>,
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<PerkResetAcquiredRefreshEvent>,
-        IGuiRefreshable<PerkRefundCooldownResetRefreshEvent>
+        IGuiRefreshable<PerkRefundCooldownResetRefreshEvent>,
+        IPerksHost
     {
-        private const int ItemsPerPage = 30;
-        // The first hotbar row is F1 through F12, which is slot indices 0 through 11.
-        private const int AutoAddHotBarSlots = 12;
-        private const int TotalHotBarSlots = 36;
+        private ICurrencyService Currency { get; }
+        private IDBService DB { get; }
+        private IPerkService Perk { get; }
+        private PerkDetailText PerkDetailText { get; }
+        private PerkListBuilder PerkListBuilder { get; }
+        private PerkPurchaseService PerkPurchaseService { get; }
+
         private int _pages;
         private bool _initialLoadDone;
-
-        private enum PerkSortOrder
-        {
-            AlphabeticalAscending = 0,
-            AlphabeticalDescending = 1,
-            SkillLevelAscending = 2,
-            SkillLevelDescending = 3
-        }
-
-        private enum PerkRowStatus
-        {
-            Maxed,
-            Buyable,
-            Unaffordable,
-            Locked
-        }
 
         public GuiBindingList<GuiComboEntry> PageNumbers
         {
@@ -303,8 +291,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public PerksViewModel()
+        public PerksViewModel(ICurrencyService currency, IDBService db, IPerkService perk, PerkDetailText perkDetailText, PerkListBuilder perkListBuilder, PerkPurchaseService perkPurchaseService)
         {
+            Currency = currency;
+            DB = db;
+            Perk = perk;
+            PerkDetailText = perkDetailText;
+            PerkListBuilder = perkListBuilder;
+            PerkPurchaseService = perkPurchaseService;
             _filteredPerks = new List<PerkType>();
             PerkButtonIcons = new GuiBindingList<string>();
             PerkButtonColors = new GuiBindingList<GuiColor>();
@@ -344,6 +338,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedPage);
         }
 
+        private void LoadCategories() => PerkListBuilder.LoadCategories(this);
+
+        private void LoadDetails() => PerkListBuilder.LoadDetails(this);
+
+        private void LoadPerks() => PerkListBuilder.LoadPerks(this);
+
         private void ResetPerkList()
         {
             SelectedPerkIndex = -1;
@@ -364,524 +364,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsFilterOwned = false;
             IsFilterCanBuy = false;
             IsFilterMaxed = false;
-        }
-
-        private (PerkRowStatus status, GuiColor color, string iconResref, string tooltip) GetPerkRowStatus(PerkDetail detail, int rank, int unallocatedSP)
-        {
-            var nextUpgrade = detail.PerkLevels.ContainsKey(rank + 1)
-                ? detail.PerkLevels[rank + 1]
-                : null;
-
-            if (nextUpgrade == null)
-            {
-                return (PerkRowStatus.Maxed, new GuiColor(90, 170, 230), PerkRequirementCategoryResolver.MaxedIcon, "Fully upgraded.");
-            }
-
-            // Find the first unmet requirement (the active restriction), if any.
-            IPerkRequirement gatingRequirement = null;
-            var gatingError = string.Empty;
-            foreach (var req in nextUpgrade.Requirements)
-            {
-                var error = req.CheckRequirements(Player);
-                if (!string.IsNullOrWhiteSpace(error))
-                {
-                    gatingRequirement = req;
-                    gatingError = error;
-                    break;
-                }
-            }
-
-            // When locked, show the gating requirement's red (inaccessible) icon.
-            if (gatingRequirement != null)
-            {
-                var lockedDetail = PerkRequirementCategoryResolver.GetDetail(gatingRequirement.Category);
-                var tooltip = $"Locked - {lockedDetail.Name}: {gatingRequirement.RequirementText}. {gatingError}";
-                return (PerkRowStatus.Locked, GuiColor.Grey, lockedDetail.IconResrefLocked, tooltip);
-            }
-
-            // Requirements met: show the green check (purchasable, or met but unaffordable).
-            if (unallocatedSP >= nextUpgrade.Price)
-            {
-                return (PerkRowStatus.Buyable, new GuiColor(60, 200, 90), PerkRequirementCategoryResolver.MetIcon, $"Can buy - {nextUpgrade.Price} SP");
-            }
-
-            return (PerkRowStatus.Unaffordable, new GuiColor(230, 180, 70), PerkRequirementCategoryResolver.MetIcon,
-                $"Costs {nextUpgrade.Price} SP - you have {unallocatedSP}");
-        }
-
-        private void LoadCategories()
-        {
-            var groupType = IsInMyPerksMode ? PerkGroupType.Player : PerkGroupType.Beast;
-            var categories = new GuiBindingList<GuiComboEntry>
-            {
-                new("<All Categories>", 0)
-            };
-
-            foreach (var (type, detail) in Perk.GetAllActivePerkCategories(groupType))
-            {
-                categories.Add(new GuiComboEntry(detail.Name, (int)type));
-            }
-
-            Categories = categories;
-        }
-
-        private void LoadDetails()
-        {
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var now = Clock.UtcNow;
-
-            LoadForceAffinityDetails(dbPlayer);
-
-            if (IsInMyPerksMode)
-            {
-                AvailableSP = $"Available SP: {dbPlayer.UnallocatedSP}";
-                TotalSP = $"Total SP: {Skill.GetTotalSkillPoints(dbPlayer)} / {SkillService.TotalSkillPointCap}";
-                WindowTitle = $"Perks - {dbPlayer.UnallocatedSP} SP available";
-            }
-            else if (IsInBeastPerksMode)
-            {
-                var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
-                AvailableSP = $"Available SP: {dbBeast.UnallocatedSP}";
-                TotalSP = $"Total SP: {dbBeast.Level} / {BeastMasteryService.MaxLevel}";
-                WindowTitle = $"Beast Perks - {dbBeast.UnallocatedSP} SP available";
-            }
-
-            var dateRefundAvailable = dbPlayer.DatePerkRefundAvailable ?? now;
-            var isRefundAvailable = dateRefundAvailable <= now;
-            var dateRefundAvailableText = isRefundAvailable
-                ? "Now"
-                : Time.GetTimeToWaitLongIntervals(now, dateRefundAvailable, true);
-            ResetNextAvailable = $"Reset Available: {dateRefundAvailableText} [# Available: {Currency.GetCurrency(Player, CurrencyType.PerkRefundToken)}]";
-            IsRefundEnabled = false;
-            HasBeast = !string.IsNullOrWhiteSpace(dbPlayer.ActiveBeastId);
-        }
-
-        private void LoadForceAffinityDetails(Player dbPlayer)
-        {
-            // Shown while browsing as well as in My Perks: affinity decides whether an opposing
-            // power lands at half strength, so players need it before they spend SP, not after.
-            IsForceAffinityVisible = !IsInBeastPerksMode &&
-                                     dbPlayer.CharacterType == CharacterType.ForceSensitive;
-            if (!IsForceAffinityVisible)
-            {
-                ForceAffinityHeading = string.Empty;
-                ForceAffinityColor = GuiColor.White;
-                return;
-            }
-
-            var affinity = Perk.GetForceAffinity(Player);
-            var affinityLabel = FormatForceAffinity(affinity);
-            ForceAffinityHeading = $"FORCE AFFINITY: {affinityLabel}";
-            ForceAffinityColor = affinity > 0
-                ? new GuiColor(120, 190, 255)
-                : affinity < 0
-                    ? new GuiColor(225, 100, 100)
-                    : new GuiColor(221, 181, 93);
-        }
-
-        private void LoadPerks()
-        {
-            if (!_initialLoadDone) return;
-
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var dbBeast = IsInBeastPerksMode
-                ? DB.Get<Beast>(dbPlayer.ActiveBeastId)
-                : null;
-
-            _filteredPerks.Clear();
-            SelectedPerkIndex = -1;
-
-            var perkButtonColors = new GuiBindingList<GuiColor>();
-            var perkButtonIcons = new GuiBindingList<string>();
-            var perkButtonTexts = new GuiBindingList<string>();
-            var perkDetailSelected = new GuiBindingList<bool>();
-            var perkRowReqIcons = new GuiBindingList<string>();
-            var perkRowReqTooltips = new GuiBindingList<string>();
-            var perkRowCosts = new GuiBindingList<string>();
-            var pageNumbers = new GuiBindingList<GuiComboEntry>();
-
-            var group = IsInMyPerksMode
-                ? PerkGroupType.Player
-                : PerkGroupType.Beast;
-            var perkList = SelectedPerkCategoryId == 0
-                ? Perk.GetAllActivePerks(group)
-                : Perk.GetActivePerksInCategory(group, (PerkCategoryType)SelectedPerkCategoryId);
-
-            // Filter down to just perks with a name partially matching the search text
-            if (!string.IsNullOrWhiteSpace(SearchText))
-            {
-                perkList = perkList.Where(x => x.Value.Name.ToLower().Contains(SearchText.ToLower()))
-                    .ToDictionary(x => x.Key, y => y.Value);
-            }
-
-            var sortedPerks = SortPerks(perkList, dbPlayer, dbBeast).ToList();
-
-            var unallocatedSP = IsInMyPerksMode
-                ? dbPlayer.UnallocatedSP
-                : dbBeast?.UnallocatedSP ?? 0;
-
-            // Row status is computed once per perk and reused between the status filter
-            // and the page bindings, since GetPerkRowStatus runs requirement checks that
-            // can hit the database.
-            var rowStateCache = new Dictionary<PerkType, (int rank, PerkRowStatus status, GuiColor color, string iconResref, string tooltip)>();
-
-            (int rank, PerkRowStatus status, GuiColor color, string iconResref, string tooltip) GetRowState(PerkType type, PerkDetail detail)
-            {
-                if (!rowStateCache.TryGetValue(type, out var state))
-                {
-                    var rank = GetDisplayPerkRank(detail, GetCurrentPerkRank(dbPlayer, dbBeast, type));
-                    var (status, color, iconResref, tooltip) = GetPerkRowStatus(detail, rank, unallocatedSP);
-                    state = (rank, status, color, iconResref, tooltip);
-                    rowStateCache[type] = state;
-                }
-
-                return state;
-            }
-
-            // Apply the status filter to the full sorted list before pagination so that
-            // pages, page numbers, and the selection index list all reflect the filtered set.
-            if (SelectedStatusFilter != 0)
-            {
-                sortedPerks = sortedPerks.Where(x =>
-                {
-                    var (rank, status, _, _, _) = GetRowState(x.Key, x.Value);
-
-                    return SelectedStatusFilter switch
-                    {
-                        1 => rank >= 1,
-                        2 => status == PerkRowStatus.Buyable,
-                        3 => status == PerkRowStatus.Maxed,
-                        _ => true
-                    };
-                }).ToList();
-            }
-
-            _pages = sortedPerks.Count / ItemsPerPage + (sortedPerks.Count % ItemsPerPage == 0 ? 0 : 1);
-
-            for (var x = 1; x <= _pages; x++)
-            {
-                pageNumbers.Add(new GuiComboEntry($"Page {x}", x));
-            }
-
-            // Paginate the results
-            var pagedPerks = sortedPerks
-                .Skip((SelectedPage - 1) * ItemsPerPage)
-                .Take(ItemsPerPage);
-
-            foreach (var (type, detail) in pagedPerks)
-            {
-                var (rank, _, color, iconResref, tooltip) = GetRowState(type, detail);
-
-                _filteredPerks.Add(type);
-                perkButtonIcons.Add(detail.IconResref);
-                perkButtonTexts.Add($"{detail.Name} ({rank}/{detail.PerkLevels.Count})");
-                perkDetailSelected.Add(false);
-                perkButtonColors.Add(color);
-                perkRowReqIcons.Add(iconResref);
-                perkRowReqTooltips.Add(tooltip);
-
-                var nextLevel = detail.PerkLevels.ContainsKey(rank + 1)
-                    ? detail.PerkLevels[rank + 1]
-                    : null;
-                perkRowCosts.Add(nextLevel != null ? $"{nextLevel.Price} SP" : string.Empty);
-            }
-
-            PerkButtonColors = perkButtonColors;
-            PerkButtonIcons = perkButtonIcons;
-            PerkButtonTexts = perkButtonTexts;
-            PerkDetailSelected = perkDetailSelected;
-            PerkRowReqIcons = perkRowReqIcons;
-            PerkRowReqTooltips = perkRowReqTooltips;
-            PerkRowCosts = perkRowCosts;
-            PageNumbers = pageNumbers;
-
-            // Select the first perk so the detail panel shows content immediately
-            // instead of leaving an empty pane when the list loads or is re-filtered.
-            if (_filteredPerks.Count > 0)
-            {
-                SelectPerkAt(0);
-            }
-        }
-
-        private IEnumerable<KeyValuePair<PerkType, PerkDetail>> SortPerks(
-            IEnumerable<KeyValuePair<PerkType, PerkDetail>> perks,
-            Player dbPlayer,
-            Beast dbBeast)
-        {
-            var sortOrder = (PerkSortOrder)SelectedSortOrderId;
-
-            return sortOrder switch
-            {
-                PerkSortOrder.AlphabeticalDescending => perks
-                    .OrderByDescending(x => x.Value.Name, StringComparer.OrdinalIgnoreCase),
-                PerkSortOrder.SkillLevelAscending => perks
-                    .OrderBy(x => GetRequiredSkillLevelSortOrder(x.Value, GetCurrentPerkRank(dbPlayer, dbBeast, x.Key)))
-                    .ThenBy(x => x.Value.Name, StringComparer.OrdinalIgnoreCase),
-                PerkSortOrder.SkillLevelDescending => perks
-                    .OrderByDescending(x => GetRequiredSkillLevelSortOrder(x.Value, GetCurrentPerkRank(dbPlayer, dbBeast, x.Key)))
-                    .ThenBy(x => x.Value.Name, StringComparer.OrdinalIgnoreCase),
-                _ => perks.OrderBy(x => x.Value.Name, StringComparer.OrdinalIgnoreCase)
-            };
-        }
-
-        private int GetCurrentPerkRank(Player dbPlayer, Beast dbBeast, PerkType perkType)
-        {
-            if (IsInMyPerksMode)
-            {
-                return dbPlayer.Perks.ContainsKey(perkType)
-                    ? dbPlayer.Perks[perkType]
-                    : 0;
-            }
-
-            if (dbBeast == null)
-                return 0;
-
-            return dbBeast.Perks.ContainsKey(perkType)
-                ? dbBeast.Perks[perkType]
-                : 0;
-        }
-
-        private static int GetDisplayPerkRank(PerkDetail detail, int savedRank)
-        {
-            // Characters awaiting a rebuild can retain ranks removed from the definition.
-            // Only normalize the UI; preserve their saved ranks for the rebuild.
-            return Math.Clamp(savedRank, 0, detail.PerkLevels.Count);
-        }
-
-        private static int GetRequiredSkillLevelSortOrder(PerkDetail detail, int rank)
-        {
-            rank = GetDisplayPerkRank(detail, rank);
-            if (detail.PerkLevels.TryGetValue(rank + 1, out var nextUpgrade))
-                return GetRequiredSkillLevel(nextUpgrade);
-
-            return detail.PerkLevels
-                .Where(x => x.Key <= rank)
-                .OrderByDescending(x => x.Key)
-                .Select(x => GetRequiredSkillLevel(x.Value))
-                .FirstOrDefault(x => x > 0);
-        }
-
-        private static int GetRequiredSkillLevel(PerkLevel level)
-        {
-            return level.Requirements
-                .OfType<PerkRequirementSkill>()
-                .Select(x => x.RequiredRank)
-                .DefaultIfEmpty(0)
-                .Max();
-        }
-
-        private string BuildSelectedPerkDetailText(PerkDetail detail, PerkLevel currentUpgrade, PerkLevel nextUpgrade, int rank)
-        {
-            var categoryDetail = Perk.GetPerkCategoryDetails(detail.Category);
-            var selectedDetails = detail.Name + "\n\n";
-
-            selectedDetails += $"[{categoryDetail.Name}]\n";
-            var isActive = detail.HotBarActionModes.Count > 0 ||
-                           detail.PerkLevels.Values.SelectMany(level => level.GrantedFeats)
-                               .Any(feat => AbilityCatalog.IsFeatRegistered(feat));
-            selectedDetails += $"Type: {(isActive ? "Active" : "Passive")}\n";
-
-            var forceAffinityText = BuildForceAffinityPerkDetailText(detail);
-            if (!string.IsNullOrWhiteSpace(forceAffinityText))
-            {
-                selectedDetails += forceAffinityText + "\n";
-            }
-
-            var recastGroupText = BuildRecastGroupText(detail);
-            if (!string.IsNullOrWhiteSpace(recastGroupText))
-            {
-                selectedDetails += recastGroupText + "\n";
-            }
-
-            selectedDetails += "\n";
-
-            selectedDetails += $"Rank {rank} / {detail.PerkLevels.Count}\n\n";
-
-            if (detail.Description != null)
-            {
-                selectedDetails += "Description:\n" + detail.Description + "\n\n";
-            }
-
-            if (currentUpgrade != null)
-            {
-                selectedDetails += $"Current (rank {rank}):\n" + BuildAbilityCostText(currentUpgrade) +
-                                   currentUpgrade.Description + "\n\n";
-            }
-
-            if (nextUpgrade != null)
-            {
-                selectedDetails += $"Next Upgrade (rank {rank + 1}) - {nextUpgrade.Price} SP:\n" +
-                                   BuildAbilityCostText(nextUpgrade) + nextUpgrade.Description + "\n\n";
-            }
-
-            selectedDetails += BuildStatusEffectPerkDetailText(detail, currentUpgrade, nextUpgrade);
-            return selectedDetails;
-        }
-
-        private static string BuildAbilityCostText(PerkLevel level)
-        {
-            var abilities = level.GrantedFeats
-                .Where(feat => AbilityCatalog.IsFeatRegistered(feat))
-                .Select(feat => AbilityCatalog.GetAbilityDetail(feat))
-                .ToList();
-            var text = string.Empty;
-            foreach (var ability in abilities)
-            {
-                var fp = ability.Requirements.OfType<AbilityRequirementFP>().Sum(x => x.RequiredFP);
-                var stamina = ability.Requirements.OfType<AbilityRequirementStamina>().Sum(x => x.RequiredSTM);
-                // Match the base costs and recast shown in the native ability tooltip.
-                var recast = ability.RecastDelay?.Invoke(OBJECT_INVALID) ?? 0f;
-                if (abilities.Count > 1)
-                    text += ability.Name + "\n";
-                text += $"FP: {fp}\nSTM: {stamina}\nRecast: {recast:0.#}s\n";
-            }
-            return text;
-        }
-
-        private static string BuildStatusEffectPerkDetailText(PerkDetail detail, PerkLevel currentUpgrade, PerkLevel nextUpgrade)
-        {
-            var descriptions = string.Join(" ", detail.Description, currentUpgrade?.Description, nextUpgrade?.Description);
-            var refersToControl = descriptions.Contains("control effect", StringComparison.OrdinalIgnoreCase) ||
-                                  descriptions.Contains("controlled", StringComparison.OrdinalIgnoreCase);
-            var refersToHarmful = descriptions.Contains("harmful effect", StringComparison.OrdinalIgnoreCase) ||
-                                  descriptions.Contains("harmful status", StringComparison.OrdinalIgnoreCase);
-            if (!refersToControl && !refersToHarmful)
-                return string.Empty;
-
-            var text = string.Empty;
-            if (refersToControl)
-            {
-                text += "Control effects: " + StatusEffectGuideTopics.ControlEffects.Replace(";", ",") + ".\n" +
-                        "All control effects also count as harmful effects. Conditions saying 'you applied' require your own effect.\n";
-            }
-            if (refersToHarmful)
-            {
-                text += "Harmful effects include control effects, damage over time, and other debuffs. A specific cleanse may only remove the effects it names.\n";
-            }
-            return text + "Full definitions in Player Guide: " + StatusEffectGuideTopics.TopicName + ".\n";
-        }
-
-        private string BuildForceAffinityPerkDetailText(PerkDetail detail)
-        {
-            if (!IsForcePerkCategory(detail.Category))
-                return string.Empty;
-
-            if (detail.ForceAffinityType == null)
-            {
-                return "\nUNIVERSAL FORCE POWER\n" +
-                       "Does not change Force Affinity and receives no affinity magnitude or hit-chance adjustment.";
-            }
-
-            var affinity = Perk.GetForceAffinity(Player);
-            var alignment = detail.ForceAffinityType.Value == ForceAffinityType.Light ? "LIGHT" : "DARK";
-            var contribution = detail.ForceAffinityType.Value == ForceAffinityType.Light ? "+1 Light" : "-1 Dark";
-            var magnitudeAdjustment = (int)Math.Round(
-                (Perk.GetForceAffinityMagnitudeMultiplier(Player, detail.Type) - 1f) * 100f,
-                MidpointRounding.AwayFromZero);
-            var restorativeAdjustment = (int)Math.Round(
-                (Perk.GetForceAffinityRestorativeMagnitudeMultiplier(Player, detail.Type) - 1f) * 100f,
-                MidpointRounding.AwayFromZero);
-            var hitChanceAdjustment = Perk.GetForceAffinityHitChanceAdjustment(Player, detail.Type);
-            var restorativeNote = restorativeAdjustment != magnitudeAdjustment
-                ? $" ({FormatSignedPercent(restorativeAdjustment)} for heals and shields)"
-                : string.Empty;
-
-            return $"\n{alignment}-ALIGNED FORCE POWER\n" +
-                   $"At {FormatForceAffinity(affinity)}: {FormatSignedPercent(magnitudeAdjustment)} magnitude{restorativeNote}, " +
-                   $"{FormatSignedPercent(hitChanceAdjustment)} hit chance.\n" +
-                   $"Owning any rank contributes {contribution}; additional ranks do not add more affinity.";
-        }
-
-        private static bool IsForcePerkCategory(PerkCategoryType category)
-        {
-            return category == PerkCategoryType.ForceAlter ||
-                   category == PerkCategoryType.ForceControl ||
-                   category == PerkCategoryType.ForceSense;
-        }
-
-        private static string FormatForceAffinity(int affinity)
-        {
-            return affinity > 0
-                ? $"+{affinity} Light"
-                : affinity < 0
-                    ? $"{affinity} Dark"
-                    : "0 Neutral";
-        }
-
-        private static string FormatSignedPercent(int adjustment)
-        {
-            return adjustment > 0 ? $"+{adjustment}%" : $"{adjustment}%";
-        }
-
-        private static string BuildRecastGroupText(PerkDetail detail)
-        {
-            var recastGroup = Perk.GetActiveAbilityRecastGroup(detail.Type);
-            if (recastGroup == RecastGroup.Invalid ||
-                !Recast.IsRecastGroupVisible(recastGroup))
-            {
-                return string.Empty;
-            }
-
-            return $"Recast Group: {Recast.GetRecastGroupDisplayName(recastGroup)}";
-        }
-
-        private (bool meetsRequirements,
-            GuiBindingList<string> texts,
-            GuiBindingList<GuiColor> colors,
-            GuiBindingList<string> icons,
-            GuiBindingList<string> tooltips) BuildRequirements(PerkLevel nextUpgrade)
-        {
-            var meetsRequirements = true;
-            var requirements = new GuiBindingList<string>();
-            var requirementColors = new GuiBindingList<GuiColor>();
-            var requirementIcons = new GuiBindingList<string>();
-            var requirementTooltips = new GuiBindingList<string>();
-
-            if (nextUpgrade == null)
-            {
-                requirements.Add("MAXED");
-                requirementColors.Add(GuiColor.Green);
-                requirementIcons.Add(PerkRequirementCategoryResolver.MaxedIcon);
-                requirementTooltips.Add("This perk is fully upgraded.");
-            }
-            else
-            {
-                foreach (var req in nextUpgrade.Requirements)
-                {
-                    requirements.Add(req.RequirementText);
-
-                    var categoryDetail = PerkRequirementCategoryResolver.GetDetail(req.Category);
-                    var error = req.CheckRequirements(Player);
-                    var met = string.IsNullOrWhiteSpace(error);
-
-                    // Show the red locked icon when the requirement is not met.
-                    requirementIcons.Add(categoryDetail.GetIcon(met));
-
-                    if (met)
-                    {
-                        requirementColors.Add(GuiColor.Green);
-                        requirementTooltips.Add($"{categoryDetail.Name}: {req.RequirementText} - met.");
-                    }
-                    else
-                    {
-                        requirementColors.Add(GuiColor.Red);
-                        requirementTooltips.Add($"{categoryDetail.Name}: {req.RequirementText} - {error}");
-                        meetsRequirements = false;
-                    }
-                }
-
-                if (nextUpgrade.Requirements.Count <= 0)
-                {
-                    requirements.Add("None");
-                    requirementColors.Add(GuiColor.Green);
-                    requirementIcons.Add(PerkRequirementCategoryResolver.MetIcon);
-                    requirementTooltips.Add("This upgrade has no requirements.");
-                }
-            }
-
-            return (meetsRequirements, requirements, requirementColors, requirementIcons, requirementTooltips);
         }
 
         public Action OnSelectPerk() => () =>
@@ -933,7 +415,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 unallocatedSP = dbBeast.UnallocatedSP;
             }
 
-            rank = GetDisplayPerkRank(detail, rank);
+            rank = PerkListBuilder.GetDisplayPerkRank(detail, rank);
             var currentUpgrade = detail.PerkLevels.ContainsKey(rank)
                 ? detail.PerkLevels[rank]
                 : null;
@@ -941,9 +423,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? detail.PerkLevels[rank + 1]
                 : null;
 
-            var selectedDetails = BuildSelectedPerkDetailText(detail, currentUpgrade, nextUpgrade, rank);
+            var selectedDetails = PerkDetailText.BuildSelectedPerkDetailText(this, detail, currentUpgrade, nextUpgrade, rank);
 
-            var (meetsRequirements, requirements, requirementColors, requirementIcons, requirementTooltips) = BuildRequirements(nextUpgrade);
+            var (meetsRequirements, requirements, requirementColors, requirementIcons, requirementTooltips) = PerkListBuilder.BuildRequirements(this, nextUpgrade);
             SelectedRequirements = requirements;
             SelectedRequirementColors = requirementColors;
             SelectedRequirementIcons = requirementIcons;
@@ -964,227 +446,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                               currentUpgrade != null;
         }
 
-        private void GrantFeats(PerkType perkType, int rank)
-        {
-            var target = IsInMyPerksMode ? Player : GetAssociate(AssociateType.Henchman, Player);
-            if (!GetIsObjectValid(target))
-                return;
-
-            var previousActiveAbilityFeats = Perk.GetCurrentActiveAbilityFeats(perkType, rank - 1);
-            var currentActiveAbilityFeats = Perk.GetCurrentActiveAbilityFeats(perkType, rank);
-
-            Perk.SyncGrantedFeats(target, perkType, rank, true);
-            SyncHotBarActiveAbilityFeats(previousActiveAbilityFeats, currentActiveAbilityFeats);
-
-            if (rank == 1)
-            {
-                foreach (var actionMode in Perk.GetPerkDetails(perkType).HotBarActionModes)
-                {
-                    AddModeToggleToHotBar(actionMode);
-                }
-            }
-        }
-
-        private void SyncHotBarActiveAbilityFeats(
-            IReadOnlyList<FeatType> previousActiveAbilityFeats,
-            IReadOnlyList<FeatType> currentActiveAbilityFeats)
-        {
-            if (!IsInMyPerksMode)
-                return;
-
-            var currentFeats = currentActiveAbilityFeats
-                .Select(feat => QuickCast.GetOriginalFeat(feat))
-                .Where(CanAddFeatToHotBar)
-                .Distinct()
-                .ToList();
-            var previousFeats = previousActiveAbilityFeats
-                .Select(feat => QuickCast.GetOriginalFeat(feat))
-                .Where(CanAddFeatToHotBar)
-                .Distinct()
-                .ToList();
-            var replacedFeats = previousFeats
-                .Except(currentFeats)
-                .ToHashSet();
-            var addedFeats = currentFeats
-                .Except(previousFeats)
-                .ToList();
-            var replacementIndex = 0;
-
-            if (replacedFeats.Count > 0)
-            {
-                for (var slot = 0; slot < TotalHotBarSlots; slot++)
-                {
-                    var quickBarSlot = PlayerPlugin.GetQuickBarSlot(Player, slot);
-                    if (!IsFeatHotBarSlot(quickBarSlot, replacedFeats))
-                        continue;
-
-                    if (replacementIndex < currentFeats.Count)
-                    {
-                        PlayerPlugin.SetQuickBarSlot(Player, slot, PlayerQuickBarSlot.UseFeat(
-                            QuickCast.GetDisplayedFeat(Player, currentFeats[replacementIndex])));
-                        replacementIndex++;
-                    }
-                    else
-                    {
-                        PlayerPlugin.SetQuickBarSlot(Player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
-                    }
-                }
-            }
-
-            foreach (var feat in addedFeats)
-            {
-                AddFeatToHotBar(feat);
-            }
-        }
-
-        private static bool CanAddFeatToHotBar(FeatType feat)
-        {
-            feat = QuickCast.GetOriginalFeat(feat);
-            return AbilityCatalog.IsFeatRegistered(feat) &&
-                   AbilityCatalog.GetAbilityDetail(feat).ImpactAction != null;
-        }
-
-        private static bool IsFeatHotBarSlot(QuickBarSlot quickBarSlot, IReadOnlySet<FeatType> feats)
-        {
-            return quickBarSlot.ObjectType == QuickBarSlotType.Feat &&
-                   feats.Contains(QuickCast.GetOriginalFeat((FeatType)quickBarSlot.INTParam1));
-        }
-
-        private bool IsFeatOnHotBar(FeatType feat)
-        {
-            feat = QuickCast.GetOriginalFeat(feat);
-            for (var slot = 0; slot < TotalHotBarSlots; slot++)
-            {
-                var quickBarSlot = PlayerPlugin.GetQuickBarSlot(Player, slot);
-                if (quickBarSlot.ObjectType == QuickBarSlotType.Feat &&
-                    QuickCast.GetOriginalFeat((FeatType)quickBarSlot.INTParam1) == feat)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private void AddFeatToHotBar(FeatType feat)
-        {
-            if (!IsInMyPerksMode)
-                return;
-
-            if (IsFeatOnHotBar(feat))
-                return;
-
-            var qbs = PlayerQuickBarSlot.UseFeat(QuickCast.GetDisplayedFeat(Player, feat));
-
-            // Try to add the new feat to the player's hotbar.
-            for (var slot = 0; slot < AutoAddHotBarSlots; slot++)
-            {
-                if (PlayerPlugin.GetQuickBarSlot(Player, slot).ObjectType != QuickBarSlotType.Empty)
-                    continue;
-
-                PlayerPlugin.SetQuickBarSlot(Player, slot, qbs);
-                return;
-            }
-        }
-
-        private void AddModeToggleToHotBar(ActionMode mode)
-        {
-            if (!IsInMyPerksMode)
-                return;
-
-            if (IsModeOnHotBar(mode))
-                return;
-
-            var quickBarSlot = PlayerQuickBarSlot.ToggleMode((int)mode);
-            for (var slot = 0; slot < AutoAddHotBarSlots; slot++)
-            {
-                if (PlayerPlugin.GetQuickBarSlot(Player, slot).ObjectType != QuickBarSlotType.Empty)
-                    continue;
-
-                PlayerPlugin.SetQuickBarSlot(Player, slot, quickBarSlot);
-                return;
-            }
-        }
-
-        private bool IsModeOnHotBar(ActionMode mode)
-        {
-            for (var slot = 0; slot < TotalHotBarSlots; slot++)
-            {
-                if (IsModeHotBarSlot(PlayerPlugin.GetQuickBarSlot(Player, slot), mode))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private static bool IsModeHotBarSlot(QuickBarSlot quickBarSlot, ActionMode mode)
-        {
-            return quickBarSlot.ObjectType == QuickBarSlotType.ModeToggle &&
-                   quickBarSlot.INTParam1 == (int)mode;
-        }
-
-        private void RemoveModeToggleFromHotBar(ActionMode mode)
-        {
-            if (!IsInMyPerksMode)
-                return;
-
-            for (var slot = 0; slot < TotalHotBarSlots; slot++)
-            {
-                var quickBarSlot = PlayerPlugin.GetQuickBarSlot(Player, slot);
-                if (IsModeHotBarSlot(quickBarSlot, mode))
-                {
-                    PlayerPlugin.SetQuickBarSlot(
-                        Player,
-                        slot,
-                        PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
-                }
-            }
-        }
-
-        private void RemoveFeatsFromHotBar(IEnumerable<FeatType> feats)
-        {
-            if (!IsInMyPerksMode)
-                return;
-
-            var featSet = feats.Select(feat => QuickCast.GetOriginalFeat(feat)).ToHashSet();
-            if (featSet.Count <= 0)
-                return;
-
-            for (var slot = 0; slot < TotalHotBarSlots; slot++)
-            {
-                var quickBarSlot = PlayerPlugin.GetQuickBarSlot(Player, slot);
-                if (IsFeatHotBarSlot(quickBarSlot, featSet))
-                {
-                    PlayerPlugin.SetQuickBarSlot(Player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
-                }
-            }
-        }
-
-        // Applies any Purchase triggers associated with this perk.
-        private void ApplyPurchasePerkTriggers(int perkLevel, PerkType selectedPerk)
-        {
-            var target = IsInMyPerksMode ? Player : GetAssociate(AssociateType.Henchman, Player);
-            if (!GetIsObjectValid(target))
-                return;
-
-            var perkDetail = Perk.GetPerkDetails(selectedPerk);
-            if (perkDetail.PurchasedTriggers.Count > 0)
-            {
-                foreach (var action in perkDetail.PurchasedTriggers)
-                {
-                    action(target);
-                }
-            }
-        }
-
         public Action OnClickBuyUpgrade() => () =>
         {
             var selectedPerk = _filteredPerks[_selectedPerkIndex];
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
-            if (!TryGetPerkRank(dbPlayer, selectedPerk, out var rank, out _))
+            if (!PerkPurchaseService.TryGetPerkRank(this, dbPlayer, selectedPerk, out var rank, out _))
                 return;
 
             var detail = Perk.GetPerkDetails(selectedPerk);
@@ -1194,122 +461,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : null;
 
             ShowModal($"This upgrade will cost {nextUpgrade?.Price} SP. Are you sure you want to buy it?",
-                () => ConfirmBuyUpgrade(playerId));
+                () => PerkPurchaseService.ConfirmBuyUpgrade(this, playerId));
         };
-
-        private void ConfirmBuyUpgrade(string playerId)
-        {
-            if (GetResRef(GetArea(Player)) == "char_migration")
-            {
-                FloatingTextStringOnCreature($"Perks cannot be purchased in this area.", Player, false);
-                return;
-            }
-
-            // Refresh data
-            var dbPlayer = DB.Get<Player>(playerId);
-            var selectedPerk = _filteredPerks[_selectedPerkIndex];
-            var detail = Perk.GetPerkDetails(selectedPerk);
-            if (!TryGetPerkRank(dbPlayer, selectedPerk, out var rank, out var unallocatedSP))
-                return;
-
-            var nextUpgrade = detail.PerkLevels.ContainsKey(rank + 1)
-                ? detail.PerkLevels[rank + 1]
-                : null;
-
-            // Run validation again
-            if (nextUpgrade == null)
-                return;
-
-            if (rank + 1 > detail.PerkLevels.Count)
-                return;
-
-            foreach (var req in nextUpgrade.Requirements)
-            {
-                if (!string.IsNullOrWhiteSpace(req.CheckRequirements(Player)))
-                {
-                    return;
-                }
-            }
-
-            if (unallocatedSP < nextUpgrade.Price)
-                return;
-
-            // Custom purchase validation logic for the perk.
-            var canPurchase = detail.PurchaseRequirement == null
-                ? string.Empty
-                : detail.PurchaseRequirement(Player);
-
-            if (!string.IsNullOrWhiteSpace(canPurchase))
-            {
-                SendMessageToPC(Player, ColorToken.Red(canPurchase));
-                return;
-            }
-
-            // All validation passes. Perform the upgrade.
-            if (IsInMyPerksMode)
-            {
-                dbPlayer.Perks[selectedPerk] = rank + 1;
-                dbPlayer.UnallocatedSP -= nextUpgrade.Price;
-                DB.Set(dbPlayer);
-
-                unallocatedSP = dbPlayer.UnallocatedSP;
-            }
-            else
-            {
-                var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
-                if (dbBeast == null)
-                    return;
-
-                dbBeast.Perks[selectedPerk] = rank + 1;
-                dbBeast.UnallocatedSP -= nextUpgrade.Price;
-                DB.Set(dbBeast);
-
-                unallocatedSP = dbBeast.UnallocatedSP;
-            }
-
-            var newRank = rank + 1;
-            GrantFeats(selectedPerk, newRank);
-            ApplyPurchasePerkTriggers(newRank, selectedPerk);
-
-            FloatingTextStringOnCreature(ColorToken.Green($"You purchase '{detail.Name}' rank {newRank}."), Player, false);
-
-            EventsPlugin.SignalEvent("SWLOR_BUY_PERK", Player);
-            Gui.PublishRefreshEvent(Player, new PerkAcquiredRefreshEvent(selectedPerk));
-
-            ExportSingleCharacter(Player);
-
-            // Update UI with latest upgrade changes.
-            LoadDetails();
-
-            RefreshAfterUpgrade(detail, newRank, unallocatedSP);
-        }
-
-        // The rank of the perk and the points left to spend, on the player or the active beast. False when the beast is gone.
-        private bool TryGetPerkRank(Player dbPlayer, PerkType selectedPerk, out int rank, out int unallocatedSP)
-        {
-            if (IsInMyPerksMode)
-            {
-                rank = dbPlayer.Perks.ContainsKey(selectedPerk)
-                    ? dbPlayer.Perks[selectedPerk]
-                    : 0;
-                unallocatedSP = dbPlayer.UnallocatedSP;
-                return true;
-            }
-
-            var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
-            if (dbBeast == null)
-            {
-                rank = 0;
-                unallocatedSP = 0;
-                return false;
-            }
-
-            rank = dbBeast.Perks.ContainsKey(selectedPerk)
-                ? dbBeast.Perks[selectedPerk]
-                : 0;
-            unallocatedSP = dbBeast.UnallocatedSP;
-            return true;
-        }
 
         private void RefreshAfterUpgrade(PerkDetail detail, int newRank, int unallocatedSP)
         {
@@ -1319,11 +472,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var nextUpgrade = detail.PerkLevels.ContainsKey(newRank + 1)
                 ? detail.PerkLevels[newRank + 1]
                 : null;
-            SelectedDetails = BuildSelectedPerkDetailText(detail, currentUpgrade, nextUpgrade, newRank);
+            SelectedDetails = PerkDetailText.BuildSelectedPerkDetailText(this, detail, currentUpgrade, nextUpgrade, newRank);
             PerkButtonTexts[_selectedPerkIndex] = $"{detail.Name} ({newRank}/{detail.PerkLevels.Count})";
 
-            var (meetsRequirements, requirements, requirementColors, requirementIcons, requirementTooltips) = BuildRequirements(nextUpgrade);
-            var (_, chipColor, rowIcon, rowTooltip) = GetPerkRowStatus(detail, newRank, unallocatedSP);
+            var (meetsRequirements, requirements, requirementColors, requirementIcons, requirementTooltips) = PerkListBuilder.BuildRequirements(this, nextUpgrade);
+            var (_, chipColor, rowIcon, rowTooltip) = PerkListBuilder.GetPerkRowStatus(this, detail, newRank, unallocatedSP);
 
             PerkButtonColors[_selectedPerkIndex] = chipColor;
             PerkRowReqIcons[_selectedPerkIndex] = rowIcon;
@@ -1345,104 +498,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickRefund() => () =>
         {
             ShowModal($"You may only refund one perk per 1 hour (real world time). This will also consume a refund token. Are you sure you want to refund this perk?", () =>
-            {
-                var playerId = GetObjectUUID(Player);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var selectedPerk = _filteredPerks[SelectedPerkIndex];
-                var perkDetail = Perk.GetPerkDetails(selectedPerk);
-                var target = IsInMyPerksMode ? Player : GetAssociate(AssociateType.Henchman, Player);
-
-                if (Currency.GetCurrency(Player, CurrencyType.PerkRefundToken) <= 0)
-                {
-                    FloatingTextStringOnCreature($"You do not have any refund tokens.", Player, false);
-                }
-                else if (dbPlayer.DatePerkRefundAvailable != null &&
-                    dbPlayer.DatePerkRefundAvailable > Clock.UtcNow)
-                {
-                    var delta = (DateTime)dbPlayer.DatePerkRefundAvailable - Clock.UtcNow;
-                    var time = Time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
-                    FloatingTextStringOnCreature($"You can refund another perk in {time}.", Player, false);
-                }
-                else
-                {
-                    // Some individual perks have validation checks.
-                    // Run that now if specified.
-                    var canRefund = perkDetail.RefundRequirement == null
-                        ? string.Empty
-                        : perkDetail.RefundRequirement(target);
-                    if (!string.IsNullOrWhiteSpace(canRefund))
-                    {
-                        FloatingTextStringOnCreature(canRefund, Player, false);
-                        return;
-                    }
-
-                    if (IsInMyPerksMode)
-                    {
-                        var perkLevel = dbPlayer.Perks[selectedPerk];
-                        var refundAmount = perkDetail.PerkLevels
-                            .Where(x => x.Key <= perkLevel)
-                            .Sum(x => x.Value.Price);
-
-                        dbPlayer.UnallocatedSP += refundAmount;
-                        dbPlayer.Perks.Remove(selectedPerk);
-
-                        Log.Write(LogGroup.PerkRefund, $"REFUND - {playerId} - Refunded Date {Clock.UtcNow} - Level {perkLevel} - PerkID {selectedPerk}");
-                        FloatingTextStringOnCreature($"Perk refunded! You reclaimed {refundAmount} SP.", Player, false);
-                    }
-                    else
-                    {
-                        var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
-                        if (dbBeast == null)
-                            return;
-
-                        var perkLevel = dbBeast.Perks[selectedPerk];
-                        var refundAmount = perkDetail.PerkLevels
-                            .Where(x => x.Key <= perkLevel)
-                            .Sum(x => x.Value.Price);
-
-                        dbBeast.UnallocatedSP += refundAmount;
-                        dbBeast.Perks.Remove(selectedPerk);
-
-                        DB.Set(dbBeast);
-
-                        Log.Write(LogGroup.PerkRefund, $"REFUND Beast - {dbBeast.Id} (Owner: {dbPlayer.Id}) - Refunded Date {Clock.UtcNow} - Level {perkLevel} - PerkID {selectedPerk}");
-                        FloatingTextStringOnCreature($"Perk refunded! Your beast reclaimed {refundAmount} SP.", Player, false);
-                    }
-
-                    dbPlayer.DatePerkRefundAvailable = Clock.UtcNow.AddHours(1);
-                    DB.Set(dbPlayer);
-                    Currency.TakeCurrency(Player, CurrencyType.PerkRefundToken, 1);
-
-                    Gui.PublishRefreshEvent(Player, new PerkRefundedRefreshEvent(selectedPerk));
-
-                    // Remove all feats granted by all levels of this perk.
-                    var feats = perkDetail.PerkLevels.Values.SelectMany(s => s.GrantedFeats).ToList();
-                    foreach (var feat in feats)
-                    {
-                        QuickCast.RemoveFeat(target, feat);
-                    }
-
-                    Perk.RemoveStatusEffectsOnPerkRefund(target, selectedPerk);
-                    RemoveFeatsFromHotBar(feats);
-
-                    foreach (var actionMode in perkDetail.HotBarActionModes)
-                    {
-                        RemoveModeToggleFromHotBar(actionMode);
-                    }
-
-                    // Run all of the triggers related to refunding this perk.
-                    foreach (var action in perkDetail.RefundedTriggers)
-                    {
-                        action(target);
-                    }
-
-                    ExportSingleCharacter(Player);
-
-                    LoadDetails();
-                    SelectedPerkIndex = -1;
-                    LoadPerks();
-                }
-            });
+                PerkPurchaseService.Refund(this));
         };
 
         public Action OnClickPreviousPage() => () =>
@@ -1540,5 +596,40 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsFilterMaxed = true;
             ResetPerkList();
         };
+
+        uint IPerksHost.Player => Player;
+        bool IPerksHost.IsInMyPerksMode => IsInMyPerksMode;
+        bool IPerksHost.IsInBeastPerksMode => IsInBeastPerksMode;
+        bool IPerksHost.InitialLoadDone => _initialLoadDone;
+        List<PerkType> IPerksHost.FilteredPerks => _filteredPerks;
+        int IPerksHost.SelectedPerkIndex { get => SelectedPerkIndex; set => SelectedPerkIndex = value; }
+        int IPerksHost.Pages { get => _pages; set => _pages = value; }
+        int IPerksHost.SelectedPage => SelectedPage;
+        int IPerksHost.SelectedPerkCategoryId => SelectedPerkCategoryId;
+        int IPerksHost.SelectedSortOrderId => SelectedSortOrderId;
+        int IPerksHost.SelectedStatusFilter => SelectedStatusFilter;
+        string IPerksHost.SearchText => SearchText;
+        string IPerksHost.AvailableSP { get => AvailableSP; set => AvailableSP = value; }
+        string IPerksHost.TotalSP { get => TotalSP; set => TotalSP = value; }
+        string IPerksHost.WindowTitle { get => WindowTitle; set => WindowTitle = value; }
+        string IPerksHost.ResetNextAvailable { get => ResetNextAvailable; set => ResetNextAvailable = value; }
+        bool IPerksHost.IsRefundEnabled { get => IsRefundEnabled; set => IsRefundEnabled = value; }
+        bool IPerksHost.HasBeast { get => HasBeast; set => HasBeast = value; }
+        bool IPerksHost.IsForceAffinityVisible { get => IsForceAffinityVisible; set => IsForceAffinityVisible = value; }
+        string IPerksHost.ForceAffinityHeading { get => ForceAffinityHeading; set => ForceAffinityHeading = value; }
+        GuiColor IPerksHost.ForceAffinityColor { get => ForceAffinityColor; set => ForceAffinityColor = value; }
+        GuiBindingList<GuiComboEntry> IPerksHost.Categories { get => Categories; set => Categories = value; }
+        GuiBindingList<GuiComboEntry> IPerksHost.PageNumbers { get => PageNumbers; set => PageNumbers = value; }
+        GuiBindingList<GuiColor> IPerksHost.PerkButtonColors { get => PerkButtonColors; set => PerkButtonColors = value; }
+        GuiBindingList<string> IPerksHost.PerkButtonIcons { get => PerkButtonIcons; set => PerkButtonIcons = value; }
+        GuiBindingList<string> IPerksHost.PerkButtonTexts { get => PerkButtonTexts; set => PerkButtonTexts = value; }
+        GuiBindingList<bool> IPerksHost.PerkDetailSelected { get => PerkDetailSelected; set => PerkDetailSelected = value; }
+        GuiBindingList<string> IPerksHost.PerkRowReqIcons { get => PerkRowReqIcons; set => PerkRowReqIcons = value; }
+        GuiBindingList<string> IPerksHost.PerkRowReqTooltips { get => PerkRowReqTooltips; set => PerkRowReqTooltips = value; }
+        GuiBindingList<string> IPerksHost.PerkRowCosts { get => PerkRowCosts; set => PerkRowCosts = value; }
+        void IPerksHost.SelectPerkAt(int index) => SelectPerkAt(index);
+        void IPerksHost.LoadDetails() => LoadDetails();
+        void IPerksHost.LoadPerks() => LoadPerks();
+        void IPerksHost.RefreshAfterUpgrade(PerkDetail detail, int newRank, int unallocatedSP) => RefreshAfterUpgrade(detail, newRank, unallocatedSP);
     }
 }

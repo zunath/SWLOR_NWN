@@ -379,7 +379,7 @@ SWLOR.Game.Server.Tests/Perks/EspionageSystemTests.cs | 49
 SWLOR.Game.Server.Tests/Perks/FabricationPerkLineTests.cs | 3
 SWLOR.Game.Server.Tests/Perks/FabricationPerkLines.cs | 2
 SWLOR.Game.Server.Tests/Perks/FirstAidCombatUpgradeTests.cs | 4
-SWLOR.Game.Server.Tests/Perks/ForceLightConsularTests.cs | 14
+SWLOR.Game.Server.Tests/Perks/ForceLightConsularTests.cs | 11
 SWLOR.Game.Server.Tests/Perks/ForceSensitiveEspionageTests.cs | 4
 SWLOR.Game.Server.Tests/Perks/GatheringPerkLineTests.cs | 3
 SWLOR.Game.Server.Tests/Perks/GeneratedWeaponPerkBehaviorTests.cs | 91

@@ -36,6 +36,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("esh_wolf_pelt", 1)
                 .AddItem("esh_frost_fang", 1);
 
+            _builder.Create("FNOTE_ESHAN_WOLF_ALPHA")
+                .IsRare()
+                .AddItem("fnote_3647", 1, 1, true);
+
             _builder.Create("ESHAN_GORAK_VESH_GEMS")
                 .AddItem("emerald", 100, 1, true)
                 .AddItem("chiro_shard", 50, 1, true);
@@ -70,6 +74,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("bp_silverpelt", 1, 1, true)
                 .AddItem("bp_frostgaunt", 1, 1, true)
                 .AddItem("bp_ridgemantle", 1, 1, true);
+
+            _builder.Create("FNOTE_THORNBOUND")
+                .IsRare()
+                .AddItem("fnote_3646", 1, 1, true);
 
             _builder.Create("ESHAN_WARDEN_FIBERPLAST")
                 .AddItem("fiberp_high", 1, 3);

@@ -22,6 +22,11 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .CombatStats(AbilityType.Willpower, AbilityType.Perception)
                 .Role(BeastRoleType.Force)
 
+                .CanMutateInto(BeastType.ThornboundWarden)
+				.MutationWeight(5)
+				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 1)
 
                 ;
 

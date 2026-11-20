@@ -9,7 +9,9 @@ using SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -56,6 +58,31 @@ public class EshanBalanceReviewTests
             foreach (var roll in rolls.Where(roll => roll.StartsWith("ESHAN_", StringComparison.Ordinal)))
                 tables.Should().ContainKey(roll.Split(',')[0]);
         }
+    }
+
+    [Test]
+    public void FrostDireWolf_TamesAndMutatesIntoTheEshanAlpha()
+    {
+        var frostLocals = Read("Module/utc/esh_frostwolf.utc.json")["VarTable"]!["value"]!;
+        var alphaLocals = Read("Module/utc/esh_wolfalpha.utc.json")["VarTable"]!["value"]!;
+        var frostType = Value(frostLocals.Single(local => Value(local, "Name") == "BEAST_TYPE"), "Value");
+        frostType.Should().Be(((int)BeastType.EshanFrostDireWolf).ToString());
+        alphaLocals.Should().NotContain(local => Value(local, "Name") == "BEAST_TYPE");
+        alphaLocals.Should().Contain(local => Value(local, "Value") == "FNOTE_ESHAN_WOLF_ALPHA,10,1");
+
+        var frost = BeastDefinitionCatalog.All[BeastType.EshanFrostDireWolf];
+        var mutation = frost.PossibleMutations.Should().ContainSingle().Which;
+        mutation.Type.Should().Be(BeastType.EshanDireWolfAlpha);
+        var requirement = mutation.Requirements.Should().ContainSingle().Which;
+        var enzymes = requirement.Should().BeOfType<MutationRequirementEnzyme>().Which;
+        enzymes.LyaseEnzymeColors.Single().Should().Be(KeyValuePair.Create(EnzymeColorType.Blue, 2));
+        enzymes.IsomeraseEnzymeColors.Single().Should().Be(KeyValuePair.Create(EnzymeColorType.Blue, 2));
+        enzymes.HydrolaseEnzymeColors.Single().Should().Be(KeyValuePair.Create(EnzymeColorType.White, 1));
+
+        var alpha = BeastDefinitionCatalog.All[mutation.Type];
+        frost.Levels.Keys.Should().BeEquivalentTo(Enumerable.Range(1, 50));
+        alpha.Levels.Keys.Should().BeEquivalentTo(Enumerable.Range(1, 50));
+        alpha.Appearance.Should().Be(AppearanceType.SWLOREshanDireWolfAlpha);
     }
 
     [Test]

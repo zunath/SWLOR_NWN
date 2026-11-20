@@ -851,6 +851,11 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         [KeyItem(KeyItemCategoryType.FieldNotes, "Wraithweb Nythrax", true, "")]
         IncubationFieldNoteWraithwebNythrax = 2138,
 
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Thornbound Warden", true, "")]
+        IncubationFieldNoteThornboundWarden = 3646,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Eshan Dire Wolf Alpha", true, "")]
+        IncubationFieldNoteEshanDireWolfAlpha = 3647,
+
         [KeyItem(KeyItemCategoryType.Maps, "Eshan Orbit Map", true, "Map of the space surrounding Eshan.")]
         EshanOrbitMap = 2139,
         [KeyItem(KeyItemCategoryType.Maps, "Eshan - Keshan Heights Map", true, "Map of Keshan Heights on Eshan.")]

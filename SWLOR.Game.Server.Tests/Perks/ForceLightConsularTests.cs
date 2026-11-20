@@ -99,7 +99,7 @@ public class ForceLightConsularTests
 
             var details = (string)typeof(PerkDetailText)
                 .GetMethod("BuildForceAffinityPerkDetailText", BindingFlags.Instance | BindingFlags.NonPublic)!
-                .Invoke(new PerkDetailText(AbilityCatalog, Perk, Recast), new object[] { PerksHostStub.Create(), perk })!;
+                .Invoke(_facades.Get<PerkDetailText>(), new object[] { PerksHostStub.Create(), perk })!;
             details.Should().Contain("UNIVERSAL FORCE POWER")
                 .And.Contain("Does not change Force Affinity")
                 .And.NotContain("LIGHT-ALIGNED");

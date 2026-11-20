@@ -22,14 +22,14 @@ public class PerksWindowTests
             "SWLOR.Game.Server",
             "Feature",
             "GuiDefinition",
-            "PerksDefinition.cs"));
+            "PerksDefinition.cs")).Replace("\r\n", "\n");
         var viewModelSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
             "Feature",
             "GuiDefinition",
             "ViewModel",
-            "PerksViewModel.cs"));
+            "PerksViewModel.cs")).Replace("\r\n", "\n");
 
         definitionSource.Should().Contain(".AddOption(\"Alphabetical (A-Z)\", 0)");
         definitionSource.Should().Contain(".AddOption(\"Alphabetical (Z-A)\", 1)");
@@ -50,7 +50,7 @@ public class PerksWindowTests
             "Feature",
             "GuiDefinition",
             "ViewModel",
-            "PerksViewModel.cs"));
+            "PerksViewModel.cs")).Replace("\r\n", "\n");
 
         viewModelSource.Should().Contain(
             "SelectedSortOrderId = (int)PerkSortOrder.SkillLevelAscending;");
@@ -68,19 +68,19 @@ public class PerksWindowTests
             "Feature",
             "GuiDefinition",
             "PerksWindow",
-            "PerkDetailText.cs"));
+            "PerkDetailText.cs")).Replace("\r\n", "\n");
         var perkSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
             "Domain",
             "Character",
-            "PerkService.cs"));
+            "PerkService.cs")).Replace("\r\n", "\n");
         var recastSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
             "Domain",
             "Combat",
-            "RecastService.cs"));
+            "RecastService.cs")).Replace("\r\n", "\n");
 
         viewModelSource.Should().Contain("selectedDetails += $\"[{categoryDetail.Name}]\\n\";");
         viewModelSource.Should().Contain("var recastGroupText = BuildRecastGroupText(detail);");
@@ -116,7 +116,7 @@ public class PerksWindowTests
             "SWLOR.Game.Server",
             "Feature",
             "GuiDefinition",
-            "PerksDefinition.cs"));
+            "PerksDefinition.cs")).Replace("\r\n", "\n");
         var viewModelSource = ReadPerksSources(root, "ViewModel/PerksViewModel.cs", "PerksWindow/PerkListBuilder.cs", "PerksWindow/PerkDetailText.cs");
 
         definitionSource.Should().Contain("model => model.IsForceAffinityVisible");
@@ -280,7 +280,7 @@ public class PerksWindowTests
     private static string ReadPerksSources(DirectoryInfo root, params string[] files)
     {
         return string.Join("\n", files.Select(file => File.ReadAllText(Path.Combine(
-            root.FullName, "SWLOR.Game.Server", "Feature", "GuiDefinition", file.Replace('/', Path.DirectorySeparatorChar)))));
+            root.FullName, "SWLOR.Game.Server", "Feature", "GuiDefinition", file.Replace('/', Path.DirectorySeparatorChar))).Replace("\r\n", "\n")));
     }
 
     private static DirectoryInfo FindRepositoryRoot()

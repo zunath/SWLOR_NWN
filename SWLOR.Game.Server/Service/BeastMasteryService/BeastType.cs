@@ -181,6 +181,8 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         VoidmireEcho = 1137,
         GreenbulkWallow = 1138,
         HouseCat = 1139,
-        ThornboundWarden = 1140
+        ThornboundWarden = 1140,
+        EshanFrostDireWolf = 1141,
+        EshanDireWolfAlpha = 1142
     }
 }

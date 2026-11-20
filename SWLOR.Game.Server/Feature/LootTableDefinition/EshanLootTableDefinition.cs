@@ -36,6 +36,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("esh_wolf_pelt", 1)
                 .AddItem("esh_frost_fang", 1);
 
+            _builder.Create("FNOTE_ESHAN_WOLF_ALPHA")
+                .IsRare()
+                .AddItem("fnote_3647", 1, 1, true);
+
             _builder.Create("ESHAN_GORAK_VESH_GEMS")
                 .AddItem("emerald", 100, 1, true)
                 .AddItem("chiro_shard", 50, 1, true);

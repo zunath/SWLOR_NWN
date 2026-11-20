@@ -249,6 +249,7 @@ namespace SWLOR.Game.Server.Service
             Register(BeastType.EldersporeOraculum, KeyItemType.IncubationFieldNoteEldersporeOraculum, FieldNoteAcquisitionType.RareSpawnDrop);
             Register(BeastType.EmberbackBristal, KeyItemType.IncubationFieldNoteEmberbackBristal, FieldNoteAcquisitionType.RareSpawnDrop);
             Register(BeastType.EmeraldcrestKalyth, KeyItemType.IncubationFieldNoteEmeraldcrestKalyth, FieldNoteAcquisitionType.RareSpawnDrop);
+            Register(BeastType.EshanDireWolfAlpha, KeyItemType.IncubationFieldNoteEshanDireWolfAlpha, FieldNoteAcquisitionType.BossDrop);
             Register(BeastType.Frog, KeyItemType.IncubationFieldNoteFrog, FieldNoteAcquisitionType.Store);
             Register(BeastType.FrostbackSpineguard, KeyItemType.IncubationFieldNoteFrostbackSpineguard, FieldNoteAcquisitionType.BossDrop);
             Register(BeastType.FrostmawGlacieron, KeyItemType.IncubationFieldNoteFrostmawGlacieron, FieldNoteAcquisitionType.RareSpawnDrop);

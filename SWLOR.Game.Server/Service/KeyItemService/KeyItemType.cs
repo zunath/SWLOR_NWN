@@ -853,6 +853,8 @@ namespace SWLOR.Game.Server.Service.KeyItemService
 
         [KeyItem(KeyItemCategoryType.FieldNotes, "Thornbound Warden", true, "")]
         IncubationFieldNoteThornboundWarden = 3646,
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Eshan Dire Wolf Alpha", true, "")]
+        IncubationFieldNoteEshanDireWolfAlpha = 3647,
 
         [KeyItem(KeyItemCategoryType.Maps, "Eshan Orbit Map", true, "Map of the space surrounding Eshan.")]
         EshanOrbitMap = 2139,

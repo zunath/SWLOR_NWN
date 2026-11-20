@@ -19,6 +19,7 @@ using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using AbilityType = SWLOR.NWN.API.NWScript.Enum.AbilityType;
 using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
+using SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
@@ -984,10 +985,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(StatusEffectApplication.ApplyStatusEffect(attacker, attacker, effect, 60f), "Off-hand haste applies");
                     ctx.AssertEqual(SkillType.Vibroblade, WeaponAttackTiming.GetTimingSkill(attacker),
                         "The off-hand's haste participates in the shared timer");
-                    var sheet = new CharacterSheetViewModel();
+                    var sheet = GameServices.Content.Create<CharacterSheetViewModel>();
                     typeof(CharacterSheetViewModel).GetField("_target", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(sheet, attacker);
-                    var delayInfo = ((string Value, string Tooltip))typeof(CharacterSheetViewModel)
-                        .GetMethod("GetAttackDelayInfo", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(sheet, null)!;
+                    var timing = (CharacterSheetWeaponTiming)typeof(CharacterSheetViewModel)
+                        .GetProperty("CharacterSheetWeaponTiming", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(sheet)!;
+                    var delayInfo = timing.GetAttackDelayInfo((ICharacterSheetHost)sheet);
                     var expectedDelay = CombatRules.CalculateEffectiveAttackDelay(GameServices.CombatAttackTiming.CalculateAttackDelay(attacker, 40)) / 1000f;
                     ctx.Assert(expectedDelay < unbuffedDelay / 1000f, "The display fixture has measurably faster off-hand haste");
                     ctx.AssertEqual($"{expectedDelay:0.##}s", delayInfo.Value, "Character sheet uses the off-hand timing effect");

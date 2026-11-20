@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.Engine;
@@ -77,6 +78,11 @@ public class FakeViewModel : IGuiViewModel, IGuiRefreshable<FakeRefreshEvent>
 /// <summary>A character sheet that is viewing a chosen target and counts the fake refreshes.</summary>
 public sealed class FakeCharacterSheet : CharacterSheetViewModel, IGuiRefreshable<FakeRefreshEvent>
 {
+    public FakeCharacterSheet(CharacterSheetAttributesTab characterSheetAttributesTab, CharacterSheetDamageEstimate characterSheetDamageEstimate, CharacterSheetWeaponRatings characterSheetWeaponRatings, CharacterSheetWeaponTiming characterSheetWeaponTiming)
+        : base(characterSheetAttributesTab, characterSheetDamageEstimate, characterSheetWeaponRatings, characterSheetWeaponTiming)
+    {
+    }
+
     public int Refreshes { get; private set; }
 
     public void Refresh(FakeRefreshEvent payload) => Refreshes++;
@@ -123,7 +129,7 @@ public sealed class FakeQuestsDefinition : IGuiWindowDefinition
 /// <summary>The Character Sheet window built from a real character sheet subclass.</summary>
 public sealed class FakeCharacterSheetDefinition : IGuiWindowDefinition
 {
-    public GuiConstructedWindow BuildWindow() => FakeWindows.Build(GuiWindowType.CharacterSheet, () => new FakeCharacterSheet());
+    public GuiConstructedWindow BuildWindow() => FakeWindows.Build(GuiWindowType.CharacterSheet, () => TestContent.WithoutServices.Create<FakeCharacterSheet>());
 }
 
 /// <summary>A window built from the same fake view model, but not resizable and with a bound size.</summary>

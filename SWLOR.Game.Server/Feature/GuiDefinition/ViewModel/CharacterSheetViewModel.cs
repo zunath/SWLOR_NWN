@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Domain.Combat;
@@ -14,6 +15,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using System.Collections.Generic;
 using System.Linq;
 using static SWLOR.Game.Server.Composition.GameServices;
+using static SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow.CharacterSheetFormat;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -34,11 +36,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<BeastGainXPRefreshEvent>,
         IGuiRefreshable<PerkAcquiredRefreshEvent>,
         IGuiRefreshable<PerkRefundedRefreshEvent>,
-        IGuiRefreshable<TechniqueChangedRefreshEvent>
+        IGuiRefreshable<TechniqueChangedRefreshEvent>,
+        ICharacterSheetHost
     {
-        private const int MaxPurchasedAttributeScore = 26;
-        private const int RacialAttributeBonus = 1;
-        private const int MaxRacialAttributeScore = MaxPurchasedAttributeScore + RacialAttributeBonus;
         private const int AttributesTabId = 0;
         private const int StatsTabId = 1;
         private const int ResistancesTabId = 2;
@@ -51,6 +51,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private uint _target;
         private int _hitPointRefreshGeneration;
+
+        private CharacterSheetAttributesTab CharacterSheetAttributesTab { get; }
+        private CharacterSheetDamageEstimate CharacterSheetDamageEstimate { get; }
+        private CharacterSheetWeaponRatings CharacterSheetWeaponRatings { get; }
+        private CharacterSheetWeaponTiming CharacterSheetWeaponTiming { get; }
+
+        public CharacterSheetViewModel(CharacterSheetAttributesTab characterSheetAttributesTab, CharacterSheetDamageEstimate characterSheetDamageEstimate, CharacterSheetWeaponRatings characterSheetWeaponRatings, CharacterSheetWeaponTiming characterSheetWeaponTiming)
+        {
+            CharacterSheetAttributesTab = characterSheetAttributesTab;
+            CharacterSheetDamageEstimate = characterSheetDamageEstimate;
+            CharacterSheetWeaponRatings = characterSheetWeaponRatings;
+            CharacterSheetWeaponTiming = characterSheetWeaponTiming;
+        }
 
         // Tab registration: id -> partial view -> refresh action. Replaces
         // GetTabPartialName + the RefreshSelectedTabData switch statement that
@@ -67,52 +80,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // tab id.
         private static readonly GuiToggleGroupSync TopToggles = new(AttributesTabId, StatsTabId);
         private static readonly GuiToggleGroupSync BottomToggles = new(ResistancesTabId, CraftingTabId);
-
-        // Row DTOs for the three tables below - one list of these per refresh,
-        // instead of hand-synced parallel GuiBindingList<string> instances.
-        private sealed class StatEntry
-        {
-            public string Name { get; }
-            public string Value { get; }
-            public string Tooltip { get; }
-
-            public StatEntry(string name, string value, string tooltip)
-            {
-                Name = name;
-                Value = value;
-                Tooltip = tooltip;
-            }
-        }
-
-        private sealed class ResistanceEntry
-        {
-            public string Name { get; }
-            public string Score { get; }
-            public string DamageTaken { get; }
-            public string StatusDuration { get; }
-
-            public ResistanceEntry(string name, string score, string damageTaken, string statusDuration)
-            {
-                Name = name;
-                Score = score;
-                DamageTaken = damageTaken;
-                StatusDuration = statusDuration;
-            }
-        }
-
-        private sealed class CraftEntry
-        {
-            public string Name { get; }
-            public string Control { get; }
-            public string Craftsmanship { get; }
-
-            public CraftEntry(string name, string control, string craftsmanship)
-            {
-                Name = name;
-                Control = control;
-                Craftsmanship = craftsmanship;
-            }
-        }
 
         // Column mappings: which bound property receives each column, and how
         // to pull that column's value out of a row DTO. Replaces the 3
@@ -598,413 +565,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.Disguises);
         };
 
-        private static int GetPurchasedAttributeScore(Player dbPlayer, AbilityType ability)
-        {
-            var baseScore = dbPlayer.BaseStats.TryGetValue(ability, out var baseValue)
-                ? baseValue
-                : 0;
-            var upgradedScore = dbPlayer.UpgradedStats.TryGetValue(ability, out var upgradedValue)
-                ? upgradedValue
-                : 0;
-
-            return baseScore + upgradedScore;
-        }
-
-        private void UpgradeAttribute(AbilityType ability, string abilityName)
-        {
-            var playerId = GetObjectUUID(_target);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
-            var promptMessage = isRacial
-                ? "WARNING: You are about to spend your one-time racial stat bonus. Once spent, this action can only be undone with a stat rebuild. Are you SURE you want to upgrade this stat?"
-                : $"Upgrading your {abilityName} attribute will consume 1 AP. Are you sure you want to upgrade it?";
-
-            ShowModal(promptMessage, () =>
-            {
-                if (GetResRef(GetArea(_target)) == "char_migration")
-                {
-                    FloatingTextStringOnCreature($"Stats cannot be upgraded in this area.", _target, false);
-                    return;
-                }
-
-                playerId = GetObjectUUID(_target);
-                dbPlayer = DB.Get<Player>(playerId);
-                isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
-                var rawScore = CreaturePlugin.GetRawAbilityScore(_target, ability);
-                var purchasedScore = GetPurchasedAttributeScore(dbPlayer, ability);
-
-                if (isRacial)
-                {
-                    if (rawScore >= MaxRacialAttributeScore || purchasedScore > MaxPurchasedAttributeScore)
-                    {
-                        FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxRacialAttributeScore} with a racial bonus.", _target, false);
-                        return;
-                    }
-
-                    dbPlayer.RacialStat = ability;
-                }
-                else
-                {
-                    if (purchasedScore >= MaxPurchasedAttributeScore)
-                    {
-                        FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxPurchasedAttributeScore} with AP.", _target, false);
-                        return;
-                    }
-
-                    if (rawScore >= MaxRacialAttributeScore)
-                    {
-                        FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxRacialAttributeScore}.", _target, false);
-                        return;
-                    }
-
-                    if (dbPlayer.UnallocatedAP <= 0)
-                    {
-                        FloatingTextStringOnCreature("You do not have enough AP to purchase this upgrade.", _target, false);
-                        return;
-                    }
-
-                    dbPlayer.UnallocatedAP--;
-                    dbPlayer.UpgradedStats[ability]++;
-                }
-
-                DB.Set(dbPlayer);
-                CreatureStat.ApplyPlayerStat(dbPlayer, _target, ability);
-
-                FloatingTextStringOnCreature($"Your {abilityName} attribute has increased!", _target, false);
-                LoadData();
-            });
-        }
-
         protected override void OnModalClosedRestore() =>
             Tabs.Select(this, TabContentPartialElement, SelectedTabId);
 
-        private bool IsAttributeUpgradeAvailable(Player dbPlayer, AbilityType ability, bool isRacialBonusAvailable)
-        {
-            var rawScore = CreaturePlugin.GetRawAbilityScore(_target, ability);
-            var purchasedScore = GetPurchasedAttributeScore(dbPlayer, ability);
-
-            if (isRacialBonusAvailable)
-            {
-                return rawScore < MaxRacialAttributeScore &&
-                       purchasedScore <= MaxPurchasedAttributeScore;
-            }
-
-            return dbPlayer.UnallocatedAP > 0 &&
-                   purchasedScore < MaxPurchasedAttributeScore &&
-                   rawScore < MaxRacialAttributeScore;
-        }
-
         public Action OnClickUpgradeMight() => () =>
         {
-            UpgradeAttribute(AbilityType.Might, "Might");
+            CharacterSheetAttributesTab.UpgradeAttribute(this, AbilityType.Might, "Might");
         };
 
         public Action OnClickUpgradePerception() => () =>
         {
-            UpgradeAttribute(AbilityType.Perception, "Perception");
+            CharacterSheetAttributesTab.UpgradeAttribute(this, AbilityType.Perception, "Perception");
         };
 
         public Action OnClickUpgradeVitality() => () =>
         {
-            UpgradeAttribute(AbilityType.Vitality, "Vitality");
+            CharacterSheetAttributesTab.UpgradeAttribute(this, AbilityType.Vitality, "Vitality");
         };
 
         public Action OnClickUpgradeWillpower() => () =>
         {
-            UpgradeAttribute(AbilityType.Willpower, "Willpower");
+            CharacterSheetAttributesTab.UpgradeAttribute(this, AbilityType.Willpower, "Willpower");
         };
 
         public Action OnClickUpgradeAgility() => () =>
         {
-            UpgradeAttribute(AbilityType.Agility, "Agility");
+            CharacterSheetAttributesTab.UpgradeAttribute(this, AbilityType.Agility, "Agility");
         };
 
         public Action OnClickUpgradeSocial() => () =>
         {
-            UpgradeAttribute(AbilityType.Social, "Social");
+            CharacterSheetAttributesTab.UpgradeAttribute(this, AbilityType.Social, "Social");
         };
 
 
-        private void RefreshStats()
-        {
-            RefreshHitPoints();
-
-            if (GetClassByPosition(1, _target) == ClassType.Standard)
-            {
-                FP = $"0 / 0";
-            }
-            else
-            {
-                var currentFP = Stat.GetCurrentFP(_target);
-                var maxFP = Stat.GetMaxFP(_target);
-                if (currentFP < 0)
-                    currentFP = 0;
-                if (maxFP < 0)
-                    maxFP = 0;
-
-                FP = $"{currentFP} / {maxFP}";
-            }
-
-            var currentSTM = Stat.GetCurrentStamina(_target);
-            var maxSTM = Stat.GetMaxStamina(_target);
-            if (currentSTM < 0)
-                currentSTM = 0;
-            if (maxSTM < 0)
-                maxSTM = 0;
-
-            STM = $"{currentSTM} / {maxSTM}";
-            Name = PlayerName.GetDisplayName(Player, _target);
-            Might = GetAbilityScore(_target, AbilityType.Might);
-            Perception = GetAbilityScore(_target, AbilityType.Perception);
-            Vitality = GetAbilityScore(_target, AbilityType.Vitality);
-            Willpower = GetAbilityScore(_target, AbilityType.Willpower);
-            Agility = GetAbilityScore(_target, AbilityType.Agility);
-            Social = GetAbilityScore(_target, AbilityType.Social);
-
-            if (IsPlayerMode)
-            {
-                var playerId = GetObjectUUID(_target);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                var isRacialBonusAvailable = dbPlayer.RacialStat == AbilityType.Invalid;
-                IsMightUpgradeAvailable = IsAttributeUpgradeAvailable(dbPlayer, AbilityType.Might, isRacialBonusAvailable);
-                IsPerceptionUpgradeAvailable = IsAttributeUpgradeAvailable(dbPlayer, AbilityType.Perception, isRacialBonusAvailable);
-                IsVitalityUpgradeAvailable = IsAttributeUpgradeAvailable(dbPlayer, AbilityType.Vitality, isRacialBonusAvailable);
-                IsWillpowerUpgradeAvailable = IsAttributeUpgradeAvailable(dbPlayer, AbilityType.Willpower, isRacialBonusAvailable);
-                IsAgilityUpgradeAvailable = IsAttributeUpgradeAvailable(dbPlayer, AbilityType.Agility, isRacialBonusAvailable);
-                IsSocialUpgradeAvailable = IsAttributeUpgradeAvailable(dbPlayer, AbilityType.Social, isRacialBonusAvailable);
-            }
-
-            RefreshCharacterStatsList();
-        }
+        private void RefreshStats() => CharacterSheetAttributesTab.RefreshStats(this);
 
         private void RefreshEquipmentStats()
         {
-            // Builds a damage estimate using the player's stats as a baseline.
-            (string, string) GetCombatInfo(uint item)
-            {
-                var itemType = GetBaseItemType(item);
-                var skill = Skill.GetWeaponSkill(_target, item);
-                int skillRank;
-
-                if (GetIsPC(_target))
-                {
-                    var playerId = GetObjectUUID(_target);
-                    var dbPlayer = DB.Get<Player>(playerId);
-                    skillRank = dbPlayer.Skills[skill].Rank;
-                }
-                else
-                {
-                    var npcStats = Stat.GetNPCStats(_target);
-                    skillRank = npcStats.Level;
-                }
-
-                var damageAbility = GetEquipmentDamageAbility(_target, item);
-                var damageStat = GetAbilityScore(_target, damageAbility);
-                var itemDamage = Item.GetDMG(item);
-                var effectiveDamage = WeaponDamage.GetEffectiveDMG(_target, item, itemDamage);
-                var dmg = effectiveDamage + GameServices.CombatQueries.GetMiscDMGBonus(_target, itemType);
-                var dmgText = $"{dmg} DMG";
-                var attack = CombatRating.GetAttack(_target, damageAbility, skill);
-                var defense = CombatRating.CalculateDefense(damageStat, skillRank, 0);
-                var (min, max) = CombatRules.CalculateDamageRange(attack, dmg, damageStat, defense, damageStat, 0);
-                var ordinaryDamageBonus = PairedRangedTraits.GetOrdinaryDamagePercentAdjustment(_target, GetAttackTarget(_target));
-                var ordinaryDamageAdjustment = Stat.GetStatAdjustment(_target, StatType.OrdinaryAttackDamagePercentAdjustment);
-                min += (int)Math.Ceiling(min * (ordinaryDamageBonus / 100f));
-                max += (int)Math.Ceiling(max * (ordinaryDamageBonus / 100f));
-                min = GameServices.CombatDamageModifiers.ApplyOrdinaryAttackDamageMultiplier(_target, min);
-                max = GameServices.CombatDamageModifiers.ApplyOrdinaryAttackDamageMultiplier(_target, max);
-                var tooltip = $"Est. Damage: {min} - {max}";
-                if (skill == SkillType.TwinPistol || ordinaryDamageBonus != 0 || ordinaryDamageAdjustment != 0)
-                    tooltip += $"\nAttack skill: {Skill.GetSkillDetails(skill).Name}\nDamage attribute: {damageAbility}" +
-                               $"\nOrdinary-attack bonuses: {FormatPercent(ordinaryDamageBonus)}\nStance damage adjustment: {FormatPercent(ordinaryDamageAdjustment)}" +
-                               "\nUses current ordinary-attack effects and the current attack target for Converging Fire." +
-                               "\nEstimate assumes matching defensive stats; activated abilities use their own power.";
-                if (effectiveDamage != itemDamage)
-                {
-                    tooltip += $"\nWeapon DMG: {itemDamage}\nSingle Weapon: +{WeaponDamage.GetNaturalSingleWeaponPercent(_target)}%" +
-                               $"\nDoublehand: +{Stat.GetStatAdjustment(_target, StatType.SingleWeaponDamagePercentAdjustment)}%" +
-                               $"\nEffective weapon DMG: {effectiveDamage}";
-                }
-
-                return (dmgText, tooltip);
-            }
-
-            var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
-            var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
-            var forceAccuracyWeapon = SelectForceAccuracyWeapon(mainHand,
-                GetIsObjectValid(offHand) && GetBaseItemType(offHand) == BaseItem.CompanionPistol ? OBJECT_INVALID : offHand,
-                GetIsObjectValid(mainHand));
-            var mainHandType = GetBaseItemType(mainHand);
-            var attackDelayInfo = GetAttackDelayInfo();
-            AttackDelay = attackDelayInfo.Value;
-            AttackDelayTooltip = attackDelayInfo.Tooltip;
-
-            if (GetIsObjectValid(mainHand))
-            {
-                var dmgInfo = GetCombatInfo(mainHand);
-                MainHandDMG = dmgInfo.Item1;
-                MainHandTooltip = dmgInfo.Item2;
-            }
-            else
-            {
-                MainHandDMG = "-";
-                MainHandTooltip = "Est. Damage: N/A";
-            }
-
-            var offhandAttackWeapon = GetOffhandAttackWeapon();
-            var hasOffhandAttack = GetIsObjectValid(offhandAttackWeapon);
-            if (hasOffhandAttack)
-            {
-                var dmgInfo = GetCombatInfo(offhandAttackWeapon);
-                OffHandDMG = dmgInfo.Item1;
-                OffHandTooltip = dmgInfo.Item2;
-            }
-            else
-            {
-                var inactiveCompanion = GetIsObjectValid(offHand) && GetBaseItemType(offHand) == BaseItem.CompanionPistol;
-                OffHandDMG = inactiveCompanion ? "Inactive" : "-";
-                OffHandTooltip = inactiveCompanion
-                    ? "Requires an eligible main-hand pistol and the Twin Pistol ranks required by both weapons."
-                    : "Est. Damage: N/A";
-            }
-
-            AbilityType damageStat;
-            AbilityType accuracyStatOverride;
-
-            if (BeastMastery.IsPlayerBeast(_target))
-            {
-                var beastType = BeastMastery.GetBeastType(_target);
-                var beastDetails = BeastMastery.GetBeastDetail(beastType);
-                damageStat = beastDetails.DamageStat;
-                accuracyStatOverride = beastDetails.AccuracyStat;
-                // The skin's Accuracy is already included through the NPC stats, so read the claw combat attacks with.
-                mainHand = GetItemInSlot(InventorySlot.CreatureLeft, _target);
-            }
-            else
-            {
-                damageStat = GetEquipmentDamageAbility(_target, mainHand);
-                accuracyStatOverride = AbilityType.Invalid;
-
-            }
-
-            var mainHandSkill = Skill.GetWeaponSkill(_target, mainHand);
-            Attack = CombatRating.GetAttack(_target, damageStat, mainHandSkill);
-            AttackTooltip = FormatOffHandTooltip(AttackDescription, hasOffhandAttack
-                ? CombatRating.GetAttack(_target, GetEquipmentDamageAbility(_target, offhandAttackWeapon),
-                    Skill.GetWeaponSkill(_target, offhandAttackWeapon)).ToString()
-                : null);
-            ForceAttack = CombatRating.GetAttack(_target, AbilityType.Willpower, SkillType.Force);
-            PhysicalDefense = CombatRating.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
-            ForceDefense = CombatRating.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
-
-            WeaponAccuracy = CombatRating.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
-            if (GetIsObjectValid(mainHand) && Item.IsAttackWeaponType(GetBaseItemType(mainHand)))
-                WeaponAccuracy += PairedRangedTraits.GetOrdinaryAccuracy(_target);
-            var offhandAccuracy = hasOffhandAttack
-                ? CombatRating.GetAccuracy(_target, offhandAttackWeapon, AbilityType.Invalid, SkillType.Invalid) : 0;
-            if (hasOffhandAttack)
-                offhandAccuracy += PairedRangedTraits.GetOrdinaryAccuracy(_target);
-            OffHandAccuracy = hasOffhandAttack ? offhandAccuracy.ToString() : "-";
-            ForceAccuracy = CombatRating.GetAccuracy(
-                _target,
-                forceAccuracyWeapon,
-                AbilityType.Willpower,
-                SkillType.Force,
-                ignoreWeaponAccuracyStatOverride: true);
-            Evasion = CombatRating.GetEvasion(_target, SkillType.Invalid);
+            CharacterSheetWeaponRatings.Refresh(this);
 
             RefreshResistances();
             RefreshCraftingStats();
             RefreshCharacterStatsList();
-        }
-
-        /// <summary>
-        /// The weapon that makes the off-hand attack: a separate left-hand weapon, the second end of a double
-        /// weapon, the owned glove of a Power Glove pair, or an active Twin Pistol companion.
-        /// </summary>
-        private uint GetOffhandAttackWeapon()
-        {
-            var weapon = TwinPistolEquipment.IsActivePair(_target)
-                ? TwinPistolEquipment.GetCompanionWeapon(_target)
-                : EquipmentPredicates.GetOffhandAttackWeapon(_target);
-            return GetIsObjectValid(weapon) && Item.IsAttackWeaponType(GetBaseItemType(weapon)) ? weapon : OBJECT_INVALID;
-        }
-
-        /// <summary>
-        /// Adds the off-hand weapon's value to a main-hand stat's tooltip; with no off-hand weapon the description
-        /// stays as it is. The off hand uses its own weapon's skill, so a mixed pair can differ from the main hand.
-        /// </summary>
-        public static string FormatOffHandTooltip(string description, string offHandValue) =>
-            string.IsNullOrEmpty(offHandValue) ? description : $"{description} Off hand: {offHandValue}.";
-
-        /// <summary>
-        /// Explains a dual-wield cycle: the delay covers one attack with each hand, so the time per attack is half
-        /// of it. Off-Hand Haste shortens only the off hand's share. NUI tooltips show one line, so this appends
-        /// to the delay tooltip on the same line.
-        /// </summary>
-        public static string FormatPairedDelay(int mainHandDelay, int offHandDelay, int offHandHastePercent,
-            int effectiveDelayMilliseconds)
-        {
-            var offHandHaste = offHandHastePercent > 0 ? $", off hand -{offHandHastePercent}%" : string.Empty;
-            return $" | 2 attacks per cycle, about {effectiveDelayMilliseconds / 2000f:0.##}s each " +
-                   $"(Delay {mainHandDelay} main + {offHandDelay} off{offHandHaste})";
-        }
-
-        private static uint SelectForceAccuracyWeapon(uint mainHand, uint offHand, bool isMainHandValid)
-        {
-            return isMainHandValid ? mainHand : offHand;
-        }
-
-        private static AbilityType GetEquipmentDamageAbility(uint creature, uint item)
-        {
-            var ability = GameServices.CombatQueries.GetWeaponDamageAbilityType(creature, GetBaseItemType(item));
-            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
-                if (GetItemPropertyType(property) == ItemPropertyType.DamageStat)
-                    ability = (AbilityType)GetItemPropertySubType(property);
-            return ability;
-        }
-
-        private (string Value, string Tooltip) GetAttackDelayInfo()
-        {
-            var attackSkillType = WeaponAttackTiming.GetTimingSkill(_target);
-            StatusEffectCombatEvent.TryGetLimitedAttackDelayReduction(
-                _target,
-                attackSkillType,
-                out var limitedAttackDelayReductionPercent,
-                out _);
-            var attackerDelayMilliseconds = GameServices.CombatAttackTiming.CalculateAttackDelay(
-                _target,
-                limitedAttackDelayReductionPercent);
-            var useDefaultMinimumDelay = GameServices.CombatAttackTiming.HasNextAutoAttackNoDelay(_target, attackSkillType);
-            var effectiveDelayMilliseconds = CombatRules.CalculateEffectiveAttackDelay(attackerDelayMilliseconds, useDefaultMinimumDelay);
-            var attackerDelaySeconds = attackerDelayMilliseconds / 1000f;
-            var baseDelaySeconds = CombatRules.BaseAttackDelayMilliseconds / 1000f;
-            var effectiveDelaySeconds = effectiveDelayMilliseconds / 1000f;
-            var swingDelaySeconds = CombatRules.CalculateAttackSwingDelay(effectiveDelayMilliseconds) / 1000f;
-
-            string tooltip;
-            if (useDefaultMinimumDelay)
-                tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s (next swing at {swingDelaySeconds:0.##}s resolves extra attacks at your fastest possible speed)";
-            else if (attackerDelayMilliseconds <= CombatRules.BaseAttackDelayMilliseconds)
-                tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s ({baseDelaySeconds:0.##}s default minimum)";
-            else if (effectiveDelayMilliseconds < CombatRules.BaseAttackDelayMilliseconds)
-                tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s (swings every {swingDelaySeconds:0.##}s resolve extra attacks)";
-            else
-                tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s ({attackerDelaySeconds:0.##}s attacker - {baseDelaySeconds:0.##}s default)";
-
-            var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
-            var offHand = GetOffhandAttackWeapon();
-            var mainHandDelay = GameServices.CombatAttackTiming.GetWeaponDelay(mainHand);
-            var offHandDelay = GameServices.CombatAttackTiming.GetWeaponDelay(offHand);
-            if (mainHandDelay > 0 && offHandDelay > 0)
-                tooltip += FormatPairedDelay(mainHandDelay, offHandDelay,
-                    GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(_target), effectiveDelayMilliseconds);
-
-            return (
-                $"{effectiveDelaySeconds:0.##}s",
-                tooltip
-            );
         }
 
         private void RefreshCharacterStatsList()
@@ -1035,7 +638,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Evasion %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EvasionPercentAdjustment)), "Bonus or penalty applied to Evasion. Already included in the Evasion shown on the Attributes tab.");
             AddStat("Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AttackPercentAdjustment)), "General bonus or penalty applied to Attack, including Force Attack.");
             AddStat("Force Attack %", FormatPercent(CombatRating.GetAttackPercentAdjustment(_target, SkillType.Force)), "Combined general and Force-specific Attack bonus or penalty. Already included in Force Attack on the Attributes tab.");
-            var offhandWeapon = BeastMastery.IsPlayerBeast(_target) ? OBJECT_INVALID : GetOffhandAttackWeapon();
+            var offhandWeapon = BeastMastery.IsPlayerBeast(_target) ? OBJECT_INVALID : CharacterSheetWeaponTiming.GetOffhandAttackWeapon(this);
             AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), FormatOffHandTooltip(
                 "Increases the chance to score a critical hit. Actual chance varies by target Vitality.",
                 GetIsObjectValid(offhandWeapon) ? FormatPercent(GetCriticalRate(Skill.GetWeaponSkill(_target, offhandWeapon))) : null));
@@ -1106,7 +709,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return (beastDetails.DamageStat, beastDetails.AccuracyStat, skill, creatureArmor);
             }
 
-            return (GetEquipmentDamageAbility(_target, mainHand), AbilityType.Invalid, skill, mainHand);
+            return (CharacterSheetDamageEstimate.GetEquipmentDamageAbility(_target, mainHand), AbilityType.Invalid, skill, mainHand);
         }
 
         private bool IsPlayerCharacterTarget()
@@ -1250,32 +853,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return Math.Max(0, percent + (int)Math.Ceiling(percent * (adjustment / 100f)));
         }
 
-        private static string FormatPercent(int value)
-        {
-            return $"{value}%";
-        }
-
-        private static string FormatMultiplier(float value)
-        {
-            return $"{value:0.##}x";
-        }
-
-        private static string GetStatusDurationLabel(int score)
-        {
-            return score switch
-            {
-                < -60 => "Greatly extended",
-                < -25 => "Extended",
-                < 0 => "Slightly extended",
-                0 => "Full Duration",
-                < 25 => "Slightly reduced",
-                < 45 => "Reduced",
-                < 60 => "Strongly reduced",
-                >= ResistanceRules.MaximumResistance => "Immune",
-                _ => "Greatly reduced"
-            };
-        }
-
         private void RefreshResistances()
         {
             var rows = Resistance.GetAllResistanceTypes().Select(resistanceType =>
@@ -1317,27 +894,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Craftsmanship = legacyCraftsmanship;
         }
 
-        private void RefreshAttributes()
-        {
-            if (GetIsPC(_target))
-            {
-                var playerId = GetObjectUUID(_target);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                SkillRanks = $"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {SkillService.SkillCap}";
-                SP = $"{Skill.GetTotalSkillPoints(dbPlayer)} / {SkillService.TotalSkillPointCap} ({dbPlayer.UnallocatedSP})";
-                APOrLevel = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
-            }
-            else if (BeastMastery.IsPlayerBeast(_target))
-            {
-                var beastId = BeastMastery.GetBeastId(_target);
-                var dbBeast = DB.Get<Beast>(beastId);
-
-                SP = $"{dbBeast.Level} / {BeastMasteryService.MaxLevel} ({dbBeast.UnallocatedSP})";
-                APOrLevel = $"{dbBeast.Level} / {BeastMasteryService.MaxLevel}";
-                APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
-            }
-        }
+        private void RefreshAttributes() => CharacterSheetAttributesTab.RefreshAttributes(this);
 
         private void RefreshPortrait()
         {
@@ -1512,5 +1069,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshStats();
             RefreshEquipmentStats();
         }
+
+        uint ICharacterSheetHost.Player => Player;
+        uint ICharacterSheetHost.Target => _target;
+        bool ICharacterSheetHost.IsPlayerMode => IsPlayerMode;
+        string ICharacterSheetHost.AttackDescription => AttackDescription;
+        string ICharacterSheetHost.HP { get => HP; set => HP = value; }
+        string ICharacterSheetHost.FP { get => FP; set => FP = value; }
+        string ICharacterSheetHost.STM { get => STM; set => STM = value; }
+        string ICharacterSheetHost.Name { get => Name; set => Name = value; }
+        int ICharacterSheetHost.Might { get => Might; set => Might = value; }
+        int ICharacterSheetHost.Perception { get => Perception; set => Perception = value; }
+        int ICharacterSheetHost.Vitality { get => Vitality; set => Vitality = value; }
+        int ICharacterSheetHost.Willpower { get => Willpower; set => Willpower = value; }
+        int ICharacterSheetHost.Agility { get => Agility; set => Agility = value; }
+        int ICharacterSheetHost.Social { get => Social; set => Social = value; }
+        bool ICharacterSheetHost.IsMightUpgradeAvailable { get => IsMightUpgradeAvailable; set => IsMightUpgradeAvailable = value; }
+        bool ICharacterSheetHost.IsPerceptionUpgradeAvailable { get => IsPerceptionUpgradeAvailable; set => IsPerceptionUpgradeAvailable = value; }
+        bool ICharacterSheetHost.IsVitalityUpgradeAvailable { get => IsVitalityUpgradeAvailable; set => IsVitalityUpgradeAvailable = value; }
+        bool ICharacterSheetHost.IsWillpowerUpgradeAvailable { get => IsWillpowerUpgradeAvailable; set => IsWillpowerUpgradeAvailable = value; }
+        bool ICharacterSheetHost.IsAgilityUpgradeAvailable { get => IsAgilityUpgradeAvailable; set => IsAgilityUpgradeAvailable = value; }
+        bool ICharacterSheetHost.IsSocialUpgradeAvailable { get => IsSocialUpgradeAvailable; set => IsSocialUpgradeAvailable = value; }
+        string ICharacterSheetHost.SkillRanks { get => SkillRanks; set => SkillRanks = value; }
+        string ICharacterSheetHost.SP { get => SP; set => SP = value; }
+        string ICharacterSheetHost.APOrLevel { get => APOrLevel; set => APOrLevel = value; }
+        string ICharacterSheetHost.APOrLevelTooltip { get => APOrLevelTooltip; set => APOrLevelTooltip = value; }
+        string ICharacterSheetHost.MainHandDMG { get => MainHandDMG; set => MainHandDMG = value; }
+        string ICharacterSheetHost.OffHandDMG { get => OffHandDMG; set => OffHandDMG = value; }
+        string ICharacterSheetHost.MainHandTooltip { get => MainHandTooltip; set => MainHandTooltip = value; }
+        string ICharacterSheetHost.OffHandTooltip { get => OffHandTooltip; set => OffHandTooltip = value; }
+        string ICharacterSheetHost.AttackDelay { get => AttackDelay; set => AttackDelay = value; }
+        string ICharacterSheetHost.AttackDelayTooltip { get => AttackDelayTooltip; set => AttackDelayTooltip = value; }
+        int ICharacterSheetHost.Attack { get => Attack; set => Attack = value; }
+        string ICharacterSheetHost.AttackTooltip { get => AttackTooltip; set => AttackTooltip = value; }
+        int ICharacterSheetHost.ForceAttack { get => ForceAttack; set => ForceAttack = value; }
+        int ICharacterSheetHost.PhysicalDefense { get => PhysicalDefense; set => PhysicalDefense = value; }
+        int ICharacterSheetHost.ForceDefense { get => ForceDefense; set => ForceDefense = value; }
+        int ICharacterSheetHost.WeaponAccuracy { get => WeaponAccuracy; set => WeaponAccuracy = value; }
+        string ICharacterSheetHost.OffHandAccuracy { get => OffHandAccuracy; set => OffHandAccuracy = value; }
+        int ICharacterSheetHost.ForceAccuracy { get => ForceAccuracy; set => ForceAccuracy = value; }
+        int ICharacterSheetHost.Evasion { get => Evasion; set => Evasion = value; }
+        void ICharacterSheetHost.ShowModal(string prompt, Action confirmAction) => ShowModal(prompt, confirmAction);
+        void ICharacterSheetHost.LoadData() => LoadData();
+        void ICharacterSheetHost.RefreshHitPoints() => RefreshHitPoints();
+        void ICharacterSheetHost.RefreshCharacterStatsList() => RefreshCharacterStatsList();
     }
 }

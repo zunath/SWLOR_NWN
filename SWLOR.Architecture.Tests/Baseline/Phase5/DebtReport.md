@@ -7,10 +7,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,091 | 13,259 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 22 | 34,045 lines | none over 1,000 lines |
+| 1. Static service lookup | `StaticLookups.txt` | 1,091 | 13,202 uses | none: GameServices and FacadeAccessor deleted |
+| 2. Large types | `LargeTypes.txt` | 22 | 33,646 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 9 | 2,708 lines | none over 150 lines (400 for layout) |
-| 4. Services per type | `ServicesPerType.txt` | 17 | 278 services | none over 10 services |
+| 4. Services per type | `ServicesPerType.txt` | 17 | 276 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 33 | 43 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 103 | 224 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 30 | 103 edges | none |
@@ -20,9 +20,9 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 ## 1. Static service lookup
 
-- 1,091 files, 13,259 uses: 826 using directives and 12,433 uses in code (7,507 in a static context).
-- SWLOR.Game.Server: 642 file(s), 5,708 use(s) (Feature/ 532, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
-- SWLOR.Game.Server.EngineTests: 241 file(s), 5,353 use(s).
+- 1,091 files, 13,202 uses: 826 using directives and 12,376 uses in code (7,507 in a static context).
+- SWLOR.Game.Server: 642 file(s), 5,650 use(s) (Feature/ 532, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
+- SWLOR.Game.Server.EngineTests: 241 file(s), 5,354 use(s).
 - SWLOR.Game.Server.Tests: 179 file(s), 2,040 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
 - SWLOR.CraftSim.Tests: 5 file(s), 15 use(s).
@@ -33,8 +33,8 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - SWLOR.CLI: 1 file(s), 5 use(s).
 - SWLOR.CombatSim: 1 file(s), 2 use(s).
 - SWLOR.Toolset.Tests: 1 file(s), 2 use(s).
-- Content (Feature/) uses in code: 4,425 (1,670 in a static context).
-- Content (Feature/) types that use it: 530. Static classes: 75. Instance classes that use it from a static member: 200 (156 only from static members).
+- Content (Feature/) uses in code: 4,367 (1,669 in a static context).
+- Content (Feature/) types that use it: 530. Static classes: 75. Instance classes that use it from a static member: 199 (156 only from static members).
 
 Largest 15 of 1,091 (all in `StaticLookups.txt`):
 
@@ -46,7 +46,6 @@ Largest 15 of 1,091 (all in `StaticLookups.txt`):
 | `SWLOR.Game.Server.EngineTests/Definitions/CombatPerkRegressionEngineTests.cs` | 192 | 192 in a static context, 0 import(s) |
 | `SWLOR.Game.Server/Feature/AbilityDefinition/WeaponActiveAbilityDefinitionBase.cs` | 187 | 65 in a static context, 1 import(s) |
 | `SWLOR.Game.Server/Feature/UsePerkFeat.cs` | 174 | 173 in a static context, 1 import(s) |
-| `SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs` | 146 | 1 in a static context, 1 import(s) |
 | `SWLOR.Game.Server.EngineTests/Definitions/CombatHealingBudgetEngineTests.cs` | 139 | 139 in a static context, 0 import(s) |
 | `SWLOR.Game.Server.EngineTests/Definitions/CombatRecorderEngineTests.cs` | 127 | 127 in a static context, 0 import(s) |
 | `SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs` | 111 | 0 in a static context, 1 import(s) |
@@ -55,10 +54,11 @@ Largest 15 of 1,091 (all in `StaticLookups.txt`):
 | `SWLOR.Game.Server.EngineTests/Definitions/DMToolbarEngineTests.cs` | 98 | 97 in a static context, 0 import(s) |
 | `SWLOR.Game.Server.EngineTests/Definitions/TwinPistolCrossSkillEngineTests.cs` | 92 | 92 in a static context, 0 import(s) |
 | `SWLOR.Game.Server.EngineTests/Definitions/TwinPistolCastCancellationEngineTests.cs` | 91 | 91 in a static context, 0 import(s) |
+| `SWLOR.Game.Server.Tests/Perks/GeneratedWeaponPerkBehaviorTests.cs` | 91 | 3 in a static context, 1 import(s) |
 
 ## 2. Large types
 
-- 22 types over 1,000 lines, 34,045 lines in all.
+- 22 types over 1,000 lines, 33,646 lines in all.
 - Exempt and over the limit: 191 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1, owner exception 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
@@ -76,11 +76,11 @@ Largest 15 of 22 (all in `LargeTypes.txt`):
 | `SWLOR.Game.Server.Feature.UsePerkFeat` | 1,687 | UsePerkFeat.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService` | 1,609 | CombatDamageTakenService.cs |
 | `SWLOR.Game.Server.Domain.Items.ItemService` | 1,605 | ItemService.cs |
-| `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel` | 1,516 | CharacterSheetViewModel.cs |
 | `SWLOR.Game.Server.Domain.Character.PerkService` | 1,486 | PerkService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatDamageModifiersService` | 1,436 | CombatDamageModifiersService.cs |
 | `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 1,307 | MimicryService.cs |
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 1,244 | EnmityService.cs |
+| `SWLOR.Game.Server.Domain.Companions.BeastMasteryService` | 1,240 | BeastMasteryService.cs |
 
 ## 3. Long methods
 
@@ -103,7 +103,7 @@ Largest 9 of 9 (all in `LongMethods.txt`):
 
 ## 4. Services per type
 
-- 17 types use more than 10 services: 13 through the constructor only, 4 through the lookup only, 0 through both.
+- 17 types use more than 10 services: 13 through the constructor only, 3 through the lookup only, 1 through both.
 - Exempt and over the limit: 0 (none).
 
 Largest 15 of 17 (all in `ServicesPerType.txt`):
@@ -113,8 +113,8 @@ Largest 15 of 17 (all in `ServicesPerType.txt`):
 | `SWLOR.Game.Server.Feature.UsePerkFeat` | 31 | constructor 0, lookup 31 |
 | `SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase` | 25 | constructor 0, lookup 25 |
 | `SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService` | 21 | constructor 21, lookup 0 |
-| `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel` | 21 | constructor 0, lookup 21 |
 | `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 20 | constructor 20, lookup 0 |
+| `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel` | 19 | constructor 4, lookup 15 |
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 18 | constructor 18, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 16 | constructor 16, lookup 0 |
 | `SWLOR.Game.Server.Domain.Creatures.AIService` | 15 | constructor 15, lookup 0 |

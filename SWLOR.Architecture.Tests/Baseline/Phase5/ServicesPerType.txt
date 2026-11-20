@@ -25,5 +25,5 @@ SWLOR.Game.Server.Domain.Creatures.AIService | 15
 SWLOR.Game.Server.Domain.Space.SpaceService | 18
 SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade.HeavyVibrobladeActiveAbilityDefinitionBase | 11
 SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase | 25
-SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel | 21
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel | 19
 SWLOR.Game.Server.Feature.UsePerkFeat | 31

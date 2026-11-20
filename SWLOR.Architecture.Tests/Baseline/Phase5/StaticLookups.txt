@@ -93,7 +93,7 @@ SWLOR.Game.Server.EngineTests/Definitions/DroidLootStatRevisionEngineTests.cs | 
 SWLOR.Game.Server.EngineTests/Definitions/DroidStatusImmunityEngineTests.cs | 5
 SWLOR.Game.Server.EngineTests/Definitions/DroidWeaponPairEngineTests.cs | 3
 SWLOR.Game.Server.EngineTests/Definitions/DroidWeaponSkillMigrationEngineTests.cs | 11
-SWLOR.Game.Server.EngineTests/Definitions/DualWieldEngineTests.cs | 69
+SWLOR.Game.Server.EngineTests/Definitions/DualWieldEngineTests.cs | 70
 SWLOR.Game.Server.EngineTests/Definitions/EmbattledRefreshEngineTests.cs | 14
 SWLOR.Game.Server.EngineTests/Definitions/EquipmentRecordReconciliationEngineTests.cs | 14
 SWLOR.Game.Server.EngineTests/Definitions/EquipmentTypeMigrationEngineTests.cs | 3
@@ -779,7 +779,7 @@ SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/BugReportViewModel.cs | 4
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CasinoSlotViewModel.cs | 4
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ChangeDescriptionViewModel.cs | 4
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs | 38
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs | 146
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs | 88
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterStatRebuildViewModel.cs | 13
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CircuitCraftViewModel.cs | 26
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftMinigameViewModel.cs | 5

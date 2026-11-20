@@ -12,12 +12,37 @@ using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
-    public static class TunicListingMigrationEngineTests
+    public static class TunicListingMarketCategoryEngineTests
     {
-        private const int Tunic = _32_MoveTunicListingsToArmor.RemovedTunicCategory;
+        private const int Tunic = _32_NextReleaseServerMigration.RemovedTunicCategory;
+
+        // Every tunic blueprint on the Armor base item; the two tunic recipes are not armor.
+        private static readonly string[] TunicResrefs =
+        {
+            "agent_tunic", "asc_chn_tunic", "asc_skm_tunic", "biolab_tunic", "cara_tunic", "com_tunic", "fld_chn_tunic",
+            "fld_skm_tunic", "flesh_tunic", "for_tunic", "gantry_tunic", "gr_tunic", "hunter_tunic", "imm_tunic", "inq_tunic",
+            "kwi_hyper_tunic", "kwi_light_tunic", "leather_tunic003", "leather_tunic004", "leather_tunic005", "leather_tunic014",
+            "mag_tunic", "npctunic_brown", "outlaw_tunic", "prm_chn_tunic", "prm_skm_tunic", "reg_tunic", "sc_tunic",
+            "seeker_tunic", "sm_tunic", "sup_tunic", "sur_tunic", "tran_tunic", "tunic_byysk", "val_tunic", "vet_chn_tunic",
+            "vet_skm_tunic", "viv_tunic",
+        };
+
+        [EngineTest("Newly listed tunics use the Armor market category", Category = "Market", TimeoutSeconds = 30f)]
+        public static async Task NewTunicListingsUseArmor(EngineTestContext ctx)
+        {
+            await ctx.WaitFrameAsync();
+            foreach (var resref in TunicResrefs)
+            {
+                var item = CreateObject(ObjectType.Item, resref, ctx.GetArenaLocation(1f, 1f));
+                ctx.Track(item);
+                ctx.Assert(GetIsObjectValid(item), $"{resref} creates an item");
+                ctx.AssertEqual(MarketCategoryType.Armor, PlayerMarket.GetItemMarketCategory(item), $"{resref} market category");
+            }
+        }
 
         [EngineTest("Tunic listings saved under the removed Tunic category move to Armor", Category = "Migration", TimeoutSeconds = 30f)]
         public static async Task TunicListingsMoveToArmor(EngineTestContext ctx)
@@ -36,11 +61,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(Tunic, StoredCategory(tunic.Id), "Fixture keeps the removed Tunic id");
                 ctx.Assert(!ArmorFilterIds(marketId).Contains(tunic.Id), "Before the migration the Armor filter misses the tunic");
 
-                new _32_MoveTunicListingsToArmor().Migrate();
+                new _32_NextReleaseServerMigration().Migrate();
                 AssertMigrated(ctx, marketId, tunic, breastplate, helmet);
 
                 // A second run finds nothing and changes nothing.
-                new _32_MoveTunicListingsToArmor().Migrate();
+                new _32_NextReleaseServerMigration().Migrate();
                 AssertMigrated(ctx, marketId, tunic, breastplate, helmet);
                 ctx.AssertEqual(MarketCategoryType.Armor, DB.Get<MarketItem>(tunic.Id).Category, "Reloaded tunic category");
             }
@@ -71,10 +96,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(Tunic, StoredCategory(tunic.Id), "Fixture record keeps the removed Tunic id");
                 ctx.Assert(ArmorFilterIds(marketId).Contains(tunic.Id), "Fixture search entry already says Armor");
 
-                new _32_MoveTunicListingsToArmor().Migrate();
+                new _32_NextReleaseServerMigration().Migrate();
                 AssertMigrated(ctx, marketId, tunic, breastplate, helmet);
 
-                new _32_MoveTunicListingsToArmor().Migrate();
+                new _32_NextReleaseServerMigration().Migrate();
                 AssertMigrated(ctx, marketId, tunic, breastplate, helmet);
             }
             finally
@@ -104,10 +129,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual((int)MarketCategoryType.Armor, StoredCategory(tunic.Id), "Fixture record already says Armor");
                 ctx.Assert(!ArmorFilterIds(marketId).Contains(tunic.Id), "Fixture search entry keeps the removed Tunic id");
 
-                new _32_MoveTunicListingsToArmor().Migrate();
+                new _32_NextReleaseServerMigration().Migrate();
                 AssertMigrated(ctx, marketId, tunic, breastplate, helmet);
 
-                new _32_MoveTunicListingsToArmor().Migrate();
+                new _32_NextReleaseServerMigration().Migrate();
                 AssertMigrated(ctx, marketId, tunic, breastplate, helmet);
             }
             finally

@@ -27,8 +27,8 @@ namespace SWLOR.Game.Server.Service.HuttballService
         private readonly Dictionary<HuttballTeam, int> _medics = new() { [HuttballTeam.Home] = 0, [HuttballTeam.Away] = 0 };
         private readonly Dictionary<HuttballTeam, HuttballPlayer> _captains = new() { [HuttballTeam.Home] = null, [HuttballTeam.Away] = null };
 
-        // Injuries and send-offs of players who left, so leaving and rejoining never heals them.
-        private readonly Dictionary<uint, HuttballPlayerStatus> _benchedLeavers = new();
+        // Injuries and send-offs of players who left, by identity, so leaving or relogging never heals them.
+        private readonly Dictionary<string, HuttballPlayerStatus> _benchedLeavers = new();
 
         // Dice rolled so far, so a command can tell whether it rolled any.
         private int _rollCount;
@@ -205,9 +205,10 @@ namespace SWLOR.Game.Server.Service.HuttballService
 
         /// <summary>
         /// Adds a player to a team. The first player on a team who <paramref name="canCaptain"/> becomes its
-        /// captain.
+        /// captain. <paramref name="identity"/> names the character across logins, and defaults to the creature.
         /// </summary>
-        public HuttballActionResult AddPlayer(uint creature, string name, HuttballTeam team, HuttballRole role, bool canCaptain = false)
+        public HuttballActionResult AddPlayer(
+            uint creature, string name, HuttballTeam team, HuttballRole role, bool canCaptain = false, string identity = null)
         {
             if (GetPlayer(creature) != null)
                 return HuttballActionResult.Fail($"{name} is already in the match.");
@@ -216,13 +217,14 @@ namespace SWLOR.Game.Server.Service.HuttballService
             {
                 IsDone = true,
                 CanCaptain = canCaptain,
+                Identity = identity ?? creature.ToString(),
             };
             _rerollable = null;
             _players.Add(player);
 
             var result = new HuttballActionResult();
             Say(result, $"{player.DisplayName} joins the {team} team.");
-            if (_benchedLeavers.Remove(creature, out var status))
+            if (_benchedLeavers.Remove(player.Identity, out var status))
             {
                 player.Status = status;
                 Say(result, $"{player.Name} is still {DescribeStatus(status)}.");
@@ -270,7 +272,7 @@ namespace SWLOR.Game.Server.Service.HuttballService
             _rerollable = null;
             _players.Remove(player);
             if (IsTreatable(player.Status) || player.Status == HuttballPlayerStatus.SentOff)
-                _benchedLeavers[creature] = player.Status;
+                _benchedLeavers[player.Identity] = player.Status;
             Say(result, $"{player.DisplayName} leaves the match.");
             if (_captains[player.Team] == player)
             {
@@ -1385,10 +1387,10 @@ namespace SWLOR.Game.Server.Service.HuttballService
             Turn = 1;
             ActiveTeam = GetFirstTeam(Half);
             Phase = HuttballPhase.Setup;
-            foreach (var (creature, status) in _benchedLeavers.ToList())
+            foreach (var (identity, status) in _benchedLeavers.ToList())
             {
                 if (status is HuttballPlayerStatus.Injured or HuttballPlayerStatus.SentOff)
-                    _benchedLeavers.Remove(creature);
+                    _benchedLeavers.Remove(identity);
             }
 
             foreach (var player in _players)

@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var entry = OpenMatch(area, pitch, isPlayerRun: true);
-                var result = entry.Match.AddPlayer(creature, Mention(creature), HuttballTeam.Home, role, CanCaptain(creature));
+                var result = entry.Match.AddPlayer(creature, Mention(creature), HuttballTeam.Home, role, CanCaptain(creature), Identity(creature));
                 Apply(area, result, creature);
             });
             return null;
@@ -193,6 +193,16 @@ namespace SWLOR.Game.Server.Service
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Who a creature is across logins, for the match to remember: a player character's ID, which a relog keeps,
+        /// or the creature's own ID.
+        /// </summary>
+        public static string Identity(uint creature)
+        {
+            var isPlayer = GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
+            return isPlayer ? GetObjectUUID(creature) : creature.ToString();
         }
 
         /// <summary>
@@ -724,8 +734,10 @@ namespace SWLOR.Game.Server.Service
             {
                 if (DMPresence.IsControlledByDM(pc))
                 {
-                    foreach (var target in DMPresence.GetShownOn(pc, GuiWindowType.Huttball)
-                                 .Concat(DMPresence.GetShownOn(pc, GuiWindowType.HuttballPlayer)))
+                    // During possession pc is the avatar, which isn't a DM then, so look up windows from the creature.
+                    var controlled = DMPresence.GetControlledCreature(pc);
+                    foreach (var target in DMPresence.GetShownOn(controlled, GuiWindowType.Huttball)
+                                 .Concat(DMPresence.GetShownOn(controlled, GuiWindowType.HuttballPlayer)))
                         Gui.PublishRefreshEvent(pc, refresh, target);
                 }
                 else

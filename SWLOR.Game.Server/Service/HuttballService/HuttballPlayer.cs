@@ -15,6 +15,13 @@ namespace SWLOR.Game.Server.Service.HuttballService
         }
 
         public uint Creature { get; }
+
+        /// <summary>
+        /// Who the player is across logins, which change <see cref="Creature"/>: the character's ID for a player
+        /// character, or the creature's ID otherwise.
+        /// </summary>
+        public string Identity { get; init; }
+
         public string Name { get; }
         public HuttballTeam Team { get; }
         public HuttballRole Role { get; set; }

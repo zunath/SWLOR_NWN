@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var team = TeamSelection == 1 ? HuttballTeam.Away : HuttballTeam.Home;
             var role = (HuttballRole)(RoleSelection + 1);
             var character = Character;
-            Huttball.Command(Player, m => m.AddPlayer(character, Huttball.Mention(character), team, role, Huttball.CanCaptain(character)));
+            Huttball.Command(Player, m => m.AddPlayer(character, Huttball.Mention(character), team, role, Huttball.CanCaptain(character), Huttball.Identity(character)));
         };
 
         public Action OnLeave() => () =>

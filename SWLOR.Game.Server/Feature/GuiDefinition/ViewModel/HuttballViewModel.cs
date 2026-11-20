@@ -394,7 +394,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 _selectedUnit = target;
-                Run(match => match.AddPlayer(target, Huttball.Mention(target), team, role, Huttball.CanCaptain(target)));
+                Run(match => match.AddPlayer(target, Huttball.Mention(target), team, role, Huttball.CanCaptain(target), Huttball.Identity(target)));
             });
         };
 

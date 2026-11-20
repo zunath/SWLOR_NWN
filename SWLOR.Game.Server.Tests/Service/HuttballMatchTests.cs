@@ -919,6 +919,22 @@ public class HuttballMatchTests
     }
 
     [Test]
+    public void ReloggingKeepsAnInjuryUnderANewCreature()
+    {
+        const uint relogged = 21;
+        var match = CreateMatch();
+        match.AddPlayer(AwayCatcher, "Hurt", HuttballTeam.Away, HuttballRole.Catcher, identity: "character-1");
+        match.GetPlayer(AwayCatcher).Status = HuttballPlayerStatus.SeverelyInjured;
+
+        match.RemovePlayer(AwayCatcher);
+        match.AddPlayer(relogged, "Hurt", HuttballTeam.Away, HuttballRole.Catcher, identity: "character-1");
+
+        match.GetPlayer(relogged).Status.Should().Be(HuttballPlayerStatus.SeverelyInjured, "a relog keeps the character");
+        match.AddPlayer(AwayCatcher, "Other", HuttballTeam.Away, HuttballRole.Catcher, identity: "character-2");
+        match.GetPlayer(AwayCatcher).Status.Should().Be(HuttballPlayerStatus.Standing, "another character reusing the creature ID is healthy");
+    }
+
+    [Test]
     public void AnEmptyPitchStopsTheDriveInsteadOfRunningOutTheHalf()
     {
         var match = CreateMatch();

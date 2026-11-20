@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server
         /// <summary>The staff-only feed that receives City Gazette story hooks and story requests.</summary>
         public string DMStoryHookWebhookUrl { get; }
         public string ServerNotificationWebhookUrl { get; }
+        public string EventWebhookUrl { get; }
         public ServerEnvironmentType ServerEnvironment { get; }
 
         /// <summary>
@@ -67,6 +68,7 @@ namespace SWLOR.Game.Server
             PropertyBroadcastWebhookUrl = Environment.GetEnvironmentVariable("SWLOR_PROPERTY_BROADCAST_WEBHOOK_URL");
             DMStoryHookWebhookUrl = Environment.GetEnvironmentVariable("SWLOR_DM_STORY_HOOK_WEBHOOK_URL");
             ServerNotificationWebhookUrl = Environment.GetEnvironmentVariable("SWLOR_SERVER_NOTIFICATION_WEBHOOK_URL");
+            EventWebhookUrl = Environment.GetEnvironmentVariable("SWLOR_EVENT_WEBHOOK_URL");
 
             EngineTestsEnabled = ParseBool(Environment.GetEnvironmentVariable("SWLOR_ENGINE_TESTS_ENABLED"), false);
             EngineTestResultsDirectory = Environment.GetEnvironmentVariable("SWLOR_ENGINE_TEST_RESULTS_DIRECTORY")

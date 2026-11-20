@@ -343,7 +343,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("HoloCom Calls",
                             "Select a player in the Player List and press Call to call another available online player. Incoming calls are announced in chat; answer or decline them with the Player List buttons or /answer and /decline. HoloCom cannot be used in space, and both participants are immobilized while a connected call is active. Use End Call in the Player List or /endcall to end it; unanswered call attempts time out."),
                         new ArticleBlock("Settings",
-                            "Settings controls achievement notifications, subdual mode, reset reminders, Mini-Vitals, chat and emote colors, language colors, character-description access, and identity/privacy options for descriptors and account names."),
+                            "Settings controls achievement notifications, subdual mode, reset reminders, event announcements, your time zone for event times, Mini-Vitals, chat and emote colors, language colors, character-description access, and identity/privacy options for descriptors and account names."),
                         new ArticleBlock("Notes",
                             "Notes are private player notes. You can keep up to 100 notes, and each note can hold up to 1000 characters. Notes can be searched, sorted into up to 25 categories you create yourself, and filtered by category."),
                         new ArticleBlock("Remembering Other Characters",
@@ -359,7 +359,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("OOC and Speech Restrictions",
                             "Text after // or (( is treated as out-of-character and is not translated through the language system. Dead characters cannot speak, and the Shout channel remains staff-only."),
                         new ArticleBlock("Useful Chat Commands",
-                            "Use /introduce <name> to offer a name or alias to nearby players, and /introductions to review names offered to you. /introduce has a 2-minute cooldown. Use /help to browse commands, /dice to open the dice bag, /helm and /cloak to show or hide your helmet and cloak, /bug to report a problem, /resetwindows to restore window positions, and /stuck only as an emergency escape when trapped on a map. /stuck has a 30 minute cooldown.")
+                            "Use /introduce <name> to offer a name or alias to nearby players, and /introductions to review names offered to you. /introduce has a 2-minute cooldown. Use /help to browse commands, /dice to open the dice bag, /helm and /cloak to show or hide your helmet and cloak, /bug to report a problem, /resetwindows to restore window positions, and /stuck only as an emergency escape when trapped on a map. /stuck has a 30 minute cooldown."),
+                        new ArticleBlock("DM Events",
+                            "Use /events to see the events DMs are running now and the ones scheduled next, including those on the Events tab of our Discord server. Start times show in UTC until you pick your Time Zone in General Settings; daylight saving is applied automatically. When the host allows it, Join sends you straight to the event. Leave Event in the same window, or /leaveevent, sends you back to where you joined from, even after the event ends. You cannot join or leave while dead, in combat, or piloting a ship. Turn off Event Announcements in General Settings to stop the chat message when an event starts.")
                     },
                     new[]
                     {
@@ -373,6 +375,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("How do I label another player?", "Type /name <label>, then click that player character. Use /forgetname and click them again to remove only your private label. Target yourself with /name to set your gray public description."),
                         new QuestionAnswer("How do I change languages?", "Use /language help, then /language <alias>. Wookiees remain in Shyriiwook."),
                         new QuestionAnswer("How do languages improve?", "Listening to partially understood non-Basic speech can grant language XP over time."),
+                        new QuestionAnswer("How do I join a DM event?", "Use /events, select a running event, and press Join if the host opened it for joining. Use /leaveevent to go back to where you joined from."),
                         new QuestionAnswer("How do I report a bug?", "Use /bug and include what happened, where it happened, and how to reproduce it.")
                     },
                     new[] { "Common Questions", "Useful Windows", "Skills", "Quests & Key Items", "Disguises", "Death & Recovery" }),

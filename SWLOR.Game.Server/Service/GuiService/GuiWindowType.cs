@@ -107,6 +107,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         PerformanceOptions = 102,
         PerformanceWatching = 103,
         PropertyAreaDescription = 104,
+        Events = 121,
+        DMEvents = 122,
 
         CityGazette = 110,
         CityAffairs = 111,

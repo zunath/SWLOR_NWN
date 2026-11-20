@@ -5531,63 +5531,63 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 335,
+    "Line": 337,
     "Member": "PayMission",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so this mission's credits are paid at your next login.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 347,
+    "Line": 349,
     "Member": "PayMission",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{agent?.Name ?? \"The agent\"} pays you {FactionAgentRules.DescribeReward(mission)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 374,
+    "Line": 376,
     "Member": "FailMission",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(reason))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 445,
+    "Line": 447,
     "Member": "GrantIntel",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You recover agent intel ({dbPlayer.AgentIntel} held). Any faction agent can turn it into an intel lead.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 464,
+    "Line": 466,
     "Member": "GrantLockboxIntel",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You recover agent intel ({dbPlayer.AgentIntel} held). Any faction agent can turn it into an intel lead.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 483,
+    "Line": 485,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(FactionAgentRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 492,
+    "Line": 494,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(Item.InventoryFullMessage))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 521,
+    "Line": 523,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so nothing was bought.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 528,
+    "Line": 530,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You requisition {item.Quantity}x {name} for {item.Tokens} {FactionAgentRules.GetTokenName(agent.Faction)}.\"))"
@@ -8597,35 +8597,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 604,
+    "Line": 607,
     "Member": "DeliverPayout",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"{string.Format(heading, payout.RegionName)}: your character could not be saved, so these spoils are given at your next login.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 611,
+    "Line": 614,
     "Member": "DeliverPayout",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                    $\"{string.Format(heading, payout.RegionName)}: {credits} credits and {given.Count(x => !string.IsNullOrWhiteSpace(x))} item(s){points}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 616,
+    "Line": 619,
     "Member": "DeliverPayout",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"Your inventory is full. {left} more item(s) from these spoils wait for you: make room, and they are given at your next login.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 974,
+    "Line": 977,
     "Member": "BroadcastIncursion",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 982,
+    "Line": 985,
     "Member": "MessageIncursionArea",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"

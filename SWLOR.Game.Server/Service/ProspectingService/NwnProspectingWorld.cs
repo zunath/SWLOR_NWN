@@ -25,9 +25,6 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         /// <summary>The local variable a node keeps its content in between sessions.</summary>
         public const string NodeVariable = "PROSPECTING_NODE";
 
-        /// <summary>The local variable the harvesting before Prospecting kept a node's remaining units in.</summary>
-        public const string LegacyStockVariable = "RESOURCE_COUNT";
-
         public string LoadNode(uint node)
         {
             var content = GetLocalString(node, NodeVariable);
@@ -37,10 +34,8 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         public void SaveNode(uint node, string content)
         {
             SetLocalString(node, NodeVariable, content);
-            DeleteLocalInt(node, LegacyStockVariable);
         }
 
-        public int LegacyStock(uint node) => Math.Max(0, GetLocalInt(node, LegacyStockVariable));
 
         public bool NodeExists(uint node) => GetIsObjectValid(node);
 
@@ -94,9 +89,9 @@ namespace SWLOR.Game.Server.Service.ProspectingService
                 return new HarvestPayout(delivery, units, 0, xp);
 
             // The units and the XP are one save: a stop after it gives both at login (the units by the journal, the XP as waiting craft XP).
-            var sequence = GetLocalInt(player, CraftSessionFileSequence.Variable) + 1;
-            SetLocalInt(player, CraftSessionFileSequence.Variable, sequence);
-            HarvestReturnJournal.Record(dbPlayer, GetLocalInt(player, CraftSessionFileSequence.ExportedVariable), sequence, units);
+            var exported = NwnCraftSessionWorld.Instance.ExportedSequence(player);
+            var sequence = NwnCraftSessionWorld.Instance.AdvanceFileSequence(player);
+            HarvestReturnJournal.Record(dbPlayer, exported, sequence, units);
             if (xp > 0)
             {
                 dbPlayer.PendingCraftXp ??= new Dictionary<SkillType, int>();
@@ -187,9 +182,9 @@ namespace SWLOR.Game.Server.Service.ProspectingService
 
             if (placed.Count > 0)
             {
-                var sequence = GetLocalInt(player, CraftSessionFileSequence.Variable) + 1;
-                SetLocalInt(player, CraftSessionFileSequence.Variable, sequence);
-                HarvestReturnJournal.Record(dbPlayer, GetLocalInt(player, CraftSessionFileSequence.ExportedVariable), sequence, placed);
+                var exported = NwnCraftSessionWorld.Instance.ExportedSequence(player);
+                var sequence = NwnCraftSessionWorld.Instance.AdvanceFileSequence(player);
+                HarvestReturnJournal.Record(dbPlayer, exported, sequence, placed);
             }
 
             return placed.Count;
@@ -236,7 +231,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
             if (dbPlayer == null)
                 return;
 
-            var redo = HarvestReturnJournal.TakeAtLogin(dbPlayer, GetLocalInt(player, CraftSessionFileSequence.LoadedVariable));
+            var redo = HarvestReturnJournal.TakeAtLogin(dbPlayer, NwnCraftSessionWorld.Instance.LoadedSequence(player));
             var returned = redo?.SelectMany(unit => Enumerable.Repeat(unit.Key, unit.Value)).ToList() ?? new List<string>();
             var waiting = HarvestReturnJournal.TakeAwaiting(dbPlayer);
             if (redo == null && waiting.Count == 0)

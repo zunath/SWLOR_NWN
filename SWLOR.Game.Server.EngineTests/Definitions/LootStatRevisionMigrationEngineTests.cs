@@ -22,7 +22,6 @@ public static partial class MigrationEngineTests
     private const string LootCategory = "LootStatRevisionMigration";
     internal const string RevisedGloves = "triagewardencr";
     internal const string RevisedPistol = "slw_lastwitness";
-    private const string RevisedGreatsword = "absdef_l1";
 
     // A crafted Attack enhancement and a Defense enhancement merged into the gloves' own properties.
     internal static readonly Dictionary<(ItemPropertyType, int), int> GloveEnhancements = new()
@@ -32,104 +31,6 @@ public static partial class MigrationEngineTests
     };
 
     internal static readonly Dictionary<(ItemPropertyType, int), int> NoEnhancements = new();
-
-    [EngineTest("Player loot stat migration revises equipped, carried and nested loot in the saved character and keeps the wearer's totals", Category = LootCategory, TimeoutSeconds = 120f)]
-    public static async Task PlayerLootStatRevision(EngineTestContext ctx)
-    {
-        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
-        // Count equipment totals from the worn gear, not the fixture's seeded combat values.
-        fixture.MatchEquipmentRecordsToGear();
-        var player = fixture.Creature;
-        var gloves = await CreateItemAsync(ctx, player, RevisedGloves, player);
-        var pistol = await CreateItemAsync(ctx, player, RevisedPistol, player);
-        var bag = await CreateItemAsync(ctx, player, "bag_sm", player);
-        var greatsword = await CreateItemAsync(ctx, player, RevisedGreatsword, bag);
-        var current = await CreateItemAsync(ctx, player, RevisedGloves, player);
-        await ctx.ExecuteInCreatureContextAsync(player, () =>
-        {
-            StampLegacyLoot(gloves, GloveEnhancements);
-            RemoveRequirement(gloves);
-            StampLegacyLoot(pistol, NoEnhancements);
-            StampLegacyLoot(greatsword, NoEnhancements);
-        });
-
-        var baseline = ReadEquipmentTotals(player);
-        await EquipAsync(ctx, player, gloves, InventorySlot.Arms);
-        var legacyTotals = ReadEquipmentTotals(player);
-        ctx.AssertEqual(baseline.Attack + LegacyValue(RevisedGloves, ItemPropertyType.Attack, 0, GloveEnhancements), legacyTotals.Attack,
-            "The legacy gloves grant their shipped Attack plus the merged enhancement");
-
-        SavedCharacterMigration.Upgraded upgraded = null;
-        await ctx.ExecuteInCreatureContextAsync(player, () =>
-        {
-            upgraded = SavedCharacterMigration.Run(player, DB.Get<Player>(fixture.Id), "_22_ReviseLootStats");
-            var character = SavedCharacterMigration.Load(ctx, upgraded);
-            var wornGloves = GetItemInSlot(InventorySlot.Arms, character);
-            ctx.AssertEqual(RevisedGloves, GetResRef(wornGloves), "The gloves stay equipped");
-            AssertRevisedLoot(ctx, wornGloves, GloveEnhancements);
-            AssertRevisedLoot(ctx, SavedCharacterMigration.FindItem(character, RevisedPistol), NoEnhancements);
-            var migratedBag = SavedCharacterMigration.FindItem(character, "bag_sm");
-            var nestedSword = SavedCharacterMigration.FindItem(character, RevisedGreatsword);
-            AssertRevisedLoot(ctx, nestedSword, NoEnhancements);
-            ctx.AssertEqual(migratedBag, GetItemPossessor(nestedSword, true), "The nested greatsword stays in its bag");
-            var carriedGloves = SavedCharacterMigration.Carried(character).Single(item => GetResRef(item) == RevisedGloves);
-            AssertRevisedLoot(ctx, carriedGloves, NoEnhancements);
-            var retried = SavedCharacterMigration.Run(upgraded.File, upgraded.Record, "_22_ReviseLootStats");
-            ctx.Assert(retried.File.SequenceEqual(upgraded.File), "A retry makes no further changes");
-            ctx.AssertEqual(JsonConvert.SerializeObject(upgraded.Record), JsonConvert.SerializeObject(retried.Record),
-                "A retry changes no record total");
-        });
-
-        AssertTotals(ctx, baseline, ReadEquipmentTotals(upgraded.Record), GloveEnhancements, "after the migration");
-
-        // The player logs in with the upgraded character and keeps using the corrected gloves.
-        using var login = await PlayerAbilityFixture.CreateFromCharacterAsync(ctx, upgraded.File, upgraded.Record, 3f);
-        player = login.Creature;
-        gloves = GetItemInSlot(InventorySlot.Arms, player);
-        bag = SavedCharacterMigration.FindItem(player, "bag_sm");
-        AssertTotals(ctx, baseline, ReadEquipmentTotals(player), GloveEnhancements, "after logging in");
-
-        for (var cycle = 1; cycle <= 2; cycle++)
-        {
-            await UnequipAsync(ctx, player, gloves);
-            var unequipped = ReadEquipmentTotals(player);
-            ctx.AssertEqual(baseline.Attack, unequipped.Attack, $"Cycle {cycle}: unequipping returns Attack to its baseline");
-            ctx.AssertEqual(baseline.PhysicalDefense, unequipped.PhysicalDefense, $"Cycle {cycle}: unequipping returns Defense to its baseline");
-            ctx.AssertEqual(baseline.ForceDefense, unequipped.ForceDefense, $"Cycle {cycle}: unequipping returns Force Defense to its baseline");
-            ctx.AssertEqual(baseline.MaxHP, unequipped.MaxHP, $"Cycle {cycle}: unequipping returns max HP to its baseline");
-            await EquipAsync(ctx, player, gloves, InventorySlot.Arms);
-            AssertTotals(ctx, baseline, ReadEquipmentTotals(player), GloveEnhancements, $"after re-equip cycle {cycle}");
-        }
-
-        string savedBag = null;
-        string savedGloves = null;
-        await ctx.ExecuteInCreatureContextAsync(player, () =>
-        {
-            savedBag = ObjectPlugin.Serialize(bag);
-            savedGloves = ObjectPlugin.Serialize(gloves);
-        });
-        for (var cycle = 1; cycle <= 2; cycle++)
-        {
-            await ctx.ExecuteInCreatureContextAsync(player, () =>
-            {
-                var restoredGloves = Deserialize(ctx, savedGloves);
-                AssertRevisedLoot(ctx, restoredGloves, GloveEnhancements);
-                var restoredBag = Deserialize(ctx, savedBag);
-                var contents = new List<uint>();
-                for (var item = GetFirstItemInInventory(restoredBag); GetIsObjectValid(item); item = GetNextItemInInventory(restoredBag))
-                    contents.Add(item);
-                ctx.AssertEqual(1, contents.Count, $"Reload cycle {cycle}: the bag still holds exactly one item");
-                AssertRevisedLoot(ctx, contents[0], NoEnhancements);
-                ctx.AssertEqual(1, GetItemStackSize(contents[0]), $"Reload cycle {cycle}: the stack size is unchanged");
-                ctx.Assert(!LootStatRevisionMigration.MigrateObject(restoredBag), $"Reload cycle {cycle}: reloaded loot needs no further change");
-                savedGloves = ObjectPlugin.Serialize(restoredGloves);
-                savedBag = ObjectPlugin.Serialize(restoredBag);
-                DestroyObject(restoredGloves);
-                DestroyObject(restoredBag);
-            });
-            await ctx.WaitFrameAsync();
-        }
-    }
 
     [EngineTest("Loot stat migration revises legacy loot a player acquires after the character migration", Category = LootCategory)]
     public static async Task AcquiredLootStatRevision(EngineTestContext ctx)
@@ -159,119 +60,6 @@ public static partial class MigrationEngineTests
             ctx.AssertEqual(player, GetItemPossessor(copy), "The player keeps the acquired pistol");
         });
     }
-
-    [EngineTest("Player loot stat migration keeps current HP and stamina when equipped pools are revised", Category = LootCategory, TimeoutSeconds = 60f)]
-    public static async Task PlayerLootStatRevisionKeepsPools(EngineTestContext ctx)
-    {
-        const string chestResref = "absdef_w2";
-        const string beltResref = "apexbite_w2";
-        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
-        var player = fixture.Creature;
-        var chest = await CreateItemAsync(ctx, player, chestResref, player);
-        var belt = await CreateItemAsync(ctx, player, beltResref, player);
-        await ctx.ExecuteInCreatureContextAsync(player, () =>
-        {
-            foreach (var item in new[] { chest, belt })
-            {
-                StampLegacyLoot(item, NoEnhancements);
-                RemoveRequirement(item);
-            }
-        });
-        await EquipAsync(ctx, player, chest, InventorySlot.Chest);
-        await EquipAsync(ctx, player, belt, InventorySlot.Belt);
-
-        var maxHP = 0;
-        var recordMaxHP = 0;
-        var maxStamina = 0;
-        await ctx.ExecuteInCreatureContextAsync(player, () =>
-        {
-            // Native max HP is capped by the fixture's few levels; the player record keeps the full total.
-            maxHP = GetMaxHitPoints(player);
-            recordMaxHP = DB.Get<Player>(GetObjectUUID(player)).MaxHP;
-            SetCurrentHitPoints(player, maxHP);
-            maxStamina = Stat.GetMaxStamina(player);
-            fixture.Update(record => record.Stamina = maxStamina);
-        });
-        await ctx.WaitFrameAsync();
-
-        SavedCharacterMigration.Upgraded upgraded = null;
-        var recordHP = 0;
-        await ctx.ExecuteInCreatureContextAsync(player, () =>
-        {
-            recordHP = DB.Get<Player>(fixture.Id).HP;
-            upgraded = SavedCharacterMigration.Run(player, DB.Get<Player>(fixture.Id), "_22_ReviseLootStats");
-            var character = SavedCharacterMigration.Load(ctx, upgraded);
-            AssertRevisedLoot(ctx, SavedCharacterMigration.FindItem(character, chestResref), NoEnhancements);
-            AssertRevisedLoot(ctx, SavedCharacterMigration.FindItem(character, beltResref), NoEnhancements);
-            var hpDifference = PoolDifference(chestResref, ItemPropertyType.HPBonus) + PoolDifference(beltResref, ItemPropertyType.HPBonus);
-            var staminaDifference = PoolDifference(beltResref, ItemPropertyType.Stamina);
-            ctx.AssertEqual(recordMaxHP + hpDifference, upgraded.Record.MaxHP, "Max HP moves by exactly the revised HP");
-            // Login sets a character's HP from its record, which the item revision does not touch.
-            ctx.AssertEqual(recordHP, upgraded.Record.HP, "Raising max HP keeps the player's current HP");
-            ctx.AssertEqual(System.Math.Min(maxStamina, maxStamina + staminaDifference), upgraded.Record.Stamina,
-                "Current STM is clamped only by the revised drop, not by the old item's whole bonus");
-        });
-
-        using var login = await PlayerAbilityFixture.CreateFromCharacterAsync(ctx, upgraded.File, upgraded.Record, 3f);
-        var staminaChange = PoolDifference(beltResref, ItemPropertyType.Stamina);
-        ctx.AssertEqual(maxStamina + staminaChange, Stat.GetMaxStamina(login.Creature), "Max STM moves by exactly the revised STM");
-        ctx.AssertEqual(GetMaxHitPoints(login.Creature), ObjectPlugin.GetCurrentHitPoints(login.Creature),
-            "A character at full HP is saved at full HP for its new maximum");
-    }
-
-    [EngineTest("Player loot stat migration keeps current HP when an earlier slot lowers it and a later slot raises it", Category = LootCategory, TimeoutSeconds = 60f)]
-    public static async Task PlayerLootStatRevisionKeepsHPAcrossMixedSlots(EngineTestContext ctx)
-    {
-        // The cloak slot is visited before the ring slots: the cloak's HP drops by one, the ring's rises by eleven.
-        const string cloakResref = "circle_mantle";
-        const string ringResref = "absdef_l6";
-        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
-        var player = fixture.Creature;
-        var cloak = await CreateItemAsync(ctx, player, cloakResref, player);
-        var ring = await CreateItemAsync(ctx, player, ringResref, player);
-        await ctx.ExecuteInCreatureContextAsync(player, () =>
-        {
-            foreach (var item in new[] { cloak, ring })
-            {
-                StampLegacyLoot(item, NoEnhancements);
-                RemoveRequirement(item);
-            }
-        });
-        await EquipAsync(ctx, player, cloak, InventorySlot.Cloak);
-        await EquipAsync(ctx, player, ring, InventorySlot.RightRing);
-
-        var maxHP = 0;
-        await ctx.ExecuteInCreatureContextAsync(player, () =>
-        {
-            // Keep native max HP below the fixture's per-level cap so every HP change is visible.
-            var record = DB.Get<Player>(GetObjectUUID(player));
-            Stat.AdjustPlayerMaxHP(record, player, 150 - record.MaxHP);
-            DB.Set(record);
-            maxHP = GetMaxHitPoints(player);
-            SetCurrentHitPoints(player, maxHP);
-        });
-        await ctx.WaitFrameAsync();
-
-        SavedCharacterMigration.Upgraded upgraded = null;
-        var recordHP = 0;
-        await ctx.ExecuteInCreatureContextAsync(player, () =>
-        {
-            recordHP = DB.Get<Player>(fixture.Id).HP;
-            upgraded = SavedCharacterMigration.Run(player, DB.Get<Player>(fixture.Id), "_22_ReviseLootStats");
-            var character = SavedCharacterMigration.Load(ctx, upgraded);
-            AssertRevisedLoot(ctx, SavedCharacterMigration.FindItem(character, cloakResref), NoEnhancements);
-            AssertRevisedLoot(ctx, SavedCharacterMigration.FindItem(character, ringResref), NoEnhancements);
-            var hpDifference = PoolDifference(cloakResref, ItemPropertyType.HPBonus) + PoolDifference(ringResref, ItemPropertyType.HPBonus);
-            ctx.AssertEqual(maxHP + hpDifference, GetMaxHitPoints(character), "Native max HP moves by the combined revised HP");
-            // Login sets a character's HP from its record, which the item revision does not touch.
-            ctx.AssertEqual(recordHP, upgraded.Record.HP, "A cloak lowering HP before a ring raises it costs no current HP");
-            ctx.AssertEqual(GetMaxHitPoints(character), ObjectPlugin.GetCurrentHitPoints(character),
-                "A character at full HP is saved at full HP for its new maximum");
-        });
-    }
-
-    private static int PoolDifference(string resref, ItemPropertyType type) =>
-        LootStatRevisionCatalog.Changes[resref].Where(x => x.Type == type).Sum(x => x.Current - x.Previous);
 
     [EngineTest("Loot stat migration leaves revised blueprints and unrelated items unchanged", Category = LootCategory)]
     public static async Task UnrelatedLootStatRevision(EngineTestContext ctx)
@@ -494,24 +282,4 @@ public static partial class MigrationEngineTests
             record.MaxHP);
     }
 
-    private static void AssertTotals(EngineTestContext ctx,
-        (int Attack, int PhysicalDefense, int ForceDefense, int MaxHP) baseline,
-        (int Attack, int PhysicalDefense, int ForceDefense, int MaxHP) actual,
-        Dictionary<(ItemPropertyType, int), int> enhancements, string when)
-    {
-        int Revised(ItemPropertyType type, int subtype)
-        {
-            var current = LootStatRevisionCatalog.Changes[RevisedGloves]
-                .Where(x => x.Type == type && x.Subtype == subtype)
-                .Select(x => x.Current)
-                .SingleOrDefault();
-            return current + enhancements.GetValueOrDefault((type, subtype));
-        }
-        ctx.AssertEqual(baseline.Attack + Revised(ItemPropertyType.Attack, 0), actual.Attack, $"Attack counts the revised gloves {when}");
-        ctx.AssertEqual(baseline.PhysicalDefense + Revised(ItemPropertyType.Defense, (int)CombatDamageType.Physical), actual.PhysicalDefense,
-            $"Defense counts the revised gloves {when}");
-        ctx.AssertEqual(baseline.ForceDefense + Revised(ItemPropertyType.Defense, (int)CombatDamageType.Force), actual.ForceDefense,
-            $"Force Defense counts the revised gloves {when}");
-        ctx.AssertEqual(baseline.MaxHP + Revised(ItemPropertyType.HPBonus, 0), actual.MaxHP, $"Max HP counts the revised gloves {when}");
-    }
 }

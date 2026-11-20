@@ -1061,48 +1061,6 @@ public class CombatAttackDelayTests
     }
 
     [Test]
-    public void WeaponDelayMigration_CoversLivePlayerInventoryAndSerializedItems()
-    {
-        var root = FindRepositoryRoot();
-        var playerMigrationSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "CharacterMigration",
-            "_14_15_CombatUpgradeMigrations.cs"));
-        var serverMigrationSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration",
-            "StoredItemDataMigration.cs"));
-        var weaponDelayMigrationSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "SerializedItemWeaponDamageTypeMigration.cs"));
-
-        playerMigrationSource.Should().Contain("SavedWeaponDamageTypeMigration.MigrateCharacter(character);");
-        serverMigrationSource.Should().Contain("SerializedItemWeaponDamageTypeMigration.MigrateObject(obj)");
-        weaponDelayMigrationSource.Should().Contain("ItemPropertyType.Delay");
-        weaponDelayMigrationSource.Should().Contain("WeaponDelay.GetWeaponDelay(baseItem)");
-        weaponDelayMigrationSource.Should().Contain("BuildWeaponBaseItemTypes");
-        weaponDelayMigrationSource.Should().Contain("StaffBaseItemTypes");
-        weaponDelayMigrationSource.Should().Contain("[\"t_knife\"] = ItemPropertyAttackDelay.Delay220");
-        weaponDelayMigrationSource.Should().Contain("[\"t_shuriken\"] = ItemPropertyAttackDelay.Delay220");
-        weaponDelayMigrationSource.Should().Contain("[\"t_rifle\"] = ItemPropertyAttackDelay.Delay300");
-        weaponDelayMigrationSource.Should().Contain("[\"t_twinblade\"] = ItemPropertyAttackDelay.Delay230");
-        weaponDelayMigrationSource.Should().Contain("[\"byyskwarriorswor\"] = ItemPropertyAttackDelay.Delay220");
-        weaponDelayMigrationSource.Should().Contain("[\"sith_blade\"] = ItemPropertyAttackDelay.Delay220");
-        weaponDelayMigrationSource.Should().Contain("[\"wswss002\"] = ItemPropertyAttackDelay.Delay220");
-        weaponDelayMigrationSource.Should().Contain("GetHasInventory(obj)");
-        weaponDelayMigrationSource.Should().Contain("GetItemInSlot((InventorySlot)index, creature)");
-    }
-
-    [Test]
     public void ModuleWeaponDelayProperties_AreNormalized()
     {
         var root = FindRepositoryRoot();

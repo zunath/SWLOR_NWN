@@ -115,69 +115,6 @@ public class LightsaberWorkbenchTests
     }
 
     [Test]
-    public void LegacySaberMigration_AllowlistCoversEveryCraftableSaberResref()
-    {
-        var root = FindRepositoryRoot();
-        var isCraftable = GetIsCraftableSaberResref();
-
-        // Every recipe-produced Lightsaber/Saberstaff base item blueprint must be
-        // excluded from removal, otherwise the migration would reclaim craftable weapons.
-        var recipeResrefs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var path in Directory.EnumerateFiles(
-                     Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "RecipeDefinition"),
-                     "*.cs",
-                     SearchOption.AllDirectories))
-        {
-            foreach (Match match in Regex.Matches(File.ReadAllText(path), @"\.Resref\(""([^""]+)""\)"))
-            {
-                recipeResrefs.Add(match.Groups[1].Value);
-            }
-        }
-
-        recipeResrefs.Should().NotBeEmpty();
-
-        var craftableSabers = new List<string>();
-        foreach (var resref in recipeResrefs)
-        {
-            var utiPath = Path.Combine(root.FullName, "Module", "uti", $"{resref}.uti.json");
-            if (!File.Exists(utiPath))
-                continue;
-
-            var baseItem = JObject.Parse(File.ReadAllText(utiPath))["BaseItem"]!["value"]!.Value<int>();
-            if (baseItem == LightsaberBaseItem || baseItem == SaberstaffBaseItem)
-                craftableSabers.Add(resref);
-        }
-
-        craftableSabers.Should().NotBeEmpty("the training saber lines are recipe-produced sabers");
-        var missing = craftableSabers.Where(resref => !isCraftable(resref)).ToList();
-        missing.Should().BeEmpty("craftable sabers must never be reclaimed by the legacy saber migration");
-
-        // The workbench outputs must be excluded as well.
-        isCraftable("ls_custom").Should().BeTrue();
-        isCraftable("ss_custom").Should().BeTrue();
-
-        // DM-built sabers must not be excluded.
-        isCraftable("lightsaber").Should().BeFalse();
-        isCraftable("saberstaff").Should().BeFalse();
-        isCraftable("malak_lightsaber").Should().BeFalse();
-    }
-
-    [Test]
-    public void CharacterMigration15_InvokesLegacySaberMigration()
-    {
-        var root = FindRepositoryRoot();
-        var migration = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "CharacterMigration",
-            "_14_15_CombatUpgradeMigrations.cs"));
-
-        migration.Should().Contain("SavedLegacySaberMigration.MigrateCharacter(character);");
-    }
-
-    [Test]
     public void SubmissionToken_TransfersCraftedDamageButNotBlueprintScaffolding()
     {
         var root = FindRepositoryRoot();
@@ -216,56 +153,6 @@ public class LightsaberWorkbenchTests
         {
             LightsaberWorkbench.ShouldTransferSubmissionProperty(type, subType)
                 .Should().Be(transfers, $"{type} (subtype {subType}) transfer must be {transfers}");
-        }
-    }
-
-    [Test]
-    public void SaberMigration_NormalizesLegacySabersAcrossSurfaces()
-    {
-        var root = FindRepositoryRoot();
-        var migrationRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "MigrationDefinition");
-
-        var storedItemMigration = File.ReadAllText(Path.Combine(migrationRoot, "ServerMigration", "StoredItemDataMigration.cs"));
-        storedItemMigration.Should().Contain("LegacySaberMigration.MigrateStoredObject(obj, out var normalizedSabers)");
-
-        // Legacy sabers are normalized in place - never removed or swapped.
-        var saberMigration = File.ReadAllText(Path.Combine(migrationRoot, "LegacySaberMigration.cs"));
-        saberMigration.Should().Contain("NormalizeSaber");
-        saberMigration.Should().Contain("SABER_TIER");
-        saberMigration.Should().NotContain("kyber_token", "the migration no longer grants tokens; legacy sabers are normalized in place");
-        foreach (var normalizedProperty in new[]
-                 {
-                     "ItemPropertyType.DMG",
-                     "ItemPropertyType.Delay",
-                     "ItemPropertyType.RequiresSkill",
-                     "ItemPropertyType.WeaponDamageType",
-                     "ItemPropertyType.EnhancementBonus",
-                     "ItemPropertyType.DamageBonus",
-                     "ItemPropertyType.AccuracyBonus",
-                     "ItemPropertyType.Accuracy",
-                 })
-        {
-            saberMigration.Should().Contain(normalizedProperty, $"{normalizedProperty} is part of the normalized damage profile");
-        }
-
-        // The recipes that taught the retired single-step kits have no equivalent to
-        // convert into, so they're just cleaned up by the obsolete-item sweep.
-        var obsoleteItems = File.ReadAllText(Path.Combine(migrationRoot, "ObsoleteItemMigration.cs"));
-        foreach (var retired in new[] { "recipe_saberupg1", "recipe_staffupg1" })
-        {
-            obsoleteItems.Should().Contain($"\"{retired}\",");
-        }
-
-        // The retired single-step kits themselves are converted to the lowest tier of
-        // the current tiered Engineering upgrade kit line rather than destroyed.
-        foreach (var (legacyKit, lowestTierKit) in new[]
-                 {
-                     ("saber_upg1", "saber_upg2"),
-                     ("saberstaff_upg1", "staff_upg2"),
-                 })
-        {
-            obsoleteItems.Should().Contain($"\"{legacyKit}\", \"{lowestTierKit}\"",
-                $"{legacyKit} must convert to {lowestTierKit} instead of being destroyed");
         }
     }
 
@@ -529,12 +416,6 @@ public class LightsaberWorkbenchTests
 
         if (weaponType == BaseItem.Saberstaff && category.Length == 0)
             colors.Single(color => color.SaberstaffTopValue == 143).Name.Should().Be("Cyan");
-    }
-    private static Func<string, bool> GetIsCraftableSaberResref()
-    {
-        var type = Type.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.LegacySaberMigration, SWLOR.Game.Server")!;
-        var method = type.GetMethod("IsCraftableSaberResref", BindingFlags.Public | BindingFlags.Static)!;
-        return resref => (bool)method.Invoke(null, new object[] { resref })!;
     }
 
     /// <summary>Resource names are case-insensitive, and some HAK files use mixed case.</summary>

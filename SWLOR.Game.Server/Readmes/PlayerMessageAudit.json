@@ -840,6 +840,13 @@
     "Call": "SendMessageToPC(user, $\"{targetName} stats: \\n\" +\n                                $\"Armor: {targetStatus.Hull} Max: {targetStatus.MaxHull} \\n\" +\n                                $\"Shields: {targetStatus.Shield} Max: {targetStatus.MaxShield} \\n\" +\n                                $\"Capacitor: {targetStatus.Capacitor} Max: {targetStatus.MaxCapacitor} \\n\" +\n                                $\"Shield Regen: {targetStatus.ShieldRechargeRate} \\n\" +\n                                $\"EM Damage Bonus: {targetStatus.EMDamage} \\n\" +\n                                $\"Thermal Damage Bonus: {targetStatus.ThermalDamage} \\n\" +\n                                $\"Explosive Damage Bonus: {targetStatus.ExplosiveDamage} \\n\" +\n                                $\"Accuracy: {targetStatus.Accuracy} \\n\" +\n                                $\"Evasion: {targetStatus.Evasion} \\n\" +\n                                $\"Thermal Defense: {targetStatus.ThermalDefense} \\n\" +\n                                $\"EM Defense: {targetStatus.EMDefense} \\n\" +\n                                $\"Explosive Defense: {targetStatus.ExplosiveDefense} \\n\" +\n                                $\"Skill Level: {level}\")"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/EventChatCommand.cs",
+    "Line": 43,
+    "Member": "LeaveEvent",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, string.IsNullOrEmpty(error)\n                        ? ColorToken.Green(\"Going back to where you joined from...\")\n                        : ColorToken.Red(error))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/IncubationTestChatCommand.cs",
     "Line": 62,
     "Member": "FinishStage",
@@ -1856,8 +1863,8 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMSettingsViewModel.cs",
-    "Line": 104,
-    "Member": "OnClientPropertyUpdated",
+    "Line": 137,
+    "Member": "SaveSetting",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(_dm, ColorToken.Red(\"Your DM settings could not be saved.\"))"
   },
@@ -2773,21 +2780,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/SettingsViewModel.cs",
-    "Line": 455,
+    "Line": 481,
     "Member": "OnSave",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Green(\"Settings updated.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/SettingsViewModel.cs",
-    "Line": 467,
+    "Line": 493,
     "Member": "OnClickHotbars",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(\"Only player characters have extra hotbars.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/SettingsViewModel.cs",
-    "Line": 478,
+    "Line": 504,
     "Member": "OnClickChangeDescription",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(\"Edit your active disguise's biography from the Disguises window. Deactivate it to edit your normal biography.\"))"
@@ -4558,7 +4565,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 419,
+    "Line": 440,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
@@ -5073,6 +5080,34 @@
     "Member": "CleanupAllHoloComState",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
+    "Line": 259,
+    "Member": "SendEveryoneBack",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"The host sent you back from {hostedEvent.Name}.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
+    "Line": 319,
+    "Member": "Join",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"Traveling to {hostedEvent.Name}. Use /leaveevent or the Events window to go back.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
+    "Line": 509,
+    "Member": "Announce",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(DMPresence.GetControlledCreature(player), message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
+    "Line": 516,
+    "Member": "TellParticipantsEnded",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Cyan($\"{hostedEvent.Name} has ended. Use /leaveevent when you are ready to go back.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Item.cs",
@@ -6147,7 +6182,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/ScavengeService/NwnScavengeWorld.cs",
-    "Line": 153,
+    "Line": 151,
     "Member": "ReturnPendingFinds",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ReturnMessage(split, names))"
@@ -6238,56 +6273,56 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 263,
+    "Line": 269,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Your XP debt has been cleared.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 265,
+    "Line": 271,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{debtRemoved} XP was removed from your debt. (Remaining: {dbPlayer.XPDebt})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 289,
+    "Line": 297,
     "Member": "GiveSkillXP",
     "Delivery": "Rate limited in Production",
-    "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_LIMIT\", ColorToken.Red($\"{details.Name} is at your limit of {rankCeiling}. Raise it in the Skills window.\"))"
+    "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_LIMIT\", ColorToken.Red($\"{details.Name} is at your limit of {rankCeiling}. Raise it in the Skills window.\"), intervalSeconds: 0)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 312,
+    "Line": 320,
     "Member": "GiveSkillXP",
     "Delivery": "Rate limited in Production",
     "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You cannot gain {details.Name} XP. You are at the skill cap of {SkillCap} and all of your other skills are locked or at their limits. Unlock a skill or change a limit in the Skills menu to resume gaining {details.Name} XP.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 317,
+    "Line": 325,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You earned {details.Name} skill experience. ({xp})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 341,
+    "Line": 349,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Your {details.Name} skill level increased to rank {pcSkill.Rank}!\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 376,
+    "Line": 384,
     "Member": "GiveSkillXP",
     "Delivery": "Rate limited in Production",
     "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You have reached the skill cap of {SkillCap} and all of your other skills are locked or at their limits. Excess {details.Name} XP was lost.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 441,
+    "Line": 449,
     "Member": "ApplyAbilityPoint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\"You acquired 1 ability point!\"))"

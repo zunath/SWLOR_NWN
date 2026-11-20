@@ -12,5 +12,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         public bool StaminaRestoreApplied { get; set; }
         public int HitStaminaRefunded { get; set; }
         public int DeferredImpactCount { get; set; }
+        /// <summary>Scheduled impacts running under this captured activation; they outlive the 35 second window.</summary>
+        public int ScheduledImpactDepth { get; set; }
     }
 }

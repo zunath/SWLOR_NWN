@@ -303,7 +303,7 @@ namespace SWLOR.Game.Server.Domain.Character
             if (!string.IsNullOrWhiteSpace(descriptorError))
                 return Reject(descriptorError);
 
-            biography ??= string.Empty;
+            biography = PastedText.Clean(biography);
             if (biography.Length > MaxBiographyLength)
                 return Reject($"Disguise biographies may be no longer than {MaxBiographyLength} characters.");
 

@@ -34,7 +34,6 @@ SHEET = "Smithery"
 TEMPLATE_SHEET = "Engineering"  # the Smithery tab has no perk row of its own to take the cell styles from
 TEMPLATE_ROW = 9
 FIRST_PERK_ROW = 9
-DESCRIPTION_MARKER = "Two perk lines"
 STYLE_PREFIX = "Plasma Forge style, picked in the Plasma Forge window with one style active at a time. "
 
 
@@ -168,11 +167,6 @@ def rows(k: dict[str, float]) -> list[dict]:
     ]
 
 
-def description_suffix(total: int, k: dict[str, float]) -> str:
-    return (
-        f" {DESCRIPTION_MARKER} of {total // 2} SP each (Forgemaster and Artisan) change the Plasma Forge minigame: ten purchases at Smithery"
-        " 5/10/15/20/25/30/35/40/45/50 priced 1/1/2/2/3/3/3/3/3/4 SP, a style at rank 20 and a capstone at rank 50. Both styles can"
-        " be owned and the Plasma Forge window toggles between them, one at a time.")
 
 
 def update_sheet(sheet: Bible.Sheet, template_sheet: Bible.Sheet, k: dict[str, float]) -> int:
@@ -212,11 +206,6 @@ def update_sheet(sheet: Bible.Sheet, template_sheet: Bible.Sheet, k: dict[str, f
     sheet.write_row(total_row, total_cells, after=total_row - 1)
 
     Bible.set_formula(sheet, "D4", f"SUM(B{total_row})", total)
-    description = sheet.row_cells(3)["B"]
-    text = sheet.text_of(description)
-    if DESCRIPTION_MARKER in text:
-        text = text[:text.index(DESCRIPTION_MARKER)].rstrip()
-    sheet.set_cell(3, "B", Bible.text_cell("B3", Bible.cell_style(description), text + description_suffix(total, k)))
     return total
 
 

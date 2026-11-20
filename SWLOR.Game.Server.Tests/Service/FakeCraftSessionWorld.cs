@@ -304,6 +304,17 @@ internal sealed class FakeCraftSessionWorld : ICraftSessionWorld
         _loaded = FileSequenceOnDisk;
     }
 
+    /// <summary>
+    /// A logout (which writes the character file) and a login in the same server run, where the login's checks read
+    /// <paramref name="loadedFor"/>(the sequence of the file written) as the sequence the file loaded with.
+    /// </summary>
+    public void LogOutAndRelog(Func<int, int> loadedFor)
+    {
+        WriteFile();
+        CrashAndReload();
+        _loaded = loadedFor(FileSequenceOnDisk);
+    }
+
     /// <summary>Writes the character file as it stands, as a logout or an unrelated export does.</summary>
     public void ExportNow() => WriteFile();
 

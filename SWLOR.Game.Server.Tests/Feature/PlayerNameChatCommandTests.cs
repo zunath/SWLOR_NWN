@@ -86,7 +86,7 @@ public class PlayerNameChatCommandTests
         source.Should().NotContain("catch (ArgumentException ex)");
         source.Should().NotContain("ColorToken.Red(ex.Message)");
 
-        source.Should().Contain("if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))");
+        source.Should().Contain("if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target))");
         source.Should().Contain("You may only name player characters.");
         source.Should().Contain("You may only forget names for player characters.");
 

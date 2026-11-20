@@ -45,18 +45,18 @@ public class ShatterveinEncounterTests
     {
         using var wolf = Read("utc", "esh_veinwolf");
         var creature = wolf.RootElement;
-        Value(creature, "Appearance_Type").GetInt32().Should().Be((int)AppearanceType.DogWolfFenrisCCCPLUSHHYENAofDOOM);
+        Value(creature, "Appearance_Type").GetInt32().Should().Be((int)AppearanceType.SWLORShatterveinWolf);
         var beastType = Value(creature, "VarTable").EnumerateArray().Single(variable => Value(variable, "Name").GetString() == "BEAST_TYPE");
         Value(beastType, "Value").GetInt32().Should().Be((int)BeastType.ShatterveinWolf);
         var beast = new ShatterveinWolfBeastDefinition().Build()[BeastType.ShatterveinWolf];
         beast.Role.Should().Be(BeastRoleType.Force);
-        beast.Appearance.Should().Be(AppearanceType.DogWolfFenrisCCCPLUSHHYENAofDOOM);
+        beast.Appearance.Should().Be(AppearanceType.SWLORShatterveinWolf);
         beast.Levels.Keys.Should().BeEquivalentTo(Enumerable.Range(1, 50));
         beast.PossibleMutations.Should().BeEmpty();
     }
 
-    [TestCase("esh_veinwolf", 6356, new[] { 1861, 1862 })]
-    [TestCase("esh_veinboss", 6473, new[] { 1861, 1862, 1863, 1864, 1765, 1844 })]
+    [TestCase("esh_veinwolf", (int)AppearanceType.SWLORShatterveinWolf, new[] { 1861, 1862 })]
+    [TestCase("esh_veinboss", (int)AppearanceType.SWLORThornboundWarden, new[] { 1861, 1862, 1863, 1864, 1765, 1844 })]
     public void Encounters_UseLevel45ForcePackages_WithoutUnrelatedQuestCredit(string resref, int appearance, int[] abilities)
     {
         using var utc = Read("utc", resref);

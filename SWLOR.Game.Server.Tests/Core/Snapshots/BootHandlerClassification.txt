@@ -87,10 +87,11 @@ mod_cache_aft (16)
   Rerun       SWLOR.Game.Server.Feature.UnarmedTechniqueProfile.Register
   Rerun       SWLOR.Game.Server.Feature.ChatCommandDefinition.DMSpawnChatCommand.CacheSpawnBeastEggHelp
 
-mod_load (46)
+mod_load (47)
   Rerun       SWLOR.Game.Server.Domain.Character.AchievementService.ReserveGuiIds
   Rerun       SWLOR.Game.Server.Domain.World.AreaService.RemoveInstancesFromCache
   Rerun       SWLOR.Game.Server.Core.FrameProfiler.Load
+  Rerun       SWLOR.Game.Server.Domain.Social.HostedEventsService.LoadEvents
   Rerun       SWLOR.Game.Server.Domain.Character.LanguageService.LoadTranslators
   BootOnly    SWLOR.Game.Server.Domain.Economy.PlayerMarketService.RemoveOldListings
   BootOnly    SWLOR.Game.Server.Domain.World.PropertyService.OnModuleLoad
@@ -142,5 +143,5 @@ app_shutdown (2)
 == TOTALS ==
 BootOnly    19
 NativeHook  15
-Rerun       84
+Rerun       85
 Retire      2

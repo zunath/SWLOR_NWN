@@ -27,7 +27,8 @@ internal static class StatHarnessSource
         .Replace("_db.", "DB.")
         .Replace("_combatRecorder.", "CombatRecorder.")
         .Replace("_playerFeedback.", "PlayerFeedback.")
-        .Replace("_companions.", "BeastMastery.");
+        .Replace("_companions.", "BeastMastery.")
+        .Replace("StatService.MaximumNPCHitPoints", "MaximumNPCHitPoints");
 
     private static MethodDeclarationSyntax MakeStatic(MethodDeclarationSyntax method) =>
         method.Modifiers.Any(SyntaxKind.StaticKeyword)

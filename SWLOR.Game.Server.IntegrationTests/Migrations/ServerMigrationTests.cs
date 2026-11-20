@@ -3,8 +3,6 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.IntegrationTests.Support;
-using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.NWN.Formats.Gff;
 
 namespace SWLOR.Game.Server.IntegrationTests.Migrations;
 
@@ -16,8 +14,6 @@ namespace SWLOR.Game.Server.IntegrationTests.Migrations;
 public class ServerMigrationTests : IntegrationTestBase
 {
     private const int Retired = MigrationService.RetiredServerMigrationVersion;
-
-    private static readonly BaseItem Legacy = BaseItem.Electronics5;
 
     private void SeedConfiguration(int version)
     {
@@ -31,25 +27,7 @@ public class ServerMigrationTests : IntegrationTestBase
         return Db.Get<ServerConfiguration>("SWLOR_CONFIG").MigrationVersion;
     }
 
-    private static string LegacyEnzyme(string resref, BaseItem baseItem, int model) =>
-        GffBuilder.Encode(GffBuilder.Root()
-            .ResRef("TemplateResRef", resref)
-            .Int("BaseItem", (int)baseItem)
-            .Byte("ModelPart1", model)
-            .Word("xModelPart1", model)
-            .Text("UUID", "item-" + resref));
-
-    private static (int BaseItem, int Model, string Uuid) Read(string data)
-    {
-        var root = GffReader.Read(Convert.FromBase64String(data)).RootStruct;
-        object Field(string label) => root.Fields.Single(field => field.Label == label).Value!;
-        return (Convert.ToInt32(Field("BaseItem")), Convert.ToInt32(Field("ModelPart1")), (string)Field("UUID"));
-    }
-
     private IntegrationMigrationService Boot(params IServerMigration[] migrations) => BootWith(migrations);
-
-    /// <summary>Boots with the migrations the server assembly holds.</summary>
-    private IntegrationMigrationService BootReal() => BootWith(null);
 
     private IntegrationMigrationService BootWith(IServerMigration[]? migrations)
     {
@@ -138,49 +116,6 @@ public class ServerMigrationTests : IntegrationTestBase
         ran.Should().BeEmpty();
         Fakes.Administration.CountOf("ShutdownServer").Should().Be(1);
         StoredVersion().Should().Be(Retired - 1);
-    }
-
-    [Test]
-    public void TheServersOwnMigrations_ConvertOlderShapeStoredItemsAndAreIdempotent()
-    {
-        var real = typeof(IServerMigration).Assembly.GetTypes()
-            .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
-            .Select(type => (IServerMigration)Activator.CreateInstance(type)!)
-            .ToList();
-        var current = real.Max(migration => migration.Version);
-        current.Should().BeGreaterThan(Retired);
-
-        SeedConfiguration(Retired);
-        Db.Set(new InventoryItem { Id = "bank-enzyme", PlayerId = "p1", StorageId = "GLOBAL_BANK", Name = "Enzyme", Resref = "hydrolase_blue", Quantity = 1, IconResref = "iit_ess5_001", Data = LegacyEnzyme("hydrolase_blue", Legacy, 3) });
-        Db.Set(new InventoryItem { Id = "bank-dna", PlayerId = "p1", StorageId = "GLOBAL_BANK", Name = "DNA", Resref = "beast_dna", Quantity = 1, IconResref = "iit_ess5_002", Data = LegacyEnzyme("beast_dna", Legacy, 1) });
-        Db.Set(new InventoryItem { Id = "bank-new", PlayerId = "p1", StorageId = "GLOBAL_BANK", Name = "Enzyme", Resref = "lyase_black", Quantity = 1, IconResref = "iit_enzyme_006", Data = LegacyEnzyme("lyase_black", BaseItem.Enzyme, 6) });
-        Db.Set(new MarketItem { Id = "market-enzyme", PlayerId = "p1", Name = "Enzyme", Resref = "isomerase_red", IconResref = "iit_ess4_004", IsListed = true, Data = LegacyEnzyme("isomerase_red", BaseItem.Electronics4, 2) });
-        Db.Set(new OverflowItem { Id = "overflow-enzyme", PlayerId = "p1", Name = "Enzyme", Resref = "lyase_red", Quantity = 1, Data = LegacyEnzyme("lyase_red", Legacy, 4) });
-        Db.EndFrame();
-
-        BootReal();
-
-        StoredVersion().Should().Be(current);
-        var converted = Db.Get<InventoryItem>("bank-enzyme");
-        Read(converted.Data).Should().Be(((int)BaseItem.Enzyme, 1, "item-hydrolase_blue"), "hydrolase_blue is enzyme color 1");
-        converted.IconResref.Should().Be("iit_enzyme_001");
-        converted.PlayerId.Should().Be("p1");
-        converted.Quantity.Should().Be(1);
-
-        Read(Db.Get<InventoryItem>("bank-dna").Data).BaseItem.Should().Be((int)Legacy, "beast DNA keeps its 2x2 base item");
-        Db.Get<InventoryItem>("bank-dna").IconResref.Should().Be("iit_ess5_002");
-        Db.Get<InventoryItem>("bank-new").IconResref.Should().Be("iit_enzyme_006");
-        var market = Db.Get<MarketItem>("market-enzyme");
-        Read(market.Data).Should().Be(((int)BaseItem.Enzyme, 14, "item-isomerase_red"));
-        market.IconResref.Should().Be("iit_enzyme_014");
-        Read(Db.Get<OverflowItem>("overflow-enzyme").Data).Should().Be(((int)BaseItem.Enzyme, 10, "item-lyase_red"));
-
-        // A second boot finds the version current and changes nothing.
-        var snapshot = new[] { "bank-enzyme", "bank-dna", "bank-new" }.Select(id => Db.GetRawJson<InventoryItem>(id)).ToArray();
-        var config = Db.GetRawJson<ServerConfiguration>("SWLOR_CONFIG");
-        BootReal();
-        new[] { "bank-enzyme", "bank-dna", "bank-new" }.Select(id => Db.GetRawJson<InventoryItem>(id)).Should().Equal(snapshot);
-        Db.GetRawJson<ServerConfiguration>("SWLOR_CONFIG").Should().Be(config);
     }
 
     private sealed class Stand : IServerMigration

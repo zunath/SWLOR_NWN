@@ -101,22 +101,21 @@ namespace SWLOR.Game.Server.Domain.Combat
                 RecordDeathDebtWaiver(player);
             ClearStatusEffectsOnDeath(player);
 
-            if (GetIsPC(hostile) && !GetIsDM(hostile) && !GetIsDMPossessed(hostile))
+            // Only a subdual revives on the spot. Every other death, a lethal kill by another
+            // player included, leaves the player dead with the respawn panel.
+            if (isSubdual)
             {
-                if (isSubdual)
-                {
-                    if (IsRecording())
-                        RecordSubdual(player, hostile);
-                    SendMessageToPC(player, "You have been subdued.");
-                    _messaging.SendMessageNearbyToPlayers(
-                        player,
-                        receiver => $"{_playerName.GetDisplayName(receiver, player)} has been subdued by {_playerName.GetDisplayName(receiver, hostile)}.");
-                    ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
-                    RestoreGhostAfterRevive(player);
-                    DelayCommand(0.1f, () => ReapplyAuraEffectsForCreature(player));
-                    ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);
-                    ApplyStatusEffect(player, player, typeof(SubdualPenaltyStatusEffect), 300f);
-                }
+                if (IsRecording())
+                    RecordSubdual(player, hostile);
+                SendMessageToPC(player, "You have been subdued.");
+                _messaging.SendMessageNearbyToPlayers(
+                    player,
+                    receiver => $"{_playerName.GetDisplayName(receiver, player)} has been subdued by {_playerName.GetDisplayName(receiver, hostile)}.");
+                ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
+                RestoreGhostAfterRevive(player);
+                DelayCommand(0.1f, () => ReapplyAuraEffectsForCreature(player));
+                ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);
+                ApplyStatusEffect(player, player, typeof(SubdualPenaltyStatusEffect), 300f);
             }
             else
             {
@@ -129,11 +128,29 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private bool IsSubdualDeath(uint hostile)
         {
-            if (!GetIsPC(hostile) || GetIsDM(hostile) || GetIsDMPossessed(hostile))
-                return false;
+            var hostileIsPlayer = GetIsPC(hostile);
+            var hostileIsDM = GetIsDM(hostile) || GetIsDMPossessed(hostile);
+            var dbHostilePlayer = hostileIsPlayer && !hostileIsDM
+                ? _db.Get<Player>(GetObjectUUID(hostile))
+                : null;
 
-            var dbHostilePlayer = _db.Get<Player>(GetObjectUUID(hostile));
-            return dbHostilePlayer != null && dbHostilePlayer.Settings.IsSubdualModeEnabled;
+            return IsSubdualDeath(hostileIsPlayer, hostileIsDM, dbHostilePlayer);
+        }
+
+        /// <summary>
+        /// Whether a player's death is a subdual: the killer is a player, not a DM, whose subdual
+        /// mode is on. A subdued player is revived where they fell; any other death, including a
+        /// lethal kill by another player, shows the respawn panel.
+        /// </summary>
+        /// <param name="hostileIsPlayer">Whether the killer is player-controlled.</param>
+        /// <param name="hostileIsDM">Whether the killer is a DM or a DM-possessed creature.</param>
+        /// <param name="dbHostilePlayer">The killer's player record. May be null.</param>
+        /// <returns>true if the death is a subdual, false if the player stays dead.</returns>
+        public static bool IsSubdualDeath(bool hostileIsPlayer, bool hostileIsDM, Player dbHostilePlayer)
+        {
+            return hostileIsPlayer &&
+                   !hostileIsDM &&
+                   dbHostilePlayer?.Settings?.IsSubdualModeEnabled == true;
         }
 
         /// <summary>

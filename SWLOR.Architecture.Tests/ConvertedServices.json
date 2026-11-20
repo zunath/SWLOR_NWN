@@ -58,6 +58,7 @@
     { "name": "Guild", "domain": "Economy" },
     { "name": "GuildTaskXp", "domain": "Economy" },
     { "name": "HoloCom", "domain": "World" },
+    { "name": "HostedEvents", "domain": "Social" },
     { "name": "IncubationFieldNote", "domain": "Companions" },
     { "name": "Item", "domain": "Items" },
     { "name": "ItemTrash", "domain": "Items" },

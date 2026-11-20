@@ -49,12 +49,48 @@ public class SearchWindowTests
                      {
                          SearchViewModel.ActionTextProperty(action), SearchViewModel.ActionSummaryProperty(action),
                          SearchViewModel.ActionTooltipProperty(action), SearchViewModel.ActionColorProperty(action),
-                         SearchViewModel.ActionEnabledProperty(action)
+                         SearchViewModel.ActionButtonColorProperty(action), SearchViewModel.ActionEnabledProperty(action)
                      })
             {
                 typeof(SearchViewModel).GetProperty(name).Should().NotBeNull(name);
             }
         }
+    }
+
+    [Test]
+    public void AnActionButtonIsClickableBeforeASpotIsChosen_SoAClickSentBeforeTheServerAnswersTheSpotClickIsNotLost()
+    {
+        // The first Search after choosing a spot was dropped by the client while the button was still disabled for "no spot chosen".
+        var button = SearchActionButton.For(true, null);
+
+        button.Enabled.Should().BeTrue();
+        button.LooksAvailable.Should().BeFalse("no action can be used until a spot is chosen");
+    }
+
+    [Test]
+    public void AnActionTheChosenSpotCannotUseStaysClickable_ButLooksGreyed()
+    {
+        var unavailable = SearchActionButton.For(true, new SearchActionView("Already searched.", string.Empty, SearchActionKind.Unavailable));
+
+        unavailable.Enabled.Should().BeTrue("choosing another spot can make it usable before the server's answer arrives");
+        unavailable.LooksAvailable.Should().BeFalse();
+
+        foreach (var kind in new[] { SearchActionKind.Normal, SearchActionKind.Risky, SearchActionKind.LastSearch })
+        {
+            var usable = SearchActionButton.For(true, new SearchActionView("Finds 8%.", string.Empty, kind));
+            usable.Enabled.Should().BeTrue(kind.ToString());
+            usable.LooksAvailable.Should().BeTrue(kind.ToString());
+        }
+    }
+
+    [Test]
+    public void TheActionButtonsAreDisabledOnceTheVisitIsOver()
+    {
+        var ended = SearchActionButton.For(false, new SearchActionView("Finds 8%.", string.Empty, SearchActionKind.Normal));
+
+        ended.Enabled.Should().BeFalse();
+        ended.LooksAvailable.Should().BeFalse();
+        SearchActionButton.For(false, null).Enabled.Should().BeFalse();
     }
 
     [Test]

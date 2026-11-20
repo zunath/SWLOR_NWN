@@ -18,15 +18,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    var player = user;
-                    var uiTarget = OBJECT_INVALID;
-                    if (GetIsDMPossessed(player))
-                    {
-                        uiTarget = player;
-                        player = GetMaster(player);
-                    }
-
-                    Gui.TogglePlayerWindow(player, GuiWindowType.Dice, null, OBJECT_INVALID, uiTarget);
+                    // A DM's window can still be open on the avatar or a creature they possessed before; DMPresence
+                    // moves it to the creature they control now instead of rebinding it under the open copy.
+                    if (DMPresence.IsControlledByDM(user))
+                        DMPresence.ToggleWindow(user, GuiWindowType.Dice);
+                    else
+                        Gui.TogglePlayerWindow(user, GuiWindowType.Dice);
                 });
 
             return builder.Build();

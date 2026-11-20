@@ -2,8 +2,8 @@
   "function": "Loot table items: tables T-Z (every item of every ILootTableDefinition table whose id starts with these letters)",
   "description": "Every item of every table in the group in the order the table lists it: the item, its weight, the largest quantity a drop can have, whether the Treasure Hunter perk raises its weight, and whether a spawn action is set. The chance of an item is its weight divided by the total weight of the table (rare items get the creature's rare find bonus added to their weight first).",
   "seed": null,
-  "inputs": "134 tables, 671 items. Tables are sorted by id (ordinal); index is the item's position in the table. nw_it_gold001 is gold, where the quantity is an amount of credits.",
-  "rowCount": 671,
+  "inputs": "135 tables, 672 items. Tables are sorted by id (ordinal); index is the item's position in the table. nw_it_gold001 is gold, where the quantity is an amount of credits.",
+  "rowCount": 672,
   "columns": ["table", "index", "=> resref", "=> weight", "=> maxQuantity", "=> isRare", "=> hasSpawnAction"],
   "rows": [
     ["TATOOINE_ANCIENT_WORM", 0, "fiberp_high", 20, 1, false, false],
@@ -118,6 +118,7 @@
     ["TATOOINE_TUSKEN_WARLORD_RARES", 3, "bp_hidecuirass", 1, 1, true, false],
     ["TATOOINE_TUSKEN_WARLORD_RARES", 4, "bp_scopecap", 1, 1, true, false],
     ["TATOOINE_TUSKEN_WARLORD_RARES", 5, "bp_windmantle", 1, 1, true, false],
+    ["TATOOINE_WAR_BANNERS", 0, "tat_war_banner", 1, 1, false, false],
     ["TATOOINE_WOMPRAT", 0, "lth_imperfect", 15, 1, false, false],
     ["TATOOINE_WOMPRAT", 1, "womprathide", 5, 1, false, false],
     ["TATOOINE_WOMPRAT", 2, "womprattooth", 5, 1, false, false],

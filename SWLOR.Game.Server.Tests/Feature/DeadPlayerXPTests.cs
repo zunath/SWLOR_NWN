@@ -62,7 +62,7 @@ public class DeadPlayerXPTests
         var advance = ExtractMethod(questDetailSource, "public bool Advance(uint player, uint questSource)");
         var complete = ExtractMethod(questDetailSource, "public void Complete(uint player, uint questSource, IQuestReward selectedReward)");
 
-        killProgression.Should().Contain("_encounters.ProgressKillCredit(creature, npcGroupType, possibleQuests);");
+        killProgression.Should().Contain("_encounters.ProgressKillCredit(creature, group, GetQuestsAssociatedWithNPCGroup(group));");
         AssertDeadPlayerGuardExitsBefore(encounterKillCredit, "player", "return;", "killTargetObjective.Advance(player, questId);");
         AssertDeadPlayerGuardExitsBefore(encounterKillCredit, "player", "return;", "questDetail.Advance(player, encounterCreature);");
         AssertDeadPlayerGuardExitsBefore(canComplete, "player", "return false;", "var playerId = GetObjectUUID(player);");

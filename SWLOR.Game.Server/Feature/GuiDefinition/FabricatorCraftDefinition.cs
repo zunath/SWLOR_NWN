@@ -12,13 +12,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// <summary>The Fabrication crafting window: the Fabricator minigame.</summary>
     public class FabricatorCraftDefinition : IGuiWindowDefinition
     {
-        private const float PanelWidth = 660f;
+        /// <summary>The default width, and the narrowest the window can be made: its text boxes are sized for this width.</summary>
+        public const float WindowWidth = 740f;
+
+        /// <summary>Two wrapped lines: a summary or threshold line that runs past one line in the default window.</summary>
+        private const float TwoLineTextHeight = 44f;
         private const float SlotRowHeight = 30f;
         private const float SlotListHeight = 4 * SlotRowHeight + 8f;
         private const float ActionRowHeight = 46f;
         private const float ActionListHeight = 11 * ActionRowHeight + 8f;
-        private const float ActionButtonWidth = 170f;
-        private const float PartLabelWidth = 250f;
+        /// <summary>Holds the longest action name, such as "Retool (Extruder) (1 CP)".</summary>
+        private const float ActionButtonWidth = 190f;
+        /// <summary>Three lines: the failure rule runs to three lines in the default window.</summary>
+        private const float RuleTextHeight = 66f;
+        /// <summary>The recipe's components, requirements and properties; a list with no height of its own collapses in a scrolled panel.</summary>
+        private const float RecipeDetailHeight = 210f;
+        /// <summary>Holds the longest sub-assembly line, such as "Fittings (Bonder): 120/120, quality 100%".</summary>
+        private const float PartLabelWidth = 300f;
 
         /// <summary>The slot thresholds as the shared outcome rules set them, such as "50% for the first slot, 85% for the second and 100% for the third and any later slot".</summary>
         private static string ThresholdSummary()
@@ -62,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.CraftFabricator)
-                .SetInitialGeometry(0, 0, 740f, 660f)
+                .SetInitialGeometry(0, 0, WindowWidth, 660f)
                 .SetTitle("Fabricator")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -84,6 +94,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 col.AddRow(row =>
                 {
+                    // No fixed width: the panel takes the window's width, so the wrapped sentences reflow when the window is resized.
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
@@ -93,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         {
                             AddTitleRow(content);
                             AddLabelRow(content, model => model.RecipeLevel);
-                            AddLabelRow(content, model => model.GearSummary);
+                            AddWrappedRow(content, model => model.GearSummary);
                             content.AddRow(row2 => row2.AddText()
                                 .BindText(model => model.FabricatorSummary)
                                 .SetShowBorder(false)
@@ -109,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetShowBorder(false)
                                 .SetScrollbars(NuiScrollbars.None)
                                 .SetHeight(40f));
-                            AddLabelRow(content, model => model.SlotHeader);
+                            AddWrappedRow(content, model => model.SlotHeader);
                             content.AddRow(row2 => row2.AddList(template =>
                                 {
                                     template.AddCell(cell => cell.AddLabel()
@@ -131,14 +142,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindText(model => model.RuleText)
                                 .SetShowBorder(false)
                                 .SetScrollbars(NuiScrollbars.None)
-                                .SetHeight(56f));
+                                .SetHeight(RuleTextHeight));
                             content.AddRow(row2 => row2.AddList(template =>
                                     template.AddCell(cell => cell.AddLabel()
                                         .BindText(model => model.RecipeDescription)
                                         .BindColor(model => model.RecipeColors)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                         .SetVerticalAlign(NuiVerticalAlign.Middle)))
-                                .BindRowCount(model => model.RecipeDescription));
+                                .BindRowCount(model => model.RecipeDescription)
+                                .SetRowHeight(22f)
+                                .SetHeight(RecipeDetailHeight));
                             content.AddRow(row2 => row2.AddLabel()
                                 .BindText(model => model.StatusText)
                                 .BindColor(model => model.StatusColor)
@@ -155,8 +168,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 row2.AddSpacer();
                             });
                         });
-                    })
-                        .SetWidth(PanelWidth);
+                    });
                 });
             });
         }
@@ -167,6 +179,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 col.AddRow(row =>
                 {
+                    // No fixed width: the panel takes the window's width, so the wrapped sentences reflow when the window is resized.
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
@@ -181,18 +194,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetHorizontalAlign(NuiHorizontalAlign.Center)
                                 .SetHeight(22f));
                             AddLabelRow(content, model => model.HeadText);
-                            content.AddRow(row2 => row2.AddLabel()
-                                .BindText(model => model.OpportunityText)
-                                .BindColor(model => model.OpportunityColor)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                .SetHeight(20f));
+                            AddWrappedRow(content, model => model.OpportunityText)
+                                .BindColor(model => model.OpportunityColor);
                             AddPartRow(content, model => model.FrameText, model => model.FrameProgress, model => model.FrameQuality);
                             AddPartRow(content, model => model.ShellText, model => model.ShellProgress, model => model.ShellQuality);
                             AddPartRow(content, model => model.FittingsText, model => model.FittingsProgress, model => model.FittingsQuality);
-                            AddMeter(content, model => model.QualityText, model => model.QualityFraction, 0, 191, 255);
+                            AddWrappedRow(content, model => model.QualityText);
+                            content.AddRow(row2 => row2.AddProgressBar()
+                                .BindValue(model => model.QualityFraction)
+                                .SetColor(0, 191, 255));
                             AddMeter(content, model => model.MachineText, model => model.MachineFraction, 169, 169, 169);
                             AddLabelRow(content, model => model.CpText);
-                            AddLabelRow(content, model => model.ThresholdText);
+                            AddWrappedRow(content, model => model.ThresholdText);
                             content.AddRow(row2 => row2.AddList(template =>
                                 {
                                     template.AddCell(cell =>
@@ -214,8 +227,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetRowHeight(ActionRowHeight)
                                 .SetHeight(ActionListHeight));
                         });
-                    })
-                        .SetWidth(PanelWidth);
+                    });
                 });
             });
         }
@@ -241,6 +253,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindText(text)
                 .SetHorizontalAlign(NuiHorizontalAlign.Left)
                 .SetHeight(20f));
+        }
+
+        /// <summary>A borderless, unscrolled text box: it wraps a sentence to the panel's width, where a label cuts it off at one line.</summary>
+        private static GuiText<FabricatorCraftViewModel> AddWrappedRow(
+            GuiColumn<FabricatorCraftViewModel> content,
+            System.Linq.Expressions.Expression<System.Func<FabricatorCraftViewModel, string>> text)
+        {
+            GuiText<FabricatorCraftViewModel> wrapped = null;
+            content.AddRow(row => wrapped = row.AddText()
+                .BindText(text)
+                .SetHeight(TwoLineTextHeight)
+                .SetShowBorder(false)
+                .SetScrollbars(NuiScrollbars.None));
+            return wrapped;
         }
 
         /// <summary>One sub-assembly: its name and numbers, then its progress bar and its quality bar side by side.</summary>

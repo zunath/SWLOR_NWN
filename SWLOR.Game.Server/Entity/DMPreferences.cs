@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.Entity
         public DMCommsFilter CommsFilter { get; set; }
         public bool ShowHelmet { get; set; }
         public bool ShowCloak { get; set; }
+        // IANA zone id from PlayerTimeZones for event times. Null means UTC.
+        public string TimeZoneId { get; set; }
 
         public DMPreferences()
         {

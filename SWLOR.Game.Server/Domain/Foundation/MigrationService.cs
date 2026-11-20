@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         /// Server migrations up to this version ran on production and were removed. A new database starts
         /// here; a database below it predates this build and cannot be upgraded by it.
         /// </summary>
-        public const int RetiredServerMigrationVersion = 30;
+        public const int RetiredServerMigrationVersion = 31;
         public const string PlayerFileVersionVariable = "PLAYER_MIGRATION_VERSION";
 
         private readonly IDBService _db;

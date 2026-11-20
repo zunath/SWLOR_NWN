@@ -1,0 +1,3382 @@
+{
+  "Id": "mon_warden",
+  "Title": "mon_warden",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "entry-00002",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "mon_reef_cull",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00009",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "mon_small_fry",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00015",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "mon_fire_mire",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00022",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "mon_legend_reef",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00029",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "mon_legend_glass",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00036",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "mon_legend_ink",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00044",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "mon_swamp_sweep",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00000",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "entry-00000": {
+      "Id": "entry-00000",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Welcome to the reef warden's desk. The shallows around Dac City should be full of divers by now, but too many predators are out there. Are you here about work on the reefs?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00011",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "mon_reef_cull",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00020",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "mon_small_fry",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00031",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "mon_fire_mire",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00041",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "mon_legend_reef",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00050",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "mon_legend_glass",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00061",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "mon_legend_ink",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00070",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "mon_swamp_sweep",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00009",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "mon_reef_cull"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00018",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "mon_small_fry"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00028",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "mon_fire_mire"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00039",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "mon_legend_reef"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00048",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "mon_legend_glass"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00059",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "mon_legend_ink"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00068",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "mon_swamp_sweep"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00051",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "mon_legend_reef"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00062",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "mon_legend_glass"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00001": {
+      "Id": "entry-00001",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Then the shallows are safe to work again. Here is the city's hazard pay for reef work. If you want harder work, ask me about the creature my divers call Reefmaw.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00002": {
+      "Id": "entry-00002",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back from the Coral Isles, and the morning crews came home with full nets. Did you kill all ten Aradile and eight Amphi-Hydrus?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00002",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00003",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00003": {
+      "Id": "entry-00003",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Aradile and Amphi-Hydrus have taken over the Coral Isles, and they attack any diver who surfaces near them. I already lost a kelp crew's whole season to them. I need you to go out to the Coral Isles and kill ten Aradile and eight Amphi-Hydrus. Come back to me here in the hotel when it is done and the city will pay you.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00007",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00008",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00006",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00004": {
+      "Id": "entry-00004",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Kill ten Aradile and eight Amphi-Hydrus on the Coral Isles, then come back to me here in the Elite Hotel. Watch the waterline, because the Amphi-Hydrus hide in it.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00004",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00005": {
+      "Id": "entry-00005",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I have four wardens for a reef the size of a city. They watch for poachers and pull divers out of trouble. They are not hunters, and I will not risk them as if they were.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00008",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00006",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00006": {
+      "Id": "entry-00006",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "They are on the Coral Isles, out past the city. You will find plenty of both on the inner isles and the outer isles, so hunt whichever you can reach.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00007",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00006",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00007": {
+      "Id": "entry-00007",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I still need ten Aradile and eight Amphi-Hydrus killed out on the Coral Isles. Come back to me here when you have killed all of them.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00010",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00008": {
+      "Id": "entry-00008",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. That buys the swamp crews a year before the next brood hatches. Here is the city's pay for the work.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00009": {
+      "Id": "entry-00009",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back, and the cave mouth has gone quiet for the first time this season. Did you kill all twelve Microtench?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00012",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00013",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00010": {
+      "Id": "entry-00010",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Microtench have filled the caves under the Sharptooth Jungle. When the caves get crowded, the young ones spill out into the Sunkenhedge Swamps and grow into something that pulls boats under. I need you to kill twelve Microtench, in the caves or in the swamps. Come back to me here when it is done and I will pay you.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00017",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00015",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00016",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00011": {
+      "Id": "entry-00011",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Kill twelve Microtench in the caves under the Sharptooth Jungle or out in the Sunkenhedge Swamps, then come back to me here in the Elite Hotel.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00014",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00012": {
+      "Id": "entry-00012",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "They stand about knee high, and their beaks can go straight through a dive boot. Do not let the name make you careless, because they attack in numbers.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00015",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00016",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00013": {
+      "Id": "entry-00013",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I still need twelve Microtench killed. Their nest is in the caves under the Sharptooth Jungle, but any you find in the Sunkenhedge Swamps count too. Come back when all twelve are dead.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00019",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00014": {
+      "Id": "entry-00014",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Then hold out your hand. This is a Reefwarden's Band. We do not sell them, and the swamp crews will know who cleared their ground when they see it. Your pay is here too.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00015": {
+      "Id": "entry-00015",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back from the swamps. Are the twelve Scorchellus dead and the six Scorchellus Tails delivered?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00021",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00022",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00016": {
+      "Id": "entry-00016",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Scorchellus have taken every patch of dry ground in the Sunkenhedge Swamps, and a crew that cannot stand on dry ground cannot work the swamp. I need you to kill twelve Scorchellus there and bring me six Scorchellus Tails. Come back to me here with the tails and I will give you a warden's mark along with your pay.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00026",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00027",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00024",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00025",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00017": {
+      "Id": "entry-00017",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Kill twelve Scorchellus in the Sunkenhedge Swamps and bring six Scorchellus Tails back to me here in the Elite Hotel. I will have a warden's mark waiting for you.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00023",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00018": {
+      "Id": "entry-00018",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The sting is in the tail. The clinic makes burn salve from the gland inside it, and I would rather hand them six tails than six burned divers.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00027",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00024",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00025",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00019": {
+      "Id": "entry-00019",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Scorchellus burn what they hit and they fight in groups. Pull them off the dry ground one at a time if you can, and watch the water behind you, because other things live in that swamp.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00026",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00024",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00025",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00020": {
+      "Id": "entry-00020",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I still need twelve Scorchellus killed in the Sunkenhedge Swamps, and six Scorchellus Tails brought here to me. Come back when you have done both.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00029",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00030",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00021": {
+      "Id": "entry-00021",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Then there will be no more offerings on the rocks. Take your pay, with my thanks. When you are ready, ask me about the next name on my list, the Glassjaw Stalker.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00022": {
+      "Id": "entry-00022",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back, and a crew towed a huge carcass past the lift this morning. Did you kill Reefmaw Tidebreaker?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00032",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00033",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00023": {
+      "Id": "entry-00023",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Reefmaw Tidebreaker is an Aradile old enough to have earned a name, and it hunts the inner Coral Isles. It has sunk two skiffs that I know of, and the crews now leave offerings on the rocks for it. I need you to go to the inner Coral Isles and kill Reefmaw Tidebreaker. Come back to me when it is dead and I will pay you well.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00037",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00038",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00035",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00036",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00024": {
+      "Id": "entry-00024",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Kill Reefmaw Tidebreaker on the inner Coral Isles, then come back to me here in the Elite Hotel. It does not always show itself, so be patient and keep looking.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00034",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00025": {
+      "Id": "entry-00025",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "It keeps to the inner Coral Isles, among the common Aradile, but it does not come up every tide. Some hunters have searched three days running and seen nothing. If it is not there, go back another day.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00038",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00035",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00036",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00026": {
+      "Id": "entry-00026",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The crews have named two more, one in the caves under the jungle and one in the swamp. Kill Reefmaw first, and then I will tell you about them.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00037",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00035",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00036",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00027": {
+      "Id": "entry-00027",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I still need Reefmaw Tidebreaker killed. It hunts the inner Coral Isles and does not surface every day, so keep going back until you find it. Come back to me when it is dead.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00040",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00028": {
+      "Id": "entry-00028",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Then I have a survey permit to sign. Here is your pay. There is one name left on my list, the Inkveil Matron, so ask me about her when you are ready.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00029": {
+      "Id": "entry-00029",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back from the caves, and the survey team is already asking me about rumors. Did you kill the Glassjaw Stalker?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00042",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00043",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00030": {
+      "Id": "entry-00030",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The Glassjaw Stalker lives in the caves under the Sharptooth Jungle, among the Microtench, and it is the reason the cave survey stopped two years ago. The survey team wants to go back in. I need you to go into those caves and kill the Glassjaw Stalker. Come back to me here when it is dead and I will pay you.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00047",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00045",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00046",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00031": {
+      "Id": "entry-00031",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Kill the Glassjaw Stalker in the caves under the Sharptooth Jungle, then come back to me here in the Elite Hotel. Like Reefmaw, it is not always there, so keep checking.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00044",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00032": {
+      "Id": "entry-00032",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The survey team wants to go back into the caves, and I am the one who has to sign their permit. I will not sign it while that creature is alive.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00045",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00046",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00033": {
+      "Id": "entry-00033",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I still need the Glassjaw Stalker killed. It lives in the caves under the Sharptooth Jungle. If it is not there, go back another day, and come to me when it is dead.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00049",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00034": {
+      "Id": "entry-00034",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "There is another named creature on my list, but I will not send you after it yet. Kill Reefmaw Tidebreaker on the inner Coral Isles first, then ask me again.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00035": {
+      "Id": "entry-00035",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Reefmaw, Glassjaw and the Matron are all dead by your hand. The crews will tell that story to their children, and I will remember it correctly. Here is your pay. You have more than earned it.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00036": {
+      "Id": "entry-00036",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back, and the swamp water ran clear this morning. I went down and looked myself. Did you kill the Inkveil Matron?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00052",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00053",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00037": {
+      "Id": "entry-00037",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The Inkveil Matron is the mother of every Octotench in the Sunkenhedge Swamps. When she moves, the water turns black for a hundred meters and the crews row for the bank. I need you to go to the Sunkenhedge Swamps and kill the Inkveil Matron. Come back to me here when she is dead and I will pay you.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00057",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00058",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00055",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00056",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00038": {
+      "Id": "entry-00038",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Kill the Inkveil Matron in the Sunkenhedge Swamps, then come back to me here in the Elite Hotel. She keeps to the deep channels with the other Octotench and is not there every tide.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00054",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00039": {
+      "Id": "entry-00039",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Fight her from the bank. Do not follow her into the black water, because you will be blind in it. Wait on solid ground and let her come to you.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00058",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00055",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00056",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00040": {
+      "Id": "entry-00040",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Then the reef, the caves and the swamp belong to the people who work them. That has not been true in my lifetime.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00057",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00055",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00056",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00041": {
+      "Id": "entry-00041",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I still need the Inkveil Matron killed. She is in the Sunkenhedge Swamps, though not every day. Wait for the water to go black, stay on the bank, and come back when she is dead.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00060",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00042": {
+      "Id": "entry-00042",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "There is one last named creature, but I will not send you after it yet. Kill the Glassjaw Stalker in the caves under the Sharptooth Jungle first, then ask me again.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00043": {
+      "Id": "entry-00043",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Here is the standing rate, as promised. The offer stays open whenever you want another sweep, because the Tench will certainly be back.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00044": {
+      "Id": "entry-00044",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back from the swamp, and still dry above the knee. Did you finish the sweep of ten Microtench and ten Octotench?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00063",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00064",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00045": {
+      "Id": "entry-00045",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "There is always work, because Tench breed faster than I can count them. I keep a standing rate for anyone who sweeps the Sunkenhedge Swamps. Each time, I need you to kill ten Microtench and ten Octotench there. Come back to me here when the sweep is done and I will pay the rate, as often as you care to do it.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00066",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00067",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00046": {
+      "Id": "entry-00046",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Kill ten Microtench and ten Octotench in the Sunkenhedge Swamps, then come back to me here in the Elite Hotel for the standing rate.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00065",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00047": {
+      "Id": "entry-00047",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The sweep is ten Microtench and ten Octotench killed. The Sunkenhedge Swamps have plenty of both. Come back to me when you have killed all twenty.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00069",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    }
+  },
+  "Choices": {
+    "reply-00000": {
+      "Id": "reply-00000",
+      "Text": {
+        "Text": "Calm water to you, Warden. Goodbye.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00001": {
+      "Id": "reply-00001",
+      "Text": {
+        "Text": "What other work do you have for me?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00000",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00002": {
+      "Id": "reply-00002",
+      "Text": {
+        "Text": "Yes, all ten Aradile and eight Amphi-Hydrus are dead.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "mon_reef_cull"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00001",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00003": {
+      "Id": "reply-00003",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00004": {
+      "Id": "reply-00004",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00005": {
+      "Id": "reply-00005",
+      "Text": {
+        "Text": "I'll do it. Ten Aradile and eight Amphi-Hydrus on the Coral Isles.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "mon_reef_cull"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00004",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00006": {
+      "Id": "reply-00006",
+      "Text": {
+        "Text": "Not right now, Warden.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00007": {
+      "Id": "reply-00007",
+      "Text": {
+        "Text": "Why don't you send your own wardens to do it?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00005",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00008": {
+      "Id": "reply-00008",
+      "Text": {
+        "Text": "Where exactly will I find them?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00006",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00009": {
+      "Id": "reply-00009",
+      "Text": {
+        "Text": "What is keeping the divers out of the water?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00003",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00010": {
+      "Id": "reply-00010",
+      "Text": {
+        "Text": "Still working on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00011": {
+      "Id": "reply-00011",
+      "Text": {
+        "Text": "Remind me what you need done about the Aradile and Amphi-Hydrus.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00007",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00012": {
+      "Id": "reply-00012",
+      "Text": {
+        "Text": "Yes, all twelve Microtench are dead.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "mon_small_fry"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00008",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00013": {
+      "Id": "reply-00013",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00014": {
+      "Id": "reply-00014",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00015": {
+      "Id": "reply-00015",
+      "Text": {
+        "Text": "I'll take the job. Twelve Microtench in the caves or the swamps.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "mon_small_fry"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00011",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00016": {
+      "Id": "reply-00016",
+      "Text": {
+        "Text": "Not right now. That is not my kind of work.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00017": {
+      "Id": "reply-00017",
+      "Text": {
+        "Text": "How small are the Microtench?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00012",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00018": {
+      "Id": "reply-00018",
+      "Text": {
+        "Text": "What is the trouble in the caves under the Sharptooth Jungle?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00010",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00019": {
+      "Id": "reply-00019",
+      "Text": {
+        "Text": "Still working on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00020": {
+      "Id": "reply-00020",
+      "Text": {
+        "Text": "Remind me what you need done about the Microtench.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00013",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00021": {
+      "Id": "reply-00021",
+      "Text": {
+        "Text": "Yes, the Scorchellus are dead and you have the tails.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "mon_fire_mire"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00014",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00022": {
+      "Id": "reply-00022",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00023": {
+      "Id": "reply-00023",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00024": {
+      "Id": "reply-00024",
+      "Text": {
+        "Text": "I'll do it. Twelve Scorchellus killed and six tails brought back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "mon_fire_mire"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00017",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00025": {
+      "Id": "reply-00025",
+      "Text": {
+        "Text": "Not right now. That is more heat than I want.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00026": {
+      "Id": "reply-00026",
+      "Text": {
+        "Text": "Why do you want their tails?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00018",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00027": {
+      "Id": "reply-00027",
+      "Text": {
+        "Text": "What should I expect in the swamps?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00019",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00028": {
+      "Id": "reply-00028",
+      "Text": {
+        "Text": "What is the problem out in the Sunkenhedge Swamps?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00016",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00029": {
+      "Id": "reply-00029",
+      "Text": {
+        "Text": "I have the six Scorchellus Tails for you.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-request-quest-items",
+          "Arguments": [
+            "mon_fire_mire"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00030": {
+      "Id": "reply-00030",
+      "Text": {
+        "Text": "Still working on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00031": {
+      "Id": "reply-00031",
+      "Text": {
+        "Text": "Remind me what you need done about the Scorchellus.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00020",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00032": {
+      "Id": "reply-00032",
+      "Text": {
+        "Text": "Yes, Reefmaw Tidebreaker is dead.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "mon_legend_reef"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00021",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00033": {
+      "Id": "reply-00033",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00034": {
+      "Id": "reply-00034",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00035": {
+      "Id": "reply-00035",
+      "Text": {
+        "Text": "I'll hunt it. Reefmaw Tidebreaker on the inner Coral Isles.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "mon_legend_reef"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00024",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00036": {
+      "Id": "reply-00036",
+      "Text": {
+        "Text": "Not right now. I do not hunt legends.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00037": {
+      "Id": "reply-00037",
+      "Text": {
+        "Text": "How do I find Reefmaw?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00025",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00038": {
+      "Id": "reply-00038",
+      "Text": {
+        "Text": "Are there other creatures like it?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00026",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00039": {
+      "Id": "reply-00039",
+      "Text": {
+        "Text": "What is the creature your divers call Reefmaw?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00023",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00040": {
+      "Id": "reply-00040",
+      "Text": {
+        "Text": "Still working on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00041": {
+      "Id": "reply-00041",
+      "Text": {
+        "Text": "Remind me what you need done about Reefmaw.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00027",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00042": {
+      "Id": "reply-00042",
+      "Text": {
+        "Text": "Yes, the Glassjaw Stalker is dead.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "mon_legend_glass"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00028",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00043": {
+      "Id": "reply-00043",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00044": {
+      "Id": "reply-00044",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00045": {
+      "Id": "reply-00045",
+      "Text": {
+        "Text": "I'll go. The Glassjaw Stalker in the caves under the jungle.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "mon_legend_glass"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00031",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00046": {
+      "Id": "reply-00046",
+      "Text": {
+        "Text": "Not right now. Caves are not for me.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00047": {
+      "Id": "reply-00047",
+      "Text": {
+        "Text": "Why does killing it matter now?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00032",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00048": {
+      "Id": "reply-00048",
+      "Text": {
+        "Text": "What can you tell me about the Glassjaw Stalker?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00030",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00049": {
+      "Id": "reply-00049",
+      "Text": {
+        "Text": "Still working on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00050": {
+      "Id": "reply-00050",
+      "Text": {
+        "Text": "Remind me what you need done about the Glassjaw Stalker.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00033",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00051": {
+      "Id": "reply-00051",
+      "Text": {
+        "Text": "What work comes after Reefmaw?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00034",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00052": {
+      "Id": "reply-00052",
+      "Text": {
+        "Text": "Yes, the Inkveil Matron is dead.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "mon_legend_ink"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00035",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00053": {
+      "Id": "reply-00053",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00054": {
+      "Id": "reply-00054",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00055": {
+      "Id": "reply-00055",
+      "Text": {
+        "Text": "I'll end it. The Inkveil Matron in the Sunkenhedge Swamps.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "mon_legend_ink"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00038",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00056": {
+      "Id": "reply-00056",
+      "Text": {
+        "Text": "Not right now. I have done enough hunting.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00057": {
+      "Id": "reply-00057",
+      "Text": {
+        "Text": "How do I fight something I cannot see?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00039",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00058": {
+      "Id": "reply-00058",
+      "Text": {
+        "Text": "What happens after she is dead?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00040",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00059": {
+      "Id": "reply-00059",
+      "Text": {
+        "Text": "What can you tell me about the Inkveil Matron?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00037",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00060": {
+      "Id": "reply-00060",
+      "Text": {
+        "Text": "Still working on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00061": {
+      "Id": "reply-00061",
+      "Text": {
+        "Text": "Remind me what you need done about the Inkveil Matron.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00041",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00062": {
+      "Id": "reply-00062",
+      "Text": {
+        "Text": "What work comes after the Glassjaw Stalker?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00042",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00063": {
+      "Id": "reply-00063",
+      "Text": {
+        "Text": "Yes, ten of each are dead.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "mon_swamp_sweep"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00043",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00064": {
+      "Id": "reply-00064",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00065": {
+      "Id": "reply-00065",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00066": {
+      "Id": "reply-00066",
+      "Text": {
+        "Text": "Put me down for a sweep. Ten Microtench and ten Octotench.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "mon_swamp_sweep"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00046",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00067": {
+      "Id": "reply-00067",
+      "Text": {
+        "Text": "Not right now. Maybe another tide.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00068": {
+      "Id": "reply-00068",
+      "Text": {
+        "Text": "Do you have any steady work culling Tench?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00045",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00069": {
+      "Id": "reply-00069",
+      "Text": {
+        "Text": "Still working on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00070": {
+      "Id": "reply-00070",
+      "Text": {
+        "Text": "Remind me what the swamp sweep needs.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00047",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    }
+  },
+  "DefaultNpcDelay": 0,
+  "DefaultPlayerDelay": 0,
+  "PreventZoomIn": false,
+  "OnStartActions": [],
+  "OnEndActions": [],
+  "OnAbortActions": []
+}

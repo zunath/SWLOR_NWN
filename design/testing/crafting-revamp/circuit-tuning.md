@@ -66,7 +66,7 @@ A Circuit craft takes 14 to 18 actions where the old window takes 5.6 to 10 at l
 | 31-40 | 0.990 | below 1 | 1.00 | 1.01x / 1.02x |
 | 41-53 | 0.771 | below 1 | 1.00 | 1.30x / 1.33x |
 
-The multiplier is one value per band of recipe levels, as the plan asks, recorded in code (`CircuitRules.XpMultiplierLevels1To10` and the others, read through the shared `CraftMinigameXp`). It is a step function; a smooth curve through the same points would avoid the 2.29 to 1.54 jump between levels 10 and 11, and the owner and the plan's XP-pace workstream may prefer one. The Bible records it as System Changes & Migrations entry 13, written from `CircuitRules.cs` by `tools/UpdateCircuitBible.py`; rerun the script after a change to the multipliers or the cap. The first shipped values (1.52 and 1.13) left two cases of the second sample at 0.99x, so they were raised to 1.54 and 1.15; another sample, or the client timing that replaces the 8 s per action estimate, can still move a band by a point or two.
+The multiplier is one value per band of recipe levels, as the plan asks, recorded in code (`CircuitRules.XpMultiplierLevels1To10` and the others, read through the shared `CraftMinigameXp`). It is a step function; a smooth curve through the same points would avoid the 2.29 to 1.54 jump between levels 10 and 11, and the owner and the plan's XP-pace workstream may prefer one. The first shipped values (1.52 and 1.13) left two cases of the second sample at 0.99x, so they were raised to 1.54 and 1.15; another sample, or the client timing that replaces the 8 s per action estimate, can still move a band by a point or two.
 
 ## Gate 1
 

@@ -2,8 +2,8 @@
   "function": "LootTable.GetRandomItemWithRareBonus + quantity roll over tables T-Z (seeded)",
   "description": "For every non-empty table whose id starts with these letters: the first draws as the item's position in the table, and a fingerprint of a longer run of item and quantity pairs. Tables that hold rare items are drawn at a rare find bonus of 0 and 30, the others at 0.",
   "seed": 6002,
-  "inputs": "134 tables. Each row reseeds the generator with 6002; the first 16 item positions are listed, and the fingerprint is the first 12 hex digits of the SHA-256 of 2000 draws written as \"index:quantity\" joined by spaces.",
-  "rowCount": 189,
+  "inputs": "135 tables. Each row reseeds the generator with 6002; the first 16 item positions are listed, and the fingerprint is the first 12 hex digits of the SHA-256 of 2000 draws written as \"index:quantity\" joined by spaces.",
+  "rowCount": 190,
   "columns": ["table", "rareBonusChance", "=> itemCount", "=> firstDraws", "=> fingerprint"],
   "rows": [
     ["TATOOINE_ANCIENT_WORM", 0, 6, [1, 0, 0, 0, 1, 0, 2, 0, 3, 0, 1, 1, 4, 0, 1, 5], "60c850f6e475"],
@@ -43,6 +43,7 @@
     ["TATOOINE_TUSKEN_WARLORD_LOCKBOX", 0, 1, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "c14da490d1f1"],
     ["TATOOINE_TUSKEN_WARLORD_RARES", 0, 6, [1, 0, 0, 0, 3, 0, 4, 1, 5, 0, 1, 2, 5, 1, 2, 5], "fd92b2dc59e0"],
     ["TATOOINE_TUSKEN_WARLORD_RARES", 30, 6, [1, 0, 0, 0, 3, 0, 4, 1, 5, 0, 1, 2, 5, 1, 2, 5], "fd92b2dc59e0"],
+    ["TATOOINE_WAR_BANNERS", 0, 1, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "c14da490d1f1"],
     ["TATOOINE_WOMPRAT", 0, 6, [0, 0, 0, 0, 2, 0, 3, 0, 4, 0, 0, 0, 5, 0, 1, 5], "f1de4864ca2d"],
     ["THORILIDE", 0, 1, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "c14da490d1f1"],
     ["VEGETABLES_PATCH_1", 0, 4, [1, 0, 0, 0, 1, 0, 2, 0, 2, 0, 0, 1, 3, 0, 1, 3], "4907248bfb37"],

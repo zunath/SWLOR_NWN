@@ -40,6 +40,13 @@ namespace SWLOR.Game.Server.Domain.UI
         void UpdatePropertyFromClient(string propertyName);
 
         /// <summary>
+        /// Moves the window to the object the client now controls when the object it was opened on no longer exists,
+        /// such as a creature a DM possessed that was destroyed while the window stayed on the DM's screen.
+        /// </summary>
+        /// <param name="eventPlayer">The object the client controls, from the NUI event.</param>
+        void FollowClientIfTargetDestroyed(uint eventPlayer);
+
+        /// <summary>
         /// Changes an element's layout to a different partial view.
         /// The partial view must be defined within the window's definition.
         /// Only groups may be targeted with this method.

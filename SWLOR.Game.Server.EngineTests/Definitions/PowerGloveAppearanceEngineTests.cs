@@ -41,9 +41,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var labels = new[]
             {
                 "Power Glove", "Vibroknuckler", "Blastknuckle", "Shock Glove", "Power Fist", "Bare Fists (Invisible)",
-                "Rivet Knuckler", "Arc Knuckler", "Breacher Cestus", "Fang Claws", "Pulse Cestus", "Talon Knuckler",
-                "Aegis Guard", "Cinder Knuckler", "Obsidian Cestus", "Rail Claws", "Thunder Knuckle", "Spine Cestus",
-                "Ion Guard", "Impact Knuckler", "Relic Claws"
+                "Rivet Knuckler", "Arc Knuckler", "Breach Cestus", "Fang Claws", "Pulse Cestus", "Talon Knuckler",
+                "Aegis Guard", "Cinder Knuckle", "Obsidian Fist", "Rail Claws", "Thunder Fist", "Spine Cestus",
+                "Ion Guard", "Impact Fist", "Relic Claws"
             };
             var invisibleIndex = Array.IndexOf(labels, "Bare Fists (Invisible)");
             try

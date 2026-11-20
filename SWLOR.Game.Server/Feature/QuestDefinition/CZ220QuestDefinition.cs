@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Items;
@@ -25,6 +26,27 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             TheMalfunctioningDroids(builder);
             TheColicoidExperiment(builder);
             ScrapMetalMonstrosity(builder);
+
+            ToothSamples(builder);
+            WingMembrane(builder);
+            GalleyStock(builder);
+            HidePatches(builder);
+            BiteWounds(builder);
+            MedicalManifest(builder);
+            PestPatrol(builder);
+            DroidSweep(builder);
+            CircuitSalvage(builder);
+            FiberplastPatches(builder);
+            DeepClean(builder);
+            ContainmentBreach(builder);
+            ShiftReport(builder);
+            CrateTimber(builder);
+            Ballast(builder);
+            VelditeQuota(builder);
+            RefinedQuota(builder);
+            Requisition(builder);
+            PartsOrder(builder);
+            StationHand(builder);
 
             return builder.Build();
         }
@@ -270,6 +292,310 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddGoldReward(3750)
                 .AddXPReward(2500)
                 .AddItemReward("recipe_fabcz220", 1);
+        }
+    
+
+        private static void ToothSamples(QuestBuilder builder)
+        {
+            builder.Create("cz_tooth_sample", "Tooth Samples")
+
+                .AddState()
+                .SetStateJournalText("Dr. Ilsa Marn is tracking an infection that follows Mynock bites on CZ-220. Collect 4 Mynock Teeth from the Mynocks on the Maintenance Level of CZ-220, then bring them to Dr. Ilsa Marn in the Recreation room of the Offices & Labs of CZ-220.")
+                .AddCollectItemObjective("mynock_tooth", 4)
+
+                .AddState()
+                .SetStateJournalText("You handed over 4 Mynock Teeth. Speak to Dr. Ilsa Marn in the Recreation room of the Offices & Labs of CZ-220 for your reward.")
+
+                .AddGoldReward(75)
+                .AddXPReward(200);
+        }
+
+        private static void WingMembrane(QuestBuilder builder)
+        {
+            builder.Create("cz_wing_membrane", "Wing Membrane")
+
+                .AddState()
+                .SetStateJournalText("Dr. Ilsa Marn dresses burns with cured Mynock wing membrane. Collect 3 Mynock Wings from the Mynocks on the Maintenance Level of CZ-220, then bring them to Dr. Ilsa Marn in the Recreation room of the Offices & Labs of CZ-220.")
+                .AddCollectItemObjective("mynock_wing", 3)
+
+                .AddState()
+                .SetStateJournalText("You handed over 3 Mynock Wings. Speak to Dr. Ilsa Marn in the Recreation room of the Offices & Labs of CZ-220 for your reward.")
+
+                .AddGoldReward(75)
+                .AddXPReward(200);
+        }
+
+        private static void GalleyStock(QuestBuilder builder)
+        {
+            builder.Create("cz_galley_meat", "Galley Stock")
+
+                .AddState()
+                .SetStateJournalText("The CZ-220 galley is stretching its protein ration with Mynock meat. Collect 5 pieces of Mynock Meat from the Mynocks on the Maintenance Level of CZ-220, then bring them to Dr. Ilsa Marn in the Recreation room of the Offices & Labs of CZ-220.")
+                .AddCollectItemObjective("mynock_meat", 5)
+
+                .AddState()
+                .SetStateJournalText("You handed over 5 pieces of Mynock Meat. Speak to Dr. Ilsa Marn in the Recreation room of the Offices & Labs of CZ-220 for your reward.")
+
+                .AddGoldReward(75)
+                .AddXPReward(200);
+        }
+
+        private static void HidePatches(QuestBuilder builder)
+        {
+            builder.Create("cz_hide_patches", "Hide Patches")
+
+                .AddState()
+                .SetStateJournalText("Sickbay on CZ-220 is out of splint padding. Collect 6 pieces of Ruined Leather from the Mynocks on the Maintenance Level or the supply caches, then bring them to Dr. Ilsa Marn in the Recreation room of the Offices & Labs of CZ-220.")
+                .AddCollectItemObjective("lth_ruined", 6)
+
+                .AddState()
+                .SetStateJournalText("You handed over 6 pieces of Ruined Leather. Speak to Dr. Ilsa Marn in the Recreation room of the Offices & Labs of CZ-220 for your reward.")
+
+                .AddGoldReward(75)
+                .AddXPReward(200);
+        }
+
+        private static void BiteWounds(QuestBuilder builder)
+        {
+            builder.Create("cz_bite_wounds", "Bite Wounds")
+
+                .AddState()
+                .SetStateJournalText("Dr. Ilsa Marn wants fewer Mynock bites coming into sickbay. Kill 8 Mynocks on the Maintenance Level of CZ-220, then return to Dr. Ilsa Marn in the Recreation room of the Offices & Labs of CZ-220.")
+                .AddKillObjective(NPCGroupType.CZ220_Mynocks, 8)
+
+                .AddState()
+                .SetStateJournalText("You killed 8 Mynocks. Return to Dr. Ilsa Marn in the Recreation room of the Offices & Labs of CZ-220 for your reward.")
+
+                .AddGoldReward(150)
+                .AddXPReward(200);
+        }
+
+        private static void MedicalManifest(QuestBuilder builder)
+        {
+            builder.Create("cz_medical_manifest", "Medical Manifest")
+
+                .AddState()
+                .SetStateJournalText("Dr. Ilsa Marn wants to know where her medical supplies are. Ask Quartermaster Tobin Raye in Supplies in the Offices & Labs of CZ-220, then return to Dr. Ilsa Marn in the Recreation room with his answer.")
+
+                .AddState()
+                .SetStateJournalText("The medical supplies are on a late shipment, and sickbay is top of the list. Return to Dr. Ilsa Marn in the Recreation room of the Offices & Labs of CZ-220 with the answer.")
+
+                .AddGoldReward(75)
+                .AddXPReward(200);
+        }
+
+        private static void PestPatrol(QuestBuilder builder)
+        {
+            builder.Create("cz_pest_patrol", "Pest Patrol")
+                .IsRepeatable()
+
+                .AddState()
+                .SetStateJournalText("Foreman Dorn Ketch pays a standing rate for Mynock control. Kill 10 Mynocks on the Maintenance Level of CZ-220, then return to Foreman Dorn Ketch by the Fabrication Terminals in the Offices & Labs of CZ-220.")
+                .AddKillObjective(NPCGroupType.CZ220_Mynocks, 10)
+
+                .AddState()
+                .SetStateJournalText("You killed 10 Mynocks. Return to Foreman Dorn Ketch by the Fabrication Terminals in the Offices & Labs of CZ-220 to collect the patrol rate.")
+
+                .AddGoldReward(50)
+                .AddXPReward(150);
+        }
+
+        private static void DroidSweep(QuestBuilder builder)
+        {
+            builder.Create("cz_droid_sweep", "Droid Sweep")
+                .IsRepeatable()
+
+                .AddState()
+                .SetStateJournalText("Foreman Dorn Ketch pays a standing rate for clearing malfunctioning droids. Destroy 10 Malfunctioning Droids on the Maintenance Level of CZ-220, then return to Foreman Dorn Ketch by the Fabrication Terminals in the Offices & Labs of CZ-220.")
+                .AddKillObjective(NPCGroupType.CZ220_MalfunctioningDroids, 10)
+
+                .AddState()
+                .SetStateJournalText("You destroyed 10 Malfunctioning Droids. Return to Foreman Dorn Ketch by the Fabrication Terminals in the Offices & Labs of CZ-220 to collect the sweep rate.")
+
+                .AddGoldReward(50)
+                .AddXPReward(150);
+        }
+
+        private static void CircuitSalvage(QuestBuilder builder)
+        {
+            builder.Create("cz_circuit_salvage", "Circuit Salvage")
+
+                .AddState()
+                .SetStateJournalText("Foreman Dorn Ketch rebuilds control boards from salvaged parts. Collect 6 sets of Ruined Electronics from the Malfunctioning Droids on the Maintenance Level of CZ-220, then bring them to Foreman Dorn Ketch by the Fabrication Terminals in the Offices & Labs of CZ-220.")
+                .AddCollectItemObjective("elec_ruined", 6)
+
+                .AddState()
+                .SetStateJournalText("You handed over 6 sets of Ruined Electronics. Speak to Foreman Dorn Ketch by the Fabrication Terminals in the Offices & Labs of CZ-220 for your reward.")
+
+                .AddGoldReward(75)
+                .AddXPReward(200);
+        }
+
+        private static void FiberplastPatches(QuestBuilder builder)
+        {
+            builder.Create("cz_fiberplast_patches", "Fiberplast Patches")
+
+                .AddState()
+                .SetStateJournalText("The Maintenance Level coolant lines on CZ-220 need patching. Collect 6 pieces of Ruined Fiberplast from the supply caches around the station, then bring them to Foreman Dorn Ketch by the Fabrication Terminals in the Offices & Labs of CZ-220.")
+                .AddCollectItemObjective("fiberp_ruined", 6)
+
+                .AddState()
+                .SetStateJournalText("You handed over 6 pieces of Ruined Fiberplast. Speak to Foreman Dorn Ketch by the Fabrication Terminals in the Offices & Labs of CZ-220 for your reward.")
+
+                .AddGoldReward(75)
+                .AddXPReward(200);
+        }
+
+        private static void DeepClean(QuestBuilder builder)
+        {
+            builder.Create("cz_deep_clean", "Deep Clean")
+
+                .AddState()
+                .SetStateJournalText("Foreman Dorn Ketch wants the Maintenance Level of CZ-220 safe for a repair crew. Kill 12 Mynocks and destroy 8 Malfunctioning Droids on the Maintenance Level of CZ-220, then return to Foreman Dorn Ketch by the Fabrication Terminals in the Offices & Labs of CZ-220.")
+                .AddKillObjective(NPCGroupType.CZ220_Mynocks, 12)
+                .AddKillObjective(NPCGroupType.CZ220_MalfunctioningDroids, 8)
+
+                .AddState()
+                .SetStateJournalText("You killed 12 Mynocks and destroyed 8 Malfunctioning Droids. Return to Foreman Dorn Ketch by the Fabrication Terminals in the Offices & Labs of CZ-220 for your reward.")
+
+                .AddGoldReward(150)
+                .AddXPReward(300);
+        }
+
+        private static void ContainmentBreach(QuestBuilder builder)
+        {
+            builder.Create("cz_containment_breach", "Containment Breach")
+                .PrerequisiteQuest("cz_deep_clean")
+
+                .AddState()
+                .SetStateJournalText("The Colicoid experiment grown by the labs is loose on the Maintenance Level of CZ-220 again. Kill the Colicoid Experiment on the Maintenance Level of CZ-220, then return to Foreman Dorn Ketch by the Fabrication Terminals in the Offices & Labs of CZ-220.")
+                .AddKillObjective(NPCGroupType.CZ220_ColicoidExperiment, 1)
+
+                .AddState()
+                .SetStateJournalText("You killed the Colicoid Experiment. Return to Foreman Dorn Ketch by the Fabrication Terminals in the Offices & Labs of CZ-220 for your reward.")
+
+                .AddGoldReward(375)
+                .AddXPReward(600);
+        }
+
+        private static void ShiftReport(QuestBuilder builder)
+        {
+            builder.Create("cz_shift_report", "Shift Report")
+
+                .AddState()
+                .SetStateJournalText("Foreman Dorn Ketch needs his shift report filed. Take it to Quartermaster Tobin Raye in Supplies in the Offices & Labs of CZ-220, then return to Foreman Dorn Ketch by the Fabrication Terminals with his answer.")
+
+                .AddState()
+                .SetStateJournalText("The shift report is filed and the parts are logged. Return to Foreman Dorn Ketch by the Fabrication Terminals in the Offices & Labs of CZ-220 with the quartermaster's answer.")
+
+                .AddGoldReward(75)
+                .AddXPReward(200);
+        }
+
+        private static void CrateTimber(QuestBuilder builder)
+        {
+            builder.Create("cz_crate_timber", "Crate Timber")
+
+                .AddState()
+                .SetStateJournalText("Quartermaster Tobin Raye needs timber to rebuild shipping crates on CZ-220. Collect 6 pieces of Wood from the supply caches around the station, then bring them to Quartermaster Tobin Raye in Supplies in the Offices & Labs of CZ-220.")
+                .AddCollectItemObjective("wood", 6)
+
+                .AddState()
+                .SetStateJournalText("You handed over 6 pieces of Wood. Speak to Quartermaster Tobin Raye in Supplies in the Offices & Labs of CZ-220 for your reward.")
+
+                .AddGoldReward(75)
+                .AddXPReward(200);
+        }
+
+        private static void Ballast(QuestBuilder builder)
+        {
+            builder.Create("cz_pebble_ballast", "Ballast")
+
+                .AddState()
+                .SetStateJournalText("Quartermaster Tobin Raye packs fragile cargo with Viscaran Pebbles. Collect 4 Viscaran Pebbles from the supply caches around the station, then bring them to Quartermaster Tobin Raye in Supplies in the Offices & Labs of CZ-220.")
+                .AddCollectItemObjective("v_pebble", 4)
+
+                .AddState()
+                .SetStateJournalText("You handed over 4 Viscaran Pebbles. Speak to Quartermaster Tobin Raye in Supplies in the Offices & Labs of CZ-220 for your reward.")
+
+                .AddGoldReward(75)
+                .AddXPReward(200);
+        }
+
+        private static void VelditeQuota(QuestBuilder builder)
+        {
+            builder.Create("cz_veldite_quota", "Veldite Quota")
+
+                .AddState()
+                .SetStateJournalText("CZ-220 is behind on its ore quota. Collect 10 pieces of Raw Veldite by mining the Veldite veins on the Maintenance Level of CZ-220, then bring them to Quartermaster Tobin Raye in Supplies in the Offices & Labs of CZ-220.")
+                .AddCollectItemObjective("raw_veldite", 10)
+
+                .AddState()
+                .SetStateJournalText("You handed over 10 pieces of Raw Veldite. Speak to Quartermaster Tobin Raye in Supplies in the Offices & Labs of CZ-220 for your reward.")
+
+                .AddGoldReward(150)
+                .AddXPReward(300);
+        }
+
+        private static void RefinedQuota(QuestBuilder builder)
+        {
+            builder.Create("cz_refined_quota", "Refined Quota")
+
+                .AddState()
+                .SetStateJournalText("CZ-220 owes Czerka a shipment of refined ore. Collect 6 ingots of Refined Veldite by smelting Raw Veldite at the station's refinery, then bring them to Quartermaster Tobin Raye in Supplies in the Offices & Labs of CZ-220.")
+                .AddCollectItemObjective("ref_veldite", 6)
+
+                .AddState()
+                .SetStateJournalText("You handed over 6 ingots of Refined Veldite. Speak to Quartermaster Tobin Raye in Supplies in the Offices & Labs of CZ-220 for your reward.")
+
+                .AddGoldReward(300)
+                .AddXPReward(300);
+        }
+
+        private static void Requisition(QuestBuilder builder)
+        {
+            builder.Create("cz_requisition", "Requisition")
+
+                .AddState()
+                .SetStateJournalText("Quartermaster Tobin Raye needs a count of sickbay's splints. Ask Dr. Ilsa Marn in the Recreation room of the Offices & Labs of CZ-220, then return to Quartermaster Tobin Raye in Supplies with the number.")
+
+                .AddState()
+                .SetStateJournalText("Sickbay has no splints at all. Return to Quartermaster Tobin Raye in Supplies in the Offices & Labs of CZ-220 with the answer.")
+
+                .AddGoldReward(75)
+                .AddXPReward(200);
+        }
+
+        private static void PartsOrder(QuestBuilder builder)
+        {
+            builder.Create("cz_parts_order", "Parts Order")
+
+                .AddState()
+                .SetStateJournalText("Quartermaster Tobin Raye is closing the parts order. Ask Foreman Dorn Ketch by the Fabrication Terminals in the Offices & Labs of CZ-220 for his order, then return to Quartermaster Tobin Raye in Supplies.")
+
+                .AddState()
+                .SetStateJournalText("The foreman wants lift controllers, coolant line and a bulkhead. Return to Quartermaster Tobin Raye in Supplies in the Offices & Labs of CZ-220 with the order.")
+
+                .AddGoldReward(75)
+                .AddXPReward(200);
+        }
+
+        private static void StationHand(QuestBuilder builder)
+        {
+            builder.Create("cz_station_hand", "Station Hand")
+                .PrerequisiteQuest("cz_deep_clean")
+                .PrerequisiteQuest("cz_veldite_quota")
+                .PrerequisiteQuest("cz_tooth_sample")
+
+                .AddState()
+                .SetStateJournalText("You have helped sickbay, Maintenance and Supplies on CZ-220. Speak to Quartermaster Tobin Raye in Supplies in the Offices & Labs of CZ-220 to be entered on the station roster and collect your bonus.")
+
+                .AddGoldReward(375)
+                .AddXPReward(600)
+                .OnCompleteAction((player, sourceObject) =>
+                {
+                    Achievement.GiveAchievement(player, AchievementType.StationHand);
+                });
         }
     }
 }

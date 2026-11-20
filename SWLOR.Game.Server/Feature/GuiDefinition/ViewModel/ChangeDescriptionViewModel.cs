@@ -38,13 +38,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(Description))
+            var description = PastedText.Clean(Description);
+            if (string.IsNullOrWhiteSpace(description))
             {
                 FloatingTextStringOnCreature("Please enter a description.", Player, false);
                 return;
             }
 
-            SetDescription(Player, Description);
+            SetDescription(Player, description);
             Gui.TogglePlayerWindow(Player, GuiWindowType.ChangeDescription);
         };
 

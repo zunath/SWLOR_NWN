@@ -92,10 +92,7 @@ namespace SWLOR.Game.Server.Service.ProspectingService
             if (!ProspectingNode.TryParse(_world.LoadNode(request.Node), out var node))
             {
                 var gemChance = _world.GemChance(request.LootTable);
-                var legacyStock = _world.LegacyStock(request.Node);
-                node = legacyStock > 0
-                    ? ProspectingNode.Create(_random, gemChance, legacyStock)
-                    : ProspectingNode.Create(_random, gemChance);
+                node = ProspectingNode.Create(_random, gemChance);
                 _world.SaveNode(request.Node, node.Serialize());
             }
 

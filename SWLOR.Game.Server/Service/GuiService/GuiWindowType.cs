@@ -105,6 +105,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         PropertyAreaDescription = 104,
         InitiativeTracker = 105,
         InitiativeTrackerEdit = 106,
+        Events = 121,
+        DMEvents = 122,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

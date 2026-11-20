@@ -3,7 +3,7 @@
 Reads the rows from the JSON that the game's own perk definitions export
 (`SWLOR.CraftSim gathering-perks --part bible --out design/testing/crafting-revamp/gathering-perk-bible-rows.json`), so the Bible cannot
 drift from the code, and edits only the target cells of design/bible/SWLOR Design Bible.xlsx at the zip/XML level, copying every other
-workbook entry byte-for-byte. Safe to rerun: the perk rows go on the rows after the retired Hard Look rows and a rerun writes the same
+workbook entry byte-for-byte. Safe to rerun: the perk rows start on the first row under the header and a rerun writes the same
 cells. After a merge conflict on the workbook, take the base's workbook and run this again.
 
   python tools/UpdateGatheringPerkBible.py [--workbook PATH] [--data PATH]
@@ -29,10 +29,9 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_WORKBOOK = ROOT / "design" / "bible" / "SWLOR Design Bible.xlsx"
 DEFAULT_DATA = ROOT / "design" / "testing" / "crafting-revamp" / "gathering-perk-bible-rows.json"
 SHEET = "Gathering"
-FIRST_PERK_ROW = 47
-TEMPLATE_ROW = 16
+FIRST_PERK_ROW = 9
+TEMPLATE_ROW = 9
 HEADER_ROW = 8
-DESCRIPTION_MARKER = "Two perk lines"
 
 # What each perk's notes say besides the stats the row grants (the export lists the stats).
 NOTES = {
@@ -60,11 +59,6 @@ def notes_for(row: dict) -> str:
     return prefix + NOTES[base]
 
 
-def description_suffix(total: int) -> str:
-    return (
-        f" {DESCRIPTION_MARKER} of {total // 2} SP each (Prospector and Treasure Seeker) change Prospecting, the Search board and refining: ten"
-        " purchases at Gathering 5/10/15/20/25/30/35/40/45/50 priced 1/1/2/2/3/3/3/3/3/4 SP, a style at rank 20 and an automatic capstone at rank 50."
-        " Both styles can be owned and the Prospecting and Search windows toggle between them, one at a time. Neither line changes Quick Harvest or Quick Search.")
 
 
 def update_sheet(sheet: Bible.Sheet, rows: list[dict]) -> int:
@@ -95,13 +89,7 @@ def update_sheet(sheet: Bible.Sheet, rows: list[dict]) -> int:
         sheet.write_row(number, cells)
 
     last = FIRST_PERK_ROW + len(rows) - 1
-    Bible.set_formula(
-        sheet, "D4", f'SUMIFS(B9:B{last},{status}9:{status}{last},"<>Retired",{status}9:{status}{last},"<>Moved")', total)
-    description = sheet.row_cells(3)["B"]
-    text = sheet.text_of(description)
-    if DESCRIPTION_MARKER in text:
-        text = text[:text.index(DESCRIPTION_MARKER)].rstrip()
-    sheet.set_cell(3, "B", Bible.text_cell("B3", Bible.cell_style(description), text + description_suffix(total)))
+    Bible.set_formula(sheet, "D4", f"SUM(B{FIRST_PERK_ROW}:B{last})", total)
     return total
 
 

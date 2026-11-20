@@ -20,7 +20,7 @@ from test_repair_staff_joint_transitions import compiled
 
 WEAPONS = ROOT / "SWLOR_Haks/sw_weapon"
 SEGMENTS = 16
-CENTRE = np.array([-0.02, 0.0])  # Fitted parts sit 20 mm off the stock axis.
+CENTRE = np.array([-0.02, 0.0])  # Where the fitted vibroblades sat before AlignWeaponPartJoints.py.
 GRIP = (0.01, 0.012)
 SLEEVE = (0.024, 0.036)
 DEPTH = 0.007

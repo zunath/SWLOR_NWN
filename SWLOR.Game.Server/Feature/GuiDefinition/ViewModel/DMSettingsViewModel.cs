@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.TimeZoneService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -45,18 +46,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public int TimeZoneIndex
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             // Settings apply to whatever the DM controls, so resolve it from the avatar on every change.
             _dm = DMPresence.GetDM(Player);
             Geometry = DMToolbarViewModel.PlaceBelowToolbar(Player, Geometry);
+            ChangePartialView(MainContentElement, MainContentPartial);
             LoadSettings();
 
+            // Every change saves at once, and a control that missed its value reports its default (layout rule R7),
+            // which would overwrite the saved choice. Send the values again and watch from the next tick.
+            var windowToken = WindowToken;
+            DelayCommand(0f, () => Listen(windowToken));
+        }
+
+        private void Listen(int windowToken)
+        {
+            if (WindowToken != windowToken || !Gui.IsWindowOpen(Player, WindowType))
+                return;
+
+            // Watching sends each value again, now that its control exists.
+            LoadSettings();
             WatchOnClient(model => model.EmoteStyleIndex);
             WatchOnClient(model => model.CommsFilterIndex);
             WatchOnClient(model => model.ShowHelmet);
             WatchOnClient(model => model.ShowCloak);
-            ChangePartialView(MainContentElement, MainContentPartial);
+            WatchOnClient(model => model.TimeZoneIndex);
         }
 
         private void LoadSettings()
@@ -65,6 +86,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var preferences = DMPreference.Get(controlled);
             EmoteStyleIndex = preferences.EmoteStyle == EmoteStyle.Novel ? NovelEmoteIndex : RegularEmoteIndex;
             CommsFilterIndex = preferences.CommsFilter == DMCommsFilter.OwnParty ? OwnPartyIndex : AllPartiesIndex;
+            TimeZoneIndex = PlayerTimeZones.IndexOf(preferences.TimeZoneId);
 
             var (showHelmet, showCloak) = ArmorDisplay.GetDMArmorDisplay(controlled);
             ShowHelmet = showHelmet;
@@ -75,6 +97,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            SaveSetting(propertyName);
+        }
+
+        private void SaveSetting(string propertyName)
         {
             var controlled = DMPresence.GetControlledCreature(_dm);
             if (!GetIsDM(controlled) && !GetIsDMPossessed(controlled))
@@ -94,6 +121,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 case nameof(ShowHelmet):
                 case nameof(ShowCloak):
                     saved = ArmorDisplay.SetDMArmorDisplay(controlled, ShowHelmet, ShowCloak);
+                    break;
+                case nameof(TimeZoneIndex):
+                    var timeZoneId = PlayerTimeZones.GetByIndex(TimeZoneIndex).Id;
+                    saved = DMPreference.Update(controlled, preferences => preferences.TimeZoneId = timeZoneId);
+                    if (saved)
+                        HostedEvents.RefreshWindows(_dm);
                     break;
                 default:
                     return;

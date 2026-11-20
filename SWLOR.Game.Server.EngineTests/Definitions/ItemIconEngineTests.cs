@@ -16,37 +16,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 public static partial class MigrationEngineTests
 {
-    [EngineTest("Non-ship artwork refresh preserves crafted enhancement state in the saved character", Category = "ItemIcons")]
-    public static async Task EnhancementArtworkPreservesCraftedState(EngineTestContext ctx)
-    {
-        using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
-        var owner = fixture.Creature;
-        var item = await CreateItemAsync(ctx, owner, "aen_hp1", owner);
-        await ctx.ExecuteInCreatureContextAsync(owner, () =>
-        {
-            ctx.AssertEqual(ItemIconMigration.GetUpdatedModel("aen_hp1", (int)GetBaseItemType(item), 88), GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0), "Newly created blueprints use the reviewed appearance");
-            SetName(item, "Custom vitality enhancement");
-            SetLocalInt(item, "CRAFTED_QUALITY", 29);
-            SetItemCharges(item, 6);
-            ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, 88);
-            var properties = DescribeProperties(item);
-            var updatedModel = ItemIconMigration.GetUpdatedModel("aen_hp1", (int)GetBaseItemType(item), 88);
-            var upgraded = SavedCharacterMigration.Run(owner, DB.Get<Player>(fixture.Id), "_19_UpdateItemIcons");
-            var migrated = SavedCharacterMigration.FindItem(SavedCharacterMigration.Load(ctx, upgraded), "aen_hp1");
-            ctx.AssertEqual(updatedModel, GetItemAppearance(migrated, ItemAppearanceType.SimpleModel, 0), "Uses its reviewed enhancement artwork");
-            ctx.AssertEqual("Custom vitality enhancement", GetName(migrated), "Custom name is retained");
-            ctx.AssertEqual(29, GetLocalInt(migrated, "CRAFTED_QUALITY"), "Crafting metadata is retained");
-            ctx.AssertEqual(6, GetItemCharges(migrated), "Charges are retained");
-            ctx.AssertEqual(properties, DescribeProperties(migrated), "Enhancement properties are retained");
-            var retried = SavedCharacterMigration.Run(upgraded.File, upgraded.Record, "_19_UpdateItemIcons");
-            ctx.Assert(retried.File.SequenceEqual(upgraded.File), "Updates are idempotent");
-
-            ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, 254);
-            var customized = SavedCharacterMigration.Run(owner, DB.Get<Player>(fixture.Id), "_19_UpdateItemIcons");
-            var customizedItem = SavedCharacterMigration.FindItem(SavedCharacterMigration.Load(ctx, customized), "aen_hp1");
-            ctx.AssertEqual(254, GetItemAppearance(customizedItem, ItemAppearanceType.SimpleModel, 0), "Customized appearance remains unchanged");
-        });
-    }
 
     [EngineTest("Saved nested crafting materials retain their properties after artwork refresh", Category = "ItemIcons")]
     public static async Task SavedCraftingMaterialArtwork(EngineTestContext ctx)
@@ -168,31 +137,4 @@ public static partial class MigrationEngineTests
         });
     }
 
-    [EngineTest("Saved creature artwork refresh keeps a retired appearance and creature state", Category = "ItemIcons")]
-    public static async Task SavedCreatureArtworkKeepsRetiredAppearance(EngineTestContext ctx)
-    {
-        var owner = ctx.SpawnCreature("nw_rat001");
-        await ctx.WaitFrameAsync();
-        var item = await CreateItemAsync(ctx, owner, "aen_hp1", owner);
-        await ctx.ExecuteInCreatureContextAsync(owner, () =>
-        {
-            ItemPlugin.SetItemAppearance(item, ItemAppearanceType.SimpleModel, 0, 88);
-            SetLocalString(owner, "PRESERVED_CREATURE_NOTE", "Saved creature state");
-            var original = Invoke("StoredObjectData", "ReadCreature", ObjectPlugin.Serialize(owner));
-            string TemporaryAppearance(object document, ushort appearance) => (string)document.GetType()
-                .GetMethod("WithTemporaryAppearance").Invoke(document, new object[] { appearance });
-            var saved = TemporaryAppearance(original, ushort.MaxValue);
-            ctx.Assert(!GetIsObjectValid(ObjectPlugin.Deserialize(saved)), "The retired appearance must reproduce native loading failure");
-
-            ctx.Assert(ItemIconMigration.MigrateSerializedObject(saved, out var migrated), "Carried item artwork is updated");
-            var document = Invoke("StoredObjectData", "ReadCreature", migrated);
-            ctx.AssertEqual((int)ushort.MaxValue, (int)document.GetType().GetProperty("Appearance").GetValue(document), "The saved appearance is preserved");
-            var view = Deserialize(ctx, TemporaryAppearance(document, (ushort)AppearanceType.Human));
-            ctx.AssertEqual("Saved creature state", GetLocalString(view, "PRESERVED_CREATURE_NOTE"), "Unrelated creature data is preserved");
-            var restoredItem = GetFirstItemInInventory(view);
-            ctx.AssertEqual(19, GetItemAppearance(restoredItem, ItemAppearanceType.SimpleModel, 0), "Carried item artwork is updated");
-            ctx.Assert(!ItemIconMigration.MigrateSerializedObject(migrated, out var unchanged), "Retry needs no further changes");
-            ctx.AssertEqual(migrated, unchanged, "Retry retains the saved payload exactly");
-        });
-    }
 }

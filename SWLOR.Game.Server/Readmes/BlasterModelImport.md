@@ -179,10 +179,29 @@ output selects complete authored `source_nodes` for each part and shares maps
 across roles. Node selectors cannot overlap or be combined with clipping.
 Each envelope must stay within the part's own cut section (or, where the surfaces stop
 short of the cut, their end section); the tool rejects a wider or off-axis one. A sleeve
-outside the part reads as a metal bar: the fitted vibroblades sit 20 mm off the stock axis,
+outside the part reads as a metal bar: the fitted vibroblades sat 20 mm off the stock axis,
 and their stock-centred 48 x 72 mm sleeves stuck out of every part, as did most fitted
 greatsword, knife, polearm and twinblade sleeves, until
-`tools/FitBladeJointInterfaces.py` removed them from the compiled parts. The flat cut caps
+`tools/FitBladeJointInterfaces.py` removed them from the compiled parts.
+Every top, middle and bottom must meet on the stock axis (X = Z = 0), where the stock parts
+and the hand sit, so any combination lines up. Fit the source so the core of its grip (the
+shaft for a polearm) is on that axis, not its blade or guard. The first fitted vibroblades
+and greatswords sat 20 mm off in X and some knife, polearm and vibroblade sources up to
+47 mm off in Z, so mixed parts met off-centre at every joint (November 2026 reports).
+`tools/AlignWeaponPartJoints.py` moves each source, as one rigid piece, onto the axis (it
+groups parts into sources by shared cuts and textures), and
+`tools/tests/test_align_weapon_part_joints.py` audits every shipped source.
+Keep a guard inside its family's middle band (greatsword Y 0.111 to 0.17, vibroblade 0.085
+to 0.135, knife 0.075 to 0.098, the twinblade end bands). Most fitted greatsword guards and
+several vibroblade, knife and twinblade guards are taller, so the stock cuts left guard
+slices on tops and bottoms that showed as plates, horns and hooks under any other middle.
+`AlignWeaponPartJoints.py` `GUARD_PIECES` lists each such part and the height its guard
+reaches (one per joint for a twinblade end); the tool gives those pieces back to each middle
+that shares the part's cut and has a source mesh in the same texture (or drops them where
+that middle was never shipped), shrinks the middle's cap to the surfaces that still end at
+the joint, and closes a top or bottom that now stops short with a collar (up to 60 mm) of
+its own end outline. Run it on
+every new fitted import and add any guard that crosses a cut. The flat cut caps
 close each cut; four vibroblade bottoms that stop 3.5 mm short keep a collar of their own
 grip end. Quarterstaffs are left as they are: a few of their sleeves stick out 1-5 mm, too
 little to see, and the staff widening left some caps partly open behind them. Add a new family's measured joint planes to `FAMILIES` (or `PAIRED` for
@@ -543,7 +562,8 @@ need a module repack and the new resources need a hak rebuild. Player structures
 the new appearance after both.
 
 `--config` points the tool at another model list in the same format. `tools/TrophyStandModels.json` holds the ten furniture
-Trophy Stands, which are new blueprints (resref = model name) rather than stations swapped in place.
+Trophy Stands, which are new blueprints (resref = model name) rather than stations swapped in place;
+`tools/FieldCotModels.json` holds the five Meshy Field Cots the same way.
 
 ### Meshy placeables
 
@@ -563,7 +583,16 @@ and `enable_pbr: true` (15 credits each). Meshy output differs from TRELLIS outp
   one vertex, export stops with "Missing source tangent requires splitting a Mikk seam". Re-export that GLB from Blender 4.0
   with `export_tangents=True` (it splits those vertices) and replace any zero-length tangent with a unit vector
   perpendicular to its normal ("Degenerate/nonfinite tangent basis" names it; one per model on two stands), then record the
-  new file's `sha256` in the manifest.
+  new file's `sha256` in the manifest. "Authored tangent conflict at compiled vertex" from `package` means corners that
+  share a position, UV and normal (which the compiler welds) carry different tangents: give each such group one tangent
+  in the GLB (projected sum, majority sign) before export.
+- **Atlas seams.** Meshy packs its 2048 atlas charts edge to edge. After the downscale and mipmaps, neighbouring charts
+  bleed into each other, which showed as dark specks on the Veilcarved Field Cot's cloth in the client. The Field Cots were
+  re-baked in Blender 4.0 onto a padded Smart UV layout: same mesh, base color, roughness and metallic baked through an
+  Emission shader from the old UV map into the new one (`margin` 16), no ray casting. Their normal maps were flat
+  (Meshy's tilt the surface by about 2 degrees on average, and a re-baked map added visible island seams).
+- **Geometry.** Smart topology can model fur as rows of dents: the first Resonant Field Cot came out polka-dotted, with a
+  nearly flat normal map. Render each GLB from a three-quarter view before importing and regenerate any that read wrong.
 
 Meshy faces the front of the concept image toward -Y after import; `yaw_degrees: 180` turns it to +Y, which points along
 the placeable's `GetFacing`.
@@ -916,7 +945,8 @@ uses **bowshot**, whose hook retains its rest orientation; generic **xbowshot**
 rotates it differently. The human `rhand` hook sits at
 `(0.0110681, 0, -0.0961281)` relative to `rhand_g`.
 
-That helper uses only the male bare hand. The female normal human bind socket
+Fit a pistol to that reference hand only. Other bodies and hand models are corrected by the hand, not the
+weapon: see [WeaponHandFit.md](WeaponHandFit.md). That helper uses only the male bare hand. The female normal human bind socket
 is `(0.00101395, 0.0104238, -0.0818723)` relative to `rhand_g`; do not reuse the
 male socket for a female reference. Inspect the actual female and male hands,
 open or fingerless glove styles, both equipped hands, and the playable normal

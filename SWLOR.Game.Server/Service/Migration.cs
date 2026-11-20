@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
         /// Server migrations up to this version ran on production and were removed. A new database starts
         /// here; a database below it predates this build and cannot be upgraded by it.
         /// </summary>
-        internal const int RetiredServerMigrationVersion = 30;
+        internal const int RetiredServerMigrationVersion = 31;
         internal const string PlayerFileVersionVariable = "PLAYER_MIGRATION_VERSION";
         private static int _currentMigrationVersion;
         private static ServerMigrationState _serverMigrationState = new(0);
@@ -201,6 +201,14 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer == null || !CharacterFileUpgrade.IsCurrent(checkpoint, dbPlayer))
             {
                 var fileVersion = dbPlayer == null ? checkpoint : CharacterFileUpgrade.ResolveFileVersion(checkpoint, dbPlayer.Version);
+                // A character older than this build can upgrade is refused at every boot, so a rescan cannot help.
+                if (dbPlayer != null && CharacterFileUpgrade.IsBelowOldestUpgradableVersion(fileVersion, dbPlayer.Version))
+                {
+                    Log.Write(LogGroup.Migration, $"Refusing login for {GetName(player)} [{playerId}]: the character is at version {fileVersion} " +
+                        $"and its record at {dbPlayer.Version}, older than {CharacterFileUpgrade.OldestUpgradableVersion}, the oldest this server upgrades.", true);
+                    BootPC(player, "This character was saved by a server version that can no longer update it. Please contact a server administrator.");
+                    return;
+                }
                 Log.Write(LogGroup.Migration, $"Refusing login for {GetName(player)} [{playerId}]: the character is at version {fileVersion} " +
                     $"and its record at {dbPlayer?.Version}, but this server requires {GetLatestPlayerVersion()}. It is upgraded at the next boot.", true);
                 // A file restored or imported after the vault was marked current is upgraded at the next boot.

@@ -85,8 +85,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public static string ActionColorProperty(int index) => $"ActionColor{index}";
         public static string ActionEnabledProperty(int index) => $"ActionEnabled{index}";
 
+        protected override float MinimumWindowWidth => LineDefinition.WindowWidth;
+
         protected override void Initialize(LinePayload initialPayload)
         {
+            KeepMinimumWidth();
             _fight = initialPayload.Fight;
 
             ClearDisplay();

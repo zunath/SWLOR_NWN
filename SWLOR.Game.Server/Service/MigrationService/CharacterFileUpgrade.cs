@@ -24,6 +24,13 @@ internal static class CharacterFileUpgrade
     /// <summary>Files without the checkpoint predate it; their record version stands in, up to this version.</summary>
     private const int LastPlayerVersionWithoutFileCheckpoint = 12;
 
+    /// <summary>
+    /// The oldest character this build upgrades. Player migrations up to this version ran on every production character
+    /// and are deleted, so a file or record below it (including a file without a checkpoint) is refused and kept as
+    /// saved instead of being marked current without them. Upgrade such a character with an older build first.
+    /// </summary>
+    internal const int OldestUpgradableVersion = 25;
+
     private static readonly Lazy<ICharacterMigration[]> _migrations = new(() => typeof(ICharacterMigration).Assembly.GetTypes()
         .Where(type => !type.IsAbstract && !type.IsInterface && typeof(ICharacterMigration).IsAssignableFrom(type))
         .Select(type => (ICharacterMigration)Activator.CreateInstance(type))
@@ -32,7 +39,13 @@ internal static class CharacterFileUpgrade
 
     internal static IReadOnlyList<ICharacterMigration> Migrations => _migrations.Value;
 
-    internal static int LatestVersion => Migrations.Count == 0 ? 0 : Migrations[^1].Version;
+    /// <summary>
+    /// The version an upgraded or new character holds: the newest registered migration, and never below
+    /// <see cref="OldestUpgradableVersion"/>, so retiring every migration still refuses older characters.
+    /// </summary>
+    internal static int LatestVersion => LatestOf(Migrations.Select(migration => migration.Version));
+
+    internal static int LatestOf(IEnumerable<int> versions) => versions.Append(OldestUpgradableVersion).Max();
 
     /// <summary>The checkpoint saved in a character file: its root PlayerFileVer field.</summary>
     internal static int ReadFileVersion(SavedCharacter character) => character.ReadInteger(PlayerFileCheckpoint.FieldName);
@@ -43,6 +56,13 @@ internal static class CharacterFileUpgrade
     /// </summary>
     internal static int ResolveFileVersion(int checkpoint, int recordVersion) =>
         checkpoint != 0 ? checkpoint : Math.Min(recordVersion, LastPlayerVersionWithoutFileCheckpoint);
+
+    /// <summary>
+    /// True when a character is older than this build can upgrade: its file (by its checkpoint, see
+    /// <see cref="ResolveFileVersion"/>) or its record is below <see cref="OldestUpgradableVersion"/>.
+    /// </summary>
+    internal static bool IsBelowOldestUpgradableVersion(int fileVersion, int recordVersion) =>
+        fileVersion < OldestUpgradableVersion || recordVersion < OldestUpgradableVersion;
 
     /// <summary>True when a character file (by its checkpoint) and its record have both reached the latest version.</summary>
     internal static bool IsCurrent(int checkpoint, Player record) =>
@@ -65,12 +85,13 @@ internal static class CharacterFileUpgrade
         var start = Math.Min(record.Version, fileVersion);
         if (start >= LatestVersion)
             return null;
+        if (IsBelowOldestUpgradableVersion(fileVersion, recordVersion))
+            throw new UnsupportedCharacterVersionException(
+                $"The character file is at version {fileVersion} and its record at {recordVersion}; this build upgrades characters from version {OldestUpgradableVersion}. Upgrade it with an older build first.");
         // A record that reached a version received that migration's record changes with the file it was saved with
         // (at login before this upgrade existed), so an older file restored beside it changes only the file.
         var recordEffectsThrough = Math.Max(record.CharacterFileVersion, recordVersion);
 
-        // Loading a character changes some saved items before login-time migrations saw them.
-        Feature.MigrationDefinition.CharacterMigration.SavedCharacterLoad.Apply(character);
 
         foreach (var migration in Migrations.Where(migration => migration.Version > start))
         {
@@ -150,14 +171,16 @@ internal static class CharacterFileUpgrade
             {
                 UpgradeBatch(batch, vault, backupDirectory, seen, deferred, counts, recordVersions);
                 Log.Write(LogGroup.Migration, $"Character upgrade: {counts.Done}/{files.Length} files ({counts.Upgraded} upgraded, " +
-                    $"{counts.Current} current, {counts.Skipped} without an initialized record, {counts.Failed} failed) in {stopwatch.Elapsed:hh\\:mm\\:ss}.", true);
+                    $"{counts.Current} current, {counts.Skipped} without an initialized record, {counts.Refused} too old, {counts.Failed} failed) in {stopwatch.Elapsed:hh\\:mm\\:ss}.", true);
             }
             queue = deferred.ToArray();
         }
 
         Log.Write(LogGroup.Migration, $"Character upgrade to version {LatestVersion} finished in {stopwatch.ElapsedMilliseconds}ms: " +
-            $"{counts.Upgraded} upgraded, {counts.Current} current, {counts.Skipped} without an initialized record, {counts.Failed} failed, " +
+            $"{counts.Upgraded} upgraded, {counts.Current} current, {counts.Skipped} without an initialized record, {counts.Refused} too old, {counts.Failed} failed, " +
             $"{counts.Overflowed} items moved to overflow storage.", true);
+        // A character too old for this build stays refused at every boot, so it does not keep the vault on the retry
+        // path; only failures a later boot can fix do.
         if (counts.Failed > 0)
             return false;
 
@@ -217,6 +240,13 @@ internal static class CharacterFileUpgrade
         {
             if (character.Deferred)
                 continue;
+            if (character.Unsupported != null)
+            {
+                counts.Refused++;
+                Log.Write(LogGroup.Migration, $"Character upgrade refused '{ServerVaultFile.DisplayPath(character.Path)}' [{character.Id}]: " +
+                    $"{character.Unsupported} The file is kept as saved; an administrator must upgrade it with an older build.", true);
+                continue;
+            }
             if (character.Error != null)
             {
                 counts.Failed++;
@@ -253,8 +283,9 @@ internal static class CharacterFileUpgrade
         public int Current { get; set; }
         public int Skipped { get; set; }
         public int Failed { get; set; }
+        public int Refused { get; set; }
         public int Overflowed { get; set; }
-        public int Done => Upgraded + Current + Skipped + Failed;
+        public int Done => Upgraded + Current + Skipped + Refused + Failed;
     }
 
     /// <summary>
@@ -373,6 +404,8 @@ internal static class CharacterFileUpgrade
         public bool Deferred { get; set; }
         public CharacterUpgradeResult Result { get; private set; }
         public string Error { get; private set; }
+        /// <summary>Why the character is too old for this build, when it is.</summary>
+        public string Unsupported { get; private set; }
 
         /// <summary>The upgraded file written beside a character file until its record is saved.</summary>
         public static string PendingPath(string path) => path + ".upgrade";
@@ -439,6 +472,10 @@ internal static class CharacterFileUpgrade
             try
             {
                 Result = Upgrade(Data, Record, ActiveBeast, RecordVersionBeforeUpgrade);
+            }
+            catch (UnsupportedCharacterVersionException ex)
+            {
+                Unsupported = ex.Message;
             }
             catch (Exception ex)
             {

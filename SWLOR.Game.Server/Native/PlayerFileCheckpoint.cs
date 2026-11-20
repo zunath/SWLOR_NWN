@@ -18,8 +18,10 @@ namespace SWLOR.Game.Server.Native
     {
         internal const string FieldName = "PlayerFileVer";
         internal const string CraftSequenceFieldName = "CraftFileSeq";
+        private const string CharacterIdFieldName = "UUID";
         private static readonly byte[] FieldLabel = System.Text.Encoding.ASCII.GetBytes(FieldName + "\0");
         private static readonly byte[] CraftSequenceLabel = System.Text.Encoding.ASCII.GetBytes(CraftSequenceFieldName + "\0");
+        private static readonly byte[] CharacterIdLabel = System.Text.Encoding.ASCII.GetBytes(CharacterIdFieldName + "\0");
         private static FunctionHook* _saveHook;
         private static FunctionHook* _loadHook;
         private static FunctionHook* _readStatsHook;
@@ -40,6 +42,17 @@ namespace SWLOR.Game.Server.Native
             _readStatsHook = NWNXAPI.RequestFunctionHook(NativeLibrary.GetExport(program,
                 "_ZN17CNWSCreatureStats16ReadStatsFromGffEP7CResGFFP10CResStructP26CNWSCreatureAppearanceInfoiiii"),
                 (IntPtr)readStats, HookOrder.Early);
+        }
+
+        /// <summary>
+        /// Puts the craft file sequence the character file loaded with back on the entering player, after the engine has copied the
+        /// locals of an earlier login over it. The login checks that read it call <see cref="NwnCraftSessionWorld.LoadedSequence"/>, which
+        /// does the same, so they need not run after this.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ApplyLoadedCraftSequence()
+        {
+            NwnCraftSessionWorld.ApplyLoadedSequence(GetEnteringObject());
         }
 
         [UnmanagedCallersOnly]
@@ -95,7 +108,7 @@ namespace SWLOR.Game.Server.Native
                     saveGame, associate, preserveIds, copyObject);
                 if (loaded == 0)
                     return 0;
-                RestoreCheckpoint(CNWSCreature.FromPointer(creature), resource, structure);
+                RestoreCheckpoint(CNWSCreature.FromPointer(creature), resource, structure, false);
                 return loaded;
             }
             catch (Exception exception)
@@ -116,7 +129,7 @@ namespace SWLOR.Game.Server.Native
                 // CNWSPlayer.LoadCreatureData bypasses LoadCreature and reads stats directly.
                 // Its return convention is zero on success, unlike LoadCreature.
                 if (result == 0 && playerCharacter != 0)
-                    RestoreCheckpoint(CNWSCreatureStats.FromPointer(stats).m_pBaseCreature, resource, structure);
+                    RestoreCheckpoint(CNWSCreatureStats.FromPointer(stats).m_pBaseCreature, resource, structure, true);
                 return result;
             }
             catch (Exception exception)
@@ -126,7 +139,20 @@ namespace SWLOR.Game.Server.Native
             }
         }
 
-        private static void RestoreCheckpoint(CNWSCreature creature, void* resource, void* structure)
+        /// <summary>The character's UUID as the file stores it, or empty when the file has none.</summary>
+        private static string ReadCharacterId(void* resource, void* structure)
+        {
+            var found = 0;
+            using var none = new CExoString(string.Empty);
+            fixed (byte* field = CharacterIdLabel)
+            {
+                using var id = CResGFF.FromPointer(resource)
+                    .ReadFieldCExoString(CResStruct.FromPointer(structure), field, &found, none);
+                return found != 0 ? id.ToString() : string.Empty;
+            }
+        }
+
+        private static void RestoreCheckpoint(CNWSCreature creature, void* resource, void* structure, bool playerLogin)
         {
             var found = 0;
             int version;
@@ -145,6 +171,11 @@ namespace SWLOR.Game.Server.Native
             fixed (byte* field = CraftSequenceLabel)
                 craftSequence = CResGFF.FromPointer(resource)
                     .ReadFieldINT(CResStruct.FromPointer(structure), field, &found, 0);
+            // A player logging back in before a restart has the locals they left with copied over these afterwards, so the value the
+            // file loaded with is also kept outside the locals until the player enters the module.
+            if (playerLogin)
+                LoadedCraftFileSequences.Record(ReadCharacterId(resource, structure), found != 0 ? craftSequence : 0, DateTime.UtcNow);
+
             if (found != 0 && craftSequence > 0)
             {
                 using var sequenceName = new CExoString(CraftSessionFileSequence.Variable);

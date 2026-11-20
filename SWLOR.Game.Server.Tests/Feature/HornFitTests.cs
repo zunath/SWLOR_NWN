@@ -112,6 +112,31 @@ public class HornFitTests
         }
     }
 
+    [Test]
+    public void TheJessoonMouthpieceReachesWhereEachBodysKlooHornDoesOnlyWhilePlaying()
+    {
+        var mouthpiece = new HornFitOffset(-.096f, .055f, -.04f, 0f);
+        foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
+        foreach (var gender in new[] { Gender.Male, Gender.Female })
+        {
+            Fit("jessoon", appearance, 0, gender, false).Should().Be(default(HornFitOffset));
+            if (appearance == AppearanceType.Cathar && gender == Gender.Male)
+                continue;
+
+            var kloo = Fit("kloo_horn", appearance, 0, gender, true);
+            var jessoon = Fit("JESSOON", appearance, 0, gender, true);
+            jessoon.TranslateX.Should().BeApproximately(mouthpiece.TranslateX + kloo.TranslateX, .000001f, appearance.ToString());
+            jessoon.TranslateY.Should().BeApproximately(mouthpiece.TranslateY + kloo.TranslateY, .000001f, appearance.ToString());
+            jessoon.TranslateZ.Should().BeApproximately(mouthpiece.TranslateZ + kloo.TranslateZ, .000001f, appearance.ToString());
+            jessoon.RotateY.Should().Be(kloo.RotateY, appearance.ToString());
+            jessoon.RotateZ.Should().Be(kloo.RotateZ, appearance.ToString());
+        }
+    }
+
+    [Test]
+    public void TheCatharMaleJessoonIsLiftedToHisLipsInsteadOfTakingTheKlooHornSwing() =>
+        Fit("jessoon", AppearanceType.Cathar, 0, Gender.Male, true).Should().Be(new HornFitOffset(-.096f, .10f, -.11f, 0f));
+
     [TestCase(.013f)]
     [TestCase(-.021f)]
     public void RepeatedRefreshAndReloadDoNotAccumulateTheFit(float authored)

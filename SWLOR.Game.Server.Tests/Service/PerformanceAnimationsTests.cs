@@ -112,6 +112,7 @@ public class PerformanceAnimationsTests
     [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Vocals, "night_microbrand", NamedAnimationHold.ClearTorch)]
     [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Horns, "KLOO_HORN", NamedAnimationHold.Auto)]
     [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Horns, "slitherhorn", NamedAnimationHold.LiftInPlace)]
+    [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Horns, "jessoon", NamedAnimationHold.Auto)]
     [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Strings, "guitar", NamedAnimationHold.Keep)]
     [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Pipes, "panpipes", NamedAnimationHold.Auto)]
     [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Percussion, "tambourine", NamedAnimationHold.Auto)]

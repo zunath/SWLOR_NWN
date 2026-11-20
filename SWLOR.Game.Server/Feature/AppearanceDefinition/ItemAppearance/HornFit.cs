@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerformanceService;
@@ -30,6 +31,7 @@ public static class HornFit
     private static Dictionary<(string, AppearanceType, Gender), HornFitOffset> BuildPlayingFits()
     {
         const string kloo = "kloo_horn";
+        const string jessoon = "jessoon";
         const string slitherhorn = "slitherhorn";
         const string panpipes = "panpipes";
         const string tambourine = "tambourine";
@@ -87,6 +89,24 @@ public static class HornFit
                      AppearanceType.Bothan, AppearanceType.Rodian
                  })
             fits[(kloo, appearance, Gender.Female)] = femaleKloo;
+
+        // The Flanged Jessoon plays on the kloo horn's hold. Its mouthpiece sits 5.5 cm lower on the shaft and off to the
+        // side of the kloo horn's (measured from both models), so each body's kloo fit plus that difference reaches the mouth.
+        var jessoonMouthpiece = new HornFitOffset(-.096f, .055f, -.04f, 0f);
+        foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
+        foreach (var gender in new[] { Gender.Male, Gender.Female })
+        {
+            var klooFit = fits.GetValueOrDefault((kloo, appearance, gender));
+            fits[(jessoon, appearance, gender)] = new HornFitOffset(
+                jessoonMouthpiece.TranslateX + klooFit.TranslateX,
+                jessoonMouthpiece.TranslateY + klooFit.TranslateY,
+                jessoonMouthpiece.TranslateZ + klooFit.TranslateZ,
+                jessoonMouthpiece.RotateY + klooFit.RotateY,
+                jessoonMouthpiece.RotateZ + klooFit.RotateZ);
+        }
+
+        // The kloo horn's Cathar male fit swings the longer Jessoon out past his hands; this lifts it to his lips instead.
+        fits[(jessoon, AppearanceType.Cathar, Gender.Male)] = new HornFitOffset(-.096f, .10f, -.11f, 0f);
 
         return fits;
     }

@@ -24,7 +24,6 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         {
             _builder.Create(PazaakCards.CardItemTag)
                 .Delay(1f)
-                .ReducesItemCharge()
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (!GetIsPC(user) || GetIsDM(user) || GetIsDMPossessed(user))
@@ -39,13 +38,20 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     return string.Empty;
                 })
-                .ApplyAction((user, item, target, location, itemPropertyIndex) =>
-                {
-                    var type = (PazaakCardType)GetLocalInt(item, PazaakCards.CardTypeVariable);
-                    var owned = Pazaak.AddCardToCollection(user, type);
-                    var name = PazaakCards.Get(type).Name;
-                    SendMessageToPC(user, ColorToken.Green($"You add the {name} card to your Pazaak collection. You can now put {owned} in your side deck."));
-                });
+                .ApplyAction((user, item, target, location, itemPropertyIndex) => CollectCard(user, item));
+        }
+
+        /// <summary>
+        /// Adds one copy of the card to the player's collection and removes one card from the stack.
+        /// Cards stack, so only the last card of a stack is destroyed.
+        /// </summary>
+        private static void CollectCard(uint user, uint item)
+        {
+            var type = (PazaakCardType)GetLocalInt(item, PazaakCards.CardTypeVariable);
+            var owned = Pazaak.AddCardToCollection(user, type);
+            var name = PazaakCards.Get(type).Name;
+            Item.ReduceItemStack(item, 1);
+            SendMessageToPC(user, ColorToken.Green($"You add the {name} card to your Pazaak collection. You can now put {owned} in your side deck."));
         }
     }
 }

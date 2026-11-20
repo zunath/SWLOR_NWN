@@ -10,14 +10,26 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
-    // Production has run player migration 25 and server migration 30. The next release adds player migration
-    // NextPlayerVersion (crafting perk conversion and enzyme resize) and server
-    // migration NextServerVersion (enzyme resize); update these at each post-release cleanup.
-    private const int ReleasedPlayerVersion = 25;
-    private const int ReleasedServerVersion = 30;
+    // Production has run player migration 26 and server migration 31. The next release adds player migration
+    // NextPlayerVersion and server migration NextServerVersion. Neither is registered until it holds real work, because
+    // booting a build records the highest registered version and an empty one would skip work later folded into it.
+    // Update these at each post-release cleanup.
+    private const int ReleasedPlayerVersion = 26;
+    private const int ReleasedServerVersion = 31;
     private const int NextPlayerVersion = ReleasedPlayerVersion + 1;
     private const int NextServerVersion = ReleasedServerVersion + 1;
     private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Service.Migration).Assembly;
+
+    [Test]
+    public void CharacterMigrationsHaveUniqueVersionsAndAtMostOneNextPass()
+    {
+        var migrations = CharacterMigrations.ImplementationTypes
+            .Select(type => Activator.CreateInstance(type)!).ToArray();
+        migrations.Select(CharacterMigrations.VersionOf).Should().OnlyHaveUniqueItems();
+        migrations.Select(CharacterMigrations.VersionOf).Where(version => version > NextPlayerVersion).Should().BeEmpty(
+            $"the next release receives at most one player pass, as migration {NextPlayerVersion}");
+        CharacterMigrations.LatestVersion.Should().BeInRange(ReleasedPlayerVersion, NextPlayerVersion);
+    }
 
     [Test]
     public void TheCharacterUpgradeRunsEveryMigrationInVersionOrder()
@@ -87,10 +99,9 @@ public class MigrationDataTests
         var remaining = ServerAssembly.GetTypes()
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
-        remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
-        remaining.Select(server => server.GetType().Name).Should().BeEquivalentTo(new[] { "_31_ShrinkEnzymes" },
-            $"the next release adds one combined stored-item pass as server migration {NextServerVersion}");
-        remaining.Single().Version.Should().Be(NextServerVersion);
+        remaining.Where(server => server.Version <= baseline).Should().BeEmpty("retired migrations are removed, not kept beside the baseline");
+        remaining.Where(server => server.Version != NextServerVersion).Should().BeEmpty(
+            $"the next release adds at most one combined stored-item pass, as server migration {NextServerVersion}");
     }
 
     private static object? Invoke(string type, string method, params object[] args) =>

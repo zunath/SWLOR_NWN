@@ -257,7 +257,8 @@ public class SpaceW11nReviewFixTests
         deliver.Should().NotContain("CreateItemOnObject(");
         deliver.Should().NotContain("ExportSingleCharacter(");
         var failed = Between(deliver, "if (!CharacterCheckpoint.Save(player))", "return -1;");
-        failed.Should().Contain("TakeGoldFromCreature(credits, player, true);").And.Contain("FarmItems.Take(player, resref, 1);")
+        failed.Should().Contain("TakeGoldFromCreature(credits, player, true);").And.Contain("FarmItems.Take(player, group.Key, group.Count());")
+            .And.NotContain("FarmItems.Take(player, resref, 1);", "one take per copy would find the same deferred-destroyed item again")
             .And.Contain("ObjectPlugin.SetString(player, variable, previousMark, true);",
                 "spoils whose save failed are taken back, so they cannot be spent and then given again at the next login");
         Index(deliver, "var previousMark = ObjectPlugin.GetString(player, variable);").Should().BeLessThan(Index(deliver, "GiveGoldToCreature(player, credits);"));

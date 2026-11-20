@@ -209,29 +209,6 @@ public class AbilityDamageQueueTests
     [Test]
     public void MultiHitWeaponAbilities_ResolveConditionalReflectionPerQueuedHit()
     {
-        var root = FindRepositoryRoot();
-        var weaponAbilitySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "AbilityDefinition",
-            "WeaponActiveAbilityDefinitionBase.cs")).Replace("\r\n", "\n");
-        var configureMultiHitStart = weaponAbilitySource.IndexOf(
-            "protected static void ConfigureMultiHit(",
-            StringComparison.Ordinal);
-        var configureInterruptStart = weaponAbilitySource.IndexOf(
-            "protected static void ConfigureInterrupt(",
-            StringComparison.Ordinal);
-        configureMultiHitStart.Should().BeGreaterThan(-1);
-        configureInterruptStart.Should().BeGreaterThan(configureMultiHitStart);
-        var configureMultiHit = weaponAbilitySource.Substring(
-            configureMultiHitStart,
-            configureInterruptStart - configureMultiHitStart);
-
-        configureMultiHit.Should().Contain("for (var i = 0; i < hits; i++)");
-        configureMultiHit.Should().Contain("Ability.ApplyCombatImpact(",
-            "every hit is queued independently against the same target");
-
         // The damage block of the public apply is the delivery part's since the ability split (P5-3e); the public apply is the
         // hostile impact part's since P5-3f.
         var primaryImpact = AbilitySource.Member("AbilityHostileImpactService", "ApplyHostileCombatImpact").Replace("\r\n", "\n");

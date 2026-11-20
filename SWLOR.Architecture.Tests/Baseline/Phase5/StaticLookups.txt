@@ -726,7 +726,7 @@ SWLOR.Game.Server/Feature/AbilityDefinition/Vibroblade/RendingStrikeAbilityDefin
 SWLOR.Game.Server/Feature/AbilityDefinition/Vibroblade/SavageCleaveAbilityDefinition.cs | 3
 SWLOR.Game.Server/Feature/AbilityDefinition/Vibroblade/ShieldBashAbilityDefinition.cs | 4
 SWLOR.Game.Server/Feature/AbilityDefinition/Vibroblade/ShieldWallAbilityDefinition.cs | 2
-SWLOR.Game.Server/Feature/AbilityDefinition/WeaponActiveAbilityDefinitionBase.cs | 187
+SWLOR.Game.Server/Feature/AbilityDefinition/WeaponActiveAbilityDefinitionBase.cs | 169
 SWLOR.Game.Server/Feature/AchievementProgression.cs | 51
 SWLOR.Game.Server/Feature/AppearanceDefinition/ItemAppearance/EquippedItemAppearance.cs | 5
 SWLOR.Game.Server/Feature/AppearanceDefinition/ItemAppearance/HornFit.cs | 1

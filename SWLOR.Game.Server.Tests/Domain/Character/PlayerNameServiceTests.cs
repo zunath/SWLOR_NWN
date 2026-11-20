@@ -525,6 +525,8 @@ public class PlayerNameServiceTests
         public long SearchCount<T>(DBQuery<T> query)
             where T : EntityBase => throw new NotSupportedException();
 
+        public string StringGet(StackExchange.Redis.RedisKey key) => throw new NotSupportedException();
+
         public Task<StackExchange.Redis.RedisValue> StreamAddAsync(StackExchange.Redis.RedisKey key,
             StackExchange.Redis.NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false) =>
             throw new NotSupportedException();

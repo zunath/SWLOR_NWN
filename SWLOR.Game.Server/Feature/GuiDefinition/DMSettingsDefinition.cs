@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.DMSettings)
-                .SetInitialGeometry(DMToolbarViewModel.ToolbarX, DMToolbarViewModel.ToolbarY, 360f, 360f)
+                .SetInitialGeometry(DMToolbarViewModel.ToolbarX, DMToolbarViewModel.ToolbarY, 360f, 470f)
                 .SetTitle("DM Settings")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -94,6 +94,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetId("dms_show_cloak")
                                     .SetText("Show Cloak")
                                     .BindIsChecked(model => model.ShowCloak);
+                                r.AddSpacer();
+                            });
+
+                            // No tooltip on the combo: a combo with a tooltip never opens (NuiLayoutRules R9).
+                            content.AddRow(r => r.AddLabel()
+                                .SetText("Time Zone for Event Times")
+                                .SetTooltip("You type event start times on this clock in the DM Events window, and /events shows them on it.")
+                                .SetHeight(LabelHeight)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left));
+                            content.AddRow(r =>
+                            {
+                                var timeZones = r.AddComboBox()
+                                    .SetId("dms_time_zone")
+                                    .BindSelectedIndex(model => model.TimeZoneIndex)
+                                    .SetWidth(300f)
+                                    .SetHeight(32f);
+                                for (var index = 0; index < PlayerTimeZones.All.Length; index++)
+                                    timeZones.AddOption(PlayerTimeZones.All[index].Label, index);
                                 r.AddSpacer();
                             });
                         });

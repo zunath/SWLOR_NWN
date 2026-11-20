@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// <summary>The Line window: the fight a fishing bite starts.</summary>
     public class LineDefinition : IGuiWindowDefinition
     {
-        private const float PanelWidth = 560f;
+        /// <summary>The default width, and the narrowest the window can be made: its text boxes are sized for this width.</summary>
+        public const float WindowWidth = 620f;
+
         private const float StatusTextHeight = 66f;
         private const float ActionButtonWidth = 130f;
         private const float ActionButtonHeight = 32f;
@@ -21,6 +23,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float MoveHintHeight = 48f;
         private const float QuickReelButtonWidth = 180f;
         private const float QuickReelButtonHeight = 40f;
+        /// <summary>Three wrapped lines: the Quick Reel summary beside its wide button.</summary>
+        private const float QuickReelTextHeight = 66f;
+        /// <summary>Two wrapped lines: an action's result, such as "Distance 8 -> 5, Tension 3 -> 8, Stamina 9 -> 7. LANDS THE FISH".</summary>
+        private const float ActionTextHeight = 44f;
 
         private static readonly string TurnSecondsText = LineRules.TurnSeconds.ToString("0", System.Globalization.CultureInfo.InvariantCulture);
 
@@ -73,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Line)
-                .SetInitialGeometry(0, 0, 620f, 660f)
+                .SetInitialGeometry(0, 0, WindowWidth, 660f)
                 .SetTitle("On the Line")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -93,14 +99,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 col.AddRow(row =>
                 {
+                    // No fixed width: the panel takes the window's width, so the wrapped sentences reflow when the window is resized.
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
                         // Auto: the host group only hands this panel the viewport height, so the panel is what scrolls on a short screen.
                         panel.SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(AddContent);
-                    })
-                        .SetWidth(PanelWidth);
+                    });
                 });
             });
         }
@@ -137,12 +143,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindOnClicked(model => model.OnClickQuickReel())
                     .SetWidth(QuickReelButtonWidth)
                     .SetHeight(QuickReelButtonHeight);
-                row.AddLabel()
-                    .BindText(model => model.QuickReelSummary)
-                    .BindColor(model => model.QuickReelColor)
-                    .SetHeight(QuickReelButtonHeight)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                AddWrappedText(row, model => model.QuickReelSummary, QuickReelTextHeight)
+                    .BindColor(model => model.QuickReelColor);
             });
             content.AddRow(row =>
             {
@@ -192,12 +194,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindOnClicked(model => model.OnClickAction(index))
                         .SetWidth(ActionButtonWidth)
                         .SetHeight(ActionButtonHeight);
-                    row.AddLabel()
-                        .BindText(Binding<string>(LineViewModel.ActionSummaryProperty(index)))
-                        .BindColor(Binding<GuiColor>(LineViewModel.ActionColorProperty(index)))
-                        .SetHeight(ActionButtonHeight)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                        .SetVerticalAlign(NuiVerticalAlign.Middle);
+                    AddWrappedText(row, Binding<string>(LineViewModel.ActionSummaryProperty(index)), ActionTextHeight)
+                        .BindColor(Binding<GuiColor>(LineViewModel.ActionColorProperty(index)));
                 });
             }
 
@@ -212,6 +210,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindOnClicked(model => model.OnClickClose());
                 row.AddSpacer();
             });
+        }
+
+        /// <summary>A borderless, unscrolled text box: it wraps a sentence to the panel's width, where a label cuts it off at one line.</summary>
+        private static GuiText<LineViewModel> AddWrappedText(
+            GuiRow<LineViewModel> row,
+            Expression<Func<LineViewModel, string>> text,
+            float height)
+        {
+            return row.AddText()
+                .BindText(text)
+                .SetHeight(height)
+                .SetShowBorder(false)
+                .SetScrollbars(NuiScrollbars.None);
         }
 
         private static void AddMeter(

@@ -970,6 +970,8 @@ public class SkillServiceTests
 
         public string EscapeTokens(string str) => _inner.EscapeTokens(str);
 
+        public string StringGet(StackExchange.Redis.RedisKey key) => _inner.StringGet(key);
+
         public Task<StackExchange.Redis.RedisValue> StreamAddAsync(StackExchange.Redis.RedisKey key,
             StackExchange.Redis.NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false) =>
             _inner.StreamAddAsync(key, streamPairs, maxLength, useApproximateMaxLength);

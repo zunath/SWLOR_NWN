@@ -25,6 +25,8 @@ public class NwnCraftSessionWorldReloadTests
         var engine = new FakeNWScript();
         var locals = new LocalVariables(engine);
         using var scope = NWScriptRuntime.Override(engine);
+        using var facades = new FacadeContainer();
+        using var facadeScope = facades.Install();
         engine.SetReturnHandler("GetIsObjectValid", _ => true);
         engine.SetReturnHandler("GetIsPC", _ => true);
         engine.SetReturnHandler("GetIsDM", args => (uint)args[0]! == PendingDM);

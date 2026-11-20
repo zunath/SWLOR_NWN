@@ -264,7 +264,7 @@ public class MigrationServiceTests
     [Test]
     public void The_retired_version_and_the_file_version_variable_keep_their_values()
     {
-        Retired.Should().Be(30);
+        Retired.Should().Be(31);
         MigrationService.PlayerFileVersionVariable.Should().Be("PLAYER_MIGRATION_VERSION");
 
         // Native code and tests read both constants here: the facade that repeated them was removed (P2-ZI).

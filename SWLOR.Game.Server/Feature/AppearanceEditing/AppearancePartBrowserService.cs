@@ -286,7 +286,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceEditing
                 SetBrowserSource(host, ids, CurrentPartId(), pictureKey,
                     id => host.Session.PartIdToIndex.TryGetValue(id, out var index) && names != null && index < names.Count &&
                           names[index] != WeaponAppearanceBaseDefinition.DefaultPartName(id)
-                        ? names[index]
+                        ? AppearancePartNames.TileName(names[index])
                         : AppearancePartNames.Get(pictureKey(id), id.ToString()),
                     partId => SelectPartFromBrowser(host, partId), frontOnly: true);
             }

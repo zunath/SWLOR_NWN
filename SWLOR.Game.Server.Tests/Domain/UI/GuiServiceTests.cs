@@ -817,14 +817,14 @@ public class GuiServiceTests
     }
 
     [Test]
-    public void The_native_player_list_panel_for_a_window_that_is_not_registered_fails_the_lookup()
+    public void The_native_player_list_panel_for_a_window_that_is_not_registered_opens_nothing()
     {
         Login();
         OpenPanel(GuiPanel.PlayerList, Player);
 
         var open = () => _service.ReplaceNWNGuis();
 
-        // The fake definitions do not include a PlayerList window, so asking for it is a lookup failure.
-        open.Should().Throw<KeyNotFoundException>();
+        // The fake definitions do not include a PlayerList window, so there is nothing to toggle.
+        open.Should().NotThrow();
     }
 }

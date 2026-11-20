@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return count;
         }
 
-        [EngineTest("Outdoor weather stays consistent across Viscara maps and a new instance", Category = "Weather")]
+        [EngineTest("Outdoor weather stays consistent across Viscara maps", Category = "Weather")]
         public static async Task SharedOutdoorWeather(EngineTestContext ctx)
         {
             // Use a warm, wet, windy front so independently rolled storms would
@@ -100,15 +100,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         GetLocalInt(area, "VAR_WEATHER_WIND") != 0) continue;
                     areas.Add(area);
                 }
+                // Production copies areas only for interiors (property layouts and the shuttle), which never get
+                // weather, so an outdoor copy is not part of this check.
                 ctx.Assert(areas.Count >= 10, "Need several comparable outdoor maps to exercise shared storm selection.");
-                // An instance gets a new resref and none of the planet id the template received at boot, so it is a
-                // Viscara map only when its name carries the planet prefix. Copy such a map: resref-resolved prefab
-                // maps (nw_N instances of "[Prefab] ..." areas) have no planet, hence no weather (reported separately).
-                const string prefix = "Viscara - "; // the planet prefix PlanetType.Viscara declares
-                var template = areas.FirstOrDefault(area => GetName(area).StartsWith(prefix));
-                ctx.Assert(GetIsObjectValid(template), $"A comparable outdoor map named \"{prefix}...\" exists to copy.");
-                var instance = ctx.CreateInstancedArea(GetResRef(template));
-                areas.Add(instance);
 
                 int? storm = null;
                 foreach (var area in areas)
@@ -123,7 +117,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     GameServices.Weather.SetWeather(area);
                     ctx.AssertEqual(storm.Value, GetLocalInt(area, "GS_AM_SKY_OVERRIDE"), "Repeated entry retains the shared storm");
                 }
-                ctx.SetResultDetail($"Verified equal heat, humidity, wind, native rain and storm sky flags across {areas.Count - 1} outdoor maps plus a fresh instance. Repeated requests retained the same storm.");
+                ctx.SetResultDetail($"Verified equal heat, humidity, wind, native rain and storm sky flags across {areas.Count} outdoor maps. Repeated requests retained the same storm.");
                 await ctx.WaitFrameAsync();
             }
             finally

@@ -14,6 +14,8 @@ public static class CraftSessionFileSequence
     public const string ExportedVariable = "CRAFT_FILE_EXPORTED";
 
     /// <summary>The sequence the character file carried when it loaded. It never changes until the next load, so every login check compares
-    /// against the same value whatever ran first.</summary>
+    /// against the same value whatever ran first. Read it through <see cref="NwnCraftSessionWorld.LoadedSequence"/>: a player logging back in
+    /// before a restart gets the locals of their earlier login copied over the new creature, and that call puts the file's value back
+    /// (see <see cref="LoadedCraftFileSequences"/>).</summary>
     public const string LoadedVariable = "CRAFT_FILE_LOADED";
 }

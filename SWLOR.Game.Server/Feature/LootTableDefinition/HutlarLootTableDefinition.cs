@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         public Dictionary<string, LootTable> BuildLootTables()
         {
             Byysk();
+            FoundryMemoryCores();
             QionSlugs();
             QionTigers();
             QionHiveLoot();
@@ -121,7 +122,23 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("recipe_imtunic", 10)
                 .AddItem("recipe_imcap", 10)
                 .AddItem("recipe_imgloves", 10)
-                .AddItem("recipe_imboots", 10);
+                .AddItem("recipe_imboots", 10)
+                .AddItem("recipe_dhcl005c", 10)
+                .AddItem("recipe_dhbe005c", 10)
+                .AddItem("recipe_dhrg005c", 10)
+                .AddItem("recipe_dhnk005c", 10)
+                .AddItem("recipe_dhar005c", 10)
+                .AddItem("recipe_dhhl005c", 10)
+                .AddItem("recipe_dhbr005c", 10)
+                .AddItem("recipe_dhlg005c", 10)
+                .AddItem("recipe_dlcl005c", 10)
+                .AddItem("recipe_dlbe005c", 10)
+                .AddItem("recipe_dlrg005c", 10)
+                .AddItem("recipe_dlnk005c", 10)
+                .AddItem("recipe_dlar005c", 10)
+                .AddItem("recipe_dlhl005c", 10)
+                .AddItem("recipe_dlbr005c", 10)
+                .AddItem("recipe_dllg005c", 10);
 
             _builder.Create("HUTLAR_FOUNDRY_OVERSEER_ELECTRONICS")
                 .AddItem("elec_high", 1, 2);
@@ -465,12 +482,35 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("recipe_imcap", 10)
                 .AddItem("recipe_imgloves", 10)
                 .AddItem("recipe_imboots", 10)
+                .AddItem("recipe_dhcl005c", 10)
+                .AddItem("recipe_dhbe005c", 10)
+                .AddItem("recipe_dhrg005c", 10)
+                .AddItem("recipe_dhnk005c", 10)
+                .AddItem("recipe_dhar005c", 10)
+                .AddItem("recipe_dhhl005c", 10)
+                .AddItem("recipe_dhbr005c", 10)
+                .AddItem("recipe_dhlg005c", 10)
+                .AddItem("recipe_dlcl005c", 10)
+                .AddItem("recipe_dlbe005c", 10)
+                .AddItem("recipe_dlrg005c", 10)
+                .AddItem("recipe_dlnk005c", 10)
+                .AddItem("recipe_dlar005c", 10)
+                .AddItem("recipe_dlhl005c", 10)
+                .AddItem("recipe_dlbr005c", 10)
+                .AddItem("recipe_dllg005c", 10)
                 .AddItem("recipe_brsushi", 10)
                 .AddItem("recipe_ocsushi", 10)
                 .AddItem("recipe_iksushi", 10)
                 .AddItem("recipe_wisushi", 10)
                 .AddItem("recipe_tesushi", 10)
                 .AddItem("recipe_dosushi", 10);
+        }
+
+        /// <summary>The memory cores foundry droids carry for the Foundry quest line.</summary>
+        private void FoundryMemoryCores()
+        {
+            _builder.Create("HUTLAR_FOUNDRY_MEMORY_CORES")
+                .AddItem("fdy_memory_core", 1);
         }
     }
 }

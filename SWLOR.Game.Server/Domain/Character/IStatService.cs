@@ -230,5 +230,12 @@ namespace SWLOR.Game.Server.Domain.Character
         /// </summary>
         /// <param name="skin">The stat skin item.</param>
         int GetNPCSkinMaxHP(uint skin);
+
+        /// <summary>
+        /// Returns the uncapped NPCHP budget stored on a stat skin, or 0 when it has none.
+        /// Gear bonuses are added to and removed from this total, so the cap must not be applied to it.
+        /// </summary>
+        /// <param name="skin">The stat skin item.</param>
+        int GetNPCSkinHPBudget(uint skin);
     }
 }

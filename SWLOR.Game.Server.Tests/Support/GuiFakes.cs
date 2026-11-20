@@ -50,6 +50,10 @@ public class FakeViewModel : IGuiViewModel, IGuiRefreshable<FakeRefreshEvent>
 
     public void UpdatePropertyFromClient(string propertyName) => Updated.Add(propertyName);
 
+    public void FollowClientIfTargetDestroyed(uint eventPlayer)
+    {
+    }
+
     public void ChangePartialView(string elementId, string partialName)
     {
     }
@@ -113,6 +117,18 @@ public sealed class TestGuiService : GuiService
 public sealed class FakeEmotesDefinition : IGuiWindowDefinition
 {
     public GuiConstructedWindow BuildWindow() => FakeWindows.Build(GuiWindowType.Emotes);
+}
+
+/// <summary>The Dice window built from a fake view model.</summary>
+public sealed class FakeDiceDefinition : IGuiWindowDefinition
+{
+    public GuiConstructedWindow BuildWindow() => FakeWindows.Build(GuiWindowType.Dice);
+}
+
+/// <summary>The Appearance Editor window built from a fake view model.</summary>
+public sealed class FakeAppearanceEditorDefinition : IGuiWindowDefinition
+{
+    public GuiConstructedWindow BuildWindow() => FakeWindows.Build(GuiWindowType.AppearanceEditor);
 }
 
 /// <summary>The Quests window built from a fake view model that stays open when the area changes.</summary>

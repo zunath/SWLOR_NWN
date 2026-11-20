@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         public Dictionary<string, LootTable> BuildLootTables()
         {
             Aradile();
+            CoralSampleCanisters();
             Viper();
             AmphiHydrus();
             EcoTerrorist();
@@ -313,6 +314,13 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("MONCALA_GLASSJAW_CHITIN")
                 .AddItem("sh_chitin", 1);
+        }
+
+        /// <summary>The Dac City survey samples the eco-terrorists carry for the Poisoned Tide quest line.</summary>
+        private void CoralSampleCanisters()
+        {
+            _builder.Create("MONCALA_CORAL_CANISTERS")
+                .AddItem("mon_coral_canist", 1);
         }
     }
 }

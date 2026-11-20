@@ -19,7 +19,7 @@ public class DomainMapTests
     /// folder: <c>Move-SupportNamespaces.ps1</c> reads the map to place master's folder, and the type move then sends the
     /// types on. They stay listed until the cutover.
     /// </summary>
-    private static readonly string[] ServicesKeptForMasterSync = ["ExtraHotbar"];
+    private static readonly string[] ServicesKeptForMasterSync = ["ExtraHotbar", "TimeZone"];
 
     [Test]
     public void Domain_map_file_is_well_formed()

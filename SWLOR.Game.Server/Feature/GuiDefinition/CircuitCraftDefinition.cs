@@ -12,14 +12,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// <summary>The Engineering crafting window: the Circuit minigame.</summary>
     public class CircuitCraftDefinition : IGuiWindowDefinition
     {
-        private const float PanelWidth = 660f;
+        /// <summary>The default width, and the narrowest the window can be made: its text boxes are sized for this width.</summary>
+        public const float WindowWidth = 740f;
+
+        /// <summary>Two wrapped lines: a summary or threshold line that runs past one line in the default window.</summary>
+        private const float TwoLineTextHeight = 44f;
         private const float SlotRowHeight = 30f;
         private const float SlotListHeight = 4 * SlotRowHeight + 8f;
         private const float StyleRowHeight = 40f;
         private const float StyleListHeight = 3 * StyleRowHeight + 8f;
         private const float ActionRowHeight = 50f;
         private const float ActionListHeight = 9 * ActionRowHeight + 8f;
-        private const float ActionButtonWidth = 170f;
+        /// <summary>Holds the longest action name, such as "Retool (Extruder) (1 CP)".</summary>
+        private const float ActionButtonWidth = 190f;
+        /// <summary>Three lines: the failure rule runs to three lines in the default window.</summary>
+        private const float RuleTextHeight = 66f;
+        /// <summary>The recipe's components, requirements and properties; a list with no height of its own collapses in a scrolled panel.</summary>
+        private const float RecipeDetailHeight = 210f;
 
         public static readonly string HelpText =
             "GOAL\n" +
@@ -61,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.CraftCircuit)
-                .SetInitialGeometry(0, 0, 740f, 660f)
+                .SetInitialGeometry(0, 0, WindowWidth, 660f)
                 .SetTitle("Circuit Assembly")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -83,6 +92,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 col.AddRow(row =>
                 {
+                    // No fixed width: the panel takes the window's width, so the wrapped sentences reflow when the window is resized.
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
@@ -92,14 +102,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         {
                             AddTitleRow(content);
                             AddLabelRow(content, model => model.RecipeLevel);
-                            AddLabelRow(content, model => model.GearSummary);
-                            AddLabelRow(content, model => model.CircuitSummary);
+                            AddWrappedRow(content, model => model.GearSummary);
+                            AddWrappedRow(content, model => model.CircuitSummary);
                             content.AddRow(row2 => row2.AddText()
                                 .BindText(model => model.NeedsSummary)
                                 .SetShowBorder(false)
                                 .SetScrollbars(NuiScrollbars.None)
                                 .SetHeight(40f));
-                            AddLabelRow(content, model => model.SlotHeader);
+                            AddWrappedRow(content, model => model.SlotHeader);
                             content.AddRow(row2 => row2.AddList(template =>
                                 {
                                     template.AddCell(cell => cell.AddLabel()
@@ -141,14 +151,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindText(model => model.RuleText)
                                 .SetShowBorder(false)
                                 .SetScrollbars(NuiScrollbars.None)
-                                .SetHeight(56f));
+                                .SetHeight(RuleTextHeight));
                             content.AddRow(row2 => row2.AddList(template =>
                                     template.AddCell(cell => cell.AddLabel()
                                         .BindText(model => model.RecipeDescription)
                                         .BindColor(model => model.RecipeColors)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                         .SetVerticalAlign(NuiVerticalAlign.Middle)))
-                                .BindRowCount(model => model.RecipeDescription));
+                                .BindRowCount(model => model.RecipeDescription)
+                                .SetRowHeight(22f)
+                                .SetHeight(RecipeDetailHeight));
                             content.AddRow(row2 => row2.AddLabel()
                                 .BindText(model => model.StatusText)
                                 .BindColor(model => model.StatusColor)
@@ -165,8 +177,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 row2.AddSpacer();
                             });
                         });
-                    })
-                        .SetWidth(PanelWidth);
+                    });
                 });
             });
         }
@@ -177,6 +188,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 col.AddRow(row =>
                 {
+                    // No fixed width: the panel takes the window's width, so the wrapped sentences reflow when the window is resized.
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
@@ -205,15 +217,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindText(model => model.LoadRuleText)
                                 .SetShowBorder(false)
                                 .SetScrollbars(NuiScrollbars.None)
-                                .SetHeight(48f));
+                                .SetHeight(RuleTextHeight));
                             AddLabelRow(content, model => model.CpText);
                             AddLabelRow(content, model => model.PerkText);
-                            content.AddRow(row2 => row2.AddLabel()
-                                .BindText(model => model.OpportunityText)
-                                .BindColor(model => model.OpportunityColor)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                .SetHeight(20f));
-                            AddLabelRow(content, model => model.ThresholdText);
+                            AddWrappedRow(content, model => model.OpportunityText)
+                                .BindColor(model => model.OpportunityColor);
+                            AddWrappedRow(content, model => model.ThresholdText);
                             content.AddRow(row2 => row2.AddList(template =>
                                 {
                                     template.AddCell(cell =>
@@ -235,8 +244,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetRowHeight(ActionRowHeight)
                                 .SetHeight(ActionListHeight));
                         });
-                    })
-                        .SetWidth(PanelWidth);
+                    });
                 });
             });
         }
@@ -262,6 +270,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindText(text)
                 .SetHorizontalAlign(NuiHorizontalAlign.Left)
                 .SetHeight(20f));
+        }
+
+        /// <summary>A borderless, unscrolled text box: it wraps a sentence to the panel's width, where a label cuts it off at one line.</summary>
+        private static GuiText<CircuitCraftViewModel> AddWrappedRow(
+            GuiColumn<CircuitCraftViewModel> content,
+            System.Linq.Expressions.Expression<System.Func<CircuitCraftViewModel, string>> text)
+        {
+            GuiText<CircuitCraftViewModel> wrapped = null;
+            content.AddRow(row => wrapped = row.AddText()
+                .BindText(text)
+                .SetHeight(TwoLineTextHeight)
+                .SetShowBorder(false)
+                .SetScrollbars(NuiScrollbars.None));
+            return wrapped;
         }
 
         private static void AddMeter(

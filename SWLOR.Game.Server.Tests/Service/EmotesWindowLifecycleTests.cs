@@ -43,7 +43,7 @@ public class EmotesWindowLifecycleTests
         _world = new DMPossessionEngine();
         _db = new InMemoryDBService();
         _presence = new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.For<ISpaceModeQuery>());
-        _gui = new TestGuiService(_db, _presence, typeof(FakeEmotesDefinition));
+        _gui = new TestGuiService(_db, _presence, typeof(FakeEmotesDefinition), typeof(FakeDiceDefinition), typeof(FakeAppearanceEditorDefinition));
         _facades = new FacadeContainer(services =>
         {
             services.Replace(ServiceDescriptor.Singleton<IDMPresenceService>(_presence));
@@ -66,6 +66,8 @@ public class EmotesWindowLifecycleTests
 
         _gui.CacheData();
         _commands = new SystemChatCommand().BuildChatCommands();
+        foreach (var command in new DiceChatCommand().BuildChatCommands().Concat(new CharacterAppearanceChatCommand().BuildChatCommands()))
+            _commands.TryAdd(command.Key, command.Value);
     }
 
     [TearDown]
@@ -118,16 +120,20 @@ public class EmotesWindowLifecycleTests
 
     [TestCase(DMPossess)]
     [TestCase(DMPossessFullPower)]
-    public void PossessedCreatureIsNotRegisteredButCommandUsesTheDMsWindow(int possessionType)
+    public void PossessedCreatureIsNotRegisteredButUsesTheDMsWindow(int possessionType)
     {
         Login(DM, isDM: true);
         _world.Possess(DM, Creature, possessionType);
-        var direct = () => _gui.TogglePlayerWindow(Creature, GuiWindowType.Emotes);
-        direct.Should().Throw<KeyNotFoundException>();
+        // Commands such as /rename pass the possessed creature itself; production threw KeyNotFoundException.
+        _gui.TogglePlayerWindow(Creature, GuiWindowType.Emotes);
+        OpenWindows.Should().Be(1);
+        BoundTo(DM).Should().Be(Creature);
+        _gui.TogglePlayerWindow(Creature, GuiWindowType.Emotes);
+        OpenWindows.Should().Be(0);
 
         Command(Creature);
         OpenWindows.Should().Be(1);
-        Model(DM).BoundTo.Should().Be(Creature);
+        BoundTo(DM).Should().Be(Creature);
         Command(Creature);
         OpenWindows.Should().Be(0);
         Command(Creature);
@@ -138,31 +144,36 @@ public class EmotesWindowLifecycleTests
         Owners.Should().Be(1, "a possessed NPC must never receive its own player window cache");
     }
 
-    [TestCase(DMPossess)]
-    [TestCase(DMPossessFullPower)]
-    public void ChangingControlledCreatureMovesOneWindowWithoutReplacingItsViewModel(int possessionType)
+    // /dice and /customize used to open a second copy on the possessed creature and rebind the avatar's open window to it.
+    [TestCase(DMPossess, "emotesgui")]
+    [TestCase(DMPossessFullPower, "emotesgui")]
+    [TestCase(DMPossess, "dice")]
+    [TestCase(DMPossessFullPower, "dice")]
+    [TestCase(DMPossess, "customize")]
+    [TestCase(DMPossessFullPower, "customize")]
+    public void ChangingControlledCreatureMovesOneWindowWithoutReplacingItsViewModel(int possessionType, string alias)
     {
         Login(DM, isDM: true);
-        var window = Window(DM);
-        Command(DM);
+        var window = Window(DM, alias);
+        Command(DM, alias);
         _world.Possess(DM, Creature, possessionType);
-        Command(Creature);
+        Command(Creature, alias);
         OpenWindows.Should().Be(1);
-        Model(DM).BoundTo.Should().Be(Creature);
+        BoundTo(DM, alias).Should().Be(Creature);
         _world.Release(DM);
         _world.Possess(DM, 4, possessionType);
-        Command(4);
+        Command(4, alias);
         OpenWindows.Should().Be(1);
-        Model(DM).BoundTo.Should().Be(4);
+        BoundTo(DM, alias).Should().Be(4);
         _world.Release(DM);
-        Command(DM);
+        Command(DM, alias);
         OpenWindows.Should().Be(1);
-        Model(DM).BoundTo.Should().Be(DM);
-        Command(DM);
+        BoundTo(DM, alias).Should().Be(DM);
+        Command(DM, alias);
         OpenWindows.Should().Be(0);
-        Command(DM);
+        Command(DM, alias);
         OpenWindows.Should().Be(1);
-        Window(DM).Should().BeSameAs(window);
+        Window(DM, alias).Should().BeSameAs(window);
         Owners.Should().Be(1);
     }
 
@@ -189,14 +200,22 @@ public class EmotesWindowLifecycleTests
     private void Command(uint actor, string alias = "emotesgui") =>
         _commands[alias].DoAction(actor, Invalid, null!, Array.Empty<string>());
 
+    private static GuiWindowType TypeOf(string alias) => alias switch
+    {
+        "dice" => GuiWindowType.Dice,
+        "customize" => GuiWindowType.AppearanceEditor,
+        _ => GuiWindowType.Emotes
+    };
+
     private void Transition(uint actor)
     {
         _world.Engine.SetReturn("GetEnteringObject", actor);
         _gui.CloseAllWindows();
     }
 
-    private GuiPlayerWindow Window(uint owner) => _gui.GetPlayerWindow(owner, GuiWindowType.Emotes);
-    private FakeViewModel Model(uint owner) => (FakeViewModel)Window(owner).ViewModel;
+    private GuiPlayerWindow Window(uint owner, string alias = "emotesgui") => _gui.GetPlayerWindow(owner, TypeOf(alias));
+    private FakeViewModel Model(uint owner, string alias = "emotesgui") => (FakeViewModel)Window(owner, alias).ViewModel;
+    private uint BoundTo(uint owner, string alias = "emotesgui") => Model(owner, alias).BoundTo;
     private int OpenWindows
     {
         get

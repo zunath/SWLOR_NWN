@@ -2,7 +2,7 @@
 
 Reads every magnitude from SWLOR.Game.Server/Domain/Crafting/Minigame/Circuit/CircuitPerkRules.cs and CircuitRules.cs, so the
 Bible cannot drift from the code, and edits only the target cells of design/bible/SWLOR Design Bible.xlsx at the zip/XML level,
-copying every other workbook entry byte-for-byte. Safe to rerun: the perk rows go on the rows after the retired Droid Assembly rows,
+copying every other workbook entry byte-for-byte. Safe to rerun: the perk rows start on the first row under the header,
 the Total row follows them, and a rerun writes the same cells. After a merge conflict on the workbook, take the base's workbook and
 run this again.
 
@@ -28,9 +28,8 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_WORKBOOK = ROOT / "design" / "bible" / "SWLOR Design Bible.xlsx"
 DEFAULT_RULES = ROOT / "SWLOR.Game.Server" / "Domain" / "Crafting" / "Minigame" / "Circuit"
 SHEET = "Engineering"
-FIRST_PERK_ROW = 14
+FIRST_PERK_ROW = 9
 TEMPLATE_ROW = 9
-DESCRIPTION_MARKER = "Two perk lines"
 
 
 def read_constants(directory: Path) -> dict[str, int]:
@@ -133,16 +132,11 @@ def rows(k: dict[str, int]) -> list[dict]:
     ]
 
 
-def description_suffix(total: int) -> str:
-    return (
-        f" {DESCRIPTION_MARKER} of {total // 2} SP each (Overclocker and Technician) change the Circuit minigame: ten purchases at Engineering"
-        " 5/10/15/20/25/30/35/40/45/50 priced 1/1/2/2/3/3/3/3/3/4 SP, a style at rank 20 and an automatic capstone at rank 50. Both styles can"
-        " be owned and the craft window toggles between them, one at a time.")
 
 
 def update_sheet(sheet: Bible.Sheet, k: dict[str, int]) -> int:
     template = sheet.row_cells(TEMPLATE_ROW)
-    label = sheet_total_label(sheet)  # found first: before the first run, row 14 holds it and the first perk row replaces it
+    label = sheet_total_label(sheet)  # found first: a perk row may replace the row that holds it
     purchases = rows(k)
     total = sum(purchase["price"] for purchase in purchases)
 
@@ -173,20 +167,15 @@ def update_sheet(sheet: Bible.Sheet, k: dict[str, int]) -> int:
     total_cells = {col: cell(col, total_row) for col in template}
     total_cells["A"] = re.sub(r'r="A\d+"', f'r="A{total_row}"', label, count=1)
     total_cells["B"] = Bible.num_cell(
-        f"B{total_row}", Bible.cell_style(label), total, f'SUMIFS(B{first}:B{last},M{first}:M{last},"<>Retired")')
+        f"B{total_row}", Bible.cell_style(label), total, f"SUM(B{first}:B{last})")
     sheet.write_row(total_row, total_cells)
 
     Bible.set_formula(sheet, "D4", f"SUM(B{total_row})", total)
-    description = sheet.row_cells(3)["B"]
-    text = sheet.text_of(description)
-    if DESCRIPTION_MARKER in text:
-        text = text[:text.index(DESCRIPTION_MARKER)].rstrip()
-    sheet.set_cell(3, "B", Bible.text_cell("B3", Bible.cell_style(description), text + description_suffix(total)))
     return total
 
 
 def sheet_total_label(sheet: Bible.Sheet) -> str:
-    """The Total label cell, taken from wherever the workbook has it (row 14 before the first run)."""
+    """The Total label cell, taken from wherever the workbook has it."""
     for number in range(FIRST_PERK_ROW, FIRST_PERK_ROW + 30):
         cell = sheet.row_cells(number).get("A")
         if cell is not None and sheet.text_of(cell) == "Total":

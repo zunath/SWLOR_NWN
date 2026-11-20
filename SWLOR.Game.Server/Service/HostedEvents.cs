@@ -24,6 +24,9 @@ namespace SWLOR.Game.Server.Service
         // instance (an apartment, a starship) returns there while it still exists.
         private const string ReturnLocationVariable = "HOSTED_EVENT_RETURN_LOCATION";
         private const string ReturnEventIdVariable = "HOSTED_EVENT_RETURN_EVENT_ID";
+        private const float ReturnArrivalRadius = 5f;
+        private static readonly TimeSpan ReturnCheckInterval = TimeSpan.FromSeconds(1);
+        private const int ReturnChecks = 120;
 
         private static readonly HashSet<string> OutOfCharacterAreaResrefs = new() { "ooc_area", "char_migration", "spending_area" };
         // Written by the background service (DiscordEventSync.SnapshotKey): the Discord server's Events tab.
@@ -92,6 +95,7 @@ namespace SWLOR.Game.Server.Service
             string hostName,
             string description,
             string startText,
+            DateTime? shownStartUtc,
             PlayerTimeZone zone,
             bool isJoinOpen,
             bool announceOnStart,
@@ -123,7 +127,7 @@ namespace SWLOR.Game.Server.Service
             hostedEvent.HostName = string.IsNullOrWhiteSpace(hostName) ? GetName(DMPresence.GetDM(dm)) : hostName.Trim();
             hostedEvent.Description = description ?? string.Empty;
             hostedEvent.ScheduledStartUtc = HostedEventRules.GetStartToSave(
-                isNew ? null : hostedEvent.ScheduledStartUtc, startText, zone, startUtc);
+                shownStartUtc ?? (isNew ? null : hostedEvent.ScheduledStartUtc), startText, zone, startUtc);
             hostedEvent.IsJoinOpen = isJoinOpen;
             hostedEvent.AnnounceOnStart = announceOnStart;
 
@@ -250,9 +254,12 @@ namespace SWLOR.Game.Server.Service
             if (hostedEvent == null)
                 return HostedEventRules.EventNotFound;
 
+            // Players sent back stay participants until they arrive, so count the offline ones first.
+            var online = GetOnlineParticipants(hostedEvent);
+            var offline = hostedEvent.ParticipantPlayerIds.Count - online.Count;
             var sent = 0;
             var refused = new List<string>();
-            foreach (var player in GetOnlineParticipants(hostedEvent))
+            foreach (var player in online)
             {
                 var error = Leave(player, ignoreCombat: true);
                 if (string.IsNullOrEmpty(error))
@@ -266,7 +273,6 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            var offline = hostedEvent.ParticipantPlayerIds.Count - refused.Count;
             Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(dm)} sent {sent} players back from event '{hostedEvent.Name}' ({hostedEvent.Id}).");
 
             var summary = $"Sent {sent} {(sent == 1 ? "player" : "players")} back.";
@@ -338,23 +344,45 @@ namespace SWLOR.Game.Server.Service
             if (destination == null)
                 return "Your way back is blocked right now. Try again shortly, or ask a DM for help.";
 
-            dbPlayer.EventReturnPoint = null;
-            DB.Set(dbPlayer);
-            DeleteLocalLocation(player, ReturnLocationVariable);
-            DeleteLocalString(player, ReturnEventIdVariable);
-
-            var hostedEvent = GetEvent(returnPoint.EventId);
-            if (hostedEvent != null && hostedEvent.ParticipantPlayerIds.Remove(playerId))
-                Store(hostedEvent);
-            else
-                RefreshWindows();
-
+            // The return point stays until the player arrives, so a restart or disconnect mid-jump leaves /leaveevent working.
             AssignCommand(player, () =>
             {
                 ClearAllActions();
                 JumpToLocation(destination);
             });
+            ConfirmReturn(player, playerId, returnPoint.EventId, destination, ReturnChecks);
             return string.Empty;
+        }
+
+        // Clears the return point once the player stands at their destination. A player who never gets there keeps it.
+        private static void ConfirmReturn(uint player, string playerId, string eventId, Location destination, int checksLeft)
+        {
+            if (!GetIsObjectValid(player) || GetObjectUUID(player) != playerId)
+                return;
+
+            var arrived = GetArea(player) == GetAreaFromLocation(destination) &&
+                          GetDistanceBetweenLocations(GetLocation(player), destination) <= ReturnArrivalRadius;
+            if (!arrived)
+            {
+                if (checksLeft > 0)
+                    Scheduler.Schedule(() => ConfirmReturn(player, playerId, eventId, destination, checksLeft - 1), ReturnCheckInterval);
+                return;
+            }
+
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer?.EventReturnPoint?.EventId != eventId)
+                return;
+
+            dbPlayer.EventReturnPoint = null;
+            DB.Set(dbPlayer);
+            DeleteLocalLocation(player, ReturnLocationVariable);
+            DeleteLocalString(player, ReturnEventIdVariable);
+
+            var hostedEvent = GetEvent(eventId);
+            if (hostedEvent != null && hostedEvent.ParticipantPlayerIds.Remove(playerId))
+                Store(hostedEvent);
+            else
+                RefreshWindows();
         }
 
         /// <summary>

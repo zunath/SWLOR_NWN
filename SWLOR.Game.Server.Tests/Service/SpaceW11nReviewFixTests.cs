@@ -256,7 +256,11 @@ public class SpaceW11nReviewFixTests
                 "a reward that merged into a stack counts as given, so the next login does not give it again");
         deliver.Should().NotContain("CreateItemOnObject(");
         deliver.Should().NotContain("ExportSingleCharacter(");
-        deliver.Should().Contain("return saved ? itemsGiven : -1;", "a payout whose save failed is not claimed: the mark keeps what was given from being given twice");
+        var failed = Between(deliver, "if (!CharacterCheckpoint.Save(player))", "return -1;");
+        failed.Should().Contain("TakeGoldFromCreature(credits, player, true);").And.Contain("FarmItems.Take(player, resref, 1);")
+            .And.Contain("ObjectPlugin.SetString(player, variable, previousMark, true);",
+                "spoils whose save failed are taken back, so they cannot be spent and then given again at the next login");
+        Index(deliver, "var previousMark = ObjectPlugin.GetString(player, variable);").Should().BeLessThan(Index(deliver, "GiveGoldToCreature(player, credits);"));
     }
 
     [Test]

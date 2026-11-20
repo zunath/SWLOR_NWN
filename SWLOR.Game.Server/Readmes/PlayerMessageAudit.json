@@ -8597,28 +8597,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 595,
+    "Line": 604,
+    "Member": "DeliverPayout",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red($\"{string.Format(heading, payout.RegionName)}: your character could not be saved, so these spoils are given at your next login.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
+    "Line": 611,
     "Member": "DeliverPayout",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                    $\"{string.Format(heading, payout.RegionName)}: {credits} credits and {given.Count(x => !string.IsNullOrWhiteSpace(x))} item(s){points}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 600,
+    "Line": 616,
     "Member": "DeliverPayout",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"Your inventory is full. {left} more item(s) from these spoils wait for you: make room, and they are given at your next login.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 940,
+    "Line": 956,
     "Member": "BroadcastIncursion",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 948,
+    "Line": 964,
     "Member": "MessageIncursionArea",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"

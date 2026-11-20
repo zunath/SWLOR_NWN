@@ -567,11 +567,13 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Gives what of the payout the character does not hold yet: the credits, then the items in order until the
         /// inventory is full. They are saved in one character save at once, with a mark of what was given, and the number of
-        /// items the character now holds is returned: -1 when the save failed, so the payout is not claimed yet (the mark keeps
-        /// what was given from being given twice).
+        /// items the character now holds is returned. When the save fails, what was given now is taken back and the mark is
+        /// restored, so nothing unsaved can be spent somewhere that saves on its own (a city treasury deposit) and then given
+        /// again at the next login; -1 is returned and the payout stays pending.
         /// </summary>
         private static int DeliverPayout(uint player, IncursionPayout payout, int creditsGiven, int itemsGiven, string variable, string heading, string logLabel)
         {
+            var previousMark = ObjectPlugin.GetString(player, variable);
             var credits = Math.Max(0, payout.Credits - creditsGiven);
             if (credits > 0)
                 GiveGoldToCreature(player, credits);
@@ -588,7 +590,21 @@ namespace SWLOR.Game.Server.Service
 
             itemsGiven += given.Count;
             ObjectPlugin.SetString(player, variable, $"{Math.Max(payout.Credits, creditsGiven)}|{itemsGiven}", true);
-            var saved = CharacterCheckpoint.Save(player);
+            if (!CharacterCheckpoint.Save(player))
+            {
+                if (credits > 0)
+                    TakeGoldFromCreature(credits, player, true);
+                foreach (var resref in given.Where(x => !string.IsNullOrWhiteSpace(x)))
+                    FarmItems.Take(player, resref, 1);
+                if (string.IsNullOrEmpty(previousMark))
+                    ObjectPlugin.DeleteString(player, variable);
+                else
+                    ObjectPlugin.SetString(player, variable, previousMark, true);
+
+                SendMessageToPC(player, ColorToken.Red($"{string.Format(heading, payout.RegionName)}: your character could not be saved, so these spoils are given at your next login."));
+                Log.Write(LogGroup.Space, $"{logLabel} - {PlayerName.GetAuditName(player)} - {payout.Id} - character save failed, nothing given");
+                return -1;
+            }
 
             var points = payout.Points > 0 ? $" for {payout.Points:0.#} contribution points" : string.Empty;
             if (credits > 0 || given.Count > 0)
@@ -600,7 +616,7 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(player, ColorToken.Red($"Your inventory is full. {left} more item(s) from these spoils wait for you: make room, and they are given at your next login."));
             Log.Write(LogGroup.Space, $"{logLabel} - {PlayerName.GetAuditName(player)} - {payout.Id} - {credits} credits, {string.Join(", ", given)}" +
                                       (left > 0 ? $" ({left} item(s) still pending)" : string.Empty));
-            return saved ? itemsGiven : -1;
+            return itemsGiven;
         }
 
         /// <summary>A player who was offline when a region was cleared collects the spoils at login.</summary>

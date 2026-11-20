@@ -965,10 +965,7 @@ public class CombatDamageTests
                     source.Contains("ApplyCombatImpact(") ||
                     source.Contains("ApplyTelegraphedCombatImpact(");
                 var usesCombatImpactHelper =
-                    source.Contains("ConfigureWeapon(") ||
-                    source.Contains("ConfigureCastedTarget(") ||
-                    source.Contains("ConfigureMultiHit(") ||
-                    source.Contains("ConfigureInterrupt(");
+                    source.Contains("ConfigureWeapon(");
                 if (!usesDirectCombatImpact && !usesCombatImpactHelper)
                     continue;
 

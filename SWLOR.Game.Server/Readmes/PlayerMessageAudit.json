@@ -428,14 +428,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 1323,
+    "Line": 1292,
     "Member": "ApplyGuardedHitNextSkillAbilityEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{selected.DamageBonus} DMG{criticalText}\"),\n                    creature,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 1556,
+    "Line": 1525,
     "Member": "ApplyRangedDeflectionReflection",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(\n                defender,\n                observer => BuildDeflectingReturnCombatLogMessage(observer, defender, attacker, appliedDamage),\n                60f)"
@@ -2801,7 +2801,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponActiveAbilityDefinitionBase.cs",
-    "Line": 2178,
+    "Line": 2000,
     "Member": "ToggleSelfStatus",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{StatusEffectCatalog.GetStatusEffectName(type)} deactivated.\")"

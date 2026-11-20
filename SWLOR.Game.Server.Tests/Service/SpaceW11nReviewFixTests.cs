@@ -257,7 +257,9 @@ public class SpaceW11nReviewFixTests
         deliver.Should().NotContain("CreateItemOnObject(");
         deliver.Should().NotContain("ExportSingleCharacter(");
         var failed = Between(deliver, "if (!CharacterCheckpoint.Save(player))", "return -1;");
-        failed.Should().Contain("TakeGoldFromCreature(credits, player, true);").And.Contain("FarmItems.Take(player, group.Key, group.Count());")
+        failed.Should().Contain("AssignCommand(player, () => TakeGoldFromCreature(credits, player, true));",
+                "TakeGoldFromCreature does nothing outside the player's context")
+            .And.Contain("FarmItems.Take(player, group.Key, group.Count());")
             .And.NotContain("FarmItems.Take(player, resref, 1);", "one take per copy would find the same deferred-destroyed item again")
             .And.Contain("ObjectPlugin.SetString(player, variable, previousMark, true);",
                 "spoils whose save failed are taken back, so they cannot be spent and then given again at the next login");
@@ -377,7 +379,7 @@ public class SpaceW11nReviewFixTests
         Index(pay, "AgentCreditMarks.Add(ObjectPlugin.GetString(player, PaidCreditsVariable), missionId), true);")
             .Should().BeLessThan(Index(pay, "CharacterCheckpoint.Save(player)"), "the mark is saved in the same character save as the credits");
         var failed = Between(pay, "if (!CharacterCheckpoint.Save(player))", "MarkPaid(player, missionId, x => x.PaidCredits = true);");
-        failed.Should().Contain("if (givenNow)").And.Contain("TakeGoldFromCreature(mission.Credits, player, true);")
+        failed.Should().Contain("if (givenNow)").And.Contain("AssignCommand(player, () => TakeGoldFromCreature(credits, player, true));")
             .And.Contain("AgentCreditMarks.Remove(ObjectPlugin.GetString(player, PaidCreditsVariable), missionId), true);",
                 "credits whose save failed cannot be spent and then paid again at the next login");
         Index(pay, "MarkPaid(player, missionId, x => x.PaidCredits = true);")

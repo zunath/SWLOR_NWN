@@ -592,8 +592,9 @@ namespace SWLOR.Game.Server.Service
             ObjectPlugin.SetString(player, variable, $"{Math.Max(payout.Credits, creditsGiven)}|{itemsGiven}", true);
             if (!CharacterCheckpoint.Save(player))
             {
+                // TakeGoldFromCreature does nothing from the module (a login delay runs this), so the player's own queue takes it.
                 if (credits > 0)
-                    TakeGoldFromCreature(credits, player, true);
+                    AssignCommand(player, () => TakeGoldFromCreature(credits, player, true));
                 // One take per resref: a destroyed item stays in the inventory until the script ends, so taking one at a
                 // time would find the same copy again and leave a second identical item behind.
                 foreach (var group in given.Where(x => !string.IsNullOrWhiteSpace(x)).GroupBy(x => x))

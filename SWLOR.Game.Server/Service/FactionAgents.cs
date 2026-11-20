@@ -327,7 +327,9 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (givenNow)
                     {
-                        TakeGoldFromCreature(mission.Credits, player, true);
+                        // TakeGoldFromCreature does nothing from the module or a NUI handler, so the player's own queue takes it.
+                        var credits = mission.Credits;
+                        AssignCommand(player, () => TakeGoldFromCreature(credits, player, true));
                         ObjectPlugin.SetString(player, PaidCreditsVariable,
                             AgentCreditMarks.Remove(ObjectPlugin.GetString(player, PaidCreditsVariable), missionId), true);
                     }

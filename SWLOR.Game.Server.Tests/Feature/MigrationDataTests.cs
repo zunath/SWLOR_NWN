@@ -108,9 +108,10 @@ public class MigrationDataTests
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
         remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
         remaining.Select(server => server.GetType()).Should().BeEquivalentTo(
-            new[] { typeof(_33_ConvertSpaceItems), typeof(_34_PlayerCityRevamp) },
-            $"the space revamp's one stored-item pass sits above master's next release ({NextServerVersion}), " +
-            "and the city revamp's one pass follows it");
+            new[] { typeof(_32_NextReleaseServerMigration), typeof(_33_ConvertSpaceItems), typeof(_34_PlayerCityRevamp) },
+            $"master's next release has one server migration ({NextServerVersion}), the space revamp's one stored-item pass " +
+            "sits above it, and the city revamp's one pass follows it");
+        new _32_NextReleaseServerMigration().Version.Should().Be(NextServerVersion);
         new _33_ConvertSpaceItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
         new _33_ConvertSpaceItems().Version.Should().Be(SpaceServerVersion).And.BeGreaterThan(NextServerVersion);
         new _34_PlayerCityRevamp().ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);

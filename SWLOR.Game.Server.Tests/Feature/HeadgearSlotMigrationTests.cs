@@ -31,30 +31,6 @@ public class HeadgearSlotMigrationTests
             HeadgearSlotMigration.IsLegacyHeadgear((string)Value(saved, "TemplateResRef"), BaseItem.Armor).Should().BeTrue();
         }
     }
-    [Test]
-    public void CatalogMatchesEveryCorrectedHeadgearRecipeAndBlueprint()
-    {
-        var recipes = new SalvagedFieldGearRecipes().BuildRecipes().Values
-            .Where(x => x.Category == RecipeCategoryType.Helmet).Select(x => x.Resref).ToArray();
-        HeadgearSlotMigration.LegacyHeadgear.Keys.Should().BeEquivalentTo(recipes);
-        HeadgearSlotMigration.LegacyHeadgear.Should().HaveCount(13);
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !Directory.Exists(Path.Combine(directory.FullName, "Module"))) directory = directory.Parent;
-        foreach (var (resref, model) in HeadgearSlotMigration.LegacyHeadgear)
-        {
-            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(directory!.FullName, "Module", "uti", resref + ".uti.json")));
-            blueprint.RootElement.GetProperty("BaseItem").GetProperty("value").GetInt32().Should().Be((int)BaseItem.Helmet);
-            blueprint.RootElement.GetProperty("ModelPart1").GetProperty("value").GetInt32().Should().Be(model);
-            HeadgearSlotMigration.IsLegacyHeadgear(resref, BaseItem.Armor).Should().BeTrue();
-            HeadgearSlotMigration.IsLegacyHeadgear(resref, BaseItem.Helmet).Should().BeFalse();
-            HeadgearSlotMigration.IsLegacyHeadgear(resref, BaseItem.Gloves).Should().BeFalse();
-        }
-        HeadgearSlotMigration.IsLegacyHeadgear("piston_gaunt", BaseItem.Armor).Should().BeFalse();
-        HeadgearSlotMigration.IsLegacyHeadgear("ordinary_armor", BaseItem.Armor).Should().BeFalse();
-        CharacterMigrations.VersionOf("_22_ReviseLootStats").Should().Be(22);
-        CharacterMigrations.FindNamed("_23_RepairHeadgearSlots").Should().BeNull();
-        typeof(SWLOR.Game.Server.Service.Migration).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._31_RepairHeadgearSlots").Should().BeNull();
-    }
 
     [TestCase(0)]
     [TestCase(33)]

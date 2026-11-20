@@ -275,4 +275,70 @@ public class ExtraHotbarsTests
 
         spot.Should().Be((793f, 374f));
     }
+    // The default stack at 1280x720, as the live client showed it: bar 1 above the chat bar, bar 2 on top of it.
+    private const float BarWidth = 484f;
+    private const float BarHeight = 66f;
+
+    [Test]
+    public void FollowScreen_DefaultStackWhenWindowShrinks_StaysInTheBottomRightCorner()
+    {
+        var bar1 = ExtraHotbarViewModel.FollowScreen(792f, 598f, BarWidth, BarHeight, BarWidth, BarHeight,
+            1280f, 720f, 800f, 600f);
+        var bar2 = ExtraHotbarViewModel.FollowScreen(792f, 500f, BarWidth, BarHeight, BarWidth, BarHeight,
+            1280f, 720f, 800f, 600f);
+
+        // Same gaps to the right and bottom edges, so bar 1 stays above the chat bar and clear of bar 2.
+        bar1.Should().Be((312f, 478f));
+        bar2.Should().Be((312f, 380f));
+    }
+
+    [Test]
+    public void FollowScreen_WindowGrowsBack_ReturnsToTheChosenSpot()
+    {
+        var shrunk = ExtraHotbarViewModel.FollowScreen(792f, 598f, BarWidth, BarHeight, BarWidth, BarHeight,
+            1280f, 720f, 800f, 600f);
+        var grown = ExtraHotbarViewModel.FollowScreen(shrunk.X, shrunk.Y, BarWidth, BarHeight, BarWidth, BarHeight,
+            800f, 600f, 1280f, 720f);
+
+        grown.Should().Be((792f, 598f));
+    }
+
+    [Test]
+    public void FollowScreen_BarNearTheTopLeft_KeepsItsSpot()
+    {
+        var spot = ExtraHotbarViewModel.FollowScreen(20f, 40f, 66f, 66f, 66f, 66f, 2560f, 1440f, 1280f, 720f);
+
+        spot.Should().Be((20f, 40f));
+    }
+
+    [Test]
+    public void FollowScreen_BarCentredOverTheQuickbar_StaysCentred()
+    {
+        // Centred at x 1280 on a 2560-wide screen.
+        var spot = ExtraHotbarViewModel.FollowScreen(1038f, 1300f, BarWidth, BarHeight, BarWidth, BarHeight,
+            2560f, 1440f, 1280f, 720f);
+
+        spot.X.Should().Be(398f);
+        (spot.X + BarWidth / 2f).Should().Be(640f);
+        // Its gap to the bottom edge is kept too.
+        spot.Y.Should().Be(580f);
+    }
+
+    [Test]
+    public void FollowScreen_UiScaleGrows_KeepsTheGapToTheFarEdge()
+    {
+        var spot = ExtraHotbarViewModel.FollowScreen(792f, 598f, BarWidth, BarHeight, BarWidth * 2f, BarHeight * 2f,
+            1280f, 720f, 1280f, 720f);
+
+        spot.Should().Be((1280f - 4f - BarWidth * 2f, 720f - 56f - BarHeight * 2f));
+    }
+
+    [Test]
+    public void FollowScreen_ScreenNarrowerThanTheBar_KeepsTheBarOnScreen()
+    {
+        var spot = ExtraHotbarViewModel.FollowScreen(792f, 598f, BarWidth, BarHeight, BarWidth, BarHeight,
+            1280f, 720f, 400f, 300f);
+
+        spot.Should().Be((0f, 178f));
+    }
 }

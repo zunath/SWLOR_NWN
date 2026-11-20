@@ -27,6 +27,13 @@ public class HornFitTests
     [TestCase("kloo_horn", AppearanceType.Rodian, Gender.Male)]
     [TestCase("kloo_horn", AppearanceType.MonCalamari, Gender.Female)]
     [TestCase("slitherhorn", AppearanceType.Cathar, Gender.Male)]
+    [TestCase("panpipes", AppearanceType.Human, Gender.Male)]
+    [TestCase("PANPIPES", AppearanceType.Human, Gender.Female)]
+    [TestCase("panpipes", AppearanceType.Cathar, Gender.Male)]
+    [TestCase("panpipes", AppearanceType.Ugnaught, Gender.Male)]
+    [TestCase("panpipes", AppearanceType.Ewok, Gender.Female)]
+    [TestCase("tambourine", AppearanceType.Wookiee, Gender.Male)]
+    [TestCase("TAMBOURINE", AppearanceType.Wookiee, Gender.Female)]
     public void BodiesTheClipMissesAreFittedOnlyWhilePlaying(string resref, AppearanceType appearance, Gender gender)
     {
         Fit(resref, appearance, 0, gender, true).Should().NotBe(default(HornFitOffset));
@@ -44,10 +51,52 @@ public class HornFitTests
     [TestCase("slitherhorn", AppearanceType.Human, 0, Gender.None)]
     [TestCase("bandfill", AppearanceType.Human, 0, Gender.Female)]
     [TestCase("guitar", AppearanceType.Cathar, 0, Gender.Male)]
+    [TestCase("tambourine", AppearanceType.Human, 0, Gender.Female)]
+    [TestCase("tambourine", AppearanceType.Cathar, 0, Gender.Male)]
+    [TestCase("panpipes", AppearanceType.Human, 2, Gender.Female)]
+    [TestCase("panpipes", AppearanceType.Human, 0, Gender.None)]
     [TestCase("", AppearanceType.Human, 0, Gender.Male)]
     public void BodiesThatAlreadyLineUpAndOtherItemsKeepTheirAuthoredTransform(string resref,
         AppearanceType appearance, int phenotype, Gender gender) =>
         Fit(resref, appearance, phenotype, gender, true).Should().Be(default(HornFitOffset));
+
+    [TestCase(AppearanceType.Cathar, Gender.Male, .085f, 0f, 0f)]
+    [TestCase(AppearanceType.Ugnaught, Gender.Male, .04f, -.03f, -.06f)]
+    [TestCase(AppearanceType.Ugnaught, Gender.Female, .04f, -.03f, -.06f)]
+    [TestCase(AppearanceType.Ewok, Gender.Male, .04f, -.03f, -.06f)]
+    [TestCase(AppearanceType.Ewok, Gender.Female, .04f, -.03f, -.06f)]
+    [TestCase(AppearanceType.Cathar, Gender.Female, .085f, 0f, 0f)]
+    [TestCase(AppearanceType.Human, Gender.Female, 0f, .03f, 0f)]
+    [TestCase(AppearanceType.Cyborg, Gender.Female, 0f, .03f, 0f)]
+    [TestCase(AppearanceType.Twilek, Gender.Female, 0f, .03f, 0f)]
+    [TestCase(AppearanceType.Trandoshan, Gender.Female, 0f, .03f, 0f)]
+    [TestCase(AppearanceType.MonCalamari, Gender.Female, 0f, .03f, 0f)]
+    [TestCase(AppearanceType.Wookiee, Gender.Male, .05f, .03f, 0f)]
+    [TestCase(AppearanceType.Wookiee, Gender.Female, .05f, 0f, 0f)]
+    [TestCase(AppearanceType.Twilek, Gender.Male, 0f, 0f, 0f)]
+    [TestCase(AppearanceType.Bothan, Gender.Male, 0f, 0f, 0f)]
+    [TestCase(AppearanceType.Droid, Gender.Male, .085f, 0f, 0f)]
+    [TestCase(AppearanceType.Droid, Gender.Female, .085f, 0f, 0f)]
+    public void PanpipesMoveToTheMouthOnlyOnBodiesWhoseHandsMissIt(AppearanceType appearance, Gender gender,
+        float x, float y, float z) =>
+        Fit("panpipes", appearance, 0, gender, true).Should().Be(new HornFitOffset(x, y, z, 0f, 180f));
+
+    [TestCase(Gender.Male)]
+    [TestCase(Gender.Female)]
+    public void TheWookieeTambourineSlidesBackUnderTheStrikingPalm(Gender gender) =>
+        Fit("tambourine", AppearanceType.Wookiee, 0, gender, true).Should().Be(new HornFitOffset(.08f, .08f, 0f, 0f));
+
+    [Test]
+    public void PanpipeRowFacesInwardForEveryPlayableBodyOnlyWhilePlaying()
+    {
+        foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
+        foreach (var gender in new[] { Gender.Male, Gender.Female })
+        {
+            Fit("panpipes", appearance, 0, gender, true).RotateZ.Should().Be(180f, appearance.ToString());
+            Fit("panpipes", appearance, 0, gender, true).RotateY.Should().Be(0f);
+            Fit("panpipes", appearance, 0, gender, false).Should().Be(default(HornFitOffset));
+        }
+    }
 
     [Test]
     public void EveryPlayableSpeciesWithAMouthOnAFemaleBodyIsDecidedForTheKlooHorn()

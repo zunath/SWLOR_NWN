@@ -45,8 +45,12 @@ public class ItemAppearanceCatalogMigrationTests
             }
 
             var current = fields.Select(field => ReadPart(blueprint, field)).ToArray();
-            if (!current.SequenceEqual(revision.Current))
-                failures.Add($"{resref}: blueprint parts are {string.Join(",", current)}, revision ends on {string.Join(",", revision.Current)}");
+            // A later release's revision (GaderffiiAppearanceMigration) moves a blueprint on from where this one ended.
+            var end = GaderffiiAppearanceMigration.Revisions.TryGetValue(resref, out var later) && later.Previous.SequenceEqual(revision.Current)
+                ? later.Current
+                : revision.Current;
+            if (!current.SequenceEqual(end))
+                failures.Add($"{resref}: blueprint parts are {string.Join(",", current)}, revisions end on {string.Join(",", end)}");
             if (revision.Previous.SequenceEqual(revision.Current))
                 failures.Add($"{resref}: revision changes nothing");
             if (fields.Length == 3 && revision.Previous.Concat(revision.Current).Any(part => part % 10 is < 1 or > 9))

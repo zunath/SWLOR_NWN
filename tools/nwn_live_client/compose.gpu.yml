@@ -1,0 +1,26 @@
+# Optional WSL2 D3D12 backend; the display and all input remain in the client container.
+services:
+    client:
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                        - count: all
+                          capabilities: [gpu]
+        environment:
+            # Xvfb uses Mesa's DRI software loader; Gallium below selects the hardware backend.
+            LIBGL_ALWAYS_SOFTWARE: "true"
+            GALLIUM_DRIVER: d3d12
+            MESA_D3D12_DEFAULT_ADAPTER_NAME: NVIDIA
+            MESA_SHADER_CACHE_DIR: /profile/cache/mesa
+            LD_LIBRARY_PATH: /usr/lib/wsl/lib
+            SWLOR_LIVE_GPU_RENDERER: wsl-d3d12
+        volumes:
+            - type: bind
+              source: /usr/lib/wsl/lib
+              target: /usr/lib/wsl/lib
+              read_only: true
+            - type: bind
+              source: /usr/lib/wsl/drivers
+              target: /usr/lib/wsl/drivers
+              read_only: true

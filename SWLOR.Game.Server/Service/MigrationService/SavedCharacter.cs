@@ -119,17 +119,6 @@ internal sealed class SavedCharacter
             SavedGff.WriteScalar(skills[skill], "Rank", 0, rank);
     }
 
-    /// <summary>
-    /// NWNX SetBaseSavingThrow for all three saves: the saved bonus beside each class save. The engine adds it to
-    /// the class save when it loads the character.
-    /// </summary>
-    public void SetBaseSavingThrows(int value)
-    {
-        WriteInteger("fortbonus", value, 3);
-        WriteInteger("refbonus", value, 3);
-        WriteInteger("willbonus", value, 3);
-    }
-
     /// <summary>The class in a class row (1-based position, as GetClassByPosition counts).</summary>
     public ClassType GetClassByPosition(int position)
     {
@@ -152,70 +141,11 @@ internal sealed class SavedCharacter
                 SavedGff.WriteScalar(level, "LvlStatClass", 0, (int)@class);
     }
 
-    /// <summary>
-    /// Adds native levels of the first class row until the character has <paramref name="target"/>. A new level
-    /// records its class, epic status and every fourth level's ability pick as the engine saves level-ups; the
-    /// feat and skill choices a native level-up would also record are left empty, since SWLOR reads neither.
-    /// </summary>
-    public void AddNativeLevels(int target)
-    {
-        var rows = SavedGff.List(Root, "ClassList", false)?.Children;
-        if (rows == null || rows.Count == 0)
-            throw new InvalidDataException("The character has no class.");
-        var levels = SavedGff.List(Root, "LvlStatList", true).Children;
-        var @class = StoredObjectData.ReadInteger(rows[0], "Class");
-        var gained = Math.Max(0, target - NativeLevelCount);
-        for (var level = NativeLevelCount + 1; level <= target; level++)
-        {
-            var fields = new List<Field>();
-            if (level % 4 == 0)
-                fields.Add(SavedGff.Scalar(0, "LvlStatAbility", 0));
-            fields.Add(SavedGff.Scalar(0, "LvlStatHitDie", 1));
-            fields.Add(SavedGff.Scalar(0, "LvlStatClass", @class));
-            fields.Add(SavedGff.Scalar(0, "EpicLevel", level > 20 ? 1 : 0));
-            fields.Add(SavedGff.Scalar(2, "SkillPoints", 0));
-            fields.Add(StoredObjectData.MakeField(15, "SkillList", children: Enumerable.Range(0, SkillCount)
-                .Select(_ => new Node { Fields = new List<Field> { SavedGff.Scalar(0, "Rank", 0) } }).ToList()));
-            fields.Add(StoredObjectData.MakeField(15, "FeatList", children: new List<Node>()));
-            levels.Add(new Node { Fields = fields });
-            SavedGff.WriteScalar(rows[0], "ClassLevel", 3, StoredObjectData.ReadInteger(rows[0], "ClassLevel") + 1);
-            // A level-up adds the class hit die to the base HP and heals it, leaving the damage taken unchanged.
-            var hitDie = SavedCharacterData.GetClassHitDie((ClassType)@class);
-            WriteInteger("HitPoints", ReadInteger("HitPoints") + hitDie, 3);
-            WriteInteger("CurrentHitPoints", ReadInteger("CurrentHitPoints") + hitDie, 3);
-        }
-        // Each level-up raises the challenge rating by one.
-        SavedGff.WriteFloat(Root, "ChallengeRating", SavedGff.ReadFloat(Root, "ChallengeRating") + gained);
-    }
-
     /// <summary>Native skills in a saved skill list.</summary>
     private const int SkillCount = 28;
 
     /// <summary>Sets a body part, saving the byte-sized and extended fields as the engine does.</summary>
     public void SetCreatureBodyPart(string label, int value) => StoredObjectData.WritePart(Root, label, value);
-
-    /// <summary>Replaces every quickbar slot: the given slots hold feats, the rest are empty.</summary>
-    public void SetQuickBar(IReadOnlyDictionary<int, FeatType> feats, int slots = 36)
-    {
-        var list = SavedGff.List(Root, "QBList", true);
-        list.Children.Clear();
-        for (var slot = 0; slot < slots; slot++)
-        {
-            var fields = new List<Field> { SavedGff.Scalar(0, "QBObjectType",
-                feats.ContainsKey(slot) ? (int)SWLOR.Game.Server.Core.NWNX.Enum.QuickBarSlotType.Feat : 0) };
-            if (feats.TryGetValue(slot, out var feat))
-                fields.Add(SavedGff.Scalar(5, "QBINTParam1", (int)feat));
-            list.Children.Add(new Node { Fields = fields });
-        }
-    }
-
-    /// <summary>Points a feat quickbar slot at another feat, keeping the slot's other saved fields.</summary>
-    public void SetQuickBarFeat(int slot, FeatType feat)
-    {
-        var slots = SavedGff.List(Root, "QBList", false)?.Children;
-        if (slots != null && slot >= 0 && slot < slots.Count)
-            SavedGff.WriteScalar(slots[slot], "QBINTParam1", 5, (int)feat);
-    }
 
     /// <summary>The record's active beast, loaded for perk requirements that check it.</summary>
     public Beast ActiveBeast { get; internal set; }
@@ -378,21 +308,6 @@ internal sealed class SavedCharacter
         return kept;
     }
 
-    /// <summary>Moves a worn item to another, empty equipment slot, along with its quickbar buttons.</summary>
-    public SavedItem MoveEquipped(SavedItem item, InventorySlot slot)
-    {
-        if (!item.IsEquipped)
-            throw new InvalidOperationException("Only equipped items can change slots.");
-        if (GetEquipped(slot) != null)
-            throw new InvalidOperationException($"Equipment slot {slot} is occupied.");
-        foreach (var button in QuickBarReferences(item).ToList())
-            SavedGff.WriteScalar(button, "QBItemInvSlot", 4, 1 << (int)slot);
-        foreach (var button in SecondaryQuickBarReferences(item).ToList())
-            SavedGff.WriteScalar(button, "QBSecItemInvSlot", 4, 1 << (int)slot);
-        item.Node.Type = 1u << (int)slot;
-        return new SavedItem(item.Node, item.List, null);
-    }
-
     /// <summary>The current position of an item node: equipped, carried, or inside a carried container.</summary>
     public SavedItem Locate(Node node) =>
         Equipped.Concat(CarriedRecursive).FirstOrDefault(item => ReferenceEquals(item.Node, node));
@@ -425,51 +340,6 @@ internal sealed class SavedCharacter
             return true;
         _overflowList.Children.Add(item);
         return false;
-    }
-
-    /// <summary>
-    /// Places an item node in a container's inventory, or the character's inventory when the container is full,
-    /// or overflow storage when that is full too. Returns false when it went to overflow storage.
-    /// </summary>
-    public bool AddToContainer(SavedItem container, Node item)
-    {
-        var list = SavedGff.List(container.Node, "ItemList", true);
-        if (Place(list, SavedCharacterData.ContainerWidth, SavedCharacterData.ContainerHeight, item))
-        {
-            StoredObjectData.NumberListElements(list);
-            return true;
-        }
-        return AddToInventory(item);
-    }
-
-    /// <summary>
-    /// Saved-data <c>CreateItemOnObject</c> plus removal, as <see cref="ObsoleteItemMigration.ConvertItem"/> replaces an
-    /// item: the old item is removed, then a new item from the blueprint with the old stack size and droid item
-    /// identity goes to the old item's holder (the character's inventory for worn and carried items). Removing the
-    /// old item first lets the replacement use the cells it frees, so only a replacement that cannot fit goes to the
-    /// character's inventory or overflow storage.
-    /// </summary>
-    public bool Replace(SavedItem item, string replacementResRef)
-    {
-        var replacement = StoredObjectData.ParseItem(SavedCharacterData.GetBlueprint(replacementResRef));
-        var saved = new SavedItem(replacement, null, null) { StackSize = Math.Max(1, item.StackSize) };
-        var droidItemId = item.GetLocalString("DROID_ITEM_ID");
-        if (!string.IsNullOrWhiteSpace(droidItemId))
-            saved.SetLocalString("DROID_ITEM_ID", droidItemId);
-        // The engine marks items it places in a character's inventory as pickpocketable; the blueprint does not.
-        if (item.Node.Fields.Any(field => field.Name == "Pickpocketable"))
-            SavedGff.WriteScalar(replacement, "Pickpocketable", 0, StoredObjectData.ReadInteger(item.Node, "Pickpocketable"));
-        // Removing a worn item takes its stats off the record, as unequipping it does.
-        var worn = item.IsEquipped;
-        if (worn)
-            ApplyItemStats(item, false);
-        Destroy(item);
-        if (worn)
-            RefreshCombatReadinessEquipment();
-        var kept = item.Container == null ? AddToInventory(replacement) : AddToContainer(item.Container, replacement);
-        if (item.Container != null)
-            StoredObjectData.NumberListElements(item.List);
-        return kept;
     }
 
     /// <summary>
@@ -511,24 +381,6 @@ internal sealed class SavedCharacter
             return true;
         }
         return false;
-    }
-
-    /// <summary>
-    /// Replaces an item in a saved container outside the character (a droid's bag) with a new item node, which may
-    /// use the cells the old item frees. False, with the container unchanged, when the new item still has no room.
-    /// </summary>
-    internal static bool ReplaceInContainer(SavedItem old, Node replacement)
-    {
-        var list = old.List;
-        var index = list.Children.IndexOf(old.Node);
-        list.Children.RemoveAt(index);
-        if (!Place(list, SavedCharacterData.ContainerWidth, SavedCharacterData.ContainerHeight, replacement))
-        {
-            list.Children.Insert(index, old.Node);
-            return false;
-        }
-        StoredObjectData.NumberListElements(list);
-        return true;
     }
 
     /// <summary>
@@ -770,8 +622,6 @@ internal sealed class SavedCharacter
         WriteInteger("PregameCurrent", maximum, 3);
     }
 
-    /// <summary>Saved-data SetCurrentHitPoints(GetMaxHitPoints()).</summary>
-    public void RestoreFullHitPoints() => SetSavedHitPointsToMaximum();
 }
 
 /// <summary>A saved quickbar slot: its object type and first integer parameter (a feat for feat slots).</summary>

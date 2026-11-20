@@ -353,6 +353,11 @@ class ManifestTests(unittest.TestCase):
             with self.subTest(key=key), self.assertRaises(ValueError):
                 self.check(**{key: value})
 
+    def test_authored_winding_is_a_policy_that_cannot_be_reoriented(self):
+        self.assertEqual(self.check(double_sided_policy='authored_winding')['double_sided_policy'], 'authored_winding')
+        with self.assertRaises(ValueError):
+            self.check(double_sided_policy='authored_winding', reorient='propagate')
+
     def test_emission_needs_threshold_and_softness_and_numeric_optionals(self):
         self.assertIn('emission', self.check(emission={'threshold': .8, 'softness': .1}))
         self.assertIn('emission', self.check(emission={'threshold': .8, 'softness': .1, 'gain': 2, 'saturation_min': .4}))

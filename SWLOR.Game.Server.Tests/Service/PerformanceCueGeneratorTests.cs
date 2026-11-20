@@ -99,4 +99,37 @@ public class PerformanceCueGeneratorTests
 
         first.Should().Equal(second);
     }
+
+    [TestCase(PerformanceTempo.Relaxed)]
+    [TestCase(PerformanceTempo.Lively)]
+    [TestCase(PerformanceTempo.Upbeat)]
+    public void Vocals_UseSingleNotesWithRepeatsNeighboringPitchesAndBreathRests(PerformanceTempo tempo)
+    {
+        var beats = Generate(PerformanceKind.Music, tempo, PerformanceInstrumentFamily.Vocals);
+
+        beats[0].IsRest.Should().BeFalse();
+        beats.Should().OnlyContain(beat => !beat.IsChord);
+        beats.Should().Contain(beat => beat.IsRest);
+        beats.Where(beat => !beat.IsRest).Select(beat => beat.Primary).Distinct()
+            .Should().BeEquivalentTo(new[] { PerformanceCue.Low, PerformanceCue.Mid, PerformanceCue.High });
+        beats.Zip(beats.Skip(1)).Should().NotContain(pair => pair.First.IsRest && pair.Second.IsRest);
+        var adjacent = beats.Zip(beats.Skip(1)).Where(pair => !pair.First.IsRest && !pair.Second.IsRest).ToList();
+        adjacent.Should().Contain(pair => pair.First.Primary == pair.Second.Primary);
+        adjacent.Should().Contain(pair => pair.First.Primary != pair.Second.Primary);
+        adjacent.Should().OnlyContain(pair => Math.Abs((int)pair.First.Primary - (int)pair.Second.Primary) <= 1);
+    }
+
+    [TestCase(PerformanceInstrumentFamily.Pipes)]
+    [TestCase(PerformanceInstrumentFamily.BowedStrings)]
+    [TestCase(PerformanceInstrumentFamily.Percussion)]
+    public void AdditionalInstrumentsUseTheirEstablishedCueRules(PerformanceInstrumentFamily family)
+    {
+        var comparable = family == PerformanceInstrumentFamily.Pipes
+            ? PerformanceInstrumentFamily.Horns
+            : PerformanceInstrumentFamily.Strings;
+        var tempo = family == PerformanceInstrumentFamily.Pipes ? PerformanceTempo.Relaxed : PerformanceTempo.Upbeat;
+        Generate(PerformanceKind.Music, tempo, family).Should().Equal(Generate(PerformanceKind.Music, tempo, comparable));
+        if (family == PerformanceInstrumentFamily.Pipes)
+            Generate(PerformanceKind.Music, PerformanceTempo.Upbeat, family).Should().OnlyContain(beat => !beat.IsChord);
+    }
 }

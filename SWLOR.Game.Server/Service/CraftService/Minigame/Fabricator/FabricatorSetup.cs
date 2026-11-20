@@ -28,7 +28,7 @@ public sealed class FabricatorSetup
         int enhancementProgressPenalty = 0,
         FabricatorPerkStats perkStats = null)
     {
-        PerkStats = perkStats ?? FabricatorPerkStats.None;
+        PerkStats = (perkStats ?? FabricatorPerkStats.None).ForRecipeLevel(recipeLevel);
         Parameters = parameters ?? FabricatorParameters.Fallback;
         RecipeLevel = recipeLevel;
         Rank = Math.Max(0, rank);
@@ -166,7 +166,7 @@ public sealed class FabricatorSetup
 
     /// <summary>The factor on every Precision Pass: the crafter's Control and rank against the recipe's level.</summary>
     public double QualityFactor =>
-        (1.0 + Control * FabricatorRules.GearPercentPerPoint / 100.0) * RankFactor(0) / FabricatorRules.QualityDifficulty(RecipeLevel);
+        (1.0 + TopRecipeRules.EffectiveControl(Control, RecipeLevel) * FabricatorRules.GearPercentPerPoint / 100.0) * RankFactor(0) / FabricatorRules.QualityDifficulty(RecipeLevel);
 
     /// <summary>The progress a Run adds before the sub-assembly's size limits it.</summary>
     /// <param name="onHead">True when the active head serves the sub-assembly; otherwise the Run has half effect.</param>

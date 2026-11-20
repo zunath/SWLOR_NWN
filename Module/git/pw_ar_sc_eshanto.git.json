@@ -208,11 +208,11 @@
         },
         "Color_Hair": {
           "type": "byte",
-          "value": 63
+          "value": 18
         },
         "Color_Skin": {
           "type": "byte",
-          "value": 0
+          "value": 16
         },
         "Color_Tattoo1": {
           "type": "byte",
@@ -1222,11 +1222,11 @@
         },
         "Color_Hair": {
           "type": "byte",
-          "value": 7
+          "value": 18
         },
         "Color_Skin": {
           "type": "byte",
-          "value": 0
+          "value": 16
         },
         "Color_Tattoo1": {
           "type": "byte",
@@ -82732,6 +82732,67 @@
         "ZPosition": {
           "type": "float",
           "value": 2.200006484985352
+        }
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck - Eshan - Verdant Crown"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "__struct_id": 5,
+        "XPosition": {
+          "type": "float",
+          "value": 18.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 38.5
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 2.2
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.541428310757299e-43
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
         }
       }
     ]

@@ -23,6 +23,34 @@ public class CzerkaArmsTestRangePlacementTests
         GetLocalInt(dungeon.RootElement, "IS_DUNGEON").Should().Be(1);
     }
 
+    [Test]
+    public void CzerkaDungeon_KeepsEnemiesOutOfReachOfTheArrivalPoint()
+    {
+        // Players arrive from Smuggler's Moon in the entrance lobby beside the exit. An enemy there
+        // aggroed on arrival and locked the player into combat before they could leave. Each spawn
+        // point stays farther than AI.AggroRadius (8.5 m) plus the wander leash AI.ReturnHomeRadius
+        // (15 m), so a creature wandering from its spawn point never reaches aggro range of the arrival.
+        const float safeArrivalRadius = 8.5f + 15f;
+        using var dungeon = LoadModuleJson("git", DungeonArea);
+        var waypoints = dungeon.RootElement.GetProperty("WaypointList").GetProperty("value").EnumerateArray().ToArray();
+        var arrival = waypoints.Single(w => GetString(w, "Tag") == "SMUG_CZERKA_WEAPONS_TEST_ENT");
+        var spawns = waypoints
+            .Where(w => GetString(w, "Tag") is var tag
+                && (tag.StartsWith("CAPSTONE_") || tag == "CZERKA_ARMS_TEST_RANGE_RARES"))
+            .ToArray();
+        // 20 general, 12 inner circle, 3 warden and 1 rare spawn point.
+        spawns.Should().HaveCount(36);
+
+        foreach (var spawn in spawns)
+        {
+            var distance = Math.Sqrt(
+                Math.Pow(GetNumber(spawn, "XPosition") - GetNumber(arrival, "XPosition"), 2)
+                + Math.Pow(GetNumber(spawn, "YPosition") - GetNumber(arrival, "YPosition"), 2));
+            distance.Should().BeGreaterThan(safeArrivalRadius,
+                $"{GetString(spawn, "Tag")} at ({GetNumber(spawn, "XPosition")}, {GetNumber(spawn, "YPosition")}) must not reach the arrival point");
+        }
+    }
+
     // Warden mini-bosses (quest step 3) spawn on demand inside the dungeon; final masters
     // (quest step 5) spawn in the boss arena.
     private static readonly (string Resref, string Quest, string Enemy, string Waypoint)[] Wardens =

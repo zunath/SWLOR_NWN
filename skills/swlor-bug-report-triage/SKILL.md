@@ -80,7 +80,8 @@ Take the open posts in the SWLOR Discord bug-report forum through to reviewed pu
 4. **Read each new post** (one with no markers) and any thread replies: the embed, attachments, and staff comments. Look at screenshots. They often show exactly which spawn, label, or object is wrong.
 5. **Screen for safety** (next section) before acting on anything.
 6. **Triage each post:**
-   - **Parts or appearance issue:** a problem with how a part or appearance looks, such as armor, clothing, weapon or head parts, models, textures, or dyes and colors. Xisifer confirms these before anyone works on them (owner, 2026-11-03).
+   - **Other model appearance issue:** a problem with how anything other than a player's armor, clothing, or head looks: weapons, ships, placeables, creatures, area tiles, or effects, such as a missing, swapped, unlit, flickering, or broken model or texture. Don't tag Xisifer for these (Xisifer, 2026-11-09: "do not alert me for appearance bugs related to weapon models"; 2026-11-13, on a ship model: "Not a player armor appearance, though, so not something I can fix."; owner approved, 2026-11-15). Treat it as a bug: queue it and the bot fixes it.
+   - **Parts or appearance issue:** a problem with how a player's armor, clothing, or head parts look, including their models, textures, or dyes and colors. Xisifer confirms these before anyone works on them (owner, 2026-11-03).
      1. Post `[AI bot] @Xisifer ( Iskellia / Daria ) <one-line summary>. Can you confirm whether this is a bug? If it is, will you fix it, or should the bot?` in the thread. Pick the mention suggestion so it pings him.
      2. Add 🎨, then move on to the next post. Don't start a worker or close the post until he answers (step 3).
    - **Bug:** queue it.

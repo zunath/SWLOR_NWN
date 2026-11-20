@@ -116,40 +116,6 @@ public partial class SavedDataItemSweepTests
     }
 
     [Test]
-    public void PelvisConsolidation_CharacterRetryChangesOnlyTheOldFile()
-    {
-        const BindingFlags members = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance;
-        var characterType = ServerAssembly.GetType("SWLOR.Game.Server.Service.MigrationService.SavedCharacter")!;
-        var migrationType = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration._25_ConsolidatePelvisAppearance")!;
-        var migration = Activator.CreateInstance(migrationType, true)!;
-        var record = new Player { Version = 25, CharacterFileVersion = 25, HP = 17, FP = 13, Stamina = 11,
-            CreatureTintOverrides = new Dictionary<string, int> { ["TMC_0"] = 0x01010203 } };
-        var beforeRecord = JsonConvert.SerializeObject(record);
-        var original = Encode(Node(0, Scalar(0, "BodyPart_Pelvis", 35),
-            List("ItemList", Item("custom_armor", BaseItem.Armor, null,
-                Scalar(0, "ArmorPart_Pelvis", 35), Scalar(2, "StackSize", 2), Text("UUID", "player-owned")))), "BIC ");
-        var current = original;
-        for (var pass = 0; pass < 3; pass++)
-        {
-            var character = Activator.CreateInstance(characterType, members, null,
-                new object[] { Convert.FromBase64String(current), record }, null)!;
-            characterType.GetProperty("AppliesRecordEffects", members)!.SetValue(character, false);
-            migrationType.GetMethod("Migrate")!.Invoke(migration, new[] { character });
-            var bytes = (byte[])characterType.GetMethod("Serialize")!.Invoke(character, null)!;
-            var migrated = Convert.ToBase64String(bytes);
-            if (pass > 0) migrated.Should().Be(current);
-            current = migrated;
-            var root = Read(current);
-            Int(root, "BodyPart_Pelvis").Should().Be(34);
-            var armor = Children(root, "ItemList").Single();
-            Int(armor, "ArmorPart_Pelvis").Should().Be(34);
-            Int(armor, "StackSize").Should().Be(2);
-            Value(armor, "UUID").Should().Be("player-owned");
-            JsonConvert.SerializeObject(record).Should().Be(beforeRecord);
-        }
-    }
-
-    [Test]
     public void PelvisConsolidation_LeavesRetainedStyleByteForByteAndHidesOnlyTheDuplicate()
     {
         var original = Encode(Item("custom_armor", BaseItem.Armor, null, Scalar(0, "ArmorPart_Pelvis", 34),

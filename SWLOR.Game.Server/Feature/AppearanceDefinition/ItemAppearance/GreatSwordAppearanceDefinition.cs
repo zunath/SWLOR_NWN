@@ -4,6 +4,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
     {
         public override bool IsSimple => false;
 
+        // Rare drops of this type come with unique parts that only that weapon may use.
+        public override bool KeepsOwnParts => true;
+
         public override int[] TopParts { get; } =
         {
             101, 102, 103, 104, 105, 108, 109, 110, 111, 112, 113, 114, 115, 117, 119, 120, 121, 122, 123, 124, 125, // Color #1

@@ -149,6 +149,19 @@ and nothing scrolls; the Auto panel is then what scrolls. Keep the action button
 that scrolled content, and wrap result sentences in a borderless `AddText` instead of a
 one-line label (`CraftWindowLayoutTests` guards both).
 
+The minigame pages (Prospecting, Forge, Circuit, Fabricator, Kitchen, Reaction, Line,
+Search) are made mostly of sentences that run past one line, such as an action's summary
+beside its button. They leave the panel's width unset, so the panel fills the content column
+and the wrapped text reflows when the player resizes the window. Every such sentence is a
+borderless `AddText` tall enough for its lines at the default window width (a text in a list
+cell takes the list's row height); a label clips at the panel edge however wide the window
+is. In such a panel, verified in the client 2026-11: when several labels share a row, give
+each one a width (otherwise the first takes the whole row and the rest are cut to nothing),
+and give every list a height (otherwise it collapses to a sliver). The text boxes are sized for the
+default width, so a narrower window cuts text off: these windows keep their default width
+as a minimum (`CraftMinigameViewModel.MinimumWindowWidth`, the way Settings keeps its
+minimum size).
+
 ### R6 — Re-select the current tab after any modal closes (framework hook)
 Closing `ShowModal`/`ShowInputModal` swaps `%%WINDOW_MAIN%%` back into the root with
 every group layout assigned through `ChangePartialView`/`SetGroupLayout` already
@@ -207,6 +220,28 @@ The hook fires after every modal close (confirm and cancel, both modal kinds).
   client. `Bind` clears assigned group layouts when a window opens.
 - After a partial makes the whole window layout fail (e.g. loading an R2c shape), the
   remembered layout fails every rebuild — close and reopen the window.
+
+### R8 — Windows do not follow a game window resize (verified in the real client 2026-11)
+
+NUI windows sit at fixed screen pixels. NUI has no screen anchors (the window's
+`edge_constraint` only keeps margins) and raises no event when the game window is
+resized. `GetPlayerDeviceProperty` `GuiWidth`/`GuiHeight` do update live. When the game
+window shrinks, the client pushes each window that would leave the screen back on by
+the smallest amount and reports that spot through the `Geometry` watch, which
+`Gui` saves. Nothing moves a window back when the game window grows again.
+
+- A HUD window the player cannot move works out its spot from the screen size on
+  each refresh (`PlayerStatusViewModel`, `PlayerStatusPortraitViewModel`).
+- A window the player places keeps the spot they chose plus the screen it was chosen
+  on, and moves with the screen edges it sits nearest when the screen changes
+  (`ExtraHotbarViewModel.FollowScreen`). Treat a `Geometry` report that arrives with a
+  new screen size as the client's push, not a drag.
+
+### R9 — Never put a tooltip on a combo box (verified in the real client 2026-11)
+
+A combo box with `SetTooltip` shows its tooltip but never opens its list when clicked.
+Put the explanation on the combo's caption label instead (Settings `Time Zone for Event
+Times`).
 
 ## Verified-working shapes (do not fear these)
 

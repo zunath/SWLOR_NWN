@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, float> _attackSwingDebts = new();
         private static readonly Dictionary<uint, float> _attackSwingDebtsWithoutLimitedReduction = new();
         private static readonly Dictionary<uint, RepeatedTargetDamageState> _repeatedTargetDamageStates = new();
-        private static readonly Dictionary<uint, RepeatedTargetDamageState> _meleeRepeatedTargetDamageStates = new();
+        private static readonly Dictionary<uint, MeleeRepeatedTargetStack> _meleeRepeatedTargetDamageStates = new();
         private static readonly Dictionary<uint, RepeatedTargetDamageState> _rangedRepeatedTargetDamageStates = new();
         private static readonly HashSet<uint> _containmentNormalizationTargets = new();
         private static readonly Dictionary<uint, int> _meleeAutoAttackCycleCounts = new();
@@ -162,6 +162,8 @@ namespace SWLOR.Game.Server.Service
             public bool StaminaRestoreApplied { get; set; }
             public int HitStaminaRefunded { get; set; }
             public int DeferredImpactCount { get; set; }
+            /// <summary>Scheduled impacts running under this captured activation; they outlive the 35 second window.</summary>
+            public int ScheduledImpactDepth { get; set; }
         }
 
         private sealed class SuppressionAbilityUseState
@@ -4992,19 +4994,28 @@ namespace SWLOR.Game.Server.Service
                 return damage;
             }
 
-            if (!_meleeRepeatedTargetDamageStates.TryGetValue(attacker, out var state) ||
-                state.Target != defender)
+            if (!_meleeRepeatedTargetDamageStates.TryGetValue(attacker, out var state))
             {
-                state = new RepeatedTargetDamageState(defender);
+                state = new MeleeRepeatedTargetStack(defender);
+                _meleeRepeatedTargetDamageStates[attacker] = state;
             }
 
             var maxStacks = Math.Max(1, (int)Math.Ceiling(maxBonus / (float)bonusPerHit));
-            state.Stacks = Math.Min(state.Stacks + 1, maxStacks);
-            state.LastHit = DateTime.UtcNow;
-            _meleeRepeatedTargetDamageStates[attacker] = state;
+            var stackRaised = state.RegisterHit(defender, maxStacks);
+            var stackBonus = Math.Min(maxBonus, state.Stacks * bonusPerHit);
 
             MeleeRepeatedTargetDamageStatusEffect.Refresh(attacker, state.Stacks, statusEffectIcon);
-            return damage + Math.Min(maxBonus, state.Stacks * bonusPerHit);
+
+            // Announce the stack only while it builds; hits at the cap stay silent.
+            if (stackRaised && GetIsPC(attacker))
+            {
+                FloatingTextStringOnCreature(
+                    ColorToken.Combat(MeleeRepeatedTargetStack.GetStackText(statusEffectIcon, state.Stacks, maxStacks, stackBonus)),
+                    attacker,
+                    false);
+            }
+
+            return damage + stackBonus;
         }
 
         /// <summary>
@@ -10610,7 +10621,7 @@ namespace SWLOR.Game.Server.Service
             if (!_abilityStaminaCosts.TryGetValue(key, out state))
                 return false;
 
-            if ((DateTime.UtcNow - state.SpentAt).TotalSeconds <= 35)
+            if (state.ScheduledImpactDepth > 0 || (DateTime.UtcNow - state.SpentAt).TotalSeconds <= 35)
                 return true;
 
             _abilityStaminaCosts.Remove(key);
@@ -10664,6 +10675,38 @@ namespace SWLOR.Game.Server.Service
             {
                 state.DeferredImpactCount++;
             }
+        }
+
+        /// <summary>
+        /// Captures this activation's stamina cost context for impacts that land after the cast ends, such as
+        /// scheduled device pulses. Returns a wrapper that runs an impact with that activation's context in place,
+        /// so its hit rewards share the stamina the activation paid and a later activation of the same ability
+        /// cannot be charged for them. Returns null when the activation paid no stamina.
+        /// </summary>
+        public static Action<Action> CaptureAbilityStaminaCostContext(uint creature, AbilityDetail ability)
+        {
+            if (!TryGetAbilityStaminaCostState(creature, ability, out var state))
+                return null;
+
+            var key = (creature, ability);
+            return impact =>
+            {
+                _abilityStaminaCosts.TryGetValue(key, out var current);
+                _abilityStaminaCosts[key] = state;
+                state.ScheduledImpactDepth++;
+                try
+                {
+                    impact();
+                }
+                finally
+                {
+                    state.ScheduledImpactDepth--;
+                    if (current == null)
+                        _abilityStaminaCosts.Remove(key);
+                    else
+                        _abilityStaminaCosts[key] = current;
+                }
+            };
         }
 
         public static void CompleteAbilityStaminaCostContext(uint creature, AbilityDetail ability)

@@ -181,8 +181,8 @@ public class PerkRefundStatusEffectCleanupTests
             "SWLOR.Game.Server",
             "Feature",
             "GuiDefinition",
-            "ViewModel",
-            "PerksViewModel.cs"));
+            "PerksWindow",
+            "PerkPurchaseService.cs"));
         var rebuildViewModelSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",

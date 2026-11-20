@@ -30,6 +30,10 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow.IncubatorJobCalculator>();
             services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow.IncubatorJobService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow.IncubatorPanelService>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow.PerkDetailText>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow.PerkHotBarService>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow.PerkListBuilder>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow.PerkPurchaseService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.PlaceableScripts>();
         }
 

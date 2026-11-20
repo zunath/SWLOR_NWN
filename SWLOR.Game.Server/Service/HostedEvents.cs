@@ -617,7 +617,14 @@ namespace SWLOR.Game.Server.Service
                 .GetSpotsAround(new Vector2(position.X, position.Y))
                 .Select(spot => Location(area, new Vector3(spot.X, spot.Y, position.Z), facing));
 
-            return nearby.Prepend(arrival).FirstOrDefault(location => DMPresence.CanLandAt(player, location));
+            // The engine's own landing spot, so the jump and the arrival check agree on where the player ends up.
+            foreach (var candidate in nearby.Prepend(arrival))
+            {
+                if (DMPresence.TryGetLanding(player, candidate, out var landing))
+                    return landing;
+            }
+
+            return null;
         }
 
         // Instances and space are not found again after a restart, so their return point is the player's last saved

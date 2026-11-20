@@ -22,10 +22,14 @@ public class GatheringWorldTests
     private LocalVariables _vars = null!;
     private InMemoryDBService _db = null!;
     private Player _record = null!;
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
 
     [SetUp]
     public void SetUp()
     {
+        _facades = new FacadeContainer();
+        _facadeScope = _facades.Install();
         _engine = new PlayerEngine();
         _vars = new LocalVariables(_engine.Engine);
         _engine.Engine.SetReturnHandler("GetIsObjectValid", args => (uint)args[0]! != ObjectInvalid);
@@ -37,7 +41,12 @@ public class GatheringWorldTests
     }
 
     [TearDown]
-    public void TearDown() => _engine.Dispose();
+    public void TearDown()
+    {
+        _facadeScope.Dispose();
+        _facades.Dispose();
+        _engine.Dispose();
+    }
 
     [Test]
     public void Scavenge_finds_are_saved_on_the_record_grouped_by_item()

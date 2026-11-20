@@ -120,7 +120,7 @@ public partial class SavedDataItemSweepTests
         var file = Encode(Node(0, Parts(("Appearance_Head", 63)).Concat(new[]
             { Scalar(2, "Appearance_Type", ship), Scalar(0, "Gender", 1) }).ToArray()), "BIC ");
         var assembly = typeof(EnzymeBaseItemMigration).Assembly;
-        var characterType = assembly.GetType("SWLOR.Game.Server.Service.MigrationService.SavedCharacter", true)!;
+        var characterType = assembly.GetType("SWLOR.Game.Server.Domain.Foundation.SavedCharacter", true)!;
         var character = Activator.CreateInstance(characterType, BindingFlags.Instance | BindingFlags.NonPublic, null,
             new object[] { Convert.FromBase64String(file), record }, null)!;
         typeof(EnzymeBaseItemMigration).GetMethod("MigrateCharacter", BindingFlags.Static | BindingFlags.NonPublic)!

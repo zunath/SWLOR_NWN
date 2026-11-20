@@ -239,7 +239,8 @@ public class DevicesFieldEngineerTests
         pulse.IndexOf("emitter.CreateAreaImpactBatch(targets.Count)", StringComparison.Ordinal)
             .Should().BeLessThan(pulse.IndexOf("foreach", StringComparison.Ordinal));
         pulse.Should().Contain("FireFieldEngineerShot(emitter, shotTarget, applyImpact)");
-        source.Should().Contain("CreateAreaImpactBatch = AbilityImpactLifecycle.CaptureRepeatedAbilityImpactBatch<uint>");
+        source.Should().Contain("var createBatch = AbilityImpactLifecycle.CaptureRepeatedAbilityImpactBatch<uint>");
+        source.Should().Contain("emitter.CreateAreaImpactBatch = count =>");
     }
 
     [Test]

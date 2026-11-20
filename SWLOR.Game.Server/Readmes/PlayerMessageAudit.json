@@ -91,29 +91,29 @@
     "Call": "SendMessageToPC(GetControlledCreature(actor), message)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Administration/HostedEvents.cs",
-    "Line": 266,
+    "File": "SWLOR.Game.Server/Domain/Administration/HostedEventsService.cs",
+    "Line": 295,
     "Member": "SendEveryoneBack",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"The host sent you back from {hostedEvent.Name}.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Administration/HostedEvents.cs",
-    "Line": 325,
+    "File": "SWLOR.Game.Server/Domain/Administration/HostedEventsService.cs",
+    "Line": 354,
     "Member": "Join",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Traveling to {hostedEvent.Name}. Use /leaveevent or the Events window to go back.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Administration/HostedEvents.cs",
-    "Line": 541,
+    "File": "SWLOR.Game.Server/Domain/Administration/HostedEventsService.cs",
+    "Line": 570,
     "Member": "Announce",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(DMPresence.GetControlledCreature(player), message)"
+    "Call": "SendMessageToPC(_dmPresence.GetControlledCreature(player), message)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Administration/HostedEvents.cs",
-    "Line": 548,
+    "File": "SWLOR.Game.Server/Domain/Administration/HostedEventsService.cs",
+    "Line": 577,
     "Member": "TellParticipantsEnded",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"{hostedEvent.Name} has ended. Use /leaveevent when you are ready to go back.\"))"
@@ -848,21 +848,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Crafting/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 71,
+    "Line": 74,
     "Member": "ChargeBlueprint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Remaining licensed runs: {details.LicensedRuns}\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Crafting/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 332,
+    "Line": 335,
     "Member": "ApplyBlueprintBonuses",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Blueprint Bonus applied: {bonusName} +{bonus.Amount}\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Crafting/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 461,
+    "Line": 464,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"

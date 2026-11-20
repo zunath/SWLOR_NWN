@@ -29,7 +29,7 @@ public class CraftFileSequenceReaderTests
             .ToList();
 
         owners.Should().BeEquivalentTo(
-            "Native/PlayerFileCheckpoint.cs",
+            "NativeSinks/PlayerFileCheckpointSink.cs",
             "Domain/Crafting/Minigame/LoadedCraftFileSequences.cs",
             "Domain/Crafting/Minigame/NwnCraftSessionWorld.cs");
     }
@@ -38,7 +38,7 @@ public class CraftFileSequenceReaderTests
     [TestCase("public int AdvanceFileSequence(uint player)")]
     [TestCase("public int LoadedSequence(uint player)")]
     [TestCase("public int ExportedSequence(uint player)")]
-    [TestCase("private static void ExportAndRecord(uint player)")]
+    [TestCase("private void ExportAndRecord(uint player)")]
     public void EveryCraftLocalAccessor_AppliesTheFilesSequenceFirst(string signature)
     {
         var accessor = Method(Source("Domain", "Crafting", "Minigame", "NwnCraftSessionWorld.cs"), signature);

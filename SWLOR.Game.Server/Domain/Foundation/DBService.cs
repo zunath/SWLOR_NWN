@@ -170,6 +170,14 @@ namespace SWLOR.Game.Server.Domain.Foundation
                 useApproximateMaxLength: useApproximateMaxLength);
         }
 
+        /// <summary>
+        /// Reads a plain Redis string, such as a snapshot another service stores.
+        /// </summary>
+        public string StringGet(RedisKey key)
+        {
+            return _multiplexer.GetDatabase().StringGet(key);
+        }
+
         public Task<RedisValue> StreamAddAsync(
             RedisKey key,
             NameValueEntry[] streamPairs,

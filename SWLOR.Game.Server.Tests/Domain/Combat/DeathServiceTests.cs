@@ -196,15 +196,15 @@ public class DeathServiceTests
     }
 
     [Test]
-    public void OnPlayerDeath_ByAPlayerWithoutSubdualModeHasNoPanelAndNoMessages()
+    public void OnPlayerDeath_ByAPlayerWithoutSubdualModeShowsTheRespawnPanelAndNoSubdualMessages()
     {
         _hostileIsPlayer = true;
 
         _death.OnPlayerDeath();
 
-        _engine.CountOf("PopUpDeathGUIPanel").Should().Be(0);
+        // A lethal kill by another player leaves the player dead with the respawn panel, like any other death.
+        _engine.CountOf("PopUpDeathGUIPanel").Should().Be(1);
         _engine.CountOf("SendMessageToPC").Should().Be(0);
-        _death.Logs.Should().BeEmpty();
         _death.Calls.Should().NotContain(call => call.StartsWith("ApplyStatusEffect"));
     }
 

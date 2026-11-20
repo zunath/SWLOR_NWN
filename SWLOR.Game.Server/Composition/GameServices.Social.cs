@@ -78,5 +78,8 @@ namespace SWLOR.Game.Server.Composition
 
         /// <summary>The data and actions behind the player list window (the facade <c>Service.PlayerList</c> until P2-ZM).</summary>
         public static IPlayerListService PlayerList => FacadeAccessor.Resolve<IPlayerListService>();
+
+        /// <summary>DM-hosted events: the schedule, joining and the way back (the facade <c>Service.HostedEvents</c> until the cutover).</summary>
+        public static IHostedEventsService HostedEvents => FacadeAccessor.Resolve<IHostedEventsService>();
     }
 }

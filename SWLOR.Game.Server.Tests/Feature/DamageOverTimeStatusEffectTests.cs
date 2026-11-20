@@ -109,6 +109,27 @@ public class DamageOverTimeStatusEffectTests
         effect.GetRemainingDurationSeconds(DateTime.UtcNow).Should().BeApproximately(expected, 0.1f);
     }
 
+    [TestCase(6f, 6, 0d)]
+    [TestCase(6f, 6, 0.4d)]
+    [TestCase(3f, 5, 2.9d)]
+    [TestCase(4f, 6, 1.1d)]
+    [TestCase(1.5f, 5, 0.2d)]
+    public void ExtendingDuration_AddsExactlyTheRequestedTimeToTheTickSchedule(float extension, int expectedTicks, double elapsedSeconds)
+    {
+        // Four 3-second ticks, then an extension partway through the interval. Whole-interval extensions add
+        // exactly their ticks; partial ones round up once, as a fresh application would.
+        var effect = new CountingStatusEffect();
+        effect.ApplyEffect(1, 2, 4);
+        typeof(StatusEffectBase).GetField("_lastRun", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .SetValue(effect, DateTime.UtcNow.AddSeconds(-elapsedSeconds));
+
+        effect.ExtendDurationSeconds(extension);
+
+        effect.DurationTicks.Should().Be(expectedTicks);
+        effect.GetRemainingDurationSeconds(DateTime.UtcNow).Should().BeApproximately(
+            12f + extension - (float)elapsedSeconds, 0.1f);
+    }
+
     [Test]
     public void FractionalFinalInterval_ExpiresWithoutGrantingAnExtraDamageTick()
     {

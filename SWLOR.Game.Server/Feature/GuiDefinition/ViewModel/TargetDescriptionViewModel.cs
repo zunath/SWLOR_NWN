@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSave() => () =>
         {
-            SetDescription(_target, Description);
+            SetDescription(_target, PastedText.Clean(Description));
             Gui.TogglePlayerWindow(Player, GuiWindowType.TargetDescription);
         };
     }

@@ -502,7 +502,7 @@ Replace each direct `Perk.GetPerkLevel` gate in the files listed under Current s
 - **Swap their requirements onto Armor:**
   - Treasure Hunter I-III: Armor 20/40/50 at 3/3/4 SP.
   - Creditfinder I-III: Armor 15/30/45 at 3/3/4 SP.
-- **Refund every owned rank explicitly in the migration** (Migration and release, "Refunds and rebuild token"). Their category and requirements changed, so owners re-buy them under the new requirements.
+- **Player migration 26 refunded every owned rank** (Migration and release). Their category and requirements changed, so owners re-buy them under the new requirements.
 
 ### Line schedule
 
@@ -543,73 +543,11 @@ Espionage gets no new lines.
 
 ## Migration and release
 
-Follow `Migrations.md`.
+Shipped in the 2026-11-17 release. Player migration 26 (`_26_ConvertCraftingPerksToRanks`) refunded the retired and moved perks from its own price table, granted one optional rebuild token, and is the one refund exception `Migrations.md` records. Server migration 31 resized stored enzymes and has been retired.
 
-### One migration per release
-
-Production has run player migration 24 and server migration 29. Player migration 25 is the next release's pass (master's pelvis consolidation, plus the Unarmed Power Glove change), which the owner ships before the revamp (November 1, 2026), so the revamp's character migration is player version 26 and `MigrationDataTests` pins it there. At release, ask the owner which versions shipped, and fold the revamp into the newest unshipped one if that is no longer 26.
-
-### Refunds and rebuild token (required)
-
-Every character gets SP back for each perk this rework removes or changes, plus one rebuild token.
-
-- **Rebuilding is optional.** The token only gives players the option. Do not force a rebuild: leave `Player.RebuildComplete` alone.
-- **Refund every perk in this table explicitly.** Treasure Hunter and Creditfinder stay in the game, but their category and requirements changed, so they are refunded too and their owners re-buy them under the new requirements.
-
-| Perk (PerkType ID) | Ranks | SP per rank on current master | Full refund |
-| --- | --- | --- | --- |
-| Harvesting (157) | I-V | 1/1/2/3/4 | 11 |
-| Refining (158) | I-V | 1/1/2/3/4 | 11 |
-| RefineryManagement (159) | I-VI | 1/1/2/2/3/4 | 13 |
-| Scavenging (160) | I-V | 1/1/2/3/4 | 11 |
-| HardLook (161) | I-V | 1/1/2/3/3 | 10 |
-| TreasureHunter (181) | I-III | 3/3/4 | 10 |
-| CreditFinder (182) | I-III | 3/3/4 | 10 |
-| Research (297) | I-V | 2/2/3/3/4 | 14 |
-| ScientificNetworking (256) | I-II | 3/4 | 7 |
-| ResearchProjects (299) | I-II | 2/3 | 5 |
-| DroidAssembly (264) | I-V | 1/1/2/3/4 | 11 |
-
-**Steps.** Do both the refund and the token in this release's character migration's `MigratePlayerData(Player)`. It runs once per character record, including characters whose players have not logged in. `_15_RemoveObsoleteCombatInstructionDiscs` grants its token there.
-
-1. For each perk in the table that the record owns:
-   - Add the price of every owned rank to `Player.UnallocatedSP`.
-   - Remove the perk from `Player.Perks`, and from `Player.UnlockedPerks` if present.
-   - Add a line to `Player.UpgradeNotices` naming the perk and the SP returned.
-2. Grant the token with `RebuildTokenGrant.Grant(player)`.
-3. Add a notice that one rebuild token was granted and that rebuilding is optional.
-
-**Price source.** Price refunds from a dedicated table in the migration: the values above, read from master `e77fca53`. Re-check them against master when you write the migration.
-
-- Not from perk definitions: the retired definitions are deleted.
-- Not from `LegacyPerkRefundMigration`'s historical table: its prices for Harvesting, Refining, Refinery Management, Research, Scientific Networking and Droid Assembly are older than what players paid after the combat upgrade's rebuild. Droid Assembly, for example, is 3 SP per rank there.
-
-**Rules.**
+- `Player.CraftedRecipes` gates quick craft. Each minigame records a first-use flag for its help page.
+- Research jobs created before the release have no stored experiment and finish under the original rolls (`ResearchGrantRules`).
 - Keep the retired `PerkType` members and never reuse their IDs.
-- **"Changed" includes any existing perk.** If any workstream changes an existing perk's behavior, requirements, category or price, add that perk to this table in the same PR.
-  - Espionage's Poisoncraft, Trapcraft and Master Saboteur are unchanged, so they are not refunded unless a workstream changes them.
-  - The new crafting lines are new purchases and need no refund.
-- This refund departs from `Migrations.md`'s rule against one-off refund migrations, at the owner's request. Update that line in the same PR to record the exception.
-
-**Tests.** Start from legacy records that own each perk at each rank, and check that the migration:
-- refunds exactly the table's SP;
-- removes the perks;
-- grants exactly one token, including to characters that own none of the perks;
-- adds the notices;
-- changes nothing on a second run.
-
-### Saved data
-
-- `Player.CraftedRecipes` stays and now gates quick craft.
-- Record first-use flags for each minigame's help page.
-- `ResearchJob` gains whatever the experiment needs to store: the chosen candidate, its magnitude and the time cut. Jobs created before the release finish under the old roll.
-- Existing blueprints and crafted items are not changed.
-- Any enum rename needs its migration (`Migrations.md`, "Enum renames"). Prefer adding members over renaming.
-
-### Bible and release notes
-
-- Update the Bible's System Changes & Migrations tab.
-- Write release notes with `skills/swlor-release-notes/SKILL.md`.
 
 ## Art and animation
 
@@ -678,7 +616,7 @@ The combat upgrade's model applies, with no pilot: build every minigame, then te
 - **Branch.** Create one long-lived feature branch from up-to-date `origin/master`, for example `feature/crafting-revamp`; `feature/crafting-upgrade` was #2393's. Pair it with a companion HAK branch.
 - **PRs.** Land each workstream as its own reviewable PR into the feature branch, following `Readmes/PullRequests.md`: Codex review loop, resolved threads, base merged in.
   - Keep each PR under about 100 files so automated review can run; #2393's 133 files exceeded the limit.
-- **Release.** Merge the feature branch to master once for one player release. That release carries the migration, refunds, rebuild token and Treasure Hunter/Creditfinder move.
+- **Release.** The feature branch merged to master once and shipped as one player release, with the migration, refunds, rebuild token and Treasure Hunter/Creditfinder move.
 - **The Bible across parallel PRs.** Branches that edit the `.xlsx` cannot be merged, and workstreams 2-9 all edit it.
   - Each PR makes its Bible edits through a re-runnable script committed with it, following `tools/UpdateSlicingDesignBible.ps1` (cell-level zip/XML edits).
   - Merge Bible-editing PRs into the feature branch one at a time. After a conflict, take the base's workbook and re-run the PR's script.

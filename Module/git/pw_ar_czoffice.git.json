@@ -3202,7 +3202,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "ns_czerka"
         },
         "CRAdjust": {
           "type": "int",
@@ -3222,7 +3222,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A Czerka asset recovery supervisor with a stack of forms and a stamp she clearly enjoys using."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -3237,6 +3239,26 @@
           "value": [
             {
               "__struct_id": 2,
+              "XOrientation": {
+                "type": "float",
+                "value": 1.011737491242518e-42
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              },
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -3327,11 +3349,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 107
+                "value": 33
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 107
+                "value": 23
               },
               "Cost": {
                 "type": "dword",
@@ -3344,13 +3366,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "This appears to be the uniform of a Czerka Corporation employee."
+                  "0": "Clothing worn by Supervisor Lena Voss."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Clothing worn by Supervisor Lena Voss."
                 }
               },
               "Identified": {
@@ -3359,25 +3381,25 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 108
+                "value": 32
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 131
+                "value": 57
               },
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Czerka Uniform"
+                  "0": "[NPC] Supervisor Lena Voss's Outfit"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 92
+                "value": 10
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 92
+                "value": 2
               },
               "Plot": {
                 "type": "byte",
@@ -3397,11 +3419,31 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "CzerkaUniform"
+                "value": "ns_czerka_o"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "czerkauniform"
+                "value": "ns_czerka_o"
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               },
               "xArmorPart_Belt": {
                 "type": "word",
@@ -3478,26 +3520,6 @@
               "xArmorPart_Torso": {
                 "type": "word",
                 "value": 189
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 1.011737491242518e-042
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
               }
             }
           ]
@@ -3591,7 +3613,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Female Czerka Employee"
+            "0": "Supervisor Lena"
           }
         },
         "fortbonus": {
@@ -3629,7 +3651,7 @@
         "LastName": {
           "type": "cexolocstring",
           "value": {
-            "0": ""
+            "0": "Voss"
           }
         },
         "LawfulChaotic": {
@@ -3662,7 +3684,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -3690,7 +3712,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -3951,7 +3973,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "FemaleCzerkaEmployee"
+          "value": "ns_czerka"
         },
         "Tail_New": {
           "type": "dword",
@@ -3963,7 +3985,7 @@
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "femaleczerkaempl"
+          "value": "ns_czerka"
         },
         "WalkRate": {
           "type": "int",

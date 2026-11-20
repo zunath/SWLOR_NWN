@@ -3544,7 +3544,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "dan_ranger"
         },
         "CRAdjust": {
           "type": "int",
@@ -3564,7 +3564,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A Republic scout with a marked-up map and the stillness of someone used to being watched."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -3579,6 +3581,26 @@
           "value": [
             {
               "__struct_id": 2,
+              "XOrientation": {
+                "type": "float",
+                "value": 2.149798690198508e-23
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              },
               "AddCost": {
                 "type": "dword",
                 "value": 50
@@ -3669,11 +3691,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 101
+                "value": 56
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 22
+                "value": 105
               },
               "Cost": {
                 "type": "dword",
@@ -3686,12 +3708,14 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "A basic uniform given out to all Republic Troopers enlisted in the military."
+                  "0": "Clothing worn by Corporal Mira Tannis."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Clothing worn by Corporal Mira Tannis."
+                }
               },
               "Identified": {
                 "type": "byte",
@@ -3699,26 +3723,25 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 22
+                "value": 106
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 118
+                "value": 62
               },
               "LocalizedName": {
-                "id": 12835,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "[NPC] Republic Trooper Uniform"
+                  "0": "[NPC] Corporal Mira Tannis's Outfit"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 94
+                "value": 0
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 91
+                "value": 40
               },
               "Plot": {
                 "type": "byte",
@@ -3738,11 +3761,31 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "RepublicTrooperUniform"
+                "value": "dan_ranger_o"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "republictrooper"
+                "value": "dan_ranger_o"
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               },
               "xArmorPart_Belt": {
                 "type": "word",
@@ -3819,26 +3862,6 @@
               "xArmorPart_Torso": {
                 "type": "word",
                 "value": 249
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 2.149798690198508e-023
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
               }
             },
             {
@@ -4269,7 +4292,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Female Republic Soldier"
+            "0": "Corporal Mira"
           }
         },
         "fortbonus": {
@@ -4307,7 +4330,7 @@
         "LastName": {
           "type": "cexolocstring",
           "value": {
-            "0": ""
+            "0": "Tannis"
           }
         },
         "LawfulChaotic": {
@@ -4340,7 +4363,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -4368,7 +4391,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -4629,7 +4652,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "frepsoldier"
+          "value": "dan_ranger"
         },
         "Tail_New": {
           "type": "dword",
@@ -4641,7 +4664,7 @@
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "frepsoldier"
+          "value": "dan_ranger"
         },
         "WalkRate": {
           "type": "int",
@@ -6815,7 +6838,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "dan_survey"
         },
         "CRAdjust": {
           "type": "int",
@@ -6835,7 +6858,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A Czerka surveyor carrying a core sampler and a permit she is ready to produce at any moment."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -6850,6 +6875,26 @@
           "value": [
             {
               "__struct_id": 2,
+              "XOrientation": {
+                "type": "float",
+                "value": 1.662247984091692e-38
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              },
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -6940,11 +6985,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 107
+                "value": 34
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 107
+                "value": 56
               },
               "Cost": {
                 "type": "dword",
@@ -6957,13 +7002,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "This appears to be the uniform of a Czerka Corporation employee."
+                  "0": "Clothing worn by Anya Kell."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Clothing worn by Anya Kell."
                 }
               },
               "Identified": {
@@ -6972,25 +7017,25 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 108
+                "value": 35
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 131
+                "value": 62
               },
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Czerka Uniform"
+                  "0": "[NPC] Anya Kell's Outfit"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 92
+                "value": 17
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 92
+                "value": 0
               },
               "Plot": {
                 "type": "byte",
@@ -7010,11 +7055,31 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "CzerkaUniform"
+                "value": "dan_survey_o"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "czerkauniform"
+                "value": "dan_survey_o"
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               },
               "xArmorPart_Belt": {
                 "type": "word",
@@ -7091,26 +7156,6 @@
               "xArmorPart_Torso": {
                 "type": "word",
                 "value": 189
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 1.662247984091692e-038
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
               }
             }
           ]
@@ -7204,7 +7249,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Female Czerka Employee"
+            "0": "Anya"
           }
         },
         "fortbonus": {
@@ -7242,7 +7287,7 @@
         "LastName": {
           "type": "cexolocstring",
           "value": {
-            "0": ""
+            "0": "Kell"
           }
         },
         "LawfulChaotic": {
@@ -7275,7 +7320,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -7303,7 +7348,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -7564,7 +7609,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "FemaleCzerkaEmployee"
+          "value": "dan_survey"
         },
         "Tail_New": {
           "type": "dword",
@@ -7576,7 +7621,7 @@
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "femaleczerkaempl"
+          "value": "dan_survey"
         },
         "WalkRate": {
           "type": "int",

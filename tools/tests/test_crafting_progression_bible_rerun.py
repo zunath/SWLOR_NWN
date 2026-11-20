@@ -1,8 +1,8 @@
 """Rerunning UpdateCraftingProgressionBible.py must leave the Design Bible unchanged.
 
-The perk-line tools later took over the Total SP, total rows and descriptions on the Engineering, Fabrication, Gathering
+The perk-line tools later took over the Total SP and total rows on the Engineering, Fabrication, Gathering
 and Agriculture tabs. A rerun used to write them back in the old shape (Engineering's first Overclocker price became a
-total formula, Total SP dropped to 0 and the line text was cut from the descriptions).
+total formula and Total SP dropped to 0).
 
 Run with: python -B -m unittest discover -s tools/tests -p test_crafting_progression_bible_rerun.py
 """

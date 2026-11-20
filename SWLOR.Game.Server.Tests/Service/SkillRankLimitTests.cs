@@ -1,6 +1,7 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
@@ -45,6 +46,7 @@ public class SkillRankLimitTests
         _cache.Clear();
         foreach (var type in Enum.GetValues<SkillType>())
             _cache[type] = type.GetAttribute<SkillType, SkillAttribute>();
+        Relog();
     }
 
     /// <summary>Restores the shared cache so this fixture cannot affect other tests.</summary>
@@ -254,6 +256,73 @@ public class SkillRankLimitTests
         var maxed = CreatePlayer(50, (SkillType.Mimicry, S(50)));
         Award(maxed, SkillType.Mimicry, 100);
         WarningKeys.Should().BeEmpty();
+    }
+
+    [Test]
+    public void LimitWarning_IsSentOncePerSkillPerLogin()
+    {
+        var player = CreatePlayer(28, (SkillType.Leadership, S(28, limit: 28)));
+
+        Award(player, SkillType.Leadership, 100).Should().Be(0);
+        WarningKeys.Should().Equal("SKILL_LIMIT");
+        Warnings.Should().ContainSingle().Which.Should().Contain("limit of 28");
+
+        for (var award = 0; award < 5; award++)
+        {
+            Award(player, SkillType.Leadership, 100).Should().Be(0);
+            WarningKeys.Should().BeEmpty("the player already learned why this skill stopped gaining XP");
+        }
+
+        player.Skills[SkillType.Leadership].Rank.Should().Be(28);
+        player.Skills[SkillType.Leadership].XP.Should().Be(0);
+    }
+
+    [Test]
+    public void LimitWarning_AnotherLimitedSkill_StillWarnsOnce()
+    {
+        var player = CreatePlayer(48,
+            (SkillType.Leadership, S(28, limit: 28)),
+            (SkillType.Unarmed, S(20, limit: 20)));
+
+        Award(player, SkillType.Leadership, 100);
+        WarningKeys.Should().Equal("SKILL_LIMIT");
+
+        Award(player, SkillType.Unarmed, 100);
+        WarningKeys.Should().Equal("SKILL_LIMIT");
+        Warnings.Should().ContainSingle().Which.Should().Contain("Unarmed").And.Contain("limit of 20");
+
+        Award(player, SkillType.Unarmed, 100);
+        WarningKeys.Should().BeEmpty();
+        Award(player, SkillType.Leadership, 100);
+        WarningKeys.Should().BeEmpty();
+    }
+
+    [Test]
+    public void LimitWarning_IsSentAgainAfterRelogging()
+    {
+        var player = CreatePlayer(28, (SkillType.Leadership, S(28, limit: 28)));
+        Award(player, SkillType.Leadership, 100);
+        Award(player, SkillType.Leadership, 100);
+        WarningKeys.Should().BeEmpty();
+
+        Relog();
+
+        Award(player, SkillType.Leadership, 100);
+        WarningKeys.Should().Equal("SKILL_LIMIT");
+        Award(player, SkillType.Leadership, 100);
+        WarningKeys.Should().BeEmpty();
+    }
+
+    [TestCase(nameof(SkillService.ResetLimitWarningsOnEnter), ScriptName.OnModuleEnter, "GetEnteringObject()")]
+    [TestCase(nameof(SkillService.ResetLimitWarningsOnExit), ScriptName.OnModuleExit, "GetExitingObject()")]
+    public void LimitWarning_IsForgottenWhenThePlayerEntersOrLeaves(string handler, string script, string playerSource)
+    {
+        typeof(SkillService).GetMethod(handler)!.GetCustomAttributes<NWNEventHandler>()
+            .Should().ContainSingle(attribute => attribute.Script == script);
+
+        var source = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Domain", "Character", "SkillService.cs"));
+        ExtractMethod(source, $"public void {handler}()")
+            .Should().Contain(playerSource).And.Contain("ForgetLimitWarnings(GetObjectUUID(player))");
     }
 
     // ---- GiveSkillXP: languages ----
@@ -657,6 +726,8 @@ public class SkillRankLimitTests
         return (List<SkillType>)service.GetType().GetMethod("GetDecayCandidates", BindingFlags.NonPublic | BindingFlags.Instance)!
             .Invoke(service, new object[] { player, skill })!;
     }
+
+    private void Relog() => _harness.GetMethod("Relog")!.Invoke(null, null);
 
     private T Field<T>(string name) => (T)_harness.GetField(name)!.GetValue(null)!;
     private List<string> Warnings => Field<List<string>>("Warnings");

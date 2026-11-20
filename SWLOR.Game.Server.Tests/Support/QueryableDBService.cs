@@ -66,6 +66,8 @@ public sealed class QueryableDBService : IDBService
         where T : EntityBase =>
         Store.GetWriteVersion<T>();
 
+    public string StringGet(RedisKey key) => Store.StringGet(key);
+
     public Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false) =>
         Store.StreamAddAsync(key, streamPairs, maxLength, useApproximateMaxLength);
 

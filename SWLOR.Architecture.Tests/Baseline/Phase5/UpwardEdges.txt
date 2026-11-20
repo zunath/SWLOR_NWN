@@ -70,6 +70,7 @@ SWLOR.Game.Server/Feature/MigrationDefinition/ItemAppearanceCatalogMigration.cs:
 SWLOR.Game.Server/Feature/MigrationDefinition/LootStatRevisionMigration.cs: Foundation content -> Gameplay content | 1
 SWLOR.Game.Server/Feature/MigrationDefinition/PelvisAppearanceMigration.cs: Foundation content -> Character content | 1
 SWLOR.Game.Server/Feature/MigrationDefinition/PistolBaseItemMigration.cs: Foundation content -> Gameplay content | 3
+SWLOR.Game.Server/Feature/MigrationDefinition/RetiredAppearanceMigration.cs: Foundation content -> Character content | 1
 SWLOR.Game.Server/Feature/MigrationDefinition/SerializedItemWeaponDamageTypeMigration.cs: Foundation content -> Gameplay content | 1
 SWLOR.Game.Server/Feature/MigrationDefinition/StoredObjectData.FurnitureRenames.cs: Foundation content -> UI content | 1
 SWLOR.Game.Server/Feature/NaturalRegeneration.cs: Gameplay content -> Abilities content | 1

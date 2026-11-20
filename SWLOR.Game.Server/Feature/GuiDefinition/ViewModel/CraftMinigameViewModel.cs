@@ -52,6 +52,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// </summary>
         protected virtual int? CraftActionsTaken => null;
 
+        /// <summary>
+        /// The window's default width, and the narrowest it can be made. Its sentences wrap to the window's width and each text box is
+        /// tall enough for its lines at this width, so a narrower window would cut text off (see <see cref="MinigameWindowWidth"/>).
+        /// Zero, the default, sets no minimum.
+        /// </summary>
+        protected virtual float MinimumWindowWidth => 0f;
+
+        /// <summary>Widens a window the player made narrower than <see cref="MinimumWindowWidth"/>. Each window calls it when it opens.</summary>
+        protected void KeepMinimumWidth()
+        {
+            var widened = MinigameWindowWidth.Widened(Geometry, MinimumWindowWidth);
+            if (widened == null)
+                return;
+
+            Geometry = widened;
+            // A client resize can commit after its watch callback, so the width is published again on the next tick (as Settings does).
+            DelayCommand(0.0f, () =>
+            {
+                if (Gui.IsWindowOpen(Player, WindowType))
+                    OnPropertyChanged(nameof(Geometry));
+            });
+        }
+
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName == nameof(Geometry))
+                KeepMinimumWidth();
+        }
+
         public Action OnHelp() => () => ChangeView(CraftMinigameHelp.PartialName);
 
         public Action OnCloseHelp() => () => ChangeView(MainViewPartial);

@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         {
             _builder.Create(BeastType.Echaolm)
                 .Name("Echa'olm")
-                .Appearance(AppearanceType.DogWinterWolf)
+                .Appearance(AppearanceType.SWLOREchaolm)
                 .AppearanceScale(1f)
                 .SoundSetId(103)
                 .PortraitId(320)

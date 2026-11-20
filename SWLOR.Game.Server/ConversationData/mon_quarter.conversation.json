@@ -1,0 +1,1879 @@
+{
+  "Id": "mon_quarter",
+  "Title": "mon_quarter",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "entry-00002",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "mon_taste_home",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00008",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "mon_archive_ink",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00014",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "mon_feelers",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00020",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "mon_shipwright_ore",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00000",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "entry-00000": {
+      "Id": "entry-00000",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "This is hotel requisitions. I have nine departments, four open orders and only one of me. If you can fetch things from where they are to where I need them, we should talk.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00011",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "mon_taste_home",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00021",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "mon_archive_ink",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00031",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "mon_feelers",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00041",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "mon_shipwright_ore",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00008",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "mon_taste_home"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00018",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "mon_archive_ink"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00028",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "mon_feelers"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00038",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "mon_shipwright_ore"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00001": {
+      "Id": "entry-00001",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Here is your payment. The chef also sent these Aradile meatballs up with his compliments. They are better than they have any right to be.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00002": {
+      "Id": "entry-00002",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back, and everything is fresh. The chef will be unbearable about this. Is that all six Aradile Tails and four Viper Meat?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00002",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00003",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00003": {
+      "Id": "entry-00003",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The chef has decided the guests want to taste Mon Cala instead of frozen imports, and he put Aradile on the menu without asking where Aradile comes from. I need you to go to the Coral Isles and bring me six Aradile Tails and four Viper Meat. Bring them to me here, fresh, and the hotel will pay you.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00007",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00006",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00004": {
+      "Id": "entry-00004",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Collect six Aradile Tails and four Viper Meat from the Aradile and Vipers on the Coral Isles, then bring them to me here in the Elite Hotel. Keep them fresh, because he can tell.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00004",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00005": {
+      "Id": "entry-00005",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "People who have never met one eat Aradile. The tail is the only part worth putting on a plate, which is why I am only asking for tails.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00006",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00006": {
+      "Id": "entry-00006",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The kitchen still needs six Aradile Tails and four Viper Meat. Both come from the Coral Isles. Bring them here to me when you have them all.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00009",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00010",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00007": {
+      "Id": "entry-00007",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "No, she will not. Here is the archive's payment. Somewhere down there, a treaty is going to outlast both of us because of you.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00008": {
+      "Id": "entry-00008",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back, and the ink has good color. The head archivist checks every bottle. Is that all five Tench Ink and five Tench Mantles?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00012",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00013",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00009": {
+      "Id": "entry-00009",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The city archive keeps its permanent record by hand, in Tench ink on cured mantle, because it does not fade or burn and no slicer can change it. They are down to their last bottle. I need you to go to the Sunkenhedge Swamps and bring me five Tench Ink and five Tench Mantles. Bring them to me here and the archive will pay you.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00017",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00015",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00016",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00010": {
+      "Id": "entry-00010",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Collect five Tench Ink and five Tench Mantles in the Sunkenhedge Swamps, then bring them to me here in the Elite Hotel. The Octotench carry the ink, and any Tench will do for mantle.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00014",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00011": {
+      "Id": "entry-00011",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "It holds land titles, treaties and births, the things you want to still be true in three hundred years. The datacores get a copy, but the mantle holds the real record.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00015",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00016",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00012": {
+      "Id": "entry-00012",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The archive still needs five Tench Ink and five Tench Mantles from the Tench in the Sunkenhedge Swamps. Bring them here to me when you have them all.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00019",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00020",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00013": {
+      "Id": "entry-00013",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "So does the harbor. Here is your payment. If the sensor arrays start working, I will pretend it was my idea.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00014": {
+      "Id": "entry-00014",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back, and none of them are scorched. She will be insufferable about it. Is that all six Scorchellus Antennae?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00022",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00023",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00015": {
+      "Id": "entry-00015",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The harbor sensors keep losing ships in the thermal layer. A technician upstairs swears that Scorchellus feel heat through their antennae better than her arrays do, and she wants some to take apart. I need you to go to the Sunkenhedge Swamps and bring me six Scorchellus Antennae. Bring them to me here and you will be paid.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00027",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00025",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00026",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00016": {
+      "Id": "entry-00016",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Collect six Scorchellus Antennae from the Scorchellus on the dry ground of the Sunkenhedge Swamps, then bring them to me here in the Elite Hotel. They burn, so mind your hands.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00024",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00017": {
+      "Id": "entry-00017",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I asked her. She talked for ten minutes and the only word I understood was antennae. She does get results, though, so I fill her orders.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00025",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00026",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00018": {
+      "Id": "entry-00018",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I still need six Scorchellus Antennae from the Scorchellus in the Sunkenhedge Swamps. Bring them here to me when you have all six.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00029",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00030",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00019": {
+      "Id": "entry-00019",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Then he can stop asking. Here is the yard's payment. Local ore mined by local hands. I may put that on a sign.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00020": {
+      "Id": "entry-00020",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back, and the yard foreman has been at my desk twice a day. Is that all ten Raw Plagionite and ten Raw Scordspar?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00032",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00033",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00021": {
+      "Id": "entry-00021",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The shipwrights patch hulls with an alloy of Plagionite and Scordspar, and the freighter that brings it is late because the Krakenborne are in orbit. There are veins of both on the Coral Isles. I need you to mine ten Raw Plagionite and ten Raw Scordspar there. Bring the ore to me here and the yard will pay you.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00037",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00035",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00036",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00022": {
+      "Id": "entry-00022",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Mine ten Raw Plagionite and ten Raw Scordspar from the veins scattered across the Coral Isles, then bring them to me here in the Elite Hotel. Take a decent harvester.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00034",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00023": {
+      "Id": "entry-00023",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The ore does not bite. I make no promises about whatever is standing next to the vein, so keep a weapon handy while you dig.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00035",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00036",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00024": {
+      "Id": "entry-00024",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The shipwrights still need ten Raw Plagionite and ten Raw Scordspar. The veins are on the Coral Isles. Bring the ore here to me when you have it all.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00039",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00040",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    }
+  },
+  "Choices": {
+    "reply-00000": {
+      "Id": "reply-00000",
+      "Text": {
+        "Text": "Good luck with the ledgers. Goodbye.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00001": {
+      "Id": "reply-00001",
+      "Text": {
+        "Text": "What else is on the order book?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00000",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00002": {
+      "Id": "reply-00002",
+      "Text": {
+        "Text": "Yes, that is the whole kitchen order.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "mon_taste_home"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00001",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00003": {
+      "Id": "reply-00003",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00004": {
+      "Id": "reply-00004",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00005": {
+      "Id": "reply-00005",
+      "Text": {
+        "Text": "I'll fill the order. Six Aradile Tails and four Viper Meat.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "mon_taste_home"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00004",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00006": {
+      "Id": "reply-00006",
+      "Text": {
+        "Text": "Not right now. I am not a butcher.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00007": {
+      "Id": "reply-00007",
+      "Text": {
+        "Text": "Do people really eat Aradile?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00005",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00008": {
+      "Id": "reply-00008",
+      "Text": {
+        "Text": "What does the hotel kitchen need?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00003",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00009": {
+      "Id": "reply-00009",
+      "Text": {
+        "Text": "Here is the kitchen order, tails and meat.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-request-quest-items",
+          "Arguments": [
+            "mon_taste_home"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00010": {
+      "Id": "reply-00010",
+      "Text": {
+        "Text": "I am still hunting for it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00011": {
+      "Id": "reply-00011",
+      "Text": {
+        "Text": "Remind me what the kitchen order needs.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00006",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00012": {
+      "Id": "reply-00012",
+      "Text": {
+        "Text": "Yes, all of it, and she will not send it back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "mon_archive_ink"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00007",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00013": {
+      "Id": "reply-00013",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00014": {
+      "Id": "reply-00014",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00015": {
+      "Id": "reply-00015",
+      "Text": {
+        "Text": "I'll supply it. Five Tench Ink and five Tench Mantles.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "mon_archive_ink"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00010",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00016": {
+      "Id": "reply-00016",
+      "Text": {
+        "Text": "Not right now. Let the archivists fetch it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00017": {
+      "Id": "reply-00017",
+      "Text": {
+        "Text": "Why keep an archive written by hand?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00011",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00018": {
+      "Id": "reply-00018",
+      "Text": {
+        "Text": "What does the city archive need?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00009",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00019": {
+      "Id": "reply-00019",
+      "Text": {
+        "Text": "Here are the ink and mantles for the archive.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-request-quest-items",
+          "Arguments": [
+            "mon_archive_ink"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00020": {
+      "Id": "reply-00020",
+      "Text": {
+        "Text": "I do not have all of it yet.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00021": {
+      "Id": "reply-00021",
+      "Text": {
+        "Text": "Remind me what the archive order needs.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00012",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00022": {
+      "Id": "reply-00022",
+      "Text": {
+        "Text": "Yes, all six. I hope the harbor finds its ships.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "mon_feelers"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00013",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00023": {
+      "Id": "reply-00023",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00024": {
+      "Id": "reply-00024",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00025": {
+      "Id": "reply-00025",
+      "Text": {
+        "Text": "I'll get them. Six Scorchellus Antennae from the swamps.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "mon_feelers"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00016",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00026": {
+      "Id": "reply-00026",
+      "Text": {
+        "Text": "Not right now. I will leave that one.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00027": {
+      "Id": "reply-00027",
+      "Text": {
+        "Text": "Does that idea actually work?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00017",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00028": {
+      "Id": "reply-00028",
+      "Text": {
+        "Text": "Do you have any unusual orders?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00015",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00029": {
+      "Id": "reply-00029",
+      "Text": {
+        "Text": "Here are the six Scorchellus Antennae.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-request-quest-items",
+          "Arguments": [
+            "mon_feelers"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00030": {
+      "Id": "reply-00030",
+      "Text": {
+        "Text": "I am still working on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00031": {
+      "Id": "reply-00031",
+      "Text": {
+        "Text": "Remind me what you need for the sensor technician.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00018",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00032": {
+      "Id": "reply-00032",
+      "Text": {
+        "Text": "Yes, that is the full load.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "mon_shipwright_ore"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00019",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00033": {
+      "Id": "reply-00033",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00034": {
+      "Id": "reply-00034",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00035": {
+      "Id": "reply-00035",
+      "Text": {
+        "Text": "I'll bring it. Ten Raw Plagionite and ten Raw Scordspar.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "mon_shipwright_ore"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00022",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00036": {
+      "Id": "reply-00036",
+      "Text": {
+        "Text": "Not right now. Mining is not my trade.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00037": {
+      "Id": "reply-00037",
+      "Text": {
+        "Text": "Are you sure it does not bite?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00023",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00038": {
+      "Id": "reply-00038",
+      "Text": {
+        "Text": "Do you have any work that does not bite?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00021",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00039": {
+      "Id": "reply-00039",
+      "Text": {
+        "Text": "Here is the ore, ten of each.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-request-quest-items",
+          "Arguments": [
+            "mon_shipwright_ore"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00040": {
+      "Id": "reply-00040",
+      "Text": {
+        "Text": "I am still digging for it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00041": {
+      "Id": "reply-00041",
+      "Text": {
+        "Text": "Remind me what ore the shipwrights need.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00024",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    }
+  },
+  "DefaultNpcDelay": 0,
+  "DefaultPlayerDelay": 0,
+  "PreventZoomIn": false,
+  "OnStartActions": [],
+  "OnEndActions": [],
+  "OnAbortActions": []
+}

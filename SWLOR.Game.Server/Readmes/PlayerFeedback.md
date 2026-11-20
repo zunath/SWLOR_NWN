@@ -63,6 +63,9 @@ Warnings remain visible in Production, with only repeated copies limited:
   creature, including both PC and NPC attackers.
 - Skill cap: once per minute across skills and blocked/overflow outcomes. A kill
   can award several skills, but the total-rank cap and unlock remedy are the same.
+- Skill rank limit: once per skill per login. The first award to a skill held at
+  a player-set limit explains why XP stopped; later awards to that skill stay
+  quiet until the player logs in again. Another limited skill still warns once.
 - Mimicry rank gates and failed decoding: once per technique/failure reason per
   minute across NPCs. Testing shows every occurrence of these warnings.
 - Aura buffs from Ability auras (Leadership Vanguard Command and Field Steward):

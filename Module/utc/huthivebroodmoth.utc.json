@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 3286
+    "value": 10283
   },
   "BodyBag": {
     "type": "byte",
@@ -549,6 +549,21 @@
   "VarTable": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "QUEST_NPC_GROUP_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 336
+        }
+      },
       {
         "__struct_id": 0,
         "Name": {

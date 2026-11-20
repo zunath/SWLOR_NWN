@@ -78,6 +78,7 @@ public class DiscordWebhookCallerSafetyTests
             "BugReportViewModel.SubmitBugReportToDiscord",
             "HoloNetViewModel.SubmitBroadcastAsync",
             "DMCommunicationChatCommand.SendDMShoutWebhookAsync",
+            "HostedEventsService.PostToDiscordAsync",
             "PropertyCityGovernanceService.BroadcastPropertyEvent",
             "ServerTasks.SendServerLifecycleNotification"
         }, "each new caller must be checked for native calls after its asynchronous enqueue");

@@ -455,14 +455,23 @@ namespace SWLOR.Game.Server.Domain.Quests
         public void ProgressKillTargetObjectives()
         {
             var creature = OBJECT_SELF;
-            var npcGroupType = (NPCGroupType)GetLocalInt(creature, "QUEST_NPC_GROUP_ID");
-            if (npcGroupType == NPCGroupType.Invalid) return;
-            var possibleQuests = GetQuestsAssociatedWithNPCGroup(npcGroupType);
-            if (possibleQuests.Count <= 0) return;
+
+            // A creature counts toward its own group and, when it is also a named target (a leader,
+            // a rare elite, a boss sharing a general group), toward a second, narrower group.
+            var groups = new List<NPCGroupType>();
+            foreach (var local in new[] { "QUEST_NPC_GROUP_ID", "QUEST_NPC_GROUP_ID_2" })
+            {
+                var group = (NPCGroupType)GetLocalInt(creature, local);
+                if (group == NPCGroupType.Invalid || groups.Contains(group)) continue;
+                if (GetQuestsAssociatedWithNPCGroup(group).Count <= 0) continue;
+                groups.Add(group);
+            }
+            if (groups.Count <= 0) return;
 
             if (_encounters.IsQuestEncounterCreature(creature))
             {
-                _encounters.ProgressKillCredit(creature, npcGroupType, possibleQuests);
+                foreach (var group in groups)
+                    _encounters.ProgressKillCredit(creature, group, GetQuestsAssociatedWithNPCGroup(group));
                 _encounters.ClearEncounterForCreature(creature);
                 return;
             }
@@ -491,38 +500,43 @@ namespace SWLOR.Game.Server.Domain.Quests
                 var distance = GetDistanceBetween(member, creature);
 
                 var playerId = GetObjectUUID(member);
-                var dbPlayer = _db.Get<Player>(playerId);
 
-                // Need to iterate over every possible quest this creature is a part of.
-                foreach (var questId in possibleQuests)
+                foreach (var npcGroupType in groups)
                 {
-                    // Players who don't have the quest are skipped.
-                    if (!dbPlayer.Quests.ContainsKey(questId)) continue;
+                    var dbPlayer = _db.Get<Player>(playerId);
+                    var possibleQuests = GetQuestsAssociatedWithNPCGroup(npcGroupType);
 
-                    var quest = dbPlayer.Quests[questId];
-                    var questDetail = GetQuestById(questId);
-                    var questState = questDetail.States[quest.CurrentState];
-                    var killRequiredForQuestAndState = false;
-
-                    // Iterate over all of the quest states which call for killing this enemy.
-                    foreach (var objective in questState.GetObjectives())
+                    // Need to iterate over every possible quest this creature is a part of.
+                    foreach (var questId in possibleQuests)
                     {
-                        // Only kill target objectives matching this NPC group ID are processed.
-                        if (objective is KillTargetObjective killTargetObjective)
+                        // Players who don't have the quest are skipped.
+                        if (!dbPlayer.Quests.ContainsKey(questId)) continue;
+
+                        var quest = dbPlayer.Quests[questId];
+                        var questDetail = GetQuestById(questId);
+                        var questState = questDetail.States[quest.CurrentState];
+                        var killRequiredForQuestAndState = false;
+
+                        // Iterate over all of the quest states which call for killing this enemy.
+                        foreach (var objective in questState.GetObjectives())
                         {
-                            if (killTargetObjective.Group != npcGroupType ||
-                                distance > killTargetObjective.MaximumCreditDistance) continue;
-                            if (!killTargetObjective.CountsKill(member, creature)) continue;
+                            // Only kill target objectives matching this NPC group ID are processed.
+                            if (objective is KillTargetObjective killTargetObjective)
+                            {
+                                if (killTargetObjective.Group != npcGroupType ||
+                                    distance > killTargetObjective.MaximumCreditDistance) continue;
+                                if (!killTargetObjective.CountsKill(member, creature)) continue;
 
-                            killRequiredForQuestAndState = true;
-                            killTargetObjective.Advance(member, questId);
+                                killRequiredForQuestAndState = true;
+                                killTargetObjective.Advance(member, questId);
+                            }
                         }
-                    }
 
-                    // Attempt to advance the quest detail. It's possible this will fail because objectives aren't all done. This is OK.
-                    if (killRequiredForQuestAndState)
-                    {
-                        questDetail.Advance(member, creature);
+                        // Attempt to advance the quest detail. It's possible this will fail because objectives aren't all done. This is OK.
+                        if (killRequiredForQuestAndState)
+                        {
+                            questDetail.Advance(member, creature);
+                        }
                     }
                 }
             }

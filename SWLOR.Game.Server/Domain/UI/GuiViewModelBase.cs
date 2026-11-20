@@ -322,6 +322,13 @@ namespace SWLOR.Game.Server.Domain.UI
         }
 
 
+        /// <inheritdoc />
+        public void FollowClientIfTargetDestroyed(uint eventPlayer)
+        {
+            if (!GetIsObjectValid(Player) && GetIsObjectValid(eventPlayer))
+                Player = eventPlayer;
+        }
+
         /// <summary>
         /// Handles updating the view model with changes received from the player's client.
         /// </summary>
@@ -330,6 +337,11 @@ namespace SWLOR.Game.Server.Domain.UI
         {
             var property = _propertyValues[propertyName];
             var json = NuiGetBind(Player, WindowToken, propertyName);
+
+            // The bind reads as null when the window is no longer on the player's screen, so there is nothing to apply.
+            if (JsonGetType(json) == SWLOR.NWN.API.NWScript.Enum.JsonType.Null)
+                return;
+
             var value = _converter.ToObject(json, property.Type);
             var currentValue = GetType().GetProperty(propertyName)?.GetValue(this);
 

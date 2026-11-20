@@ -121,6 +121,11 @@ public sealed class InMemoryDBService : IDBService
         where T : EntityBase =>
         _writeVersions.TryGetValue(typeof(T), out var version) ? version : 0;
 
+    /// <summary>The plain Redis strings <see cref="StringGet"/> answers, by key.</summary>
+    public Dictionary<string, string> Strings { get; } = new();
+
+    public string StringGet(RedisKey key) => Strings.GetValueOrDefault(key.ToString());
+
     public Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false)
     {
         StreamAdds.Add(new StreamAddCall(key.ToString(), streamPairs, maxLength, useApproximateMaxLength));

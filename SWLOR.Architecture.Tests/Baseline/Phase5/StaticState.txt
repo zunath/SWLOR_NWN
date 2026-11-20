@@ -43,7 +43,9 @@ SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveHandFitC
 SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveHandFitOverrides | 1
 SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveOpenFrameFits | 2
 SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.TrainingSaberCatalog | 2
-SWLOR.Game.Server.Feature.AppearanceDefinition.Preview.AppearancePartNames | 2
+SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponHandFit | 3
+SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponHandFitCatalog | 2
+SWLOR.Game.Server.Feature.AppearanceDefinition.Preview.AppearancePartNames | 4
 SWLOR.Game.Server.Feature.AppearanceDefinition.Species.RacialAppearanceRegistry | 2
 SWLOR.Game.Server.Feature.BasicVibrobladeCompatibility | 1
 SWLOR.Game.Server.Feature.ChatCommandDefinition.DMCommunicationChatCommand | 1
@@ -96,8 +98,7 @@ SWLOR.Game.Server.Feature.MigrationDefinition.DoubleWeaponRecalibration | 5
 SWLOR.Game.Server.Feature.MigrationDefinition.DroidWeaponSkillMigration | 1
 SWLOR.Game.Server.Feature.MigrationDefinition.DungeonSaberMigration | 1
 SWLOR.Game.Server.Feature.MigrationDefinition.EngineStoredItemConverter | 1
-SWLOR.Game.Server.Feature.MigrationDefinition.EnzymeBaseItemMigration | 2
-SWLOR.Game.Server.Feature.MigrationDefinition.EnzymeStoredItemConverter | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.EnzymeBaseItemMigration | 1
 SWLOR.Game.Server.Feature.MigrationDefinition.EquipmentRequirementMigration | 2
 SWLOR.Game.Server.Feature.MigrationDefinition.EquipmentTypeMigration | 1
 SWLOR.Game.Server.Feature.MigrationDefinition.EquipmentTypeStatRevisionCatalog | 1
@@ -113,6 +114,8 @@ SWLOR.Game.Server.Feature.MigrationDefinition.LootStatRevisionCatalog | 1
 SWLOR.Game.Server.Feature.MigrationDefinition.ObsoleteItemMigration | 2
 SWLOR.Game.Server.Feature.MigrationDefinition.PelvisAppearanceMigration | 2
 SWLOR.Game.Server.Feature.MigrationDefinition.RareLootStatRevisionCatalog | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.RetiredAppearanceMigration | 4
+SWLOR.Game.Server.Feature.MigrationDefinition.RetiredAppearances | 4
 SWLOR.Game.Server.Feature.MigrationDefinition.RetiredDefenseStatRevisionCatalog | 1
 SWLOR.Game.Server.Feature.MigrationDefinition.SavedDataStoredItemConverter | 1
 SWLOR.Game.Server.Feature.MigrationDefinition.SerializedItemResistanceMigration | 9
@@ -145,4 +148,4 @@ SWLOR.Game.Server.Native.SavedPlayerInventory | 1
 SWLOR.Game.Server.Native.WeaponAttackAnimation | 1
 SWLOR.Game.Server.Native.WeaponAttackCycle | 1
 SWLOR.Game.Server.NativeSinks.LegacyItemPropertiesSink | 6
-SWLOR.Game.Server.NativeSinks.PlayerFileCheckpointSink | 2
+SWLOR.Game.Server.NativeSinks.PlayerFileCheckpointSink | 3

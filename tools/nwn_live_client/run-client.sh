@@ -33,11 +33,17 @@ done
 
 timeout --signal=TERM --kill-after=5 30 glxinfo -B > /verify/renderer.txt 2>&1
 if [ "${SWLOR_LIVE_GPU_RENDERER:-}" = wsl-d3d12 ]; then
-    grep -q 'OpenGL renderer string: D3D12 (' /verify/renderer.txt || { cat /verify/renderer.txt >&2; exit 1; }
-    if grep -q 'Basic Render Driver' /verify/renderer.txt; then
+    # Hardware D3D12 only: llvmpipe or Microsoft's WARP adapter means the GPU was not reached.
+    if ! grep -q 'OpenGL renderer string: D3D12 (' /verify/renderer.txt \
+            || grep -q 'Basic Render Driver' /verify/renderer.txt; then
         echo "The requested GPU backend fell back to software" >&2
+        cat /verify/renderer.txt >&2
         exit 1
     fi
+fi
+# "up" runs this check in a throwaway container before it starts the server.
+if [ "${1:-}" = --renderer-check ]; then
+    exit 0
 fi
 
 server_ip=$(getent hosts "$SWLOR_LIVE_SERVER_HOST" | awk '{print $1; exit}')

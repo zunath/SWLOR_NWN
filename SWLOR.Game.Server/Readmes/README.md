@@ -44,6 +44,7 @@ One line per guide. Rule guides are required reading before working in their are
 ## Content pipelines
 
 - [BlasterModelImport.md](BlasterModelImport.md) and [RifleModelImport.md](RifleModelImport.md): weapon model import and fitting.
+- [WeaponHandFit.md](WeaponHandFit.md): how a held pistol or rifle is seated in each body's hand; deriving and reviewing a move without the client.
 - [TintMapRendering.md](TintMapRendering.md): tint material rendering.
 - [MimicryBalance.md](MimicryBalance.md): the Mimicry technique balance model.
 

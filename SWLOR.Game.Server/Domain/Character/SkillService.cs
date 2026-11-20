@@ -34,6 +34,13 @@ namespace SWLOR.Game.Server.Domain.Character
             .Where(x => x.GetAttribute<SkillType, SkillAttribute>().ContributesToSkillCap)
             .ToFrozenSet();
 
+        /// <summary>
+        /// Skills whose rank limit warning a player has seen since logging in. A limited skill keeps
+        /// receiving XP awards, so the warning explains why XP stopped once and then stays quiet.
+        /// </summary>
+        [ReloadState(ReloadStateKind.Runtime)]
+        private readonly HashSet<(string PlayerId, SkillType Skill)> _limitWarningsSent = new();
+
         private readonly IDBService _db;
         private readonly IGuiRefreshPublisher _gui;
         private readonly IPlayerFeedbackService _playerFeedback;
@@ -335,8 +342,10 @@ namespace SWLOR.Game.Server.Domain.Character
                     _gui.PublishRefreshEvent(player, new SkillXPRefreshEvent(new List<SkillType> { skill }));
 
                 // Languages gain XP from overheard speech, so a limited language would warn whenever someone speaks it.
-                if (rankCeiling < details.MaxRank && details.ContributesToSkillCap)
-                    _playerFeedback.SendWarningToPlayer(player, "SKILL_LIMIT", ColorToken.Red($"{details.Name} is at your limit of {rankCeiling}. Raise it in the Skills window."));
+                // Warn once per skill per login; the once-per-login set replaces the shared timed limit.
+                if (rankCeiling < details.MaxRank && details.ContributesToSkillCap &&
+                    _limitWarningsSent.Add((GetObjectUUID(player), skill)))
+                    _playerFeedback.SendWarningToPlayer(player, "SKILL_LIMIT", ColorToken.Red($"{details.Name} is at your limit of {rankCeiling}. Raise it in the Skills window."), intervalSeconds: 0);
 
                 return debtRemoved;
             }
@@ -514,6 +523,37 @@ namespace SWLOR.Game.Server.Domain.Character
             }
 
             _db.Set(dbPlayer);
+        }
+
+        /// <summary>
+        /// A new login shows each limited skill's warning again.
+        /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Forgets the login's rank limit warnings; a player who stays online keeps the ones already shown.")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public void ResetLimitWarningsOnEnter()
+        {
+            var player = GetEnteringObject();
+            if (GetIsPC(player) && !GetIsDM(player))
+                ForgetLimitWarnings(GetObjectUUID(player));
+        }
+
+        /// <summary>
+        /// Drops a departing player's warning records so the set does not grow until a restart.
+        /// </summary>
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Forgets the player's rank limit warnings in the old build's memory.")]
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public void ResetLimitWarningsOnExit()
+        {
+            var player = GetExitingObject();
+            if (GetIsPC(player) && !GetIsDM(player))
+                ForgetLimitWarnings(GetObjectUUID(player));
+        }
+
+        internal void ForgetLimitWarnings(string playerId)
+        {
+            _limitWarningsSent.RemoveWhere(entry => entry.PlayerId == playerId);
         }
 
         /// <summary>

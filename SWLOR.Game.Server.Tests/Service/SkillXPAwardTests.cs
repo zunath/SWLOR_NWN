@@ -33,11 +33,20 @@ public class SkillXPAwardTests
                 "SWLOR.Game.Server", "Domain", "Character", "SkillService.cs"))).GetRoot()
             .DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Where(method => method.Identifier.ValueText is "GiveSkillXP" or "ShouldDecaySkillRank" or "ApplyAbilityPoint" or "GetRankLimit" or "GetRankCeiling"
-                or "GetDecayCandidates" or "IsBlockedBySkillCap" or "GetTotalContributingSkillRanks")
+                or "GetDecayCandidates" or "IsBlockedBySkillCap" or "GetTotalContributingSkillRanks" or "ForgetLimitWarnings")
             // The production methods are instance methods of the skill service; the harness is a static class.
             .Select(method => method.WithAttributeLists(default).Modifiers.Any(SyntaxKind.StaticKeyword)
                 ? method
                 : method.AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword).WithTrailingTrivia(SyntaxFactory.Space)));
+        var fields = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
+                "SWLOR.Game.Server", "Domain", "Character", "SkillService.cs"))).GetRoot()
+            .DescendantNodes().OfType<FieldDeclarationSyntax>()
+            .Where(field => field.Declaration.Variables.Any(variable => variable.Identifier.ValueText == "_limitWarningsSent"))
+            .Select(field => field.WithAttributeLists(default)
+                .WithModifiers(SyntaxFactory.TokenList(
+                    SyntaxFactory.Token(SyntaxKind.PrivateKeyword).WithTrailingTrivia(SyntaxFactory.Space),
+                    SyntaxFactory.Token(SyntaxKind.StaticKeyword).WithTrailingTrivia(SyntaxFactory.Space),
+                    SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword).WithTrailingTrivia(SyntaxFactory.Space))));
 
         // Run the production award flow, replacing native inputs, storage, and feedback only.
         var source = $$"""
@@ -69,6 +78,7 @@ public class SkillXPAwardTests
                 public static readonly List<int> QueuedXP = new();
                 public static int Refreshes;
                 private static readonly XPQueue _xpMessages = new();
+                {{string.Join(Environment.NewLine, fields)}}
                 {{string.Join(Environment.NewLine, methods)}}
                 private static bool IsSkillCapContributingSkill(SkillType skill) => GetSkillDetails(skill).ContributesToSkillCap;
                 private static bool GetIsPC(uint player) => true;
@@ -94,7 +104,7 @@ public class SkillXPAwardTests
                 }
                 private static class _playerFeedback
                 {
-                    public static void SendWarningToPlayer(uint player, string key, string message) { WarningKeys.Add(key); Warnings.Add(message); }
+                    public static void SendWarningToPlayer(uint player, string key, string message, int intervalSeconds = 60) { WarningKeys.Add(key); Warnings.Add(message); }
                 }
                 private sealed class XPQueue
                 {
@@ -109,6 +119,7 @@ public class SkillXPAwardTests
                     public static void SignalEvent(string name, uint player) {}
                     public static void PushEventData(string key, string value) {}
                 }
+                public static void Relog() => ForgetLimitWarnings("test-player");
                 public static void Award(Player player, int xp, uint source) => AwardSkill(player, SkillType.Mimicry, xp, source);
                 public static int AwardSkill(Player player, SkillType skill, int xp, uint source)
                 {

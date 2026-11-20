@@ -183,7 +183,9 @@ namespace SWLOR.Game.Server.Service
                         {
                             // Skills that are exempt from CP sharing; XP gain is calculated directly on a rank vs NPC level basis
                             // As long as the player is on the ground, we always try to give them Armor XP
-                            if (!Space.IsPlayerInSpaceMode(player)) validSkills.Add(SkillType.Armor, dbPlayer.Skills[SkillType.Armor]);
+                            // (Chassis XP for an astromech, whose Chassis rank stands in for Armor).
+                            var defenseSkill = SkillBodyFrames.GetDefenseSkill(dbPlayer.BodyFrame);
+                            if (!Space.IsPlayerInSpaceMode(player)) validSkills.Add(defenseSkill, dbPlayer.Skills[defenseSkill]);
                             if (!validSkills.Any()) continue;
 
                             foreach (var (skillType, ps) in validSkills)
@@ -250,6 +252,10 @@ namespace SWLOR.Game.Server.Service
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (GetIsPC(creature) || GetIsDM(creature)) return;
+
+            // An astromech's tools act as a staff and a rifle; the points they earn belong to Armaments, so the
+            // XP that follows is weighed against the rank the astromech actually trains.
+            skill = SkillBodyFrames.GetTrainedSkill(skill, Race.GetBodyFrame(player));
 
             var tracker = _creatureCombatPointTracker.ContainsKey(creature) ?
                 _creatureCombatPointTracker[creature] :

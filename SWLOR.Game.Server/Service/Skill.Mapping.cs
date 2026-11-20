@@ -82,6 +82,9 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.LightMace] = SkillType.Staff;
             _itemToSkillMapping[BaseItem.MorningStar] = SkillType.Staff;
             _itemToSkillMapping[BaseItem.QuarterStaff] = SkillType.Staff;
+            // Astromech tools act as a staff and a rifle in combat; SkillBodyFrames.GetTrainedSkill turns the
+            // rank and XP behind them into Armaments.
+            _itemToSkillMapping[BaseItem.ShockProd] = SkillType.Staff;
 
             // Pistol
             _itemToSkillMapping[BaseItem.Pistol] = SkillType.Pistol;
@@ -96,6 +99,7 @@ namespace SWLOR.Game.Server.Service
             // Rifle
             _itemToSkillMapping[BaseItem.Cannon] = SkillType.Rifle;
             _itemToSkillMapping[BaseItem.Rifle] = SkillType.Rifle;
+            _itemToSkillMapping[BaseItem.BlasterMount] = SkillType.Rifle;
             _itemToSkillMapping[BaseItem.Longbow] = SkillType.Rifle;
             _itemToSkillMapping[BaseItem.Bolt] = SkillType.Rifle;
             _itemToSkillMapping[BaseItem.Grenade] = SkillType.Rifle;

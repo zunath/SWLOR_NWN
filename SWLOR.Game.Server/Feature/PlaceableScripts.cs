@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.KeyItemService;
@@ -179,12 +180,38 @@ namespace SWLOR.Game.Server.Feature
             }
         }
         /// <summary>
+        /// The stock chair script: seat the user unless the chair is taken. An astromech has no sitting
+        /// pose, so it is told so instead of being parked on the seat.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnPlaceableStockSit)]
+        public static void SitOnStockChair()
+        {
+            var chair = OBJECT_SELF;
+            var user = GetLastUsedBy();
+
+            if (Astromech.IsAstromech(user))
+            {
+                SendMessageToPC(user, AstromechAnimations.SitRefusal);
+                return;
+            }
+
+            if (!GetIsObjectValid(GetSittingCreature(chair)))
+                AssignCommand(user, () => ActionSit(chair));
+        }
+
+        /// <summary>
         /// Handle sitting on an object.
         /// </summary>
         [NWNEventHandler(ScriptName.OnPlaceableSit)]
         public static void Sit()
         {
             var user = GetLastUsedBy();
+
+            if (Astromech.IsAstromech(user))
+            {
+                SendMessageToPC(user, AstromechAnimations.SitRefusal);
+                return;
+            }
 
             AssignCommand(user, () => ActionSit(OBJECT_SELF));
             if (GetObjectVisualTransform(user, ObjectVisualTransform.Scale) == 1.0) return;

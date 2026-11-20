@@ -39,6 +39,13 @@ namespace SWLOR.Game.Server.Feature
                 showCloak = dbPlayer.Settings.ShowCloak;
             }
 
+            if (Astromech.IsAstromech(player))
+            {
+                // Modules in these slots are fitted inside the chassis; none has a model that suits it.
+                showHelmet = false;
+                showCloak = false;
+            }
+
             if (itemType == BaseItem.Helmet)
             {
                 HelmetModelRenderer.SetShownByOwner(item, showHelmet);
@@ -57,6 +64,12 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="showCloak">true to show the cloak.</param>
         public static void Apply(uint creature, bool showHelmet, bool showCloak)
         {
+            if (Astromech.IsAstromech(creature))
+            {
+                showHelmet = false;
+                showCloak = false;
+            }
+
             var helmet = GetItemInSlot(InventorySlot.Head, creature);
             if (GetIsObjectValid(helmet))
             {

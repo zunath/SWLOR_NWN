@@ -136,5 +136,9 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         CompanionPowerGlove = 543,
         Enzyme = 544,
 
+        // Astromech tools. They share the staff and rifle weapon rules but are small, because the chassis is.
+        ShockProd = 545,
+        BlasterMount = 546,
+
     }
 }

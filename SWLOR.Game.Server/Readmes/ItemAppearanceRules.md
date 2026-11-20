@@ -11,6 +11,18 @@ clipping checks and dependent robe/part-skin regeneration.
   appearance in the NWN client. A model number or an item's display name does not prove
   what it looks like. Use the relevant appearance definition under
   `Feature/AppearanceDefinition/ItemAppearance/` as the catalog of player choices.
+- **Armor torso 240 belongs to astromech Chassis Plating.** It has an inventory icon (`ip?_chest240.plt`) and no
+  model on any body, so plating shows the chassis underneath. Never add a chest model numbered 240 for any body, and
+  never offer 240 in another species' armor catalog (`AstromechBody.PlatingTorso`, `BlasterModelImport.md`).
+- **The other astromech modules own four model numbers each, for their inventory icons** (`MODULE_ICONS` in
+  `tools/GenerateAstromechModules.py`): helmet 200-203, gloves 200-203, bracer 200-203, boots 200-203 (all three
+  parts), belt 200-203, amulet 140-143, ring 240-243 and cloak rows 200-203. A module keeps the humanoid piece's
+  base item, so the number is all that makes it show a droid part. Never give one of these numbers to a humanoid
+  item, a model or an appearance catalog, and never put a humanoid icon under one
+  (`AstromechModuleIconContentTests`, `tools/BuildAstromechModuleIcons.py`). A helmet or cloak icon must be a
+  palette texture (PLT): the client draws nothing for a helmet icon of any other kind and a stock cape for a cloak.
+  So a Sensor Package and a Deflector Emitter also wear the two dyes their icon was drawn in (first metal, first
+  cloth); changing those dyes tints the icon.
 - **Helmet model 223 (`helm_223`) is Darth Revan's mask and hood. Never use it for
   dungeon loot, crafted gear, quest rewards, store stock, generic NPC gear, or migration
   fallbacks.** The existing `Module/uti/revan_mask.uti.json` is an NPC-only prop marked

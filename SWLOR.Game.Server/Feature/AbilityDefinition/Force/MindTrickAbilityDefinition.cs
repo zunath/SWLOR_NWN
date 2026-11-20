@@ -140,10 +140,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         internal static bool IsNonMechanical(uint target)
         {
-            var racialType = GetRacialType(target);
-            return racialType != RacialType.Construct &&
-                   racialType != RacialType.Robot &&
-                   racialType != RacialType.Droid;
+            return !Race.IsMechanical(GetRacialType(target));
         }
 
         internal static string ValidateNonMechanicalTarget(uint target)

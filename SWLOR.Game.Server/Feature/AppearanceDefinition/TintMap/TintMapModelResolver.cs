@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -205,7 +206,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     ? (AppearanceArmor)(int)part
                     : AppearanceArmor.Invalid;
                 var creaturePartId = GetCreatureBodyPart(part, creature);
-                var armorPartId = usesArmorModel
+                // Astromech modules have no part models: the chassis part shows through and takes the module's dyes.
+                var armorPartId = usesArmorModel && !Astromech.IsAstromech(creature)
                     ? GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)armorPart)
                     : 0;
                 var partId = ResolvePartId(creaturePartId, armorPartId, usesArmorModel);

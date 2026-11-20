@@ -22,6 +22,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The astromech abilities and the humanoid abilities they copy (Data/AstromechMirrors.cs). -->
+    <EmbeddedResource Include="../tools/AstromechSkillMirrors.json" LogicalName="AstromechSkillMirrors.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Scenarios\Space\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

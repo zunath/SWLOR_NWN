@@ -629,12 +629,13 @@ namespace SWLOR.Game.Server.Service.SlicingService
                 Random.Next(int.MaxValue));
 
             var playerId = GetObjectUUID(session.Player);
-            foreach (var reward in rewards)
+            var items = SlicingReward.ItemsFor(rewards, Race.GetBodyFrame(session.Player));
+            foreach (var (resref, quantity) in items)
             {
-                CreateItemOnObject(reward.Resref, session.Player, reward.Quantity);
-                SendMessageToPC(session.Player, $"You recover {reward.Quantity}x {Cache.GetItemNameByResref(reward.Resref)}.");
+                CreateItemOnObject(resref, session.Player, quantity);
+                SendMessageToPC(session.Player, $"You recover {quantity}x {Cache.GetItemNameByResref(resref)}.");
             }
-            var receivedRewards = string.Join(", ", rewards.Select(reward => $"{reward.Quantity}x '{reward.Resref}'"));
+            var receivedRewards = string.Join(", ", items.Select(item => $"{item.Quantity}x '{item.Resref}'"));
             Log.Write(LogGroup.Crafting,
                 $"Player '{GetName(session.Player)}' ({playerId}) completed {session.Source} slicing board {session.Board.BoardId} and received {receivedRewards}.");
 

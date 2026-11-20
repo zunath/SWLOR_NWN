@@ -104,6 +104,9 @@ public class HornFitTests
         var alreadyAtTheMouth = new[] { AppearanceType.Ewok, AppearanceType.Ugnaught, AppearanceType.Droid };
         foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
         {
+            // An astromech has no mouth, and Performance is closed to it.
+            if (appearance == AppearanceType.Astromech)
+                continue;
             var fit = Fit("kloo_horn", appearance, 0, Gender.Female, true);
             if (alreadyAtTheMouth.Contains(appearance))
                 fit.Should().Be(default(HornFitOffset), appearance.ToString());

@@ -64,6 +64,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 CombatPoint.AddSupportCombatPoint(activator, treated, SkillType.FirstAid, alreadyCredited: alreadyCredited);
         }
 
+        // For a skill that mirrors First Aid (the astromech's Utility Systems): same credit, its own skill.
+        public static void GrantCombatPointFor(SkillType skill, uint activator, uint treated)
+        {
+            CombatPoint.AddSupportCombatPoint(activator, treated, skill);
+        }
+
+        public static void GrantCombatPointFor(SkillType skill, uint activator, IReadOnlyCollection<uint> treated,
+            ISet<uint> alreadyCredited = null)
+        {
+            if (treated.Count > 0)
+                CombatPoint.AddSupportCombatPoint(activator, treated, skill, alreadyCredited: alreadyCredited);
+        }
+
         public static float ApplyStimDurationBonus(uint source, float durationSeconds)
         {
             if (durationSeconds <= 0f || !GetIsObjectValid(source))

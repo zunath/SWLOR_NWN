@@ -485,6 +485,25 @@ public class ShipHudRulesTests
         ShipHudRules.GetModuleRowText(all[2]).Should().StartWith("Mid 1: Shield Repairer (Engineer)\n");
     }
 
+    /// <summary>Checks the astromech socket lists the Pilot's repair modules, which the Pilot's own list keeps.</summary>
+    [Test]
+    public void BuildModuleRows_ForTheAstromechSocket_ListsThePilotsRepairModulesOnly()
+    {
+        var status = new ShipStatus
+        {
+            Size = ShipSize.Small,
+            SlotTags = new Dictionary<int, ShipSlotTag> { [1] = ShipSlotTag.Helm, [21] = ShipSlotTag.Helm },
+        };
+        status.HighPowerModules[1] = Module("laser");
+        status.MidPowerModules[1] = Module("shield");
+        TurnOn(status, 1);
+        TurnOn(status, 21, Self);
+
+        Rows(status, ShipCrewSeat.AstromechSocket).Select(x => x.Slot).Should().Equal(21);
+        Rows(status, ShipCrewSeat.Pilot).Select(x => x.Slot).Should().Equal(1, 21);
+        ShipHudRules.GetWeaponSlots(status, ShipCrewSeat.AstromechSocket, Lookup).Should().BeEmpty();
+    }
+
     /// <summary>Checks a crew member's own HUD (a seat given) still lists only that seat's modules.</summary>
     [Test]
     public void BuildModuleRows_WithASeat_StillListsOnlyThatSeat()

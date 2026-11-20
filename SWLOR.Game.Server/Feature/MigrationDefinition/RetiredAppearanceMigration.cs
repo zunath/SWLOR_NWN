@@ -51,6 +51,7 @@ public static class RetiredAppearanceMigration
         [(int)AppearanceType.Echani] = 'h', [(int)AppearanceType.MonCalamari] = 'h', [(int)AppearanceType.Ugnaught] = 'd',
         [(int)AppearanceType.Rodian] = 'e', [(int)AppearanceType.Togruta] = 'h', [(int)AppearanceType.KelDor] = 'h',
         [(int)AppearanceType.Droid] = 'z', [(int)AppearanceType.Nautolan] = 'h', [(int)AppearanceType.Ewok] = 'd',
+        [(int)AppearanceType.Astromech] = 'r',
     };
 
     // Built once at type initialization, before any worker thread converts saved data.

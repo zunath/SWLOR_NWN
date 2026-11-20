@@ -416,8 +416,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 new("<All Categories>", 0)
             };
 
+            // Lines that belong to another body (astromech lines for a humanoid, and the reverse) are not listed.
+            var bodyFrame = DB.Get<Player>(GetObjectUUID(Player))?.BodyFrame ?? BodyFrame.Humanoid;
             foreach (var (type, detail) in Perk.GetAllActivePerkCategories(groupType))
             {
+                if (!detail.BodyFrameRestriction.Allows(bodyFrame))
+                    continue;
+
                 categories.Add(new GuiComboEntry(detail.Name, (int)type));
             }
 
@@ -507,6 +512,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var perkList = SelectedPerkCategoryId == 0
                 ? Perk.GetAllActivePerks(group)
                 : Perk.GetActivePerksInCategory(group, (PerkCategoryType)SelectedPerkCategoryId);
+
+            perkList = perkList
+                .Where(x => Perk.GetPerkCategoryDetails(x.Value.Category).BodyFrameRestriction.Allows(dbPlayer.BodyFrame))
+                .ToDictionary(x => x.Key, y => y.Value);
 
             // Filter down to just perks with a name partially matching the search text
             if (!string.IsNullOrWhiteSpace(SearchText))

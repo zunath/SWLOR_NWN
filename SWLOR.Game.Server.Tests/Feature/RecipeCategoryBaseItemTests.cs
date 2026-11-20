@@ -23,6 +23,12 @@ public class RecipeCategoryBaseItemTests
         [RecipeCategoryType.Shield] = new[] { BaseItem.SmallShield, BaseItem.LargeShield, BaseItem.TowerShield },
         [RecipeCategoryType.PowerGlove] = new[] { BaseItem.PowerGlove },
         [RecipeCategoryType.TwinPistol] = new[] { BaseItem.Sling },
+        [RecipeCategoryType.AstromechModule] = new[]
+        {
+            BaseItem.Helmet, BaseItem.Armor, BaseItem.Gloves, BaseItem.Bracer, BaseItem.Boots, BaseItem.Belt, BaseItem.Cloak,
+            BaseItem.Amulet, BaseItem.Ring
+        },
+        [RecipeCategoryType.AstromechTool] = new[] { BaseItem.ShockProd, BaseItem.BlasterMount },
     };
 
     private static readonly Dictionary<RecipeType, RecipeDetail> Recipes = typeof(IRecipeListDefinition).Assembly

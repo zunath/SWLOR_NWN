@@ -58,8 +58,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var model = Data<Model>();
             page.Header = "This tome holds techniques lost to the ages. Select a skill to earn experience in that art.";
 
+            var bodyFrame = Race.GetBodyFrame(Player);
             foreach (var (type, detail) in Skill.GetAllSkillsByCategory(model.Category))
             {
+                // A skill the reader's species cannot train would take the tome and give nothing.
+                if (!SkillBodyFrames.IsOpenTo(type, bodyFrame))
+                    continue;
+
                 page.AddResponse(detail.Name, () =>
                 {
                     model.Skill = type;
@@ -78,6 +83,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             page.AddResponse("Select this skill.", () =>
             {
                 var amount = GetLocalInt(model.Item, "XP_TOME_AMOUNT");
+                if (!SkillBodyFrames.IsOpenTo(model.Skill, Race.GetBodyFrame(player)))
+                {
+                    SendMessageToPC(player, SkillBodyFrames.GetRefusal(model.Skill));
+                    Close();
+                    return;
+                }
+
                 Skill.GiveSkillXP(player, model.Skill, amount, false, false);
                 DestroyObject(model.Item);
 

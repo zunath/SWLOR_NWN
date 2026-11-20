@@ -220,7 +220,12 @@ public class ItemAppearanceCatalogTests
         Func<BaseArmorAppearanceDefinition, int[]> select)
     {
         var model = ReadPart(blueprint, "ModelPart1");
-        return catalogs.Any(catalog => select(catalog).Contains(model))
+        // An astromech module's number names its inventory icon and no model: nothing a wearer restyles, so no
+        // catalog lists it (AstromechModuleIconContentTests keeps the numbers off every other item).
+        var resref = blueprint["TemplateResRef"]?["value"]?.Value<string>() ?? string.Empty;
+        var baseItem = blueprint["BaseItem"]?["value"]?.Value<int>() ?? -1;
+        return catalogs.Any(catalog => select(catalog).Contains(model)) ||
+               AstromechModuleIconNumbers.IsModuleIcon(resref, baseItem, model)
             ? new List<string>()
             : new List<string> { $"Model {model}" };
     }

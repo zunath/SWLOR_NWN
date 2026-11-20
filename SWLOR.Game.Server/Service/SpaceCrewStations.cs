@@ -8,6 +8,8 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
@@ -84,6 +86,41 @@ namespace SWLOR.Game.Server.Service
             return seat == ShipCrewSeat.Pilot ? ship : SpaceCrew.GetSeatOccupant(ship, seat);
         }
 
+        /// <summary>Whether the ship's hull carries an astromech socket (<see cref="ShipCrewSeats.HasAstromechSocket"/>).</summary>
+        public static bool HasAstromechSocket(ShipStatus status)
+        {
+            var detail = status == null ? null : FindShipDetail(status.ItemTag);
+            return detail != null && ShipCrewSeats.HasAstromechSocket(detail.Size, detail.Role);
+        }
+
+        /// <summary>The crew stations a player can take aboard the ship, the astromech socket included.</summary>
+        public static IReadOnlyList<ShipCrewSeat> GetStationSeats(ShipStatus status) =>
+            ShipCrewSeats.GetStationSeats(status?.Size ?? ShipSize.Small, HasAstromechSocket(status));
+
+        /// <summary>
+        /// The hotbar slots (1-30) a crew member at a seat works: the slots the seat owns, or for the astromech
+        /// socket the Pilot's slots that hold a socket module.
+        /// </summary>
+        private static List<int> GetCrewSlots(ShipStatus status, ShipCrewSeat seat)
+        {
+            if (seat != ShipCrewSeat.AstromechSocket)
+                return ShipCrewSeats.GetSlotsForSeat(status.Size, status.SlotTags, seat);
+
+            var slots = new List<int>();
+            for (var slot = 1; slot <= 30; slot++)
+            {
+                if (ShipCrewSeats.GetSeatForSlot(status.Size, status.SlotTags, slot) == ShipCrewSeat.Pilot &&
+                    TryGetFittedModule(status, slot, out var module) &&
+                    _shipModules.TryGetValue(module.ItemTag, out var detail) &&
+                    ShipCrewSeats.IsSocketModule(detail.Type))
+                {
+                    slots.Add(slot);
+                }
+            }
+
+            return slots;
+        }
+
         /// <summary>Whether a hotbar slot (1-30) of the ship is a crew-station slot.</summary>
         public static bool IsStationSlot(ShipStatus status, int hotbarSlot) =>
             status != null && ShipCrewSeats.GetSeatForSlot(status.Size, status.SlotTags, hotbarSlot) != ShipCrewSeat.Pilot;
@@ -129,7 +166,7 @@ namespace SWLOR.Game.Server.Service
                 return string.Empty;
 
             var (skill, required) = unmet.Value;
-            return $"You need {Skill.GetSkillDetails(skill).Name} rank {required} to work this module at the {ShipCrewSeats.GetSeatName(seat)} station.";
+            return $"You need {Skill.GetSkillDetails(skill).Name} rank {required} to work this module at {ShipCrewSeats.GetPostName(seat)}.";
         }
 
         /// <summary>
@@ -237,7 +274,8 @@ namespace SWLOR.Game.Server.Service
 
             var status = dbShip.Status;
             var routingReset = status.PowerRouting != ShipPowerRouting.Balanced &&
-                               !GetIsObjectValid(SpaceCrew.GetSeatOccupant(pilot, ShipCrewSeat.Engineer));
+                               !GetIsObjectValid(SpaceCrew.GetSeatOccupant(pilot, ShipCrewSeat.Engineer)) &&
+                               !GetIsObjectValid(SpaceCrew.GetSeatOccupant(pilot, ShipCrewSeat.AstromechSocket));
             if (routingReset)
             {
                 status.PowerRouting = ShipPowerRouting.Balanced;
@@ -252,7 +290,9 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbShip);
             ApplyShipSpeed(pilot, status);
             if (routingReset)
-                SendMessageToPC(pilot, "Nobody works the Engineer station, so the ship's power returns to Balanced.");
+                SendMessageToPC(pilot, HasAstromechSocket(status)
+                    ? "Nobody is plugged into the astromech socket, so the ship's power returns to Balanced."
+                    : "Nobody works the Engineer station, so the ship's power returns to Balanced.");
 
             ExecuteScript("pc_target_upd", pilot);
         }
@@ -313,14 +353,16 @@ namespace SWLOR.Game.Server.Service
                 return string.Empty;
 
             var status = GetShipStatus(pilot);
-            if (status == null || seat == ShipCrewSeat.Pilot || !ShipCrewSeats.HasSeat(status.Size, seat))
+            if (status == null || seat == ShipCrewSeat.Pilot || !ShipCrewSeats.HasSeat(status.Size, seat, HasAstromechSocket(status)))
                 return "This ship has no such station.";
+            if (seat == ShipCrewSeat.AstromechSocket && Race.GetBodyFrame(player) != BodyFrame.Astromech)
+                return "Only an astromech can plug into the astromech socket.";
             if (!HasCrewStationPermission(player, propertyId))
                 return "You do not have permission to crew this starship.";
             if (!Party.IsInParty(pilot, player))
                 return "You must be in the captain's party to take a station.";
             if (SpaceCrew.GetSeatOccupant(pilot, seat) != OBJECT_INVALID)
-                return $"The {ShipCrewSeats.GetSeatName(seat)} station is taken.";
+                return ColorlessTaken(seat);
 
             return string.Empty;
         }
@@ -348,7 +390,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!isViewer && !SpaceCrew.AssignSeat(pilot, seat, player))
             {
-                SendMessageToPC(player, ColorToken.Red($"The {ShipCrewSeats.GetSeatName(seat)} station is taken."));
+                SendMessageToPC(player, ColorToken.Red(ColorlessTaken(seat)));
                 return false;
             }
 
@@ -410,6 +452,13 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        /// <summary>"The Gunner station is taken." or "The astromech socket is taken."</summary>
+        private static string ColorlessTaken(ShipCrewSeat seat)
+        {
+            var post = ShipCrewSeats.GetPostName(seat);
+            return $"{char.ToUpperInvariant(post[0])}{post.Substring(1)} is taken.";
+        }
+
         private static uint CreateCrewCopy(uint player, Location consoleLocation, string name)
         {
             var copy = CopyObject(player, consoleLocation, OBJECT_INVALID, "spaceship_crew_copy");
@@ -426,9 +475,14 @@ namespace SWLOR.Game.Server.Service
 
             AssignCommand(copy, () => ClearAllActions());
 
-            // A console with a crew chair beside it seats the copy; otherwise it stands at the console.
+            // A console with a crew chair beside it seats the copy; otherwise it stands at the console. An astromech
+            // never sits: its copy stays plugged in at the console.
             var chair = GetNearestObjectByTag(CrewChairTag, copy);
-            if (GetIsObjectValid(chair) && GetDistanceBetween(copy, chair) <= CrewChairReach)
+            if (Astromech.IsAstromech(player))
+            {
+                DelayCommand(1f, () => AssignCommand(copy, () => ActionPlayAnimation(AstromechAnimations.Station, 1f, StandInPoseSeconds)));
+            }
+            else if (GetIsObjectValid(chair) && GetDistanceBetween(copy, chair) <= CrewChairReach)
             {
                 DelayCommand(1f, () => AssignCommand(copy, () => ActionSit(chair)));
             }
@@ -453,7 +507,7 @@ namespace SWLOR.Game.Server.Service
             if (status == null)
                 return;
 
-            var slots = ShipCrewSeats.GetSlotsForSeat(status.Size, status.SlotTags, seat);
+            var slots = GetCrewSlots(status, seat);
             var feats = new List<FeatType>();
             foreach (var slot in slots)
             {
@@ -470,8 +524,9 @@ namespace SWLOR.Game.Server.Service
                 feats.Add(feat);
             }
 
-            // The Engineer routes power. The feats are owned before the hotbar loads, so saved slots for them survive.
-            if (seat == ShipCrewSeat.Engineer)
+            // The Engineer and the astromech socket route power. The feats are owned before the hotbar loads, so saved
+            // slots for them survive.
+            if (ShipCrewSeats.RoutesPower(seat))
             {
                 foreach (var feat in PowerRoutingRules.Feats)
                 {
@@ -504,7 +559,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (seat == ShipCrewSeat.Engineer)
+            if (ShipCrewSeats.RoutesPower(seat))
                 EnsurePowerRoutingOnHotBar(crewMember);
 
             RestoreCrewStationVisuals(crewMember, status, slots);
@@ -547,6 +602,14 @@ namespace SWLOR.Game.Server.Service
                     hasPresence = true;
                     break;
                 }
+            }
+
+            // The client of an astromech does not always keep the hide effect across the
+            // jump into the ship's area: the droid then sat on top of the ship. Sending the effect again hides it.
+            if (hasPresence && Astromech.IsAstromech(crewMember))
+            {
+                RemoveEffectByTag(crewMember, CrewPresenceEffectTag);
+                hasPresence = false;
             }
 
             // The crew member's own client still draws their character (it must stay visible to itself), so it
@@ -643,7 +706,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 RecalculateCrewedShip(pilot);
-                SendMessageToPC(pilot, $"{PlayerName.GetDisplayName(pilot, player)} leaves the {ShipCrewSeats.GetSeatName(assignment.Seat)} station.");
+                SendMessageToPC(pilot, $"{PlayerName.GetDisplayName(pilot, player)} leaves {ShipCrewSeats.GetPostName(assignment.Seat)}.");
             }
 
             RestoreCrewMember(player, assignment);
@@ -766,7 +829,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 RecalculateCrewedShip(assignment.Pilot);
-                SendMessageToPC(assignment.Pilot, $"{PlayerName.GetDisplayName(assignment.Pilot, player)} leaves the {ShipCrewSeats.GetSeatName(assignment.Seat)} station.");
+                SendMessageToPC(assignment.Pilot, $"{PlayerName.GetDisplayName(assignment.Pilot, player)} leaves {ShipCrewSeats.GetPostName(assignment.Seat)}.");
             }
 
             if (GetIsObjectValid(assignment.Copy))

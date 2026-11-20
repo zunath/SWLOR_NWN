@@ -1463,7 +1463,7 @@ namespace SWLOR.Game.Server.Service
                 var dbPlayer = DB.Get<Player>(playerId);
 
                 if (skillType != SkillType.Invalid)
-                    skillLevel = dbPlayer.Skills[skillType].Rank;
+                    skillLevel = dbPlayer.Skills[SkillBodyFrames.GetTrainedSkill(skillType, dbPlayer.BodyFrame)].Rank;
 
                 if (attackBonusOverride <= 0)
                 {
@@ -1527,7 +1527,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer != null)
                 {
                     if(skillType != SkillType.Invalid)
-                        skillLevel = dbPlayer.Skills[skillType].Rank;
+                        skillLevel = dbPlayer.Skills[SkillBodyFrames.GetTrainedSkill(skillType, dbPlayer.BodyFrame)].Rank;
 
                     if (usesForceAttack)
                         attackBonus += dbPlayer.ForceAttack;
@@ -1594,7 +1594,7 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
+                skillLevel = dbPlayer.Skills[SkillBodyFrames.GetDefenseSkill(dbPlayer.BodyFrame)].Rank;
                 if (defenseBonusOverride <= 0 &&
                     dbPlayer.Defenses != null &&
                     dbPlayer.Defenses.TryGetValue(defenseType, out var playerDefense))
@@ -1687,7 +1687,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (dbPlayer != null)
                 {
-                    skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
+                    skillLevel = dbPlayer.Skills[SkillBodyFrames.GetDefenseSkill(dbPlayer.BodyFrame)].Rank;
                     if (dbPlayer.Defenses != null &&
                         dbPlayer.Defenses.TryGetValue(defenseType, out var playerDefense))
                     {
@@ -1807,7 +1807,7 @@ namespace SWLOR.Game.Server.Service
                 var dbPlayer = DB.Get<Player>(playerId);
 
                 if (skillType != SkillType.Invalid)
-                    skillLevel = dbPlayer.Skills[skillType].Rank;
+                    skillLevel = dbPlayer.Skills[SkillBodyFrames.GetTrainedSkill(skillType, dbPlayer.BodyFrame)].Rank;
 
                 accuracyBonus += dbPlayer.Accuracy;
             }
@@ -1900,7 +1900,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer != null)
                 {
                     if (skillType != SkillType.Invalid)
-                        skillLevel = dbPlayer.Skills[skillType].Rank;
+                        skillLevel = dbPlayer.Skills[SkillBodyFrames.GetTrainedSkill(skillType, dbPlayer.BodyFrame)].Rank;
 
                     accuracyBonus += dbPlayer.Accuracy;
                 }
@@ -1980,7 +1980,7 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                skillLevel = dbPlayer.Skills[skillType].Rank;
+                skillLevel = dbPlayer.Skills[SkillBodyFrames.GetTrainedSkill(skillType, dbPlayer.BodyFrame)].Rank;
                 evasionBonus = dbPlayer.Evasion;
             }
             else
@@ -2146,7 +2146,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (dbPlayer != null)
                 {
-                    skillLevel = dbPlayer.Skills[SkillType.Armor].Rank;
+                    skillLevel = dbPlayer.Skills[SkillBodyFrames.GetDefenseSkill(dbPlayer.BodyFrame)].Rank;
                     evasionBonus = dbPlayer.Evasion;
                 }
             }

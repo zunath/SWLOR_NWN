@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public static IEnumerable<KeyValuePair<SkillType, SkillAttribute>> Skills(
             IEnumerable<KeyValuePair<SkillType, SkillAttribute>> skills, Player target, int category, string search)
         {
-            return skills.Where(x => x.Value.IsAvailableToCharacterType(target.CharacterType) &&
+            return skills.Where(x => x.Value.IsAvailableTo(target.CharacterType, target.BodyFrame) &&
                 (category == 0 || (int)x.Value.Category == category) && Matches(x.Value.Name, search));
         }
 

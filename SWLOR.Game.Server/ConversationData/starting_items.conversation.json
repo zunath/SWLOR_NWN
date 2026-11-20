@@ -3,6 +3,16 @@
   "Title": "starting_items",
   "EntryPoints": [
     {
+      "TargetNodeId": "entry-00002",
+      "Conditions": [
+        {
+          "Key": "condition-player-is-astromech",
+          "Arguments": [],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
       "TargetNodeId": "entry-00000",
       "Conditions": []
     }
@@ -56,6 +66,62 @@
       "Text": [
         {
           "Text": "\"Looking for some weapons, are you? Talk to Captain Sl'uuk, and once you are off the shuttle onto CZ-220, you should be able to find a basic weapons dealer near the receptionist there at the space station. Uh, word of advice. Don't fight with a survivor's knife. It's not a good weapon.\"",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00002",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00002": {
+      "Id": "entry-00002",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "\"'Ey there, little fella! Just call me Salvatore - Sal for short.\n\nI got nothin' on the rack that'll fit a droid, but I can tell you where to find parts once we land. Want to hear it?\"",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00006",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00003": {
+      "Id": "entry-00003",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "\"Lookin' for parts, are you? Once you are off the shuttle onto CZ-220, the dealer near the receptionist stocks astromech modules, shock prods and blaster mounts. An engineer can build you better ones later on.\"",
           "Style": 0,
           "Color": null
         }
@@ -150,6 +216,47 @@
           ]
         }
       ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00005": {
+      "Id": "reply-00005",
+      "Text": {
+        "Text": "[Ask where to find modules and tools.]",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00003",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00006": {
+      "Id": "reply-00006",
+      "Text": {
+        "Text": "[Decline.]",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
       "Next": [],
       "EndsConversation": true,
       "IsAutomatic": false

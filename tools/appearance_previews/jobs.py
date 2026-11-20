@@ -8,6 +8,9 @@ DEFINITIONS = REPO / "SWLOR.Game.Server/Feature/AppearanceDefinition"
 APPEARANCE_ENUM = REPO / "SWLOR.NWN.API/NWScript/Enum/AppearanceType.cs"
 BASE_ITEM_ENUM = REPO / "SWLOR.NWN.API/NWScript/Enum/Item/BaseItem.cs"
 EDITOR_VIEW_MODEL = REPO / "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs"
+ASTROMECH_BODY = REPO / "SWLOR.Game.Server/Service/AstromechService/AstromechBody.cs"
+# Chassis Plating carries a torso number no body has a model for; its picture is the body of the first design.
+PLATING_PICTURE_DESIGN = 1
 
 # Armor catalog list name -> model stems (right side first).
 ARMOR_STEMS = {
@@ -123,6 +126,11 @@ def weapon_models(haks_2da: Path) -> list:
     return [(base_item, model) for base_item, model in result if model]
 
 
+def plating_torso(path: Path = ASTROMECH_BODY) -> int:
+    """The armor torso number of astromech Chassis Plating (AstromechBody.PlatingTorso)."""
+    return int(re.search(r"const int PlatingTorso = (\d+);", path.read_text(encoding="utf-8"))[1])
+
+
 def appearance_ids() -> dict:
     text = APPEARANCE_ENUM.read_text(encoding="utf-8")
     return {m[1]: int(m[2]) for m in re.finditer(r"^\s*(\w+)\s*=\s*(\d+)", text, re.M)}
@@ -186,6 +194,10 @@ def build(haks_2da: Path, exists) -> list:
                     if part > 0:
                         model = f"p{gender}{race}0_{stem}{part:03d}"
                         add(model, model)
+
+    if "r" in bodies:
+        for gender in "fm":
+            add(f"p{gender}r0_chest{plating_torso():03d}", f"p{gender}r0_chest{PLATING_PICTURE_DESIGN:03d}")
 
     for helmet in general.get("Helmet", []):
         model = f"helm_{helmet:03d}"

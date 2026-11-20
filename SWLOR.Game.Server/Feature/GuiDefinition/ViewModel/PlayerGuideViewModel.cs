@@ -1214,6 +1214,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     new[] { "Housing & Markets", "Travel & Navigation", "Perks", "Combat Basics", "Useful Windows" }),
 
                 new(
+                    "Astromechs",
+                    "Character",
+                    "The astromech species: its chassis, speech, skills, modules, tools, and its socket aboard small ships.",
+                    "Playable droids",
+                    new[]
+                    {
+                        new ArticleBlock("A Different Body",
+                            "An astromech is a playable species with a droid chassis in place of a humanoid body: a dome, a barrel, and two legs. It has no hands and wears no clothes, and it cannot be Force Sensitive. Pick it at character creation like any other species."),
+                        new ArticleBlock("Chassis and Paint",
+                            "Use /customize or the Appearance action on the Character Sheet to open the Appearance Editor, as any species does. On the Appearance tab, the head slot is the dome, the chest slot is the body, and the two thigh slots are the legs; each comes in eight designs that mix freely, and the dome settles onto whichever body you pick. The paint belongs to the Chassis Plating you wear, like the dyes of clothes: dye it on the Equipment tab. The second Cloth swatch is the main paint, the first Cloth swatch the accent panels, and the second Metal swatch the trim. A new astromech starts in Basic Chassis Plating, and a chassis with no plating wears factory white and blue."),
+                        new ArticleBlock("Speech and Emotes",
+                            "An astromech speaks only Droidspeak. Others understand it as far as their own Droidspeak allows, the same way Shyriiwook works for Wookiees. Emotes stay free, but the chassis can only play the emotes it has a motion for, and it cannot sit in chairs. Resting powers the chassis down on the floor."),
+                        new ArticleBlock("Skills",
+                            "Astromechs train three skills of their own. Chassis is their defensive skill and stands wherever Armor would count. Utility Systems repairs and reinforces allies in the field. Armaments fights with the tools built into the chassis. The Force, Armor, First Aid, the humanoid weapon skills, Mimicry, Beast Mastery, and Performance are closed to them. Every other skill, including crafting, gathering, Piloting, Devices, Espionage, and Leadership, is open."),
+                        new ArticleBlock("Modules and Tools",
+                            "An astromech equips only gear made for astromechs, and a fishing rod. Modules fill its equipment slots and need Chassis ranks. The shock prod is its melee tool and the blaster mount is its ranged tool; both need Armaments ranks. Engineering crafts them, and the CZ-220 merchant sells the first tier. A new astromech starts with a Basic Shock Prod and Basic Chassis Plating. Quest rewards and slicing rewards come in an astromech form: a module, shock prod, or blaster mount with the same stats. Stores sell the astromech form of the gear they stock. Loot does too: wherever a piece of armor, a staff, or a rifle can drop, its astromech form can drop as well, at the same chance."),
+                        new ArticleBlock("Astromech Socket",
+                            "Fighters, Interceptors, Bombers, and Gunships carry one astromech socket. While the ship flies, an astromech aboard in the pilot's party, with the Crew Station permission, can use the ship's computer to plug in. From the socket it routes the ship's power and works the ship's repair and capacitor modules on its own Engineering rank, beside the pilot. It never fires weapons. Use /exit to unplug. Astromechs can also fly ships and take any crew station a larger ship offers."),
+                    },
+                    new[]
+                    {
+                        new QuestionAnswer("How do I change how my astromech looks?", "Use /customize to open the Appearance Editor. Pick the dome, body, and legs on the Appearance tab, and dye your Chassis Plating on the Equipment tab to repaint the chassis."),
+                        new QuestionAnswer("Why did my paint change?", "The paint is the dye of the Chassis Plating you wear. New plating brings its own colors; dye it on the Equipment tab of the Appearance Editor."),
+                        new QuestionAnswer("Why can't I equip this item?", "Astromechs equip only astromech modules and tools, plus fishing rods, and each module or tool needs enough Chassis or Armaments rank."),
+                        new QuestionAnswer("Why can't I train this skill?", "The Force, Armor, First Aid, humanoid weapon skills, Mimicry, Beast Mastery, and Performance are closed to astromechs. Chassis, Utility Systems, and Armaments take their place."),
+                        new QuestionAnswer("Why does nobody understand me?", "Astromechs speak only Droidspeak. Listeners understand more as their own Droidspeak improves."),
+                        new QuestionAnswer("How do I use the astromech socket?", "Board a Fighter, Interceptor, Bomber, or Gunship, join the pilot's party, and use the ship's computer once the ship is flying."),
+                        new QuestionAnswer("Can anyone else use astromech gear or the socket?", "No. Astromech modules, tools, and the socket are for astromechs only."),
+                    },
+                    new[] { "Skills", "Perks", "Ships & Space", "Communication", "Crafting", "Useful Windows" }),
+
+                new(
                     "Useful Windows",
                     "Interface",
                     "The main windows and shortcuts new players commonly need.",

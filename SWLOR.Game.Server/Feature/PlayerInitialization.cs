@@ -40,6 +40,9 @@ namespace SWLOR.Game.Server.Feature
             // Already been initialized. Don't do it again.
             if (!dbPlayer.CharacterInitializationPending && (dbPlayer.Version >= 1 || dbPlayer.Version == -1)) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
             {
+                if (ReconcileBodyFrame(dbPlayer, Race.GetBodyFrame(player)))
+                    DB.Set(dbPlayer);
+
                 if (PlayerDescriptor.EnsureUnknownDisplayName(player))
                     PlayerName.RefreshNameOverridesForPlayer(player);
 
@@ -68,6 +71,21 @@ namespace SWLOR.Game.Server.Feature
                 PlayerName.RefreshNameOverridesForPlayer(player);
 
             ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
+        }
+
+        /// <summary>
+        /// Brings the saved body frame in line with the frame of the character's species; true when it changed.
+        /// A record restored or imported without the field reads as Humanoid. The socket and rebuild checks read the
+        /// species while skill gains and the perk window read the saved frame, so a stale value would give one
+        /// character two sets of skills.
+        /// </summary>
+        public static bool ReconcileBodyFrame(Player dbPlayer, BodyFrame frame)
+        {
+            if (dbPlayer.BodyFrame == frame)
+                return false;
+
+            dbPlayer.BodyFrame = frame;
+            return true;
         }
 
         internal static bool RequiresExistingPlayerRecord(Player player)
@@ -352,6 +370,7 @@ namespace SWLOR.Game.Server.Feature
                     languages.Add(SkillType.KelDor);
                     break;
                 case RacialType.Droid:
+                case RacialType.Astromech:
                     languages.Add(SkillType.Droidspeak);
                     break;
                 case RacialType.Nautolan:
@@ -380,6 +399,13 @@ namespace SWLOR.Game.Server.Feature
 
             Race.SetDefaultRaceAppearance(player);
             dbPlayer.OriginalAppearanceType = raceAppearance.AppearanceType;
+            dbPlayer.BodyFrame = Race.GetBodyFrame(player);
+            if (dbPlayer.BodyFrame == BodyFrame.Astromech)
+            {
+                // Character creation offers every voice and portrait; an astromech starts with its own.
+                SetSoundset(player, Astromech.SoundSetId);
+                SetPortraitResRef(player, Astromech.DefaultPortrait);
+            }
         }
 
         /// <summary>
@@ -396,6 +422,19 @@ namespace SWLOR.Game.Server.Feature
                     throw new InvalidOperationException($"The starting item {resref} could not be created.");
                 return created;
             }
+            // An astromech starts with a basic shock prod, as others start with a knife, basic plating in place of
+            // clothes (its paint is the plating's dyes), and the same credits.
+            if (Race.GetBodyFrame(race) == BodyFrame.Astromech)
+            {
+                SetItemCursedFlag(CreateStarterItem("am_w_prod_01"), true);
+                var plating = CreateStarterItem(Astromech.StarterPlatingResref);
+                CreaturePlugin.RunEquip(player, plating, InventorySlot.Chest);
+                if (GetItemInSlot(InventorySlot.Chest, player) != plating)
+                    throw new InvalidOperationException("The starting plating could not be equipped.");
+                GiveGoldToCreature(player, 200);
+                return;
+            }
+
             var item = CreateStarterItem("survival_knife");
             SetName(item, "Survival Knife");
             SetItemCursedFlag(item, true);

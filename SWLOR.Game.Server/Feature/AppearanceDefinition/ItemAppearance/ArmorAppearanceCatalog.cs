@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                 [AppearanceType.Droid] = new DroidArmorAppearanceDefinition(),
                 [AppearanceType.Nautolan] = new GeneralArmorAppearanceDefinition(),
                 [AppearanceType.Ewok] = new GeneralArmorAppearanceDefinition(),
+                [AppearanceType.Astromech] = new AstromechArmorAppearanceDefinition(),
             };
 
         public static int[] GetStyles(BaseArmorAppearanceDefinition definition, AppearanceArmor part) => part switch

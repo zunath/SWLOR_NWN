@@ -596,6 +596,7 @@ Ships at launch.
   - Large hulls: Pilot, Gunner and Engineer.
   - Capital hulls: Pilot, 2 Gunners, Engineer and Sensors.
   - Small and Medium hulls are solo.
+  - **Astromech socket (amended by the Astromech species, `Readmes/AstromechPlayableSpeciesPlan.md`):** the Small and Medium combat hulls (Fighter, Interceptor, Bomber and Gunship) carry one socket that only an astromech player can take. It owns no slots, so the hull flies the same with it empty. An astromech in it routes power as the Engineer does and works the pilot's repair and capacitor modules (Hull Repairer, Shield Repairer, Repair Field Generator, Hypermatter Injector) on its own Engineering, beside the pilot, never a weapon. Droids cannot be posted there. The simulator holds a pilot plus an astromech at or below two separate ships (`checks.py` section S).
 - **Slot control:**
   - Gunners toggle the High slots tagged as their turrets and pick their own target, independent of the pilot.
   - The Engineer runs active shield and hull modules, plus a new **power-routing** ability that shifts capacitor regen between weapons, shields and engines.

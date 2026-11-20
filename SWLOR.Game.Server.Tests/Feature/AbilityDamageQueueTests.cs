@@ -413,12 +413,7 @@ public class AbilityDamageQueueTests
     {
         var root = FindRepositoryRoot();
         var abilitySource = AbilitySource.Read().Replace("\r\n", "\n");
-        var weaponAbilitySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "AbilityDefinition",
-            "WeaponActiveAbilityDefinitionBase.cs")).Replace("\r\n", "\n");
+        var weaponAbilitySource = WeaponAbilitySource.Read().Replace("\r\n", "\n");
         var telegraphedAreaBranch = weaponAbilitySource.Substring(
             weaponAbilitySource.IndexOf("if (isArea && ShouldUseTelegraphedCombatImpact", StringComparison.Ordinal),
             weaponAbilitySource.IndexOf("var totalDamage = 0;", StringComparison.Ordinal) -

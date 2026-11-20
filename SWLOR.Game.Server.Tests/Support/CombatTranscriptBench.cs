@@ -177,6 +177,9 @@ public sealed class CombatTranscriptBench : IDisposable
     public TranscriptLeaf Leaf<T>()
         where T : class => _leaves[typeof(T)];
 
+    /// <summary>The recording stand-in that replaced a leaf, by its contract, for a fixture that sets up every leaf alike.</summary>
+    public TranscriptLeaf Leaf(Type contract) => _leaves[contract];
+
     /// <summary>Sets what a stat of a creature reads.</summary>
     public void SetStat(uint creature, StatType stat, int value) => _stats[(creature, stat)] = value;
 

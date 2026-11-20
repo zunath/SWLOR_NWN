@@ -111,8 +111,7 @@ public class WeaponDeflectionTests
         var statSource = StatSource.Read();
         var statRulesSource = ReadSource("SWLOR.Game.Server", "Domain", "Character", "StatRules.cs");
         var combatSource = CombatSource.Read();
-        var abilitySource = ReadSource(
-            "SWLOR.Game.Server", "Feature", "AbilityDefinition", "WeaponActiveAbilityDefinitionBase.cs");
+        var abilitySource = WeaponAbilitySource.Read();
         var forceSupportSource = ReadSource(
             "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "LightGuardianPowerSupport.cs");
         var sentinelGuardSource = ReadSource(

@@ -555,12 +555,7 @@ public class CombatDamageTests
     {
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
-        var abilitySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "AbilityDefinition",
-            "WeaponActiveAbilityDefinitionBase.cs"));
+        var abilitySource = WeaponAbilitySource.Read();
         var usePerkFeatSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -796,12 +791,7 @@ public class CombatDamageTests
         abilitySource.Should().Contain("queuedWeaponBonuses.DamageBonus");
         abilitySource.Should().Contain("queuedWeaponBonuses.CriticalDamagePercentAdjustment");
 
-        var weaponAbilityBaseSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "AbilityDefinition",
-            "WeaponActiveAbilityDefinitionBase.cs"));
+        var weaponAbilityBaseSource = WeaponAbilitySource.Read();
         weaponAbilityBaseSource.Should().Contain(
             "GameServices.CombatAbilityBonus.StoreQueuedWeaponAbilityActivationIdleBonuses(activator, skillType);");
         combatSource.Should().Contain("public static void StoreQueuedWeaponAbilityActivationIdleBonuses(");

@@ -699,8 +699,7 @@ public class AIModelTests
     public void InvisibleTargets_AreSkippedByNpcDecisionsAndAttackReissue()
     {
         var enmitySource = EnmitySource.Read().Replace("\r\n", "\n");
-        var weaponSource = ReadSource("SWLOR.Game.Server", "Feature", "AbilityDefinition",
-            "WeaponActiveAbilityDefinitionBase.cs").Replace("\r\n", "\n");
+        var weaponSource = WeaponAbilitySource.Read();
         var issueBody = ExtractMethodBody(enmitySource, "public void IssueAttackCommand");
         var invisibilityBody = ExtractMethodBody(weaponSource, "private void ApplySelfInvisibility");
 

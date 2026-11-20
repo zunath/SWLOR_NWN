@@ -174,92 +174,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(5 + carriedCount, Items(droid).Where(item => GetResRef(item) == "advent_ring").Select(item => GetName(item)).Distinct().Count(), "Every distinct fixture item survives");
         }
 
-        [EngineTest("Migration preserves legacy droid inventory through equipping removal and resummoning", Category = "DroidInventory")]
-        public static async Task LegacyInventoryIdentity(EngineTestContext ctx)
-        {
-            var owner = ctx.SpawnCreature("civilian");
-            await ctx.WaitFrameAsync();
-            foreach (var savedId in new[] { string.Empty, "outdated-item-id" })
-            {
-                var controller = await CreateController(ctx, owner);
-                var ring = await CreateRing(ctx, owner);
-                await ctx.ExecuteInCreatureContextAsync(owner, () =>
-                {
-                    SetLocalString(ring, "DROID_ITEM_ID", savedId);
-                    Droid.SaveConstructedDroid(controller, new ConstructedDroid
-                    {
-                        Name = "Legacy inventory fixture",
-                        LearnedPerks = { new DroidPerk((PerkType)23, 1) },
-                        Inventory = { ["legacy-inventory-key"] = ObjectPlugin.Serialize(ring) }
-                    });
-                    DestroyObject(ring);
-                });
-                controller = await MigrateController(ctx, owner, controller);
-                var droid = await Spawn(ctx, owner, controller);
-                ring = Items(droid).Single(item => GetResRef(item) == "advent_ring");
-                ctx.AssertEqual("legacy-inventory-key", GetLocalString(ring, "DROID_ITEM_ID"), "The saved inventory key restores the item's identity");
-                await Equip(ctx, droid, ring, InventorySlot.RightRing);
-                await ctx.ExecuteInCreatureContextAsync(owner, () =>
-                {
-                    var saved = Droid.LoadConstructedDroid(controller);
-                    ctx.AssertEqual(0, saved.Inventory.Count, "Equipping removes the inventory copy");
-                    ctx.AssertEqual(1, saved.EquippedItems.Count, "One equipped copy is saved");
-                });
-                await Unequip(ctx, droid, ring);
-                await Transfer(ctx, owner, ring, owner);
-                for (var pass = 0; pass < 2; pass++)
-                {
-                    await Dismiss(ctx, owner, droid);
-                    droid = await Spawn(ctx, owner, controller);
-                    ctx.AssertEqual(0, Items(droid).Count(item => GetResRef(item) == "advent_ring"), "A removed legacy item must never return on resummon");
-                    ctx.AssertEqual(owner, GetItemPossessor(ring), "The removed original remains with its owner");
-                    ctx.AssertEqual("Legacy inventory fixture", GetName(droid), "Inventory reconciliation preserves controller metadata");
-                }
-                await Dismiss(ctx, owner, droid);
-            }
-        }
-
-        [EngineTest("Migration preserves droid equipment replacements across repeated summons", Category = "DroidInventory")]
-        public static async Task EquipmentRoundTrip(EngineTestContext ctx)
-        {
-            var owner = ctx.SpawnCreature("civilian");
-            await ctx.WaitFrameAsync();
-            var controller = await CreateController(ctx, owner);
-            var original = await CreateRing(ctx, owner);
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                SetName(original, "Original equipment");
-                DeleteLocalString(original, "DROID_ITEM_ID");
-                Droid.SaveConstructedDroid(controller, new ConstructedDroid
-                {
-                    LearnedPerks = { new DroidPerk((PerkType)23, 1) },
-                    EquippedItems = { [InventorySlot.RightRing] = ObjectPlugin.Serialize(original) }
-                });
-                DestroyObject(original);
-            });
-            controller = await MigrateController(ctx, owner, controller);
-            var droid = await Spawn(ctx, owner, controller);
-            await ctx.WaitUntilAsync(() => GetIsObjectValid(GetItemInSlot(InventorySlot.RightRing, droid)), 5f, "the original equipment to be restored");
-            original = GetItemInSlot(InventorySlot.RightRing, droid);
-            await Unequip(ctx, droid, original);
-            await Transfer(ctx, owner, original, owner);
-            var replacement = await CreateRing(ctx, owner);
-            await ctx.ExecuteInCreatureContextAsync(owner, () => SetName(replacement, "Replacement equipment"));
-            await Transfer(ctx, owner, replacement, droid);
-            await Equip(ctx, droid, replacement, InventorySlot.RightRing);
-            for (var pass = 0; pass < 2; pass++)
-            {
-                await Dismiss(ctx, owner, droid);
-                droid = await Spawn(ctx, owner, controller);
-                await ctx.WaitUntilAsync(() => GetIsObjectValid(GetItemInSlot(InventorySlot.RightRing, droid)), 5f, "the replacement equipment to be restored");
-                replacement = GetItemInSlot(InventorySlot.RightRing, droid);
-                ctx.AssertEqual("Replacement equipment", GetName(replacement), "Resummoning retains the new equipment");
-                ctx.AssertEqual(1, Items(droid).Count(item => GetResRef(item) == "advent_ring"), "Only one replacement item exists");
-                ctx.AssertEqual(owner, GetItemPossessor(original), "The removed original remains with its owner");
-            }
-            await Dismiss(ctx, owner, droid);
-        }
-
         [EngineTest("Rejected droid equipment stays carried across resummoning", Category = "DroidInventory")]
         public static async Task RejectedEquipment(EngineTestContext ctx)
         {
@@ -652,29 +566,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;
             server.GetGameObject(droid).AsNWSCreature().SplitItem(server.GetGameObject(item).AsNWSItem(), amount);
-        }
-
-        private static async Task<uint> MigrateController(EngineTestContext ctx, uint owner, uint controller)
-        {
-            var migrated = OBJECT_INVALID;
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                var migrate = typeof(Droid).Assembly
-                    .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration.StoredItemDataMigration")
-                    .GetMethod("MigrateSerializedObject", BindingFlags.NonPublic | BindingFlags.Static);
-                var result = migrate.Invoke(null, new object[] { ObjectPlugin.Serialize(controller) });
-                ctx.AssertEqual(true, (bool)result.GetType().GetProperty("Changed").GetValue(result), "The legacy controller requires an actual migration");
-                migrated = ObjectPlugin.Deserialize((string)result.GetType().GetProperty("Data").GetValue(result));
-                ctx.Assert(GetIsObjectValid(migrated), "The migrated controller reloads");
-                ctx.Track(migrated);
-                ctx.Assert(ItemPlugin.MoveTo(migrated, owner), "The owner receives the migrated controller");
-                DestroyObject(controller);
-                ctx.AssertEqual(0, Droid.LoadConstructedDroid(migrated).LearnedPerks.Count, "Migration removes the historical reassigned instruction");
-                var retry = migrate.Invoke(null, new object[] { ObjectPlugin.Serialize(migrated) });
-                ctx.AssertEqual(false, (bool)retry.GetType().GetProperty("Changed").GetValue(retry), "The migrated controller is stable on retry before gameplay changes");
-            });
-            await ctx.WaitFrameAsync();
-            return migrated;
         }
 
         private static async Task<uint> CreateController(EngineTestContext ctx, uint owner)

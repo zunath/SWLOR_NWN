@@ -49,8 +49,6 @@ public static class LootStatRevisionMigration
     /// </summary>
     public static bool MigrateObject(uint obj) => MigrateObject(obj, new HashSet<uint>(), true, true);
 
-    public static bool MigratePlayerItems(uint player) => MigrateObject(player, new HashSet<uint>(), true, true, true);
-
     internal static bool MigrateHeadgear(uint obj) => MigrateObject(obj, new HashSet<uint>(), false, true);
 
     private static bool MigrateObject(uint obj, HashSet<uint> visited, bool reviseStats, bool repairHeadgear, bool updateArtwork = false)

@@ -22,29 +22,4 @@ public static class SaberRecalibration
         return (int)Math.Min(int.MaxValue, Math.Round(amount, MidpointRounding.AwayFromZero));
     }
 
-    /// <summary>
-    /// Returns the normalized tier, damage, accuracy, and required skill. Each five
-    /// accuracy consumes one of two enhancement slots; remaining slots allow bounded
-    /// damage above the tier baseline, in addition to the blueprint allowance.
-    /// </summary>
-    public static (int Tier, int Damage, int Accuracy, int RequiredSkill) CalculateProfile(
-        bool saberstaff,
-        int currentDamage,
-        int accuracy,
-        bool upgraded)
-    {
-        var tier = upgraded ? ChiroTier : TierFive;
-        var baselineDamage = upgraded ? 24 : 21;
-        var requiredSkill = upgraded ? 50 : 40;
-        var boundedAccuracy = Math.Clamp(accuracy, 0, MaximumAccuracy);
-        var accuracySlots = boundedAccuracy == 0
-            ? 0
-            : 1 + (boundedAccuracy - 1) / AccuracyPerEnhancementSlot;
-        var remainingSlots = EnhancementSlotCount - accuracySlots;
-        var maximumDamage = baselineDamage + BlueprintDamageAllowance +
-                            remainingSlots * DamagePerRemainingEnhancementSlot;
-        var boundedDamage = Math.Clamp(currentDamage, baselineDamage, maximumDamage);
-
-        return (tier, boundedDamage, boundedAccuracy, requiredSkill);
-    }
 }

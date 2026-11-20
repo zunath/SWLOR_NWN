@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             const string checkpointVariable = "PLAYER_MIGRATION_VERSION";
             CreaturePlugin.SetClassByPosition(player, 0, characterClass);
             var latest = SavedCharacterMigration.LatestVersion;
-            var record = new Player(GetObjectUUID(player)) { Version = 14, UnallocatedSP = 166 };
+            var record = new Player(GetObjectUUID(player)) { Version = latest - 1, UnallocatedSP = 166 };
             DB.Set(record);
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(player).AsNWSCreature();
             var wasPlayer = native.m_bPlayerCharacter;
@@ -95,33 +95,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
-        [EngineTest("Character migration preserves purchased ability ranks in the saved file", Category = "PlayerPerkFeats", TimeoutSeconds = 120)]
-        public static async Task MigrationPreservesPurchasedFeats(EngineTestContext ctx)
-        {
-            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
-            var player = fixture.Creature;
-            await ctx.ExecuteInCreatureContextAsync(player, () =>
-            {
-                CreaturePlugin.SetClassByPosition(player, 0, ClassType.Standard);
-                var record = CreateRecord(player);
-                // The record already holds the effects of every migration through 15; only the file is behind.
-                record.CharacterFileVersion = 15;
-                DB.Set(record);
-                PlayerInitialization.ResetFeatsToBaseline(player);
-                Perk.RestorePlayerFeats(player);
-                AssertPurchasedFeats(ctx, player);
-                // Reproduce an older character file with an already-current database record.
-                SetLocalInt(player, "PLAYER_MIGRATION_VERSION", 14);
-                var upgraded = SavedCharacterMigration.Upgrade(SavedCharacterMigration.SaveFile(player), DB.Get<Player>(record.Id));
-                ctx.Assert(upgraded != null, "The file is behind and is upgraded");
-                var restored = SavedCharacterMigration.Load(ctx, upgraded);
-                AssertPurchasedFeats(ctx, restored);
-                ctx.AssertEqual(166, upgraded.Record.UnallocatedSP, "Migration does not charge for restored abilities");
-                ctx.AssertEqual(4, upgraded.Record.Currencies[CurrencyType.RebuildToken], "File replay grants only migration 24's and migration 26's tokens, not migration 15's again");
-                ctx.AssertEqual(SavedCharacterMigration.LatestVersion, upgraded.Record.Version, "The record reaches the latest version");
-            });
-        }
-
         [EngineTest("Previously stripped characters recover purchased feats without repeating rewards", Category = "PlayerPerkFeats")]
         public static async Task RestorePreviouslyStrippedCharacter(EngineTestContext ctx)
         {
@@ -157,7 +130,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static Player CreateRecord(uint player)
         {
-            var record = new Player(GetObjectUUID(player)) { Version = 15, UnallocatedSP = 166 };
+            var record = new Player(GetObjectUUID(player)) { Version = SavedCharacterMigration.LatestVersion, UnallocatedSP = 166 };
             record.Currencies[CurrencyType.RebuildToken] = 2;
             record.Perks[PerkType.FortressStrike] = 3;
             record.Perks[PerkType.BastionStance] = 1;

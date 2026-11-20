@@ -1,7 +1,6 @@
 using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Crafting.Minigame;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -21,19 +20,6 @@ namespace SWLOR.Game.Server.Native
         public static void RegisterHooks()
         {
             NativeHookAccess.Hooks.Enable(NativeHookId.PlayerFileCheckpoint);
-        }
-
-        /// <summary>
-        /// Puts the craft file sequence the character file loaded with back on the entering player, after the engine has copied the
-        /// locals of an earlier login over it. The login checks that read it call <see cref="NwnCraftSessionWorld.LoadedSequence"/>, which
-        /// does the same, so they need not run after this.
-        /// </summary>
-        [PlayerSession(PlayerReload.LoginOnly,
-            "Restores the file's craft sequence over a login's copied locals; a player who stays online keeps theirs.")]
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
-        public static void ApplyLoadedCraftSequence()
-        {
-            NwnCraftSessionWorld.Instance.ApplyLoadedSequence(GetEnteringObject());
         }
     }
 }

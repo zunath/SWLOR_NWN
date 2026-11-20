@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Social;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;

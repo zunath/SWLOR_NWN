@@ -15,8 +15,6 @@
 # SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
 
 SWLOR.Game.Server/ApplicationSettings.cs: Platform -> Character | 1
-SWLOR.Game.Server/Domain/Administration/HostedEventsService.cs: Administration -> Combat | 6
-SWLOR.Game.Server/Domain/Administration/HostedEventsService.cs: Administration -> World | 2
 SWLOR.Game.Server/Domain/Character/EquipmentStatTotals.cs: Character -> Combat | 1
 SWLOR.Game.Server/Domain/Character/EquipmentStatTotals.cs: Character -> Items | 1
 SWLOR.Game.Server/Domain/Character/EspionageInfiltrationService.cs: Character -> Creatures | 4
@@ -40,8 +38,6 @@ SWLOR.Game.Server/Domain/Combat/StealthService.cs: Combat -> Creatures | 4
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> Character | 3
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> UI | 6
 SWLOR.Game.Server/Domain/Foundation/PlayerFeedbackService.cs: Foundation -> Character | 3
-SWLOR.Game.Server/Domain/Foundation/TimeZoneService/PlayerTimeZones.cs: Foundation -> Administration | 1
-SWLOR.Game.Server/Domain/Foundation/TimeZoneService/PlayerTimeZones.cs: Foundation -> UI | 1
 SWLOR.Game.Server/Domain/Items/EquipmentPredicates.cs: Items -> Combat | 3
 SWLOR.Game.Server/Domain/Items/ItemService.cs: Items -> Combat | 6
 SWLOR.Game.Server/Domain/Items/ItemService.cs: Items -> Crafting | 3
@@ -50,7 +46,6 @@ SWLOR.Game.Server/Domain/Items/KeyItemIcon.cs: Items -> World | 1
 SWLOR.Game.Server/Domain/Quests/GuildTaskXpReward.cs: Quests -> Economy | 2
 SWLOR.Game.Server/Domain/Quests/QuestRewards.cs: Quests -> Economy | 2
 SWLOR.Game.Server/Domain/World/StructureChangedAction.cs: World -> Space | 1
-SWLOR.Game.Server/Entity/HostedEvent.cs: Foundation -> Administration | 2
 SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceSettingsService.cs: UI content -> Gameplay content | 3
 SWLOR.Game.Server/Feature/BeastStableTrials.cs: Gameplay content -> Quests content | 1
 SWLOR.Game.Server/Feature/DialogDefinition/MarketDialog.cs: Foundation content -> UI content | 1
@@ -131,7 +126,6 @@ SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs: Platform -> Combat | 5
 SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs: Platform -> Foundation | 2
 SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs: Platform -> Items | 1
 SWLOR.Game.Server/Native/PairedRangedPresentation.cs: Platform -> Combat | 4
-SWLOR.Game.Server/Native/PlayerFileCheckpoint.cs: Platform -> Crafting | 1
 SWLOR.Game.Server/Native/RangedWeaponAttackContext.cs: Platform -> Combat | 10
 SWLOR.Game.Server/Native/RangedWeaponAttackContext.cs: Platform -> Foundation | 1
 SWLOR.Game.Server/Native/ResolveAttackRoll.cs: Platform -> Character | 2

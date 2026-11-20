@@ -1,9 +1,10 @@
+using SWLOR.Game.Server.Domain.Administration;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
 
-namespace SWLOR.Game.Server.Domain.Administration
+namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// DM-hosted events: DMs schedule, start and end them; players see them with /events, join them when
@@ -53,5 +54,10 @@ namespace SWLOR.Game.Server.Domain.Administration
         HostedEventTravelState GetTravelState(uint player);
 
         void RefreshWindows(uint player);
+
+        /// <summary>
+        /// The zone a player picked in Settings, or a DM in DM Settings, or UTC.
+        /// </summary>
+        PlayerTimeZone GetPlayerTimeZone(uint player);
     }
 }

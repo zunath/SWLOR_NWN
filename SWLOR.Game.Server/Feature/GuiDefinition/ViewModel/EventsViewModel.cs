@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Social;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -111,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadEvents()
         {
             var now = DateTime.UtcNow;
-            _zone = PlayerTimeZones.ForPlayer(Player);
+            _zone = HostedEvents.GetPlayerTimeZone(Player);
             var events = HostedEvents.GetEvents();
             _eventIds = events.Select(e => e.Id).ToList();
             if (!_eventIds.Contains(_selectedEventId))

@@ -91,7 +91,7 @@ mod_load (47)
   Rerun       SWLOR.Game.Server.Domain.Character.AchievementService.ReserveGuiIds
   Rerun       SWLOR.Game.Server.Domain.World.AreaService.RemoveInstancesFromCache
   Rerun       SWLOR.Game.Server.Core.FrameProfiler.Load
-  Rerun       SWLOR.Game.Server.Domain.Administration.HostedEventsService.LoadEvents
+  Rerun       SWLOR.Game.Server.Domain.Social.HostedEventsService.LoadEvents
   Rerun       SWLOR.Game.Server.Domain.Character.LanguageService.LoadTranslators
   BootOnly    SWLOR.Game.Server.Domain.Economy.PlayerMarketService.RemoveOldListings
   BootOnly    SWLOR.Game.Server.Domain.World.PropertyService.OnModuleLoad

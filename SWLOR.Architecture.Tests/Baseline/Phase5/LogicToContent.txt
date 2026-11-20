@@ -19,7 +19,6 @@ SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Feature.UsePerkFeat | 
 SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Abilities/TwinPistolAbilityService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Administration/DMBlueprintCatalogService.cs -> Feature.DMActions | 1
-SWLOR.Game.Server/Domain/Administration/HostedEventsService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Character/CreatureStatService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Character/RobeModelRenderer.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Feature/AbilityDefinition | 1
@@ -92,6 +91,7 @@ SWLOR.Game.Server/Domain/Quests/QuestDetail.cs -> Feature/DialogDefinition | 1
 SWLOR.Game.Server/Domain/Social/ExtraHotbarsEquipService.cs -> Feature/MigrationDefinition | 1
 SWLOR.Game.Server/Domain/Social/ExtraHotbarsService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Social/ExtraHotbarsWindowService.cs -> Feature/GuiDefinition | 1
+SWLOR.Game.Server/Domain/Social/HostedEventsService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Social/PerformanceInspiredService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Social/PerformanceService.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Social/PerformanceWindowsService.cs -> Feature/GuiDefinition | 1

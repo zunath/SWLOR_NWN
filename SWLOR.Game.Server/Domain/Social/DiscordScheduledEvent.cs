@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Domain.Administration
+namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// One entry from the Discord server's Events tab, with its text already made safe for the game.

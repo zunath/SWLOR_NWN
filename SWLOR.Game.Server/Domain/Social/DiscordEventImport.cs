@@ -6,9 +6,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
 
-namespace SWLOR.Game.Server.Domain.Administration
+namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// Engine-free rules for listing the Discord server's scheduled events in game: reading the snapshot the

@@ -90,7 +90,7 @@ mod_load  # run by the engine as the module OnModuleLoad event, which EventRegis
   action      SWLOR.Game.Server.Domain.Character.AchievementService.ReserveGuiIds
   action      SWLOR.Game.Server.Domain.World.AreaService.RemoveInstancesFromCache
   action      SWLOR.Game.Server.Core.FrameProfiler.Load
-  action      SWLOR.Game.Server.Domain.Administration.HostedEventsService.LoadEvents
+  action      SWLOR.Game.Server.Domain.Social.HostedEventsService.LoadEvents
   action      SWLOR.Game.Server.Domain.Character.LanguageService.LoadTranslators
   action      SWLOR.Game.Server.Domain.Economy.PlayerMarketService.RemoveOldListings
   action      SWLOR.Game.Server.Domain.World.PropertyService.OnModuleLoad
@@ -773,7 +773,7 @@ mod_enter
   action      SWLOR.Game.Server.Domain.Quests.QuestEncounterService.OnModuleEnter
   action      SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.RestoreCraftingStylesOnEnter
   action      SWLOR.Game.Server.Domain.Creatures.CompanionControlService.RenameToggleAbilitiesCommand
-  action      SWLOR.Game.Server.Native.PlayerFileCheckpoint.ApplyLoadedCraftSequence
+  action      SWLOR.Game.Server.Domain.Crafting.CraftService.ApplyLoadedCraftSequence
   action      SWLOR.Game.Server.Feature.AchievementProgression.LogIn
   action      SWLOR.Game.Server.Feature.Auditing.AuditClientConnection
   action      SWLOR.Game.Server.Feature.CraftingInterruptions.SettleOnLogin

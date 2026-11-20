@@ -524,7 +524,6 @@ SWLOR.Game.Server/Domain/Foundation/SavedCharacter.cs | 1
 SWLOR.Game.Server/Domain/Foundation/SavedCharacterData.cs | 13
 SWLOR.Game.Server/Domain/Foundation/SavedCharacterDataStore.cs | 1
 SWLOR.Game.Server/Domain/Foundation/ServerMigrationProgress.cs | 2
-SWLOR.Game.Server/Domain/Foundation/TimeZoneService/PlayerTimeZones.cs | 4
 SWLOR.Game.Server/Domain/Gameplay/ServerRestart.cs | 2
 SWLOR.Game.Server/Domain/Items/EquipmentPredicates.cs | 23
 SWLOR.Game.Server/Domain/Items/KeyItemIcon.cs | 3
@@ -795,7 +794,7 @@ SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMAdminToolsViewModel.cs | 5
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMBattleGridViewModel.cs | 20
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMChooserViewModel.cs | 17
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMCreatorViewModel.cs | 23
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMEventsViewModel.cs | 20
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMEventsViewModel.cs | 22
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerExamineViewModel.cs | 31
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerSearchViewModel.cs | 30
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMSettingsViewModel.cs | 11
@@ -808,7 +807,7 @@ SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs | 2
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DroidAIViewModel.cs | 21
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ElectionViewModel.cs | 21
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/EmotesViewModel.cs | 5
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/EventsViewModel.cs | 7
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/EventsViewModel.cs | 8
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ExamineItemViewModel.cs | 6
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ExtraHotbarSetupViewModel.cs | 8
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ExtraHotbarSlotPickerViewModel.cs | 34

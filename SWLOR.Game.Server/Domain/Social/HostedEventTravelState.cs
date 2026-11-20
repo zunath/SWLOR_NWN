@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Domain.Administration
+namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// What blocks a player from traveling to or from an event, read from the engine by the caller.

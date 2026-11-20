@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Domain.Administration
+namespace SWLOR.Game.Server.Domain.Foundation
 {
     public enum HostedEventStatus
     {

@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
-using SWLOR.Game.Server.Entity;
-using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Domain.Foundation
 {
@@ -67,19 +65,6 @@ namespace SWLOR.Game.Server.Domain.Foundation
         public static PlayerTimeZone GetByIndex(int index)
         {
             return index >= 0 && index < All.Length ? All[index] : Utc;
-        }
-
-        /// <summary>
-        /// The zone a player picked in Settings, or a DM in DM Settings, or UTC.
-        /// </summary>
-        public static PlayerTimeZone ForPlayer(uint player)
-        {
-            // DM avatars and possessed creatures have no Player record; a DM's choice follows their CD key.
-            if (DMPresence.IsControlledByDM(player))
-                return Get(DMPreference.Get(player).TimeZoneId);
-
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
-            return Get(dbPlayer?.Settings?.TimeZoneId);
         }
 
         public static TimeZoneInfo GetInfo(PlayerTimeZone zone)

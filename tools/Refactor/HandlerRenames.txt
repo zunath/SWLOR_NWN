@@ -416,4 +416,5 @@ SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.Clos
 SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand.CacheSpawnBeastEggHelp SWLOR.Game.Server.Feature.ChatCommandDefinition.DMSpawnChatCommand.CacheSpawnBeastEggHelp
 SWLOR.Game.Server.Service.Skill.ResetLimitWarningsOnEnter SWLOR.Game.Server.Domain.Character.SkillService.ResetLimitWarningsOnEnter
 SWLOR.Game.Server.Service.Skill.ResetLimitWarningsOnExit SWLOR.Game.Server.Domain.Character.SkillService.ResetLimitWarningsOnExit
-SWLOR.Game.Server.Service.HostedEvents.LoadEvents SWLOR.Game.Server.Domain.Administration.HostedEventsService.LoadEvents
+SWLOR.Game.Server.Service.HostedEvents.LoadEvents SWLOR.Game.Server.Domain.Social.HostedEventsService.LoadEvents
+SWLOR.Game.Server.Native.PlayerFileCheckpoint.ApplyLoadedCraftSequence SWLOR.Game.Server.Domain.Crafting.CraftService.ApplyLoadedCraftSequence

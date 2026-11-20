@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Administration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -10,7 +11,7 @@ using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.NWN.API.Engine;
 
-namespace SWLOR.Game.Server.Domain.Administration
+namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// DM-hosted events: DMs schedule, start and end them; players see them with /events, join them when
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Domain.Administration
         private readonly ISpaceModeQuery _space;
         private readonly IBackgroundJobService _backgroundJob;
         private readonly IDeathService _death;
+        private readonly IDMPreferenceService _dmPreference;
 
         public HostedEventsService(
             IDBService db,
@@ -54,7 +56,8 @@ namespace SWLOR.Game.Server.Domain.Administration
             IEnmityService enmity,
             ISpaceModeQuery space,
             IBackgroundJobService backgroundJob,
-            IDeathService death)
+            IDeathService death,
+            IDMPreferenceService dmPreference)
         {
             _db = db;
             _gui = gui;
@@ -64,6 +67,7 @@ namespace SWLOR.Game.Server.Domain.Administration
             _space = space;
             _backgroundJob = backgroundJob;
             _death = death;
+            _dmPreference = dmPreference;
         }
 
         [BootPhase(BootReload.Rerun)]
@@ -597,6 +601,16 @@ namespace SWLOR.Game.Server.Domain.Administration
         /// <summary>
         /// Redraws one player's open event windows, for example after they pick another time zone.
         /// </summary>
+        public PlayerTimeZone GetPlayerTimeZone(uint player)
+        {
+            // DM avatars and possessed creatures have no Player record; a DM's choice follows their CD key.
+            if (_dmPresence.IsControlledByDM(player))
+                return PlayerTimeZones.Get(_dmPreference.Get(player).TimeZoneId);
+
+            var dbPlayer = _db.Get<Player>(GetObjectUUID(player));
+            return PlayerTimeZones.Get(dbPlayer?.Settings?.TimeZoneId);
+        }
+
         public void RefreshWindows(uint player)
         {
             _gui.PublishRefreshEvent(player, new HostedEventsChangedRefreshEvent(), _dmPresence.GetControlledCreature(player));

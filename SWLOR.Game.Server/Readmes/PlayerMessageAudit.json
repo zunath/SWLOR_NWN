@@ -91,34 +91,6 @@
     "Call": "SendMessageToPC(GetControlledCreature(actor), message)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Administration/HostedEventsService.cs",
-    "Line": 295,
-    "Member": "SendEveryoneBack",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Green($\"The host sent you back from {hostedEvent.Name}.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Administration/HostedEventsService.cs",
-    "Line": 354,
-    "Member": "Join",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Green($\"Traveling to {hostedEvent.Name}. Use /leaveevent or the Events window to go back.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Administration/HostedEventsService.cs",
-    "Line": 570,
-    "Member": "Announce",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(_dmPresence.GetControlledCreature(player), message)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Administration/HostedEventsService.cs",
-    "Line": 577,
-    "Member": "TellParticipantsEnded",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Cyan($\"{hostedEvent.Name} has ended. Use /leaveevent when you are ready to go back.\"))"
-  },
-  {
     "File": "SWLOR.Game.Server/Domain/Character/PerkService.cs",
     "Line": 1426,
     "Member": "RemovePerkLevelOnSkillDecay",
@@ -1818,6 +1790,34 @@
     "Member": "UseItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"That item cannot be used.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/HostedEventsService.cs",
+    "Line": 299,
+    "Member": "SendEveryoneBack",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"The host sent you back from {hostedEvent.Name}.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/HostedEventsService.cs",
+    "Line": 358,
+    "Member": "Join",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Green($\"Traveling to {hostedEvent.Name}. Use /leaveevent or the Events window to go back.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/HostedEventsService.cs",
+    "Line": 574,
+    "Member": "Announce",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(_dmPresence.GetControlledCreature(player), message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/HostedEventsService.cs",
+    "Line": 581,
+    "Member": "TellParticipantsEnded",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Cyan($\"{hostedEvent.Name} has ended. Use /leaveevent when you are ready to go back.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Social/PerformanceAudienceService.cs",

@@ -50,10 +50,7 @@ Domain/Abilities -> Domain/UI | 13
 Feature/AbilityDefinition -> Domain/World | 2
 
 # Administration -> Character (1 edge)
-Domain/Administration -> Domain/Character | 18
-
-# Administration -> Combat (1 edge)
-Domain/Administration -> Domain/Combat | 6
+Domain/Administration -> Domain/Character | 17
 
 # Administration -> Gameplay (1 edge)
 Domain/Administration -> Feature.DMActions | 1
@@ -61,12 +58,8 @@ Domain/Administration -> Feature.DMActions | 1
 # Administration -> Items (1 edge)
 Domain/Administration -> Domain/Items | 5
 
-# Administration -> UI (2 edges)
-Domain/Administration -> Domain/UI | 10
-Domain/Administration -> Feature/GuiDefinition | 1
-
-# Administration -> World (1 edge)
-Domain/Administration -> Domain/World | 2
+# Administration -> UI (1 edge)
+Domain/Administration -> Domain/UI | 8
 
 # Character -> Abilities (6 edges)
 Domain/Character -> Domain/Abilities | 4
@@ -246,10 +239,6 @@ Domain/Economy -> Domain/World | 7
 # Foundation -> Abilities (1 edge)
 Feature/MigrationDefinition -> Domain/Abilities | 4
 
-# Foundation -> Administration (2 edges)
-Domain/Foundation -> Domain/Administration | 1
-Platform/Entity -> Domain/Administration | 3
-
 # Foundation -> Character (4 edges)
 Domain/Foundation -> Domain/Character | 6
 Feature/DialogDefinition -> Domain/Character | 19
@@ -291,7 +280,7 @@ Feature/SnippetDefinition -> Domain/Quests | 7
 Feature/DialogDefinition -> Domain/Space | 13
 
 # Foundation -> UI (5 edges)
-Domain/Foundation -> Domain/UI | 7
+Domain/Foundation -> Domain/UI | 6
 Domain/Foundation -> Feature/GuiDefinition | 3
 Feature/DialogDefinition -> Domain/UI | 12
 Feature/DialogDefinition -> Feature/GuiDefinition | 1
@@ -481,9 +470,6 @@ Platform/Root -> Domain/Character | 1
 # Platform -> Combat (1 edge)
 Platform/Native -> Domain/Combat | 61
 
-# Platform -> Crafting (1 edge)
-Platform/Native -> Domain/Crafting | 1
-
 # Platform -> Creatures (1 edge)
 Platform/Native -> Domain/Creatures | 1
 
@@ -530,18 +516,18 @@ Domain/Social -> Domain/Abilities | 13
 Feature/ChatCommandDefinition -> Domain/Abilities | 6
 
 # Social -> Administration (2 edges)
-Domain/Social -> Domain/Administration | 17
-Feature/ChatCommandDefinition -> Domain/Administration | 5
+Domain/Social -> Domain/Administration | 31
+Feature/ChatCommandDefinition -> Domain/Administration | 4
 
 # Social -> Character (5 edges)
-Domain/Social -> Domain/Character | 106
+Domain/Social -> Domain/Character | 107
 Domain/Social -> Feature/AppearanceDefinition | 1
 Domain/Social -> Feature/StatusEffectDefinition | 6
 Feature/ChatCommandDefinition -> Domain/Character | 14
 Feature/ChatCommandDefinition -> Feature/AppearanceDefinition | 1
 
 # Social -> Combat (2 edges)
-Domain/Social -> Domain/Combat | 21
+Domain/Social -> Domain/Combat | 27
 Feature/ChatCommandDefinition -> Domain/Combat | 3
 
 # Social -> Companions (1 edge)
@@ -573,13 +559,13 @@ Domain/Social -> Domain/Space | 9
 Feature/ChatCommandDefinition -> Domain/Space | 3
 
 # Social -> UI (4 edges)
-Domain/Social -> Domain/UI | 46
-Domain/Social -> Feature/GuiDefinition | 6
+Domain/Social -> Domain/UI | 49
+Domain/Social -> Feature/GuiDefinition | 7
 Feature/ChatCommandDefinition -> Domain/UI | 34
 Feature/ChatCommandDefinition -> Feature/GuiDefinition | 2
 
 # Social -> World (2 edges)
-Domain/Social -> Domain/World | 40
+Domain/Social -> Domain/World | 42
 Feature/ChatCommandDefinition -> Domain/World | 3
 
 # Space -> Abilities (1 edge)
@@ -614,7 +600,7 @@ Feature/GuiDefinition -> Feature/AbilityDefinition | 4
 
 # UI -> Administration (2 edges)
 Feature/AppearanceEditing -> Domain/Administration | 5
-Feature/GuiDefinition -> Domain/Administration | 110
+Feature/GuiDefinition -> Domain/Administration | 91
 
 # UI -> Character (5 edges)
 Domain/UI -> Domain/Character | 1
@@ -656,7 +642,7 @@ Feature/GuiDefinition -> Domain/Items | 83
 Feature/GuiDefinition -> Domain/Quests | 33
 
 # UI -> Social (1 edge)
-Feature/GuiDefinition -> Domain/Social | 130
+Feature/GuiDefinition -> Domain/Social | 149
 
 # UI -> Space (1 edge)
 Feature/GuiDefinition -> Domain/Space | 20

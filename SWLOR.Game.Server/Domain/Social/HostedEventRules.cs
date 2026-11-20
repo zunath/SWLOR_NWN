@@ -1,10 +1,11 @@
+using SWLOR.Game.Server.Domain.Administration;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Foundation;
 
-namespace SWLOR.Game.Server.Domain.Administration
+namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// Engine-free event rules: travel refusals, start time parsing, expiry, ordering and display text.

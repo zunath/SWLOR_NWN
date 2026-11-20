@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Social;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -116,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // The DM picked another time zone in Settings: show the typed start time on the new zone's clock.
         private void FollowTimeZoneChange()
         {
-            var zone = PlayerTimeZones.ForPlayer(Player);
+            var zone = HostedEvents.GetPlayerTimeZone(Player);
             if (zone.Id == _formZone.Id)
                 return;
 
@@ -257,7 +258,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadForm(HostedEvent hostedEvent)
         {
-            _formZone = PlayerTimeZones.ForPlayer(Player);
+            _formZone = HostedEvents.GetPlayerTimeZone(Player);
             if (hostedEvent == null)
             {
                 EventName = string.Empty;

@@ -48,10 +48,10 @@ public class CraftFileSequenceReaderTests
         apply.Should().BeLessThan(accessor.IndexOf("GetLocalInt(", StringComparison.Ordinal), "it applies before it reads");
     }
 
-    [TestCase("Native", "PlayerFileCheckpoint.cs", "public static void ApplyLoadedCraftSequence()")]
+    [TestCase("Domain/Crafting", "CraftService.cs", "public void ApplyLoadedCraftSequence()")]
     public void TheModuleEnterHandler_AppliesTheFilesSequence(string folder, string file, string signature)
     {
-        Method(Source(folder, file), signature).Should().Contain("NwnCraftSessionWorld.Instance.ApplyLoadedSequence(GetEnteringObject());");
+        Method(Source(folder, file), signature).Should().Contain("SessionWorld.ApplyLoadedSequence(GetEnteringObject());");
     }
 
     private static string Source(params string[] relative) =>

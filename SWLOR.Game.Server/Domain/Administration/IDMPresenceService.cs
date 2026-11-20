@@ -54,6 +54,12 @@ namespace SWLOR.Game.Server.Domain.Administration
         /// <param name="dm">The DM avatar or the creature they possess.</param>
         /// <param name="location">The location to check.</param>
         bool CanLandAt(uint dm, Location location);
+
+        /// <summary>
+        /// Where a jump to this location puts the creature, which can be up to the search radius away from it.
+        /// Returns false when the engine would cancel the jump.
+        /// </summary>
+        bool TryGetLanding(uint dm, Location location, out Location landingLocation);
         /// <summary>
         /// Brings a creature or player to the DM, or to the creature they possess. Players piloting a ship in
         /// space cannot be summoned, because moving them would move their ship instead.

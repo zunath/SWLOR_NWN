@@ -607,6 +607,8 @@ public class CasinoSlotServiceTests
 
         public long GetWriteVersion<T>() where T : EntityBase => _inner.GetWriteVersion<T>();
 
+        public string StringGet(RedisKey key) => _inner.StringGet(key);
+
         public Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false) =>
             _inner.StreamAddAsync(key, streamPairs, maxLength, useApproximateMaxLength);
     }

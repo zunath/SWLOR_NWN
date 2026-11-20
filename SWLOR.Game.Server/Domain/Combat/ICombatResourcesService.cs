@@ -86,6 +86,14 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         void DeferAbilityStaminaCostContext(uint creature, AbilityDetail ability);
 
+        /// <summary>
+        /// Captures this activation's stamina cost context for impacts that land after the cast ends, such as
+        /// scheduled device pulses. Returns a wrapper that runs an impact with that activation's context in place,
+        /// so its hit rewards share the stamina the activation paid and a later activation of the same ability
+        /// cannot be charged for them. Returns null when the activation paid no stamina.
+        /// </summary>
+        Action<Action> CaptureAbilityStaminaCostContext(uint creature, AbilityDetail ability);
+
         void CompleteAbilityStaminaCostContext(uint creature, AbilityDetail ability);
 
         void CompleteDeferredAbilityStaminaCostContext(uint creature, AbilityDetail ability);

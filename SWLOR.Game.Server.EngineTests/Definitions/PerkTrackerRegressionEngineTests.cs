@@ -380,8 +380,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Stat.ReduceStamina(caster, 50);
                 stamina = Stat.GetCurrentStamina(caster);
                 // Hit rewards refund the stamina this activation paid, so record the cost as the activation does.
-                Combat.ApplyAbilityStaminaCostFPRestore(caster, area, 50);
-                Ability.BeginAbilityImpact(caster, area);
+                GameServices.CombatResources.ApplyAbilityStaminaCostFPRestore(caster, area, 50);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, area);
                 try
                 {
                     ScheduleChannel(CombatDamageType.Physical, 6f);
@@ -389,9 +389,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(caster);
+                    AbilityImpactLifecycle.EndAbilityImpact(caster);
                     // The cast ends here; the scheduled channels must keep the paid cost for their later pulses.
-                    Combat.CompleteAbilityStaminaCostContext(caster, area);
+                    GameServices.CombatResources.CompleteAbilityStaminaCostContext(caster, area);
                 }
             });
             GameServices.CombatAbilityBonus.GrantNextAbilityDamageBonus(caster, (int)PerkType.KillzoneBeacon, 100, 30);
@@ -444,7 +444,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(caster, StatType.AreaAbilityPulseRadiusMeters, 5, 30f, "pulse");
             TemporaryStatModifier.Add(caster, StatType.AreaHitStaminaRestorePerTarget, 2, 30f, "reward");
             TemporaryStatModifier.Add(caster, StatType.AreaHitStaminaRestoreMaximum, 6, 30f, "reward");
-            var area = Ability.GetAbilityDetail(FeatType.KillzoneBeacon1);
+            var area = AbilityCatalog.GetAbilityDetail(FeatType.KillzoneBeacon1);
             var stamina = 0;
 
             // Two casts of the same ability while the first one's pulses are still scheduled, as a recast of a
@@ -454,8 +454,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 foreach (var damageType in new[] { CombatDamageType.Physical, CombatDamageType.Electrical })
                 {
                     Stat.ReduceStamina(caster, 10);
-                    Combat.ApplyAbilityStaminaCostFPRestore(caster, area, 10);
-                    Ability.BeginAbilityImpact(caster, area);
+                    GameServices.CombatResources.ApplyAbilityStaminaCostFPRestore(caster, area, 10);
+                    AbilityImpactLifecycle.BeginAbilityImpact(caster, area);
                     try
                     {
                         DeviceAbilityEffects.ScheduleAreaHostilePulses(caster, GetLocation(first), SkillType.Devices,
@@ -464,8 +464,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
                     finally
                     {
-                        Ability.EndAbilityImpact(caster);
-                        Combat.CompleteAbilityStaminaCostContext(caster, area);
+                        AbilityImpactLifecycle.EndAbilityImpact(caster);
+                        GameServices.CombatResources.CompleteAbilityStaminaCostContext(caster, area);
                     }
                 }
 
@@ -486,37 +486,37 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             PrepareStationaryCreature(ctx, caster);
             ctx.SetNPCResources(caster, 100, 100);
-            var area = Ability.GetAbilityDetail(FeatType.KillzoneBeacon1);
+            var area = AbilityCatalog.GetAbilityDetail(FeatType.KillzoneBeacon1);
 
             // Ages the paid cost past the 35 second window, as a long field's late pulse sees it.
             void AgeCostContext(int seconds)
             {
-                var costs = (System.Collections.IDictionary)typeof(Combat)
-                    .GetField("_abilityStaminaCosts", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)!
-                    .GetValue(null);
+                var costs = (System.Collections.IDictionary)typeof(CombatResourcesService)
+                    .GetField("_abilityStaminaCosts", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                    .GetValue(GameServices.CombatResources);
                 var state = costs[(caster, area)]!;
                 state.GetType().GetProperty("SpentAt")!.SetValue(state, DateTime.UtcNow.AddSeconds(-seconds));
             }
 
             Stat.ReduceStamina(caster, 10);
             var before = Stat.GetCurrentStamina(caster);
-            Combat.ApplyAbilityStaminaCostFPRestore(caster, area, 10);
-            var inCostContext = Combat.CaptureAbilityStaminaCostContext(caster, area);
+            GameServices.CombatResources.ApplyAbilityStaminaCostFPRestore(caster, area, 10);
+            var inCostContext = GameServices.CombatResources.CaptureAbilityStaminaCostContext(caster, area);
             AgeCostContext(40);
-            Combat.CompleteAbilityStaminaCostContext(caster, area);
+            GameServices.CombatResources.CompleteAbilityStaminaCostContext(caster, area);
             ctx.Assert(inCostContext != null, "an activation that paid stamina can be captured");
 
             var refunded = 0;
-            inCostContext(() => refunded = Combat.RestoreAbilityHitStamina(caster, area, 2));
+            inCostContext(() => refunded = GameServices.CombatResources.RestoreAbilityHitStamina(caster, area, 2));
             ctx.AssertEqual(2, refunded, "a scheduled pulse 40 seconds after the cast still refunds from the paid cost");
             ctx.AssertEqual(before + 2, Stat.GetCurrentStamina(caster), "the refund reaches the caster");
-            ctx.AssertEqual(0, Combat.RestoreAbilityHitStamina(caster, area, 2), "outside a captured pulse the context stays removed");
+            ctx.AssertEqual(0, GameServices.CombatResources.RestoreAbilityHitStamina(caster, area, 2), "outside a captured pulse the context stays removed");
 
             // An ordinary uncaptured cost still expires after 35 seconds.
-            Combat.ApplyAbilityStaminaCostFPRestore(caster, area, 10);
+            GameServices.CombatResources.ApplyAbilityStaminaCostFPRestore(caster, area, 10);
             AgeCostContext(40);
-            ctx.AssertEqual(0, Combat.RestoreAbilityHitStamina(caster, area, 2), "an uncaptured paid cost expires after its ordinary lifetime");
-            Combat.CompleteAbilityStaminaCostContext(caster, area);
+            ctx.AssertEqual(0, GameServices.CombatResources.RestoreAbilityHitStamina(caster, area, 2), "an uncaptured paid cost expires after its ordinary lifetime");
+            GameServices.CombatResources.CompleteAbilityStaminaCostContext(caster, area);
         }
 
         [EngineTest("Deadeye Reload builds from non-critical abilities of every ranged weapon skill only", Category = "PerkTracker", TimeoutSeconds = 30f)]

@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Domain.Administration
         /// Where a jump to this location puts the creature, which can be up to the search radius away from it.
         /// Returns false when the engine would cancel the jump.
         /// </summary>
-        public static bool TryGetLanding(uint dm, Location location, out Location landingLocation)
+        public bool TryGetLanding(uint dm, Location location, out Location landingLocation)
         {
             landingLocation = null;
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ChatCommandService;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.UI;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition

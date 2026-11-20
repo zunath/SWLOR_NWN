@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Domain.Foundation
 {
     /// <summary>
     /// Cleans player-written text pasted from documents and chat apps so the game shows it without stray boxes:

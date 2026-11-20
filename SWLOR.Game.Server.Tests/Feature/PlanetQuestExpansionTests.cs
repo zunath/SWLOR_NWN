@@ -4,8 +4,10 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.QuestDefinition;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -18,13 +20,17 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class PlanetQuestExpansionTests
 {
     private object _originalItemNames = null!;
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
 
-    private static PropertyInfo ItemNameCache => typeof(Cache)
-        .GetProperty("ItemNamesByResref", BindingFlags.NonPublic | BindingFlags.Static)!;
+    private static PropertyInfo ItemNameCache => typeof(CacheService)
+        .GetProperty("ItemNamesByResref", BindingFlags.NonPublic | BindingFlags.Instance)!;
 
     [OneTimeSetUp]
     public void LoadItemNamesForRewardTitles()
     {
+        _facades = new FacadeContainer();
+        _facadeScope = _facades.Install();
         Guild.LoadData();
         NPCGroup.CacheData();
         var names = Directory.EnumerateFiles(Path.Combine(Root, "Module", "uti"), "*.uti.json")
@@ -34,12 +40,17 @@ public class PlanetQuestExpansionTests
                 return document.RootElement.GetProperty("LocalizedName").GetProperty("value")
                     .TryGetProperty("0", out var name) ? name.GetString() ?? string.Empty : string.Empty;
             });
-        _originalItemNames = ItemNameCache.GetValue(null)!;
-        ItemNameCache.SetValue(null, names);
+        _originalItemNames = ItemNameCache.GetValue(Cache)!;
+        ItemNameCache.SetValue(Cache, names);
     }
 
     [OneTimeTearDown]
-    public void RestoreItemNames() => ItemNameCache.SetValue(null, _originalItemNames);
+    public void RestoreItemNames()
+    {
+        ItemNameCache.SetValue(Cache, _originalItemNames);
+        _facadeScope.Dispose();
+        _facades.Dispose();
+    }
 
     private static string Root
     {

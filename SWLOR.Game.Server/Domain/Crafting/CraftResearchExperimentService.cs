@@ -54,7 +54,7 @@ public class CraftResearchExperimentService : ICraftResearchExperimentService
         if (string.IsNullOrWhiteSpace(playerId))
             return;
 
-        var loaded = GetLocalInt(player, CraftSessionFileSequence.LoadedVariable);
+        var loaded = NwnCraftSessionWorld.Instance.LoadedSequence(player);
         var query = new DBQuery<ResearchJob>()
             .AddFieldSearch(nameof(ResearchJob.PlayerId), playerId, false);
 

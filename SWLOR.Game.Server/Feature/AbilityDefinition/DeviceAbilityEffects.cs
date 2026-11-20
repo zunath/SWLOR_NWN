@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             // The cast's stamina cost context ends with the cast, but its pulses land later: each pulse runs
             // inside the context of the activation that scheduled it, so its hit rewards share that
             // activation's paid stamina and a recast of the same ability keeps its own.
-            var inCostContext = GameServices.CombatResources.CaptureAbilityStaminaCostContext(
+            var inCostContext = CombatResources.CaptureAbilityStaminaCostContext(
                 activator, AbilityImpactState.GetActiveAbilityImpactSummary(activator)?.Ability) ?? (impact => impact());
             if (emitter.IsAreaPulse && !emitter.HasShotVisual)
             {

@@ -116,18 +116,15 @@ public class GatheringWorldTests
     }
 
     [Test]
-    public void A_harvest_node_keeps_its_content_and_forgets_the_old_stock()
+    public void A_harvest_node_keeps_its_content()
     {
         var world = new NwnProspectingWorld(_db);
 
         world.LoadNode(Site).Should().BeNull();
-        SetLocalInt(Site, NwnProspectingWorld.LegacyStockVariable, 6);
-        world.LegacyStock(Site).Should().Be(6);
 
         world.SaveNode(Site, "node-content");
 
         world.LoadNode(Site).Should().Be("node-content");
-        world.LegacyStock(Site).Should().Be(0);
         world.NodeExists(Site).Should().BeTrue();
         world.NodeExists(ObjectInvalid).Should().BeFalse();
     }

@@ -90,6 +90,7 @@ mod_load  # run by the engine as the module OnModuleLoad event, which EventRegis
   action      SWLOR.Game.Server.Domain.Character.AchievementService.ReserveGuiIds
   action      SWLOR.Game.Server.Domain.World.AreaService.RemoveInstancesFromCache
   action      SWLOR.Game.Server.Core.FrameProfiler.Load
+  action      SWLOR.Game.Server.Service.HostedEvents.LoadEvents
   action      SWLOR.Game.Server.Domain.Character.LanguageService.LoadTranslators
   action      SWLOR.Game.Server.Domain.Economy.PlayerMarketService.RemoveOldListings
   action      SWLOR.Game.Server.Domain.World.PropertyService.OnModuleLoad
@@ -660,6 +661,7 @@ item_uneqp_aft
   action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnAppearanceEquipmentChanged
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnEquipmentChanged
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnEquipmentChanged
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponHandFit.OnItemUnequipAfter
 
 item_uneqp_bef
   action      SWLOR.Game.Server.Domain.Companions.DroidService.OnUnequipItem
@@ -763,6 +765,7 @@ mod_enter
   action      SWLOR.Game.Server.Domain.Character.RaceService.ApplyWookieeScaling
   action      SWLOR.Game.Server.Domain.World.ShuttleService.EnterServer
   action      SWLOR.Game.Server.Domain.Character.SkillService.AddMissingSkills
+  action      SWLOR.Game.Server.Domain.Character.SkillService.ResetLimitWarningsOnEnter
   action      SWLOR.Game.Server.Domain.Space.SpaceService.EnterServer
   action      SWLOR.Game.Server.Domain.Character.CreatureStatService.ApplyPlayerStats
   action      SWLOR.Game.Server.Domain.Character.StatusEffectSessionService.OnPlayerEnter
@@ -770,6 +773,7 @@ mod_enter
   action      SWLOR.Game.Server.Domain.Quests.QuestEncounterService.OnModuleEnter
   action      SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.RestoreCraftingStylesOnEnter
   action      SWLOR.Game.Server.Domain.Creatures.CompanionControlService.RenameToggleAbilitiesCommand
+  action      SWLOR.Game.Server.Native.PlayerFileCheckpoint.ApplyLoadedCraftSequence
   action      SWLOR.Game.Server.Feature.AchievementProgression.LogIn
   action      SWLOR.Game.Server.Feature.Auditing.AuditClientConnection
   action      SWLOR.Game.Server.Feature.CraftingInterruptions.SettleOnLogin
@@ -808,6 +812,7 @@ mod_equip
   action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnModuleEquip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnModuleEquip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleEquip
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponHandFit.OnModuleEquip
 
 mod_exit
   action      SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.ClearAurasOnExit
@@ -833,6 +838,7 @@ mod_exit
   action      SWLOR.Game.Server.Domain.Character.PlayerNameService.ClearAfkOnExit
   action      SWLOR.Game.Server.Domain.Combat.PvpCombatService.ForgetExitingPlayer
   action      SWLOR.Game.Server.Domain.World.ShuttleService.ExitServer
+  action      SWLOR.Game.Server.Domain.Character.SkillService.ResetLimitWarningsOnExit
   action      SWLOR.Game.Server.Domain.Space.SpaceService.ExitServer
   action      SWLOR.Game.Server.Domain.Character.CreatureStatService.ForgetOutOfCombatMovementState
   action      SWLOR.Game.Server.Domain.Character.StatusEffectSessionService.OnPlayerExit
@@ -900,6 +906,7 @@ mod_unacquire
   action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnModuleUnacquire
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnUnacquire
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnUnacquire
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponHandFit.OnModuleUnacquire
 
 mod_unequip
   action      SWLOR.Game.Server.Domain.Social.ExtraHotbarsStatusService.RefreshOnUnequip
@@ -912,6 +919,7 @@ mod_unequip
   action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnModuleUnequip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnModuleUnequip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleUnequip
+  action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponHandFit.OnModuleUnequip
 
 object_destroyed
   action      SWLOR.Game.Server.Domain.Creatures.AIService.RemoveFromAlliesCache

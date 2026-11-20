@@ -45,6 +45,9 @@ namespace SWLOR.Game.Server.Domain.Foundation
         /// <summary>Appends an entry to a Redis stream without waiting for the reply. Same as <c>DB.StreamAddAsync</c>.</summary>
         Task<RedisValue> StreamAddAsync(RedisKey key, NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false);
 
+        /// <summary>Reads a plain Redis string, such as a snapshot another service stores. Same as <c>DB.StringGet</c>.</summary>
+        string StringGet(RedisKey key);
+
         // The members below are what the static DB facade forwarded.
 
         /// <summary>

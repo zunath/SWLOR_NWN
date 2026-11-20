@@ -2,18 +2,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.DMToolService;
-using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.NWN.API.Engine;
 using static SWLOR.Game.Server.Composition.GameServices;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Domain.Administration
 {
     /// <summary>
     /// DM-hosted events: DMs schedule, start and end them; players see them with /events, join them when
@@ -397,7 +395,7 @@ namespace SWLOR.Game.Server.Service
                 IsDM = isDM,
                 IsDead = GetIsDead(player),
                 IsInCombat = GetIsInCombat(player) || Enmity.HasEnmity(player),
-                IsInSpace = !isDM && Space.IsPlayerInSpaceMode(player),
+                IsInSpace = !isDM && GameServices.Space.IsPlayerInSpaceMode(player),
                 IsInOutOfCharacterArea = OutOfCharacterAreaResrefs.Contains(GetResRef(GetArea(player))),
                 CurrentEventId = isDM ? string.Empty : GetReturnPoint(player)?.EventId ?? string.Empty,
             };

@@ -427,17 +427,16 @@ namespace SWLOR.Game.Server.Service
             var collecting = new Dictionary<string, uint>();
             foreach (var pilot in run.Pilots)
             {
-                var items = Enumerable.Range(0, pulls).Select(_ => table.GetRandomItem().Resref).ToList();
+                var spoils = new IncursionPayout { RegionName = run.Key.Name };
+                for (var pull = 0; pull < pulls; pull++)
+                    AddPull(spoils, table);
                 var nextKey = RiftRunRules.NextKey(run.Key);
                 if (nextKey != null && Random.Next(100) < RiftRunTuning.NextKeyPercent)
-                    items.Add(nextKey.Resref);
+                    spoils.Items.Add(nextKey.Resref);
+                var items = spoils.Items;
 
                 var pilotId = GetObjectUUID(pilot);
-                CapitalBattleRules.AddPending(state.PendingRiftPayouts, pilotId, new IncursionPayout
-                {
-                    Items = items.Where(x => !string.IsNullOrWhiteSpace(x)).ToList(),
-                    RegionName = run.Key.Name
-                });
+                CapitalBattleRules.AddPending(state.PendingRiftPayouts, pilotId, spoils);
                 if (GetIsObjectValid(pilot))
                     collecting[pilotId] = pilot;
 
@@ -452,7 +451,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 Log.Write(LogGroup.Space, $"RIFT RUN CLEARED - {PlayerName.GetAuditName(pilot)} - {run.Key.Resref}, {secondsLeft} s left, " +
-                                          $"{credits} credits, {string.Join(", ", items)}");
+                                          $"{credits} credits, {spoils.Credits} pulled credits, {string.Join(", ", items)}");
             }
 
             SaveIncursions();

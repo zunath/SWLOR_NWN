@@ -648,11 +648,27 @@ namespace SWLOR.Game.Server.Service
             {
                 var lootTable = Loot.GetLootTableByName(table);
                 for (var pull = 0; pull < pulls; pull++)
-                    payout.Items.Add(lootTable.GetRandomItem().Resref);
+                    AddPull(payout, lootTable);
             }
 
             payout.Pulls.Clear();
             return payout;
+        }
+
+        /// <summary>The resref of a loot table's gold entry (<c>AddGold</c>).</summary>
+        private const string LootGoldResref = "nw_it_gold001";
+
+        /// <summary>
+        /// Rolls one loot pull into a payout. A gold entry adds its rolled amount to the credits, as dropped loot does,
+        /// since gold never sits in an inventory; anything else adds its item.
+        /// </summary>
+        private static void AddPull(IncursionPayout payout, LootService.LootTable table)
+        {
+            var item = table.GetRandomItem();
+            if (item.Resref == LootGoldResref)
+                payout.Credits += Random.Next(Math.Max(1, item.MaxQuantity)) + 1;
+            else if (!string.IsNullOrWhiteSpace(item.Resref))
+                payout.Items.Add(item.Resref);
         }
 
         /// <summary>

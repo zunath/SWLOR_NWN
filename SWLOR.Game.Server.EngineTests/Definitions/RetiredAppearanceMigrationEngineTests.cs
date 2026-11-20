@@ -23,11 +23,11 @@ public static partial class MigrationEngineTests
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
             ItemPlugin.SetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 160);
-            ItemPlugin.SetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck, 299);
+            ItemPlugin.SetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck, 232);
             ItemPlugin.SetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder, 255);
             ItemPlugin.SetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep, 18);
             ItemPlugin.SetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep, 17);
-            ItemPlugin.SetItemAppearance(helmet, ItemAppearanceType.SimpleModel, 0, 297);
+            ItemPlugin.SetItemAppearance(helmet, ItemAppearanceType.SimpleModel, 0, 258);
             ItemPlugin.SetItemAppearance(cloak, ItemAppearanceType.SimpleModel, 0, 33);
             SetLocalString(armor, "RETIRED_OWNER", "armor");
 

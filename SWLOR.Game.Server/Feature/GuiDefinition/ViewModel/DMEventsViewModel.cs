@@ -21,6 +21,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // The zone the start time box is typed in: the DM's Settings choice when the form was loaded.
         private PlayerTimeZone _formZone = PlayerTimeZones.Utc;
 
+        // The instant the start text was last filled in from. Saving or a zone change keeps it while the DM leaves the
+        // text alone, since a repeated hour reads back as its first copy.
+        private DateTime? _formStartUtc;
+
         public GuiBindingList<string> EventNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<bool> EventSelected { get => Get<GuiBindingList<bool>>(); set => Set(value); }
         public string HeaderText { get => Get<string>(); set => Set(value); }
@@ -111,10 +115,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (HostedEventRules.TryParseLocalTime(StartText, out var local) &&
                 PlayerTimeZones.TryToUtc(local, _formZone, out var startUtc))
             {
-                // Unchanged text keeps the event's stored start, which may be the second copy of a repeated hour.
-                var storedUtc = string.IsNullOrEmpty(_selectedEventId) ? null : HostedEvents.GetEvent(_selectedEventId)?.ScheduledStartUtc;
-                startUtc = HostedEventRules.GetStartToSave(storedUtc, StartText, _formZone, startUtc);
-                StartText = HostedEventRules.FormatStartTime(startUtc, zone);
+                startUtc = HostedEventRules.GetStartToSave(_formStartUtc, StartText, _formZone, startUtc);
+                ShowStart(startUtc, zone);
             }
 
             _formZone = zone;
@@ -219,6 +221,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 HostName,
                 Description,
                 StartText,
+                _formStartUtc,
                 _formZone,
                 IsJoinOpen,
                 AnnounceOnStart,
@@ -231,9 +234,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _selectedEventId = saved.Id;
             HostName = saved.HostName;
-            StartText = HostedEventRules.FormatStartTime(saved.ScheduledStartUtc, _formZone);
+            ShowStart(saved.ScheduledStartUtc, _formZone);
             LoadEvents();
             return true;
+        }
+
+        private void ShowStart(DateTime startUtc, PlayerTimeZone zone)
+        {
+            _formStartUtc = startUtc;
+            StartText = HostedEventRules.FormatStartTime(startUtc, zone);
         }
 
         private void LoadForm(HostedEvent hostedEvent)
@@ -243,7 +252,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 EventName = string.Empty;
                 HostName = GetName(DMPresence.GetDM(Player));
-                StartText = HostedEventRules.FormatStartTime(HostedEventRules.GetDefaultStartTime(DateTime.UtcNow, _formZone), _formZone);
+                ShowStart(HostedEventRules.GetDefaultStartTime(DateTime.UtcNow, _formZone), _formZone);
                 Description = string.Empty;
                 IsJoinOpen = true;
                 AnnounceOnStart = true;
@@ -252,7 +261,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             EventName = hostedEvent.Name;
             HostName = hostedEvent.HostName;
-            StartText = HostedEventRules.FormatStartTime(hostedEvent.ScheduledStartUtc, _formZone);
+            ShowStart(hostedEvent.ScheduledStartUtc, _formZone);
             Description = hostedEvent.Description;
             IsJoinOpen = hostedEvent.IsJoinOpen;
             AnnounceOnStart = hostedEvent.AnnounceOnStart;

@@ -6,7 +6,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
-using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -97,9 +97,9 @@ public class ForceLightConsularTests
             foreach (var damage in new[] { 22, 40, 60 })
                 Perk.ApplyForceAffinityMagnitude(0, PerkType.ThrowRock, damage).Should().Be(damage);
 
-            var details = (string)typeof(PerksViewModel)
+            var details = (string)typeof(PerkDetailText)
                 .GetMethod("BuildForceAffinityPerkDetailText", BindingFlags.Instance | BindingFlags.NonPublic)!
-                .Invoke(new PerksViewModel(), new object[] { perk })!;
+                .Invoke(_facades.Get<PerkDetailText>(), new object[] { PerksHostStub.Create(), perk })!;
             details.Should().Contain("UNIVERSAL FORCE POWER")
                 .And.Contain("Does not change Force Affinity")
                 .And.NotContain("LIGHT-ALIGNED");

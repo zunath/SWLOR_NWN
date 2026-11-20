@@ -4088,6 +4088,62 @@
     "Call": "FloatingTextStringOnCreature(\"Incubation job cancelled!\", host.Player, false)"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/PerksWindow/PerkPurchaseService.cs",
+    "Line": 49,
+    "Member": "ConfirmBuyUpgrade",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"Perks cannot be purchased in this area.\", host.Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/PerksWindow/PerkPurchaseService.cs",
+    "Line": 89,
+    "Member": "ConfirmBuyUpgrade",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(host.Player, ColorToken.Red(canPurchase))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/PerksWindow/PerkPurchaseService.cs",
+    "Line": 119,
+    "Member": "ConfirmBuyUpgrade",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Green($\"You purchase '{detail.Name}' rank {newRank}.\"), host.Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/PerksWindow/PerkPurchaseService.cs",
+    "Line": 171,
+    "Member": "Refund",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"You do not have any refund tokens.\", host.Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/PerksWindow/PerkPurchaseService.cs",
+    "Line": 178,
+    "Member": "Refund",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"You can refund another perk in {time}.\", host.Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/PerksWindow/PerkPurchaseService.cs",
+    "Line": 189,
+    "Member": "Refund",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(canRefund, host.Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/PerksWindow/PerkPurchaseService.cs",
+    "Line": 204,
+    "Member": "Refund",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"Perk refunded! You reclaimed {refundAmount} SP.\", host.Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/PerksWindow/PerkPurchaseService.cs",
+    "Line": 223,
+    "Member": "Refund",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature($\"Perk refunded! Your beast reclaimed {refundAmount} SP.\", host.Player, false)"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearancePartBrowserViewModel.cs",
     "Line": 460,
     "Member": "OnClickGo",
@@ -5073,62 +5129,6 @@
     "Member": "OnApply",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, \"Performance options applied.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs",
-    "Line": 1204,
-    "Member": "ConfirmBuyUpgrade",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"Perks cannot be purchased in this area.\", Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs",
-    "Line": 1244,
-    "Member": "ConfirmBuyUpgrade",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(Player, ColorToken.Red(canPurchase))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs",
-    "Line": 1274,
-    "Member": "ConfirmBuyUpgrade",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(ColorToken.Green($\"You purchase '{detail.Name}' rank {newRank}.\"), Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs",
-    "Line": 1357,
-    "Member": "OnClickRefund",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"You do not have any refund tokens.\", Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs",
-    "Line": 1364,
-    "Member": "OnClickRefund",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"You can refund another perk in {time}.\", Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs",
-    "Line": 1375,
-    "Member": "OnClickRefund",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(canRefund, Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs",
-    "Line": 1390,
-    "Member": "OnClickRefund",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"Perk refunded! You reclaimed {refundAmount} SP.\", Player, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs",
-    "Line": 1409,
-    "Member": "OnClickRefund",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature($\"Perk refunded! Your beast reclaimed {refundAmount} SP.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs",

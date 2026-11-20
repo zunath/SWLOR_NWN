@@ -122,8 +122,8 @@ public class PlayerSkillPointAccountingTests : SkillFacadeFixture
             "SWLOR.Game.Server",
             "Feature",
             "GuiDefinition",
-            "ViewModel",
-            "PerksViewModel.cs"));
+            "PerksWindow",
+            "PerkListBuilder.cs"));
 
         characterSheetDefinition.Should().Contain("AddBoundValueRow(resourceCol, \"Ranks\", model => model.SkillRanks");
         characterSheetDefinition.Should().Contain("$\"Skill ranks contributing to the {SkillService.SkillCap}-rank limit.\"");

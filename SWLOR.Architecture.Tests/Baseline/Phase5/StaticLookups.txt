@@ -835,7 +835,6 @@ SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/NotesViewModel.cs | 21
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerformanceCueViewModelBase.cs | 5
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerformanceOptionsViewModel.cs | 41
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerformanceWatchingViewModel.cs | 8
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs | 61
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs | 42
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerStatusPortraitSpaceViewModel.cs | 4
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerStatusPortraitViewModel.cs | 6

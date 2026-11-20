@@ -269,7 +269,9 @@ public class SpaceW11nReviewFixTests
         var incursions = ReadSource("Service", "SpaceIncursions.cs").Replace("\r\n", "\n");
         var roll = Between(incursions, "private static IncursionPayout RollPulls(", "/// The character-file local prefix");
         roll.Should().Contain("AddPull(payout, lootTable);").And.NotContain("payout.Items.Add(lootTable.GetRandomItem().Resref);");
-        roll.Should().Contain("if (item.Resref == LootGoldResref)").And.Contain("payout.Credits += Random.Next(Math.Max(1, item.MaxQuantity)) + 1;",
+        roll.Should().Contain("var quantity = Random.Next(Math.Max(1, item.MaxQuantity)) + 1;")
+            .And.Contain("payout.Items.AddRange(Enumerable.Repeat(item.Resref, quantity));", "an item pull keeps its rolled quantity, as dropped loot does");
+        roll.Should().Contain("if (item.Resref == LootGoldResref)").And.Contain("payout.Credits += quantity;",
             "gold never sits in an inventory, so a gold item would never count as given and the payout would stay pending forever");
         incursions.Should().Contain("private const string LootGoldResref = \"nw_it_gold001\";");
         ReadSource("Service", "SpaceRiftRuns.cs").Should().Contain("AddPull(spoils, table);").And.NotContain("table.GetRandomItem().Resref");

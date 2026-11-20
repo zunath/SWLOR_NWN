@@ -5531,63 +5531,63 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 325,
+    "Line": 335,
     "Member": "PayMission",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so this mission's credits are paid at your next login.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 337,
+    "Line": 347,
     "Member": "PayMission",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{agent?.Name ?? \"The agent\"} pays you {FactionAgentRules.DescribeReward(mission)}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 364,
+    "Line": 374,
     "Member": "FailMission",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(reason))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 435,
+    "Line": 445,
     "Member": "GrantIntel",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You recover agent intel ({dbPlayer.AgentIntel} held). Any faction agent can turn it into an intel lead.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 454,
+    "Line": 464,
     "Member": "GrantLockboxIntel",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You recover agent intel ({dbPlayer.AgentIntel} held). Any faction agent can turn it into an intel lead.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 473,
+    "Line": 483,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(FactionAgentRules.GetRefusalMessage(refusal)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 482,
+    "Line": 492,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(Item.InventoryFullMessage))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 511,
+    "Line": 521,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so nothing was bought.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/FactionAgents.cs",
-    "Line": 518,
+    "Line": 528,
     "Member": "Buy",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You requisition {item.Quantity}x {name} for {item.Tokens} {FactionAgentRules.GetTokenName(agent.Faction)}.\"))"
@@ -8793,35 +8793,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 206,
+    "Line": 208,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, ColorToken.Red(\"Only a ship can open a site cache.\"))"
+    "Call": "SendMessageToPC(user, ColorToken.Red(\"Only a pilot flying their own ship can open a site cache.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 219,
+    "Line": 221,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"The cache is locked. Target it and slice it open with a Data Analyzer.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 225,
+    "Line": 227,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"The cache is keyed to the ships that scanned this site. Scan it yourself to open it.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 232,
+    "Line": 234,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(leadRefusal))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 246,
+    "Line": 248,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"You open the {GetName(cache)}: {credits} credits.\"))"

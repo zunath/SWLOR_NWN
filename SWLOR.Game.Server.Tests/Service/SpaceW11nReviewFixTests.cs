@@ -357,8 +357,12 @@ public class SpaceW11nReviewFixTests
             .Should().BeLessThan(Index(pay, "GiveGoldToCreature(player, mission.Credits);"), "credits already in the character file are not paid again");
         Index(pay, "AgentCreditMarks.Add(ObjectPlugin.GetString(player, PaidCreditsVariable), missionId), true);")
             .Should().BeLessThan(Index(pay, "CharacterCheckpoint.Save(player)"), "the mark is saved in the same character save as the credits");
+        var failed = Between(pay, "if (!CharacterCheckpoint.Save(player))", "MarkPaid(player, missionId, x => x.PaidCredits = true);");
+        failed.Should().Contain("if (givenNow)").And.Contain("TakeGoldFromCreature(mission.Credits, player, true);")
+            .And.Contain("AgentCreditMarks.Remove(ObjectPlugin.GetString(player, PaidCreditsVariable), missionId), true);",
+                "credits whose save failed cannot be spent and then paid again at the next login");
         Index(pay, "MarkPaid(player, missionId, x => x.PaidCredits = true);")
-            .Should().BeLessThan(Index(pay, "AgentCreditMarks.Remove(ObjectPlugin.GetString(player, PaidCreditsVariable), missionId), true);"),
+            .Should().BeLessThan(pay.LastIndexOf("AgentCreditMarks.Remove(ObjectPlugin.GetString(player, PaidCreditsVariable), missionId), true);", StringComparison.Ordinal),
                 "a mission leaves the mark only once it is saved as paid");
     }
 

@@ -69,6 +69,13 @@ public class SpaceRevampReviewFixTests
     }
 
     [Test]
+    public void ASiteCache_OpensOnlyForAPilotFlyingTheirOwnShip()
+    {
+        var cache = Between(ReadSource("Service", "SpaceScanSites.cs"), "public static void OpenSiteCache(", "FactionAgents.OnSiteCompleted(signature, user, cache);");
+        cache.Should().Contain("if (!IsPlayerInSpaceMode(user) || IsAtCrewStation(user))", "a crew member's own docked ship would take the cache's items");
+    }
+
+    [Test]
     public void AMissionCreditedWhileItsHolderIsDown_FinishesOnceTheyStand()
     {
         var agents = ReadSource("Service", "FactionAgents.cs");

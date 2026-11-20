@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task OfferLifecycle(EngineTestContext ctx)
         {
             using var pilot = await PlayerAbilityFixture.CreateAsync(ctx);
+            AllowCharacterSaves(ctx);
             var (agent, offer) = FindOffer(x => x.Slot == AgentMissionSlot.Standard &&
                                                 x.Type is AgentMissionType.Kill or AgentMissionType.ConvoyEscort or AgentMissionType.ScanDown);
             ctx.Assert(agent != null, "some agent's board offers a counted mission today");
@@ -97,6 +98,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task BoardGates(EngineTestContext ctx)
         {
             using var pilot = await PlayerAbilityFixture.CreateAsync(ctx);
+            AllowCharacterSaves(ctx);
             var now = DateTime.UtcNow;
             // A board whose standard and priority offers need no ship, so all three can be taken here.
             var agent = FactionAgentTuning.Agents.FirstOrDefault(a => FactionAgentRules.GetBoard(a.Type, now)
@@ -160,6 +162,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task KillsCountInTheMissionSystem(EngineTestContext ctx)
         {
             using var pilot = await PlayerAbilityFixture.CreateAsync(ctx);
+            AllowCharacterSaves(ctx);
             var low = SpawnShip(ctx, "t1fighter", 6f);
             var high = SpawnShip(ctx, "t2fighter", 8f);
             await ctx.WaitUntilAsync(() => Space.GetShipStatus(low) != null && Space.GetShipStatus(high) != null, 5f, "both ships to register as NPC ships");
@@ -191,6 +194,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task ScanDownLead(EngineTestContext ctx)
         {
             using var holder = await PlayerAbilityFixture.CreateAsync(ctx);
+            AllowCharacterSaves(ctx);
             using var outsider = await PlayerAbilityFixture.CreateAsync(ctx, 2f);
             var holderShip = CreateShip(holder, "engine-agent-scan/" + holder.Id, ShipTag);
             var outsiderShip = CreateShip(outsider, "engine-agent-scan-out/" + outsider.Id, ShipTag);
@@ -246,6 +250,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task DataHeistTarget(EngineTestContext ctx)
         {
             using var holder = await PlayerAbilityFixture.CreateAsync(ctx);
+            AllowCharacterSaves(ctx);
             var holderShip = CreateShip(holder, "engine-agent-heist/" + holder.Id, ShipTag);
             var area = GetArea(holder.Creature);
             var mission = NewMission(AgentMissionType.DataHeist, 1, GetResRef(area), 1);
@@ -312,6 +317,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task SealedCourier(EngineTestContext ctx)
         {
             using var pilot = await PlayerAbilityFixture.CreateAsync(ctx);
+            AllowCharacterSaves(ctx);
             var now = DateTime.UtcNow;
             var found = new List<(FactionAgentDetail Agent, AgentMission Offer)>();
             foreach (var agent in FactionAgentTuning.Agents)
@@ -382,6 +388,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task ConvoyEscort(EngineTestContext ctx)
         {
             using var pilot = await PlayerAbilityFixture.CreateAsync(ctx);
+            AllowCharacterSaves(ctx);
             var area = GetArea(pilot.Creature);
             var start = typeof(FactionAgents).GetMethod("StartEscort", BindingFlags.Static | BindingFlags.NonPublic);
             ctx.Assert(start != null, "FactionAgents.StartEscort exists");
@@ -426,6 +433,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task TokenStore(EngineTestContext ctx)
         {
             using var pilot = await PlayerAbilityFixture.CreateAsync(ctx);
+            AllowCharacterSaves(ctx);
             var agent = FactionAgentRules.GetAgent(FactionAgentType.RepublicVeles);
             var npc = SpawnAgent(ctx, agent.Type);
             var currency = FactionAgentRules.GetTokenCurrency(agent.Faction);
@@ -467,6 +475,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         // Fixtures
+
+        // Mission pay, token purchases and courier loads checkpoint the character; a headless fixture has no client
+        // whose character file can be saved, so the tests let every save succeed.
+        private static void AllowCharacterSaves(EngineTestContext ctx)
+        {
+            CharacterCheckpoint.SetSaveOverride(_ => true);
+            ctx.AddCleanup(() => CharacterCheckpoint.SetSaveOverride(null));
+        }
 
         private static uint SpawnAgent(EngineTestContext ctx, FactionAgentType type)
         {

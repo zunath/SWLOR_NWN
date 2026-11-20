@@ -201,9 +201,11 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(user) || !GetIsObjectValid(cache))
                 return;
 
-            if (!IsPlayerInSpaceMode(user))
+            // A crew member at a station or viewport keeps their own docked ship's ID, which would take the cache's items;
+            // only a pilot opens it, into the hold of the ship they fly.
+            if (!IsPlayerInSpaceMode(user) || IsAtCrewStation(user))
             {
-                SendMessageToPC(user, ColorToken.Red("Only a ship can open a site cache."));
+                SendMessageToPC(user, ColorToken.Red("Only a pilot flying their own ship can open a site cache."));
                 return;
             }
 

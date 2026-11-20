@@ -33,7 +33,6 @@ public static class EnzymeBaseItemMigration
         ["isomerase_yellow"] = (BaseItem.Electronics4, 15),
     };
 
-    private static readonly string[] LegacyIconPrefixes = { "iit_ess4_", "iit_ess5_" };
 
     public static bool MigrateSavedObject(string original, out string migrated) =>
         StoredObjectData.MigrateEnzymeData(original, out migrated);
@@ -61,16 +60,6 @@ public static class EnzymeBaseItemMigration
         if (resref == null || !Enzymes.TryGetValue(resref, out var enzyme) || enzyme.Previous != baseItem)
             return false;
         model = enzyme.Model;
-        return true;
-    }
-
-    /// <summary>Points a stored listing's icon at the new artwork when it still shows the old 2x2 icon.</summary>
-    internal static bool UpdateListingIcon(string resref, string icon, Action<string> setIcon)
-    {
-        if (resref == null || icon == null || !Enzymes.TryGetValue(resref, out var enzyme) ||
-            !Array.Exists(LegacyIconPrefixes, icon.StartsWith))
-            return false;
-        setIcon($"iit_enzyme_{enzyme.Model:000}");
         return true;
     }
 }

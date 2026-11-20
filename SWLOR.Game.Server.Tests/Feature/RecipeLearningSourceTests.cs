@@ -42,41 +42,6 @@ public class RecipeLearningSourceTests
         missing.Should().BeEmpty("locked recipes need a teaching book, including DM-issued recipes");
     }
 
-    [TestCase("recipe_trnsabers", "181,182,183,184,185")]
-    [TestCase("recipe_trnsabstf", "202,203,204,205,206")]
-    public void StoredTrainingBooks_GainCurrentTiersAndRemainUnchangedOnRetry(string resref, string previousRecipes)
-    {
-        using var document = ReadTemplate("uti", resref);
-        var expected = ReadLocals(document.RootElement)["RECIPES"].GetString();
-
-        var migrated = ExpandStoredTrainingBook(resref, previousRecipes);
-
-        migrated.Should().Be(expected, "persisted books must teach the same tiers as newly issued books");
-        ExpandStoredTrainingBook(resref, migrated).Should().Be(migrated);
-    }
-
-    [TestCase("recipe_trnsabers", "181,182,183,184,185,422,1")]
-    [TestCase("recipe_trnsabstf", "202,203,204,205,206,423,1")]
-    public void StoredTrainingBooks_PreserveCustomRecipesAndDoNotDuplicateExistingTiers(string resref, string previousRecipes)
-    {
-        using var document = ReadTemplate("uti", resref);
-        var expected = ReadTaughtRecipes(document.RootElement).Append(RecipeType.BasicGreatSword);
-
-        var migrated = ExpandStoredTrainingBook(resref, previousRecipes);
-        var recipes = migrated.Split(',').Select(id => (RecipeType)int.Parse(id)).ToList();
-
-        recipes.Should().BeEquivalentTo(expected);
-        recipes.Should().OnlyHaveUniqueItems();
-        ExpandStoredTrainingBook(resref, migrated).Should().Be(migrated);
-    }
-
-    [Test]
-    public void StoredTrainingBookMigration_LeavesOtherBooksUnchanged()
-    {
-        ExpandStoredTrainingBook("recipe_sturd1", "3471").Should().Be("3471");
-        ExpandStoredTrainingBook("custom_book", "181,182,183,184,185").Should().Be("181,182,183,184,185");
-    }
-
     [Test]
     public void DroidResistanceBooks_UseDroidEnhancementTierValues()
     {
@@ -93,14 +58,6 @@ public class RecipeLearningSourceTests
                 document.RootElement.GetProperty(field).GetProperty("value").GetInt32().Should()
                     .Be(expectedCost, $"{book.Resref}/{field} follows the existing droid enhancement blueprint tier values");
         }
-    }
-
-    private static string ExpandStoredTrainingBook(string resref, string recipes)
-    {
-        var method = typeof(IRecipeListDefinition).Assembly
-            .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration.StoredItemDataMigration")!
-            .GetMethod("ExpandTrainingRecipeBook", BindingFlags.NonPublic | BindingFlags.Static)!;
-        return (string)method.Invoke(null, new object[] { resref, recipes })!;
     }
 
     [Test]

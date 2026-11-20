@@ -237,6 +237,12 @@ the smallest amount and reports that spot through the `Geometry` watch, which
   (`ExtraHotbarViewModel.FollowScreen`). Treat a `Geometry` report that arrives with a
   new screen size as the client's push, not a drag.
 
+### R9 — Never put a tooltip on a combo box (verified in the real client 2026-11)
+
+A combo box with `SetTooltip` shows its tooltip but never opens its list when clicked.
+Put the explanation on the combo's caption label instead (Settings `Time Zone for Event
+Times`).
+
 ## Verified-working shapes (do not fear these)
 
 All verified in-game 2026-07 via DebugNuiGallery; each remains loadable on the

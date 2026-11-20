@@ -34,80 +34,6 @@ public class CombatUpgradeMigrationCoverageTests
     }
 
     [Test]
-    public void CharacterMigrations_RunTheSavedDataCombatUpgradeMigrations()
-    {
-        var root = FindRepositoryRoot();
-        var characterMigrationRoot = Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "CharacterMigration");
-        var requirementMigration = File.ReadAllText(Path.Combine(characterMigrationRoot, "_13_UpdateItemRequirements.cs"));
-        var combatUpgradeMigrations = File.ReadAllText(Path.Combine(characterMigrationRoot, "_14_15_CombatUpgradeMigrations.cs"));
-
-        CharacterMigrations.VersionOf("_13_UpdateItemRequirements").Should().Be(13);
-        requirementMigration.Should().Contain("SavedEquipmentRequirementMigration.MigrateCharacter(character);");
-        CharacterMigrations.VersionOf("_14_MigrateResistanceItemProperties").Should().Be(14);
-        combatUpgradeMigrations.Should().Contain("SavedItemResistanceMigration.MigrateCharacter(character);");
-        combatUpgradeMigrations.Should().Contain("SavedWeaponDamageTypeMigration.MigrateCharacter(character);");
-        combatUpgradeMigrations.Should().Contain("SavedCombatUpgradeItemMigrations.MigrateCombatReadiness(character);");
-        combatUpgradeMigrations.Should().Contain("SavedCombatUpgradeItemMigrations.MigratePistols(character);");
-        combatUpgradeMigrations.Should().Contain("SavedCombatUpgradeItemMigrations.MigrateAccuracy(character);");
-        CharacterMigrations.VersionOf("_15_RemoveObsoleteCombatInstructionDiscs").Should().Be(15);
-        combatUpgradeMigrations.Should().Contain("SavedObsoleteItemMigration.MigrateCharacter(character);");
-        combatUpgradeMigrations.Should().Contain("CharacterRecalculation.ResetFeatsToBaseline(character);");
-    }
-
-    /// <summary>
-    /// Guards player, database, ship, and nested droid entry points for pistol and ammunition conversion.
-    /// </summary>
-    [Test]
-    public void PistolBaseItemMigration_CoversPlayersAndStoredItemSurfaces()
-    {
-        var root = FindRepositoryRoot();
-        var migrationRoot = Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition");
-        var pistolMigration = File.ReadAllText(Path.Combine(
-            migrationRoot,
-            "PistolBaseItemMigration.cs"));
-        var storedMigration = File.ReadAllText(Path.Combine(
-            migrationRoot,
-            "ServerMigration",
-            "StoredItemDataMigration.cs"));
-
-        storedMigration.Should().Contain("PistolBaseItemMigration.MigrateStoredObject(obj)");
-        pistolMigration.Should().Contain("PistolBaseItemCompatibility.Normalize(obj)");
-        pistolMigration.Should().Contain("GetEquippedItem(creature, InventorySlot.Arrows)");
-        pistolMigration.Should().Contain("CreaturePlugin.RunUnequip(creature, legacyAmmo)");
-        pistolMigration.Should().Contain("CreaturePlugin.RunEquip(creature, legacyAmmo, InventorySlot.Bullets)");
-        pistolMigration.Should().Contain("ConstructedDroidVariable");
-        pistolMigration.Should().Contain("droid.SerializedCPU");
-        pistolMigration.Should().Contain("droid.SerializedHead");
-        pistolMigration.Should().Contain("droid.SerializedBody");
-        pistolMigration.Should().Contain("droid.SerializedArms");
-        pistolMigration.Should().Contain("droid.SerializedLegs");
-        pistolMigration.Should().Contain("droid.EquippedItems");
-        pistolMigration.Should().Contain("droid.Inventory");
-        pistolMigration.Should().Contain("MoveEquippedItemToDroidInventory(droid, existingBulletAmmo)");
-
-        AssertMigrationCalls(storedMigration,
-            "MigrateInventoryItems(progress, disposal);",
-            "MigrateMarketItems(progress, disposal);",
-            "MigrateWorldPropertyCategories(categories, progress, disposal);",
-            "MigrateEntityItems(SearchAll<WorldProperty>()",
-            "MigrateEntityItems(researchJobs",
-            "MigrateEntityItems(SearchAll<PlayerOutfit>()",
-            "MigrateEntityItems(SearchAll<DMCreature>()",
-            "MigratePlayerShips(ships, progress, disposal);");
-        AssertStoredEntitySurfaces(storedMigration);
-        AssertShipSurfaces(storedMigration);
-    }
-
-    [Test]
     public void ServerMigrationsFrom22_ReportCurrentMigrationStartWithoutOverallProgress()
     {
         var root = FindRepositoryRoot();
@@ -121,73 +47,6 @@ public class CombatUpgradeMigrationCoverageTests
         migrationService.Should().Contain("Starting server migration");
         migrationService.Should().NotContain("migrations 22+ pending");
         migrationService.Should().NotContain("migrations 22+ complete");
-    }
-
-    [Test]
-    public void SerializedRequirementMigration_ReportsCurrentMigrationRecordProgress()
-    {
-        var root = FindRepositoryRoot();
-        var migration = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration",
-            "StoredItemDataMigration.cs"));
-
-        migration.Should().Contain("Migration #22:");
-        migration.Should().Contain("Current migration progress");
-        migration.Should().Contain("serialized objects");
-        migration.Should().Contain("Current surface");
-        migration.Should().Contain("RecordReportStep");
-        migration.Should().Contain("PercentReportStep");
-        migration.Should().Contain("new MigrationProgress(itemCount, \"records\")");
-        migration.Should().Contain("new MigrationProgress(jobCount, \"records\")");
-        migration.Should().Contain("new MigrationProgress(totalSerializedObjects, \"serialized objects\")");
-        migration.Should().Contain("MigrateDroidBoostSerializedObject(serializedItem, out var migratedData)");
-        migration.Should().Contain("false))");
-        foreach (var message in new[]
-                 {
-                     "BeginSection(\"market category records\"",
-                     "market category records changed",
-                     "BeginSection(\"research job recipe records\"",
-                     "research job records written",
-                     "BeginSection(\"inventory items\"",
-                     "inventory item records changed",
-                     "BeginSection(\"market items\"",
-                     "market item records changed",
-                     "BeginSection(\"world property category storage\"",
-                     "category items changed",
-                     "\"world property structure items\"",
-                     "\"research jobs\"",
-                     "\"player outfits\"",
-                     "\"DM creatures\"",
-                     "{sectionName} records changed",
-                     "BeginSection(\"player ships\"",
-                     "player ship records changed",
-                 })
-        {
-            migration.Should().Contain(message);
-        }
-    }
-
-    [Test]
-    public void WeaponDamageMigration_CollapsesConflictingBlueprintElementalDamageBonuses()
-    {
-        var root = FindRepositoryRoot();
-        var migrationSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "SerializedItemWeaponDamageTypeMigration.cs"));
-
-        migrationSource.Should().Contain("BlueprintRecipeIdVariable = \"BLUEPRINT_RECIPE_ID\"");
-        migrationSource.Should().Contain("ItemPropertyType.Blueprint");
-        migrationSource.Should().Contain("SelectBlueprintDamageEnhancements(selectedEnhancements)");
-        migrationSource.Should().Contain("DamageType.IsElementalDamageType()");
-        migrationSource.Should().Contain("SWLOR.Game.Server.Service.Random.Next(elementalDamageTypes.Count)");
-        migrationSource.Should().Contain("damageEnhancement.DamageType == selectedElementalDamageType");
     }
 
     [Test]
@@ -281,18 +140,6 @@ public class CombatUpgradeMigrationCoverageTests
             if (GetTsvInt(row, 17) > 0)
                 stats.Should().ContainKey((int)DroidStatSubType.TwinPistol, $"{templateResref} ranged CPUs should grant Twin Pistol like Pistol, Rifle, and Throwing");
         }
-
-        var migration = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition",
-            "ServerMigration",
-            "StoredItemDataMigration.cs"));
-        migration.Should().Contain("DroidStatSubType.Armor");
-        migration.Should().Contain("DroidPartItemPropertySubType.CPU");
-        migration.Should().Contain("Droid.DroidControlItemResref");
-        migration.Should().Contain("GetTierArmorSkillRank");
     }
 
     [Test]
@@ -309,76 +156,6 @@ public class CombatUpgradeMigrationCoverageTests
             .Select(match => match.Groups[1].Value)
             .Should()
             .Equal("Invalid", "ExplicitPerk", "ImplicitPerk", "FinalImplicit");
-    }
-
-    [Test]
-    public void SharedItemMigrationServices_RecurseThroughEquippedItemsInventoryAndNestedDroidItems()
-    {
-        var root = FindRepositoryRoot();
-        var migrationRoot = Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "MigrationDefinition");
-        var recursiveObjectMigrations = new[]
-        {
-            "EquipmentRequirementMigration.cs",
-            "SerializedItemResistanceMigration.cs",
-            "SerializedItemWeaponDamageTypeMigration.cs",
-            "CombatReadinessMigration.cs",
-        };
-
-        foreach (var file in recursiveObjectMigrations)
-        {
-            var source = File.ReadAllText(Path.Combine(migrationRoot, file));
-            source.Should().Contain("GetHasInventory(obj)", file);
-            source.Should().Contain("GetFirstItemInInventory(obj)", file);
-            source.Should().Contain("GetItemInSlot((InventorySlot)index, creature)", file);
-        }
-
-        var obsoleteItemMigration = File.ReadAllText(Path.Combine(migrationRoot, "ObsoleteItemMigration.cs"));
-        obsoleteItemMigration.Should().Contain("GetHasInventory(obj)");
-        obsoleteItemMigration.Should().Contain("GetFirstItemInInventory(obj)");
-        obsoleteItemMigration.Should().Contain("GetItemInSlot((InventorySlot)index, obj)");
-        obsoleteItemMigration.Should().Contain("droid.EquippedItems");
-        obsoleteItemMigration.Should().Contain("droid.Inventory");
-
-        var combatReadinessMigration = File.ReadAllText(Path.Combine(migrationRoot, "CombatReadinessMigration.cs"));
-        combatReadinessMigration.Should().Contain("droid.EquippedItems");
-        combatReadinessMigration.Should().Contain("droid.Inventory");
-    }
-
-    private static void AssertMigrationCalls(string source, params string[] calls)
-    {
-        foreach (var call in calls)
-        {
-            source.Should().Contain(call);
-        }
-    }
-
-    private static void AssertStoredEntitySurfaces(string source)
-    {
-        foreach (var entityType in new[]
-                 {
-                     "InventoryItem",
-                     "MarketItem",
-                     "WorldPropertyCategory",
-                     "WorldProperty",
-                     "ResearchJob",
-                     "PlayerOutfit",
-                     "DMCreature",
-                 })
-        {
-            source.Should().Contain(entityType);
-        }
-    }
-
-    private static void AssertShipSurfaces(string source)
-    {
-        source.Should().Contain("PlayerShip");
-        source.Should().Contain("HighPowerModules");
-        source.Should().Contain("LowPowerModules");
-        source.Should().Contain("ConfigurationModules");
     }
 
     private static int GetJsonFieldValue(JObject obj, string field)

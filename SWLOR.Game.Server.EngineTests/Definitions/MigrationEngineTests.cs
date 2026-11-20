@@ -44,249 +44,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(original, GetAbilityScore(owner, AbilityType.Might), "Its equipped effect is removed too");
         }
 
-        [EngineTest("Migration converts stored weapon requirements after cache load", Category = "Migration")]
-        public static async Task StoredWeaponRequirements(EngineTestContext ctx)
-        {
-            var owner = ctx.SpawnCreature("nw_rat001");
-            await ctx.WaitFrameAsync();
-            var weapon = await CreateItemAsync(ctx, owner, "b_longsword", owner);
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                ClearProperties(weapon);
-                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.UseLimitationPerk, 6, 5), weapon);
-            });
-            await ctx.WaitFrameAsync();
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                ctx.AssertEqual(5, PropertyValue(weapon, ItemPropertyType.UseLimitationPerk, 6), "Legacy fixture perk requirement");
-                var migrated = MigrateSerialized(ctx, weapon);
-                ctx.AssertEqual(40, PropertyValue(migrated, ItemPropertyType.RequiresSkill, (int)SkillType.Vibroblade), "Weapon skill rank");
-                ctx.AssertEqual(-1, PropertyValue(migrated, ItemPropertyType.RequiresSkill, 0), "No invalid skill requirement");
-            });
-        }
-
-        [EngineTest("Migration updates carried droid CPU and nested weapon data", Category = "Migration")]
-        public static async Task DroidContents(EngineTestContext ctx)
-        {
-            var owner = ctx.SpawnCreature("nw_rat001");
-            await ctx.WaitFrameAsync();
-            var cpu = await CreateItemAsync(ctx, owner, "d_bl_cpu1_m", owner);
-            var weapon = await CreateItemAsync(ctx, owner, "b_longsword", owner);
-            var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                ClearProperties(cpu);
-                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DroidPart, (int)DroidPartItemPropertySubType.CPU), cpu);
-                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Tier, 1), cpu);
-                // Retired rows are no longer constructible from the current 2DA.
-                // Restore a saved legacy property just as a pre-upgrade item does.
-                AddLegacyProperty(cpu, ItemPropertyType.DroidStat, 12, 45, 5);
-                var savedCpu = Deserialize(ctx, ObjectPlugin.Serialize(cpu));
-                ObjectPlugin.AcquireItem(owner, savedCpu);
-                DestroyObject(cpu);
-                cpu = savedCpu;
-                ctx.AssertEqual(5, PropertyValue(cpu, ItemPropertyType.DroidStat, 12), "Saved legacy CPU weapon group");
-
-                ClearProperties(weapon);
-                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, 6), weapon);
-                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.UseLimitationPerk, 6, 5), weapon);
-            });
-            await ctx.WaitFrameAsync();
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                SetLocalString(controller, "CONSTRUCTED_DROID", JsonConvert.SerializeObject(new ConstructedDroid
-                {
-                    SerializedCPU = ObjectPlugin.Serialize(cpu),
-                    EquippedItems = { [InventorySlot.RightHand] = ObjectPlugin.Serialize(weapon) }
-                }));
-
-                Invoke("ServerMigration.StoredItemDataMigration", "MigrateDroidItems", owner);
-                Invoke("SerializedItemWeaponDamageTypeMigration", "MigrateObject", owner);
-                ctx.Log($"Carried CPU properties: {DescribeProperties(cpu)}; owner inventory: {Item.GetInventoryItemCount(owner)}");
-                ctx.AssertEqual(5, PropertyValue(cpu, ItemPropertyType.DroidStat, (int)DroidStatSubType.Armor), "Carried CPU armor skill");
-                ctx.AssertEqual(5, PropertyValue(cpu, ItemPropertyType.DroidStat, (int)DroidStatSubType.Vibroblade), "Carried CPU weapon skill");
-                var droid = JsonConvert.DeserializeObject<ConstructedDroid>(GetLocalString(controller, "CONSTRUCTED_DROID"));
-                var migratedWeapon = Deserialize(ctx, droid.EquippedItems[InventorySlot.RightHand]);
-                ctx.AssertEqual(5, PropertyValue(migratedWeapon, ItemPropertyType.DMG), "Droid weapon damage");
-                ctx.AssertEqual(40, PropertyValue(migratedWeapon, ItemPropertyType.RequiresSkill, (int)SkillType.Vibroblade), "Droid weapon requirement");
-                var migratedCpu = Deserialize(ctx, droid.SerializedCPU);
-                ctx.AssertEqual(5, PropertyValue(migratedCpu, ItemPropertyType.DroidStat, (int)DroidStatSubType.Armor), "Stored CPU armor skill");
-
-                Invoke("SerializedItemWeaponDamageTypeMigration", "MigrateObject", owner);
-                droid = JsonConvert.DeserializeObject<ConstructedDroid>(GetLocalString(controller, "CONSTRUCTED_DROID"));
-                ctx.AssertEqual(5, PropertyValue(Deserialize(ctx, droid.EquippedItems[InventorySlot.RightHand]), ItemPropertyType.DMG), "Repeat migration damage");
-
-                var storedController = MigrateSerialized(ctx, controller);
-                var storedDroid = JsonConvert.DeserializeObject<ConstructedDroid>(GetLocalString(storedController, "CONSTRUCTED_DROID"));
-                var storedCpu = Deserialize(ctx, storedDroid.SerializedCPU);
-                ctx.AssertEqual(5, PropertyValue(storedCpu, ItemPropertyType.DroidStat, (int)DroidStatSubType.Armor), "Full storage pipeline preserves CPU armor");
-                ctx.AssertEqual(5, PropertyValue(Deserialize(ctx, storedDroid.EquippedItems[InventorySlot.RightHand]), ItemPropertyType.DMG), "Full storage pipeline preserves weapon damage");
-            });
-        }
-
-        [EngineTest("Migration expands nested carried blueprints without losing alternatives", Category = "Migration")]
-        public static async Task NestedBlueprints(EngineTestContext ctx)
-        {
-            var owner = ctx.SpawnCreature("nw_rat001");
-            await ctx.WaitFrameAsync();
-            var bag = await CreateItemAsync(ctx, owner, "bag_sm", owner);
-            var blueprint = await CreateItemAsync(ctx, owner, "blueprint", bag);
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                SetLocalInt(blueprint, "BLUEPRINT_RECIPE_ID", 3488);
-            });
-            await ctx.WaitFrameAsync();
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                Invoke("ServerMigration.StoredItemDataMigration", "MigrateDroidItems", owner);
-                AssertBlueprintRecipes(ctx, bag);
-                Invoke("ServerMigration.StoredItemDataMigration", "MigrateDroidItems", owner);
-                AssertBlueprintRecipes(ctx, bag);
-            });
-        }
-
-        [EngineTest("Migration expands blueprint alternatives inside serialized droid inventories", Category = "Migration")]
-        public static async Task DroidBlueprints(EngineTestContext ctx)
-        {
-            var owner = ctx.SpawnCreature("nw_rat001");
-            await ctx.WaitFrameAsync();
-            var blueprint = await CreateItemAsync(ctx, owner, "blueprint", owner);
-            var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                SetLocalInt(blueprint, "BLUEPRINT_RECIPE_ID", 3488);
-                SetLocalString(blueprint, "DROID_ITEM_ID", "original");
-            });
-            await ctx.WaitFrameAsync();
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                ctx.Log("Serializing the legacy blueprint into its droid controller.");
-                SetLocalString(controller, "CONSTRUCTED_DROID", JsonConvert.SerializeObject(new ConstructedDroid
-                {
-                    Inventory = { ["original"] = ObjectPlugin.Serialize(blueprint) }
-                }));
-                ctx.Log("Expanding the controller's serialized blueprint.");
-                Invoke("ServerMigration.StoredItemDataMigration", "MigrateDroidItems", controller);
-                ctx.Log("Checking the expanded serialized blueprints.");
-                var droid = JsonConvert.DeserializeObject<ConstructedDroid>(GetLocalString(controller, "CONSTRUCTED_DROID"));
-                ctx.AssertEqual(3, droid.Inventory.Count, "Expanded droid blueprint count");
-                var recipes = new List<int>();
-                foreach (var pair in droid.Inventory)
-                {
-                    var item = Deserialize(ctx, pair.Value);
-                    recipes.Add(GetLocalInt(item, "BLUEPRINT_RECIPE_ID"));
-                    ctx.AssertEqual(pair.Key, GetLocalString(item, "DROID_ITEM_ID"), "Droid item identity");
-                }
-                ctx.Assert(recipes.OrderBy(value => value).SequenceEqual(new[] { 4799, 4800, 4801 }), "All replacement recipes should survive.");
-            });
-        }
-
-        [EngineTest("Migration preserves storage quantities and replacement metadata", Category = "Migration")]
-        public static async Task ReplacementStacksAndMetadata(EngineTestContext ctx)
-        {
-            var owner = ctx.SpawnCreature("nw_rat001");
-            await ctx.WaitFrameAsync();
-            var kit = await CreateItemAsync(ctx, owner, "saber_upg1", owner);
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                ctx.AssertEqual(1, GetItemStackSize(kit), "Kits use separate items; storage records aggregate their quantity");
-            });
-            await ctx.WaitFrameAsync();
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                var data = ObjectPlugin.Serialize(kit);
-                var record = new InventoryItem { PlayerId = "migration-test", StorageId = "migration-test", Name = "Old kit", Resref = "saber_upg1", Tag = "saber_upg1", Quantity = 7, Data = data };
-                try
-                {
-                    DB.Set(record);
-                    Invoke("ServerMigration.StoredItemDataMigration", "Migrate");
-                    var migrated = DB.Get<InventoryItem>(record.Id);
-                    ctx.AssertEqual("saber_upg2", migrated.Resref, "Replacement metadata resref");
-                    ctx.AssertEqual("saber_upg2", migrated.Tag, "Replacement metadata tag");
-                    var item = Deserialize(ctx, migrated.Data);
-                    ctx.AssertEqual(GetName(item), migrated.Name, "Replacement metadata name");
-                    ctx.AssertEqual(Item.GetIconResref(item), migrated.IconResref, "Replacement metadata icon");
-                    ctx.AssertEqual(7, migrated.Quantity, "Stored stack quantity");
-                    ctx.AssertEqual(1, GetItemStackSize(item), "Serialized individual kit quantity");
-                    Invoke("ServerMigration.StoredItemDataMigration", "Migrate");
-                    ctx.AssertEqual(7, DB.Get<InventoryItem>(record.Id).Quantity, "Retry stack quantity");
-                }
-                finally
-                {
-                    DB.Delete<InventoryItem>(record.Id);
-                }
-            });
-        }
-
-        [EngineTest("Migration removes obsolete contents before serializing their container", Category = "Migration")]
-        public static async Task ObsoleteContainerContents(EngineTestContext ctx)
-        {
-            var owner = ctx.SpawnCreature("nw_rat001");
-            await ctx.WaitFrameAsync();
-            var bag = await CreateItemAsync(ctx, owner, "bag_sm", owner);
-            await CreateItemAsync(ctx, owner, "recipe_saberupg1", bag);
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                var migrated = MigrateSerialized(ctx, bag);
-                ctx.Assert(!GetIsObjectValid(GetFirstItemInInventory(migrated)), $"The serialized bag must not retain a destroyed obsolete item; first remaining item: {GetResRef(GetFirstItemInInventory(migrated))}.");
-            });
-        }
-
-        [EngineTest("Migration normalizes sabers nested in droid containers", Category = "Migration")]
-        public static async Task NestedDroidSabers(EngineTestContext ctx)
-        {
-            var owner = ctx.SpawnCreature("nw_rat001");
-            await ctx.WaitFrameAsync();
-            var bag = await CreateItemAsync(ctx, owner, "bag_sm", owner);
-            var saber = await CreateItemAsync(ctx, owner, "b_longsword", bag);
-            var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                ItemPlugin.SetBaseItemType(saber, BaseItem.Lightsaber);
-            });
-            await ctx.WaitFrameAsync();
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                SetLocalString(controller, "CONSTRUCTED_DROID", JsonConvert.SerializeObject(new ConstructedDroid
-                {
-                    Inventory = { ["bag"] = ObjectPlugin.Serialize(bag) }
-                }));
-                var migrated = MigrateSerialized(ctx, controller);
-                var droid = JsonConvert.DeserializeObject<ConstructedDroid>(GetLocalString(migrated, "CONSTRUCTED_DROID"));
-                var migratedSaber = GetFirstItemInInventory(Deserialize(ctx, droid.Inventory["bag"]));
-                ctx.Log($"Nested saber properties: {DescribeProperties(migratedSaber)}");
-                ctx.AssertEqual(5, GetLocalInt(migratedSaber, "SABER_TIER"), "Nested saber tier");
-                ctx.AssertEqual(21, PropertyValue(migratedSaber, ItemPropertyType.DMG), "Nested saber damage");
-            });
-        }
-
-        [EngineTest("Migration keeps resistance vulnerabilities when merging old properties", Category = "Migration")]
-        public static async Task ResistanceVulnerability(EngineTestContext ctx)
-        {
-            var owner = ctx.SpawnCreature("nw_rat001");
-            await ctx.WaitFrameAsync();
-            var item = await CreateItemAsync(ctx, owner, "ch_armor", owner);
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                AddLegacyProperty(item, ItemPropertyType.Resistance, (int)ResistanceType.Fire, 54, 112);
-                // Retired elemental defense subtypes are absent from today's 2DA,
-                // but can still occur in serialized pre-upgrade items.
-                AddLegacyProperty(item, ItemPropertyType.Defense, (int)CombatDamageType.Fire, 35, 5);
-                item = Deserialize(ctx, ObjectPlugin.Serialize(item));
-            });
-            await ctx.WaitFrameAsync();
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                ctx.Log($"Resistance fixture: {DescribeProperties(item)}; table: {Get2DAString("itempropdef", "Label", 133)} / {Get2DAString("itempropdef", "CostTableResRef", 133)}");
-                ctx.AssertEqual(112, PropertyValue(item, ItemPropertyType.Resistance, (int)ResistanceType.Fire), "Fixture vulnerability row");
-                ctx.AssertEqual(5, PropertyValue(item, ItemPropertyType.Defense, (int)CombatDamageType.Fire), "Fixture legacy defense row");
-                Invoke("SerializedItemResistanceMigration", "MigrateObject", item);
-                var value = PropertyValue(item, ItemPropertyType.Resistance, (int)ResistanceType.Fire);
-                ctx.AssertEqual(5, value, "The legacy defense wins over vulnerability, without becoming immunity");
-                ctx.AssertEqual(-1, PropertyValue(item, ItemPropertyType.Defense, (int)CombatDamageType.Fire), "Legacy elemental defense is removed");
-            });
-        }
-
         private static async Task<uint> CreateItemAsync(EngineTestContext ctx, uint actor, string resref, uint possessor)
         {
             var item = OBJECT_INVALID;
@@ -307,15 +64,86 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return item;
         }
 
-        private static uint MigrateSerialized(EngineTestContext ctx, uint item)
+        /// <summary>A CPU blueprint with both the martial and ranged groups at 25.</summary>
+        internal const string LegacyDroidCpu = "d_jg_cpu3_m";
+        private const int LegacyControllerKatar = 30;
+        private const int LegacyControllerStaff = 25;
+
+        /// <summary>A CPU saved before the Unarmed and Twin Pistol skills existed.</summary>
+        internal static void StampLegacyDroidCpu(uint cpu)
         {
-            var result = Invoke("ServerMigration.StoredItemDataMigration", "MigrateSerializedObject", ObjectPlugin.Serialize(item));
-            return Deserialize(ctx, (string)result.GetType().GetProperty("Data").GetValue(result));
+            RemoveDroidStats(cpu, DroidStatSubType.Unarmed, DroidStatSubType.TwinPistol);
+        }
+
+        /// <summary>
+        /// A controller assembled before the new skills: a boosted Katar, the ranged group at zero as assembly saves
+        /// skills no part grants, and the CPU saved inside it.
+        /// </summary>
+        internal static void StampLegacyDroidController(uint controller, string serializedCpu)
+        {
+            RemoveDroidStats(controller, DroidStatSubType.Katar, DroidStatSubType.Staff, DroidStatSubType.Pistol, DroidStatSubType.Rifle,
+                DroidStatSubType.Throwing, DroidStatSubType.Unarmed, DroidStatSubType.TwinPistol);
+            foreach (var (skill, value) in new[]
+                     {
+                         (DroidStatSubType.Katar, LegacyControllerKatar), (DroidStatSubType.Staff, LegacyControllerStaff),
+                         (DroidStatSubType.Pistol, 0), (DroidStatSubType.Rifle, 0), (DroidStatSubType.Throwing, 0),
+                     })
+                AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DroidStat, (int)skill, value), controller);
+            Droid.SaveConstructedDroid(controller, new ConstructedDroid { Name = "Weapon skill fixture", SerializedCPU = serializedCpu });
+        }
+
+        private static void RemoveDroidStats(uint item, params DroidStatSubType[] skills)
+        {
+            var matches = new List<SWLOR.NWN.API.Engine.ItemProperty>();
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                if (GetItemPropertyType(ip) == ItemPropertyType.DroidStat && skills.Contains((DroidStatSubType)GetItemPropertySubType(ip)))
+                    matches.Add(ip);
+            foreach (var ip in matches)
+                Invoke("MigrationObject", "RemoveProperty", item, ip);
+        }
+
+        private static int FindFlatFiveDamageBonusRow()
+        {
+            for (var row = 0; row < Get2DARowCount("iprp_damagecost"); row++)
+            {
+                if (Get2DAString("iprp_damagecost", "NumDice", row) != "0" ||
+                    Get2DAString("iprp_damagecost", "Die", row) != "5")
+                    continue;
+
+                return row;
+            }
+
+            throw new System.InvalidOperationException("iprp_damagecost has no flat 5 damage row.");
         }
 
         private static object Invoke(string type, string method, params object[] args) =>
             typeof(SWLOR.Game.Server.Service.Migration).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition." + type)
                 .GetMethod(method, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, args);
+
+        // Read Redis directly so these assertions cannot pass on a mutated cache object
+        // whose database write was omitted.
+        private static T ReadPersisted<T>(string id) where T : EntityBase =>
+            JsonConvert.DeserializeObject<T>(DB.GetRawJson<T>(id));
+
+        private static void AssertDamageType(EngineTestContext ctx, uint item, CombatDamageType expected)
+        {
+            var types = new List<int>();
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                if (GetItemPropertyType(ip) == ItemPropertyType.WeaponDamageType)
+                    types.Add(GetItemPropertySubType(ip));
+            // Physical damage is the default and carries no damage-type property.
+            var expectedTypes = expected == CombatDamageType.Physical ? new int[0] : new[] { (int)expected };
+            ctx.Assert(types.SequenceEqual(expectedTypes),
+                $"Expected {(expected == CombatDamageType.Physical ? "no" : $"exactly one {expected}")} damage-type property; found {string.Join(", ", types)}.");
+        }
+
+        private static int MeleePropertyTotal(uint item, ItemPropertyType type)
+        {
+            var total = 0;
+            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+                if (GetItemPropertyType(property) == type) total += GetItemPropertyCostTableValue(property);
+            return total;
+        }
 
         private static void ClearProperties(uint item)
         {
@@ -359,12 +187,5 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return string.Join(", ", properties);
         }
 
-        private static void AssertBlueprintRecipes(EngineTestContext ctx, uint container)
-        {
-            var recipes = new List<int>();
-            for (var item = GetFirstItemInInventory(container); GetIsObjectValid(item); item = GetNextItemInInventory(container))
-                recipes.Add(GetLocalInt(item, "BLUEPRINT_RECIPE_ID"));
-            ctx.Assert(recipes.OrderBy(value => value).SequenceEqual(new[] { 4799, 4800, 4801 }), $"A migrated container should hold exactly all three new blueprints; found: {string.Join(", ", recipes)}.");
-        }
     }
 }

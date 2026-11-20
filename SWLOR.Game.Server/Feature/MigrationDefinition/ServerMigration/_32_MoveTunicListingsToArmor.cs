@@ -1,4 +1,7 @@
+using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 
@@ -6,9 +9,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 
 /// <summary>
 /// The next release's server migration. Moves market listings still saved under the removed Tunic category (20) to
-/// Armor so the market's Armor filter finds them; the combat upgrade's category remap missed that id. It checks each
-/// listing's saved record rather than its search entry, so a listing whose search entry already says Armor but whose
-/// record does not is still corrected.
+/// Armor so the market's Armor filter finds them; the combat upgrade's category remap missed that id. A listing's
+/// saved record and its search entry are written separately, so either can hold 20 while the other says Armor: the
+/// migration first checks every saved record, then re-saves every listing whose search entry still holds 20.
 /// </summary>
 public sealed class _32_MoveTunicListingsToArmor : IServerMigration
 {
@@ -21,6 +24,7 @@ public sealed class _32_MoveTunicListingsToArmor : IServerMigration
     {
         var progress = new ServerMigrationProgress(Version, ServerMigrationProgress.CountRecords<MarketItem>());
         new ParallelStoredItemPass(progress).Process<MarketItem>(MoveTunicToArmor);
+        ReindexTunicSearchEntries();
     }
 
     public static bool MoveTunicToArmor(MarketItem listing)
@@ -30,5 +34,26 @@ public sealed class _32_MoveTunicListingsToArmor : IServerMigration
 
         listing.Category = MarketCategoryType.Armor;
         return true;
+    }
+
+    // After the record pass every saved record is off 20, so any search entry still at 20 is stale; saving the
+    // listing again rewrites that entry from the record.
+    private static void ReindexTunicSearchEntries()
+    {
+        var query = new DBQuery<MarketItem>().AddFieldSearch(nameof(MarketItem.Category), RemovedTunicCategory);
+        var count = (int)DB.SearchCount(query);
+        if (count == 0)
+            return;
+
+        var ids = DB.SearchIds(query.AddPaging(count, 0)).ToList();
+        foreach (var id in ids)
+        {
+            var listing = DB.Get<MarketItem>(id);
+            if (listing == null)
+                continue;
+
+            MoveTunicToArmor(listing);
+            DB.Set(listing);
+        }
     }
 }

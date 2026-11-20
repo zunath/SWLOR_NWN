@@ -84,6 +84,39 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        [EngineTest("Tunic listings whose saved record already says Armor get their search entry moved to Armor", Category = "Migration", TimeoutSeconds = 30f)]
+        public static async Task TunicListingWithTunicSearchEntryMovesToArmor(EngineTestContext ctx)
+        {
+            await ctx.WaitFrameAsync();
+            var marketId = "tunic-migration-market-" + Guid.NewGuid().ToString("N");
+            var tunic = NewListing(marketId, "Old Tunic", MarketCategoryType.Armor);
+            var breastplate = NewListing(marketId, "Breastplate", MarketCategoryType.Armor);
+            var helmet = NewListing(marketId, "Helmet", MarketCategoryType.Helmet);
+            var listings = new[] { tunic, breastplate, helmet };
+            try
+            {
+                foreach (var listing in listings)
+                    DB.Set(listing);
+
+                // A save whose record was written but whose search entry write was lost: the record says Armor
+                // while the search entry still holds the Tunic id.
+                SetSearchEntryCategoryOnly(tunic.Id, Tunic);
+                ctx.AssertEqual((int)MarketCategoryType.Armor, StoredCategory(tunic.Id), "Fixture record already says Armor");
+                ctx.Assert(!ArmorFilterIds(marketId).Contains(tunic.Id), "Fixture search entry keeps the removed Tunic id");
+
+                new _32_MoveTunicListingsToArmor().Migrate();
+                AssertMigrated(ctx, marketId, tunic, breastplate, helmet);
+
+                new _32_MoveTunicListingsToArmor().Migrate();
+                AssertMigrated(ctx, marketId, tunic, breastplate, helmet);
+            }
+            finally
+            {
+                foreach (var listing in listings)
+                    DB.Delete<MarketItem>(listing.Id);
+            }
+        }
+
         private static void AssertMigrated(EngineTestContext ctx, string marketId, MarketItem tunic, MarketItem breastplate, MarketItem helmet)
         {
             ctx.AssertEqual((int)MarketCategoryType.Armor, StoredCategory(tunic.Id), "Stored tunic category");
@@ -118,6 +151,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 throw new InvalidOperationException($"Could not set the stored category of {id}.");
             ((Dictionary<string, EntityBase>)typeof(DB).GetField("_cachedEntities", flags)!.GetValue(null)!).Remove(id);
             ((Dictionary<string, string>)typeof(DB).GetField("_jsonAcrossFrames", flags)!.GetValue(null)!).Remove(key);
+        }
+
+        // Writes the search entry's category without touching the saved record.
+        private static void SetSearchEntryCategoryOnly(string id, int category)
+        {
+            const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
+            var multiplexer = (ConnectionMultiplexer)typeof(DB).GetField("_multiplexer", flags)!.GetValue(null)!;
+            var keyPrefix = ((Dictionary<Type, string>)typeof(DB).GetField("_keyPrefixByType", flags)!.GetValue(null)!)[typeof(MarketItem)];
+            multiplexer.GetDatabase().HashSet(SearchIndexDefinition.KeyPrefix(keyPrefix) + id, nameof(MarketItem.Category), category);
         }
 
         // The query the market's buy window runs with only the Armor toggle on.

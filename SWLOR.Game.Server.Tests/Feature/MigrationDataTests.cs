@@ -11,18 +11,15 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
-    // Master records player migration 25 and server migration 30 as released; NextPlayerVersion (crafting perk conversion and
-    // enzyme resize) and NextServerVersion (enzyme resize) shipped on 2026-11-17, and master's post-release cleanup (#3481) moves
-    // these constants up. Master's next release owns player migration 27 and server migration 32 (#3481's stubs), so the space
-    // revamp takes player 28 and server 33, and the city revamp, launched with space, server 34. Either release can then ship
-    // first: one that ran 27 and 32 still runs space's higher versions, and the space build runs master's 27 and 32 first.
+    // Production has run player migration 26 and server migration 31. Master's next release adds player migration
+    // NextPlayerVersion and server migration NextServerVersion once they hold real work. The space revamp sits above them,
+    // at player 28 and server 33, and the city revamp, launched with space, at server 34, so either release can ship first:
+    // the one that ships second keeps or moves above the first's versions. Update these at each post-release cleanup.
     private const int SpacePlayerVersion = 28;
     private const int SpaceServerVersion = 33;
     private const int CityServerVersion = 34;
-    private const int MastersNextPlayerVersion = 27;
-    private const int MastersNextServerVersion = 32;
-    private const int ReleasedPlayerVersion = 25;
-    private const int ReleasedServerVersion = 30;
+    private const int ReleasedPlayerVersion = 26;
+    private const int ReleasedServerVersion = 31;
     private const int NextPlayerVersion = ReleasedPlayerVersion + 1;
     private const int NextServerVersion = ReleasedServerVersion + 1;
     private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Service.Migration).Assembly;
@@ -38,12 +35,11 @@ public class MigrationDataTests
             .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes"),
                 CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConsolidatePelvisAppearance"),
                 CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks"), CharacterMigrations.Named("_28_ConvertSpaceItems") });
-        // 26 is the crafting revamp's, which shipped on its own; 28 is the space revamp's, above master's next release (27).
+        // 26 shipped with the crafting revamp; 28 is the space revamp's, above master's next release (27).
         migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks"), CharacterMigrations.Named("_28_ConvertSpaceItems") },
-                "each unreleased release receives one combined player-item pass, and the crafting perk conversion ships before the space revamp");
-        CharacterMigrations.VersionOf("_26_ConvertCraftingPerksToRanks").Should().Be(NextPlayerVersion);
-        CharacterMigrations.VersionOf("_28_ConvertSpaceItems").Should().Be(SpacePlayerVersion).And.BeGreaterThan(MastersNextPlayerVersion);
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_28_ConvertSpaceItems") },
+                "the space revamp receives one combined player-item pass");
+        CharacterMigrations.VersionOf("_28_ConvertSpaceItems").Should().Be(SpacePlayerVersion).And.BeGreaterThan(NextPlayerVersion);
         CharacterMigrations.LatestVersion.Should().Be(SpacePlayerVersion);
     }
 
@@ -136,12 +132,11 @@ public class MigrationDataTests
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
         remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
         remaining.Select(server => server.GetType()).Should().BeEquivalentTo(
-            new[] { typeof(_31_ShrinkEnzymes), typeof(_33_ConvertSpaceItems), typeof(_34_PlayerCityRevamp) },
-            $"server migration {NextServerVersion} shipped one combined stored-item pass, the space revamp's stored-item pass sits " +
-            $"above master's next release ({MastersNextServerVersion}), and the city revamp's one pass follows it");
-        new _31_ShrinkEnzymes().Version.Should().Be(NextServerVersion);
+            new[] { typeof(_33_ConvertSpaceItems), typeof(_34_PlayerCityRevamp) },
+            $"the space revamp's one stored-item pass sits above master's next release ({NextServerVersion}), " +
+            "and the city revamp's one pass follows it");
         new _33_ConvertSpaceItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
-        new _33_ConvertSpaceItems().Version.Should().Be(SpaceServerVersion).And.BeGreaterThan(MastersNextServerVersion);
+        new _33_ConvertSpaceItems().Version.Should().Be(SpaceServerVersion).And.BeGreaterThan(NextServerVersion);
         new _34_PlayerCityRevamp().ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);
         new _34_PlayerCityRevamp().Version.Should().Be(CityServerVersion);
     }

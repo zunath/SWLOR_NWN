@@ -25,9 +25,6 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         /// <summary>The local variable a node keeps its content in between sessions.</summary>
         public const string NodeVariable = "PROSPECTING_NODE";
 
-        /// <summary>The local variable the harvesting before Prospecting kept a node's remaining units in.</summary>
-        public const string LegacyStockVariable = "RESOURCE_COUNT";
-
         public string LoadNode(uint node)
         {
             var content = GetLocalString(node, NodeVariable);
@@ -37,10 +34,8 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         public void SaveNode(uint node, string content)
         {
             SetLocalString(node, NodeVariable, content);
-            DeleteLocalInt(node, LegacyStockVariable);
         }
 
-        public int LegacyStock(uint node) => Math.Max(0, GetLocalInt(node, LegacyStockVariable));
 
         public bool NodeExists(uint node) => GetIsObjectValid(node);
 

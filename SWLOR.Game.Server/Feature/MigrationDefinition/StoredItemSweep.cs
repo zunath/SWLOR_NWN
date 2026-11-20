@@ -42,18 +42,6 @@ internal static class StoredItemSweep
         return overflow ? sections.Append(ServerMigrationProgress.CountRecords<OverflowItem>()).ToArray() : sections;
     }
 
-    /// <summary>Updates enzyme sizes and building icons in every stored item record, including overflow storage.</summary>
-    internal static void MigrateEnzymes(int version)
-    {
-        var sections = BaseSections().Append(ServerMigrationProgress.CountRecords<OverflowItem>()).ToArray();
-        var progress = new ServerMigrationProgress(version, sections);
-        var pass = new ParallelStoredItemPass(progress);
-        var converter = EnzymeStoredItemConverter.Instance;
-        var changed = Sweep(pass, converter, null);
-        changed += pass.Process<OverflowItem>(item => MigrateData(converter, item.Data, value => item.Data = value));
-        Log.Write(LogGroup.Migration, $"Migration #{version}: Updated enzyme sizes, building icons, Gaderffii looks and retired appearances in {changed} stored records.", true);
-    }
-
 
     private static (string Name, int Count)[] BaseSections() => new[]
     {
@@ -124,8 +112,7 @@ internal static class StoredItemSweep
         // Cosmetic chest templates retain Armor so ApplyOutfit can still load them.
         changed += pass.Process<PlayerOutfit>(outfit =>
             MigrateData(converter, outfit.Data, value => outfit.Data = value, repairHeadgear: false) |
-            MigrateData(converter, outfit.HelmetData, value => outfit.HelmetData = value) |
-            (converter is EnzymeStoredItemConverter && RetiredAppearanceMigration.UpdateOutfitIds(outfit)));
+            MigrateData(converter, outfit.HelmetData, value => outfit.HelmetData = value));
         changed += pass.Process<DMCreature>(creature => MigrateData(converter, creature.Data, value => creature.Data = value) |
             (space?.Migrate(creature.Data, value => creature.Data = value, null) ?? false));
         changed += pass.Process<PlayerShip>(ship =>
@@ -157,17 +144,6 @@ internal static class StoredItemSweep
             rootIcon = listing.IconResref;
             rootChanged?.Invoke(listing);
         });
-        if (converter is EnzymeStoredItemConverter)
-        {
-            changed |= EnzymeBaseItemMigration.UpdateListingIcon(resref, icon, setIcon);
-            var buildingIcon = BuildingIconMigration.GetUpdatedIcon(resref, icon);
-            if (buildingIcon != icon)
-            {
-                setIcon(buildingIcon);
-                changed = true;
-            }
-            return changed;
-        }
         var updatedIcon = rootIcon ?? ItemIconMigration.GetUpdatedIcon(resref, icon);
         if (updatedIcon == icon)
             return changed;

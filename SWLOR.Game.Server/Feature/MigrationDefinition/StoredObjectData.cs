@@ -119,17 +119,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         }
 
         /// <summary>
-        /// Parses BIC or UTC data without native instantiation; NPC archives can also use the BIC file type.
-        /// </summary>
-        public static StoredObjectData ReadCreature(string data)
-        {
-            // NWNX serializes NPCs as BIC too; file type is not a player flag.
-            if (!IsCreatureData(data))
-                return null;
-            return new StoredObjectData(Convert.FromBase64String(data));
-        }
-
-        /// <summary>
         /// Parses inventory-bearing archives so nested identities can survive native loading alongside live copies.
         /// </summary>
         public static StoredObjectData ReadInventory(string data)
@@ -186,27 +175,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     MakeField(5, "Value", BitConverter.GetBytes(id))
                 }
             });
-        }
-
-        /// <summary>
-        /// Reads a typed integer local directly from saved GFF without claiming its native object identity.
-        /// </summary>
-        public static int ReadRootInteger(string data, string name)
-        {
-            var document = new StoredObjectData(Convert.FromBase64String(data));
-            var variables = document._root.Fields.SingleOrDefault(x => x.Name == "VarTable" && x.Type == 15);
-            if (variables == null) return 0;
-            foreach (var variable in variables.Children)
-            {
-                var variableName = variable.Fields.SingleOrDefault(x => x.Name == "Name" && x.Type == 10);
-                if (variableName == null || Encoding.UTF8.GetString(variableName.Data.AsSpan(4)) != name)
-                    continue;
-                var variableType = variable.Fields.SingleOrDefault(x => x.Name == "Type" && x.Type == 4);
-                var value = variable.Fields.SingleOrDefault(x => x.Name == "Value" && x.Type == 5);
-                if (variableType != null && BinaryPrimitives.ReadUInt32LittleEndian(variableType.Data) == 1 && value != null)
-                    return BinaryPrimitives.ReadInt32LittleEndian(value.Data);
-            }
-            return 0;
         }
 
         /// <summary>

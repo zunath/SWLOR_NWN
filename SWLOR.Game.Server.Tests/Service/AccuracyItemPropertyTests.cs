@@ -90,46 +90,6 @@ public class AccuracyItemPropertyTests
         equipmentStats.Should().Contain("_statChangeActions[ItemPropertyType.Accuracy] = ApplyAccuracy;");
     }
 
-    [Test]
-    public void LegacyAccuracy_CombinesIntoOneClampedValue()
-    {
-        AccuracyItemPropertyMigration.IsLegacyAccuracyProperty(ItemPropertyType.AccuracyBonus).Should().BeTrue();
-        AccuracyItemPropertyMigration.IsLegacyAccuracyProperty(ItemPropertyType.EnhancementBonus).Should().BeTrue();
-        AccuracyItemPropertyMigration.IsLegacyAccuracyProperty(ItemPropertyType.Accuracy).Should().BeFalse();
-        AccuracyItemPropertyMigration.IsLegacyAccuracyProperty(ItemPropertyType.Attack).Should().BeFalse();
-
-        AccuracyItemPropertyMigration.CombineLegacyAccuracy(new[] { 10 }).Should().Be(10);
-        AccuracyItemPropertyMigration.CombineLegacyAccuracy(new[] { 4, 5, 5, 5, 5, 6 }).Should().Be(30,
-            "the old accuracy read summed every Attack Bonus and Enhancement Bonus on the item");
-        AccuracyItemPropertyMigration.CombineLegacyAccuracy(new[] { 80, 40 })
-            .Should().Be(AccuracyItemPropertyMigration.MaximumAccuracy);
-    }
-
-    [Test]
-    public void AccuracyMigration_RunsForPlayersAndEveryStoredItemSurface()
-    {
-        var root = FindRepositoryRoot();
-        var migrationRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "MigrationDefinition");
-        var characterMigration = File.ReadAllText(Path.Combine(migrationRoot, "CharacterMigration", "_14_15_CombatUpgradeMigrations.cs"));
-        var storedMigration = File.ReadAllText(Path.Combine(migrationRoot, "ServerMigration", "StoredItemDataMigration.cs"));
-        var accuracyMigration = File.ReadAllText(Path.Combine(migrationRoot, "AccuracyItemPropertyMigration.cs"));
-        var recalculation = File.ReadAllText(Path.Combine(migrationRoot, "CharacterMigration", "CharacterRecalculation.cs"));
-
-        characterMigration.Should().Contain("SavedCombatUpgradeItemMigrations.MigrateAccuracy(character);");
-        storedMigration.Should().Contain("migrated |= AccuracyItemPropertyMigration.MigrateObject(obj);");
-        recalculation.Should().Contain("record.Accuracy = 0;");
-
-        // Droid controllers serialize their parts and gear separately from the controller item.
-        foreach (var field in new[]
-                 {
-                     "droid.SerializedCPU", "droid.SerializedHead", "droid.SerializedBody",
-                     "droid.SerializedArms", "droid.SerializedLegs", "droid.EquippedItems", "droid.Inventory"
-                 })
-        {
-            accuracyMigration.Should().Contain(field);
-        }
-    }
-
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

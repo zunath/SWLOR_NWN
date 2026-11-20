@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 /// creature body part becomes 1, the bare limb, or 0 on shoulders and belts, which bodies do not have. A retired head
 /// becomes the first head the race offers, a retired helmet becomes helmet 1, and a retired cloak becomes the Plain
 /// cloak (row 1).
-/// Runs in the release's enzyme visit (player migration 26, server migration 31).
+/// Player migration 26 applies it to character files; production has run it.
 /// </summary>
 public static class RetiredAppearanceMigration
 {
@@ -141,44 +141,4 @@ public static class RetiredAppearanceMigration
         [CreaturePart.LeftShin] = RetiredArmorPart.Shin, [CreaturePart.RightShin] = RetiredArmorPart.Shin,
         [CreaturePart.LeftFoot] = RetiredArmorPart.Foot, [CreaturePart.RightFoot] = RetiredArmorPart.Foot,
     };
-
-    /// <summary>Keeps an outfit's listed part numbers in step with its saved garment and helmet.</summary>
-    public static bool UpdateOutfitIds(PlayerOutfit outfit)
-    {
-        var changed = false;
-        void Update(RetiredArmorPart part, Func<int> read, Action<int> write)
-        {
-            var current = read();
-            var replacement = ReplaceArmorPart(part, current);
-            if (replacement == current) return;
-            write(replacement);
-            changed = true;
-        }
-        Update(RetiredArmorPart.Neck, () => outfit.NeckId, value => outfit.NeckId = value);
-        Update(RetiredArmorPart.Torso, () => outfit.TorsoId, value => outfit.TorsoId = value);
-        Update(RetiredArmorPart.Belt, () => outfit.BeltId, value => outfit.BeltId = value);
-        Update(RetiredArmorPart.Pelvis, () => outfit.PelvisId, value => outfit.PelvisId = value);
-        Update(RetiredArmorPart.Robe, () => outfit.RobeId, value => outfit.RobeId = value);
-        Update(RetiredArmorPart.Bicep, () => outfit.LeftBicepId, value => outfit.LeftBicepId = value);
-        Update(RetiredArmorPart.Bicep, () => outfit.RightBicepId, value => outfit.RightBicepId = value);
-        Update(RetiredArmorPart.Foot, () => outfit.LeftFootId, value => outfit.LeftFootId = value);
-        Update(RetiredArmorPart.Foot, () => outfit.RightFootId, value => outfit.RightFootId = value);
-        Update(RetiredArmorPart.Forearm, () => outfit.LeftForearmId, value => outfit.LeftForearmId = value);
-        Update(RetiredArmorPart.Forearm, () => outfit.RightForearmId, value => outfit.RightForearmId = value);
-        Update(RetiredArmorPart.Hand, () => outfit.LeftHandId, value => outfit.LeftHandId = value);
-        Update(RetiredArmorPart.Hand, () => outfit.RightHandId, value => outfit.RightHandId = value);
-        Update(RetiredArmorPart.Shin, () => outfit.LeftShinId, value => outfit.LeftShinId = value);
-        Update(RetiredArmorPart.Shin, () => outfit.RightShinId, value => outfit.RightShinId = value);
-        Update(RetiredArmorPart.Shoulder, () => outfit.LeftShoulderId, value => outfit.LeftShoulderId = value);
-        Update(RetiredArmorPart.Shoulder, () => outfit.RightShoulderId, value => outfit.RightShoulderId = value);
-        Update(RetiredArmorPart.Thigh, () => outfit.LeftThighId, value => outfit.LeftThighId = value);
-        Update(RetiredArmorPart.Thigh, () => outfit.RightThighId, value => outfit.RightThighId = value);
-        var helmet = ReplaceHelmet(outfit.HelmetId);
-        if (helmet != outfit.HelmetId)
-        {
-            outfit.HelmetId = helmet;
-            changed = true;
-        }
-        return changed;
-    }
 }

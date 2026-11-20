@@ -875,6 +875,13 @@
     "Call": "SendMessageToPC(user, $\"Your incubation mutations now check {day}. This resets when the server restarts.\")"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/PazaakChatCommand.cs",
+    "Line": 22,
+    "Member": "BuildChatCommands",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(\"Pazaak is only available to player characters.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/RenameChatCommand.cs",
     "Line": 29,
     "Member": "BuildChatCommands",
@@ -2380,6 +2387,48 @@
     "Call": "SendMessageToPC(Player, ColorToken.Red($\"A category named '{name}' already exists.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
+    "Line": 249,
+    "Member": "OnWindowClosed",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, \"Your Pazaak match continues. Use /pazaak to return to the table.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
+    "Line": 284,
+    "Member": "PromptPendingChallenge",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
+    "Line": 448,
+    "Member": "PlayHandCard",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
+    "Line": 507,
+    "Member": "OnClickEndTurn",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
+    "Line": 514,
+    "Member": "OnClickStand",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PazaakViewModel.cs",
+    "Line": 530,
+    "Member": "OnClickChallenge",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, ColorToken.Red(error))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerformanceOptionsViewModel.cs",
     "Line": 183,
     "Member": "OnApply",
@@ -3071,6 +3120,13 @@
     "Member": "Lockbox",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, error)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ItemDefinition/PazaakCardItemDefinition.cs",
+    "Line": 54,
+    "Member": "CollectCard",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Green($\"You add the {name} card to your Pazaak collection. You can now put {owned} in your side deck.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ItemDefinition/RecipeItemDefinition.cs",
@@ -4551,14 +4607,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/DMPresence.cs",
-    "Line": 140,
+    "Line": 158,
     "Member": "JumpToFirstLanding",
     "Delivery": "Retained",
     "Call": "SendMessage(dm, \"There is nowhere to land there.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/DMPresence.cs",
-    "Line": 349,
+    "Line": 367,
     "Member": "SendMessage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(GetControlledCreature(actor), message)"
@@ -5027,28 +5083,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
-    "Line": 259,
+    "Line": 267,
     "Member": "SendEveryoneBack",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"The host sent you back from {hostedEvent.Name}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
-    "Line": 319,
+    "Line": 326,
     "Member": "Join",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Traveling to {hostedEvent.Name}. Use /leaveevent or the Events window to go back.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
-    "Line": 509,
+    "Line": 542,
     "Member": "Announce",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(DMPresence.GetControlledCreature(player), message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
-    "Line": 516,
+    "Line": 549,
     "Member": "TellParticipantsEnded",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"{hostedEvent.Name} has ended. Use /leaveevent when you are ready to go back.\"))"
@@ -5209,7 +5265,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Migration.cs",
-    "Line": 231,
+    "Line": 239,
     "Member": "DeliverUpgradeNotices",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, notice)"
@@ -5297,6 +5353,55 @@
     "Member": "NotifyOnLogin",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{count} item(s) from a character update did not fit in your inventory and are in overflow storage. Free inventory space and use /overflow to claim them.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
+    "Line": 141,
+    "Member": "Challenge",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(challenger, ColorToken.Green($\"You challenge {targetName} to a game of Pazaak.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
+    "Line": 142,
+    "Member": "Challenge",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(target, ColorToken.Green($\"{PlayerName.GetDisplayName(target, challenger)} challenges you to a game of Pazaak.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
+    "Line": 164,
+    "Member": "DeclineChallenge",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(challenger, ColorToken.Red($\"{PlayerName.GetDisplayName(challenger, target)} declines your Pazaak challenge.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
+    "Line": 196,
+    "Member": "AcceptChallenge",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(seat.Player, ColorToken.Green($\"Your Pazaak match with {PlayerName.GetDisplayName(seat.Player, opponent)} begins.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
+    "Line": 283,
+    "Member": "AnnounceSetResult",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Cyan(\"Pazaak: \") + DescribeSetResult(match, seatIndex, player))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
+    "Line": 336,
+    "Member": "AnnounceMatchEnd",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, message)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PazaakService/Pazaak.cs",
+    "Line": 350,
+    "Member": "ScheduleTurnTimeout",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"You took too long, so you stand.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Performance.cs",
@@ -5671,49 +5776,49 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 145,
+    "Line": 140,
     "Member": "GiveHarvest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestHeldMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 147,
+    "Line": 142,
     "Member": "GiveHarvest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestDroppedMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 215,
+    "Line": 210,
     "Member": "DeliverAwaiting",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestCollectedMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 249,
+    "Line": 244,
     "Member": "ReturnPendingHarvest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestReturnedMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 251,
+    "Line": 246,
     "Member": "ReturnPendingHarvest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestCollectedMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 253,
+    "Line": 248,
     "Member": "ReturnPendingHarvest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestHeldMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 275,
+    "Line": 270,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"

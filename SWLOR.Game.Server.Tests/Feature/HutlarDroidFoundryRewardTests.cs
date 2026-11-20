@@ -88,7 +88,8 @@ public class HutlarDroidFoundryRewardTests
                 $"HUTLAR_FOUNDRY_{rare.LootKey}_RARES,100,1",
                 $"HUTLAR_FOUNDRY_{rare.LootKey}_RARES,10,1",
                 $"HUTLAR_FOUNDRY_{rare.LootKey}_COMP,100,1",
-                "MUSIC_DISCS,1,1");
+                "MUSIC_DISCS,1,1",
+                "PAZAAK_CARDS,1,1");
 
             foreach (var gear in rare.Gear.Append(rare.Crafted))
             {

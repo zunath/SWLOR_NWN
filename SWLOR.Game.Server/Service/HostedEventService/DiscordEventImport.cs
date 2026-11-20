@@ -18,6 +18,8 @@ namespace SWLOR.Game.Server.Service.HostedEventService
     {
         private const int ScheduledStatus = 1;
         private const int ActiveStatus = 2;
+        private const int CompletedStatus = 3;
+        private const int CanceledStatus = 4;
         public const string DefaultName = "Discord event";
         public const string DefaultHost = "Discord";
 
@@ -56,11 +58,18 @@ namespace SWLOR.Game.Server.Service.HostedEventService
 
             var events = new List<DiscordScheduledEvent>();
             var seen = new HashSet<string>();
-            foreach (var item in items.OfType<JObject>())
+            foreach (var token in items)
             {
+                // An entry that cannot be read could be an event a DM set up, so the whole snapshot is ignored.
+                if (token is not JObject item)
+                    return null;
+
                 var id = ReadString(item, "id");
                 var status = item["status"]?.Type == JTokenType.Integer ? item.Value<int>("status") : 0;
-                if (string.IsNullOrWhiteSpace(id) || status != ScheduledStatus && status != ActiveStatus || !seen.Add(id))
+                if (string.IsNullOrWhiteSpace(id) || status is < ScheduledStatus or > CanceledStatus)
+                    return null;
+
+                if (status is CompletedStatus or CanceledStatus || !seen.Add(id))
                     continue;
 
                 if (!DateTime.TryParse(

@@ -102,11 +102,33 @@ public class DiscordEventImportTests
     }
 
     [Test]
-    public void Parse_SkipsEntriesWithoutAnIdAndRepeatedIds()
+    public void Parse_SkipsRepeatedIds()
     {
-        var events = DiscordEventImport.Parse(Snapshot(DiscordEvent(""), DiscordEvent("3"), DiscordEvent("3", name: "Copy")));
+        var events = DiscordEventImport.Parse(Snapshot(DiscordEvent("3"), DiscordEvent("3", name: "Copy")));
 
         events.Should().ContainSingle().Which.Name.Should().Be("Cantina Night");
+    }
+
+    [Test]
+    public void Parse_RejectsTheSnapshotWhenAnEntryCannotBeRead()
+    {
+        // Each of these would otherwise drop out of the list and remove an event a DM may have set up.
+        var noStatus = DiscordEvent("2");
+        noStatus.Remove("status");
+        var malformed = new JToken[]
+        {
+            JValue.CreateNull(),
+            new JValue("2"),
+            DiscordEvent(""),
+            DiscordEvent("2", status: 9),
+            noStatus,
+        };
+
+        foreach (var entry in malformed)
+        {
+            var snapshot = new JObject { ["fetchedUtc"] = "2026-11-17T12:00:00Z", ["events"] = new JArray(DiscordEvent("1"), entry) };
+            DiscordEventImport.Parse(snapshot.ToString()).Should().BeNull(entry.ToString());
+        }
     }
 
     [TestCase(null)]

@@ -71,6 +71,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("bp_frostgaunt", 1, 1, true)
                 .AddItem("bp_ridgemantle", 1, 1, true);
 
+            _builder.Create("FNOTE_THORNBOUND")
+                .IsRare()
+                .AddItem("fnote_3646", 1, 1, true);
+
             _builder.Create("ESHAN_WARDEN_FIBERPLAST")
                 .AddItem("fiberp_high", 1, 3);
 

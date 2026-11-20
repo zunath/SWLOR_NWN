@@ -316,6 +316,7 @@ namespace SWLOR.Game.Server.Service
             Register(BeastType.Tach, KeyItemType.IncubationFieldNoteTach, FieldNoteAcquisitionType.Store);
             Register(BeastType.TempestBulwark, KeyItemType.IncubationFieldNoteTempestBulwark, FieldNoteAcquisitionType.RareSpawnDrop);
             Register(BeastType.Terentatek, KeyItemType.IncubationFieldNoteTerentatek, FieldNoteAcquisitionType.Store);
+            Register(BeastType.ThornboundWarden, KeyItemType.IncubationFieldNoteThornboundWarden, FieldNoteAcquisitionType.BossDrop);
             Register(BeastType.TideplumeStriderel, KeyItemType.IncubationFieldNoteTideplumeStriderel, FieldNoteAcquisitionType.RareSpawnDrop);
             Register(BeastType.Torosaurus, KeyItemType.IncubationFieldNoteTorosaurus, FieldNoteAcquisitionType.Store);
             Register(BeastType.Triceratops, KeyItemType.IncubationFieldNoteTriceratops, FieldNoteAcquisitionType.Store);

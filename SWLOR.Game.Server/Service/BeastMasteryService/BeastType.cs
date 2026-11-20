@@ -180,6 +180,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         CrystalflowSkimmer = 1136,
         VoidmireEcho = 1137,
         GreenbulkWallow = 1138,
-        HouseCat = 1139
+        HouseCat = 1139,
+        ThornboundWarden = 1140
     }
 }

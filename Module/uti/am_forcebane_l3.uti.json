@@ -12,6 +12,10 @@
     "type": "byte",
     "value": 0
   },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 148
+  },
   "Comment": {
     "type": "cexostring",
     "value": ""
@@ -46,9 +50,13 @@
       "0": "Proving Chamber Sensor Package"
     }
   },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 60
+  },
   "ModelPart1": {
     "type": "byte",
-    "value": 33
+    "value": 200
   },
   "PaletteID": {
     "type": "byte",
@@ -240,6 +248,6 @@
   },
   "xModelPart1": {
     "type": "word",
-    "value": 33
+    "value": 200
   }
 }

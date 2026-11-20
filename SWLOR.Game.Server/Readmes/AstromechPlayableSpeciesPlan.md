@@ -558,9 +558,9 @@ Done on 2026-11-18, on the owner's rule that every playable species has a dynami
 
 **Left as it is**
 
-- The other modules (sensor package, servo, drive unit and so on) still show the icons of the humanoid pieces they
-  copy.
-- Module descriptions are still the text of the humanoid piece they copy.
+- The other modules (sensor package, servo, drive unit and so on) still showed the icons of the humanoid pieces
+  they copy, and module descriptions were still the text of those pieces. Both were done on 2026-11-20: see
+  Descriptions and Module icons below.
 - The editor shows the Skin, Hair and Tattoo swatches and the Show Helmet and Show Cloak boxes to an astromech, as it
   does to everyone; they change nothing on a chassis.
 - Legs are not fitted to the body they are worn with. The eight designs share one leg joint, and the mixes looked
@@ -595,6 +595,32 @@ Done on 2026-11-20, after the owner asked that plating stop reading as a tunic.
 - **The fix.** Each of those forms has a description of its own in `tools/AstromechDescriptions.json`, keyed by the humanoid resref and written by hand: the same lore, names and stated effects, describing the droid part. The three gear generators write it into both description fields (`GenerateAstromechModules.described`) and stop on a described piece that has none. Gear that says it "requires Armor training" says Chassis training, which is what its form asks for.
 - **Not changed.** The 764 forms whose humanoid piece has no description still have none.
 - **Names.** Nineteen forms whose names still held a garment, a piece of jewelry or a body part were renamed the same day (`tools/AstromechLootNames.json`): the Sacred accessories follow the set's Lumen, Daybreak and Vigil variants ("Sacred Amulet Logic Module" is "Sacred Lumen Logic Module"), "Ashline Hushcloak Deflector Emitter" is "Ashline Hushfield Deflector Emitter", and so on. Names of other things stay: "Dead Hand" (a creature), "Ringside", "Boot Hill", hide as a material.
+
+## Module icons
+
+Done on 2026-11-20, after the owner asked for icons that fit a droid, with the condition that humanoid items stay
+humanoid.
+
+- **The problem.** A module keeps the base item of the humanoid piece it copies, and a helmet, an amulet, a belt, a
+  ring, gloves, a bracer, boots and a cloak pick their inventory icon by model number. So 1,019 modules showed a hood,
+  a necklace, a ring or a boot. Plating and the two held tools already had icons of their own.
+- **The fix.** Each of the seven module kinds has four icons of a droid part under model numbers no humanoid piece
+  uses (`MODULE_ICONS` in `tools/GenerateAstromechModules.py`; the numbers are listed in `ItemAppearanceRules.md`).
+  The generators put one of its kind's numbers on every module, spread evenly by the source resref, and the placed
+  store copies follow. The numbers have no model, which changes nothing on the body: a chassis never drew these
+  pieces.
+- **The art.** `tools/BuildAstromechModuleIcons.py` fits each source picture
+  (`SWLOR_Haks/sw_item_source/astromech`, with the prompts) into its inventory slot as a slot-sized DXT5 DDS with its
+  8x8 TGA, and writes the four cloakmodel.2da rows (no model, as the non-appearing cloak has). The pictures were
+  generated, which the owner approved; renders of the domes and legs were tried first and read poorly at icon size.
+- **Helmets and cloaks.** The first client pass showed nothing for a Sensor Package and a stock cape for a Deflector
+  Emitter: those two base items draw their icon through the dye palette and accept only a palette texture. Their
+  icons are PLTs of two layers, the metal of the part on the first metal dye and its glow on the first cloth dye,
+  and the generators give each of those modules the dyes its icon was drawn in (`ICON_METAL_DYE`, `ICON_GLOW_DYES`).
+  A chassis shows neither piece, so the dyes color nothing but the icon.
+- **Humanoid items.** No humanoid blueprint, model, icon or 2DA row changed. `AstromechModuleIconContentTests` and
+  `test_build_astromech_module_icons.py` fail if a humanoid piece carries a module number, if an appearance catalog
+  offers one, or if a module shows anything else; the icon tool stops at a name that already holds humanoid art.
 
 ## Phases
 

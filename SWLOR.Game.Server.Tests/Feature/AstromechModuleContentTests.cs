@@ -119,7 +119,11 @@ public class AstromechModuleContentTests
             .Concat(plating ? paint : Array.Empty<string>())
             .ToArray();
         // Plating also drops the part models of the piece it copies: a leftover number can name a chassis part.
-        bool Copied(string field) => !changed.Contains(field) && !(plating && IsPartModel(field));
+        // The other modules take the model number of their own inventory icon (AstromechModuleIconContentTests).
+        // A Sensor Package and a Deflector Emitter also wear that icon's dyes.
+        var paletteIcon = module.Resref.Contains("_sens_") || module.Resref.Contains("_defl_");
+        bool Copied(string field) => !changed.Contains(field) && !(plating && IsPartModel(field)) && !IsIconModel(field)
+                                     && !(paletteIcon && field is "Metal1Color" or "Cloth1Color");
         var sourceFields = source.EnumerateObject().Where(field => Copied(field.Name)).ToDictionary(field => field.Name, field => field.Value.GetRawText());
         var itemFields = item.EnumerateObject().Where(field => Copied(field.Name)).ToDictionary(field => field.Name, field => field.Value.GetRawText());
         itemFields.Should().BeEquivalentTo(sourceFields);
@@ -247,6 +251,8 @@ public class AstromechModuleContentTests
     private static int Number(JsonElement element, string name) => element.GetProperty(name).GetProperty("value").GetInt32();
 
     private static bool IsPartModel(string field) => field.StartsWith("ArmorPart_") || field.StartsWith("xArmorPart_");
+
+    private static bool IsIconModel(string field) => field.StartsWith("ModelPart") || field.StartsWith("xModelPart");
 
     // Plating draws nothing: every part is 0 but the torso, whose number has no model and carries the plating icon.
     private static void ShouldHaveThePartModelsOfPlating(JsonElement item)

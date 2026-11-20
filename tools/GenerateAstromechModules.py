@@ -4,7 +4,9 @@ An astromech cannot wear humanoid gear. Its gear is "modules": ordinary items in
 astromechs can equip (item property UseLimitationRacialType, subtype 170). Modules introduce no balance numbers: each one
 is a stat copy of the humanoid armor-slot item of the same slot and tier, with a new name, a Chassis (skill 61) rank
 requirement in place of the Armor (skill 6) rank, and the astromech-only property. Its description is its own: a piece
-that has one needs the description of its astromech form in tools/AstromechDescriptions.json (`described`).
+that has one needs the description of its astromech form in tools/AstromechDescriptions.json (`described`). Its
+inventory icon is its own too: a module that is not plating takes one of its kind's model numbers (`with_module_icon`),
+which name droid-part icons and no model.
 
   python tools/GenerateAstromechModules.py            write everything
   python tools/GenerateAstromechModules.py --check    write nothing, exit 1 and list what differs
@@ -26,6 +28,7 @@ import argparse
 import json
 import re
 import sys
+import zlib
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -250,6 +253,82 @@ def without_part_models(text: str, source: str) -> str:
     return TORSO_FIELD.sub(lambda m: f"{m.group(1)}{PLATING_TORSO}{m.group(2)}", text)
 
 
+# Inventory icons of the modules that are not plating. A module keeps the base item of the humanoid piece it copies,
+# and these base items pick their inventory icon by model number, so a copied blueprint showed a hood, a ring or a
+# boot. Each module kind has ICON_VARIANTS icons of its own (tools/BuildAstromechModuleIcons.py draws them) under
+# numbers no humanoid piece and no humanoid appearance catalog uses: base item -> (picture, first icon number). The
+# numbers have no model, which changes nothing on the chassis: it never drew these pieces. A cloak number is a
+# cloakmodel.2da row, and those rows name no model either.
+MODULE_ICONS = {
+    17: ("sensor", 200),    # helmet: Sensor Package
+    36: ("servo", 200),     # gloves: Manipulator Servo
+    78: ("servo", 200),     # bracer: Manipulator Servo
+    26: ("drive", 200),     # boots: Drive Unit
+    21: ("cell", 200),      # belt: Power Cell
+    19: ("logic", 140),     # amulet: Logic Module
+    52: ("socket", 240),    # ring: Expansion Socket
+    80: ("emitter", 200),   # cloak: Deflector Emitter
+}
+ICON_VARIANTS = 4
+THREE_PART_ITEMS = (26,)    # boots: a bottom, a middle and a top part number, each with its own icon layer
+# A helmet and a cloak draw their icon through the dye palette, so the icons of those two kinds are palette textures
+# and each module wears the dyes its icon was drawn in: the metal of the part is its first metal dye and the glow its
+# first cloth dye, one glow per icon variant (blue, orange, red, green). A chassis shows neither piece, so the dyes
+# color nothing but the icon. Every one is a matte dye: the inventory draws a reflective dye as brown noise
+# (BuildAstromechModuleIcons.py refuses one).
+PALETTE_ICON_ITEMS = (17, 80)
+ICON_METAL_DYE = 60
+ICON_GLOW_DYES = (148, 35, 36, 30)
+TOP_FIELD = re.compile(r'^  "(\w+)": \{', re.MULTILINE)
+BASE_ITEM_FIELD = re.compile(r'  "BaseItem": \{\r\n    "type": "int",\r\n    "value": (\d+)\r\n  \}')
+MODEL_FIELD = re.compile(r'(  "(x?)ModelPart([123])": \{\r\n    "type": "(?:byte|word)",\r\n    "value": )(\d+)(\r\n  \})')
+
+
+def module_icon_numbers(base_item: int) -> range:
+    first = MODULE_ICONS[base_item][1]
+    return range(first, first + ICON_VARIANTS)
+
+
+def with_dye(text: str, source: str, field: str, dye: int) -> str:
+    """The blueprint with a dye in one of its color fields. A piece that never had the field gets it in its place
+    among the fields, which are kept in order."""
+    pattern = re.compile(rf'(  "{field}": \{{\r\n    "type": "byte",\r\n    "value": )\d+(\r\n  \}})')
+    found = len(pattern.findall(text))
+    if found == 1:
+        return pattern.sub(lambda m: f"{m.group(1)}{dye}{m.group(2)}", text)
+    names = TOP_FIELD.findall(text)
+    later = [name for name in names if name > field]
+    if found or names != sorted(names) or not later:
+        raise SystemExit(f"{source}: {field} has an unexpected shape")
+    at = re.search(rf'^  "{later[0]}": \{{', text, re.MULTILINE).start()
+    return text[:at] + f'  "{field}": {{\r\n    "type": "byte",\r\n    "value": {dye}\r\n  }},\r\n' + text[at:]
+
+
+def with_module_icon(text: str, source: str) -> str:
+    """The blueprint with the model number of one of its module kind's icons in place of the humanoid piece's. The
+    variant follows the source resref, which spreads a kind evenly over its icons whatever the humanoid pieces
+    shared. A Sensor Package and a Deflector Emitter also take the dyes of that icon. Plating and the held tools
+    have icons of their own and come back unchanged."""
+    base = BASE_ITEM_FIELD.findall(text)
+    if len(base) != 1:
+        raise SystemExit(f"{source}: BaseItem has an unexpected shape")
+    if int(base[0]) not in MODULE_ICONS:
+        return text
+    fields = MODEL_FIELD.findall(text)
+    parts = sorted(int(part) for _, extended, part, _, _ in fields if not extended)
+    if parts != ([1, 2, 3] if int(base[0]) in THREE_PART_ITEMS else [1]):
+        raise SystemExit(f"{source}: unexpected model part fields")
+    numbers = {part: int(value) for _, extended, part, value, _ in fields if not extended}
+    if any(numbers[part] != int(value) for _, _, part, value, _ in fields):
+        raise SystemExit(f"{source}: its model part fields disagree")
+    variant = zlib.crc32(source.encode("ascii")) % ICON_VARIANTS
+    icon = module_icon_numbers(int(base[0]))[variant]
+    text = MODEL_FIELD.sub(lambda m: f"{m.group(1)}{icon}{m.group(5)}", text)
+    if int(base[0]) in PALETTE_ICON_ITEMS:
+        text = with_dye(with_dye(text, source, "Metal1Color", ICON_METAL_DYE), source, "Cloth1Color", ICON_GLOW_DYES[variant])
+    return text
+
+
 def painted(text: str, source: str, job: tuple) -> str:
     """The blueprint with a paint job in place of the dyes its source wore."""
     for field, row in zip(PAINT_FIELDS, job):
@@ -271,7 +350,7 @@ def starter_blueprint() -> str:
 
 
 def module_blueprint(module: Module) -> str:
-    text = described(renamed(module.source, module.resref, module.name), module.source)
+    text = with_module_icon(described(renamed(module.source, module.resref, module.name), module.source), module.source)
 
     changed = 0
     for match in PROPERTY_BLOCK.finditer(text):

@@ -276,7 +276,7 @@ def twin_blueprint(twin: Twin) -> str:
         raise SystemExit(f"{twin.source}: LocalizedName has an unexpected shape")
     new_name = ('  "LocalizedName": {\r\n    "type": "cexolocstring",\r\n    "value": {\r\n'
                 f'      "0": "{twin.name}"\r\n    }}\r\n  }},')
-    text = mod.described(name_pattern.sub(lambda _m: new_name, text), twin.source)
+    text = mod.with_module_icon(mod.described(name_pattern.sub(lambda _m: new_name, text), twin.source), twin.source)
 
     for key, kind in (("Tag", "cexostring"), ("TemplateResRef", "resref")):
         pattern = re.compile(rf'  "{key}": \{{\r\n    "type": "{kind}",\r\n    "value": "[^"\r\n]*"\r\n  \}}')

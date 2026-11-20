@@ -160,12 +160,12 @@ def tool_icon(png: Path) -> np.ndarray:
     return rgba
 
 
-def slot_sized(info: dict) -> dict:
-    """The template's DDS header for an icon of the tool canvas size."""
-    width, height = TOOL_CANVAS
+def slot_sized(info: dict, size=TOOL_CANVAS) -> dict:
+    """The template's DDS header for an icon of the given size (the tool canvas by default)."""
+    width, height = size
     header = bytearray(info['header'])
     struct.pack_into('<III', header, 12, height, width, ((width + 3) // 4) * ((height + 3) // 4) * 16)
-    return {**info, 'header': bytes(header), 'size': TOOL_CANVAS}
+    return {**info, 'header': bytes(header), 'size': tuple(size)}
 
 
 def write_tool_icons(folder: Path, pictures: dict) -> int:

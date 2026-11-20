@@ -21,6 +21,7 @@ public class AstromechRewardContentTests
     private const int RequiresSkillProperty = 131;
     private const int ArmorSkill = 6, StaffSkill = 44, RifleSkill = 46, ChassisSkill = 61, ArmamentsSkill = 63;
     private const int StaffBaseItem = 50, RifleBaseItem = 7, ShockProdBaseItem = 545, BlasterMountBaseItem = 546;
+    private const int HelmetBaseItem = 17, CloakBaseItem = 80;
 
     private static readonly string Root = FindRepositoryRoot();
 
@@ -126,6 +127,13 @@ public class AstromechRewardContentTests
             if (field.Name is "LocalizedName" or "Tag" or "TemplateResRef" or "BaseItem" or "PropertiesList" or "Description" or "DescIdentified")
                 continue;
             if (field.Name.StartsWith("ArmorPart_") || field.Name.StartsWith("xArmorPart_"))
+                continue;
+            // A module shows a droid part: its model number is its icon (AstromechModuleIconContentTests). A held
+            // tool keeps the part numbers of the weapon it copies.
+            if (sourceBase is not (StaffBaseItem or RifleBaseItem) && (field.Name.StartsWith("ModelPart") || field.Name.StartsWith("xModelPart")))
+                continue;
+            // A Sensor Package and a Deflector Emitter wear the dyes of their palette icon.
+            if (sourceBase is HelmetBaseItem or CloakBaseItem && field.Name is "Metal1Color" or "Cloth1Color")
                 continue;
             if (field.Name == "VarTable")
             {

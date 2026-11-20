@@ -12,6 +12,10 @@
     "type": "byte",
     "value": 0
   },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 30
+  },
   "Comment": {
     "type": "cexostring",
     "value": ""
@@ -46,9 +50,13 @@
       "0": "Hexweave Deflector Emitter"
     }
   },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 60
+  },
   "ModelPart1": {
     "type": "byte",
-    "value": 117
+    "value": 203
   },
   "PaletteID": {
     "type": "byte",
@@ -302,6 +310,6 @@
   },
   "xModelPart1": {
     "type": "word",
-    "value": 117
+    "value": 203
   }
 }

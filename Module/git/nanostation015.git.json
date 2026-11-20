@@ -239892,7 +239892,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 128
+                      "value": 35
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -239942,7 +239942,7 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 50
+                      "value": 60
                     },
                     "Metal2Color": {
                       "type": "byte",
@@ -239950,7 +239950,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 10
+                      "value": 201
                     },
                     "Plot": {
                       "type": "byte",
@@ -240142,7 +240142,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 10
+                      "value": 201
                     },
                     "XOrientation": {
                       "type": "float",
@@ -240181,7 +240181,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 20
+                      "value": 36
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -240229,7 +240229,7 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 39
+                      "value": 60
                     },
                     "Metal2Color": {
                       "type": "byte",
@@ -240237,7 +240237,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 4
+                      "value": 202
                     },
                     "Plot": {
                       "type": "byte",
@@ -240429,7 +240429,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 4
+                      "value": 202
                     },
                     "XOrientation": {
                       "type": "float",
@@ -241399,7 +241399,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 203
                     },
                     "Plot": {
                       "type": "byte",
@@ -241560,7 +241560,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 1
+                      "value": 203
                     },
                     "XOrientation": {
                       "type": "float",
@@ -241633,7 +241633,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 125
+                      "value": 201
                     },
                     "Plot": {
                       "type": "byte",
@@ -241763,7 +241763,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 125
+                      "value": 201
                     },
                     "XOrientation": {
                       "type": "float",
@@ -241834,15 +241834,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 202
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 202
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 61
+                      "value": 202
                     },
                     "Plot": {
                       "type": "byte",
@@ -242003,15 +242003,15 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 11
+                      "value": 202
                     },
                     "xModelPart2": {
                       "type": "word",
-                      "value": 11
+                      "value": 202
                     },
                     "xModelPart3": {
                       "type": "word",
-                      "value": 61
+                      "value": 202
                     },
                     "XOrientation": {
                       "type": "float",
@@ -242080,15 +242080,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 202
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 41
+                      "value": 202
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 71
+                      "value": 202
                     },
                     "Plot": {
                       "type": "byte",
@@ -242280,15 +242280,15 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 11
+                      "value": 202
                     },
                     "xModelPart2": {
                       "type": "word",
-                      "value": 41
+                      "value": 202
                     },
                     "xModelPart3": {
                       "type": "word",
-                      "value": 71
+                      "value": 202
                     },
                     "XOrientation": {
                       "type": "float",
@@ -242361,7 +242361,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 255
+                      "value": 201
                     },
                     "Plot": {
                       "type": "byte",
@@ -242491,7 +242491,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 255
+                      "value": 201
                     },
                     "XOrientation": {
                       "type": "float",
@@ -242564,7 +242564,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 202
                     },
                     "Plot": {
                       "type": "byte",
@@ -242694,7 +242694,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 1
+                      "value": 202
                     },
                     "XOrientation": {
                       "type": "float",
@@ -242733,7 +242733,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 105
+                      "value": 35
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -242781,7 +242781,7 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 51
+                      "value": 60
                     },
                     "Metal2Color": {
                       "type": "byte",
@@ -242789,7 +242789,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 99
+                      "value": 201
                     },
                     "Plot": {
                       "type": "byte",
@@ -242919,7 +242919,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 99
+                      "value": 201
                     },
                     "XOrientation": {
                       "type": "float",
@@ -242958,7 +242958,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 36
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -243006,7 +243006,7 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 60
                     },
                     "Metal2Color": {
                       "type": "byte",
@@ -243014,7 +243014,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 99
+                      "value": 202
                     },
                     "Plot": {
                       "type": "byte",
@@ -243175,7 +243175,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 99
+                      "value": 202
                     },
                     "XOrientation": {
                       "type": "float",
@@ -245101,7 +245101,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 128
+                      "value": 35
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -245151,7 +245151,7 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 50
+                      "value": 60
                     },
                     "Metal2Color": {
                       "type": "byte",
@@ -245159,7 +245159,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 10
+                      "value": 201
                     },
                     "Plot": {
                       "type": "byte",
@@ -245351,7 +245351,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 10
+                      "value": 201
                     },
                     "XOrientation": {
                       "type": "float",
@@ -245390,7 +245390,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 2
+                      "value": 30
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -245438,7 +245438,7 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 35
+                      "value": 60
                     },
                     "Metal2Color": {
                       "type": "byte",
@@ -245446,7 +245446,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 33
+                      "value": 203
                     },
                     "Plot": {
                       "type": "byte",
@@ -245638,7 +245638,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 33
+                      "value": 203
                     },
                     "XOrientation": {
                       "type": "float",
@@ -245677,7 +245677,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 2
+                      "value": 30
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -245725,7 +245725,7 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 35
+                      "value": 60
                     },
                     "Metal2Color": {
                       "type": "byte",
@@ -245733,7 +245733,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 33
+                      "value": 203
                     },
                     "Plot": {
                       "type": "byte",
@@ -245987,7 +245987,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 33
+                      "value": 203
                     },
                     "XOrientation": {
                       "type": "float",
@@ -246026,7 +246026,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 20
+                      "value": 30
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -246074,7 +246074,7 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 39
+                      "value": 60
                     },
                     "Metal2Color": {
                       "type": "byte",
@@ -246082,7 +246082,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 4
+                      "value": 203
                     },
                     "Plot": {
                       "type": "byte",
@@ -246336,7 +246336,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 4
+                      "value": 203
                     },
                     "XOrientation": {
                       "type": "float",
@@ -246409,7 +246409,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 255
+                      "value": 201
                     },
                     "Plot": {
                       "type": "byte",
@@ -246570,7 +246570,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 255
+                      "value": 201
                     },
                     "XOrientation": {
                       "type": "float",
@@ -246643,7 +246643,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 202
                     },
                     "Plot": {
                       "type": "byte",
@@ -246866,7 +246866,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 1
+                      "value": 202
                     },
                     "XOrientation": {
                       "type": "float",
@@ -246939,7 +246939,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 59
+                      "value": 203
                     },
                     "Plot": {
                       "type": "byte",
@@ -247069,7 +247069,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 59
+                      "value": 203
                     },
                     "XOrientation": {
                       "type": "float",
@@ -247142,7 +247142,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 59
+                      "value": 202
                     },
                     "Plot": {
                       "type": "byte",
@@ -247365,7 +247365,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 59
+                      "value": 202
                     },
                     "XOrientation": {
                       "type": "float",
@@ -247436,15 +247436,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 202
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 202
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 61
+                      "value": 202
                     },
                     "Plot": {
                       "type": "byte",
@@ -247636,15 +247636,15 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 11
+                      "value": 202
                     },
                     "xModelPart2": {
                       "type": "word",
-                      "value": 11
+                      "value": 202
                     },
                     "xModelPart3": {
                       "type": "word",
-                      "value": 61
+                      "value": 202
                     },
                     "XOrientation": {
                       "type": "float",
@@ -247713,15 +247713,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 200
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 41
+                      "value": 200
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 71
+                      "value": 200
                     },
                     "Plot": {
                       "type": "byte",
@@ -247975,15 +247975,15 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 11
+                      "value": 200
                     },
                     "xModelPart2": {
                       "type": "word",
-                      "value": 41
+                      "value": 200
                     },
                     "xModelPart3": {
                       "type": "word",
-                      "value": 71
+                      "value": 200
                     },
                     "XOrientation": {
                       "type": "float",
@@ -248052,15 +248052,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 21
+                      "value": 200
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 41
+                      "value": 200
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 41
+                      "value": 200
                     },
                     "Plot": {
                       "type": "byte",
@@ -248283,15 +248283,15 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 21
+                      "value": 200
                     },
                     "xModelPart2": {
                       "type": "word",
-                      "value": 41
+                      "value": 200
                     },
                     "xModelPart3": {
                       "type": "word",
-                      "value": 41
+                      "value": 200
                     },
                     "XOrientation": {
                       "type": "float",
@@ -248360,15 +248360,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 21
+                      "value": 203
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 41
+                      "value": 203
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 41
+                      "value": 203
                     },
                     "Plot": {
                       "type": "byte",
@@ -248622,15 +248622,15 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 21
+                      "value": 203
                     },
                     "xModelPart2": {
                       "type": "word",
-                      "value": 41
+                      "value": 203
                     },
                     "xModelPart3": {
                       "type": "word",
-                      "value": 41
+                      "value": 203
                     },
                     "XOrientation": {
                       "type": "float",
@@ -248703,7 +248703,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 202
                     },
                     "Plot": {
                       "type": "byte",
@@ -248895,7 +248895,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 1
+                      "value": 202
                     },
                     "XOrientation": {
                       "type": "float",
@@ -248934,7 +248934,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 105
+                      "value": 30
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -248982,7 +248982,7 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 51
+                      "value": 60
                     },
                     "Metal2Color": {
                       "type": "byte",
@@ -248990,7 +248990,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 99
+                      "value": 203
                     },
                     "Plot": {
                       "type": "byte",
@@ -249182,7 +249182,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 99
+                      "value": 203
                     },
                     "XOrientation": {
                       "type": "float",
@@ -249221,7 +249221,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 148
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -249269,7 +249269,7 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 60
                     },
                     "Metal2Color": {
                       "type": "byte",
@@ -249277,7 +249277,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 99
+                      "value": 200
                     },
                     "Plot": {
                       "type": "byte",
@@ -249500,7 +249500,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 99
+                      "value": 200
                     },
                     "XOrientation": {
                       "type": "float",
@@ -249539,7 +249539,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 148
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -249589,7 +249589,7 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 60
                     },
                     "Metal2Color": {
                       "type": "byte",
@@ -249597,7 +249597,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 99
+                      "value": 200
                     },
                     "Plot": {
                       "type": "byte",
@@ -249789,7 +249789,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 99
+                      "value": 200
                     },
                     "XOrientation": {
                       "type": "float",
@@ -249828,7 +249828,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 30
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -249878,7 +249878,7 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 60
                     },
                     "Metal2Color": {
                       "type": "byte",
@@ -249886,7 +249886,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 99
+                      "value": 203
                     },
                     "Plot": {
                       "type": "byte",
@@ -250109,7 +250109,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 99
+                      "value": 203
                     },
                     "XOrientation": {
                       "type": "float",
@@ -250182,7 +250182,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 125
+                      "value": 203
                     },
                     "Plot": {
                       "type": "byte",
@@ -250405,7 +250405,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 125
+                      "value": 203
                     },
                     "XOrientation": {
                       "type": "float",
@@ -250478,7 +250478,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 6
+                      "value": 203
                     },
                     "Plot": {
                       "type": "byte",
@@ -250608,7 +250608,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 6
+                      "value": 203
                     },
                     "XOrientation": {
                       "type": "float",
@@ -250681,7 +250681,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 6
+                      "value": 201
                     },
                     "Plot": {
                       "type": "byte",
@@ -250904,7 +250904,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 6
+                      "value": 201
                     },
                     "XOrientation": {
                       "type": "float",
@@ -261005,7 +261005,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 22
+                      "value": 142
                     },
                     "Plot": {
                       "type": "byte",
@@ -261135,7 +261135,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 22
+                      "value": 142
                     },
                     "XOrientation": {
                       "type": "float",
@@ -261208,7 +261208,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 19
+                      "value": 142
                     },
                     "Plot": {
                       "type": "byte",
@@ -261369,7 +261369,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 19
+                      "value": 142
                     },
                     "XOrientation": {
                       "type": "float",
@@ -261442,7 +261442,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 25
+                      "value": 242
                     },
                     "Plot": {
                       "type": "byte",
@@ -261572,7 +261572,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 25
+                      "value": 242
                     },
                     "XOrientation": {
                       "type": "float",
@@ -261645,7 +261645,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 241
                     },
                     "Plot": {
                       "type": "byte",
@@ -261775,7 +261775,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 11
+                      "value": 241
                     },
                     "XOrientation": {
                       "type": "float",
@@ -261848,7 +261848,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 22
+                      "value": 143
                     },
                     "Plot": {
                       "type": "byte",
@@ -262009,7 +262009,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 22
+                      "value": 143
                     },
                     "XOrientation": {
                       "type": "float",
@@ -262082,7 +262082,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 19
+                      "value": 140
                     },
                     "Plot": {
                       "type": "byte",
@@ -262305,7 +262305,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 19
+                      "value": 140
                     },
                     "XOrientation": {
                       "type": "float",
@@ -262378,7 +262378,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 15
+                      "value": 141
                     },
                     "Plot": {
                       "type": "byte",
@@ -262539,7 +262539,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 15
+                      "value": 141
                     },
                     "XOrientation": {
                       "type": "float",
@@ -262612,7 +262612,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 15
+                      "value": 140
                     },
                     "Plot": {
                       "type": "byte",
@@ -262835,7 +262835,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 15
+                      "value": 140
                     },
                     "XOrientation": {
                       "type": "float",
@@ -262908,7 +262908,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 25
+                      "value": 242
                     },
                     "Plot": {
                       "type": "byte",
@@ -263069,7 +263069,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 25
+                      "value": 242
                     },
                     "XOrientation": {
                       "type": "float",
@@ -263142,7 +263142,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 241
                     },
                     "Plot": {
                       "type": "byte",
@@ -263365,7 +263365,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 11
+                      "value": 241
                     },
                     "XOrientation": {
                       "type": "float",
@@ -263438,7 +263438,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 4
+                      "value": 240
                     },
                     "Plot": {
                       "type": "byte",
@@ -263568,7 +263568,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 4
+                      "value": 240
                     },
                     "XOrientation": {
                       "type": "float",
@@ -263641,7 +263641,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 4
+                      "value": 241
                     },
                     "Plot": {
                       "type": "byte",
@@ -263864,7 +263864,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 4
+                      "value": 241
                     },
                     "XOrientation": {
                       "type": "float",

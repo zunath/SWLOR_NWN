@@ -14,7 +14,7 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 104
+    "value": 36
   },
   "Cloth2Color": {
     "type": "byte",
@@ -62,7 +62,7 @@
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 88
+    "value": 60
   },
   "Metal2Color": {
     "type": "byte",
@@ -70,7 +70,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 29
+    "value": 202
   },
   "PaletteID": {
     "type": "byte",
@@ -289,6 +289,6 @@
   },
   "xModelPart1": {
     "type": "word",
-    "value": 29
+    "value": 202
   }
 }

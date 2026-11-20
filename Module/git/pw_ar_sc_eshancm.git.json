@@ -193404,7 +193404,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 24
+                      "value": 35
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -193452,7 +193452,7 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 58
+                      "value": 60
                     },
                     "Metal2Color": {
                       "type": "byte",
@@ -193460,7 +193460,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 14
+                      "value": 201
                     },
                     "Plot": {
                       "type": "byte",
@@ -193714,7 +193714,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 14
+                      "value": 201
                     },
                     "XOrientation": {
                       "type": "float",
@@ -193783,15 +193783,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 14
+                      "value": 201
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 13
+                      "value": 201
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 53
+                      "value": 201
                     },
                     "Plot": {
                       "type": "byte",
@@ -194045,15 +194045,15 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 14
+                      "value": 201
                     },
                     "xModelPart2": {
                       "type": "word",
-                      "value": 13
+                      "value": 201
                     },
                     "xModelPart3": {
                       "type": "word",
-                      "value": 53
+                      "value": 201
                     },
                     "XOrientation": {
                       "type": "float",
@@ -194126,7 +194126,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 59
+                      "value": 201
                     },
                     "Plot": {
                       "type": "byte",
@@ -194380,7 +194380,7 @@
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 59
+                      "value": 201
                     },
                     "XOrientation": {
                       "type": "float",

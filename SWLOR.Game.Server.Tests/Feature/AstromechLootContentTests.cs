@@ -24,6 +24,7 @@ public class AstromechLootContentTests
     private const int RacialProperty = 64, RequiresSkillProperty = 131;
     private const int FabricationSkill = 10, AgricultureSkill = 31, EngineeringSkill = 32;
     private const int ArmorSkill = 6, SmitherySkill = 9, StaffSkill = 44, RifleSkill = 46, ChassisSkill = 61, ArmamentsSkill = 63;
+    private const int HelmetBaseItem = 17, CloakBaseItem = 80;
     private const int ArmorBaseItem = 16, StaffBaseItem = 50, RifleBaseItem = 7, ShockProdBaseItem = 545, BlasterMountBaseItem = 546;
     private const int PlainToolPart = 11;
 
@@ -77,6 +78,7 @@ public class AstromechLootContentTests
             var to = ReadBlueprint(path);
             var sourceBase = Number(from, "BaseItem");
             var isTool = sourceBase is StaffBaseItem or RifleBaseItem;
+            var isPaletteIcon = sourceBase is HelmetBaseItem or CloakBaseItem;
             var expectedBase = sourceBase switch
             {
                 StaffBaseItem => ShockProdBaseItem,
@@ -136,6 +138,11 @@ public class AstromechLootContentTests
                 {
                     if (value.GetProperty("value").GetInt32() != PlainToolPart)
                         problems.Add($"{form}: {field.Name} is not {PlainToolPart}");
+                }
+                else if (IsWeaponPart(field.Name) || field.Name is "Metal1Color" or "Cloth1Color" && isPaletteIcon)
+                {
+                    // A module's model number is its inventory icon, and a Sensor Package and a Deflector Emitter
+                    // wear that icon's dyes: AstromechModuleIconContentTests.
                 }
                 else if (value.GetRawText() != field.Value.GetRawText())
                 {

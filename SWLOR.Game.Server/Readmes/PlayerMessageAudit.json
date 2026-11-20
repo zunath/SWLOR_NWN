@@ -3123,8 +3123,8 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ItemDefinition/PazaakCardItemDefinition.cs",
-    "Line": 47,
-    "Member": "PazaakCard",
+    "Line": 54,
+    "Member": "CollectCard",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"You add the {name} card to your Pazaak collection. You can now put {owned} in your side deck.\"))"
   },
@@ -4607,14 +4607,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/DMPresence.cs",
-    "Line": 140,
+    "Line": 158,
     "Member": "JumpToFirstLanding",
     "Delivery": "Retained",
     "Call": "SendMessage(dm, \"There is nowhere to land there.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/DMPresence.cs",
-    "Line": 349,
+    "Line": 367,
     "Member": "SendMessage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(GetControlledCreature(actor), message)"
@@ -5083,28 +5083,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
-    "Line": 259,
+    "Line": 267,
     "Member": "SendEveryoneBack",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"The host sent you back from {hostedEvent.Name}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
-    "Line": 319,
+    "Line": 326,
     "Member": "Join",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Traveling to {hostedEvent.Name}. Use /leaveevent or the Events window to go back.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
-    "Line": 509,
+    "Line": 542,
     "Member": "Announce",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(DMPresence.GetControlledCreature(player), message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
-    "Line": 516,
+    "Line": 549,
     "Member": "TellParticipantsEnded",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"{hostedEvent.Name} has ended. Use /leaveevent when you are ready to go back.\"))"
@@ -5265,7 +5265,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Migration.cs",
-    "Line": 231,
+    "Line": 239,
     "Member": "DeliverUpgradeNotices",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, notice)"
@@ -5776,49 +5776,49 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 145,
+    "Line": 140,
     "Member": "GiveHarvest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestHeldMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 147,
+    "Line": 142,
     "Member": "GiveHarvest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestDroppedMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 215,
+    "Line": 210,
     "Member": "DeliverAwaiting",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestCollectedMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 249,
+    "Line": 244,
     "Member": "ReturnPendingHarvest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestReturnedMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 251,
+    "Line": 246,
     "Member": "ReturnPendingHarvest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestCollectedMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 253,
+    "Line": 248,
     "Member": "ReturnPendingHarvest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, HarvestHeldMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ProspectingService/NwnProspectingWorld.cs",
-    "Line": 275,
+    "Line": 270,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"

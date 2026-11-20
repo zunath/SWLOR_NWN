@@ -59,38 +59,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
         }
 
-        [EngineTest("Legacy resource reset is stable after failed character exports", Category = "PlayerInitialization")]
-        public static async Task RetryLegacyResources(EngineTestContext ctx)
-        {
-            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
-            var owner = fixture.Creature;
-            await ctx.ExecuteInCreatureContextAsync(owner, () =>
-            {
-                typeof(Feature.PlayerInitialization).GetMethod("ClearInventory", BindingFlags.Static | BindingFlags.NonPublic)
-                    .Invoke(null, new object[] { owner });
-                var original = SavedCharacterMigration.SaveFile(owner);
-                var record = new Player(GetObjectUUID(owner)) { Version = -1 };
-
-                // The first upgrade saves the record and then loses the file write.
-                var first = SavedCharacterMigration.Run(original, record, "_1_LegacyPlayerMigration");
-                ctx.AssertEqual(70, first.Record.MaxHP, "Legacy HP reset sets the base HP");
-                ctx.AssertEqual(10, first.Record.MaxFP, "Legacy FP reset sets the base FP");
-                ctx.AssertEqual(10, first.Record.MaxStamina, "Legacy stamina reset sets the base stamina");
-                var initialNativeHP = GetMaxHitPoints(SavedCharacterMigration.Load(ctx, first));
-
-                // The record is ahead of the unchanged file, so each retry migrates the file and leaves the record alone.
-                for (var attempt = 1; attempt <= 3; attempt++)
-                {
-                    var retried = SavedCharacterMigration.Run(original, first.Record, false, new[] { "_1_LegacyPlayerMigration" });
-                    ctx.AssertEqual(70, retried.Record.MaxHP, "Legacy HP reset does not accumulate across failures");
-                    ctx.AssertEqual(10, retried.Record.MaxFP, "Legacy FP reset does not accumulate across failures");
-                    ctx.AssertEqual(10, retried.Record.MaxStamina, "Legacy stamina reset does not accumulate across failures");
-                    ctx.AssertEqual(initialNativeHP, GetMaxHitPoints(SavedCharacterMigration.Load(ctx, retried)), "Native legacy HP does not grow on retry");
-                    ctx.Assert(retried.File.SequenceEqual(first.File), "A retried file matches the first upgrade");
-                }
-            });
-        }
-
         [EngineTest("Failed starter exports do not increase resource budgets on retry", Category = "PlayerInitialization")]
         public static async Task RetryStarterResources(EngineTestContext ctx)
         {

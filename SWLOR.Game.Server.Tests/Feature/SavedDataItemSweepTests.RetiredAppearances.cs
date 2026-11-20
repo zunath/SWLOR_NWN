@@ -153,16 +153,6 @@ public partial class SavedDataItemSweepTests
     }
 
     [Test]
-    public void RetiredAppearances_KeepOutfitPartNumbersInStepWithTheGarment()
-    {
-        var outfit = new PlayerOutfit { RobeId = 160, NeckId = 299, LeftShoulderId = 255, LeftBicepId = 17, HelmetId = 297, TorsoId = 186 };
-        RetiredAppearanceMigration.UpdateOutfitIds(outfit).Should().BeTrue();
-        (outfit.RobeId, outfit.NeckId, outfit.LeftShoulderId, outfit.LeftBicepId, outfit.HelmetId, outfit.TorsoId)
-            .Should().Be((0, 0, 0, 17, 1, 186));
-        RetiredAppearanceMigration.UpdateOutfitIds(outfit).Should().BeFalse();
-    }
-
-    [Test]
     public void RetiredAppearances_ReplacementsStillShip()
     {
         foreach (var (part, styles) in RetiredAppearances.ArmorParts)

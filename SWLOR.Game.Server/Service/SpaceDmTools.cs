@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrEmpty(refusal))
                 return (false, refusal);
 
-            if (!OpenRiftRun(target, key, OBJECT_INVALID))
+            if (!OpenRiftRun(target, key, spentKey: false))
                 return (false, "The pocket could not be created.");
 
             Log.Write(LogGroup.DM, $"{GetName(dm)} opened a tier {key.TierLabel} Rift Pocket for {PlayerName.GetAuditName(target)}.");

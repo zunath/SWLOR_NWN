@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -24,6 +25,10 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<string, RiftRun> _riftRuns = new();
 
+        // The resref of a Rift Key spent but not yet saved as spent. It rides in the character file, so a player who logs
+        // out before the save gets the key back at login.
+        private const string PendingRiftKeyVariable = "SPACE_RIFT_KEY_PENDING";
+
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ScheduleRiftRuns()
         {
@@ -39,7 +44,9 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>Why a Rift Key cannot open a pocket for this user now, or empty.</summary>
         public static string GetRiftKeyRefusal(uint user, uint item) =>
-            GetRiftOpenRefusal(user, RiftRunRules.FindKey(GetResRef(item)));
+            string.IsNullOrEmpty(ObjectPlugin.GetString(user, PendingRiftKeyVariable))
+                ? GetRiftOpenRefusal(user, RiftRunRules.FindKey(GetResRef(item)))
+                : "Your rift is already opening.";
 
         /// <summary>Why a pocket of this key's tier cannot open for this user now, or empty.</summary>
         private static string GetRiftOpenRefusal(uint user, RiftKeyDetail key)
@@ -75,7 +82,10 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Whether an area is a Rift Run pocket.</summary>
         public static bool IsRiftPocket(uint area) => GetIsObjectValid(area) && RiftRunRules.IsPocketTemplate(GetResRef(area));
 
-        /// <summary>Opens a pocket for the key user and the party ships nearby, and spends the key.</summary>
+        /// <summary>
+        /// Spends the key, saves the character without it, then opens a pocket for the key user and the party ships nearby.
+        /// The run's rewards are recorded only after that save, so a crash can never leave both the key and the rewards.
+        /// </summary>
         public static void StartRiftRun(uint user, uint item)
         {
             var refusal = GetRiftKeyRefusal(user, item);
@@ -85,14 +95,58 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            OpenRiftRun(user, RiftRunRules.FindKey(GetResRef(item)), item);
+            var resref = GetResRef(item);
+            ObjectPlugin.SetString(user, PendingRiftKeyVariable, resref, true);
+            Item.ReduceItemStack(item, 1);
+            // A destroyed key leaves the inventory when this script ends, so the save waits a moment.
+            AssignCommand(GetModule(), () => DelayCommand(0.1f, () => OpenSpentRiftKey(user, RiftRunRules.FindKey(resref), resref)));
         }
 
         /// <summary>
-        /// Opens a pocket of <paramref name="key"/>'s tier for the user and the party ships nearby. The key item is spent
-        /// when the pocket opens; a DM opening one passes <see cref="OBJECT_INVALID"/> and no key is spent.
+        /// Saves the spent key and opens the pocket. A refused or failed opening hands the key back; a player who logged out
+        /// first keeps the pending mark in their logout save and gets the key back at login.
         /// </summary>
-        private static bool OpenRiftRun(uint user, RiftKeyDetail key, uint item)
+        private static void OpenSpentRiftKey(uint user, RiftKeyDetail key, string resref)
+        {
+            if (!GetIsObjectValid(user))
+                return;
+
+            // The mark goes before the save, so a saved file holds either the key or neither the key nor the mark.
+            ObjectPlugin.DeleteString(user, PendingRiftKeyVariable);
+            var refusal = GetRiftOpenRefusal(user, key);
+            if (string.IsNullOrEmpty(refusal) && !CharacterCheckpoint.Save(user))
+                refusal = "Your character could not be saved, so the rift stays closed. Try again in a moment.";
+            if (string.IsNullOrEmpty(refusal) && OpenRiftRun(user, key, spentKey: true))
+                return;
+
+            if (!string.IsNullOrEmpty(refusal))
+                SendMessageToPC(user, ColorToken.Red($"{refusal} Your key is returned."));
+            CreateItemOnObject(resref, user);
+            CharacterCheckpoint.Save(user);
+        }
+
+        /// <summary>A player who logged out while their Rift Key was being spent gets it back.</summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ReturnPendingRiftKey()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var resref = ObjectPlugin.GetString(player, PendingRiftKeyVariable);
+            if (string.IsNullOrEmpty(resref))
+                return;
+
+            ObjectPlugin.DeleteString(player, PendingRiftKeyVariable);
+            CreateItemOnObject(resref, player);
+            SendMessageToPC(player, ColorToken.Cyan("You left before your rift opened, so your Rift Key is returned."));
+        }
+
+        /// <summary>
+        /// Opens a pocket of <paramref name="key"/>'s tier for the user and the party ships nearby. A key user's key is
+        /// already spent and saved (<paramref name="spentKey"/>); a DM opening one spends none.
+        /// </summary>
+        private static bool OpenRiftRun(uint user, RiftKeyDetail key, bool spentKey)
         {
             var nearby = new List<(uint Ship, float Distance)>();
             for (var member = GetFirstFactionMember(user); GetIsObjectValid(member); member = GetNextFactionMember(user))
@@ -112,13 +166,10 @@ namespace SWLOR.Game.Server.Service
             var area = Area.CreateInstance(key.Template, $"rift_pocket_{Guid.NewGuid():N}", $"Rift Pocket (Tier {key.TierLabel})");
             if (!GetIsObjectValid(area))
             {
-                SendMessageToPC(user, ColorToken.Red("The rift flickers and will not open. Your key is unspent."));
+                SendMessageToPC(user, ColorToken.Red(spentKey ? "The rift flickers and will not open. Your key is returned." : "The rift flickers and will not open."));
                 Log.Write(LogGroup.Error, $"Rift Run: could not create an instance of {key.Template}.");
                 return false;
             }
-
-            if (GetIsObjectValid(item))
-                Item.ReduceItemStack(item, 1);
 
             // A party ship that fails an entry check stays where it is, and its pilot hears why.
             foreach (var (pilot, refusal) in leftOut)
@@ -149,7 +200,7 @@ namespace SWLOR.Game.Server.Service
                 foreach (var player in GetShipCrewPlayers(pilot))
                 {
                     SendMessageToPC(player, ColorToken.Cyan(
-                        $"{(GetIsObjectValid(item) ? GetName(user) : "A DM")} opens a tier {key.TierLabel} rift pocket. Clear its three chambers within " +
+                        $"{(spentKey ? GetName(user) : "A DM")} opens a tier {key.TierLabel} rift pocket. Clear its three chambers within " +
                         $"{RiftRunTuning.TimerSeconds / 60} minutes, or it collapses with you inside."));
                 }
             }

@@ -150,11 +150,12 @@ public class DmSpaceToolTests
     public void ADmPocketOpening_SpendsNoKeyAndTheCloakToolOnlyEndsTheCloak()
     {
         var runs = ReadSource("Service", "SpaceRiftRuns.cs");
-        runs.Should().Contain("if (GetIsObjectValid(item))").And.Contain("Item.ReduceItemStack(item, 1);");
-        runs.Should().Contain("OpenRiftRun(user, RiftRunRules.FindKey(GetResRef(item)), item);");
+        var opener = runs[runs.IndexOf("private static bool OpenRiftRun(", StringComparison.Ordinal)..];
+        opener.Should().NotContain("ReduceItemStack", "the opener spends no key; a key user's is spent and saved before it runs");
+        runs.Should().Contain("OpenRiftRun(user, key, spentKey: true)");
 
         var tools = ReadSource("Service", "SpaceDmTools.cs");
-        tools.Should().Contain("OpenRiftRun(target, key, OBJECT_INVALID)").And.Contain("EndCloak(ship,");
+        tools.Should().Contain("OpenRiftRun(target, key, spentKey: false)").And.Contain("EndCloak(ship,");
         tools.Should().Contain("RevealSite(signature, controlled, openToAll: true)");
     }
 }

@@ -158,6 +158,27 @@ public class RiftRunTests
     }
 
     [Test]
+    public void ASpentRiftKey_IsSavedBeforeAnyShipEntersThePocket()
+    {
+        var runs = ReadSource("Service", "SpaceRiftRuns.cs");
+        var start = runs[runs.IndexOf("public static void StartRiftRun(", StringComparison.Ordinal)..];
+        start = start[..start.IndexOf("private static bool OpenRiftRun(", StringComparison.Ordinal)];
+
+        start.IndexOf("ObjectPlugin.SetString(user, PendingRiftKeyVariable, resref, true);", StringComparison.Ordinal)
+            .Should().BeLessThan(start.IndexOf("Item.ReduceItemStack(item, 1);", StringComparison.Ordinal), "the pending mark rides in a logout save");
+        var open = start[start.IndexOf("private static void OpenSpentRiftKey(", StringComparison.Ordinal)..];
+        open.IndexOf("ObjectPlugin.DeleteString(user, PendingRiftKeyVariable);", StringComparison.Ordinal)
+            .Should().BeLessThan(open.IndexOf("CharacterCheckpoint.Save(user)", StringComparison.Ordinal), "the saved file holds no mark once the key is gone");
+        open.IndexOf("CharacterCheckpoint.Save(user)", StringComparison.Ordinal)
+            .Should().BeLessThan(open.IndexOf("OpenRiftRun(user, key, spentKey: true)", StringComparison.Ordinal),
+                "no ship enters, and no reward can be recorded, until the spent key is saved");
+        open.Should().Contain("CreateItemOnObject(resref, user);", "a refused or failed opening hands the key back");
+        start.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]").And.Contain("CreateItemOnObject(resref, player);",
+            "a player who logged out before the save gets the key back");
+        runs.Should().Contain(": \"Your rift is already opening.\"", "a second key waits for the first save");
+    }
+
+    [Test]
     public void Pocket_EachKeyTierHasItsOwnTemplateWithItsOwnSkyMusicAndChambers()
     {
         RiftRunTuning.Keys.Select(x => x.Template).Should().Equal("space_riftpkt_t1", "space_riftpkt_t2", "space_riftpkt_t3",

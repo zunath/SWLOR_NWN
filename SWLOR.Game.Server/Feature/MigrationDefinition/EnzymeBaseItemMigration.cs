@@ -8,8 +8,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
 /// <summary>
 /// Moves incubation enzymes from their 2x2 base items to the 1x1 <see cref="BaseItem.Enzyme"/>, with the model that
-/// selects each color's inventory icon (<c>iit_enzyme_NNN</c>), and updates building icons and Sandstorm Gaderffii looks
-/// (<see cref="GaderffiiAppearanceMigration"/>) in the same saved-data visit.
+/// selects each color's inventory icon (<c>iit_enzyme_NNN</c>), and updates building icons, Sandstorm Gaderffii looks
+/// (<see cref="GaderffiiAppearanceMigration"/>) and retired appearances (<see cref="RetiredAppearanceMigration"/>) in the
+/// same saved-data visit.
 /// </summary>
 public static class EnzymeBaseItemMigration
 {
@@ -32,15 +33,20 @@ public static class EnzymeBaseItemMigration
         ["isomerase_yellow"] = (BaseItem.Electronics4, 15),
     };
 
-    private static readonly string[] LegacyIconPrefixes = { "iit_ess4_", "iit_ess5_" };
 
     public static bool MigrateSavedObject(string original, out string migrated) =>
         StoredObjectData.MigrateEnzymeData(original, out migrated);
 
-    /// <summary>Updates enzyme sizes, building icons and Gaderffii looks in carried, worn and nested items.</summary>
+    /// <summary>
+    /// Updates enzyme sizes, building icons, Gaderffii looks and retired appearances on the character and its carried,
+    /// worn and nested items.
+    /// </summary>
     internal static void MigrateCharacter(SavedCharacter character)
     {
         var visited = new HashSet<StoredObjectData.Node>();
+        // A character saved in space has its ship's appearance; its head belongs to the species on its record.
+        StoredObjectData.MigrateRetiredAppearances(character.Root, false,
+            RetiredAppearanceMigration.SpeciesAppearance(character.ReadInteger("Appearance_Type"), character.Record));
         StoredObjectData.MigrateEnzymeNode(character.Root, false, visited);
         // Items waiting in overflow storage hang off the character separately from its inventory lists.
         foreach (var item in character.Carried.Concat(character.Equipped))
@@ -54,16 +60,6 @@ public static class EnzymeBaseItemMigration
         if (resref == null || !Enzymes.TryGetValue(resref, out var enzyme) || enzyme.Previous != baseItem)
             return false;
         model = enzyme.Model;
-        return true;
-    }
-
-    /// <summary>Points a stored listing's icon at the new artwork when it still shows the old 2x2 icon.</summary>
-    internal static bool UpdateListingIcon(string resref, string icon, Action<string> setIcon)
-    {
-        if (resref == null || icon == null || !Enzymes.TryGetValue(resref, out var enzyme) ||
-            !Array.Exists(LegacyIconPrefixes, icon.StartsWith))
-            return false;
-        setIcon($"iit_enzyme_{enzyme.Model:000}");
         return true;
     }
 }

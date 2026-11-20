@@ -150,29 +150,6 @@ public partial class SavedDataItemSweepTests
         EnzymeBaseItemMigration.MigrateSavedObject(migrated, out _).Should().BeFalse();
     }
 
-    [TestCase("hydrolase_orange", "iit_ess5_004", "iit_enzyme_002")]
-    [TestCase("hydrolase_orange", "iit_ess5_154", "iit_enzyme_002")]
-    [TestCase("isomerase_yellow", "iit_ess4_007", "iit_enzyme_015")]
-    [TestCase("lyase_black", "iit_ess5_008", "iit_enzyme_006")]
-    [TestCase("lyase_black", "iit_enzyme_006", null)]
-    [TestCase("lyase_black", "iit_ess2_008", null)]
-    [TestCase("beast_dna", "iit_ess5_003", null)]
-    public void EnzymeShrink_UpdatesOnlyLegacyListingIcons(string resref, string icon, string? expected)
-    {
-        var updated = TryUpdateEnzymeListingIcon(resref, icon, out var result);
-        updated.Should().Be(expected != null);
-        result.Should().Be(expected);
-    }
-
-    private static bool TryUpdateEnzymeListingIcon(string resref, string icon, out string? result)
-    {
-        string? written = null;
-        var update = typeof(EnzymeBaseItemMigration).GetMethod("UpdateListingIcon", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var changed = (bool)update.Invoke(null, new object[] { resref, icon, (Action<string>)(value => written = value) })!;
-        result = written;
-        return changed;
-    }
-
     [Test]
     public void EnzymeShrink_CharacterRetryChangesOnlyTheOldFile()
     {

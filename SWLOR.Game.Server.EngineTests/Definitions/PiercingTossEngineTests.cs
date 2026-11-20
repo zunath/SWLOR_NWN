@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 (FeatType.PiercingToss4, 4, 60f)
             };
             var abilities = new PiercingTossAbilityDefinition().BuildAbilities();
-            var cases = new List<(uint Target, BleedStatusEffect Bleed, int Ticks, DateTime AppliedAt, string Label, int PostHitHP)>();
+            var cases = new List<(uint Target, BleedStatusEffect Bleed, int Ticks, float Seconds, DateTime AppliedAt, string Label, int PostHitHP)>();
 
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
@@ -71,7 +71,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         var ticks = (int)Math.Ceiling(duration / bleed.Frequency) + extensionSeconds / 6;
                         ctx.Assert(bleed.DurationTicks == ticks, $"{label}: Bleed must have {ticks} damage ticks (had {bleed.DurationTicks}, frequency {bleed.Frequency}).");
                         AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(1), target));
-                        cases.Add((target, bleed, ticks, appliedAt, label, GetCurrentHitPoints(target)));
+                        // A fractional final interval ends the Bleed at its authored seconds without a bonus tick.
+                        cases.Add((target, bleed, ticks, duration + extensionSeconds, appliedAt, label, GetCurrentHitPoints(target)));
                     }
                 }
 
@@ -91,7 +92,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     foreach (var test in cases)
                     {
-                        if ((DateTime.UtcNow - test.AppliedAt).TotalSeconds < test.Ticks * test.Bleed.Frequency)
+                        if ((DateTime.UtcNow - test.AppliedAt).TotalSeconds < test.Seconds)
                         {
                             ctx.Assert(StatusEffect.HasStatusEffect<BleedStatusEffect>(test.Target),
                                 $"{test.Label}: Bleed must not disappear before its duration ends.");

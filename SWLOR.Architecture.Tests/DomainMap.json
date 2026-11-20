@@ -16,7 +16,7 @@
       "services": [
         "DB", "Cache", "Messaging", "BackgroundJob", "Migration", "Authorization",
         "Conversation", "ConversationMenu", "Snippet", "PlayerFeedback", "ObjectVisibility",
-        "Walkmesh", "TileMagic", "AnimationPlayer", "NamedAnimation", "Animation", "Attribute"
+        "Walkmesh", "TileMagic", "AnimationPlayer", "NamedAnimation", "Animation", "Attribute", "TimeZone"
       ],
       "featureFolders": [
         "MigrationDefinition", "SnippetDefinition", "DialogDefinition"
@@ -136,7 +136,7 @@
     "Administration": {
       "services": [
         "DMBlueprintCatalog", "DMCreatorFavorite", "DMCreatureManagerFavorite", "DMObjectDetails",
-        "DMObjectSearch", "DMPlayerDirectory", "DMPreference", "DMPresence"
+        "DMObjectSearch", "DMPlayerDirectory", "DMPreference", "DMPresence", "HostedEvent"
       ],
       "featureFolders": []
     },

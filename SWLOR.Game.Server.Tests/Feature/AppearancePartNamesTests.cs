@@ -51,11 +51,29 @@ public class AppearancePartNamesTests
         foreach (var (key, name) in AppearancePartNames.All)
         {
             name.Length.Should().BeInRange(1, AppearancePartNames.MaxLength, key);
+            // Letter count alone lets wide names ("Compact Matte") run into the next tile's name.
+            AppearancePartNames.Width(name).Should().BeLessThanOrEqualTo(AppearancePartNames.MaxWidth, $"{key} is \"{name}\"");
             // Letters only: a number would read as the part number drawn on the tile.
             Regex.IsMatch(name, "^[A-Za-z][A-Za-z '\\-]*$").Should().BeTrue($"{key} is \"{name}\"");
             name.Should().Be(name.Trim(), key);
             name.Should().NotContain("  ", key);
         }
+    }
+
+    [TestCase("Long Mustache", 102)]
+    [TestCase("Goatee", 50)]
+    [TestCase("Jawa's Hood-Cap", 109)]
+    public void WidthMatchesTheGameLabelFont(string name, int expected)
+    {
+        AppearancePartNames.Width(name).Should().Be(expected);
+    }
+
+    [TestCase("Bare Fists (Invisible)", "Bare Fists")]
+    [TestCase("Power Glove", "Power Glove")]
+    [TestCase("Pad (Thin)", "Pad (Thin)")]
+    public void TileNameDropsABracketedNoteOnlyWhenTheNameIsTooWide(string name, string expected)
+    {
+        AppearancePartNames.TileName(name).Should().Be(expected);
     }
 
     [Test]

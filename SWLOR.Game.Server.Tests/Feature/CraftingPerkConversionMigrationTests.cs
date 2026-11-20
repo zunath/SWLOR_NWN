@@ -83,7 +83,7 @@ public class CraftingPerkConversionMigrationTests
 
         upgraded.Should().NotBeNull();
         var result = upgraded!.Record;
-        result.Version.Should().Be(PreviousVersion + 1);
+        result.Version.Should().Be(CharacterMigrations.LatestVersion);
         result.UnallocatedSP.Should().Be(StartingSP + expectedRefund);
         result.Perks.Should().NotContainKey(perk);
         result.UnlockedPerks.Should().NotContainKey(perk);

@@ -516,7 +516,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (!_abilityStaminaCosts.TryGetValue(key, out state))
                 return false;
 
-            if ((Clock.UtcNow - state.SpentAt).TotalSeconds <= 35)
+            if (state.ScheduledImpactDepth > 0 || (Clock.UtcNow - state.SpentAt).TotalSeconds <= 35)
                 return true;
 
             _abilityStaminaCosts.Remove(key);
@@ -565,6 +565,38 @@ namespace SWLOR.Game.Server.Domain.Combat
             {
                 state.DeferredImpactCount++;
             }
+        }
+
+        /// <summary>
+        /// Captures this activation's stamina cost context for impacts that land after the cast ends, such as
+        /// scheduled device pulses. Returns a wrapper that runs an impact with that activation's context in place,
+        /// so its hit rewards share the stamina the activation paid and a later activation of the same ability
+        /// cannot be charged for them. Returns null when the activation paid no stamina.
+        /// </summary>
+        public Action<Action> CaptureAbilityStaminaCostContext(uint creature, AbilityDetail ability)
+        {
+            if (!TryGetAbilityStaminaCostState(creature, ability, out var state))
+                return null;
+
+            var key = (creature, ability);
+            return impact =>
+            {
+                _abilityStaminaCosts.TryGetValue(key, out var current);
+                _abilityStaminaCosts[key] = state;
+                state.ScheduledImpactDepth++;
+                try
+                {
+                    impact();
+                }
+                finally
+                {
+                    state.ScheduledImpactDepth--;
+                    if (current == null)
+                        _abilityStaminaCosts.Remove(key);
+                    else
+                        _abilityStaminaCosts[key] = current;
+                }
+            };
         }
 
         public void CompleteAbilityStaminaCostContext(uint creature, AbilityDetail ability)

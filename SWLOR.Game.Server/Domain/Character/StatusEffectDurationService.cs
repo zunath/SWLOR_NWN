@@ -340,7 +340,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 if (source != OBJECT_INVALID && statusEffect.Source != source)
                     continue;
 
-                statusEffect.SetDurationSeconds(statusEffect.GetRemainingDurationSeconds(Clock.UtcNow) + durationSeconds);
+                statusEffect.ExtendDurationSeconds(durationSeconds);
                 _native.ReplaceNativeStatusEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
                 extended = true;
                 if (_combatRecorder.IsRecording)

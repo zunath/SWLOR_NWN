@@ -47,21 +47,33 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 activator, location, skillType, baseDamage, statusDuration, statusEffect, radius, durationSeconds, damageType,
                 targetVisualEffect, areaVisualEffect, markerVisualEffect, markerVisualEffectScale, isAreaPulse,
                 appliesBeaconPulseBonuses, showAreaIndicator, projectileVisualEffect, beamVisualEffect);
+            // The cast's stamina cost context ends with the cast, but its pulses land later: each pulse runs
+            // inside the context of the activation that scheduled it, so its hit rewards share that
+            // activation's paid stamina and a recast of the same ability keeps its own.
+            var inCostContext = GameServices.CombatResources.CaptureAbilityStaminaCostContext(
+                activator, AbilityImpactState.GetActiveAbilityImpactSummary(activator)?.Ability) ?? (impact => impact());
             if (emitter.IsAreaPulse && !emitter.HasShotVisual)
             {
-                emitter.ApplyPulse = AbilityImpactLifecycle.CaptureRepeatedAbilityImpact(activator,
+                var applyAreaPulse = AbilityImpactLifecycle.CaptureRepeatedAbilityImpact(activator,
                     () => ApplyAreaHostilePulse(emitter), baseDamage: baseDamage);
+                emitter.ApplyPulse = () => inCostContext(applyAreaPulse);
             }
             else if (emitter.IsAreaPulse)
             {
-                emitter.CreateAreaImpactBatch = AbilityImpactLifecycle.CaptureRepeatedAbilityImpactBatch<uint>(activator,
+                var createBatch = AbilityImpactLifecycle.CaptureRepeatedAbilityImpactBatch<uint>(activator,
                     target => ApplySingleHostilePulseImpact(emitter, target), baseDamage: baseDamage);
+                emitter.CreateAreaImpactBatch = count =>
+                {
+                    var applyShot = createBatch(count);
+                    return target => inCostContext(() => applyShot(target));
+                };
                 emitter.ApplyPulse = () => ApplyAreaHostileShots(emitter);
             }
             else
             {
-                emitter.ApplyTargetImpact = AbilityImpactLifecycle.CaptureRepeatedAbilityImpact<uint>(activator,
+                var applyTargetPulse = AbilityImpactLifecycle.CaptureRepeatedAbilityImpact<uint>(activator,
                     target => ApplySingleHostilePulseImpact(emitter, target), baseDamage: baseDamage);
+                emitter.ApplyTargetImpact = target => inCostContext(() => applyTargetPulse(target));
                 emitter.ApplyPulse = () => ApplySingleHostilePulse(emitter);
             }
             return emitter;

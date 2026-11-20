@@ -102,6 +102,16 @@ namespace SWLOR.Game.Server.Domain.Administration
         // The engine's own safe-point search, which reads native structures; a unit test subclass answers it.
         protected virtual bool ComputeSafeLanding(uint dm, Location location)
         {
+            return TryGetLanding(dm, location, out _);
+        }
+
+        /// <summary>
+        /// Where a jump to this location puts the creature, which can be up to the search radius away from it.
+        /// Returns false when the engine would cancel the jump.
+        /// </summary>
+        public static bool TryGetLanding(uint dm, Location location, out Location landingLocation)
+        {
+            landingLocation = null;
             var server = NWNXLib.g_pAppManager.m_pServerExoApp;
             var creature = server.GetCreatureByGameObjectID(GetControlledCreature(dm));
             var area = server.GetAreaByGameObjectID(GetAreaFromLocation(location));
@@ -118,6 +128,14 @@ namespace SWLOR.Game.Server.Domain.Administration
             using var landing = new Vector();
             var isSafe = area.ComputeSafeLocation(target, JumpSearchRadius, pathfinding, 1, landing) == 1;
             pathfinding.ResetInterAreaSearchData();
+            if (isSafe)
+            {
+                landingLocation = Location(
+                    GetAreaFromLocation(location),
+                    new System.Numerics.Vector3(landing.x, landing.y, landing.z),
+                    GetFacingFromLocation(location));
+            }
+
             return isSafe;
         }
 

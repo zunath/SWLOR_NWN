@@ -142,7 +142,7 @@ public static class PowerGloveFit
     /// The hand model the wearer shows on this side, the natural hand beneath any armor hand, and the species'
     /// standard hand.
     /// </summary>
-    private static (string Worn, string Natural, string Standard) GetHandModels(uint creature, CreaturePart part,
+    internal static (string Worn, string Natural, string Standard) GetHandModels(uint creature, CreaturePart part,
         string side)
     {
         var appearanceType = GetAppearanceType(creature);

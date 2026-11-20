@@ -1236,11 +1236,11 @@
         },
         "Color_Hair": {
           "type": "byte",
-          "value": 7
+          "value": 18
         },
         "Color_Skin": {
           "type": "byte",
-          "value": 0
+          "value": 16
         },
         "Color_Tattoo1": {
           "type": "byte",
@@ -1383,11 +1383,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 61
+                "value": 23
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 61
+                "value": 23
               },
               "Cost": {
                 "type": "dword",
@@ -1415,11 +1415,11 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 61
+                "value": 23
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 61
+                "value": 23
               },
               "LocalizedName": {
                 "id": 12835,
@@ -1430,11 +1430,11 @@
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 61
+                "value": 23
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 61
+                "value": 23
               },
               "Plot": {
                 "type": "byte",
@@ -2251,11 +2251,11 @@
         },
         "Color_Hair": {
           "type": "byte",
-          "value": 8
+          "value": 18
         },
         "Color_Skin": {
           "type": "byte",
-          "value": 0
+          "value": 16
         },
         "Color_Tattoo1": {
           "type": "byte",

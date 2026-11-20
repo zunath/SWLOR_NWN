@@ -593,7 +593,8 @@ Done on 2026-11-20, after the owner asked that plating stop reading as a tunic.
 
 - **The problem.** A form copied its humanoid piece whole, description included, so 484 of the 1,248 forms described a tunic, a ring, boots or a rifle.
 - **The fix.** Each of those forms has a description of its own in `tools/AstromechDescriptions.json`, keyed by the humanoid resref and written by hand: the same lore, names and stated effects, describing the droid part. The three gear generators write it into both description fields (`GenerateAstromechModules.described`) and stop on a described piece that has none. Gear that says it "requires Armor training" says Chassis training, which is what its form asks for.
-- **Not changed.** The 764 forms whose humanoid piece has no description still have none, and no item name changed.
+- **Not changed.** The 764 forms whose humanoid piece has no description still have none.
+- **Names.** Nineteen forms whose names still held a garment, a piece of jewelry or a body part were renamed the same day (`tools/AstromechLootNames.json`): the Sacred accessories follow the set's Lumen, Daybreak and Vigil variants ("Sacred Amulet Logic Module" is "Sacred Lumen Logic Module"), "Ashline Hushcloak Deflector Emitter" is "Ashline Hushfield Deflector Emitter", and so on. Names of other things stay: "Dead Hand" (a creature), "Ringside", "Boot Hill", hide as a material.
 
 ## Phases
 

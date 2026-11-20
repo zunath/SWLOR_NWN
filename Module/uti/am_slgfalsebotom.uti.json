@@ -35,13 +35,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Purpose-built clandestine equipment recovered from a sealed lockbox. False-Bottom Keycloak Deflector Emitter follows a fixed slicer profile and requires Chassis training rather than Espionage rank."
+      "0": "Purpose-built clandestine equipment recovered from a sealed lockbox. False-Bottom Keyfield Deflector Emitter follows a fixed slicer profile and requires Chassis training rather than Espionage rank."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Purpose-built clandestine equipment recovered from a sealed lockbox. False-Bottom Keycloak Deflector Emitter follows a fixed slicer profile and requires Chassis training rather than Espionage rank."
+      "0": "Purpose-built clandestine equipment recovered from a sealed lockbox. False-Bottom Keyfield Deflector Emitter follows a fixed slicer profile and requires Chassis training rather than Espionage rank."
     }
   },
   "Identified": {
@@ -59,7 +59,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "False-Bottom Keycloak Deflector Emitter"
+      "0": "False-Bottom Keyfield Deflector Emitter"
     }
   },
   "Metal1Color": {

@@ -35,13 +35,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Purpose-built clandestine equipment recovered from a field terminal cache. Nightroot Rebreather Sensor Package follows a fixed poisoner profile and requires Chassis training rather than Espionage rank."
+      "0": "Purpose-built clandestine equipment recovered from a field terminal cache. Nightroot Filter Sensor Package follows a fixed poisoner profile and requires Chassis training rather than Espionage rank."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Purpose-built clandestine equipment recovered from a field terminal cache. Nightroot Rebreather Sensor Package follows a fixed poisoner profile and requires Chassis training rather than Espionage rank."
+      "0": "Purpose-built clandestine equipment recovered from a field terminal cache. Nightroot Filter Sensor Package follows a fixed poisoner profile and requires Chassis training rather than Espionage rank."
     }
   },
   "Identified": {
@@ -59,7 +59,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Nightroot Rebreather Sensor Package"
+      "0": "Nightroot Filter Sensor Package"
     }
   },
   "Metal1Color": {

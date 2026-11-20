@@ -23,7 +23,35 @@ public class AstromechDescriptionContentTests
         @"carbines?|wearers?|wielders?|Armor training|Staff training|Rifle training)\b",
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+    // Garments, jewelry and body parts an item name must not carry. A name is checked more narrowly than a
+    // description: "Ringside", "Dead Hand" (a creature's name) and "Boot Hill" are names of other things.
+    private static readonly Regex HumanoidNameWords = new(
+        @"\b(tunics?|robes?|coats?|vests?|cuirass|vestments?|boots|shoes|leggings|gloves|gauntlets?|bracers?|" +
+        @"vambraces?|cestus|sash|belts?|necklaces?|pendants?|amulets?|talismans?|signets?|band|\w*cloaks?|capes?|" +
+        @"mantles?|shawls?|helmets?|helm|hood|hooded|cowls?|masks?|headdress|rebreathers?|dusters?|wraps?|\w+wrap|" +
+        @"fetish|staff|staffs|rifles?|carbines?|fingers?|shoulders?|wrists?|necks?)\b",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
     private static readonly string Root = FindRepositoryRoot();
+
+    [Test]
+    public void NoAstromechGearIsNamedAsAHumanoidPiece()
+    {
+        var problems = new List<string>();
+        var files = Directory.GetFiles(Path.Combine(Root, "Module", "uti"), "am_*.uti.json");
+        foreach (var file in files)
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(file, Encoding.Latin1));
+            var name = Description(document.RootElement, "LocalizedName");
+            var words = HumanoidNameWords.Matches(name).Select(match => match.Value.ToLowerInvariant()).Distinct().ToList();
+            if (words.Count > 0)
+                problems.Add($"{Path.GetFileName(file).Split('.')[0]} \"{name}\" says {string.Join(", ", words)}");
+        }
+
+        files.Length.Should().BeGreaterThan(1200);
+        problems.Should().BeEmpty("name the form in tools/AstromechLootNames.json and rerun the generators" +
+                                  Environment.NewLine + string.Join(Environment.NewLine, problems.Take(40)));
+    }
 
     [Test]
     public void EveryFormOfADescribedPiece_HasADescriptionOfItsOwn()

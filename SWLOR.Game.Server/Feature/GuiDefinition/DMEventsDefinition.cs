@@ -80,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         r.AddTextEdit()
                             .SetPlaceholder("Event name")
                             .SetMaxLength(HostedEventRules.MaxNameLength)
+                            .BindIsEnabled(model => model.IsDetailsEditable)
                             .BindValue(model => model.EventName);
                     });
 
@@ -89,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         r.AddTextEdit()
                             .SetPlaceholder("Name players will see")
                             .SetMaxLength(HostedEventRules.MaxHostLength)
+                            .BindIsEnabled(model => model.IsDetailsEditable)
                             .BindValue(model => model.HostName);
                     });
 
@@ -100,6 +102,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetTooltip("Type the start time in your time zone, shown beside Now. Change it in DM Settings.")
                             .SetMaxLength(16)
                             .SetWidth(170f)
+                            .BindIsEnabled(model => model.IsDetailsEditable)
                             .BindValue(model => model.StartText);
                         r.AddLabel()
                             .BindText(model => model.ServerTimeText)
@@ -113,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetMaxLength(HostedEventRules.MaxDescriptionLength)
                         .SetWidth(ContentWidth)
                         .SetHeight(120f)
+                        .BindIsEnabled(model => model.IsDetailsEditable)
                         .BindValue(model => model.Description));
 
                     content.AddRow(r =>

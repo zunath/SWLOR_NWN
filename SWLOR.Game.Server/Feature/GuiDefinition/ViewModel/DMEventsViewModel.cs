@@ -39,6 +39,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string SummaryText { get => Get<string>(); set => Set(value); }
         public string EndText { get => Get<string>(); set => Set(value); }
         public bool IsSaved { get => Get<bool>(); set => Set(value); }
+        // False while Discord owns the name, host, time and description.
+        public bool IsDetailsEditable { get => Get<bool>(); set => Set(value); }
         public bool HasArrival { get => Get<bool>(); set => Set(value); }
         public bool IsStartEnabled { get => Get<bool>(); set => Set(value); }
         public bool IsSendBackEnabled { get => Get<bool>(); set => Set(value); }
@@ -95,10 +97,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // Keeps the DM's unsaved typing; only the list and the event's state are reloaded.
         public void Refresh(HostedEventsChangedRefreshEvent payload)
         {
-            if (!string.IsNullOrEmpty(_selectedEventId) && HostedEvents.GetEvent(_selectedEventId) == null)
+            var selected = HostedEvents.GetEvent(_selectedEventId);
+            if (!string.IsNullOrEmpty(_selectedEventId) && selected == null)
             {
                 _selectedEventId = string.Empty;
                 LoadForm(null);
+            }
+            else if (DiscordEventImport.IsSyncedFromDiscord(selected))
+            {
+                // The details cannot be typed in, so show Discord's latest. The options keep the DM's unsaved choices.
+                LoadDetails(selected);
             }
 
             FollowTimeZoneChange();
@@ -172,7 +180,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var prompt = hostedEvent.Status == HostedEventStatus.Running
                 ? $"End {hostedEvent.Name}? Players there stay where they are and can use /leaveevent to go back."
-                : $"Cancel {hostedEvent.Name}? It is removed from /events.";
+                : DiscordEventImport.IsSyncedFromDiscord(hostedEvent)
+                    ? $"Cancel {hostedEvent.Name}? It leaves /events until Discord gives it a new time."
+                    : $"Cancel {hostedEvent.Name}? It is removed from /events.";
             ShowModal(prompt, () =>
             {
                 var error = HostedEvents.End(Player, _selectedEventId);
@@ -259,12 +269,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            LoadDetails(hostedEvent);
+            IsJoinOpen = hostedEvent.IsJoinOpen;
+            AnnounceOnStart = hostedEvent.AnnounceOnStart;
+        }
+
+        private void LoadDetails(HostedEvent hostedEvent)
+        {
             EventName = hostedEvent.Name;
             HostName = hostedEvent.HostName;
             ShowStart(hostedEvent.ScheduledStartUtc, _formZone);
             Description = hostedEvent.Description;
-            IsJoinOpen = hostedEvent.IsJoinOpen;
-            AnnounceOnStart = hostedEvent.AnnounceOnStart;
         }
 
         private void LoadEvents()
@@ -277,7 +292,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var selected = new GuiBindingList<bool>();
             foreach (var hostedEvent in events)
             {
-                var marker = hostedEvent.Status == HostedEventStatus.Running ? "[Live] " : string.Empty;
+                var marker = hostedEvent.Status == HostedEventStatus.Running
+                    ? "[Live] "
+                    : DiscordEventImport.IsSyncedFromDiscord(hostedEvent) ? "[Discord] " : string.Empty;
                 names.Add(marker + hostedEvent.Name);
                 selected.Add(hostedEvent.Id == _selectedEventId);
             }
@@ -291,6 +308,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadState(HostedEvent hostedEvent, DateTime now)
         {
             IsSaved = hostedEvent != null;
+            IsDetailsEditable = !DiscordEventImport.IsSyncedFromDiscord(hostedEvent);
             if (hostedEvent == null)
             {
                 HeaderText = "New event. Save it, then set the arrival point.";
@@ -312,7 +330,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ArrivalText = HasArrival
                 ? $"Arrival point: {areaName}"
                 : "Arrival point: none. Players cannot join until you set one.";
-            SummaryText = $"Players at the event: {total} ({online} online).";
+            SummaryText = DiscordEventImport.IsSyncedFromDiscord(hostedEvent)
+                ? "Listed from Discord. Change its details there."
+                : $"Players at the event: {total} ({online} online).";
             EndText = isRunning ? "End Event" : "Cancel Event";
             IsStartEnabled = !isRunning;
             IsSendBackEnabled = isRunning && online > 0;

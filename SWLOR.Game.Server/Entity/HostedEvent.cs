@@ -18,6 +18,12 @@ namespace SWLOR.Game.Server.Entity
         public bool IsJoinOpen { get; set; }
         public bool AnnounceOnStart { get; set; }
 
+        // The Discord Events tab entry this event was listed from, or empty for an event made in game.
+        public string DiscordEventId { get; set; }
+        // Discord's start time for the occurrence this event was listed from. Kept when a DM edits the start time
+        // after starting the event, so ending it hides that occurrence.
+        public DateTime? DiscordStartUtc { get; set; }
+
         // Empty when the DM has not set an arrival point; players cannot join until one is set.
         public string ArrivalAreaResref { get; set; }
         public float ArrivalX { get; set; }
@@ -28,6 +34,16 @@ namespace SWLOR.Game.Server.Entity
         // Players who joined and have not left. They keep their way back if the event ends first.
         public HashSet<string> ParticipantPlayerIds { get; set; }
 
+        /// <summary>
+        /// A copy to change and save before it replaces this event in the cache.
+        /// </summary>
+        public HostedEvent Copy()
+        {
+            var copy = (HostedEvent)MemberwiseClone();
+            copy.ParticipantPlayerIds = new HashSet<string>(ParticipantPlayerIds ?? new HashSet<string>());
+            return copy;
+        }
+
         public HostedEvent()
         {
             Name = string.Empty;
@@ -36,6 +52,7 @@ namespace SWLOR.Game.Server.Entity
             CreatedBy = string.Empty;
             Status = HostedEventStatus.Scheduled;
             ArrivalAreaResref = string.Empty;
+            DiscordEventId = string.Empty;
             AnnounceOnStart = true;
             IsJoinOpen = true;
             ParticipantPlayerIds = new HashSet<string>();

@@ -12,6 +12,10 @@ namespace SWLOR.BackgroundServices.Configuration
         public int BatchSize { get; }
         public int MaxAttempts { get; }
         public int MaxLogContentLength { get; }
+        public string DiscordBotToken { get; }
+        public string DiscordGuildId { get; }
+        public string DiscordApiBaseUrl { get; }
+        public TimeSpan DiscordEventSyncInterval { get; }
 
         private BackgroundServiceSettings(
             string redisConnection,
@@ -23,7 +27,11 @@ namespace SWLOR.BackgroundServices.Configuration
             TimeSpan failureDelay,
             int batchSize,
             int maxAttempts,
-            int maxLogContentLength)
+            int maxLogContentLength,
+            string discordBotToken,
+            string discordGuildId,
+            string discordApiBaseUrl,
+            TimeSpan discordEventSyncInterval)
         {
             RedisConnection = redisConnection;
             ConsumerName = consumerName;
@@ -35,6 +43,10 @@ namespace SWLOR.BackgroundServices.Configuration
             BatchSize = batchSize;
             MaxAttempts = maxAttempts;
             MaxLogContentLength = maxLogContentLength;
+            DiscordBotToken = discordBotToken;
+            DiscordGuildId = discordGuildId;
+            DiscordApiBaseUrl = discordApiBaseUrl.TrimEnd('/');
+            DiscordEventSyncInterval = discordEventSyncInterval;
         }
 
         public static BackgroundServiceSettings FromEnvironment()
@@ -49,7 +61,11 @@ namespace SWLOR.BackgroundServices.Configuration
                 TimeSpan.FromSeconds(GetInt("SWLOR_BACKGROUND_FAILURE_DELAY_SECONDS", 5)),
                 GetInt("SWLOR_BACKGROUND_BATCH_SIZE", 10),
                 GetInt("SWLOR_BACKGROUND_MAX_ATTEMPTS", 5),
-                GetInt("SWLOR_BACKGROUND_MAX_LOG_CONTENT_LENGTH", 2000));
+                GetInt("SWLOR_BACKGROUND_MAX_LOG_CONTENT_LENGTH", 2000),
+                Environment.GetEnvironmentVariable("SWLOR_DISCORD_BOT_TOKEN") ?? string.Empty,
+                Environment.GetEnvironmentVariable("SWLOR_DISCORD_GUILD_ID") ?? string.Empty,
+                GetString("SWLOR_DISCORD_API_BASE_URL", "https://discord.com/api/v10"),
+                TimeSpan.FromMinutes(GetInt("SWLOR_DISCORD_EVENT_SYNC_MINUTES", 5)));
         }
 
         private static string GetString(string name, string defaultValue)

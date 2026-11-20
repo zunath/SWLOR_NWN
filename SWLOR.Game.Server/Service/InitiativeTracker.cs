@@ -18,6 +18,11 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<int, InitiativeTrackerSession> _sessions = new();
         private static readonly Dictionary<uint, int> _sessionIdByMember = new();
         private static readonly HashSet<uint> _exitingPlayers = new();
+        private static readonly GuiWindowType[] TrackerWindowTypes =
+        {
+            GuiWindowType.InitiativeTracker,
+            GuiWindowType.InitiativeTrackerEdit,
+        };
         private static int _nextSessionId = 1;
         private static bool _isRefreshQueued;
 
@@ -265,18 +270,34 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Takes a DM off a tracker when possession moves them to another area, so its other members see them leave.
+        /// Follows a DM through possession. The tracker windows are reopened on whatever the DM controls next,
+        /// because the client keeps them open but their view models stay bound to the object they opened on.
+        /// A DM now acting in another area is also taken off their tracker, so its other members see them leave.
         /// </summary>
         [NWNEventHandler(ScriptName.OnDMPossessBefore)]
         [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
-        public static void CheckAreaOnPossession()
+        public static void FollowPossession()
         {
-            var member = GetMember(OBJECT_SELF);
-            if (!_sessionIdByMember.ContainsKey(member))
+            // Possessing starts on the avatar; returning to it starts on the possessed creature.
+            var current = OBJECT_SELF;
+            if (!GetIsDM(current) && !GetIsDMPossessed(current))
                 return;
 
-            // Possession has not settled while the event runs, so check on the next tick.
-            Scheduler.Schedule(() => GetSession(member), TimeSpan.FromSeconds(0.1));
+            var dm = DMPresence.GetDM(current);
+            var openWindows = TrackerWindowTypes.Where(type => Gui.IsWindowOpen(current, type)).ToList();
+            if (openWindows.Count == 0 && !_sessionIdByMember.ContainsKey(dm))
+                return;
+
+            // Possession has not settled while the event runs, so follow it on the next tick.
+            DelayCommand(0.1f, () =>
+            {
+                GetSession(dm);
+                foreach (var type in openWindows)
+                {
+                    DMPresence.CloseWindow(dm, type);
+                    DMPresence.ShowWindow(dm, type);
+                }
+            });
         }
 
         [NWNEventHandler(ScriptName.OnModuleExit)]
@@ -326,8 +347,8 @@ namespace SWLOR.Game.Server.Service
                     // One publish refreshes every tracker window shown on that target.
                     var dm = DMPresence.GetDM(player);
                     var controlled = DMPresence.GetControlledCreature(dm);
-                    var targets = DMPresence.GetShownOn(controlled, GuiWindowType.InitiativeTracker)
-                        .Concat(DMPresence.GetShownOn(controlled, GuiWindowType.InitiativeTrackerEdit))
+                    var targets = TrackerWindowTypes
+                        .SelectMany(type => DMPresence.GetShownOn(controlled, type))
                         .Distinct()
                         .Where(IsTrackerWindowOpen);
                     foreach (var target in targets)
@@ -344,8 +365,7 @@ namespace SWLOR.Game.Server.Service
 
         private static bool IsTrackerWindowOpen(uint target)
         {
-            return Gui.IsWindowOpen(target, GuiWindowType.InitiativeTracker) ||
-                   Gui.IsWindowOpen(target, GuiWindowType.InitiativeTrackerEdit);
+            return TrackerWindowTypes.Any(type => Gui.IsWindowOpen(target, type));
         }
     }
 }

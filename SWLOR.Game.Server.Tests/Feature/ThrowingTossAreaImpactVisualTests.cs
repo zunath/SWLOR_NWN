@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -21,8 +22,7 @@ public class ThrowingTossAreaImpactVisualTests
     [Test]
     public void WeaponAbilities_PassTheirAreaVisualToTheSharedAreaImpact()
     {
-        var baseSource = File.ReadAllText(ResolveRepositoryPath(
-            "SWLOR.Game.Server", "Feature", "AbilityDefinition", "WeaponActiveAbilityDefinitionBase.cs"));
+        var baseSource = WeaponAbilitySource.Read();
         var generator = File.ReadAllText(ResolveRepositoryPath("tools", "GenerateWeaponArchetypeImplementation.py"));
 
         baseSource.Should().Contain("VisualEffect areaVisualEffect = VisualEffect.None)");

@@ -340,12 +340,7 @@ public class GeneratedWeaponPerkBehaviorTests
         oneShotSource.Should().Contain("CriticalRateIfIdle = 25");
         oneShotSource.Should().Contain("DefenseIgnoreIfIdle = 25");
 
-        var weaponBaseSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "AbilityDefinition",
-            "WeaponActiveAbilityDefinitionBase.cs"));
+        var weaponBaseSource = WeaponAbilitySource.Read();
         var activationIndex = weaponBaseSource.IndexOf(
             "profile.PrepareActivationIdleBonuses(activator);",
             StringComparison.Ordinal);
@@ -439,12 +434,7 @@ public class GeneratedWeaponPerkBehaviorTests
     public void QueuedWeaponActivation_SnapshotsOpeningRidersBeforeHostileActivity()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "AbilityDefinition",
-            "WeaponActiveAbilityDefinitionBase.cs"));
+        var source = WeaponAbilitySource.Read();
         var snapshotIndex = source.IndexOf(
             "GameServices.CombatAbilityBonus.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(activator, skill);",
             StringComparison.Ordinal);
@@ -475,12 +465,7 @@ public class GeneratedWeaponPerkBehaviorTests
     public void CastedWeaponActivation_SnapshotsSharedIdleBonusesBeforeHostileActivity()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "AbilityDefinition",
-            "WeaponActiveAbilityDefinitionBase.cs"));
+        var source = WeaponAbilitySource.Read();
         source.Should().Contain("if (isHostile && !profile.IsQueuedWeaponAbility)");
         source.Should().Contain("GameServices.CombatActivity.StoreAbilityActivationIdleBonuses(activator, skill);");
 
@@ -669,12 +654,7 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("sequence.TryTriggerPartyBuff()");
         combatSource.Should().Contain("ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied)");
 
-        var generatedWeaponSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "AbilityDefinition",
-            "WeaponActiveAbilityDefinitionBase.cs"));
+        var generatedWeaponSource = WeaponAbilitySource.Read();
         var criticalStatusIndex = generatedWeaponSource.IndexOf(
             "SelfStatusEffectOnCriticalHitFactory(summary)",
             StringComparison.Ordinal);
@@ -1009,12 +989,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "AbilityDefinition",
             "Vibroknife",
             "PathogenStrikeAbilityDefinition.cs"));
-        var generatedAbilitySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "AbilityDefinition",
-            "WeaponActiveAbilityDefinitionBase.cs")).Replace("\r\n", "\n");
+        var generatedAbilitySource = WeaponAbilitySource.Read().Replace("\r\n", "\n");
 
         pathogenSource.Should().Contain("SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) }");
         pathogenSource.Should().NotContain("ConsumeSourceStatusEffectsOnHit = true");
@@ -1839,12 +1814,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "SuppressSourceStatusStackRiders = true");
         AssertAbilitySourceContains(root, "TwinBlade", "RedBloomAbilityDefinition.cs", "SpreadHemorrhageFromTarget = true");
 
-        var weaponBaseSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "AbilityDefinition",
-            "WeaponActiveAbilityDefinitionBase.cs"));
+        var weaponBaseSource = WeaponAbilitySource.Read();
         weaponBaseSource.Should().Contain("UsePerkFeat.InterruptAbilityActivationFromHit(target)");
         weaponBaseSource.Should().Contain("Extended {extendedCount} {statusLabel} by {SourceStatusExtensionSeconds}s");
         weaponBaseSource.Should().Contain("public bool HasImmediateSelfStatusEffect()");
@@ -1857,12 +1827,7 @@ public class GeneratedWeaponPerkBehaviorTests
     public void GeneratedFriendlyTargetAbilities_ValidateStatusBeforeReplacingExistingLinks()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "AbilityDefinition",
-            "WeaponActiveAbilityDefinitionBase.cs"));
+        var source = WeaponAbilitySource.Read();
 
         source.Should().Contain("public string ValidateFriendlyTargetStatus(uint activator, uint target)");
         source.Should().Contain("target = ResolveFriendlyTarget(activator, target);");

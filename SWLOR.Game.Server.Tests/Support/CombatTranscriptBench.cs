@@ -177,6 +177,9 @@ public sealed class CombatTranscriptBench : IDisposable
     public TranscriptLeaf Leaf<T>()
         where T : class => _leaves[typeof(T)];
 
+    /// <summary>The recording stand-in that replaced a leaf, by its contract, for a fixture that sets up every leaf alike.</summary>
+    public TranscriptLeaf Leaf(Type contract) => _leaves[contract];
+
     /// <summary>Sets what a stat of a creature reads.</summary>
     public void SetStat(uint creature, StatType stat, int value) => _stats[(creature, stat)] = value;
 
@@ -230,6 +233,12 @@ public sealed class CombatTranscriptBench : IDisposable
 
     /// <summary>The transcript so far, as the committed text.</summary>
     public string Text => _text.ToString();
+
+    /// <summary>The length of the transcript so far, read without copying it.</summary>
+    public int Length => _text.Length;
+
+    /// <summary>The part of the transcript written since <paramref name="start"/> (an earlier <see cref="Length"/>), without copying the rest.</summary>
+    public string TextFrom(int start) => _text.ToString(start, _text.Length - start);
 
     /// <summary>Runs the actions the code under test delayed, in the order it delayed them, writing each to the transcript.</summary>
     public void RunDelayed()

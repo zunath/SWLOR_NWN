@@ -199,7 +199,7 @@ public class GeneratedWeaponPerkBehaviorTests
         cycleTracker.Should().Contain("Attack cycle tracker requires a configured status icon.");
         var resolveAttackRoll = NativeCombatSource.AttackRoll();
         var luckyChamberPreparation = resolveAttackRoll.IndexOf(
-            "GameServices.CombatDamageModifiers.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)",
+            "GameServices.CombatRateModifiers.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)",
             StringComparison.Ordinal);
         var hitBranch = resolveAttackRoll.IndexOf("if (isHit)", StringComparison.Ordinal);
         luckyChamberPreparation.Should().BeGreaterThan(-1);

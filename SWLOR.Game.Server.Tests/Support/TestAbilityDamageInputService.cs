@@ -19,7 +19,7 @@ public sealed class TestAbilityDamageInputService : AbilityDamageInputService
     public TestAbilityDamageInputService(AbilityBench bench, IAbilityImpactState impactState, ICombatAbilityMagnitudeService magnitude, IResistanceService resistance)
         : base(impactState, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatRatingService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatQueriesService>(),
             FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatDamageModifiersService>(),
-            FacadeForwarder.For<ICombatDamageTakenService>(), magnitude, resistance)
+            FacadeForwarder.For<ICombatRepeatedTargetService>(), FacadeForwarder.For<ICombatDamageTakenService>(), magnitude, resistance)
     {
         _bench = bench;
     }

@@ -28,11 +28,12 @@ internal sealed partial class TestDamageModifiers : CombatDamageModifiersService
         ICombatResourcesService resources,
         IStatService stat,
         IStatusEffectService statusEffect,
-        IStatusEffectApplicationService statusApplication,
         ITemporaryStatModifierService temporaryStatModifier,
         IAbilityImpactState ability,
-        IPlayerFeedbackService playerFeedback)
-        : base(queries, resources, stat, statusEffect, statusApplication, temporaryStatModifier, ability, playerFeedback, FacadeForwarder.For<ICombatDefenseMemoryService>())
+        IPlayerFeedbackService playerFeedback,
+        ICombatRateModifiersService rateModifiers,
+        ICombatRepeatedTargetService repeatedTarget)
+        : base(queries, resources, stat, statusEffect, temporaryStatModifier, ability, playerFeedback, FacadeForwarder.For<ICombatDefenseMemoryService>(), rateModifiers, repeatedTarget)
     {
     }
 

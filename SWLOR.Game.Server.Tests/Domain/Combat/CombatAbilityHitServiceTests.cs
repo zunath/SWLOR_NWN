@@ -127,15 +127,17 @@ public class CombatAbilityHitServiceTests
             .On(nameof(ICombatSuppressionService.GetRangedAbilityLongRangeCriticalRateAdjustment), _ => _longRangeCritical);
         var activity = ScriptedProxy.Create<ICombatActivityService>(out var activityCalls);
         activityCalls.On(nameof(ICombatActivityService.GetIdleAbilityHitChanceAdjustment), _ => _idleHit);
+        var rate = ScriptedProxy.Create<ICombatRateModifiersService>(out var rateCalls);
+        rateCalls
+            .On(nameof(ICombatRateModifiersService.ApplySideAttackEvasionIgnore), args => (int)args[3]! - _evasionIgnore)
+            .On(nameof(ICombatRateModifiersService.GetSideAttackHitChanceAdjustment), _ => _sideHit)
+            .On(nameof(ICombatRateModifiersService.GetTargetStatusCriticalRateAdjustment), _ => _targetStatusCritical)
+            .On(nameof(ICombatRateModifiersService.GetSideAttackCriticalRateAdjustment), _ => _sideCritical)
+            .On(nameof(ICombatRateModifiersService.GetBackAttackCriticalRateAdjustment), _ => _backCritical);
         var modifiers = ScriptedProxy.Create<ICombatDamageModifiersService>(out var modifierCalls);
         modifierCalls
-            .On(nameof(ICombatDamageModifiersService.ApplySideAttackEvasionIgnore), args => (int)args[3]! - _evasionIgnore)
             .On(nameof(ICombatDamageModifiersService.ApplyStatusSourceAccuracyModifiers), args => (int)args[2]! + _statusAccuracy)
-            .On(nameof(ICombatDamageModifiersService.GetSideAttackHitChanceAdjustment), _ => _sideHit)
-            .On(nameof(ICombatDamageModifiersService.GetSkillCriticalRatePercentAdjustment), _ => _skillCritical)
-            .On(nameof(ICombatDamageModifiersService.GetTargetStatusCriticalRateAdjustment), _ => _targetStatusCritical)
-            .On(nameof(ICombatDamageModifiersService.GetSideAttackCriticalRateAdjustment), _ => _sideCritical)
-            .On(nameof(ICombatDamageModifiersService.GetBackAttackCriticalRateAdjustment), _ => _backCritical);
+            .On(nameof(ICombatDamageModifiersService.GetSkillCriticalRatePercentAdjustment), _ => _skillCritical);
         var stat = ScriptedProxy.Create<IStatService>(out var statCalls);
         statCalls
             .On(nameof(IStatService.GetStatAdjustment), args => _stats.GetValueOrDefault(((uint)args[0]!, (StatType)args[1]!)));
@@ -177,7 +179,7 @@ public class CombatAbilityHitServiceTests
             return null;
         });
 
-        _service = new CombatAbilityHitService(queries, resources, suppression, activity, modifiers, stat, rating, statusEffect, temporary,
+        _service = new CombatAbilityHitService(queries, resources, suppression, activity, modifiers, rate, stat, rating, statusEffect, temporary,
             ability, perk, traits);
     }
 

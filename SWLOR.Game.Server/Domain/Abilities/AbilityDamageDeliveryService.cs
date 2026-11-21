@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly ICombatRecorderService _combatRecorder;
         private readonly IAbilityDarkForceService _darkForce;
         private readonly ICombatFeedbackService _feedback;
-        private readonly ICombatDamageModifiersService _damageModifiers;
+        private readonly ICombatRepeatedTargetService _repeatedTarget;
         private readonly ICombatHitEffectsService _hitEffects;
         private readonly ICombatDamageTakenService _damageTaken;
         private readonly ICombatAbilityBonusService _abilityBonus;
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             ICombatRecorderService combatRecorder,
             IAbilityDarkForceService darkForce,
             ICombatFeedbackService feedback,
-            ICombatDamageModifiersService damageModifiers,
+            ICombatRepeatedTargetService repeatedTarget,
             ICombatHitEffectsService hitEffects,
             ICombatDamageTakenService damageTaken,
             ICombatAbilityBonusService abilityBonus)
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _combatRecorder = combatRecorder;
             _darkForce = darkForce;
             _feedback = feedback;
-            _damageModifiers = damageModifiers;
+            _repeatedTarget = repeatedTarget;
             _hitEffects = hitEffects;
             _damageTaken = damageTaken;
             _abilityBonus = abilityBonus;
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         protected virtual void SendTemporaryHitPointDamageFeedback(uint attacker, uint defender, int damage) => _feedback.SendTemporaryHitPointDamageFeedback(attacker, defender, damage);
 
         protected virtual void ConsumeSameTargetPressureWeaponAbilityDamageBonus(uint attacker, uint target, SkillType skillType, int damage) =>
-            _damageModifiers.ConsumeSameTargetPressureWeaponAbilityDamageBonus(attacker, target, skillType, damage);
+            _repeatedTarget.ConsumeSameTargetPressureWeaponAbilityDamageBonus(attacker, target, skillType, damage);
 
         protected virtual void ApplyDamageDealtEffects(uint attacker, uint defender, int damage, SkillType skillType, CombatDamageType damageType, bool isAbilityDamage, bool allowsHitProcs) =>
             _hitEffects.ApplyDamageDealtEffects(attacker, defender, damage, skillType, damageType, isAbilityDamage: isAbilityDamage, allowsHitProcs: allowsHitProcs);

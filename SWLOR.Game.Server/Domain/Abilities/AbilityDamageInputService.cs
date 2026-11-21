@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly ICombatAbilityBonusService _abilityBonus;
         private readonly ICombatAbilityImpactService _abilityImpact;
         private readonly ICombatDamageModifiersService _damageModifiers;
+        private readonly ICombatRepeatedTargetService _repeatedTarget;
         private readonly ICombatDamageTakenService _damageTaken;
         private readonly ICombatAbilityMagnitudeService _magnitude;
         private readonly IResistanceService _resistance;
@@ -43,6 +44,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             ICombatAbilityBonusService abilityBonus,
             ICombatAbilityImpactService abilityImpact,
             ICombatDamageModifiersService damageModifiers,
+            ICombatRepeatedTargetService repeatedTarget,
             ICombatDamageTakenService damageTaken,
             ICombatAbilityMagnitudeService magnitude,
             IResistanceService resistance)
@@ -55,6 +57,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _abilityBonus = abilityBonus;
             _abilityImpact = abilityImpact;
             _damageModifiers = damageModifiers;
+            _repeatedTarget = repeatedTarget;
             _damageTaken = damageTaken;
             _magnitude = magnitude;
             _resistance = resistance;
@@ -484,7 +487,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         protected virtual int GetCostlyAbilityDamageBonus(uint activator, AbilityDetail ability, SkillType skillType) => _abilityImpact.GetCostlyAbilityDamageBonus(activator, ability, skillType);
 
-        protected virtual int GetSameTargetPressureWeaponAbilityDamageBonus(uint attacker, uint target, SkillType skillType) => _damageModifiers.GetSameTargetPressureWeaponAbilityDamageBonus(attacker, target, skillType);
+        protected virtual int GetSameTargetPressureWeaponAbilityDamageBonus(uint attacker, uint target, SkillType skillType) => _repeatedTarget.GetSameTargetPressureWeaponAbilityDamageBonus(attacker, target, skillType);
 
         protected virtual int ApplyTargetStatusAttackModifiers(uint attacker, uint defender, int attack, SkillType skillType) => _damageModifiers.ApplyTargetStatusAttackModifiers(attacker, defender, attack, skillType);
 

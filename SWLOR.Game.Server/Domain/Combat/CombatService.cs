@@ -14,7 +14,8 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatSuppressionService _suppression;
         private readonly ICombatActivityService _combatActivity;
         private readonly ICombatAttackTimingService _attackTiming;
-        private readonly ICombatDamageModifiersService _damageModifiers;
+        private readonly ICombatRateModifiersService _rateModifiers;
+        private readonly ICombatRepeatedTargetService _repeatedTarget;
         private readonly ICombatHitEffectsService _hitEffects;
         private readonly ICombatDefenseMemoryService _defenseMemory;
         private readonly ICombatAbilityActivationService _abilityActivation;
@@ -28,7 +29,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatSuppressionService suppression,
             ICombatActivityService combatActivity,
             ICombatAttackTimingService attackTiming,
-            ICombatDamageModifiersService damageModifiers,
+            ICombatRateModifiersService rateModifiers,
+            ICombatRepeatedTargetService repeatedTarget,
             ICombatHitEffectsService hitEffects,
             ICombatDefenseMemoryService defenseMemory,
             ICombatAbilityActivationService abilityActivation,
@@ -41,7 +43,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             _suppression = suppression;
             _combatActivity = combatActivity;
             _attackTiming = attackTiming;
-            _damageModifiers = damageModifiers;
+            _rateModifiers = rateModifiers;
+            _repeatedTarget = repeatedTarget;
             _hitEffects = hitEffects;
             _defenseMemory = defenseMemory;
             _abilityActivation = abilityActivation;
@@ -90,7 +93,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _combatActivity.ForgetOpeningActivityState(creature);
             _resources.ForgetAbilityStaminaCostState(creature);
             _attackTiming.ForgetAttackTimingState(creature);
-            _damageModifiers.ForgetDamageModifierState(creature);
+            _repeatedTarget.ForgetDamageModifierState(creature);
             _temporaryStatModifier.Clear(creature);
         }
 
@@ -111,13 +114,13 @@ namespace SWLOR.Game.Server.Domain.Combat
                 _stat.GetStatAdjustment(creature, StatType.RangedRepeatedTargetDamageBonusMax) <= 0 ||
                 _stat.GetStatAdjustment(creature, StatType.RangedRepeatedTargetDamageDurationSeconds) <= 0)
             {
-                _damageModifiers.ClearRangedRepeatedTargetDamageTracker(creature);
+                _repeatedTarget.ClearRangedRepeatedTargetDamageTracker(creature);
             }
 
             if (_stat.GetStatAdjustment(creature, StatType.RangedAutoAttackCycleCriticalRateRequiredCount) <= 0 ||
                 _stat.GetStatAdjustment(creature, StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment) <= 0)
             {
-                _damageModifiers.ClearAutoAttackCycleCriticalRateTracker(creature);
+                _rateModifiers.ClearAutoAttackCycleCriticalRateTracker(creature);
             }
 
             if (_stat.GetStatAdjustment(

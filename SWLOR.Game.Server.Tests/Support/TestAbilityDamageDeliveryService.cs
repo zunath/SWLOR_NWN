@@ -15,7 +15,7 @@ public sealed class TestAbilityDamageDeliveryService : AbilityDamageDeliveryServ
     private readonly AbilityBench _bench;
 
     public TestAbilityDamageDeliveryService(AbilityBench bench, IStatusEffectCombatEventService statusEffectCombatEvents, ICombatRecorderService combatRecorder, IAbilityDarkForceService darkForce)
-        : base(statusEffectCombatEvents, combatRecorder, darkForce, FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatDamageModifiersService>(),
+        : base(statusEffectCombatEvents, combatRecorder, darkForce, FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatRepeatedTargetService>(),
             FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatAbilityBonusService>())
     {
         _bench = bench;

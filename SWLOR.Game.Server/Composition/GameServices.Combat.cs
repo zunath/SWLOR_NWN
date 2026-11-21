@@ -43,6 +43,12 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The damage roll modifiers, a part of combat.</summary>
         public static ICombatDamageModifiersService CombatDamageModifiers => FacadeAccessor.Resolve<ICombatDamageModifiersService>();
 
+        /// <summary>Critical rate and positional rate modifiers, a part of combat.</summary>
+        public static ICombatRateModifiersService CombatRateModifiers => FacadeAccessor.Resolve<ICombatRateModifiersService>();
+
+        /// <summary>Repeated-target and same-target pressure state, a part of combat.</summary>
+        public static ICombatRepeatedTargetService CombatRepeatedTarget => FacadeAccessor.Resolve<ICombatRepeatedTargetService>();
+
         /// <summary>
         /// What a deflection sets off (part 6 of the stat split, P5-4d; until then <c>Stat.ApplyDeflectionEffectsNative</c>).
         /// </summary>

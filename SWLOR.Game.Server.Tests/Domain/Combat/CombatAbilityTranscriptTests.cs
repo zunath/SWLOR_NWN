@@ -156,6 +156,8 @@ public class CombatAbilityTranscriptTests
     {
         using var bench = new CombatTranscriptBench();
         var modifiers = bench.Get<ICombatDamageModifiersService>();
+        var rate = bench.Get<ICombatRateModifiersService>();
+        var repeated = bench.Get<ICombatRepeatedTargetService>();
         var hit = bench.Get<ICombatAbilityHitService>();
         var bonus = bench.Get<ICombatAbilityBonusService>();
 
@@ -179,26 +181,26 @@ public class CombatAbilityTranscriptTests
             bench.Step("critical mitigation" + tag, () => modifiers.CalculateDamageWithCriticalMitigation(Defender, 80, 40, 30, 60, 20, 120, 5));
             bench.Step("the cycle critical rate" + tag, () =>
             {
-                modifiers.PrepareAutoAttackCycleCriticalRate(Attacker, SkillType.Rifle);
-                modifiers.GetAutoAttackCriticalRateAdjustment(Attacker, Defender, 5);
-                modifiers.GetTargetStatusCriticalRateAdjustment(Attacker, Defender);
-                modifiers.ClearAutoAttackCycleCriticalRateTracker(Attacker);
+                rate.PrepareAutoAttackCycleCriticalRate(Attacker, SkillType.Rifle);
+                rate.GetAutoAttackCriticalRateAdjustment(Attacker, Defender, 5);
+                rate.GetTargetStatusCriticalRateAdjustment(Attacker, Defender);
+                rate.ClearAutoAttackCycleCriticalRateTracker(Attacker);
             });
             bench.Step("the positional modifiers" + tag, () =>
             {
-                modifiers.ApplySideAttackDamageModifier(Attacker, Defender, SkillType.Vibroknife, 100);
-                modifiers.ApplyBackAttackDamageModifier(Attacker, Defender, SkillType.Vibroknife, 100);
-                modifiers.GetSideAttackCriticalRateAdjustment(Attacker, Defender, SkillType.Vibroknife);
-                modifiers.GetBackAttackCriticalRateAdjustment(Attacker, Defender, SkillType.Vibroknife);
+                rate.ApplySideAttackDamageModifier(Attacker, Defender, SkillType.Vibroknife, 100);
+                rate.ApplyBackAttackDamageModifier(Attacker, Defender, SkillType.Vibroknife, 100);
+                rate.GetSideAttackCriticalRateAdjustment(Attacker, Defender, SkillType.Vibroknife);
+                rate.GetBackAttackCriticalRateAdjustment(Attacker, Defender, SkillType.Vibroknife);
             });
             bench.Step("repeated and same-target pressure" + tag, () =>
             {
-                modifiers.ApplySameTargetPressureDamageEffects(Attacker, Defender, SkillType.Rifle);
-                modifiers.GetSameTargetPressureWeaponAbilityDamageBonus(Attacker, Defender, SkillType.Rifle);
-                modifiers.ConsumeSameTargetPressureWeaponAbilityDamageBonus(Attacker, Defender, SkillType.Rifle, 50);
-                modifiers.ClearRangedRepeatedTargetDamageTracker(Attacker);
+                repeated.ApplySameTargetPressureDamageEffects(Attacker, Defender, SkillType.Rifle);
+                repeated.GetSameTargetPressureWeaponAbilityDamageBonus(Attacker, Defender, SkillType.Rifle);
+                repeated.ConsumeSameTargetPressureWeaponAbilityDamageBonus(Attacker, Defender, SkillType.Rifle, 50);
+                repeated.ClearRangedRepeatedTargetDamageTracker(Attacker);
             });
-            bench.Step("forget the attacker's modifier state" + tag, () => modifiers.ForgetDamageModifierState(Attacker));
+            bench.Step("forget the attacker's modifier state" + tag, () => repeated.ForgetDamageModifierState(Attacker));
 
             foreach (var skill in new[] { SkillType.Rifle, SkillType.Force, SkillType.Lightsaber })
             {

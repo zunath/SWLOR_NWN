@@ -47,7 +47,7 @@ public class CombatCleanupOrderTests
             ForwardingRecorder.Decorate<ICombatHitEffectsService>(services, "HitEffects", lines, format, forgets);
             ForwardingRecorder.Decorate<ICombatAbilityImpactService>(services, "Impact", lines, format, forgets);
             ForwardingRecorder.Decorate<ICombatAttackTimingService>(services, "AttackTiming", lines, format, forgets);
-            ForwardingRecorder.Decorate<ICombatDamageModifiersService>(services, "DamageModifiers", lines, format, forgets);
+            ForwardingRecorder.Decorate<ICombatRepeatedTargetService>(services, "RepeatedTarget", lines, format, forgets);
             ForwardingRecorder.Decorate<ITemporaryStatModifierService>(services, "TemporaryStatModifier", lines, format, forgets);
         });
         var combat = (CombatService)bench.Get<ICombatService>();
@@ -55,7 +55,7 @@ public class CombatCleanupOrderTests
         {
             bench.Get<ICombatResourcesService>(), bench.Get<ICombatActivityService>(), bench.Get<ICombatDefenseMemoryService>(),
             bench.Get<ICombatSuppressionService>(), bench.Get<ICombatAbilityActivationService>(), bench.Get<ICombatHitEffectsService>(),
-            bench.Get<ICombatAbilityImpactService>(), bench.Get<ICombatAttackTimingService>(), bench.Get<ICombatDamageModifiersService>(),
+            bench.Get<ICombatAbilityImpactService>(), bench.Get<ICombatAttackTimingService>(), bench.Get<ICombatRateModifiersService>(), bench.Get<ICombatRepeatedTargetService>(),
             bench.Get<ITemporaryStatModifierService>()
         }.Select(ForwardingRecorder.Unwrap).ToArray();
         var temporary = bench.Get<ITemporaryStatModifierService>();

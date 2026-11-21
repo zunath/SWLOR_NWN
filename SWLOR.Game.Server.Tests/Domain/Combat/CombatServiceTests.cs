@@ -45,7 +45,7 @@ public class CombatServiceTests
         $"Activity.ForgetOpeningActivityState {creature}",
         $"Resources.ForgetAbilityStaminaCostState {creature}",
         $"AttackTiming.ForgetAttackTimingState {creature}",
-        $"DamageModifiers.ForgetDamageModifierState {creature}",
+        $"RepeatedTarget.ForgetDamageModifierState {creature}",
         $"TemporaryStatModifier.Clear {creature}",
     };
 
@@ -87,9 +87,9 @@ public class CombatServiceTests
                 nameof(ICombatSuppressionService.ReconcileOverwatchStatus)),
             activity,
             Logged<ICombatAttackTimingService>("AttackTiming", out _, nameof(ICombatAttackTimingService.ForgetAttackTimingState)),
-            Logged<ICombatDamageModifiersService>("DamageModifiers", out _, nameof(ICombatDamageModifiersService.ForgetDamageModifierState),
-                nameof(ICombatDamageModifiersService.ClearRangedRepeatedTargetDamageTracker),
-                nameof(ICombatDamageModifiersService.ClearAutoAttackCycleCriticalRateTracker)),
+            Logged<ICombatRateModifiersService>("RateModifiers", out _, nameof(ICombatRateModifiersService.ClearAutoAttackCycleCriticalRateTracker)),
+            Logged<ICombatRepeatedTargetService>("RepeatedTarget", out _, nameof(ICombatRepeatedTargetService.ForgetDamageModifierState),
+                nameof(ICombatRepeatedTargetService.ClearRangedRepeatedTargetDamageTracker)),
             Logged<ICombatHitEffectsService>("HitEffects", out _, nameof(ICombatHitEffectsService.ForgetHitEffectState),
                 nameof(ICombatHitEffectsService.ApplyDefeatedEnemyEffects), nameof(ICombatHitEffectsService.ApplyRecentDamagerDefeatedEnemyEffects)),
             Logged<ICombatDefenseMemoryService>("DefenseMemory", out _, nameof(ICombatDefenseMemoryService.ForgetDefenseMemory)),
@@ -239,9 +239,9 @@ public class CombatServiceTests
             $"Activity.HasConfiguredIdleSkillAbilityChannel {Killer}",
             $"StatusEffect.RemoveStatusEffect {Killer} {nameof(IdleSkillAbilityReadyStatusEffect)} False True",
             $"Stat.GetStatAdjustment {Killer} {StatType.RangedRepeatedTargetDamageBonusPerHit}",
-            $"DamageModifiers.ClearRangedRepeatedTargetDamageTracker {Killer}",
+            $"RepeatedTarget.ClearRangedRepeatedTargetDamageTracker {Killer}",
             $"Stat.GetStatAdjustment {Killer} {StatType.RangedAutoAttackCycleCriticalRateRequiredCount}",
-            $"DamageModifiers.ClearAutoAttackCycleCriticalRateTracker {Killer}",
+            $"RateModifiers.ClearAutoAttackCycleCriticalRateTracker {Killer}",
             $"Stat.GetStatAdjustment {Killer} {StatType.NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment}",
             $"TemporaryStatModifier.Consume {Killer} {StatType.PersistentNextSkillAbilityCriticalRatePercentAdjustment} {StatType.PersistentNextSkillAbilityCriticalRateSkillType}",
             $"TemporaryStatModifier.Consume {Killer} {StatType.PersistentNextSkillAbilityCriticalRateSkillType} {StatType.PersistentNextSkillAbilityCriticalRateSkillType}",
@@ -249,11 +249,11 @@ public class CombatServiceTests
             $"StatusEffect.RemoveStatusEffect {Killer} {nameof(CriticalRateStackTrackerStatusEffect)} False True");
     }
 
-    [TestCase(StatType.RangedRepeatedTargetDamageBonusPerHit, "DamageModifiers.ClearRangedRepeatedTargetDamageTracker")]
-    [TestCase(StatType.RangedRepeatedTargetDamageBonusMax, "DamageModifiers.ClearRangedRepeatedTargetDamageTracker")]
-    [TestCase(StatType.RangedRepeatedTargetDamageDurationSeconds, "DamageModifiers.ClearRangedRepeatedTargetDamageTracker")]
-    [TestCase(StatType.RangedAutoAttackCycleCriticalRateRequiredCount, "DamageModifiers.ClearAutoAttackCycleCriticalRateTracker")]
-    [TestCase(StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment, "DamageModifiers.ClearAutoAttackCycleCriticalRateTracker")]
+    [TestCase(StatType.RangedRepeatedTargetDamageBonusPerHit, "RepeatedTarget.ClearRangedRepeatedTargetDamageTracker")]
+    [TestCase(StatType.RangedRepeatedTargetDamageBonusMax, "RepeatedTarget.ClearRangedRepeatedTargetDamageTracker")]
+    [TestCase(StatType.RangedRepeatedTargetDamageDurationSeconds, "RepeatedTarget.ClearRangedRepeatedTargetDamageTracker")]
+    [TestCase(StatType.RangedAutoAttackCycleCriticalRateRequiredCount, "RateModifiers.ClearAutoAttackCycleCriticalRateTracker")]
+    [TestCase(StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment, "RateModifiers.ClearAutoAttackCycleCriticalRateTracker")]
     [TestCase(StatType.OpeningAutoAttackIdleSeconds, "StatusEffect.RemoveStatusEffect")]
     [TestCase(StatType.NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment, "TemporaryStatModifier.Consume")]
     public void RefreshClearsATrackerWhenAnyOneOfItsStatsIsGone(StatType missing, string clearing)

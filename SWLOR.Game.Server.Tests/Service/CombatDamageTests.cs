@@ -397,7 +397,7 @@ public class CombatDamageTests
         GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(0, SkillType.BeastMastery).Should().Be(AbilityType.Invalid);
         GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Invalid).Should().Be(AbilityType.Invalid);
         attackSource.Should().Contain("CombatRating.GetEvasionNative(defender, abilitySkillType)");
-        attackSource.Should().Contain("GameServices.CombatDamageModifiers.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType)");
+        attackSource.Should().Contain("GameServices.CombatRateModifiers.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType)");
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"ApplySideAttackEvasionIgnore\(\s*attacker.m_idSelf,\s*defender.m_idSelf,\s*abilitySkillType,").Should().BeTrue();
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
@@ -407,7 +407,7 @@ public class CombatDamageTests
             .Should().BeTrue("ability accuracy must not affect ordinary weapon attacks");
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"StoreQueuedWeaponAbilityCriticalRateBonus\(\s*attacker.m_idSelf,\s*abilitySkillType,").Should().BeTrue();
-        attackSource.Should().Contain("GameServices.CombatDamageModifiers.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)");
+        attackSource.Should().Contain("GameServices.CombatRateModifiers.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)");
         attackSource.Should().Contain("GameServices.CombatDamageTaken.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
         var accuracy = ExtractMethod(statSource, "public int GetAccuracyNative");
         accuracy.Should().Contain("skillOverride != SkillType.Invalid ? skillOverride :");

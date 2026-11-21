@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Native
                         abilitySkillType)
                     : 0;
             var hitChanceModifier =
-                GameServices.CombatDamageModifiers.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType) +
+                GameServices.CombatRateModifiers.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType) +
                 queuedWeaponAbilityLongRangeHitChanceAdjustment +
                 GameServices.CombatAbilityHit.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf) +
                 (queuedAbility == null ? 0 : GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(

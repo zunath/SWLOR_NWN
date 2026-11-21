@@ -177,8 +177,9 @@ public class CombatHitEffectsServiceTests
             {
                 _log.Add($"TypeDealt {args[0]} {args[1]} {args[2]}");
                 return (int)args[1]! + _typeDealtBonus;
-            })
-            .On(nameof(ICombatDamageModifiersService.ApplySameTargetPressureDamageEffects), args => Log($"Pressure {string.Join(" ", args)}"));
+            });
+        var repeatedTarget = ScriptedProxy.Create<ICombatRepeatedTargetService>(out var repeatedTargetCalls);
+        repeatedTargetCalls.On(nameof(ICombatRepeatedTargetService.ApplySameTargetPressureDamageEffects), args => Log($"Pressure {string.Join(" ", args)}"));
         var abilityHit = ScriptedProxy.Create<ICombatAbilityHitService>(out var abilityHitCalls);
         abilityHitCalls.On(nameof(ICombatAbilityHitService.GetCriticalRateAgainstSunderedTargetAdjustment), _ => _sunderedCritical);
         var stat = ScriptedProxy.Create<IStatService>(out var statCalls);
@@ -290,7 +291,7 @@ public class CombatHitEffectsServiceTests
             return _party;
         });
 
-        return new TestHitEffects(_log, () => _taken, queries, resources, timing, suppression, activity, modifiers, abilityHit, stat,
+        return new TestHitEffects(_log, () => _taken, queries, resources, timing, suppression, activity, modifiers, repeatedTarget, abilityHit, stat,
             statusEffect, statusApplication, statusCombat, statusDuration, temporary, ability, traits, recorder, capstone, resistance, party);
     }
 

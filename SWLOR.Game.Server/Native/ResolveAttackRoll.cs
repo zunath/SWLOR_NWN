@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.Native
             // Lucky Chamber advances on every ranged attack attempt, including misses and
             // deflections. Its returned bonus is only consulted if this attempt lands.
             var autoAttackCycleCriticalRate =
-                GameServices.CombatDamageModifiers.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType);
+                GameServices.CombatRateModifiers.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType);
             var isHit = GameServices.CombatAbilityHit.GetAutoAttackHitResolutionOverride() ?? attackRoll <= hitRate;
             var accuracyEvasionMiss = !isHit;
 

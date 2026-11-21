@@ -8,11 +8,11 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
 | 1. Static service lookup | `StaticLookups.txt` | 1,100 | 13,041 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 20 | 30,237 lines | none over 1,000 lines |
+| 2. Large types | `LargeTypes.txt` | 19 | 28,804 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 8 | 2,419 lines | none over 150 lines (400 for layout) |
-| 4. Services per type | `ServicesPerType.txt` | 15 | 232 services | none over 10 services |
+| 4. Services per type | `ServicesPerType.txt` | 15 | 236 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 33 | 43 parameters | none |
-| 6. Logic referencing content | `LogicToContent.txt` | 104 | 226 types | none |
+| 6. Logic referencing content | `LogicToContent.txt` | 106 | 226 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 30 | 103 edges | none |
 | 8. Static entry points and static state | `StaticState.txt` | 138 | 264 members | each kept with an approved reason, or removed |
 | 9. References up the domain order | `UpwardEdges.txt` | 126 | 274 members | none: every reference follows the domain order |
@@ -58,11 +58,11 @@ Largest 15 of 1,100 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 20 types over 1,000 lines, 30,237 lines in all.
+- 19 types over 1,000 lines, 28,804 lines in all.
 - Exempt and over the limit: 191 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1, owner exception 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
-Largest 15 of 20 (all in `LargeTypes.txt`):
+Largest 15 of 19 (all in `LargeTypes.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
@@ -70,17 +70,17 @@ Largest 15 of 20 (all in `LargeTypes.txt`):
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel` | 2,081 | ShipManagementViewModel.cs |
 | `SWLOR.Game.Server.Domain.Creatures.AIService` | 1,878 | AIService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 1,720 | CombatAbilityImpactService.cs |
-| `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 1,716 | CombatHitEffectsService.cs |
+| `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 1,719 | CombatHitEffectsService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatRecorderService` | 1,691 | CombatRecorderService.cs |
 | `SWLOR.Game.Server.Feature.UsePerkFeat` | 1,687 | UsePerkFeat.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService` | 1,609 | CombatDamageTakenService.cs |
 | `SWLOR.Game.Server.Domain.Items.ItemService` | 1,605 | ItemService.cs |
 | `SWLOR.Game.Server.Domain.Character.PerkService` | 1,486 | PerkService.cs |
-| `SWLOR.Game.Server.Domain.Combat.CombatDamageModifiersService` | 1,436 | CombatDamageModifiersService.cs |
 | `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 1,307 | MimicryService.cs |
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 1,244 | EnmityService.cs |
 | `SWLOR.Game.Server.Domain.Companions.BeastMasteryService` | 1,240 | BeastMasteryService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService` | 1,203 | CombatAbilityActivationService.cs |
+| `SWLOR.Game.Server.Domain.Companions.DroidService` | 1,194 | DroidService.cs |
 
 ## 3. Long methods
 
@@ -111,17 +111,17 @@ Largest 15 of 15 (all in `ServicesPerType.txt`):
 |---|---:|---|
 | `SWLOR.Game.Server.Feature.UsePerkFeat` | 31 | constructor 0, lookup 31 |
 | `SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService` | 21 | constructor 21, lookup 0 |
-| `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 20 | constructor 20, lookup 0 |
+| `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 21 | constructor 21, lookup 0 |
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 18 | constructor 18, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 16 | constructor 16, lookup 0 |
 | `SWLOR.Game.Server.Domain.Creatures.AIService` | 15 | constructor 15, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Companions.BeastMasteryService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Companions.DroidService` | 14 | constructor 14, lookup 0 |
-| `SWLOR.Game.Server.Domain.Combat.CombatAbilityHitService` | 12 | constructor 12, lookup 0 |
-| `SWLOR.Game.Server.Domain.Combat.CombatService` | 12 | constructor 12, lookup 0 |
+| `SWLOR.Game.Server.Domain.Combat.CombatAbilityHitService` | 13 | constructor 13, lookup 0 |
+| `SWLOR.Game.Server.Domain.Combat.CombatService` | 13 | constructor 13, lookup 0 |
+| `SWLOR.Game.Server.Domain.Abilities.AbilityDamageInputService` | 12 | constructor 12, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 12 | constructor 12, lookup 0 |
-| `SWLOR.Game.Server.Domain.Abilities.AbilityDamageInputService` | 11 | constructor 11, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 11 | constructor 11, lookup 0 |
 | `SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade.HeavyVibrobladeActiveAbilityDefinitionBase` | 11 | constructor 0, lookup 11 |
 
@@ -154,18 +154,18 @@ Largest 15 of 33 (all in `DeferredResolution.txt`):
 
 ## 6. Logic referencing content
 
-- 86 logic files name content: 104 file-to-content-unit lines, 226 named content types, 48 unit edges.
+- 88 logic files name content: 106 file-to-content-unit lines, 226 named content types, 48 unit edges.
 - Unit edges from Domain/ into another domain's content: 36. From Platform/Native and Platform/NativeSinks: 7. From other Platform areas: 0.
 - Domain/ files that name their own domain's content: 8.
 
-Largest 15 of 104 (all in `LogicToContent.txt`):
+Largest 15 of 106 (all in `LogicToContent.txt`):
 
 | Entry | Types | Detail |
 |---|---:|---|
 | `SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs -> Feature/StatusEffectDefinition` | 28 | Combat -> Character: BleedStatusEffect, BreachStatusEffect, ChallengeEnmityStatusEffect, CoveringClawsStatusEffect, CrippledDefenseStatusEffect, CrushingBlowStatusEffect, DamageDealtAdjustmentStatusEffect, DazedStatusEffect, DisorientedStatusEffect, DisruptionFieldStatusEffect, EclipseOfResolve1StatusEffect, ExposedStatusEffect, FoggyMindStatusEffect, ForceDisruptionStatusEffect, ForceErosionStatusEffect, ForceSuppressionStatusEffect, ForcebaneStatusEffect, FracturedFocusStatusEffect, FragmentationStatusEffect, HostileAbilityPartyBuffStatusEffect, KnockdownStatusEffect, MarkedForDeathStatusEffect, MarkingTossStatusEffect, NightmareField1StatusEffect, PoisonStatusEffect, SaturationTossStatusEffect, SunderStatusEffect, ToxinStatusEffect |
 | `SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs -> Feature/StatusEffectDefinition` | 17 | Combat -> Character: BleedStatusEffect, CriticalRateStackTrackerStatusEffect, CruelMomentumStatusEffect, ExposedStatusEffect, ForceErosionStatusEffect, FreezingStatusEffect, HamstringStatusEffect, HemorrhageStatusEffect, InfectionStatusEffect, LimitedHasteStatusEffect, MarkingTossStatusEffect, PoisonStatusEffect, PredatorsMark1StatusEffect, ShockStatusEffect, SoulAscensionStatusEffect, SunderStatusEffect, ToxicRushStatusEffect |
-| `SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs -> Feature/StatusEffectDefinition` | 14 | Combat -> Character: AttackCycleTrackerStatusEffect, BlindStatusEffect, DazedStatusEffect, DisorientedStatusEffect, ExposedStatusEffect, HamstringStatusEffect, KnockdownStatusEffect, MeleeRepeatedTargetDamageStatusEffect, PoisonStatusEffect, SpottersRhythmStatusEffect, SunderStatusEffect, SustainedFireStatusEffect, TranquilizedStatusEffect, WeakenedStatusEffect |
 | `SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs -> Feature/StatusEffectDefinition` | 12 | Combat -> Character: ButchersTempoStatusEffect, CenteringStatusEffect, DangerSenseStatusEffect, EvasiveCombatStatusEffect, EvasiveFootworkStatusEffect, ForceConvergenceStatusEffect, GuardiansResolveStatusEffect, GuardingStepStatusEffect, HostileAbilityForceAttackStatusEffect, RangedDeflectionStatusEffect, SentinelGuardStatusEffect, SoulSacrificeStatusEffect |
+| `SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs -> Feature/StatusEffectDefinition` | 9 | Combat -> Character: BlindStatusEffect, DazedStatusEffect, DisorientedStatusEffect, HamstringStatusEffect, KnockdownStatusEffect, PoisonStatusEffect, SunderStatusEffect, TranquilizedStatusEffect, WeakenedStatusEffect |
 | `SWLOR.Game.Server/Domain/Combat/CombatAbilityBonusService.cs -> Feature/StatusEffectDefinition` | 7 | Combat -> Character: CriticalRateStackTrackerStatusEffect, ExposeWeakPointStatusEffect, ExposedStatusEffect, FoggyMindStatusEffect, ForceDisruptionStatusEffect, OpeningAttackReadyStatusEffect, SunderStatusEffect |
 | `SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs -> Feature/StatusEffectDefinition` | 6 | Combat -> Character: PvpCombatStatusEffect, PvpHealingReduction1StatusEffect, PvpHealingReduction2StatusEffect, PvpHealingReduction3StatusEffect, PvpHealingReduction4StatusEffect, PvpHealingReduction5StatusEffect |
 | `SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Feature/StatusEffectDefinition` | 5 | Combat -> Character: EmbattledStatusEffect, ForceWardingStatusEffect, GuardianReflexesStatusEffect, RangedDeflectionStatusEffect, UnbreakableStatusEffect |
@@ -173,16 +173,16 @@ Largest 15 of 104 (all in `LogicToContent.txt`):
 | `SWLOR.Game.Server/Domain/Foundation/SavedCharacterDataStore.cs -> Feature/MigrationDefinition` | 5 | same domain: SavedCharacterGameRules, SavedDroidBoostItemMigration, SavedItemResistanceMigration, DungeonSaberMigration, ObsoleteItemMigration |
 | `SWLOR.Game.Server/Domain/Companions/TintMapService.cs -> Feature/AppearanceDefinition` | 4 | Companions -> Character: ArmorPartAppearance, EquippedItemAppearance, NeckAppearance, RobeAppearance |
 | `SWLOR.Game.Server/Domain/Foundation/SavedCharacter.cs -> Feature/MigrationDefinition` | 4 | same domain: SavedEquipmentStatEffects, StoredObjectData, Field, Node |
+| `SWLOR.Game.Server/Domain/Combat/CombatRepeatedTargetService.cs -> Feature/StatusEffectDefinition` | 3 | Combat -> Character: MeleeRepeatedTargetDamageStatusEffect, SpottersRhythmStatusEffect, SustainedFireStatusEffect |
 | `SWLOR.Game.Server/Domain/Combat/CombatService.cs -> Feature/StatusEffectDefinition` | 3 | Combat -> Character: CriticalRateStackTrackerStatusEffect, IdleSkillAbilityReadyStatusEffect, OpeningAttackReadyStatusEffect |
 | `SWLOR.Game.Server/Domain/Combat/CombatSuppressionService.cs -> Feature/StatusEffectDefinition` | 3 | Combat -> Character: ContainmentNetStatusEffect, OverwatchStatusEffect, SuppressionStatusEffect |
 | `SWLOR.Game.Server/Domain/Companions/TintMapApplyService.cs -> Feature/AppearanceDefinition` | 3 | Companions -> Character: HornFit, PowerGloveFit, WeaponHandFit |
-| `SWLOR.Game.Server/Domain/Foundation/SavedItem.cs -> Feature/MigrationDefinition` | 3 | same domain: StoredObjectData, Field, Node |
 
 ## 7. Domain cycles
 
 - 30 pairs of domains depend on each other: 26 between logic (8 of them with Foundation or Platform), 4 between content.
 - Foundation's logic is in a pair with 3 domains, Platform with 6.
-- Members both ways: 4,265.
+- Members both ways: 4,274.
 
 Largest 15 of 30 (all in `DomainCycles.txt`):
 
@@ -201,8 +201,8 @@ Largest 15 of 30 (all in `DomainCycles.txt`):
 | `Items <-> Platform` | 4 | Items -> Platform: 3 edge(s), 46 member(s); Platform -> Items: 1 edge(s), 6 member(s) |
 | `Abilities content <-> Character content` | 3 | Abilities content -> Character content: 1 edge(s), 444 member(s); Character content -> Abilities content: 2 edge(s), 10 member(s) |
 | `Abilities <-> Character` | 2 | Abilities -> Character: 1 edge(s), 331 member(s); Character -> Abilities: 1 edge(s), 4 member(s) |
-| `Abilities <-> Combat` | 2 | Abilities -> Combat: 1 edge(s), 277 member(s); Combat -> Abilities: 1 edge(s), 10 member(s) |
-| `Character <-> Combat` | 2 | Character -> Combat: 1 edge(s), 7 member(s); Combat -> Character: 1 edge(s), 983 member(s) |
+| `Abilities <-> Combat` | 2 | Abilities -> Combat: 1 edge(s), 278 member(s); Combat -> Abilities: 1 edge(s), 10 member(s) |
+| `Character <-> Combat` | 2 | Character -> Combat: 1 edge(s), 7 member(s); Combat -> Character: 1 edge(s), 991 member(s) |
 
 ## 8. Static entry points and static state
 

@@ -4,7 +4,7 @@ using NUnit.Framework;
 namespace SWLOR.Game.Server.Tests.Deployment;
 
 /// <summary>
-/// The hot reload switch (P4-13), <c>SWLOR_HOT_RELOAD</c>, never reaches production: no file of the production deployer
+/// The hot reload switch, <c>SWLOR_HOT_RELOAD</c>, never reaches production: no file of the production deployer
 /// names it, the development env file ships it off, the engine-test compose file keeps it off unless the local reload check
 /// turns it on, and the dev stack's compose file leaves it to the env file. The host refuses it in production anyway
 /// (<c>HostSettings</c>).

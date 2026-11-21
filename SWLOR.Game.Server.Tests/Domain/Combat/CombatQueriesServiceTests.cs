@@ -553,7 +553,7 @@ public class CombatQueriesServiceTests
     [Test]
     public void AForcePowerIsAForceSkillAbilityOrOneFlaggedAsAForcePower()
     {
-        // Moved here from AbilityService with the ability split (P5-3b).
+        // Moved here from AbilityService with the ability split.
         _service.IsForcePower(Attacker, new AbilityDetail { SkillType = SkillType.Force }).Should().BeTrue();
         _service.IsForcePower(Attacker, new AbilityDetail { SkillType = SkillType.Devices }).Should().BeFalse();
         _service.IsForcePower(Attacker, new AbilityDetail { SkillType = SkillType.Espionage, IsForcePower = true }).Should().BeTrue();

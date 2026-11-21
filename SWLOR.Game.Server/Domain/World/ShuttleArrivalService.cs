@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
     /// Arrival: delivers the passengers of each flight whose arrival time has passed, tears down its shuttle instance, and has
-    /// the status consoles announce the time left. The logic moved here unchanged from <see cref="ShuttleService"/> (P5-9c).
+    /// the status consoles announce the time left. The logic moved here unchanged from <see cref="ShuttleService"/>.
     /// </summary>
     public class ShuttleArrivalService : IShuttleArrivalService
     {

@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// <summary>
     /// The registry of property instances: the area instance of each property and the players in it, the load state and failure
     /// of each property, the players waiting for a load, the instance spawn actions that have run and the placeable of each
-    /// structure, with the handlers that keep the players of an instance. Split from <c>PropertyLoaderService</c> (P5-9b); the
+    /// structure, with the handlers that keep the players of an instance. Split from <c>PropertyLoaderService</c>; the
     /// members moved unchanged. The queue that loads the instances is <see cref="IPropertyLoaderService"/>, the spawning of a
     /// property is <see cref="IPropertySpawnService"/>.
     /// </summary>

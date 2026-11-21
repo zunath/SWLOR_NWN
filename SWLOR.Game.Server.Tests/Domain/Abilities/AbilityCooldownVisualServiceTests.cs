@@ -445,7 +445,7 @@ public class AbilityCooldownVisualServiceTests
     [Test]
     public void A_reload_resets_a_recharge_that_ends_during_the_pause_and_redraws_only_those_still_running()
     {
-        // P4-15: the old build drew two recharges; the closure that would reset the Flash icon at its deadline is dropped.
+        // Hot reload: the old build drew two recharges; the closure that would reset the Flash icon at its deadline is dropped.
         CacheTwoAbilities();
         _visual.ApplyRecastDelay(Player, RecastGroup.Earthshatter, T0, T0.AddSeconds(60));
         _visual.ApplyRecastDelay(Player, RecastGroup.Flash, T0, T0.AddSeconds(5));

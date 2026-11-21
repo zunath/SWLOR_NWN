@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Domain.Combat;
 namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
-    /// The party roster (a part of the party service, P5-3c): the reads of <see cref="IPartyRoster"/>, which Combat owns, and the
+    /// The party roster (a part of the party service): the reads of <see cref="IPartyRoster"/>, which Combat owns, and the
     /// caches <see cref="PartyService"/> keeps as the party events arrive. Only the party service writes the caches.
     /// </summary>
     public interface IPartyRosterService : IPartyRoster

@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace SWLOR.Architecture.Tests.Debt;
 
 /// <summary>
-/// The "sink does no work" measure (owner decision 12, P5-1b): <c>NativeSinks</c> counts as wiring in the domain order only
+/// The "sink does no work" measure (owner decision 12): <c>NativeSinks</c> counts as wiring in the domain order only
 /// because a sink forwards a hook to the code that handles it, as a trampoline forwards to its sink. Read from source (syntax,
 /// and the compiler's binding for what a constructor assigns), so it does not depend on the build configuration.
 /// </summary>

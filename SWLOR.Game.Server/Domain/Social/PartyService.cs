@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Domain.Social
     /// <summary>
     /// The party caches: the logic that used to be static in <c>Party</c>, moved here unchanged. The event handlers run on the
     /// container's instance; static callers reach it through <c>GameServices.Party</c>. The caches themselves are the party
-    /// roster (<see cref="IPartyRosterService"/>, P5-3c), which the domains below read through Combat's
+    /// roster (<see cref="IPartyRosterService"/>), which the domains below read through Combat's
     /// <see cref="IPartyRoster"/>; this service keeps them as the party events arrive and answers its reads from them. The
     /// auras it refreshes on a party change reach back to the parties through the roster, so the aura part stays a
     /// <c>Lazy&lt;&gt;</c> here: its own services (status effects, stats, combat points) still take <see cref="IPartyService"/>.

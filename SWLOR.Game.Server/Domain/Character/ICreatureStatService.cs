@@ -10,7 +10,7 @@ using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
-    /// Movement, maximum HP and food HP, attributes, NPC loading and regeneration: part 2 of the stat split (P5-4e; until then
+    /// Movement, maximum HP and food HP, attributes, NPC loading and regeneration: part 2 of the stat split (until then
     /// members of <c>IStatService</c>).
     /// </summary>
     public interface ICreatureStatService

@@ -5,7 +5,7 @@ using System.Reflection;
 namespace SWLOR.Game.Server.Core
 {
     /// <summary>
-    /// The digests a hot reload is checked with (MaintainabilityRefactorHotReload.md, P4-14), each a count and a content hash
+    /// The digests a hot reload is checked with (MaintainabilityRefactorHotReload.md), each a count and a content hash
     /// (<see cref="ReloadDigestHasher"/>) of one field, named <c>Namespace.Class.field</c>. Cache: every field of each class that
     /// owns a rerun boot handler or a handler of a script those run, except the fields marked <see cref="ReloadStateAttribute"/>
     /// and those that hold another service; after a reload each must equal the boot's. Adopted: every field marked

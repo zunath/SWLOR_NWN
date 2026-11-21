@@ -3,7 +3,7 @@ using SWLOR.Architecture.Tests.Scanning;
 namespace SWLOR.Architecture.Tests.Rules;
 
 /// <summary>
-/// The rules of the native hooks (P4-9, P4-11). NWNX calls an installed hook for the life of the process, so the hook
+/// The rules of the native hooks. NWNX calls an installed hook for the life of the process, so the hook
 /// entry points (the trampolines) live in <c>SWLOR.Game.NativeHooks</c>, which outlives every game build, and each hook's
 /// managed body sits behind a sink interface of <c>SWLOR.Game.Contracts</c> that the build implements and binds:
 /// <list type="bullet">

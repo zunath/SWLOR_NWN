@@ -255,7 +255,7 @@ public class StatAdjustmentSourceTests
         AddStatus(Payload((payload, 12), (StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 60)));
         AddTemporary("other-source", payload, 7);
         AddTemporary("other-source", StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 80);
-        // The impact reads the sources it has not cached through its caller's stat service (the ability split, P5-3b).
+        // The impact reads the sources it has not cached through its caller's stat service (the ability split).
         var stat = FacadeForwarder.For<IStatService>();
         Func<uint, StatType, IReadOnlyList<StatAdjustmentSource>> CreateImpactReader()
         {

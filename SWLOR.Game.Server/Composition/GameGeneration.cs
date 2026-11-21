@@ -183,7 +183,7 @@ namespace SWLOR.Game.Server.Composition
 
         /// <summary>
         /// On the engine thread, when a reload replaces this build and hot reload is on: runs the online players' quiescence steps
-        /// and takes their windows and conversations down (<see cref="IGenerationBoot.QuiescePlayers"/>, P4-15), logs the
+        /// and takes their windows and conversations down (<see cref="IGenerationBoot.QuiescePlayers"/>), logs the
         /// adopted-state and world digests the next build's must equal, then runs the carry steps, which leave on the module what
         /// the next build's adoption steps cannot read back from the world, and the carried runtime state. The old build's dispose
         /// then stops its timers and queues (<see cref="IServerTeardown"/>), and the host drops its pending closures.

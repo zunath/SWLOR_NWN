@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Domain.Character
             _recast.ApplyRecastDelay(presenter, RecastGroup.Introduction, delaySeconds);
         }
 
-        /// <summary>The structured log line: <c>Log.WriteStructured</c> (<c>Log</c> stays static in Phase 2).</summary>
+        /// <summary>The structured log line: <c>Log.WriteStructured</c> (<c>Log</c> stays static for now).</summary>
         protected virtual void WriteStructuredLog(LogGroup group, string messageTemplate, params object[] propertyValues)
         {
             Log.WriteStructured(group, messageTemplate, propertyValues);

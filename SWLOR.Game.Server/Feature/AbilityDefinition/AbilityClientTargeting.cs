@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 {
     /// <summary>
     /// The client's targeting data for each ability feat (the shape and size of the targeting cursor), set when a player
-    /// enters, when a DM possesses a creature and when a perk changes a size. Split from <c>AbilityTargeting</c> (P5-3c), whose
+    /// enters, when a DM possesses a creature and when a perk changes a size. Split from <c>AbilityTargeting</c>, whose
     /// target queries moved to Combat.
     /// </summary>
     public static class AbilityClientTargeting

@@ -14,7 +14,7 @@ using SWLOR.NWN.API.Testing;
 namespace SWLOR.Game.Server.Tests.Domain.Space;
 
 /// <summary>
-/// Unit tests of the space instance (P2-A9): the tables it owns, the slot-to-feat conversions and the landing point
+/// Unit tests of the space instance: the tables it owns, the slot-to-feat conversions and the landing point
 /// registry, whose state used to be static and now belongs to the instance. The engine is a fake with local variables,
 /// the planet service is scripted, and every other neighbour is unused by what these tests reach.
 /// </summary>
@@ -201,7 +201,7 @@ public class SpaceServiceTests
         _space.GetDockPointsByPlanet(PlanetType.Tatooine).Should().BeEmpty();
     }
 
-    // ---- loading the landing points at boot (P4-8: AssignLandingPointIds, boot only, then LoadLandingPoints, rerun)
+    // ---- loading the landing points at boot (AssignLandingPointIds, boot only, then LoadLandingPoints, rerun)
 
     private const uint Waypoint4 = 2004;
     private const uint ObjectInvalid = 0x7F000000;

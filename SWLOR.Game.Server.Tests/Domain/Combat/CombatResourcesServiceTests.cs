@@ -103,7 +103,7 @@ public class CombatResourcesServiceTests
             .On(nameof(ICombatRecorderService.BeginRiderAttribution), _ => default(CombatRecordAttributionScope))
             .On(nameof(ICombatRecorderService.BeginStatTriggerAttribution), _ => default(CombatRecordAttributionScope))
             .On(nameof(ICombatRecorderService.BeginHealingReaction), _ => default(CombatRecordHealingReactionScope));
-        // The healing adjustments joined this service in P5-4d; they read the PvP healing cut and whether a source is a beast.
+        // The healing adjustments joined this service with the stat split; they read the PvP healing cut and whether a source is a beast.
         var pvp = ScriptedProxy.Create<IPvpCombatService>(out var pvpCalls);
         pvpCalls.On(nameof(IPvpCombatService.GetHealingReductionPercent), _ => 0);
         var companions = ScriptedProxy.Create<ICompanionLookup>(out var companionCalls);
@@ -537,7 +537,7 @@ public class CombatResourcesServiceTests
     [Test]
     public void RestoredResourceRidersNeedAValueAndADuration()
     {
-        // The riders of any FP or Stamina restore left for ResourceRestoredEffectsService in P5-4d (its own tests).
+        // The riders of any FP or Stamina restore left for ResourceRestoredEffectsService with the stat split (its own tests).
         _service.ApplyAbilityRestoredFPEffects(Creature);
         _service.ApplyAbilityRestoredBothResourcesEffects(Creature);
         _statusCalls.Calls.Should().BeEmpty();

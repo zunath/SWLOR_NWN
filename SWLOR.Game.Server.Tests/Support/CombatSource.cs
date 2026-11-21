@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// The source of combat wherever it lives, for the tests that guard a rule by reading the code. The combat split
 /// (<c>Readmes/MaintainabilityRefactorCombatSplit.md</c>) moved its text from the static class to the part services
 /// <c>Domain/Combat/Combat*Service.cs</c> (<c>CombatService.cs</c> holds what is left) and <c>CombatRules.cs</c>
-/// (see <see cref="CombatParts"/>), and P2-ZP deleted the facade; a test calls <see cref="Read"/> and keeps its needles.
+/// (see <see cref="CombatParts"/>), and the facade was deleted; a test calls <see cref="Read"/> and keeps its needles.
 /// <para>
 /// The text is combined as it is, apart from two rewrites in the part services, which change a line only where the
 /// move itself changed it: <c>static</c> is put back on a member declaration at member indentation, and a call on an

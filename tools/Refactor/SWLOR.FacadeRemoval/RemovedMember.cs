@@ -5,7 +5,7 @@ namespace SWLOR.FacadeRemoval;
 /// <c>ICombatService</c>, and the pure <c>CombatRules</c>), and the class that holds it now. A caller of <c>Facade.Name</c> writes
 /// <c>GameServices.Owner.Name</c> when <paramref name="Owner"/> is a <c>GameServices</c> property of an explicit facade (or one the
 /// file declares a name of), the bare <c>Owner.Name</c> through the imported property for a facade that is no namespace segment
-/// (<c>Ability</c>, split by P5-3), or <c>Owner.Name</c> when it is a class. A name listed under two owners (an overload on each) cannot be told apart from syntax, so the tool leaves
+/// (<c>Ability</c>, split into services), or <c>Owner.Name</c> when it is a class. A name listed under two owners (an overload on each) cannot be told apart from syntax, so the tool leaves
 /// a call to it alone: it does not compile, and a person picks the overload.
 /// </summary>
 /// <param name="Name">The member's name, the same on the facade and on the owner.</param>

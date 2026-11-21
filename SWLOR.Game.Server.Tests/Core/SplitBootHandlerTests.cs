@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Tests.Core;
 /// The handlers the branch split. A split is a line of <c>tools/Refactor/HandlerRenames.txt</c> with several branch names
 /// (master's one handler, then its parts in run order); the parts must stand together in the manifest where master's
 /// handler stood, so the boot runs them back to back in the old handler's place, and the parity run maps master's one
-/// handler onto them. There are two kinds: the boot splits of P4-8, each into a part a hot reload reruns and a boot-only
+/// handler onto them. There are two kinds: the boot handler splits, each into a part a hot reload reruns and a boot-only
 /// part, and the service splits, where a service split moves part of a handler into the new service and every part keeps
 /// one BootReload class, so a hot reload treats the handler as before.
 /// </summary>
@@ -31,11 +31,11 @@ public class SplitBootHandlerTests
     // Service splits. Add each later service split here.
     private static readonly string[] ServiceSplitMasterHandlers =
     {
-        // P5-4b, stat split part 4: the trait stats' cache handler splits out of Mimicry.CacheData.
+        // Stat split part 4: the trait stats' cache handler splits out of Mimicry.CacheData.
         "SWLOR.Game.Server.Service.Mimicry.CacheData",
-        // P5-4e, stat split part 2: the stat effect listener's registration splits out of Stat.CacheData.
+        // Stat split part 2: the stat effect listener's registration splits out of Stat.CacheData.
         "SWLOR.Game.Server.Service.Stat.CacheData",
-        // P5-5d, status effect split: the melee, impact and capstone listeners register out of StatusEffect.CacheData.
+        // Status effect split: the melee, impact and capstone listeners register out of StatusEffect.CacheData.
         "SWLOR.Game.Server.Service.StatusEffect.CacheData",
     };
 

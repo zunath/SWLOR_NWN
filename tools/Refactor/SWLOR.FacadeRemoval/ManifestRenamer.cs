@@ -4,7 +4,7 @@ namespace SWLOR.FacadeRemoval;
 /// Renames, in place, the lines of the handler order manifest (<c>SWLOR.Game.Server/Core/ScriptHandlerOrder.txt</c>) that
 /// name a handler of a removed facade, to the instance method that carries the handler now, as
 /// <c>tools/Refactor/HandlerRenames.txt</c> lists it (<c>&lt;master name&gt; &lt;branch name&gt;</c>). A line keeps its position,
-/// so the run order does not change. A handler the branch split into several (P4-8, <c>&lt;master name&gt; &lt;branch name&gt;
+/// so the run order does not change. A handler the branch split into several (<c>&lt;master name&gt; &lt;branch name&gt;
 /// &lt;branch name&gt; ...</c>) becomes one line per branch name, in that order, where its line was. A line that still names a
 /// removed facade's handler without a rename is an error.
 /// </summary>

@@ -4,7 +4,7 @@ using SWLOR.Architecture.Tests.Scanning;
 
 namespace SWLOR.Architecture.Tests.Debt;
 
-/// <summary>One run of every Phase 5 debt measure over the solution's source and the compiled server.</summary>
+/// <summary>One run of every debt measure over the solution's source and the compiled server.</summary>
 internal sealed class DebtScan
 {
     private DebtScan(IReadOnlyList<DebtMeasure> measures, IReadOnlyList<string> timings)
@@ -13,7 +13,7 @@ internal sealed class DebtScan
         Timings = timings;
     }
 
-    /// <summary>The ten measures, in the plan's order (P5-0's eight, then P5-1b's two).</summary>
+    /// <summary>The ten measures, in the plan's order (the first eight, then two more).</summary>
     public IReadOnlyList<DebtMeasure> Measures { get; }
 
     /// <summary>How long each stage took, for the test output.</summary>

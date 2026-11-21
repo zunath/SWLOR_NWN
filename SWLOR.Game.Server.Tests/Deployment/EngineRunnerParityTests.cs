@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace SWLOR.Game.Server.Tests.Deployment;
 
 /// <summary>
-/// The engine-test runners and what drives them (P4-16). <c>scripts/run-engine-tests.sh</c> (Linux and CI) and
+/// The engine-test runners and what drives them. <c>scripts/run-engine-tests.sh</c> (Linux and CI) and
 /// <c>scripts/run-engine-tests.ps1</c> (Windows) must stage and boot the same way; the compose file, the workflow and
 /// <c>tools/Refactor/Update-EngineCharacterization.ps1</c> must name the same switches. The PowerShell scripts cannot run
 /// here; the bash runner's argument checks do, because they fail before it builds or starts Docker.

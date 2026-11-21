@@ -89,7 +89,7 @@ public class CombatDamageTakenServiceTests
     private Func<int, int> _triggered = null!;
     private BuildMessageDelegate? _message;
 
-    // The ally search of the deflection guard asks the party roster (GameServices.PartyRoster, P5-3c) whether a nearby creature
+    // The ally search of the deflection guard asks the party roster (GameServices.PartyRoster) whether a nearby creature
     // is in the creature's party.
     [OneTimeSetUp]
     public void BuildFacades()

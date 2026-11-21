@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Tests.Support;
 namespace SWLOR.Game.Server.Tests.Native;
 
 /// <summary>
-/// P4-11: each hook file's install moment now enables its hooks through the container's <see cref="IHookControl"/> (the
+/// Each hook file's install moment now enables its hooks through the container's <see cref="IHookControl"/> (the
 /// process's own table on the native entry, the host's on the host entry) and does nothing else, so the moment a hook is
 /// installed is the same on both entries and as before.
 /// </summary>

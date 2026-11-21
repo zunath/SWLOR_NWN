@@ -149,7 +149,7 @@ public class SearchSetupTests
     [Test]
     public void TheBoardReadsNoAttribute()
     {
-        // The search board and the scavenging code beside it. Since P2-Z2 the scavenging files share Domain/Crafting with
+        // The search board and the scavenging code beside it. Since the namespace move the scavenging files share Domain/Crafting with
         // the rest of the craft code (which reads attributes), so they are picked by name: every file the old scavenging
         // folder held has Scavenge in its name or starts with QuickSearch, and so do the service's own files.
         var root = TestRepository.FindRoot();

@@ -33,7 +33,7 @@ public static class StatSource
         "SWLOR.Game.Server/Domain/Character/StatRecordService.cs",
         "SWLOR.Game.Server/Domain/Combat/CombatRatingService.cs",
         "SWLOR.Game.Server/Domain/Combat/CombatDeflectionReactionService.cs",
-        // Part 7, the healing adjustments, joined the rest of the resources service (P5-4d).
+        // Part 7, the healing adjustments, joined the rest of the resources service.
         "SWLOR.Game.Server/Domain/Combat/CombatResourcesService.cs",
     };
 

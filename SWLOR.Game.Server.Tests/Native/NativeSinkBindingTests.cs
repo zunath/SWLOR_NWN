@@ -9,7 +9,7 @@ using SWLOR.Game.Server.NativeSinks;
 namespace SWLOR.Game.Server.Tests.Native;
 
 /// <summary>
-/// P4-9 and P4-11: every hook file of <c>Native/</c> enables the trampolines of <c>SWLOR.Game.NativeHooks</c>, which forward
+/// Every hook file of <c>Native/</c> enables the trampolines of <c>SWLOR.Game.NativeHooks</c>, which forward
 /// to one sink of <c>NativeSinks/</c> implementing the sink interface of <c>SWLOR.Game.Contracts</c>. The architecture tests
 /// prove the trampoline bodies only forward or run the engine function; these prove the pairing is complete, that the
 /// interfaces have the shape the host binds and that the game binds a full set.

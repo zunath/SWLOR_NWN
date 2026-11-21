@@ -2,7 +2,7 @@ namespace SWLOR.Game.Server.Core
 {
     /// <summary>
     /// Lets go of everything a running server holds in the process, so a build can be retired. Generations call it
-    /// later (P4-13); nothing calls it on a reload yet.
+    /// later; nothing calls it on a reload yet.
     /// </summary>
     public interface IServerTeardown
     {

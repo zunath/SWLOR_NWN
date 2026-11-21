@@ -46,7 +46,7 @@ public class FacadeRemovalDataTests
     public void Every_member_of_a_split_facade_is_a_member_of_its_owner(string facadeName)
     {
         // Combat's members went to its parts, its service and its rules; Ability's go to its parts as the ability split
-        // (P5-3) moves them, the rest stay on Ability; Stat's go to its parts as the stat split (P5-4) moves them, the rest stay
+        // moves them, the rest stay on Ability; Stat's go to its parts as the stat split moves them, the rest stay
         // on Stat.
         var facade = Data.Single(candidate => candidate.Facade == facadeName);
         facade.IsSplit.Should().BeTrue($"{facadeName}'s members went to more than one class");

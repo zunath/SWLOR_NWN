@@ -10,8 +10,8 @@ internal enum UnitKind
     Domain,
 
     /// <summary>
-    /// A <c>Service.&lt;Name&gt;Service</c> folder of a tree the P2-Z2 move has not reached; the domain map's <c>services</c> list
-    /// places it. (Until P2-Z3 a type left directly in <c>Service</c> was one too; nothing is left there now, and the namespace
+    /// A <c>Service.&lt;Name&gt;Service</c> folder of a tree the namespace move has not reached; the domain map's <c>services</c> list
+    /// places it. (Until the type move a type left directly in <c>Service</c> was one too; nothing is left there now, and the namespace
     /// guard fails a new one.)
     /// </summary>
     Service,

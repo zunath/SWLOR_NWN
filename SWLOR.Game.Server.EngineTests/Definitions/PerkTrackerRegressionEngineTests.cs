@@ -579,7 +579,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(caster, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 80, 45f, "third-resource-source");
             StatusEffectApplication.ApplyStatusEffect(caster, caster, new InfiniteConduitStatusEffect(), 45f);
             AbilityImpactLifecycle.BeginAbilityImpact(caster, new AbilityDetail { IsHostileAbility = true, IsAreaAbility = true });
-            // The impact state store reads the sources it has not cached through the caller's stat service (P5-3b).
+            // The impact state store reads the sources it has not cached through the caller's stat service.
             var stat = Stat;
             try
             {

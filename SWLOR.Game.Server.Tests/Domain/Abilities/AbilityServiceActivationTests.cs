@@ -302,7 +302,7 @@ public class AbilityServiceActivationTests : AbilityServiceTestBase
     [Test]
     public void A_force_power_is_a_force_skill_or_a_flagged_ability()
     {
-        // The rule moved to Combat with the ability split (P5-3b): CombatRules for the flag and skill, and
+        // The rule moved to Combat with the ability split: CombatRules for the flag and skill, and
         // CombatQueriesService.IsForcePower for an ability (CombatQueriesServiceTests).
         CombatRules.IsForcePower(true, SkillType.Devices).Should().BeTrue();
         CombatRules.IsForcePower(false, SkillType.Force).Should().BeTrue();

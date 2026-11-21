@@ -6,7 +6,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Tests.Domain.Character;
 
 /// <summary>
-/// Part 2 of the stat split as the status effects' listener (P5-4e): it registers itself at boot and answers the two notices
+/// Part 2 of the stat split as the status effects' listener: it registers itself at boot and answers the two notices
 /// the status effects send.
 /// </summary>
 public class CreatureStatListenerTests : StatServiceTestBase

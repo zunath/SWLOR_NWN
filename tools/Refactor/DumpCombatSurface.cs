@@ -1,5 +1,5 @@
 #:package System.Reflection.MetadataLoadContext@10.0.0
-// P2-CB1 proof: dumps the public member set of SWLOR.Game.Server.Service.Combat and every [NWNEventHandler] method
+// Combat split proof: dumps the public member set of SWLOR.Game.Server.Service.Combat and every [NWNEventHandler] method
 // of an assembly, sorted, one per line, so a before and an after dump can be diffed.
 //   dotnet run tools/Refactor/DumpCombatSurface.cs -- <bin folder with SWLOR.Game.Server.dll> <out file>
 using System.Reflection;

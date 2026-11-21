@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Core;
 namespace SWLOR.Game.Server.Domain.UI
 {
     /// <summary>
-    /// The NUI windows and conversations of the players online during a hot reload (MaintainabilityRefactorHotReload.md, P4-15,
+    /// The NUI windows and conversations of the players online during a hot reload (MaintainabilityRefactorHotReload.md,
     /// owner decision Q3: keep them where reasonable). While the old build quiesces, each player's open conversation is taken out
     /// as data when it can be (<see cref="IConversationService.CarryForReload"/>) and every open window is closed the way the player
     /// closes it (<see cref="IGuiService.CloseWindowsForReload"/>), because the new build's element ids and view models differ;

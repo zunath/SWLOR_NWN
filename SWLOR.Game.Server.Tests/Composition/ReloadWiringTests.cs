@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Tests.Core;
 namespace SWLOR.Game.Server.Tests.Composition;
 
 /// <summary>
-/// The composition root builds what a hot reload's player and state steps need from the domains (<see cref="ReloadWiring"/>, P4-15):
+/// The composition root builds what a hot reload's player and state steps need from the domains (<see cref="ReloadWiring"/>):
 /// a carrier whose ability converter reads the container's ability service, and the players' screens over the container's GUI and
 /// conversation services.
 /// </summary>

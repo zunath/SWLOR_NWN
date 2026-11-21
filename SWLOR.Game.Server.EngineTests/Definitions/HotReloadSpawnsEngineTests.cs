@@ -10,7 +10,7 @@ using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     /// <summary>
-    /// An area with live spawns across hot reloads (the P5-8c test plan: the spawn registry adopts and no area spawns twice).
+    /// An area with live spawns across hot reloads (the test plan: the spawn registry adopts and no area spawns twice).
     /// Like <see cref="HotReloadPlayersEngineTests"/> it runs in phases, one per generation of the build:
     /// <list type="number">
     /// <item>The first run puts a headless player in Smesk's palace (not the Abandoned Station: the dock master scenarios start that area clean, and a reload would carry these spawns into them), enters the area through the spawn handler, waits for

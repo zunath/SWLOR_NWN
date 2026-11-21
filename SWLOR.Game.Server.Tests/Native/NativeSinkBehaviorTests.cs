@@ -7,7 +7,7 @@ using SWLOR.Game.Server.NativeSinks;
 namespace SWLOR.Game.Server.Tests.Native;
 
 /// <summary>
-/// P4-9: what a sink does without an engine. A hook must never let a managed failure escape into the engine and must
+/// What a sink does without an engine. A hook must never let a managed failure escape into the engine and must
 /// run the engine function exactly as before, so these call the sinks with null pointers (every engine read fails) and a
 /// stand-in for the engine function, and check what runs and what comes back.
 /// </summary>

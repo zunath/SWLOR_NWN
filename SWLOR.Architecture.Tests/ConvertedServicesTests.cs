@@ -29,7 +29,7 @@ public class ConvertedServicesTests
     [Test]
     public void Combat_is_listed_with_its_parts_and_there_is_no_list_of_services_in_progress()
     {
-        // P2-CB10 listed Combat, the last service converted in pieces, and removed the temporary inProgress list.
+        // Combat, the last service converted in pieces, was listed and the temporary inProgress list was removed.
         using var document = System.Text.Json.JsonDocument.Parse(File.ReadAllText(ArchitectureProject.ConvertedServicesPath));
         document.RootElement.TryGetProperty("inProgress", out _).Should().BeFalse($"{ListName} has no inProgress list any more");
         ConvertedServiceList.Parse("""{ "services": [], "inProgress": [] }""").Problems
@@ -54,7 +54,7 @@ public class ConvertedServicesTests
     /// <summary>
     /// Support types of services that were never converted (the folders <c>AnimationService</c>, <c>DMToolService</c> and
     /// <c>RoleplayXPService</c>, whose services are not in <c>ConvertedServices.json</c>). The rules below never reached them
-    /// while they sat in <c>Service.&lt;Name&gt;Service</c>; P2-Z2 moved them into their domain namespace, which the rules now
+    /// while they sat in <c>Service.&lt;Name&gt;Service</c>; they moved into their domain namespace, which the rules now
     /// cover whole, so they keep their constant tables and the one boot handler (<c>AnimationPreviewCatalog.CacheCategories</c>)
     /// until their code is converted. Nothing may be added: remove a line when its type is fixed (the list is kept tight).
     /// </summary>
@@ -69,7 +69,7 @@ public class ConvertedServicesTests
     ];
 
     /// <summary>
-    /// The static helpers P2-Z3 moved out of the namespace <c>Service</c> into their domain namespaces, which hold static
+    /// The static helpers that moved out of the namespace <c>Service</c> into their domain namespaces, which hold static
     /// state or a boot handler on purpose: <c>Random</c>, <c>Log</c> and <c>FrameProfiler</c> stay static (the facade removal
     /// plan), and the rest keep a constant table or a flag. The rules never reached them while each was a unit of its own in
     /// <c>Service</c>; nothing may be added, and a line goes when its type no longer breaks a rule (the list is kept tight).
@@ -158,7 +158,7 @@ public class ConvertedServicesTests
     [Test]
     public void Service_classes_in_a_domain_namespace_are_pieces_of_converted_services()
     {
-        // Since P2-Z2 a domain's support types share its namespace with its services, so only the types named like a
+        // Since the namespace move a domain's support types share its namespace with its services, so only the types named like a
         // service class (FooService, IFooService) must be registered pieces; ListProblems and MissingPieces tie each piece
         // to a service of its domain in DomainMap.json.
         Fail(ConvertedServiceRules.UnlistedServiceClasses(ArchitectureProject.Facts, List),

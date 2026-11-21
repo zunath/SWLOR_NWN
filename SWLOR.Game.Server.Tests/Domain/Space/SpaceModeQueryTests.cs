@@ -9,7 +9,7 @@ using SWLOR.NWN.API.Testing;
 namespace SWLOR.Game.Server.Tests.Domain.Space;
 
 /// <summary>
-/// The space mode read the ability activation checks make (<see cref="SpaceModeQuery"/>, P5-3d of the ability split): a
+/// The space mode read the ability activation checks make (<see cref="SpaceModeQuery"/>): a
 /// player whose record names an active ship, the same answer as <see cref="SpaceService.IsPlayerInSpaceMode"/> gives for the
 /// same creature and record.
 /// </summary>

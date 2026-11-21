@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
 {
     /// <summary>
     /// The area cache reads the domains below World make: an area by resref and the players in an area. Foundation owns the
-    /// interface and <c>IAreaService</c> extends it (supply rule 2 of MaintainabilityRefactorDomainOrder.md; P5-15a), so
+    /// interface and <c>IAreaService</c> extends it (supply rule 2 of MaintainabilityRefactorDomainOrder.md), so
     /// death and the DM tools read the cache without naming World. The container's one <c>AreaService</c> answers both.
     /// </summary>
     public interface IAreaLookup

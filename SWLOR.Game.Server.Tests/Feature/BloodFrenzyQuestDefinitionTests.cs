@@ -467,7 +467,7 @@ public class BloodFrenzyQuestDefinitionTests
 
     private static MethodInfo GetKeyItemMethod(string methodName)
     {
-        // The quest delegates call the service through the interface (the facade was removed, P2-ZJ).
+        // The quest delegates call the service through the interface (the facade was removed).
         return typeof(IKeyItemService)
             .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Single(method =>
@@ -479,7 +479,7 @@ public class BloodFrenzyQuestDefinitionTests
 
     private static MethodInfo GetAchievementMethod(string methodName)
     {
-        // The quest delegates call the service through the interface (the facade was removed, P2-ZE).
+        // The quest delegates call the service through the interface (the facade was removed).
         return typeof(IAchievementService)
             .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Single(method =>

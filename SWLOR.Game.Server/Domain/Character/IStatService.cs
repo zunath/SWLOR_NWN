@@ -13,10 +13,10 @@ namespace SWLOR.Game.Server.Domain.Character
     /// Stats: the stat adjustment read and its sources, the FP and Stamina pools, the NPC stat skin reads, and the Detection,
     /// Stealth, Lockpicking, Combat Readiness, Control and Craftsmanship reads. Walk mode, the movement rate, maximum HP,
     /// attributes, NPC loading and regeneration are <c>ICreatureStatService</c>'s and the player records fed by worn gear are
-    /// <c>IStatRecordService</c>'s (P5-4e).
-    /// The ratings and the deflection and Guard chances are <c>ICombatRatingService</c>'s (Combat, P5-4c); what a deflection
+    /// <c>IStatRecordService</c>'s.
+    /// The ratings and the deflection and Guard chances are <c>ICombatRatingService</c>'s (Combat); what a deflection
     /// sets off is <c>ICombatDeflectionReactionService</c>'s and the healing adjustments are <c>ICombatResourcesService</c>'s
-    /// (Combat, P5-4d).
+    /// (Combat).
     /// </summary>
     public interface IStatService
     {

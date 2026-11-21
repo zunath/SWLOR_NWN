@@ -9,7 +9,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Tests.Domain.World;
 
 /// <summary>
-/// Unit tests of spawning a property into the world, through the spawn service and the registry it records in (P5-9b). The
+/// Unit tests of spawning a property into the world, through the spawn service and the registry it records in. The
 /// loader tests cover the same spawns reached through the queue.
 /// </summary>
 [TestFixture]

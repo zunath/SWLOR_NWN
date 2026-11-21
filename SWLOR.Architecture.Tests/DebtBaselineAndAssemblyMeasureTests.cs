@@ -6,7 +6,7 @@ using SWLOR.Architecture.Tests.Scanning;
 namespace SWLOR.Architecture.Tests;
 
 /// <summary>
-/// The Phase 5 debt baseline format and comparison, and the measure read from the compiled server (static state) on
+/// The debt baseline format and comparison, and the measure read from the compiled server (static state) on
 /// hand-made inputs. The domain order measures are in <see cref="DomainOrderMeasureTests"/>.
 /// </summary>
 [TestFixture]

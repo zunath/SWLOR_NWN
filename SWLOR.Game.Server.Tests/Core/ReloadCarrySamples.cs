@@ -133,7 +133,7 @@ internal static class ReloadCarrySamples
     }
 
     /// <summary>
-    /// The session part of the status effects reads the trackers of the part that stays when it settles a reload (P5-5e), so it is
+    /// The session part of the status effects reads the trackers of the part that stays when it settles a reload, so it is
     /// built over a tracker service with an empty table, as the container builds it, and not as an empty shell.
     /// </summary>
     private static object NewStatusEffectSession()

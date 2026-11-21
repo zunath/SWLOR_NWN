@@ -69,7 +69,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         combat.Should().Contain("foreach (var channel in _idleSkillAbilityStatChannels)");
         combat.Should().Contain("typeof(IdleSkillAbilityReadyStatusEffect)");
         combat.Should().Contain("ColorToken.Combat(\"Idle Skill Ability Ready\")");
-        // The login handler is a call of its per-player step (a hot reload runs the step for players who stay online, P4-15).
+        // The login handler is a call of its per-player step (a hot reload runs the step for players who stay online).
         ExtractMethod(combat, "public static void RestoreIdleReadinessOnPlayerEnter()").Should().Contain("RestoreIdleReadiness(GetEnteringObject())");
         var restoreOnLogin = ExtractMethod(combat, "public static void RestoreIdleReadiness(uint creature)");
         restoreOnLogin.Should().Contain("RefreshIdleReadiness(creature)",
@@ -120,7 +120,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         beginAbilityImpact.Should().NotContain("ConsumeStatusAppliedNextAttackDamageBonus",
             "a miss or zero-damage hostile ability must preserve Charged Blows");
         beginAbilityImpact.Should().Contain("ability.IsHostileAbility");
-        // The hostile impact is its part's since the ability split (P5-3f): it hands a damaging hit to the delivery part, which
+        // The hostile impact is its part's since the ability split: it hands a damaging hit to the delivery part, which
         // consumes the bonus first.
         var hostileImpact = AbilitySource.Member("AbilityHostileImpactService", "ApplyHostileCombatImpact");
         hostileImpact.Should().Contain("if (damage > 0)");
@@ -287,8 +287,8 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         bleedingRestore.Should().Contain(
             "SkillAbilityBleedingTargetStaminaRestoreCooldownSeconds");
 
-        // The damage block of the hostile impact is the delivery part's since the ability split (P5-3e), the hostile impact its
-        // own part's since P5-3f.
+        // The damage block of the hostile impact is the delivery part's since the ability split, the hostile impact its
+        // own part's since the ability split.
         var hostileImpact = AbilitySource.Member("AbilityHostileImpactService", "ApplyHostileCombatImpact");
         hostileImpact.Should().Contain("DeliverHostileImpactDamage(");
         var delivery = ExtractMethod(ability, "public void DeliverHostileImpactDamage(");
@@ -487,7 +487,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         weaponScope.Should().BeLessThan(nativeDamage.IndexOf("PublishDamageDealtEvent", weaponScope, StringComparison.Ordinal));
 
         // The hostile impact opens the scope before it hands the damage to the delivery part, which converts Dark Force and
-        // applies the damage-dealt effects (the ability split, P5-3e and P5-3f).
+        // applies the damage-dealt effects (the ability split).
         var hostileImpact = AbilitySource.Member("AbilityHostileImpactService", "ApplyHostileCombatImpact");
         var abilityScope = hostileImpact.IndexOf("using var damageDerivedHealing = BeginDamageDerivedHealing", StringComparison.Ordinal);
         abilityScope.Should().BeGreaterThanOrEqualTo(0);
@@ -590,7 +590,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         beginAbilityImpact.Should().Contain("guardedHitBonuses.EnmityBonus");
         abilitySource.Should().Contain("trackedImpact?.NextAttackEnmityBonus");
         // The delayed half of the telegraphed impact is its own method, and the delayed action begins the impact through the
-        // lifecycle's telegraphed begin, since the ability split (P5-3f).
+        // lifecycle's telegraphed begin, since the ability split.
         var telegraphedImpact = ExtractMethod(abilitySource, "public int ApplyTelegraphedCombatImpact(") +
             ExtractMethod(abilitySource, "private int ScheduleTelegraphedCombatImpact(");
         telegraphedImpact.Should().Contain("trackedImpact?.NextAttackEnmityBonus ?? 0",

@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
 /// Part 2 of the stat split, <c>CreatureStatService</c>, with its calls into unconverted code answered without allocating, as
-/// <see cref="AllocationStatService"/> answered them before the part moved (P5-4e).
+/// <see cref="AllocationStatService"/> answered them before the part moved.
 /// </summary>
 internal sealed class AllocationCreatureStatService : CreatureStatService
 {

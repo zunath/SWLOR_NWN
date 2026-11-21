@@ -473,7 +473,7 @@ public class DeathServiceTests
     public void A_revive_in_place_tells_every_revived_listener_in_order()
     {
         // The subdual revive used to call the ability service's aura reapply; the death service now tells each listener the
-        // container registered (the aura part, P5-3c), once per revive.
+        // container registered (the aura part), once per revive.
         var heard = new List<string>();
         var death = new ReviveProbe(new[] { new RecordingRevivedListener("first", heard), new RecordingRevivedListener("second", heard) });
 

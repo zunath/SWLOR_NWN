@@ -24,7 +24,7 @@ using static SWLOR.Game.Server.EngineTests.Framework.ViewModelTestHelper;
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     /// <summary>
-    /// The binding transcripts of the six windows the view model split (P5-16h) touches: the player guide, perks, character sheet,
+    /// The binding transcripts of the six windows the view model split touches: the player guide, perks, character sheet,
     /// incubator, disguises and droid assembly. Each script opens the window with the recorder attached before it is bound, drives the
     /// window's main interactions on a real saved player record with the clock fixed, and compares the transcript
     /// (<see cref="ViewModelTranscript"/>) with the one captured on the code before any view model code moved. A run without an embedded
@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         /// <summary>
         /// The first line of every fixture. The windows read hak data (robe and forearm models, 2DA rows), so the fixtures are captured, and
-        /// later compared, on the full engine hak set the P5-16e PR 3 recipe builds; the debugserver hak set lacks models and differs.
+        /// later compared, on the full engine hak set the recipe builds; the debugserver hak set lacks models and differs.
         /// </summary>
         private const string CaptureHeader =
             "# Captured on the full engine hak set (scripts/ci/fetch-engine-test-haks.sh checkout, prepare-engine-test-home.sh staging, SWLOR.CLI --hak), host entry; compare only on that set, not on the debugserver hak set.\n";

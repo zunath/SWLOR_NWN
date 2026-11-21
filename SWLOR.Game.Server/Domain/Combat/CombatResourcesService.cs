@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// <summary>
     /// The FP, stamina and healing bookkeeping of <c>Combat</c>: stat trigger cooldowns, damage-derived healing and its
     /// budgets, the stamina each hostile ability paid and what its hits may refund, and the healing adjustments and what a
-    /// received heal sets off (part 7 of the stat split, P5-4d: moved from <c>StatService</c> unchanged except that the stat
+    /// received heal sets off (part 7 of the stat split: moved from <c>StatService</c> unchanged except that the stat
     /// read and the pools are <see cref="IStatService"/> calls). The five tables are this instance's own fields. The riders
     /// that restored FP or stamina grant are <c>ResourceRestoredEffectsService</c>'s (part 8).
     /// </summary>

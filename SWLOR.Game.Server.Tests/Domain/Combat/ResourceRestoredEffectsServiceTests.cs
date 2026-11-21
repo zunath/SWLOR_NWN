@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Tests.Support;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// The riders restoring FP or Stamina grants (part 8 of the stat split, P5-4d): each needs a value and a duration, reads them
+/// The riders restoring FP or Stamina grants (part 8 of the stat split): each needs a value and a duration, reads them
 /// through the stat reader its caller passes, and applies its status effect to the creature that was restored.
 /// </summary>
 [TestFixture]

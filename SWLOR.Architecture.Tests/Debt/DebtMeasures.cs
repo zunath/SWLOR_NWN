@@ -6,7 +6,7 @@ using SWLOR.Architecture.Tests.Scanning;
 namespace SWLOR.Architecture.Tests.Debt;
 
 /// <summary>
-/// Turns what the scanners found into the ten Phase 5 debt measures: their baseline entries, the header that explains
+/// Turns what the scanners found into the ten debt measures: their baseline entries, the header that explains
 /// each baseline file and the totals the report shows.
 /// </summary>
 internal static class DebtMeasures

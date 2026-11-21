@@ -5,7 +5,7 @@ using SWLOR.Architecture.Tests.Scanning;
 
 namespace SWLOR.Architecture.Tests;
 
-/// <summary>The host rule (P4-10): the permanent host references nothing of the game.</summary>
+/// <summary>The host rule: the permanent host references nothing of the game.</summary>
 [TestFixture]
 public class HostRulesTests
 {

@@ -190,7 +190,7 @@ public class ContentInjectionRulesTests
     {
         WithoutLocation(Real.Value.RegisteredCreations()).Should().Equal(new[]
         {
-            // The native entry binds this build's sinks before the container exists; P5-12 resolves the sinks from the container.
+            // The native entry binds this build's sinks before the container exists; the sinks are resolved from the container later.
             "SWLOR.Game.Server.Core.ServerBootstrapper: builds NativeHookTable, which the container registers: take it through the constructor",
             // The clean-up of a hosted boot that stopped before the container was built: there is no container to ask.
             "SWLOR.Game.Server.Core.ServerBootstrapper: builds ServerStaticState, which the container registers: take it through the constructor",
@@ -220,7 +220,7 @@ public class ContentInjectionRulesTests
     {
         WithoutLocation(Real.Value.StaticInitializers()).Should().Equal(new[]
         {
-            // WeaponDamageScales reads Item 11 times; the read moves to first use when wave C2 converts the migrations.
+            // WeaponDamageScales reads Item 11 times; the read moves to first use when the migrations are converted to instance services.
             "SWLOR.Game.Server.Feature.MigrationDefinition.SerializedItemWeaponDamageTypeMigration: a static initializer of SWLOR.Game.Server.Feature.MigrationDefinition.SerializedItemWeaponDamageTypeMigration reads a service",
         });
     }
@@ -228,7 +228,7 @@ public class ContentInjectionRulesTests
     [Test]
     public void Only_the_entry_points_read_a_static_ContainerHost()
     {
-        // The entry points until wave C11 removes ServerHost: the composition root that declares it, and the bootstrapper's default
+        // The entry points until ServerHost is removed: the composition root that declares it, and the bootstrapper's default
         // constructor (ServerManager boots the server's container through it).
         WithoutLocation(Real.Value.StaticContainerHosts()).Distinct().Should().Equal(
             "SWLOR.Game.Server.Composition.CompositionRoot reads CompositionRoot.ServerHost",

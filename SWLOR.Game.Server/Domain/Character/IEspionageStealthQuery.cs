@@ -2,7 +2,7 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// The stealth reads Espionage infiltration makes. Character owns the interface and <c>IStealthService</c> extends it
-    /// (supply rule 2 of MaintainabilityRefactorDomainOrder.md; P5-15b).
+    /// (supply rule 2 of MaintainabilityRefactorDomainOrder.md).
     /// </summary>
     public interface IEspionageStealthQuery
     {

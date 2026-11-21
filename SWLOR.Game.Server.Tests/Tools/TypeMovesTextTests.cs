@@ -7,7 +7,7 @@ using SWLOR.TypeMoves;
 namespace SWLOR.Game.Server.Tests.Tools;
 
 /// <summary>
-/// The text pieces of <c>tools/Refactor/SWLOR.TypeMoves</c> (P2-Z3): the rewrite of names and paths outside code, and the
+/// The text pieces of <c>tools/Refactor/SWLOR.TypeMoves</c>: the rewrite of names and paths outside code, and the
 /// placement of using lines the way a file already sorts them.
 /// </summary>
 [TestFixture]

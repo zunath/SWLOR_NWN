@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 namespace SWLOR.Game.Server.Domain.Items
 {
     /// <summary>
-    /// The item reads the item cache makes (<see cref="IItemCacheInfo"/>, owned by Foundation; P5-15a of
+    /// The item reads the item cache makes (<see cref="IItemCacheInfo"/>, owned by Foundation; see
     /// Readmes/MaintainabilityRefactorPhase5.md): the same three answers <see cref="IItemService"/> gives.
     /// </summary>
     public class ItemCacheInfo : IItemCacheInfo

@@ -24,7 +24,7 @@ using SWLOR.NWN.API.Testing;
 namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
-/// The worn-gear transcript of <see cref="EquipmentStats"/> (P5-16h, PR 0): a fixed gear set is worn, removed and swapped through
+/// The worn-gear transcript of <see cref="EquipmentStats"/>: a fixed gear set is worn, removed and swapped through
 /// the real equip and unequip handlers, the three refresh handlers and <c>StatRecord.RefreshPlayerEquipmentStats</c>, on a fake
 /// world, and the transcript holds, after each step, what each saved player record changed from a new one, every call the code
 /// made that writes to the engine (skin properties, hit points, local variables, refresh events) and any exception. It is

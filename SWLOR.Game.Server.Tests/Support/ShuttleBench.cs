@@ -347,7 +347,7 @@ public sealed class ClockedShuttleClockService : ShuttleClockService
 /// <summary>
 /// The shuttle services as the container builds them (<see cref="ShuttleService"/> and the narrow services it takes), with
 /// the clock and the scheduler under the test's control. A test drives the whole shuttle through this one object, as it
-/// did when the shuttle was a single service (P5-9c).
+/// did when the shuttle was a single service.
 /// </summary>
 public sealed class ClockedShuttleService
 {

@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
 
         /// <summary>
         /// Writes to the server log. One line so a test can see what was logged; the body is the original
-        /// <c>Log.Write</c> call (<c>Log</c> stays static in Phase 2).
+        /// <c>Log.Write</c> call (<c>Log</c> stays static for now).
         /// </summary>
         protected virtual void WriteLog(LogGroup group, string details, bool printToConsole = false)
         {

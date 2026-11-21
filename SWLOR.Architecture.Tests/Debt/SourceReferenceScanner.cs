@@ -8,8 +8,8 @@ using SWLOR.Architecture.Tests.Scanning;
 namespace SWLOR.Architecture.Tests.Debt;
 
 /// <summary>
-/// Every source member of the server that names a type of another unit, bound the way the compiler binds it (P5-1b). It is
-/// the reference set of the domain order measures (pairs by band, upward references), the same one the P5-1 measuring
+/// Every source member of the server that names a type of another unit, bound the way the compiler binds it. It is
+/// the reference set of the domain order measures (pairs by band, upward references), the same one the measuring
 /// tool records (<c>tools/Refactor/DomainOrder</c>), so the guard and the tool count alike. Read from source, it does not
 /// depend on the build configuration, and it sees what the compiler inlines (constants, enum members, <c>nameof</c>).
 /// </summary>

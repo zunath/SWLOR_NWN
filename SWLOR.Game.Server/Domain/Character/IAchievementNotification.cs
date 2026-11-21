@@ -2,7 +2,7 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// The window that tells a player an achievement was unlocked. Character owns the interface and the UI domain draws it
-    /// (supply rule 2 of MaintainabilityRefactorDomainOrder.md; P5-15b).
+    /// (supply rule 2 of MaintainabilityRefactorDomainOrder.md).
     /// </summary>
     public interface IAchievementNotification
     {

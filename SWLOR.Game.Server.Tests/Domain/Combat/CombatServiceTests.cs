@@ -32,7 +32,7 @@ public class CombatServiceTests
     private Dictionary<StatType, int> _stats = null!;
     private bool _idleChannel;
 
-    // The forget calls, in the order RemoveStatTriggerCooldowns has made them since P2-CB1 (and TemporaryStatModifier.Clear last).
+    // The forget calls, in the order RemoveStatTriggerCooldowns has made them since the Combat split (and TemporaryStatModifier.Clear last).
     private static string[] ForgetSequence(uint creature) => new[]
     {
         $"Resources.ForgetResourceTriggerState {creature}",

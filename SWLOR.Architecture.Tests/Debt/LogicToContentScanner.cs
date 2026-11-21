@@ -6,7 +6,7 @@ using SWLOR.Architecture.Tests.Scanning;
 namespace SWLOR.Architecture.Tests.Debt;
 
 /// <summary>
-/// Game logic that names content (Phase 5 target 4): code outside <c>Feature</c> (a domain's code, <c>Native</c>,
+/// Game logic that names content (target 4): code outside <c>Feature</c> (a domain's code, <c>Native</c>,
 /// <c>NativeSinks</c>, <c>Core</c>, ...) that names a type declared in <c>Feature</c>, its own domain's content included. Read
 /// from source with the compiler's binding, so the result does not depend on the build configuration and a constant (a
 /// <c>Feature</c> enum member) counts. The composition root (<c>contentRuleExemptAreas</c> of the domain map) registers content

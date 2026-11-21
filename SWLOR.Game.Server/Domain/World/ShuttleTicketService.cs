@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
     /// The shuttle tickets: a player's ride record, buying and refunding a ticket, and the next departure of a route. The
-    /// logic moved here unchanged from <see cref="ShuttleService"/> (P5-9c).
+    /// logic moved here unchanged from <see cref="ShuttleService"/>.
     /// </summary>
     public class ShuttleTicketService : IShuttleTicketService
     {

@@ -326,7 +326,7 @@ public class FirstAidCombatUpgradeTests
                     $"{Path.GetFileName(sourcePath.FullName)} should not apply Medical Injector Rig to damage-derived or system healing");
         }
 
-        // The adjustment lives in CombatResourcesService since P5-4d, so its declaration is the only mention Combat may have.
+        // The adjustment lives in CombatResourcesService since the stat split, so its declaration is the only mention Combat may have.
         // CombatSource puts static back on member declarations, as they read in the static class.
         CombatSource.Read()
             .Replace("public static int ApplyOutgoingAbilityHealingAdjustment(", string.Empty)

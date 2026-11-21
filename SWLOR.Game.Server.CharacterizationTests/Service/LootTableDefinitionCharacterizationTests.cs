@@ -43,7 +43,7 @@ public class LootTableDefinitionCharacterizationTests
             AllowConstantOutputs = true
         };
 
-        // An explicit list, sorted by class then name, not a reflection over Loot: its facade was removed (P2-ZJ), so the
+        // An explicit list, sorted by class then name, not a reflection over Loot: its facade was removed, so the
         // constant lives on LootService and the facade removal tool respells the read, both ways (the parity copy).
         var constants = new (string Class, string Name, Type Type, object Value)[]
         {

@@ -23,10 +23,10 @@ namespace SWLOR.Game.Server.Domain.Character
     /// Stats: the stat adjustment read and its sources, the FP and Stamina pools, the NPC stat skin reads, and the Detection,
     /// Stealth, Lockpicking, Combat Readiness, Control and Craftsmanship reads (part 1 of the stat split). Walk mode, the
     /// movement rate, maximum HP, attributes, NPC loading and regeneration are <c>CreatureStatService</c>'s and the player
-    /// records fed by worn gear are <c>StatRecordService</c>'s (P5-4e). The Attack, Accuracy, Defense and Evasion ratings and
-    /// the deflection and Guard chances are <c>CombatRatingService</c>'s (Combat, P5-4c); what a deflection sets off is
+    /// records fed by worn gear are <c>StatRecordService</c>'s. The Attack, Accuracy, Defense and Evasion ratings and
+    /// the deflection and Guard chances are <c>CombatRatingService</c>'s (Combat); what a deflection sets off is
     /// <c>CombatDeflectionReactionService</c>'s, the healing adjustments are <c>CombatResourcesService</c>'s, and what a
-    /// restore grants is the <see cref="IResourceRestoredListener"/>'s (Combat, P5-4d). The logic that used to be static in the
+    /// restore grants is the <see cref="IResourceRestoredListener"/>'s (Combat). The logic that used to be static in the
     /// facade <c>Stat</c> is moved here unchanged; the event handlers run on the container's instance, and static callers reach
     /// it through <c>GameServices.Stat</c>. Calls into <c>Skill</c>, <c>Perk</c>, <c>TemporaryStatModifier</c> and the restore
     /// listener sit behind one-line <c>protected virtual</c> methods whose bodies are the original calls. The stat type

@@ -182,7 +182,7 @@ public class FacadeRemovalRunnerTests
     [Test]
     public void A_handler_the_branch_split_becomes_one_manifest_line_per_part_in_order_and_a_second_run_changes_nothing()
     {
-        // P4-8: master's one handler is several on the branch; the renames line lists them in run order.
+        // Boot handler split: master's one handler is several on the branch; the renames line lists them in run order.
         Write("tools/Refactor/HandlerRenames.txt",
             "SWLOR.Game.Server.Service.Taxi.LoadTaxiDestinations SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations SWLOR.Game.Server.Domain.World.TaxiService.AssignTaxiIds\n");
 
@@ -258,7 +258,7 @@ public class FacadeRemovalRunnerTests
     [Test]
     public void A_project_that_imports_the_accessor_globally_needs_no_using_in_its_files()
     {
-        // Since P2-Z3 the branch's projects no longer import SWLOR.Game.Server.Service; the accessor's global import stays.
+        // Since the type move the branch's projects no longer import SWLOR.Game.Server.Service; the accessor's global import stays.
         Write("SWLOR.Game.Server.EngineTests/GlobalUsings.cs", "global using System;\nglobal using static SWLOR.Game.Server.Composition.GameServices;\n");
 
         Run(RunMode.Apply).Should().Be(FacadeRemovalRunner.Ok);

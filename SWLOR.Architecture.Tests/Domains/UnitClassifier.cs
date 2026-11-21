@@ -5,11 +5,11 @@ namespace SWLOR.Architecture.Tests.Domains;
 /// <summary>
 /// Decides which <see cref="DependencyUnit"/> a type belongs to from its namespace and name, never from the file it
 /// lives in. A type in <c>Domain.&lt;Domain&gt;</c> or one of its topic namespaces (<c>Domain.Crafting.Minigame</c>) belongs
-/// to the domain: since P2-Z2 a domain's services and their support types share that namespace, so the namespace names the
-/// domain and nothing finer. A type in a <c>Service.&lt;Name&gt;Service</c> folder (a tree the P2-Z2 move has not reached) is
+/// to the domain: since the namespace move a domain's services and their support types share that namespace, so the namespace names the
+/// domain and nothing finer. A type in a <c>Service.&lt;Name&gt;Service</c> folder (a tree the namespace move has not reached) is
 /// the unit of that service, a type in <c>Feature</c> its folder or itself, and the rest of the server assembly Platform;
 /// anything else (compiler generated types, other assemblies) belongs to no unit. Nothing is left directly in <c>Service</c>
-/// since P2-Z3: a type there belongs to no unit, and the namespace guard (<c>NamespaceRules</c>) fails it.
+/// since the type move: a type there belongs to no unit, and the namespace guard (<c>NamespaceRules</c>) fails it.
 /// </summary>
 internal static class UnitClassifier
 {

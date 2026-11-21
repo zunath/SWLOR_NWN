@@ -14,7 +14,7 @@ using SWLOR.NWN.API.Testing;
 namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
-/// The two <c>mod_load</c> handlers that split <c>StoreManagement.ProcessStores</c> (P4-8): <c>LoadStores</c> finds the
+/// The two <c>mod_load</c> handlers that split <c>StoreManagement.ProcessStores</c>: <c>LoadStores</c> finds the
 /// stores and starts the hourly cleanup (a hot reload reruns it), then <c>ProcessStores</c> marks the store items and
 /// raises their prices (boot only). Together they make the calls the single handler made, item by item and in order.
 /// The engine is a scripted module of two areas; the store list and the scheduler are the game's statics, read and

@@ -8,7 +8,7 @@ using SWLOR.NWN.API.Testing;
 namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
-/// The creatures a hot reload resets the animation mappings of (P4-15 closure audit): the closures that would have released an NPC's
+/// The creatures a hot reload resets the animation mappings of: the closures that would have released an NPC's
 /// clip, queued swing or suspended pistol remap were dropped, so every creature other than a player that still holds one is reset.
 /// Players are reset by their restore step.
 /// </summary>

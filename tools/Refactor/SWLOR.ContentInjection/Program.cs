@@ -1,7 +1,7 @@
 using SWLOR.ContentInjection;
 
 /*
- * Content injection (P5-13, Readmes/MaintainabilityRefactorContentInjection.md).
+ * Content injection (Readmes/MaintainabilityRefactorContentInjection.md).
  *
  * Content gets its services through its constructor instead of the static GameServices lookup. This tool converts the content files
  * tools/Refactor/ContentInjection.json lists, and keeps master's code in that shape at every sync (a mechanical script,

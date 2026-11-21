@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// properties and the load diagnostics. The logic and state that used to be part of the static property class, moved
     /// here unchanged. The registry of the instances, load states, failures and waiting players is
     /// <see cref="IPropertyLoadRegistryService"/>, spawning a property into the world is <see cref="IPropertySpawnService"/> and the
-    /// hot reload of the loader is <see cref="IPropertyLoadReloadService"/> (split out in P5-9b).
+    /// hot reload of the loader is <see cref="IPropertyLoadReloadService"/> (split out of the loader).
     /// </summary>
     public class PropertyLoaderService : IPropertyLoaderService
     {

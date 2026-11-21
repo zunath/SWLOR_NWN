@@ -6,13 +6,13 @@ using SWLOR.TypeMoves;
 namespace SWLOR.Game.Server.Tests.Tools;
 
 /// <summary>
-/// Runs <c>tools/Refactor/SWLOR.TypeMoves</c> with the domain order's kind of data (P5-1c, <c>DomainOrderTypeMoves.json</c>) over
+/// Runs <c>tools/Refactor/SWLOR.TypeMoves</c> with the domain order's kind of data (<c>DomainOrderTypeMoves.json</c>) over
 /// a small repository in a temporary folder: each entry has its own source namespace; a type moves from <c>Feature</c> to
 /// <c>Domain</c> and from <c>Domain.Foundation</c> to <c>Core</c>; qualified names, <c>cref</c>s, <c>nameof</c>, <c>using static</c>,
 /// aliases, attributes and calls of a moved class's extension methods follow; a new using goes to its sorted place and the using
 /// of the old namespace stays unless no type is left there; a qualifier that would reach another namespace is written in full;
 /// the run is idempotent and a check lists the pending moves; master's code that names a moved type after the move is moved too;
-/// a type moved twice (P2-Z3, then the domain order) is reached from master's first name.
+/// a type moved twice (then the domain order) is reached from master's first name.
 /// </summary>
 /// <remarks>The fixture names its own types; the tool's text rewrite never sees this file (both data files exclude it).</remarks>
 [TestFixture]
@@ -216,7 +216,7 @@ public class TypeMovesDomainOrderRunnerTests
     {
         Run(RunMode.Apply).Should().Be(TypeMoveRunner.Ok);
 
-        // P2-Z3 moved Log out of Service; the domain order moved it on to Core. TypeMoves.json points at Core, so master's code
+        // The type move moved Log out of Service; the domain order moved it on to Core. TypeMoves.json points at Core, so master's code
         // that still names Service is moved there in one step (the folder Service is gone from the branch).
         Write("tools/Refactor/TypeMoves.json", "{ \"from\": \"SWLOR.Game.Server.Service\", \"types\": [ { \"type\": \"Log\", \"to\": \"SWLOR.Game.Server.Core\" } ], "
             + "\"textExcludes\": [ \"tools/Refactor/*.json\", \"docs/Excluded.md\" ] }");

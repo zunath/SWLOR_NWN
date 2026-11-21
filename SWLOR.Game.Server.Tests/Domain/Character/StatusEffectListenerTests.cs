@@ -9,7 +9,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Tests.Domain.Character;
 
 /// <summary>
-/// The melee and applied listeners (P5-5d): who is told, in what order, and that registering twice keeps one entry. The bench
+/// The melee and applied listeners: who is told, in what order, and that registering twice keeps one entry. The bench
 /// registers its three stand-ins in the order the boot handlers register the real implementers (melee, impact, capstone).
 /// </summary>
 [TestFixture]

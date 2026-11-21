@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// Part 7 of the stat split, the healing adjustments that joined <c>CombatResourcesService</c> (Combat, P5-4d), with the stat
+/// Part 7 of the stat split, the healing adjustments that joined <c>CombatResourcesService</c> (Combat), with the stat
 /// trigger and the temporary stat modifier answered by the bench (<c>StatBench.Seams.cs</c>), as the stat double's seams
 /// answered them before the move. It reads the stat adjustment and the pools through the bench's stat double, so a healing
 /// test sees the same answers and the same log.

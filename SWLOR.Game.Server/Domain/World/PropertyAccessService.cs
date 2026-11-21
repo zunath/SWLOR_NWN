@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
     /// Who may use a property and getting into it: the permission checks, entering a property or a building, previewing a layout,
-    /// and remembering where a player came from. Split from <c>PropertyService</c> (P5-9b); the members moved unchanged.
+    /// and remembering where a player came from. Split from <c>PropertyService</c>; the members moved unchanged.
     /// </summary>
     public class PropertyAccessService : IPropertyAccessService
     {

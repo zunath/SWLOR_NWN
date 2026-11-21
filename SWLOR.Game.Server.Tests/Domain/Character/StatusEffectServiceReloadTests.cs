@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Tests.Support;
 namespace SWLOR.Game.Server.Tests.Domain.Character;
 
 /// <summary>
-/// The carried statuses when a hot reload has activated a new build (P4-15 closure audit): the old build's closures that settled an
+/// The carried statuses when a hot reload has activated a new build: the old build's closures that settled an
 /// ended status, kept a status's own checks going and recomputed the movement rate were dropped, so adoption does their work.
 /// </summary>
 [TestFixture]

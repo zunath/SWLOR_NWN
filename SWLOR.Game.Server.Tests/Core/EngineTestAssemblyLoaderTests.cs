@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Core;
 namespace SWLOR.Game.Server.Tests.Core;
 
 /// <summary>
-/// <see cref="EngineTestAssemblyLoader"/> (P4-16): the engine-test assembly is loaded into the generation's own load
+/// <see cref="EngineTestAssemblyLoader"/>: the engine-test assembly is loaded into the generation's own load
 /// context from bytes, so the file is not held open and the test code leaves with the generation.
 /// </summary>
 [TestFixture]

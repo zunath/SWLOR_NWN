@@ -2,7 +2,7 @@ namespace SWLOR.Game.Server.Core
 {
     /// <summary>
     /// What a hot reload does with a handler of <c>mod_enter</c> (a player logs in) or <c>mod_exit</c> (a player logs out) for the
-    /// players who are online while it runs (MaintainabilityRefactorHotReload.md, P4-15). The player stays connected, so the engine
+    /// players who are online while it runs (MaintainabilityRefactorHotReload.md). The player stays connected, so the engine
     /// keeps their creature, effects, locals, HP, position and inventory, and Redis keeps their saved data; only the old build's
     /// managed memory goes. <see cref="PlayerSessionAttribute"/> records the decision; a normal login or logout never reads it.
     /// </summary>

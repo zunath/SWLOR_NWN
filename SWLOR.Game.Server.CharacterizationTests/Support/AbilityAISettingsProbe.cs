@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Domain.Creatures;
 namespace SWLOR.Game.Server.CharacterizationTests.Support;
 
 /// <summary>
-/// Whether an ability sets each of its AI settings. On the branch the settings live in Creatures (P5-1d); master keeps them on
+/// Whether an ability sets each of its AI settings. On the branch the settings live in Creatures; master keeps them on
 /// <see cref="AbilityDetail"/>, so the parity run overlays a master version of this file (tools/Refactor/MasterOverlay).
 /// </summary>
 internal static class AbilityAISettingsProbe

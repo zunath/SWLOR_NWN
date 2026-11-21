@@ -618,7 +618,7 @@ public class QuestServiceTests
     [Test]
     public void A_reload_gives_every_item_collector_its_sweep_again()
     {
-        // P4-15 closure audit: the sweep, and the removal of a closed collector, are closures the reload drops.
+        // Hot reload: the sweep, and the removal of a closed collector, are closures the reload drops.
         const uint area = 950;
         const uint chest = 951;
         _resrefs[Collector] = "qst_item_collect";

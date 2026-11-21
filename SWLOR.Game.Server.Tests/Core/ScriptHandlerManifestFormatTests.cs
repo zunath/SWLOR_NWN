@@ -180,7 +180,7 @@ public class ScriptHandlerManifestFormatTests
 
         manifest.ScriptNames.Should().Contain(ScriptName.OnModulePreload);
         var preload = manifest.GetHandlers(ScriptName.OnModulePreload, false).ToList();
-        // DB.Load is two handlers since P4-8, which run first: Connect, then SyncIndexes.
+        // DB.Load is two handlers since the boot handler split, which run first: Connect, then SyncIndexes.
         preload.Take(2).Should().Equal(
             new[] { "SWLOR.Game.Server.Domain.Foundation.DBService.Connect", "SWLOR.Game.Server.Domain.Foundation.DBService.SyncIndexes" },
             "the database connects first and its indexes are current before anything reads it");

@@ -240,7 +240,7 @@ public class HoloComServiceTests
     [Test]
     public void A_reload_goes_on_ringing_an_unanswered_call_from_its_locals()
     {
-        // P4-15: the next ring is a closure the reload drops; the attempt itself is in engine locals.
+        // Hot reload: the next ring is a closure the reload drops; the attempt itself is in engine locals.
         AliceIsRingingBob();
         var buzzes = MessagesTo(Bob).Count;
         _engine.SetReturn("GetFirstPC", Alice);

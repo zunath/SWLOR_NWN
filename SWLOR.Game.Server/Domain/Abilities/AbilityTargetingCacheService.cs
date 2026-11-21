@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.Domain.Abilities;
 /// The targeting overrides that update the client's targeting data. The dictionary that used to be static in
 /// <c>AbilityTargeting</c> is this instance's own: <see cref="CacheData"/>, which the ability catalog
 /// calls when the abilities are cached, clears and refills it, so it is state and not a table. The cache half of
-/// <c>AbilityTargeting</c> (the load and its validation) moved here with the ability split (P5-3b); the client refresh is
-/// <c>AbilityClientTargeting</c>'s (P5-3c).
+/// <c>AbilityTargeting</c> (the load and its validation) moved here with the ability split; the client refresh is
+/// <c>AbilityClientTargeting</c>'s.
 /// </summary>
 public class AbilityTargetingCacheService : IAbilityTargetingCacheService
 {

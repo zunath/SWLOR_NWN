@@ -275,7 +275,7 @@ public class FacadeRemovalRewriterTests
         CallerRewriter.Apply(text, Split, false).Text.Should().BeSameAs(text);
     }
 
-    // A facade that is no namespace segment (Ability, split by P5-3): its members keep the bare form and change only the name
+    // A facade that is no namespace segment (Ability, split into services): its members keep the bare form and change only the name
     // before the member, which is the owner's imported GameServices property.
     private static readonly RemovedFacade[] BareSplit =
     [
@@ -396,7 +396,7 @@ public class FacadeRemovalRewriterTests
     [Test]
     public void The_reversal_imports_the_facades_namespace_when_the_tree_it_is_reversed_against_declares_it()
     {
-        // Since P2-Z3 the branch's files no longer import SWLOR.Game.Server.Service (nothing is left in it); master's parity
+        // Since the type move the branch's files no longer import SWLOR.Game.Server.Service (nothing is left in it); master's parity
         // copy still declares it for the facades, so a file the reversal sends back to a facade imports it there.
         const string text = "using SWLOR.Game.Server.Domain.Quests;\nusing static SWLOR.Game.Server.Composition.GameServices;\n\n" +
                             "class C { int M() => Taxi.Count + FactionService.MinimumFaction; }\n";

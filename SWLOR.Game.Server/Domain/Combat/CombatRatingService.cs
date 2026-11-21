@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// The Attack, Accuracy, Defense and Evasion ratings and the deflection and Guard chances, scripted and native: part 5 of
-    /// the stat split (P5-4c, <c>Readmes/MaintainabilityRefactorStatSplit.md</c>), moved from <c>StatService</c> unchanged except
+    /// the stat split (<c>Readmes/MaintainabilityRefactorStatSplit.md</c>), moved from <c>StatService</c> unchanged except
     /// for how it reaches its dependencies. The stat read, the NPC stat skin reads and the pools it read on its own instance are
     /// <see cref="IStatService"/> calls, and the Combat services it reached through <c>Lazy&lt;&gt;</c> are plain parameters.
     /// Static callers reach it through <c>GameServices.CombatRating</c>. Calls into <c>Skill</c>, the combat queries and the

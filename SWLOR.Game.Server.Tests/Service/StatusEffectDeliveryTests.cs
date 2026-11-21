@@ -75,7 +75,7 @@ public class StatusEffectDeliveryTests
     [Test]
     public void ControlResistanceFeedback_IsBuiltAfterBothRuntimeDurationConstraints()
     {
-        // The application runs in named steps (P5-5f): the timing step clamps the hard control duration, the replaced-effects step
+        // The application runs in named steps: the timing step clamps the hard control duration, the replaced-effects step
         // clamps a converted control, and the announce step formats the feedback. The method that runs them keeps that order.
         MethodDeclarationSyntax Step(string name) => StatusEffectSource.Nodes<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == name);

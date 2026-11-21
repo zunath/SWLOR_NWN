@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
 /// The constructor argument a test passes for a service an instance used to reach through its static facade, before the
-/// instance took the service by constructor (P2-ZB). Every call resolves the service from the container installed at that
+/// instance took the service by constructor. Every call resolves the service from the container installed at that
 /// moment, through the accessor the facade used, so a test double whose seams fall back to their default bodies reaches
 /// the same instance as before: the one a <see cref="FacadeContainer"/> installed when the call runs, or
 /// <see cref="ContainerNotBuiltException"/> when none is. A test that scripts the dependency passes its own stand-in instead.

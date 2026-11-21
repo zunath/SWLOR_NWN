@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     /// <summary>
     /// Records every binding the appearance editor publishes (name, order and the JSON the client receives) while the
     /// editor opens and through a fixed run of colour operations, and compares the transcript with the one captured
-    /// before the per-channel colour bindings stopped being declared properties (P5-16e).
+    /// before the per-channel colour bindings stopped being declared properties.
     /// </summary>
     public static class AppearanceEditorBindingIdentityEngineTests
     {

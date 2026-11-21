@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Core
 {
     /// <summary>
     /// Hands the runtime state marked <see cref="ReloadStateKind.Carried"/> from the build a hot reload retires to the build it
-    /// activates (MaintainabilityRefactorHotReload.md, P4-15). While the old build quiesces, each class's carried fields are written
+    /// activates (MaintainabilityRefactorHotReload.md). While the old build quiesces, each class's carried fields are written
     /// as one JSON object (its static fields, and the fields of the container's singleton of the class) and left on the module
     /// (<see cref="ReloadCarry"/>); after the new build's rerun and adoption steps, each class's object is read back into the same
     /// fields of the new singleton. A field that moved to another class or was renamed since the old build names where it lived

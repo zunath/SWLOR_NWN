@@ -29,28 +29,28 @@ public static class AbilitySource
     public static readonly IReadOnlyList<string> PartFiles = new[]
     {
         "SWLOR.Game.Server/Domain/Abilities/AbilityService.cs",
-        // P5-3b: the catalog, the impact state store and its tracker, the geometry and the magnitude.
+        // The catalog, the impact state store and its tracker, the geometry and the magnitude.
         "SWLOR.Game.Server/Domain/Abilities/AbilityCatalogService.cs",
         "SWLOR.Game.Server/Domain/Combat/AbilityImpactStore.cs",
         "SWLOR.Game.Server/Domain/Combat/AbilityImpactTracker.cs",
         "SWLOR.Game.Server/Domain/Combat/PendingDamageEffect.cs",
         "SWLOR.Game.Server/Domain/Combat/CombatImpactGeometryService.cs",
         "SWLOR.Game.Server/Domain/Combat/CombatAbilityMagnitudeService.cs",
-        // P5-3c: the auras, the temporary immunities and the activation state.
+        // The auras, the temporary immunities and the activation state.
         "SWLOR.Game.Server/Domain/Abilities/AbilityAuraService.cs",
         "SWLOR.Game.Server/Domain/Abilities/AbilityImmunityService.cs",
         "SWLOR.Game.Server/Domain/Abilities/AbilityActivationStateService.cs",
-        // P5-3d: the activation checks and the target checks.
+        // The activation checks and the target checks.
         "SWLOR.Game.Server/Domain/Abilities/AbilityActivationService.cs",
         "SWLOR.Game.Server/Domain/Abilities/AbilityTargetCheckService.cs",
-        // P5-3e: the impact messages, Dark Force, the damage delivery, the status application and the damage inputs and stages.
+        // The impact messages, Dark Force, the damage delivery, the status application and the damage inputs and stages.
         "SWLOR.Game.Server/Domain/Abilities/AbilityImpactMessageService.cs",
         "SWLOR.Game.Server/Domain/Abilities/AbilityDarkForceService.cs",
         "SWLOR.Game.Server/Domain/Abilities/AbilityDamageDeliveryService.cs",
         "SWLOR.Game.Server/Domain/Abilities/AbilityStatusApplicationService.cs",
         "SWLOR.Game.Server/Domain/Abilities/AbilityDamageInputService.cs",
         "SWLOR.Game.Server/Domain/Abilities/AbilityDamageStageService.cs",
-        // P5-3f: the impact lifecycle, the per-target hit roll, resolution and hostile impact, and the success visual.
+        // The impact lifecycle, the per-target hit roll, resolution and hostile impact, and the success visual.
         "SWLOR.Game.Server/Domain/Abilities/AbilityImpactLifecycleService.cs",
         "SWLOR.Game.Server/Domain/Abilities/AbilityHitRollService.cs",
         "SWLOR.Game.Server/Domain/Abilities/AbilityTargetImpactService.cs",

@@ -6,7 +6,7 @@ namespace SWLOR.Game.NativeHooks.Tests.Support;
 /// <summary>
 /// The 36 engine functions the 17 hook files hook, in the order the hooks are requested when every file is enabled in
 /// id order. Symbols and orders are copied from the hook files as they were before the trampolines moved out of the game
-/// (P4-11), so a changed symbol or order fails the tests.
+///, so a changed symbol or order fails the tests.
 /// </summary>
 internal static unsafe class HookedFunctions
 {

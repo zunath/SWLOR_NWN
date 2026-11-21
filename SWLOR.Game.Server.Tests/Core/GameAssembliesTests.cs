@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Core;
 namespace SWLOR.Game.Server.Tests.Core;
 
 /// <summary>
-/// <see cref="GameAssemblies"/> (P4-4): every discovery scan lists its assemblies through it. In a process with one load
+/// <see cref="GameAssemblies"/>: every discovery scan lists its assemblies through it. In a process with one load
 /// context (the server today, and this test process) it must return what <c>AppDomain.CurrentDomain.GetAssemblies()</c>
 /// returned, in the same order, so each scan finds the same types in the same order as before. The architecture test
 /// <c>Only_GameAssemblies_lists_the_assemblies_of_the_process</c> guarantees no scan lists assemblies any other way.

@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Tests.Core;
 /// <summary>
 /// Records how a hot reload treats every handler of the boot scripts, and fails when a boot handler has no
 /// <see cref="BootPhaseAttribute"/> or a handler's class changes. Nothing reads the attribute at runtime yet; this
-/// snapshot is the reviewed list the reload work (Phase 4) is built from. The rule behind the classes is in
+/// snapshot is the reviewed list the reload work is built from. The rule behind the classes is in
 /// <see cref="BootReload"/> and in <c>Readmes/MaintainabilityRefactorHotReload.md</c>.
 /// </summary>
 [TestFixture]

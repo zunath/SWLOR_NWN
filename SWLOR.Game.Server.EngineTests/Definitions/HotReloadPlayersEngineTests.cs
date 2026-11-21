@@ -11,7 +11,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     /// <summary>
-    /// A player who stays online across hot reloads (MaintainabilityRefactorHotReload.md, P4-15). The scenario spans generations of
+    /// A player who stays online across hot reloads (MaintainabilityRefactorHotReload.md). The scenario spans generations of
     /// the build, so it keeps its state on the module and runs in phases, one per generation (the runner reruns after a reload,
     /// <see cref="EngineTest.ScheduleEngineTests"/>):
     /// <list type="number">
@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return false;
         }
 
-        // The table of the effects logged-out players hold: StatusEffectSessionService's since P5-5e (found through the holders the status
+        // The table of the effects logged-out players hold: StatusEffectSessionService's since the status effect split (found through the holders the status
         // effect tracker registered), StatusEffectService's before.
         private static IDictionary LoggedOutTable(object statusEffects)
         {

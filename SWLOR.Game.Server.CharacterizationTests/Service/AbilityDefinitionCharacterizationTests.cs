@@ -115,7 +115,7 @@ public class AbilityDefinitionCharacterizationTests
         new(nameof(AbilityDetail.UsesImmediateAuthoredAnimation), a => a.UsesImmediateAuthoredAnimation),
     };
 
-    // The AI settings moved off AbilityDetail into Creatures (P5-1d); they stay in the snapshot rows under their old names.
+    // The AI settings moved off AbilityDetail into Creatures; they stay in the snapshot rows under their old names.
     private static readonly HashSet<string> CreaturesOwnedSettings = new() { "AIHitPointCostPercent", "AIScore", "AITargetSelector" };
 
     // The delegates a definition may set. A row lists the ones that are set; their bodies are code, not data.

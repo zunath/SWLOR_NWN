@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// Part 6 of the stat split, <c>CombatDeflectionReactionService</c> (Combat, P5-4d): what a deflection sets off, with its calls
+/// Part 6 of the stat split, <c>CombatDeflectionReactionService</c> (Combat): what a deflection sets off, with its calls
 /// into the other Combat services and the temporary stat modifiers answered by the bench (<c>StatBench.Seams.cs</c>). It reads
 /// the stat adjustment and the pools through the bench's stat double, which it read on its own instance before the move, so a
 /// test sees the same answers and the same log.

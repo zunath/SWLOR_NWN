@@ -54,13 +54,13 @@ public class AbilityServiceDefaultSeamsTests
         type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)
             .Where(method => method.IsVirtual && method.IsFamily);
 
-    // The activation part of the ability split (P5-3d) with every service forwarded to the installed container.
+    // The activation part of the ability split with every service forwarded to the installed container.
     private static AbilityActivationService ActivationPart() =>
         new(FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<ISpaceModeQuery>(), FacadeForwarder.For<IPerkService>(),
             FacadeForwarder.For<IMimicryService>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IStatService>(),
             FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<IAbilityTargetCheckService>());
 
-    // The damage parts of the ability split (P5-3e) with every service forwarded to the installed container.
+    // The damage parts of the ability split with every service forwarded to the installed container.
     private static AbilityImpactMessageService ImpactMessagePart() =>
         new(FacadeForwarder.For<IMessagingService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICombatFeedbackService>());
 
@@ -90,7 +90,7 @@ public class AbilityServiceDefaultSeamsTests
             FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatAbilityMagnitudeService>(),
             FacadeForwarder.For<IResistanceService>());
 
-    // The lifecycle and per-target parts of the ability split (P5-3f) with every service forwarded to the installed container.
+    // The lifecycle and per-target parts of the ability split with every service forwarded to the installed container.
     private static AbilityImpactLifecycleService LifecyclePart() =>
         new(FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<IMeleeTechniqueService>(), FacadeForwarder.For<ICombatRecorderService>(),
             FacadeForwarder.For<IAbilityDamageDeliveryService>(), FacadeForwarder.For<IStatusEffectCombatEventService>(), FacadeForwarder.For<ICombatQueriesService>(),
@@ -165,7 +165,7 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void There_is_a_seam_for_every_unconverted_call()
     {
-        // The activation checks (P5-3d), the damage parts (P5-3e) and the lifecycle and per-target parts (P5-3f) took their seams
+        // The activation checks, the damage parts and the lifecycle and per-target parts took their seams
         // with them, so the count spans the service and those parts.
         new[]
             {
@@ -180,7 +180,7 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void Every_default_reaches_the_static_code_and_stops_without_a_server()
     {
-        // The service keeps the seams of the telegraphed impact (P5-3f).
+        // The service keeps the seams of the telegraphed impact.
         Seams().Should().HaveCount(3);
         // These need the database or the native engine for a real creature, so they are left to the in-engine tests:
         // the space mode and FP reads ask the database and the NPC stats read a creature's skin.
@@ -243,7 +243,7 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void The_definition_search_is_lazy_and_finds_only_concrete_definitions()
     {
-        // The search moved to the catalog part with the ability split (P5-3b).
+        // The search moved to the catalog part with the ability split.
         var types = (IEnumerable<Type>)typeof(AbilityCatalogService).GetMethod("GetAbilityListDefinitionTypes", BindingFlags.NonPublic | BindingFlags.Instance)!
             .Invoke(new AbilityCatalogService(null!), null)!;
 
@@ -254,7 +254,7 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void The_stat_adjustment_is_stats_total()
     {
-        // Dark Force and the damage inputs took the read with them (P5-3e).
+        // Dark Force and the damage inputs took the read with them.
         Run(DarkForcePart(), "GetStatAdjustment", Creature, StatType.Attack).Should().Be(0);
         Run(DamageInputPart(), "GetStatAdjustment", Creature, StatType.Attack).Should().Be(0);
     }
@@ -262,7 +262,7 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void The_weapon_skill_check_is_combats()
     {
-        // The damage inputs took the check with them (P5-3e).
+        // The damage inputs took the check with them.
         Run(DamageInputPart(), "IsWeaponSkillType", SkillType.Vibroblade).Should().Be(true);
         Run(DamageInputPart(), "IsWeaponSkillType", SkillType.Force).Should().Be(false);
     }
@@ -270,7 +270,7 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void The_ability_skill_is_the_definitions_for_a_creature_with_no_override()
     {
-        // The impact lifecycle took the read with it (P5-3f).
+        // The impact lifecycle took the read with it.
         Run(LifecyclePart(), "GetAbilitySkillType", Creature, new AbilityDetail { SkillType = SkillType.Force }).Should().Be(SkillType.Force);
     }
 
@@ -284,7 +284,7 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void The_healing_eligibility_is_combats_arithmetic()
     {
-        // The impact state store calls the rule directly since the ability split (P5-3b).
+        // The impact state store calls the rule directly since the ability split.
         CombatRules.CalculateDamageEligibleForHealing(50, 50, 20).Should().Be(30);
     }
 

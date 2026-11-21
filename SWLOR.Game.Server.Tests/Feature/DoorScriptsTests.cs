@@ -8,7 +8,7 @@ using SWLOR.NWN.API.Testing;
 namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
-/// Auto-relocking doors when a hot reload has activated a new build (P4-15 closure audit): the close-and-relock timer is a closure
+/// Auto-relocking doors when a hot reload has activated a new build: the close-and-relock timer is a closure
 /// the reload drops, so a door the old build left open gets it again.
 /// </summary>
 [TestFixture]

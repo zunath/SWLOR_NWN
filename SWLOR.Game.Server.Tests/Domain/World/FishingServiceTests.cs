@@ -508,7 +508,7 @@ public class FishingServiceTests
     [Test]
     public void A_reload_interrupts_a_cast_still_waiting_on_its_timer_and_leaves_other_players_alone()
     {
-        // P4-15: the timer that would land the cast is a closure the reload drops.
+        // Hot reload: the timer that would land the cast is a closure the reload drops.
         LoadRod();
         PointAt(FishingLocationType.ViscaraCavern);
         Random.SetSeed(1);

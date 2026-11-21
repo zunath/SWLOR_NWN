@@ -267,7 +267,7 @@ public class MigrationServiceTests
         Retired.Should().Be(31);
         MigrationService.PlayerFileVersionVariable.Should().Be("PLAYER_MIGRATION_VERSION");
 
-        // Native code and tests read both constants here: the facade that repeated them was removed (P2-ZI).
+        // Native code and tests read both constants here: the facade that repeated them was removed.
         typeof(MigrationService).GetField(nameof(MigrationService.RetiredServerMigrationVersion))!.IsLiteral.Should().BeTrue();
         typeof(MigrationService).GetField(nameof(MigrationService.PlayerFileVersionVariable))!.IsLiteral.Should().BeTrue();
     }

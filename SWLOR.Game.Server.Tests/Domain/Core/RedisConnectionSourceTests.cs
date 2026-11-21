@@ -9,7 +9,7 @@ using SWLOR.Game.Server.Tests.Support;
 namespace SWLOR.Game.Server.Tests.Domain.Core;
 
 /// <summary>
-/// The server's default <see cref="IRedisConnectionSource"/> (P4-8): it opens the connection exactly as <c>DB.Load</c> did,
+/// The server's default <see cref="IRedisConnectionSource"/>: it opens the connection exactly as <c>DB.Load</c> did,
 /// with the RESP2 options against the endpoint of the settings, and waits until the connection is up.
 /// </summary>
 [TestFixture]

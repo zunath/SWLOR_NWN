@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Core;
 namespace SWLOR.Game.Server.Composition
 {
     /// <summary>
-    /// How static code reaches a converted service whose static facade has been removed (P2-Z, decision D1 of
+    /// How static code reaches a converted service whose static facade has been removed (decision D1 of
     /// <c>Readmes/MaintainabilityRefactorFacadeRemoval.md</c>): one property per removed facade, named like the facade and
     /// typed as the service's interface. Content definitions, native hooks, support types, tools and tests import it with
     /// <c>using static SWLOR.Game.Server.Composition.GameServices;</c>, so a call keeps its text (<c>Taxi.RegisterTaxiDestination(...)</c>)
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Composition
     /// </remarks>
     public static partial class GameServices
     {
-        /// <summary>Whether a combat recording runs, as the platform sees it (<c>ICombatRecordingState</c>, P5-1g).</summary>
+        /// <summary>Whether a combat recording runs, as the platform sees it (<c>ICombatRecordingState</c>).</summary>
         public static ICombatRecordingState CombatRecordingState => FacadeAccessor.Resolve<ICombatRecordingState>();
 
     }

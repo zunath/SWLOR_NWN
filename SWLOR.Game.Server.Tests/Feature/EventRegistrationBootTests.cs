@@ -9,7 +9,7 @@ using SWLOR.Game.Server.Feature;
 namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
-/// The two <c>mod_preload</c> handlers that split <c>EventRegistration.OnModulePreload</c> (P4-8): <c>StartServerEvents</c>
+/// The two <c>mod_preload</c> handlers that split <c>EventRegistration.OnModulePreload</c>: <c>StartServerEvents</c>
 /// signals APPLICATION_SHUTDOWN at process exit and starts the 6-second heartbeat (both live in the game build, so a hot
 /// reload reruns it), then <c>OnModulePreload</c> does the rest of the old handler (boot only): the legacy item property
 /// hook, the engine and NWNX event bindings, <c>mod_content_chg</c> and the cache scripts. The boot-only part installs a

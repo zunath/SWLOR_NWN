@@ -8,7 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// Part 5 of the stat split, <c>CombatRatingService</c> (Combat, P5-4c): Attack, Accuracy, Defense, Evasion and the deflection and
+/// Part 5 of the stat split, <c>CombatRatingService</c> (Combat): Attack, Accuracy, Defense, Evasion and the deflection and
 /// Guard chances, with its calls into unconverted code answered by the bench (<c>StatBench.Seams.cs</c>). It reads the stat
 /// adjustment, the NPC stats and the pools through the bench's stat double, which it read on its own instance before the move,
 /// so a test sees the same answers and the same log.

@@ -1,7 +1,7 @@
 namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
-    /// What the melee techniques are told about status effects (P5-5d, Readmes/MaintainabilityRefactorStatusEffectSplit.md).
+    /// What the melee techniques are told about status effects (Readmes/MaintainabilityRefactorStatusEffectSplit.md).
     /// Character owns the interface and <c>MeleeTechniqueService</c> implements it and registers itself with
     /// <see cref="IStatusEffectService.RegisterMeleeListener"/> at boot, so the status effects notify Combat without holding it.
     /// A listener that has nothing to do for a notice leaves its method empty.

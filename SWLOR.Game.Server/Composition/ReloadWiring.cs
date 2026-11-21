@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Domain.UI;
 namespace SWLOR.Game.Server.Composition
 {
     /// <summary>
-    /// What a hot reload's player and state steps (P4-15, <see cref="ServerBootstrapper"/>) need from the domains, built from the
+    /// What a hot reload's player and state steps (<see cref="ServerBootstrapper"/>) need from the domains, built from the
     /// container: the carrier of the <see cref="ReloadStateKind.Carried"/> fields with its converters for definitions the rerun
     /// caches rebuild, and the players' screens. The composition root names the domain types so the bootstrapper does not.
     /// </summary>

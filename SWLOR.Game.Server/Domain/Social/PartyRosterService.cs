@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Core;
 namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
-    /// The party roster: who is in whose party and who leads it (a part of the party service, P5-3c), moved from
+    /// The party roster: who is in whose party and who leads it (a part of the party service), moved from
     /// <c>PartyService</c> unchanged. The party service keeps the roster as the party events arrive; the reads are
     /// <see cref="SWLOR.Game.Server.Domain.Combat.IPartyRoster"/>, which Combat owns, so the ability auras and the ability
     /// target queries read the parties without reaching the party service. It takes no service.

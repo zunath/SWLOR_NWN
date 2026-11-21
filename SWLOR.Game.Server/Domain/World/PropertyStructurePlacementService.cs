@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
     /// Placing a structure: the item use handler that checks the limits and permissions of a property before it creates the
-    /// structure or building. Split from <c>PropertyService</c> (P5-9b); the members moved unchanged.
+    /// structure or building. Split from <c>PropertyService</c>; the members moved unchanged.
     /// </summary>
     public class PropertyStructurePlacementService : IPropertyStructurePlacementService
     {

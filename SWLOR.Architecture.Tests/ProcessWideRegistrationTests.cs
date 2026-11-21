@@ -7,7 +7,7 @@ using SWLOR.Architecture.Tests.Scanning;
 namespace SWLOR.Architecture.Tests;
 
 /// <summary>
-/// Nothing in the server subscribes to a process-wide event or starts a thread outside a short allow list (P4-5), so a
+/// Nothing in the server subscribes to a process-wide event or starts a thread outside a short allow list, so a
 /// retired build can let go of everything that points into it. The fixtures prove each side of the rule; the last tests
 /// apply it to the real server.
 /// </summary>
@@ -19,7 +19,7 @@ public class ProcessWideRegistrationTests
     /// <summary>The one type that subscribes to the process: it holds the two subscriptions the server keeps.</summary>
     private static readonly TypeKey[] Subscribers = [new TypeKey(Core, "AppDomainProcessEventSource")];
 
-    /// <summary>No type may start a thread: the combat record writer runs on the pool since P4-6.</summary>
+    /// <summary>No type may start a thread: the combat record writer runs on the pool.</summary>
     private static readonly TypeKey[] ThreadStarters = [];
 
     private static readonly AssemblyFacts FixtureFacts = AssemblyFactScanner.Scan(typeof(ProcessWideRegistrationTests).Assembly.Location);

@@ -9,7 +9,7 @@ using SWLOR.NWN.API.Testing;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// The target queries of the ability definitions (moved to Combat with the ability split, P5-3c) over an engine fake: the
+/// The target queries of the ability definitions (moved to Combat with the ability split) over an engine fake: the
 /// friendly target checks, the single-target friendly search, the hostile search with a priority target, and where an impact
 /// lands. The party search reads the roster and is covered by the Combat part tests that use it.
 /// </summary>

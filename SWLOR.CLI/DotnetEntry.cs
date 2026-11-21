@@ -66,7 +66,7 @@ namespace SWLOR.CLI
 
         /// <summary>
         /// The entry <paramref name="envPath"/> names. A file without the setting, or with it blank, means the host: the
-        /// development server moved to it in P4-10. An unknown value stops the deploy.
+        /// development server moved to it. An unknown value stops the deploy.
         /// </summary>
         public static DotnetEntry Read(string envPath)
         {

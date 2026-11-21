@@ -5,7 +5,7 @@ using SWLOR.Architecture.Tests.Debt;
 namespace SWLOR.Architecture.Tests;
 
 /// <summary>
-/// The Phase 5 debt guards (P5-0, P5-1b): ten measures of structural debt, each with a shrinking baseline under
+/// The debt guards: ten measures of structural debt, each with a shrinking baseline under
 /// <c>Baseline/Phase5</c>, and the generated <c>DebtReport.md</c>. The measures read the source of every project of the
 /// solution (Roslyn: syntax for sizes and sink work, the compiler's binding for the static lookup, constructor services,
 /// content names and the references the domain order measures count) and the compiled server (IL: static state). See

@@ -17,7 +17,7 @@ using SWLOR.NWN.API.Testing;
 namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
-/// The two <c>mod_load</c> handlers that split <c>ServerTasks.ProcessBootUp</c> (P4-8): <c>ProcessBootUp</c> sets the play
+/// The two <c>mod_load</c> handlers that split <c>ServerTasks.ProcessBootUp</c>: <c>ProcessBootUp</c> sets the play
 /// options and the bans in the engine and sends the boot-complete notification (boot only), then
 /// <c>StartRestartReminders</c> starts the reminder state and its one-minute timer (a hot reload reruns it). Together they
 /// make the calls the single handler made; only the notification now goes out before the reminders start, two steps

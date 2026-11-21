@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Creatures;
 /// <see cref="SpawnBench"/>: areas of a given size, hand-placed creatures, waypoints and placeables, real local
 /// variables and a clock the test moves. The spawn tables are the test's own; the instance finds them through the
 /// definition search the bench replaces. The boot runs the two <c>mod_cache_bef</c> handlers <c>LoadSpawnTables</c> (a hot
-/// reload reruns it) and <c>StoreSpawns</c> (boot only) back to back, which <see cref="CacheData"/> does (P4-8).
+/// reload reruns it) and <c>StoreSpawns</c> (boot only) back to back, which <see cref="CacheData"/> does.
 /// </summary>
 [TestFixture]
 public class SpawnServiceTests

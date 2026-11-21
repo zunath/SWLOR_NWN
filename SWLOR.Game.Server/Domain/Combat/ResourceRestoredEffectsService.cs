@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Domain.Character;
 namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
-    /// The riders restoring FP or Stamina grants: part 8 of the stat split (P5-4d, <c>Readmes/MaintainabilityRefactorStatSplit.md</c>),
+    /// The riders restoring FP or Stamina grants: part 8 of the stat split (<c>Readmes/MaintainabilityRefactorStatSplit.md</c>),
     /// moved from <c>CombatResourcesService</c> unchanged except that the stat reader is an argument. The pools in
     /// <c>StatService</c> call it as Character's <see cref="IResourceRestoredListener"/> and pass themselves, so it takes only the
     /// status effects and no service above it.

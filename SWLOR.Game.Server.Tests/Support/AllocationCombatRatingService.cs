@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
 /// Part 5 of the stat split, <c>CombatRatingService</c>, with its calls into unconverted code answered without allocating, as
-/// <see cref="AllocationStatService"/> answered them before the ratings moved (P5-4c).
+/// <see cref="AllocationStatService"/> answered them before the ratings moved.
 /// </summary>
 internal sealed class AllocationCombatRatingService : CombatRatingService
 {

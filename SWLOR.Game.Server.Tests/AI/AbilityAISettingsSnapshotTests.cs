@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Tests.AI;
 
 /// <summary>
 /// Locks the AI settings of every registered ability. The snapshot was recorded from the members that
-/// <see cref="AbilityDetail"/> held before they moved to Creatures (P5-1d), so it proves the move changed no
+/// <see cref="AbilityDetail"/> held before they moved to Creatures, so it proves the move changed no
 /// ability's target selector, score or hit point cost: each delegate is identified by the method it runs.
 /// </summary>
 public class AbilityAISettingsSnapshotTests

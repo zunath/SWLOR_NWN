@@ -13,7 +13,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Tests.Domain.World;
 
 /// <summary>
-/// Tests of the narrow services the shuttle was split into (P5-9c), each built with its own constructor-injected
+/// Tests of the narrow services the shuttle was split into, each built with its own constructor-injected
 /// seams on the <see cref="ShuttleBench"/>. <see cref="ShuttleServiceTests"/> runs whole flights through all of them.
 /// </summary>
 [TestFixture]

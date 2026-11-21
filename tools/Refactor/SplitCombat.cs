@@ -1,5 +1,5 @@
 #:package Microsoft.CodeAnalysis.CSharp@5.6.0
-// P2-CB1: splits SWLOR.Game.Server/Service/Combat.cs into partial-class files, mechanically.
+// Splits SWLOR.Game.Server/Service/Combat.cs into partial-class files, mechanically.
 //
 //   dotnet run tools/Refactor/SplitCombat.cs -- --source-rev <rev> [--range-rev 7aacf4b85] [--write]
 //

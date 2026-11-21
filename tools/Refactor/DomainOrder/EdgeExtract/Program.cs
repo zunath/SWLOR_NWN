@@ -1,4 +1,4 @@
-// The P5-1 domain order extractor (tools/Refactor/DomainOrder/README.md). Compiles SWLOR.Game.Server from source, binds every
+// The domain order extractor (tools/Refactor/DomainOrder/README.md). Compiles SWLOR.Game.Server from source, binds every
 // name the way the compiler does (accessibility respected) and writes two files into <out>:
 //   refs.tsv  : one line per distinct (file, source top type, source member, target type, mode, target member, in attribute)
 //   types.tsv : one line per type declared in the server (nested included) with its shape

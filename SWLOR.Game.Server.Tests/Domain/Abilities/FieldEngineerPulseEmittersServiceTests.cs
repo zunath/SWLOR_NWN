@@ -111,7 +111,7 @@ public class FieldEngineerPulseEmittersServiceTests
     [Test]
     public void A_reload_ends_every_emitter_and_removes_the_markers_whose_removal_closures_it_drops()
     {
-        // P4-15 closure audit: the pulses and the marker removals are closures; the emitters hold callbacks and cannot be carried.
+        // Hot reload: the pulses and the marker removals are closures; the emitters hold callbacks and cannot be carried.
         using var facades = new SWLOR.Game.Server.Tests.Support.FacadeContainer();
         using var facadeScope = facades.Install();
         var engine = new SWLOR.NWN.API.Testing.FakeNWScript();

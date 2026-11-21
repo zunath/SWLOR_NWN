@@ -211,7 +211,7 @@ internal sealed class ContentInjectionRules
         return Sorted(problems);
     }
 
-    /// <summary>Who reads a static <c>ContainerHost</c> (<c>CompositionRoot.ServerHost</c>): the entry points only, until wave C11 removes it.</summary>
+    /// <summary>Who reads a static <c>ContainerHost</c> (<c>CompositionRoot.ServerHost</c>): the entry points only, until it is removed.</summary>
     public IReadOnlyList<string> StaticContainerHosts()
     {
         var problems = new List<string>();

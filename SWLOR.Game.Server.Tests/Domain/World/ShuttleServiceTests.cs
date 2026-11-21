@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Tests.Domain.World;
 /// test moves <see cref="ClockedShuttleService.Now"/>, runs the repeating tick the instance registered, and runs the
 /// delayed tasks it scheduled, so a whole flight (ticket, boarding, transit, arrival) runs in a few lines. The module
 /// load runs <c>LoadShuttleFlights</c> (a hot reload reruns it) then <c>DeliverOfflinePassengers</c> (boot only), which
-/// <see cref="LoadTheModule"/> does (P4-8).
+/// <see cref="LoadTheModule"/> does.
 /// </summary>
 [TestFixture]
 public class ShuttleServiceTests

@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// Part 2 of the stat split, <c>CreatureStatService</c> (P5-4e): movement, maximum HP and food HP, attributes, NPC loading and
+/// Part 2 of the stat split, <c>CreatureStatService</c>: movement, maximum HP and food HP, attributes, NPC loading and
 /// regeneration, with its calls into unconverted code answered by the bench (<c>StatBench.Seams.cs</c>). It reads the stat
 /// adjustment and the pools through the bench's stat double, which it read on its own instance before the move, so a test sees
 /// the same answers and the same log.

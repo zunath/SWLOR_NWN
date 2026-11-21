@@ -34,5 +34,13 @@ public sealed class WeaponAbilityPartBench : IDisposable
         return _bench.TextFrom(start);
     }
 
+    /// <summary>Runs the action and returns only the calls it made, without the step heading, so an action that calls nothing returns an empty text.</summary>
+    public string RunCalls(Action action)
+    {
+        var text = Run(action);
+        var heading = text.IndexOf('\n', StringComparison.Ordinal);
+        return heading < 0 ? string.Empty : text[(heading + 1)..];
+    }
+
     public void Dispose() => _bench.Dispose();
 }

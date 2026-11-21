@@ -62,6 +62,12 @@ public sealed class WeaponAbilityTraceBench : IDisposable
     /// <summary>The transcript so far.</summary>
     public string Text => _bench.Text;
 
+    /// <summary>The length of the transcript so far.</summary>
+    public int Length => _bench.Length;
+
+    /// <summary>The part of the transcript written since <paramref name="start"/>.</summary>
+    public string TextFrom(int start) => _bench.TextFrom(start);
+
     /// <summary>Drives every closure of an ability once in a scenario, as one step of the transcript.</summary>
     public void Drive(string step, AbilityDetail ability, WeaponAbilityScenario scenario)
     {

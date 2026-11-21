@@ -234,6 +234,12 @@ public sealed class CombatTranscriptBench : IDisposable
     /// <summary>The transcript so far, as the committed text.</summary>
     public string Text => _text.ToString();
 
+    /// <summary>The length of the transcript so far, read without copying it.</summary>
+    public int Length => _text.Length;
+
+    /// <summary>The part of the transcript written since <paramref name="start"/> (an earlier <see cref="Length"/>), without copying the rest.</summary>
+    public string TextFrom(int start) => _text.ToString(start, _text.Length - start);
+
     /// <summary>Runs the actions the code under test delayed, in the order it delayed them, writing each to the transcript.</summary>
     public void RunDelayed()
     {

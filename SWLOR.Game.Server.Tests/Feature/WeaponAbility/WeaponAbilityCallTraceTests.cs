@@ -74,9 +74,9 @@ public class WeaponAbilityCallTraceTests
         {
             foreach (var scenario in scenarios)
             {
-                var before = bench.Text.Length;
+                var before = bench.Length;
                 bench.Drive($"{label} {scenario.Name}", ability, scenario);
-                var step = bench.Text[before..];
+                var step = bench.TextFrom(before);
                 var body = StableGuids(step[(step.IndexOf('\n') + 1)..]);
                 text.Append("== ").Append(label).Append(": ").Append(scenario.Name).Append('\n');
                 var key = scenario.Name + "\n" + body;

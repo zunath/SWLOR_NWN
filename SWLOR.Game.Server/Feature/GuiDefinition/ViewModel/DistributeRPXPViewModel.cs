@@ -84,6 +84,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickConfirm() => () =>
         {
+            // Locks, limits and other awards can change while this window is open, so never refuse on a stale limit.
+            _maxDistributableXP = GetMaxDistributableXP();
+            UpdateMaxDistributableInfo();
+
             if (_maxDistributableXP <= 0)
             {
                 var playerId = GetObjectUUID(Player);

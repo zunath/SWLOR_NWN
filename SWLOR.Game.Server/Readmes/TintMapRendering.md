@@ -210,17 +210,20 @@ authored-diffuse mode keeps its luminance-only RGB and first-row metal
 coverage. Authored normal, specular and roughness maps still pass through
 standard material lighting. Preset lookup and authored colors are unchanged.
 
-The Toolset still shades RGB with the 2026-11-17 offset formula and does not
-yet apply the chroma-relative shading or the dark-swatch rule, so near-black
-and dark neutral custom colors preview differently there than in the game.
-Its area viewport (NWN.Toolset
-`AreaViewportControl`, package 0.1.0-preview.6 or later) takes the swatch row
-the host passes as `PaletteRow`; `SwlorAreaViewportMaterialProvider` passes
-`GetClosestColorId`'s exact nearest swatch, so the 0.2% of colors the atlas
-lookup resolves to a farther swatch can differ slightly from the game. The
-cloak material sets `CustomColorsUseLayerCoverage`, which keeps the reflective
-cloak coverage rule; the viewport does not model cutout cloaks.
-`TintMapTextureRenderer` (CPU previews) applies the same swatch shading.
+The Toolset's CPU previews (`TintMapTextureRenderer`) shade RGB with
+`TintRgbShading`, a port of `TintRgbShading.py` that `TintRgbShadingTests`
+checks against the reference, including every swatch sent as RGB and the
+reported black and dark neutral dyes. Its area viewport (NWN.Toolset
+`AreaViewportControl`, package 0.1.0-preview.6) still shades RGB with the
+2026-11-17 offset formula in the package's shader and does not yet apply the
+chroma-relative shading or the dark-swatch rule, so near-black and dark neutral
+custom colors look different there than in the game until the package changes.
+It takes the swatch row the host passes as `PaletteRow`;
+`SwlorAreaViewportMaterialProvider` passes `GetClosestColorId`'s exact nearest
+swatch, so the 0.2% of colors the atlas lookup resolves to a farther swatch can
+differ slightly from the game in both Toolset paths. The cloak material sets
+`CustomColorsUseLayerCoverage`, which keeps the reflective cloak coverage rule;
+the viewport does not model cutout cloaks.
 
 Run `TestTintRgb.py --game-data <NWN data directory>` for GPU RGB and metal
 material checks. `TestTintShaderMaterials.py` validates native engine shader/MTR

@@ -53,7 +53,7 @@ internal sealed class ConvertedServiceList
             list._services.Add(new ConvertedService(name, domain) { Extras = list.ReadExtras(name, element) });
         }
 
-        // Combat was split into part services one layer at a time behind a temporary inProgress list (P2-CB0 to P2-CB10).
+        // Combat was split into part services one layer at a time behind a temporary inProgress list.
         // It is listed under services now; a service is listed only when it is fully converted.
         if (document.RootElement.TryGetProperty("inProgress", out _))
             list._problems.Add("The inProgress list is gone (P2-CB10): convert a service in one pull request and list it under services.");

@@ -6,8 +6,8 @@ using SWLOR.Architecture.Tests.Scanning;
 namespace SWLOR.Architecture.Tests;
 
 /// <summary>
-/// The namespace guard (P2-Z2, owner decision 2026-11-06): no namespace of <c>SWLOR.Game.Server</c> hides a type, no leaf
-/// segment sits under two parents, no <c>Service.&lt;Name&gt;Service</c> support namespace is left and (P2-Z3) no type is
+/// The namespace guard (owner decision 2026-11-06): no namespace of <c>SWLOR.Game.Server</c> hides a type, no leaf
+/// segment sits under two parents, no <c>Service.&lt;Name&gt;Service</c> support namespace is left and no type is
 /// declared directly in <c>Service</c>, with no exceptions (<see cref="NamespaceRules"/>). The fixture tests prove each check
 /// fails on a violation and passes on the right shape.
 /// </summary>

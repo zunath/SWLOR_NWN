@@ -5,7 +5,7 @@ using SWLOR.Architecture.Tests.Debt;
 namespace SWLOR.Architecture.Tests;
 
 /// <summary>
-/// The source measures of the Phase 5 debt guards (<see cref="Phase5DebtTests"/>) on small in-memory projects: what counts
+/// The source measures of the debt guards (<see cref="Phase5DebtTests"/>) on small in-memory projects: what counts
 /// as a use of the static lookup, how types and methods are measured, which constructor parameters are services.
 /// </summary>
 [TestFixture]

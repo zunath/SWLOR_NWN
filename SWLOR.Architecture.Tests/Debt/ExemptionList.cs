@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace SWLOR.Architecture.Tests.Debt;
 
 /// <summary>
-/// The reviewed exemptions of the Phase 5 debt measures, read from <c>Baseline/Phase5/Exemptions.json</c>: what the size and
+/// The reviewed exemptions of the debt measures, read from <c>Baseline/Phase5/Exemptions.json</c>: what the size and
 /// services measures skip (owner decision 1) and the static entry points the owner approved (owner decision 3).
 /// </summary>
 internal sealed class ExemptionList

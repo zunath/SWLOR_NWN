@@ -535,7 +535,7 @@ public class ConvertedServiceRulesTests
         problems.Should().ContainSingle().Which.Should().Contain("HandlerOnStaticClass.Handle").And.Contain("one of its instance classes").And.Contain("PartService");
     }
 
-    // ---- no in-progress list (P2-CB10 removed it when Combat was listed)
+    // ---- no in-progress list (removed when Combat was listed)
 
     [Test]
     public void A_list_of_services_in_progress_is_a_problem()

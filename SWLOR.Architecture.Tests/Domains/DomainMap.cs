@@ -12,7 +12,7 @@ namespace SWLOR.Architecture.Tests.Domains;
 /// <c>Service</c>.
 /// </summary>
 /// <remarks>
-/// The order (P5-1, owner decisions 10 to 13): <c>order</c> lists the domains bottom to top, and content (<c>Feature/</c>) is a
+/// The order (owner decisions 10 to 13): <c>order</c> lists the domains bottom to top, and content (<c>Feature/</c>) is a
 /// band above all logic (<c>contentBand</c>), so each domain is two <see cref="OrderNode"/>s. A reference points up when it
 /// stays in its band and goes to a domain higher in the order. Edges out of a <c>wiringPlatformAreas</c> area (the
 /// composition root and the native sinks) are wiring and never count; <c>contentRuleExemptAreas</c> names the wiring that may

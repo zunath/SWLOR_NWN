@@ -3,7 +3,7 @@ using SWLOR.Architecture.Tests.Domains;
 namespace SWLOR.Architecture.Tests.Debt;
 
 /// <summary>
-/// The domain order measures (P5-1b, Phase 5 target 4) over the server's source references
+/// The domain order measures (target 4) over the server's source references
 /// (<see cref="SourceReferenceScanner"/>), counted the way <c>MaintainabilityRefactorDomainOrder.md</c> counts them: each domain
 /// is two nodes, its logic and its content (<see cref="OrderNode"/>), <c>platformAreaDomains</c> puts <c>Entity</c> and
 /// <c>Enumeration</c> in Foundation, and references out of a wiring area (the composition root, the native sinks) do not count.

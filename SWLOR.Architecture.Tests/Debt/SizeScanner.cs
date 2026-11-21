@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace SWLOR.Architecture.Tests.Debt;
 
 /// <summary>
-/// Measures the server's types and members from syntax (Phase 5 targets 2 and 3). A type is measured by its files, every
+/// Measures the server's types and members from syntax (targets 2 and 3). A type is measured by its files, every
 /// partial file together ("all partial files of a type together", the approved target): a file that declares only that
 /// top-level type counts all its lines, a file that declares several counts the lines each declaration spans. A member is
 /// measured from its first attribute or modifier to its last token, so the XML documentation above it is not counted.

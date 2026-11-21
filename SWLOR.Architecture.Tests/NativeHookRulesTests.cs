@@ -9,7 +9,7 @@ using SWLOR.Architecture.Tests.Scanning;
 namespace SWLOR.Architecture.Tests;
 
 /// <summary>
-/// The native hook rules (P4-9, P4-11). The fixtures prove each side of every rule; the last tests apply them to the real
+/// The native hook rules. The fixtures prove each side of every rule; the last tests apply them to the real
 /// hooks assembly, the server and the contracts assembly.
 /// </summary>
 [TestFixture]

@@ -105,7 +105,7 @@ public class UnitClassifierTests
     [Test]
     public void A_type_directly_in_Service_belongs_to_no_unit()
     {
-        // P2-Z3 left nothing directly in Service; the namespace guard fails a new type there, so no unit is made for it.
+        // The type move left nothing directly in Service; the namespace guard fails a new type there, so no unit is made for it.
         UnitClassifier.Classify(new TypeKey("SWLOR.Game.Server.Service", "Widget")).Should().BeNull();
     }
 

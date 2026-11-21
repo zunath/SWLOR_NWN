@@ -15,7 +15,7 @@ public class DomainMapTests
     private const string MapName = "SWLOR.Architecture.Tests/DomainMap.json";
 
     /// <summary>
-    /// Services whose last type moved to a lower domain (P5-1e) but that master still has as a <c>Service.&lt;Name&gt;Service</c>
+    /// Services whose last type moved to a lower domain but that master still has as a <c>Service.&lt;Name&gt;Service</c>
     /// folder: <c>Move-SupportNamespaces.ps1</c> reads the map to place master's folder, and the type move then sends the
     /// types on. They stay listed until the cutover.
     /// </summary>
@@ -33,7 +33,7 @@ public class DomainMapTests
     [Test]
     public void Domain_map_records_the_approved_domain_order()
     {
-        // P5-1, owner decisions 10 to 13 (MaintainabilityRefactorDomainOrder.md). Domain_map_file_is_well_formed checks that
+        // Owner decisions 10 to 13 (MaintainabilityRefactorDomainOrder.md). Domain_map_file_is_well_formed checks that
         // the order lists every domain once; this one keeps it from being dropped.
         var map = DomainMap.Load(ArchitectureProject.DomainMapPath);
 

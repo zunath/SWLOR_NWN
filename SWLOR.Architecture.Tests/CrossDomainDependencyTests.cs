@@ -17,8 +17,8 @@ namespace SWLOR.Architecture.Tests;
 /// <para><b>Regenerating.</b> After an intended change set <c>SWLOR_UPDATE_SNAPSHOTS=1</c> and run these tests again,
 /// then review the diff of the baseline files like any snapshot. PowerShell:
 /// <c>$env:SWLOR_UPDATE_SNAPSHOTS = "1"; dotnet test SWLOR.Architecture.Tests --no-build</c>.</para>
-/// <para><b>Domains.</b> Code in <c>Domain.&lt;Domain&gt;</c> (and its topic namespaces) is one unit per domain: since P2-Z2
-/// a domain's services and their support types share that namespace, and since P2-Z3 nothing is left directly in
+/// <para><b>Domains.</b> Code in <c>Domain.&lt;Domain&gt;</c> (and its topic namespaces) is one unit per domain: since the namespace move
+/// a domain's services and their support types share that namespace, and since the type move nothing is left directly in
 /// <c>Service</c>. <c>DomainMap.json</c> maps the Feature folders to domains. The guard maps types by namespace, not by file
 /// (extend <see cref="UnitClassifier"/> when the namespaces change).</para>
 /// <para><b>Limit.</b> The compiler inlines constants (enum members, <c>const</c> fields); a dependency made only

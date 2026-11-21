@@ -26,7 +26,7 @@ internal static class ArchitectureProject
     private static readonly Lazy<DebtScan> SolutionDebt = new(() => DebtScan.Run(Source, Exemptions, Graph, Server, Facts));
     private static readonly Lazy<ContentInjectionRules> ServerContentRules = new(() => new ContentInjectionRules(Source));
 
-    /// <summary>The solution whose projects the Phase 5 debt measures read.</summary>
+    /// <summary>The solution whose projects the debt measures read.</summary>
     public const string SolutionFileName = "SWLOR.Game.Server.sln";
 
     public static bool IsUpdating => Environment.GetEnvironmentVariable(UpdateVariable) == "1";
@@ -49,16 +49,16 @@ internal static class ArchitectureProject
     /// <summary>The repository root: the folder of the solution, one above this project.</summary>
     public static string RepositoryRoot => Path.GetFullPath(Path.Combine(Directory, ".."));
 
-    /// <summary>The folder of the Phase 5 debt baselines, their exemptions and the generated report.</summary>
+    /// <summary>The folder of the debt baselines, their exemptions and the generated report.</summary>
     public static string DebtBaselineDirectory => Path.Combine(Directory, "Baseline", "Phase5");
 
-    /// <summary>The reviewed exemptions and approved static entry points of the Phase 5 debt measures.</summary>
+    /// <summary>The reviewed exemptions and approved static entry points of the debt measures.</summary>
     public static ExemptionList Exemptions => ExemptionList.Load(Path.Combine(DebtBaselineDirectory, "Exemptions.json"));
 
     /// <summary>Every project of the solution, parsed once for all debt tests.</summary>
     public static SourceSnapshot Source => SolutionSource.Value;
 
-    /// <summary>The Phase 5 debt measures of the solution as it is now, computed once for all debt tests.</summary>
+    /// <summary>The debt measures of the solution as it is now, computed once for all debt tests.</summary>
     public static DebtScan Debt => SolutionDebt.Value;
 
     /// <summary>The content injection guards over the server's source, computed once for all tests that read them.</summary>

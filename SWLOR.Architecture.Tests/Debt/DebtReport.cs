@@ -3,7 +3,7 @@ using System.Text;
 namespace SWLOR.Architecture.Tests.Debt;
 
 /// <summary>
-/// The generated Phase 5 debt report (<c>Baseline/Phase5/DebtReport.md</c>): the totals of every measure and its largest
+/// The generated debt report (<c>Baseline/Phase5/DebtReport.md</c>): the totals of every measure and its largest
 /// entries. It is written with the baselines and read by people; the guard compares the baselines, not this file.
 /// </summary>
 internal static class DebtReport

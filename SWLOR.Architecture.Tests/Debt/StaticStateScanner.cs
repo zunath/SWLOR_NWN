@@ -4,9 +4,9 @@ using SWLOR.Architecture.Tests.Scanning;
 namespace SWLOR.Architecture.Tests.Debt;
 
 /// <summary>
-/// Static entry points and static state of the server (Phase 5 target 1), read from the compiled IL: every type with a
+/// Static entry points and static state of the server (target 1), read from the compiled IL: every type with a
 /// static field that can change or share what it holds (anything but a <c>const</c> or a <c>static readonly</c> field of a
-/// deeply immutable type, the P2-D1 rule of <see cref="ImmutabilityAnalyzer"/>), and every type outside the lookup itself
+/// deeply immutable type, the immutability rule of <see cref="ImmutabilityAnalyzer"/>), and every type outside the lookup itself
 /// whose static members resolve a service from the container (<c>NativeHookAccess</c>). The composition root
 /// (<c>Composition</c>) is not measured for state: holding the container is its job. The lookup itself
 /// (<c>GameServices</c>, <c>FacadeAccessor</c>, <c>FacadeCache</c>) is measured by the lookup measure.

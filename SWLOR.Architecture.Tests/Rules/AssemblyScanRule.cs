@@ -3,7 +3,7 @@ using SWLOR.Architecture.Tests.Scanning;
 namespace SWLOR.Architecture.Tests.Rules;
 
 /// <summary>
-/// Discovery scans see only the game build's own assemblies (P4-4): the one helper (<c>Core.GameAssemblies</c>) may list the
+/// Discovery scans see only the game build's own assemblies: the one helper (<c>Core.GameAssemblies</c>) may list the
 /// assemblies of the process, and nothing else may enumerate them, so a retired build that is still loaded during a reload is
 /// never searched for types. Covers <c>AppDomain.GetAssemblies</c> and the listings of <c>AssemblyLoadContext</c>
 /// (<c>All</c>, and <c>Assemblies</c> on any context, <c>Default</c> included).

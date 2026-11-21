@@ -6,7 +6,7 @@ using SWLOR.Architecture.Tests.Domains;
 namespace SWLOR.Architecture.Tests;
 
 /// <summary>
-/// The domain order (P5-1b) on small inputs: how <c>DomainMap.json</c> records it, which references the source scanner
+/// The domain order on small inputs: how <c>DomainMap.json</c> records it, which references the source scanner
 /// records, how pairs and upward references are counted by band, and what a native sink may do.
 /// </summary>
 [TestFixture]

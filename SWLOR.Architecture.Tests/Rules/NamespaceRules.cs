@@ -3,7 +3,7 @@ using SWLOR.Architecture.Tests.Scanning;
 namespace SWLOR.Architecture.Tests.Rules;
 
 /// <summary>
-/// The namespace guard of the maintainability refactor (P2-Z2, owner decision 2026-11-06: one root per domain and no
+/// The namespace guard of the maintainability refactor (owner decision 2026-11-06: one root per domain and no
 /// namespace that hides a type). It reads the namespaces and top-level type names of one compiled assembly and reports,
 /// with no exceptions:
 /// <list type="bullet">
@@ -11,8 +11,8 @@ namespace SWLOR.Architecture.Tests.Rules;
 /// namespace, so the type is hidden: <c>Domain.Combat</c> hid the facade <c>Combat</c>);</item>
 /// <item>a leaf segment under two parents (a domain named <c>Core</c> beside the root namespace <c>Core</c>: inside
 /// <c>Domain.*</c> the name <c>Core</c> means the wrong one);</item>
-/// <item>any <c>Service.&lt;Name&gt;Service</c> namespace (the support namespaces P2-Z2 moved into <c>Domain.&lt;Domain&gt;</c>);</item>
-/// <item>any type declared directly in <c>SWLOR.Game.Server.Service</c> (P2-Z3 moved the last ones into their domains, so
+/// <item>any <c>Service.&lt;Name&gt;Service</c> namespace (the support namespaces that moved into <c>Domain.&lt;Domain&gt;</c>);</item>
+/// <item>any type declared directly in <c>SWLOR.Game.Server.Service</c> (the last ones moved into their domains, so
 /// <c>Service</c> is no namespace of the server any more).</item>
 /// </list>
 /// Every namespace counts, including the ones that hold no type of their own (<c>SWLOR.Game.Server.Domain</c>).
@@ -21,7 +21,7 @@ internal static class NamespaceRules
 {
     private const string ServiceSegment = "Service";
 
-    /// <summary>The namespace P2-Z3 emptied.</summary>
+    /// <summary>The namespace that was emptied.</summary>
     private const string ServiceNamespace = "SWLOR.Game.Server." + ServiceSegment;
 
     /// <param name="types">The top-level types of the assembly (compiler-generated names, which start with <c>&lt;</c>, are ignored).</param>

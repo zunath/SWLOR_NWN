@@ -98,10 +98,10 @@ select-topic-1 12 property SelectedTopicName "Communication"
 select-topic-1 13 engine NuiSetBind <player>, 1, SelectedTopicName, "Communication"
 select-topic-1 14 property SelectedTopicSummary "Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and settings."
 select-topic-1 15 engine NuiSetBind <player>, 1, SelectedTopicSummary, "Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and settings."
-select-topic-1 16 property SelectedArticleBody <4335 chars hash f850ff831703f3f9b8d01f4fb8f6d4ce> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
-select-topic-1 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <4335 chars hash f850ff831703f3f9b8d01f4fb8f6d4ce> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
-select-topic-1 18 property QuestionSummaryText <1715 chars hash d2f9039ceea69599491345fcba10555a> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
-select-topic-1 19 engine NuiSetBind <player>, 1, QuestionSummaryText, <1715 chars hash d2f9039ceea69599491345fcba10555a> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
+select-topic-1 16 property SelectedArticleBody <4998 chars hash 0d7a33ec8fa6133fe50a4b29cb13a40d> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
+select-topic-1 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <4998 chars hash 0d7a33ec8fa6133fe50a4b29cb13a40d> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
+select-topic-1 18 property QuestionSummaryText <1891 chars hash 6c1094ce0a14763dbae13bef76cc3e32> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
+select-topic-1 19 engine NuiSetBind <player>, 1, QuestionSummaryText, <1891 chars hash 6c1094ce0a14763dbae13bef76cc3e32> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
 select-topic-1 20 property RelatedTopicTexts ["Common Questions","Useful Windows","Skills","Quests & Key Items","Disguises","Death & Recovery"]
 select-topic-1 21 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, 15
 select-topic-1 22 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, [true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false]
@@ -376,10 +376,10 @@ select-related 12 property SelectedTopicName "Communication"
 select-related 13 engine NuiSetBind <player>, 1, SelectedTopicName, "Communication"
 select-related 14 property SelectedTopicSummary "Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and settings."
 select-related 15 engine NuiSetBind <player>, 1, SelectedTopicSummary, "Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and settings."
-select-related 16 property SelectedArticleBody <4335 chars hash f850ff831703f3f9b8d01f4fb8f6d4ce> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
-select-related 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <4335 chars hash f850ff831703f3f9b8d01f4fb8f6d4ce> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
-select-related 18 property QuestionSummaryText <1715 chars hash d2f9039ceea69599491345fcba10555a> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
-select-related 19 engine NuiSetBind <player>, 1, QuestionSummaryText, <1715 chars hash d2f9039ceea69599491345fcba10555a> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
+select-related 16 property SelectedArticleBody <4998 chars hash 0d7a33ec8fa6133fe50a4b29cb13a40d> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
+select-related 17 engine NuiSetBind <player>, 1, SelectedArticleBody, <4998 chars hash 0d7a33ec8fa6133fe50a4b29cb13a40d> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
+select-related 18 property QuestionSummaryText <1891 chars hash 6c1094ce0a14763dbae13bef76cc3e32> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
+select-related 19 engine NuiSetBind <player>, 1, QuestionSummaryText, <1891 chars hash 6c1094ce0a14763dbae13bef76cc3e32> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
 select-related 20 property RelatedTopicTexts ["Common Questions","Useful Windows","Skills","Quests & Key Items","Disguises","Death & Recovery"]
 select-related 21 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowCount, 15
 select-related 22 engine NuiSetBind <player>, 1, RelatedTopicTexts_RowVisibility, [true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false]
@@ -404,8 +404,8 @@ close-and-reopen 9 engine NuiSetBind <player>, 2, TopicTooltips, <5572 chars has
 close-and-reopen 10 engine NuiSetBind <player>, 2, SelectedTopicCategory, "SOCIAL"
 close-and-reopen 11 engine NuiSetBind <player>, 2, SelectedTopicName, "Communication"
 close-and-reopen 12 engine NuiSetBind <player>, 2, SelectedTopicSummary, "Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and settings."
-close-and-reopen 13 engine NuiSetBind <player>, 2, SelectedArticleBody, <4335 chars hash f850ff831703f3f9b8d01f4fb8f6d4ce> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
-close-and-reopen 14 engine NuiSetBind <player>, 2, QuestionSummaryText, <1715 chars hash d2f9039ceea69599491345fcba10555a> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
+close-and-reopen 13 engine NuiSetBind <player>, 2, SelectedArticleBody, <4998 chars hash 0d7a33ec8fa6133fe50a4b29cb13a40d> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
+close-and-reopen 14 engine NuiSetBind <player>, 2, QuestionSummaryText, <1891 chars hash 6c1094ce0a14763dbae13bef76cc3e32> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
 close-and-reopen 15 engine NuiSetBind <player>, 2, RelatedTopicTexts, ["Common Questions","Useful Windows","Skills","Quests & Key Items","Disguises","Death & Recovery"]
 close-and-reopen 16 engine NuiSetBind <player>, 2, RelatedTopicTooltips, <568 chars hash 9f836847ea61440c5697337ee2bf974c> ["Start here for progression, recovery, combat, crafting, travel, companions, quests, communication, and essential windo
 close-and-reopen 17 engine NuiSetBind <player>, 2, Geometry, {"h":641.0,"w":980.0,"x":0.0,"y":0.0}
@@ -430,10 +430,10 @@ close-and-reopen 35 property SelectedTopicName "Communication"
 close-and-reopen 36 engine NuiSetBind <player>, 2, SelectedTopicName, "Communication"
 close-and-reopen 37 property SelectedTopicSummary "Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and settings."
 close-and-reopen 38 engine NuiSetBind <player>, 2, SelectedTopicSummary, "Talk ranges, scoped comms, HoloCom calls, disabled Shout, HoloNet broadcasts, names, emotes, languages, notes, and settings."
-close-and-reopen 39 property SelectedArticleBody <4335 chars hash f850ff831703f3f9b8d01f4fb8f6d4ce> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
-close-and-reopen 40 engine NuiSetBind <player>, 2, SelectedArticleBody, <4335 chars hash f850ff831703f3f9b8d01f4fb8f6d4ce> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
-close-and-reopen 41 property QuestionSummaryText <1715 chars hash d2f9039ceea69599491345fcba10555a> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
-close-and-reopen 42 engine NuiSetBind <player>, 2, QuestionSummaryText, <1715 chars hash d2f9039ceea69599491345fcba10555a> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
+close-and-reopen 39 property SelectedArticleBody <4998 chars hash 0d7a33ec8fa6133fe50a4b29cb13a40d> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
+close-and-reopen 40 engine NuiSetBind <player>, 2, SelectedArticleBody, <4998 chars hash 0d7a33ec8fa6133fe50a4b29cb13a40d> "TALK, WHISPER, AND COMMS\nNormal Talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat acts as Co
+close-and-reopen 41 property QuestionSummaryText <1891 chars hash 6c1094ce0a14763dbae13bef76cc3e32> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
+close-and-reopen 42 engine NuiSetBind <player>, 2, QuestionSummaryText, <1891 chars hash 6c1094ce0a14763dbae13bef76cc3e32> "Q: How far does talk carry?\nA: Talk reaches 20 meters. Whisper reaches 4 meters.\n\nQ: What is party chat here?\nA: Pa
 close-and-reopen 43 property RelatedTopicTexts ["Common Questions","Useful Windows","Skills","Quests & Key Items","Disguises","Death & Recovery"]
 close-and-reopen 44 engine NuiSetBind <player>, 2, RelatedTopicTexts_RowCount, 15
 close-and-reopen 45 engine NuiSetBind <player>, 2, RelatedTopicTexts_RowVisibility, [true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false]

@@ -14,7 +14,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using System.Collections.Generic;
 using System.Linq;
-using static SWLOR.Game.Server.Composition.GameServices;
 using static SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow.CharacterSheetFormat;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Composition;
@@ -53,17 +52,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _hitPointRefreshGeneration;
 
         private CharacterSheetAttributesTab CharacterSheetAttributesTab { get; }
-        private CharacterSheetDamageEstimate CharacterSheetDamageEstimate { get; }
+        private CharacterSheetTableTabs CharacterSheetTableTabs { get; }
         private CharacterSheetWeaponRatings CharacterSheetWeaponRatings { get; }
-        private CharacterSheetWeaponTiming CharacterSheetWeaponTiming { get; }
-
-        public CharacterSheetViewModel(CharacterSheetAttributesTab characterSheetAttributesTab, CharacterSheetDamageEstimate characterSheetDamageEstimate, CharacterSheetWeaponRatings characterSheetWeaponRatings, CharacterSheetWeaponTiming characterSheetWeaponTiming)
+        private IBeastMasteryService BeastMastery { get; }
+        private IDBService DB { get; }
+        private IGuiService Gui { get; }
+        private IPerkService Perk { get; }
+        private ISkillService Skill { get; }
+        public CharacterSheetViewModel(IBeastMasteryService beastMastery, CharacterSheetAttributesTab characterSheetAttributesTab, CharacterSheetWeaponRatings characterSheetWeaponRatings, IDBService db, IGuiService gui, IPerkService perk, ISkillService skill, CharacterSheetTableTabs characterSheetTableTabs)
         {
+            BeastMastery = beastMastery;
             CharacterSheetAttributesTab = characterSheetAttributesTab;
-            CharacterSheetDamageEstimate = characterSheetDamageEstimate;
             CharacterSheetWeaponRatings = characterSheetWeaponRatings;
-            CharacterSheetWeaponTiming = characterSheetWeaponTiming;
+            DB = db;
+            Gui = gui;
+            Perk = perk;
+            Skill = skill;
+            CharacterSheetTableTabs = characterSheetTableTabs;
         }
+
 
         // Tab registration: id -> partial view -> refresh action. Replaces
         // GetTabPartialName + the RefreshSelectedTabData switch statement that
@@ -610,289 +617,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshCharacterStatsList();
         }
 
-        private void RefreshCharacterStatsList()
-        {
-            var rows = new List<StatEntry>();
-            void AddStat(string name, string value, string tooltip)
-            {
-                rows.Add(new StatEntry(name, value, tooltip));
-            }
+        private void RefreshCharacterStatsList() => CharacterSheetTableTabs.RefreshCharacterStatsList(this);
 
-            var combatProfile = GetPrimaryCombatProfile();
+        private void RefreshResistances() => CharacterSheetTableTabs.RefreshResistances(this);
 
-            AddStat("HP Regen", GetHPRegenValue().ToString(), "Amount of HP restored automatically by natural regeneration.");
-            AddStat("FP Regen", GetFPRegenValue().ToString(), "Amount of FP restored automatically by natural regeneration.");
-            AddStat("STM Regen", GetStaminaRegenValue().ToString(), "Amount of STM restored automatically by natural regeneration.");
-            AddStat("Combat Readiness", FormatPercent(Stat.GetCombatReadinessPercent(_target)), "Increases activated ability damage, healing, and temporary HP. Does not reduce cooldowns.");
-            AddStat("Melee Deflection", FormatPercent(CombatRating.GetMeleeDeflectionChance(_target)), "Chance to negate a hostile melee weapon auto-attack while wielding a weapon without a shield.");
-            AddStat("Ranged Deflection", FormatPercent(CombatRating.GetRangedDeflectionChance(_target)), "Chance to negate a hostile ranged weapon auto-attack while wielding a weapon without a shield.");
-            AddStat("Shield Deflection", FormatPercent(CombatRating.GetShieldDeflectionChance(_target)), "Chance to negate either a hostile melee or ranged weapon auto-attack while equipped with a shield. Shield Deflection replaces weapon deflection while the shield is equipped.");
-            AddStat("Guard", FormatPercent(CombatRating.GetGuardChance(_target)), "Chance to reduce damage and increase enmity gain.");
-            AddStat("Guard Reduction", FormatPercent(GameServices.CombatDamageTaken.GetGuardDamageReductionPercent(_target)), "Amount of damage removed from a hit when Guard succeeds.");
-            AddStat("Phys. Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Physical)), "Incoming physical damage modifier after damage-taken effects. Lower is better.");
-            AddStat("Force Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Force)), "Incoming Force damage modifier after damage-taken effects. Lower is better.");
-            AddStat("Physical DEF %", FormatPercent(CombatRating.GetDefensePercentAdjustment(_target, CombatDamageType.Physical)), "Bonus or penalty applied to Physical DEF. Already included in the Physical DEF shown on the Attributes tab.");
-            AddStat("Force DEF %", FormatPercent(CombatRating.GetDefensePercentAdjustment(_target, CombatDamageType.Force)), "Bonus or penalty applied to Force DEF. Already included in the Force DEF shown on the Attributes tab.");
-            AddStat("Ability Accuracy", FormatPercent(Stat.GetStatAdjustment(_target, StatType.PhysicalAndForceAbilityHitChancePercentAdjustment)), "Direct percentage-point change to hit chance for weapon-skill and Force-skill ability hit checks only. Does not affect Mimicry abilities or the underlying Accuracy rating.");
-            AddStat("Accuracy %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AccuracyPercentAdjustment)), "Percentage bonus or penalty applied to the underlying Accuracy rating for attacks and ability hit checks, including Force and Mimicry. It is not a direct percentage-point change to hit chance and is already included in the Main-hand Accuracy, Off-hand Accuracy, and Force Accuracy ratings shown on the Attributes tab.");
-            AddStat("Evasion %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EvasionPercentAdjustment)), "Bonus or penalty applied to Evasion. Already included in the Evasion shown on the Attributes tab.");
-            AddStat("Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AttackPercentAdjustment)), "General bonus or penalty applied to Attack, including Force Attack.");
-            AddStat("Force Attack %", FormatPercent(CombatRating.GetAttackPercentAdjustment(_target, SkillType.Force)), "Combined general and Force-specific Attack bonus or penalty. Already included in Force Attack on the Attributes tab.");
-            var offhandWeapon = BeastMastery.IsPlayerBeast(_target) ? OBJECT_INVALID : CharacterSheetWeaponTiming.GetOffhandAttackWeapon(this);
-            AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), FormatOffHandTooltip(
-                "Increases the chance to score a critical hit. Actual chance varies by target Vitality.",
-                GetIsObjectValid(offhandWeapon) ? FormatPercent(GetCriticalRate(Skill.GetWeaponSkill(_target, offhandWeapon))) : null));
-            AddStat("Next Ability Crit", FormatPercent(GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(_target, combatProfile.Skill)), "Conditional Critical Rate reserved for the next matching ability. It does not affect ordinary auto-attacks and is consumed only when the ability critically hits.");
-            AddStat("Assault Gadget Crit", FormatPercent(GetAssaultGadgetCriticalRate()), "Current Assault Gadget ability critical chance before target-specific bonuses. Includes the 5% baseline, Gadget Harness, Tactical Uplink, and other Devices ability bonuses; capped at 50%.");
-            AddStat("Gadget DMG", DeviceAbilityEffects.GetAssaultGadgetWeaponDamageEquivalent(_target).ToString(), "DMG added to every Assault Gadget ability, the way weapon DMG is added to weapon abilities; Overload Barrage adds it only to its single-target strike. Rises with Devices rank: 6 below rank 10, then 10, 15, 19, 24, and 28 at ranks 10, 20, 30, 40, and 50. Droids use their level in place of Devices rank.");
-            AddStat("Critical Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.CriticalDamagePercentAdjustment)), "Increases the amount of damage a critical hit deals.");
-            AddStat("Damage Dealt", FormatPercent(Stat.GetStatAdjustment(_target, StatType.DamageDealtPercentAdjustment)), "Adjusts all outgoing damage.");
-            AddStat("Weapon/Force Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.WeaponAndForceDamageDealtPercentAdjustment)), "Adjusts outgoing weapon and Force damage. Stacks with Damage Dealt.");
-            AddHighResourceAbilityDamageStats(AddStat);
-            AddStat("Healing Received", FormatPercent(Stat.GetStatAdjustment(_target, StatType.HealingReceivedPercentAdjustment)), "Adjusts the amount of healing you receive from all sources.");
-            AddStat("Enmity", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EnmityPercentAdjustment)), "Increases or decreases the rate at which enmity is acquired.");
-            AddStat("FP Cost", FormatPercent(Stat.GetStatAdjustment(_target, StatType.FPCostPercentAdjustment)), "Adjusts the FP cost of abilities. Lower is better.");
-            AddStat("STM Cost", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AbilityStaminaCostPercentAdjustment)), "Adjusts the Stamina cost of abilities. Lower is better.");
-            AddStat("Haste", FormatPercent(GameServices.CombatAttackTiming.CalculateAttackDelayReduction(_target)), "Increases attack speed. Negative values slow attacks.");
-            AddStat("Off-Hand Haste", FormatPercent(GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(_target)), "Increases off-hand attack speed. Only applies while dual wielding.");
-            AddStat("Single Weapon DMG", FormatPercent(EquipmentPredicates.HasSingleWeapon(_target) ? WeaponDamage.GetSingleWeaponPercent(_target) : 0),
-                "Bonus to the item's weapon DMG with one eligible one-handed melee, pistol, or throwing weapon and an empty off hand. Includes the natural bonus and Doublehand; already included in equipped DMG.");
-            AddStat("Ranged Evasion", FormatPercent(Stat.GetStatAdjustment(_target, StatType.RangedEvasionPercentAdjustment)), "Evasion adjustment against ranged attacks.");
-            AddStat("Slow", GetEffectStateLabel(EffectTypeScript.Slow), "Reduces attack speed.");
-            AddStat("Paralysis", GetEffectStateLabel(EffectTypeScript.Paralyze), "Prevents auto attacks and other actions.");
-            AddStat("Movement Speed", FormatMultiplier(CreatureStat.GetMovementSpeedMultiplier(_target)), "Increases or decreases your movement speed.");
-            AddStat("Force Evasion", FormatPercent(GetForceEvasion()), "Percent chance to completely evade a detrimental force ability.");
-            AddStat("Force Affinity", Perk.GetForceAffinity(_target).ToString(), "-10 Dark to +10 Light. Strengthens matching powers; weakens opposing powers.");
-            AddStat("Detection", Stat.GetDetection(_target).ToString(), "PER + WIL plus equipment, perk, and status-effect bonuses; Detect mode adds +5.");
-            AddStat("Stealth", Stat.GetStealth(_target).ToString(), "Twice AGI plus equipment, perk, and status-effect bonuses.");
-            AddStat("Experience", FormatPercent(Stat.GetStatAdjustment(_target, StatType.ExperiencePercentAdjustment)), "Bonus or penalty applied to experience gained from skill use.");
-
-            StatsTable.Refresh(this, rows);
-        }
-
-        private void AddHighResourceAbilityDamageStats(Action<string, string, string> addStat)
-        {
-            AddConditionalDamage(StatType.HighFPAndStaminaAbilityDamageBonus,
-                StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, " DMG");
-            AddConditionalDamage(StatType.HighFPAndStaminaAbilityDamagePercentAdjustment,
-                StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent, "% DMG");
-
-            void AddConditionalDamage(StatType payload, StatType thresholdStat, string units)
-            {
-                foreach (var group in Stat.GetStatSources(_target, payload)
-                             .Where(source => source[payload] > 0 && source[thresholdStat] > 0)
-                             .GroupBy(source => source[thresholdStat]).OrderBy(group => group.Key))
-                {
-                    var threshold = group.Key;
-                    var bonus = group.Sum(source => source[payload]);
-                    var active = GameServices.CombatResources.IsCurrentFPAndStaminaAbovePercent(_target, threshold);
-                    addStat($"Ability DMG above {threshold}% FP/STM",
-                        active ? $"Active (+{bonus}{units})" : $"Inactive ({threshold}% required)",
-                        $"Hostile combat abilities gain +{bonus}{units} while FP and STM are both above {threshold}%.");
-                }
-            }
-
-        }
-
-        private (AbilityType DamageAbility, AbilityType AccuracyAbilityOverride, SkillType Skill, uint AccuracyWeapon) GetPrimaryCombatProfile()
-        {
-            var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
-            var mainHandType = GetBaseItemType(mainHand);
-            var skill = Skill.GetWeaponSkill(_target, mainHand);
-
-            if (BeastMastery.IsPlayerBeast(_target))
-            {
-                var beastType = BeastMastery.GetBeastType(_target);
-                var beastDetails = BeastMastery.GetBeastDetail(beastType);
-                var creatureArmor = GetItemInSlot(InventorySlot.CreatureArmor, _target);
-
-                return (beastDetails.DamageStat, beastDetails.AccuracyStat, skill, creatureArmor);
-            }
-
-            return (CharacterSheetDamageEstimate.GetEquipmentDamageAbility(_target, mainHand), AbilityType.Invalid, skill, mainHand);
-        }
-
-        private bool IsPlayerCharacterTarget()
-        {
-            return GetIsPC(_target) && !GetIsDM(_target);
-        }
-
-        private Player GetPlayerEntity()
-        {
-            return DB.Get<Player>(GetObjectUUID(_target));
-        }
-
-        private int GetHPRegenValue()
-        {
-            var bonus = Stat.GetStatAdjustment(_target, StatType.HPRegen);
-            if (!IsPlayerCharacterTarget())
-                return bonus;
-
-            var dbPlayer = GetPlayerEntity();
-            return dbPlayer.HPRegen + GetAbilityScore(_target, AbilityType.Vitality) + bonus;
-        }
-
-        private int GetFPRegenValue()
-        {
-            var bonus = Stat.GetStatAdjustment(_target, StatType.FPRegen);
-            if (!IsPlayerCharacterTarget())
-                return bonus;
-
-            var dbPlayer = GetPlayerEntity();
-            return 1 + dbPlayer.FPRegen + GetAbilityScore(_target, AbilityType.Willpower) / 4 + bonus;
-        }
-
-        private int GetStaminaRegenValue()
-        {
-            var bonus = Stat.GetStatAdjustment(_target, StatType.StaminaRegen);
-            if (!IsPlayerCharacterTarget())
-                return bonus;
-
-            var dbPlayer = GetPlayerEntity();
-            return NaturalRegeneration.BaseStaminaRegenPerThirtySeconds + dbPlayer.STMRegen + GetAbilityScore(_target, AbilityType.Might) / 4 + bonus;
-        }
-
-        private int GetCriticalRate(SkillType skillType)
-        {
-            var criticalRateAdjustment = Stat.GetStatAdjustment(
-                _target,
-                StatType.CriticalRatePercentAdjustment);
-            criticalRateAdjustment += GameServices.CombatDamageModifiers.GetSkillCriticalRatePercentAdjustment(_target, skillType);
-
-            return CombatRules.CalculateCriticalRate(
-                GetAbilityScore(_target, AbilityType.Perception),
-                GetAbilityScore(_target, AbilityType.Vitality),
-                GetSkillRank(skillType),
-                criticalRateAdjustment);
-        }
-
-        private int GetAssaultGadgetCriticalRate()
-        {
-            return GameServices.CombatAbilityHit.GetAbilityCriticalRate(
-                _target,
-                SkillType.Devices,
-                false,
-                Stat.GetStatAdjustment(_target, StatType.AssaultGadgetCriticalRatePercentAdjustment));
-        }
-
-        private int GetSkillRank(SkillType skillType)
-        {
-            if (IsPlayerCharacterTarget())
-            {
-                if (skillType == SkillType.Invalid)
-                    return 0;
-
-                var dbPlayer = GetPlayerEntity();
-                return dbPlayer.Skills.TryGetValue(skillType, out var skill)
-                    ? skill.Rank
-                    : 0;
-            }
-
-            var npcStats = Stat.GetNPCStats(_target);
-            return npcStats.Skills.TryGetValue(skillType, out var rank)
-                ? rank
-                : npcStats.Level;
-        }
-
-        private string GetEffectStateLabel(EffectTypeScript effectType)
-        {
-            for (var effect = GetFirstEffect(_target); GetIsEffectValid(effect); effect = GetNextEffect(_target))
-            {
-                if (GetEffectType(effect) == effectType)
-                    return "Active";
-            }
-
-            return "Inactive";
-        }
-
-        private int GetForceEvasion()
-        {
-            var skillType = Stat.GetStatAdjustment(_target, StatType.IncomingAbilityHitChancePercentAdjustmentSkillType);
-            if (skillType != (int)SkillType.Force)
-                return 0;
-
-            return Math.Max(0, -Stat.GetStatAdjustment(_target, StatType.IncomingAbilityHitChancePercentAdjustment));
-        }
-
-        private int GetDamageTakenPercent(CombatDamageType damageType)
-        {
-            var typeAdjustment = damageType switch
-            {
-                CombatDamageType.Physical =>
-                    Stat.GetStatAdjustment(_target, StatType.PhysicalDamageTakenPercentAdjustment),
-                CombatDamageType.Force =>
-                    Stat.GetStatAdjustment(_target, StatType.ForceDamageTakenPercentAdjustment),
-                _ => 0
-            };
-            var leadershipAdjustment = damageType switch
-            {
-                CombatDamageType.Physical =>
-                    Stat.GetStatAdjustment(_target, StatType.LeadershipPhysicalDamageTakenPercentAdjustment) +
-                    Stat.GetStatAdjustment(_target, StatType.LeadershipRecoveryPhysicalDamageTakenPercentAdjustment),
-                CombatDamageType.Force =>
-                    Stat.GetStatAdjustment(_target, StatType.LeadershipForceDamageTakenPercentAdjustment) +
-                    Stat.GetStatAdjustment(_target, StatType.LeadershipRecoveryForceDamageTakenPercentAdjustment),
-                _ => Stat.GetStatAdjustment(_target, StatType.LeadershipOtherDamageTakenPercentAdjustment)
-            };
-
-            var percent = ApplyDamageTakenPercentAdjustment(100, typeAdjustment);
-            percent = ApplyDamageTakenPercentAdjustment(percent, leadershipAdjustment);
-            return ApplyDamageTakenPercentAdjustment(
-                percent,
-                Stat.GetStatAdjustment(_target, StatType.DamageTakenPercentAdjustment));
-        }
-
-        private static int ApplyDamageTakenPercentAdjustment(int percent, int adjustment)
-        {
-            if (percent <= 0 || adjustment <= -100)
-                return 0;
-
-            if (adjustment == 0)
-                return percent;
-
-            return Math.Max(0, percent + (int)Math.Ceiling(percent * (adjustment / 100f)));
-        }
-
-        private void RefreshResistances()
-        {
-            var rows = Resistance.GetAllResistanceTypes().Select(resistanceType =>
-            {
-                var score = Resistance.GetResistance(_target, resistanceType);
-                var takenPercent = (int)Math.Round(Resistance.CalculateResistanceDamageMultiplier(_target, resistanceType) * 100f);
-
-                return new ResistanceEntry(
-                    resistanceType.ToString(),
-                    score.ToString(),
-                    $"{takenPercent}% taken",
-                    GetStatusDurationLabel(score));
-            });
-
-            ResistancesTable.Refresh(this, rows);
-        }
-
-        private void RefreshCraftingStats()
-        {
-            var rows = new List<CraftEntry>();
-            var legacyControl = string.Empty;
-            var legacyCraftsmanship = string.Empty;
-
-            var index = 0;
-            foreach (var (skillType, detail) in Skill.GetActiveCraftingSkills())
-            {
-                var control = Stat.CalculateControl(_target, skillType);
-                var craft = Stat.CalculateCraftsmanship(_target, skillType);
-
-                rows.Add(new CraftEntry(detail.Name, control.ToString(), craft.ToString()));
-
-                legacyControl += index == 0 ? control.ToString() : $"/{control}";
-                legacyCraftsmanship += index == 0 ? craft.ToString() : $"/{craft}";
-                index++;
-            }
-
-            CraftingTable.Refresh(this, rows);
-            Control = legacyControl;
-            Craftsmanship = legacyCraftsmanship;
-        }
+        private void RefreshCraftingStats() => CharacterSheetTableTabs.RefreshCraftingStats(this);
 
         private void RefreshAttributes() => CharacterSheetAttributesTab.RefreshAttributes(this);
 
@@ -1112,6 +841,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         void ICharacterSheetHost.ShowModal(string prompt, Action confirmAction) => ShowModal(prompt, confirmAction);
         void ICharacterSheetHost.LoadData() => LoadData();
         void ICharacterSheetHost.RefreshHitPoints() => RefreshHitPoints();
+        string ICharacterSheetHost.Control { get => Control; set => Control = value; }
+        string ICharacterSheetHost.Craftsmanship { get => Craftsmanship; set => Craftsmanship = value; }
         void ICharacterSheetHost.RefreshCharacterStatsList() => RefreshCharacterStatsList();
+        void ICharacterSheetHost.RefreshStatsTable(IEnumerable<StatEntry> rows) => StatsTable.Refresh(this, rows);
+        void ICharacterSheetHost.RefreshResistancesTable(IEnumerable<ResistanceEntry> rows) => ResistancesTable.Refresh(this, rows);
+        void ICharacterSheetHost.RefreshCraftingTable(IEnumerable<CraftEntry> rows) => CraftingTable.Refresh(this, rows);
     }
 }

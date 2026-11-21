@@ -378,7 +378,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
 
         var root = FindRepositoryRoot();
         var characterSheet = File.ReadAllText(
-            (root / "SWLOR.Game.Server" / "Feature" / "GuiDefinition" / "ViewModel" / "CharacterSheetViewModel.cs").FullName);
+            (root / "SWLOR.Game.Server" / "Feature" / "GuiDefinition" / "CharacterSheetWindow" / "CharacterSheetAccuracyRows.cs").FullName);
         var ability = AbilitySource.Read();
         var combat = CombatSource.Read();
 

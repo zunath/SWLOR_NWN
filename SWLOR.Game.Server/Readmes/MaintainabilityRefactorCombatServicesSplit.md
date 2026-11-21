@@ -727,7 +727,7 @@ coordinator decisions that take this guide's recommendation.
 
 ## Progress
 
-P5-7a: this guide (2026-11-18), revised after the coordinator's review. P5-7b: the proof (2026-11-18, "P5-7b as built" below). P5-7c: the damage roll, the defense memory and the serializer cut (2026-11-18, "P5-7c as built" below). Next: P5-7d, P5-7e1, P5-7g and P5-7i1 can start (P5-7d also waits for P5-16h PRs 7 and 8).
+P5-7a: this guide (2026-11-18), revised after the coordinator's review. P5-7b: the proof (2026-11-18, "P5-7b as built" below). P5-7c: the damage roll, the defense memory and the serializer cut (2026-11-18, "P5-7c as built" below). P5-7d: the rate and repeated-target parts (2026-11-21, "P5-7d as built" below). Next: P5-7e1, P5-7g and P5-7i1 can start.
 
 ### P5-7b as built (2026-11-18)
 
@@ -818,3 +818,52 @@ concrete class where a handler is not on an interface).
 - **Tests.** `CombatDamageRollServiceTests` and `CombatDefenseMemoryServiceTests` are new (the window, purge and forget tests moved out of
   `CombatDamageTakenServiceTests` and `CombatServiceTests`); the doubles `TestDamageTaken` and `TestDamageModifiers` take the new parts; the
   allocation pins keep their bytes (`ForgetDefenseMemory` 184); `CombatPartForwardingTests` lists the two new interfaces.
+
+### P5-7d as built (2026-11-21)
+
+Branch `claude/mr-p5-7d`, base `38311bdeb` (P5-16f PR 2).
+
+- **`CombatRateModifiersService`** (`ICombatRateModifiersService`, 220 lines, 6 services: queries, stat, statusEffect, statusEffectApplication,
+  temporaryStatModifier, playerFeedback): `GetAutoAttackCriticalRateAdjustment`, `GetTargetStatusCriticalRateAdjustment`,
+  `PrepareAutoAttackCycleCriticalRate`, `ClearAutoAttackCycleCriticalRateTracker`, the side attack members (`ApplySideAttackDamageModifier`,
+  `GetSideAttackHitChanceAdjustment`, `GetSideAttackCriticalRateAdjustment`, `ApplySideAttackEvasionIgnore`), the back attack members and the
+  `_autoAttackCycleCriticalCounts` table. One new member, `ForgetAutoAttackCycleCriticalRateCount` (the one table line cut out of
+  `ForgetDamageModifierState`).
+- **`CombatRepeatedTargetService`** (`ICombatRepeatedTargetService`, 427 lines, 4 services: stat, statusEffect, statusEffectApplication and
+  `ICombatRateModifiersService`): the repeated-target, melee, ranged and same-target pressure members, the four state tables, their two nested
+  state classes and `ForgetDamageModifierState`. It reads the clock, so it is in `ClockSeamFiles.txt`.
+- **`CombatDamageModifiersService`** (stay, 875 lines, 1,436 before; 10 services): the two parts are plain parameters; it keeps
+  `GetHighHPTargetCriticalDamageAdjustment` and `IPlayerFeedbackService`, so the map's fallback (which would move it) was not needed.
+  `ICombatDamageModifiersService` loses the moved members. `LargeTypes.txt` loses its line (20 to 19 types over 1,000 lines).
+- **Departures from the plan.** `CombatRepeatedTargetService` is at 4 services, not 3, because `ForgetDamageModifierState` calls the rate part
+  first. Four holders grow by one in `ServicesPerType.txt`: `CombatHitEffectsService` 20 to 21, `CombatAbilityHitService` 12 to 13,
+  `CombatService` 12 to 13 and `AbilityDamageInputService` 11 to 12 (each takes the part its calls moved to; `CombatService` takes both and drops
+  the damage modifiers). The later splits of those services lower the counts again. `CombatHitEffectsService` is 3 lines longer (1,716 to 1,719).
+  `LogicToContent.txt` re-keys the `StatusEffectDefinition` lines (stay 14 to 9, rate 2, repeated target 3).
+- **Cleanup order unchanged.** `ForgetDamageModifierState` clears the auto-attack cycle table first, then the repeated-target tables and the
+  pressure states, in the old order. `CombatCleanupOrderTests` decorates the repeated-target part; its fixture changes only in the three lines that
+  name the call (`RepeatedTarget.ForgetDamageModifierState`).
+- **Call sites** by hand with `sed` on the exact text, as in P5-7c: the native attack roll (`AttackRollAccuracy`, `AttackRollCritical`,
+  `AttackRollDefense`, `ResolveAttackRoll`), `AbilityDamageDeliveryService`, `AbilityDamageInputService`, `CombatAbilityHitService`,
+  `CombatHitEffectsService`, `CombatService`, `RemovedFacades.json` (and the registrations and `GameServices.Combat.cs` for the two parts). The player
+  message audit rows moved with the code (6 rows: stay 1, rate 1, repeated target 4).
+- **Tests.** `CombatDamageModifiersServiceTests` splits into `CombatModifierTestBase` (the shared bench, 231 lines) and three classes: the stay-part
+  24 tests, `CombatRateModifiersServiceTests` 6 and `CombatRepeatedTargetServiceTests` 8. All 37 old test names are kept (the four helper
+  methods moved to the base) and `ForgettingTheCycleCountRestartsTheCycleWithoutTouchingOtherCreatures` is new. The doubles `TestDamageModifiers` and
+  `TestHitEffects`, `CombatAbilityTranscriptTests`, the allocation pins (`CombatFacadeAllocationTests` re-pointed, bytes unchanged) and
+  `CombatPartForwardingTests` take the new interfaces. The transcript fixtures are unchanged except `CleanupOrder.txt`.
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored) of every member of the old class against the three
+    parts: 80 members identical, the two nested state classes identical, one different. The difference is `ForgetDamageModifierState`, whose first
+    statement `_autoAttackCycleCriticalCounts.Remove(creature)` is now `_rateModifiers.ForgetAutoAttackCycleCriticalRateCount(creature)`.
+  - *Unit tests* (`SWLOR.Game.Server.Tests`, filters `Combat`, `DamageModifiers`, `RepeatedTarget`, `RateModifiers`, `PlayerMessageAudit`,
+    `ConvertedServiceContainer`, `AbilityDamage`, `MeleeRepeated`, `AttackRoll`): 3,196 tests, 3,195 pass and 1 skipped (the walkmesh test needs the
+    `sw_t_office` hak folder, which a checkout without the submodule lacks; it passes with the folder). `SWLOR.Architecture.Tests`: 297 pass.
+  - *Engine tests* at `38311bdeb` and at the head, host entry, filter `Characterization|RepeatedTargetDamage|StealthRetarget|TwinPistolCompanionArrival|CombatPerkRegression|PerkTracker|TwinPistolPvpCombat|TwinPistolConversion`:
+    104 tests each, 104 pass each, identical per-test outcomes, no snapshot file changed.
+  - *Client evidence* (map "Tests and the proof plan" said none; taken anyway): one NWN client, the same module, haks and steps at the base and the head,
+    a Vibroknife and a rifle against a hostile Outlaw in `veles_sewers`: plain melee, auto-attack cycle critical rate, side attack, back attack, melee
+    repeated target, plain rifle, ranged repeated target (Sustained Fire), same-target pressure (Spotter's Rhythm) and rifle cycle critical. Per phase the
+    message kinds and counts, and the damage ranges, match (side and back attacks double the plain hit, Repeated Target 1/5 to 5/5 adds +10 per stack,
+    Sustained Fire stacks 1/5 to 4/5, the critical rate notice appears 6 and 4 times in both); attack rolls differ by at most two per phase
+    from timing. The pressure ready bonus on a weapon ability was not driven (no ability cast).

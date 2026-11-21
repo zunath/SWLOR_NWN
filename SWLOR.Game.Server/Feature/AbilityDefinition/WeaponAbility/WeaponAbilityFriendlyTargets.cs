@@ -197,40 +197,40 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
             string temporaryHPEffectKey,
             SkillType skill)
         {
-                target = ResolveFriendlyTarget(profile, activator, target);
-                if (isFriendlyTarget && HasFriendlyTargetStatus(profile))
-                {
-                    if (ApplyFriendlyTargetStatus(profile, activator, target, duration))
-                    {
-                        ApplyFriendlyTargetEffects(profile, activator, target, temporaryHPEffectKey);
-                        Ability.PlaySuccessfulImpactVisualEffect(activator, target);
-                        WeaponAbilitySelfEffects.AfterActivation(profile, activator, skill);
-                    }
-                    return;
-                }
-
-                if (isFriendlyTarget && HasFriendlyTargetEffects(profile))
+            target = ResolveFriendlyTarget(profile, activator, target);
+            if (isFriendlyTarget && HasFriendlyTargetStatus(profile))
+            {
+                if (ApplyFriendlyTargetStatus(profile, activator, target, duration))
                 {
                     ApplyFriendlyTargetEffects(profile, activator, target, temporaryHPEffectKey);
                     Ability.PlaySuccessfulImpactVisualEffect(activator, target);
                     WeaponAbilitySelfEffects.AfterActivation(profile, activator, skill);
-                    return;
                 }
-
-                if (HasImmediateSelfStatusEffect(profile))
-                {
-                    ApplySelfStatusEffect(profile, activator, duration);
-                }
-                else if (statusEffect != null)
-                {
-                    StatusEffect.RemoveOtherStanceStatuses(activator, statusEffect);
-                    if (StatusEffectApplication.ApplyStatusEffect(activator, activator, statusEffect, duration > 0f ? duration : 0f))
-                        Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
-                    ApplySelfStatusToGuardedTarget(profile, activator, statusEffect, duration);
-                }
-
-                    WeaponAbilitySelfEffects.AfterActivation(profile, activator, skill);
                 return;
+            }
+
+            if (isFriendlyTarget && HasFriendlyTargetEffects(profile))
+            {
+                ApplyFriendlyTargetEffects(profile, activator, target, temporaryHPEffectKey);
+                Ability.PlaySuccessfulImpactVisualEffect(activator, target);
+                WeaponAbilitySelfEffects.AfterActivation(profile, activator, skill);
+                return;
+            }
+
+            if (HasImmediateSelfStatusEffect(profile))
+            {
+                ApplySelfStatusEffect(profile, activator, duration);
+            }
+            else if (statusEffect != null)
+            {
+                StatusEffect.RemoveOtherStanceStatuses(activator, statusEffect);
+                if (StatusEffectApplication.ApplyStatusEffect(activator, activator, statusEffect, duration > 0f ? duration : 0f))
+                    Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
+                ApplySelfStatusToGuardedTarget(profile, activator, statusEffect, duration);
+            }
+
+            WeaponAbilitySelfEffects.AfterActivation(profile, activator, skill);
+            return;
         }
     }
 }

@@ -22,7 +22,9 @@ public static class AbilityAnimationEquipment
     {
         var weapon = GetItemInSlot(InventorySlot.RightHand, creature);
         if (!GetIsObjectValid(weapon)) return AnimationWeaponHold.None;
-        return ResolveHold(GetBaseItemType(weapon), ReadGrip(weapon, (int)GetCreatureSize(creature)));
+        var hold = ResolveHold(GetBaseItemType(weapon), ReadGrip(weapon, (int)GetCreatureSize(creature)));
+        return hold == AnimationWeaponHold.Shoulder && Feature.MeleeWeaponCarry.AppliesTo(creature)
+            ? AnimationWeaponHold.None : hold;
     }
 
     public static AnimationWeaponHold ResolveHold(BaseItem type, AnimationWeaponGrip grip)
@@ -32,7 +34,7 @@ public static class AbilityAnimationEquipment
             ? AnimationWeaponHold.Shoulder : AnimationWeaponHold.None;
     }
 
-    private static AnimationWeaponGrip ReadGrip(uint item, int creatureSize)
+    public static AnimationWeaponGrip ReadGrip(uint item, int creatureSize)
     {
         if (!GetIsObjectValid(item)) return AnimationWeaponGrip.Empty;
         var type = GetBaseItemType(item);

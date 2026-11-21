@@ -565,7 +565,7 @@ public class CombatDamageTests
         trackCompleted.Should().Contain("if (!ability.IsHostileAbility)");
         trackCompleted.Should().Contain("return;");
 
-        var activationIndex = abilitySource.IndexOf("profile.PrepareQueuedActivation(activator, skill);", StringComparison.Ordinal);
+        var activationIndex = abilitySource.IndexOf("WeaponAbilityDamageModifiers.PrepareQueuedActivation(profile, activator, skill);", StringComparison.Ordinal);
         var queueIndex = usePerkFeatSource.IndexOf(
             "QueueWeaponAbility(activator, target, ability, feat);",
             StringComparison.Ordinal);

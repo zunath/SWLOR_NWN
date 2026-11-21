@@ -23,14 +23,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
         private ICombatResourcesService CombatResources { get; }
         private IStatService Stat { get; }
         private IStatusEffectApplicationService StatusEffectApplication { get; }
+        private WeaponAbilityStatusRiders WeaponAbilityStatusRiders { get; }
         private WeaponAbilityTemporaryModifiers WeaponAbilityTemporaryModifiers { get; }
 
-        public WeaponAbilityHitEffects(ICombatActivityService combatActivity, ICombatResourcesService combatResources, IStatService stat, IStatusEffectApplicationService statusEffectApplication, WeaponAbilityTemporaryModifiers weaponAbilityTemporaryModifiers)
+        public WeaponAbilityHitEffects(ICombatActivityService combatActivity, ICombatResourcesService combatResources, IStatService stat, IStatusEffectApplicationService statusEffectApplication, WeaponAbilityStatusRiders weaponAbilityStatusRiders, WeaponAbilityTemporaryModifiers weaponAbilityTemporaryModifiers)
         {
             CombatActivity = combatActivity;
             CombatResources = combatResources;
             Stat = stat;
             StatusEffectApplication = statusEffectApplication;
+            WeaponAbilityStatusRiders = weaponAbilityStatusRiders;
             WeaponAbilityTemporaryModifiers = weaponAbilityTemporaryModifiers;
         }
 
@@ -108,6 +110,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
                     new ChallengeEnmityStatusEffect(profile.SelfEnmityPercentIfTargetRecentlyDamagedActivator),
                     profile.SelfEnmityDurationSecondsIfTargetRecentlyDamagedActivator);
             }
+        }
+
+        public StatusEffectCategory? ApplyTargetUsingAbilityEffects(WeaponAbilityProfile profile, uint activator, uint target, CombatDamageType damageType)
+        {
+            if (!CombatActivity.IsUsingAbility(target))
+                return null;
+
+            if (profile.TargetUsingAbilityDrainStamina > 0)
+                Stat.ReduceStamina(target, profile.TargetUsingAbilityDrainStamina);
+            if (profile.TargetUsingAbilityDrainFP > 0)
+                Stat.ReduceFP(target, profile.TargetUsingAbilityDrainFP);
+
+            if (profile.TargetUsingAbilityStatusEffect == null || profile.TargetUsingAbilityStatusDurationSeconds <= 0)
+                return null;
+
+            return WeaponAbilityStatusRiders.GetAppliedCategories(
+                StatusEffectApplication.ApplyStatusEffect(
+                    activator,
+                    target,
+                    profile.TargetUsingAbilityStatusEffect,
+                    profile.TargetUsingAbilityStatusDurationSeconds,
+                    damageType),
+                profile.TargetUsingAbilityStatusEffect);
         }
     }
 }

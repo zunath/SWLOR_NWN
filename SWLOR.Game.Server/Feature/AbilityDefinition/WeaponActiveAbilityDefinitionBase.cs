@@ -58,190 +58,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             ability.HasActivationDelay(activationDelay)
                 .SkillType(skill)
-                .ResolvesImpactStatusCategories(activator => isHostile
-                    ? AbilityStatusApplication.GetCombatImpactStatusCategories(
-                        profile.ResolveImpactStatus(activator, statusEffect, duration).StatusEffect,
-                        additionalStatusEffects,
-                        profile.StatusEffectFactory)
-                    : StatusEffectCategory.None)
+                .ResolvesImpactStatusCategories(activator => GameServices.WeaponAbilityImpacts.ResolveStatusCategories(
+                    profile, activator, isHostile, statusEffect, duration, additionalStatusEffects))
                 .UsesImpactAnimation(impactAnimation)
                 .HasActivationAction((activator, target, level, targetLocation) =>
-                {
-                    profile.PrepareActivationIdleBonuses(activator);
-                    if (isHostile && !profile.IsQueuedWeaponAbility)
-                        GameServices.CombatActivity.StoreAbilityActivationIdleBonuses(activator, skill);
-                    profile.PrepareQueuedActivation(activator, skill);
-                    if (profile.IsQueuedWeaponAbility)
-                        GameServices.CombatAbilityBonus.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(activator, skill);
-                    return isHostile || isFriendlyTarget || statusEffect == null || ToggleSelfStatus(activator, statusEffect);
-                })
+                    GameServices.WeaponAbilityActivations.ApplyActivation(
+                        profile, activator, skill, isHostile, isFriendlyTarget, statusEffect))
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     if (!isHostile)
-                    {
-                        target = profile.ResolveFriendlyTarget(activator, target);
-                        if (isFriendlyTarget && profile.HasFriendlyTargetStatus())
-                        {
-                            if (profile.ApplyFriendlyTargetStatus(activator, target, duration))
-                            {
-                                profile.ApplyFriendlyTargetEffects(activator, target, temporaryHPEffectKey);
-                                Ability.PlaySuccessfulImpactVisualEffect(activator, target);
-                                profile.AfterActivation(activator, skill);
-                            }
-                            return;
-                        }
-
-                        if (isFriendlyTarget && profile.HasFriendlyTargetEffects())
-                        {
-                            profile.ApplyFriendlyTargetEffects(activator, target, temporaryHPEffectKey);
-                            Ability.PlaySuccessfulImpactVisualEffect(activator, target);
-                            profile.AfterActivation(activator, skill);
-                            return;
-                        }
-
-                        if (profile.HasImmediateSelfStatusEffect())
-                        {
-                            profile.ApplySelfStatusEffect(activator, duration);
-                        }
-                        else if (statusEffect != null)
-                        {
-                            StatusEffect.RemoveOtherStanceStatuses(activator, statusEffect);
-                            if (StatusEffectApplication.ApplyStatusEffect(activator, activator, statusEffect, duration > 0f ? duration : 0f))
-                                Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
-                            profile.ApplySelfStatusToGuardedTarget(activator, statusEffect, duration);
-                        }
-
-                            profile.AfterActivation(activator, skill);
-                        return;
-                    }
-
-                    profile.SpendHitPoints(activator);
-                    profile.AfterHostileActivation(activator);
-                    var (impactStatusEffect, impactDuration) = profile.ResolveImpactStatus(activator, statusEffect, duration);
-                    var spreadSnapshot = new WeaponAbilityProfile.StatusSpreadSnapshot(profile.MaximumStatusSpreadsPerCast);
-                    Action<uint> captureSpreadPrerequisites = profile.SpreadBleedFromTarget || profile.SpreadHemorrhageFromTarget || profile.SpreadSunderFromTarget
-                        ? impactedTarget => spreadSnapshot.Capture(impactedTarget)
-                        : null;
-                    var activationIdleBonusSnapshot = profile.CaptureActivationIdleBonusSnapshot(activator);
-                    AbilityImpactState.AddActiveAbilityDefenseIgnorePercentAdjustment(
-                        activator,
-                        profile.GetDefenseIgnorePercent(activator, activationIdleBonusSnapshot));
-
-                    if (isArea && ShouldUseTelegraphedCombatImpact(targetingShape, profile))
-                    {
-                        var areaDamage = 0;
-                        try
-                        {
-                            areaDamage = Ability.ApplyTelegraphedCombatImpact(
-                                activator,
-                                target,
-                                targetLocation,
-                                skill,
-                                baseDamage,
-                                impactDuration,
-                                impactStatusEffect,
-                                ToCombatImpactAreaShape(targetingShape),
-                                profile.TelegraphDuration,
-                                targetingSizeX > 0f ? targetingSizeX : 5.0f,
-                                targetingSizeY,
-                                additionalStatusEffects,
-                                CenterAreaOnActivator(targetingFlags),
-                                profile.StatusEffectFactory,
-                                damageType: profile.DamageType,
-                                areaVisualEffect: areaVisualEffect,
-                                combatImpactDamageAbility: combatImpactDamageAbility,
-                                baseDamageAdjustment: impactedTarget => profile.GetBaseDamageAdjustment(
-                                    activator,
-                                    impactedTarget,
-                                    activationIdleBonusSnapshot),
-                                damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
-                                afterImpactAction: summary =>
-                                {
-                                    profile.RestoreResourcesForTargetCount(activator, summary);
-                                    // Instant impacts apply these modifiers in AfterImpact below.
-                                    if (profile.TelegraphDuration > 0f && summary.ImpactedTargetCount > 0)
-                                        profile.AfterActivation(activator, skill);
-                                },
-                                maxTargets: profile.MaximumAreaTargets,
-                                enmityBonus: profile.EnmityBonus,
-                                beforeImpact: captureSpreadPrerequisites,
-                                afterSuccessfulHit: impactedTarget =>
-                                {
-                                    profile.AfterSuccessfulHit(activator, impactedTarget, AbilityDamageInput.GetWeaponAbilityDamageType(activator, skill, profile.DamageType), spreadSnapshot);
-                                    GameServices.CombatAbilityHit.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
-                                },
-                                beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(
-                                    activator,
-                                    impactedTarget,
-                                    AbilityDamageInput.GetWeaponAbilityDamageType(activator, skill, profile.DamageType)),
-                                hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
-                                criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(
-                                    activator,
-                                    target,
-                                    activationIdleBonusSnapshot),
-                                impactAnimation: impactAnimation);
-                        }
-                        finally
-                        {
-                            profile.ClearActivationIdleBonusSnapshots(activator);
-                        }
-
-                        profile.AfterImpact(
-                            activator,
-                            areaDamage,
-                            areaDamage > 0 ? 1 : 0,
-                            AbilityImpactState.GetActiveAbilityImpactSummary(activator),
-                            clearActivationIdleBonusSnapshots: false);
-                        return;
-                    }
-
-                    var totalDamage = 0;
-                    var successfulHitCount = 0;
-                    var hitCount = Math.Max(1, profile.HitCount);
-                    for (var hit = 0; hit < hitCount; hit++)
-                    {
-                        var hitDamage = Ability.ApplyCombatImpact(
-                            activator,
-                            target,
-                            targetLocation,
-                            skill,
-                            baseDamage,
-                            impactDuration,
-                            impactStatusEffect,
-                            isArea,
-                            additionalStatusEffects,
-                            profile.StatusEffectFactory,
-                            damageType: profile.DamageType,
-                            combatImpactDamageAbility: combatImpactDamageAbility,
-                            baseDamageAdjustment: impactedTarget => profile.GetBaseDamageAdjustment(
-                                activator,
-                                impactedTarget,
-                                activationIdleBonusSnapshot),
-                            damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
-                            enmityBonus: profile.EnmityBonus,
-                            beforeImpact: captureSpreadPrerequisites,
-                            afterSuccessfulHit: impactedTarget =>
-                            {
-                                profile.AfterSuccessfulHit(activator, impactedTarget, AbilityDamageInput.GetWeaponAbilityDamageType(activator, skill, profile.DamageType), spreadSnapshot);
-                                GameServices.CombatAbilityHit.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
-                            },
-                            beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(
-                                activator,
-                                impactedTarget,
-                                AbilityDamageInput.GetWeaponAbilityDamageType(activator, skill, profile.DamageType)),
-                            hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
-                            criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(
-                                activator,
-                                target,
-                                activationIdleBonusSnapshot),
-                            playImpactAnimation: hit == 0);
-                        totalDamage += hitDamage;
-                        if (hitDamage > 0)
-                            successfulHitCount++;
-                    }
-
-                    profile.RestoreResourcesForTargetCount(activator, AbilityImpactState.GetActiveAbilityImpactSummary(activator));
-                    profile.AfterImpact(activator, totalDamage, successfulHitCount, AbilityImpactState.GetActiveAbilityImpactSummary(activator));
+                        GameServices.WeaponAbilityFriendlyTargets.ApplyFriendlyImpact(
+                            profile, activator, target, isFriendlyTarget, statusEffect, duration, temporaryHPEffectKey, skill);
+                    else
+                        GameServices.WeaponAbilityImpacts.ApplyHostileImpact(
+                            new WeaponAbilityImpactRequest(
+                                profile, skill, baseDamage, duration, statusEffect, additionalStatusEffects, isArea, targetingShape,
+                                targetingSizeX, targetingSizeY, targetingFlags, areaVisualEffect, combatImpactDamageAbility, impactAnimation),
+                            activator, target, targetLocation);
                 })
                 .BreaksStealth();
 
@@ -277,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 ability.HasCustomValidation((activator, target, level, targetLocation) =>
                 {
-                    return profile.ValidateHostileTarget(activator, target);
+                    return GameServices.WeaponAbilityFriendlyTargets.ValidateHostileTarget(profile, activator, target);
                 });
             }
             else if (statusEffect != null)
@@ -293,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 ability.HasCustomValidation((activator, target, level, targetLocation) =>
                     {
-                        return profile.ValidateFriendlyTargetStatus(activator, target);
+                        return GameServices.WeaponAbilityFriendlyTargets.ValidateFriendlyTargetStatus(profile, activator, target);
                     });
                 if (maxRange > 0f)
                     ability.HasMaxRange(maxRange);
@@ -309,28 +142,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ability.RequirementStamina(stamina);
             if (fp > 0)
                 ability.RequirementFP(fp);
-        }
-
-        private static bool ShouldUseTelegraphedCombatImpact(
-            AbilityTargetingShapeType targetingShape,
-            WeaponAbilityProfile profile)
-        {
-            return targetingShape != AbilityTargetingShapeType.None || profile.MaximumAreaTargets > 0;
-        }
-
-        private static CombatImpactAreaShape ToCombatImpactAreaShape(AbilityTargetingShapeType targetingShape)
-        {
-            return targetingShape switch
-            {
-                AbilityTargetingShapeType.Cone => CombatImpactAreaShape.Cone,
-                AbilityTargetingShapeType.Rect => CombatImpactAreaShape.Line,
-                _ => CombatImpactAreaShape.Sphere
-            };
-        }
-
-        private static bool CenterAreaOnActivator(AbilityTargetingFlags targetingFlags)
-        {
-            return (targetingFlags & AbilityTargetingFlags.OriginOnSelf) == AbilityTargetingFlags.OriginOnSelf;
         }
 
         private static void ApplyTargetingMetadata(

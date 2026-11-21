@@ -1926,35 +1926,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 90,
+    "Line": 94,
     "Member": "OnClickConfirm",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(GetRefusalReason(DB.Get<Player>(playerId)), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 100,
+    "Line": 104,
     "Member": "OnClickConfirm",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed in this area.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 106,
+    "Line": 110,
     "Member": "OnClickConfirm",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed while dead.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 143,
+    "Line": 147,
     "Member": "OnClickConfirm",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(GetRefusalReason(dbPlayer), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 181,
+    "Line": 185,
     "Member": "DistributeToBeast",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(GetRefusalReason(dbPlayer), Player, false)"
@@ -3480,14 +3480,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/SkillsViewModel.cs",
-    "Line": 325,
+    "Line": 333,
     "Member": "OnClickDistributeRPXP",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed in this area.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/SkillsViewModel.cs",
-    "Line": 331,
+    "Line": 339,
     "Member": "OnClickDistributeRPXP",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed while dead.\", Player, false)"

@@ -156,18 +156,34 @@ using the two float exponent ranges' 2^24 distinct values. Every tint shader
 this value before lighting.
 
 Exact RGB is shaded with the row of its nearest palette swatch: the shade-128
-midtone the editor shows (`TintMapPaletteColors`). The result is the swatch
-row plus the color's difference from the midtone, scaled by the row's
-luminance relative to that midtone, with the row's environment coverage. A
-color equal to a swatch therefore renders exactly like that palette color,
-reflection included, on every layer. An all-black swatch row (hair row 57,
-for example) has no shading to lend, so a near-black custom color uses the
-layer's first palette row for the offset's shading instead of collapsing to
-black. Do not go back to one reference row for
-all colors: palette rows fall to black at very different rates, and row zero
-(a light blond for hair) left dark RGB hair two to four times brighter and
-flatter than the same palette color on head 053's low-shade hair (bug
-"Hair Color Palette", 2026-11).
+midtone the editor shows (`TintMapPaletteColors`), with the row's environment
+coverage. The swatch lends two things. Its contrast (the row's luminance over
+the midtone's) scales the color's own luminance. Its change of hue and
+saturation from shade to shade is applied relative to the color's own chroma:
+the row's chroma at that shade over its midtone chroma, times the color's
+chroma, with chroma taken as a complex number in the plane orthogonal to the
+luminance weights. A color equal to a swatch therefore renders exactly like
+that palette color, reflection included, on every layer, while a neutral color
+stays neutral on a colored swatch's row. A nearly neutral swatch has no
+reliable hue, so its ratio fades to plain scaling below about 8 levels of
+midtone chroma, and the rest of its row is added back only for colors within
+16 levels of it. `SWLOR_Haks/tools/TintRgbShading.py` is the reference the
+tests check every shader against.
+
+Do not offset the swatch row by the color's difference from its midtone, as
+the 2026-11-17 release did: a dark neutral color far from any neutral swatch
+then takes a colored row's hue. Graphite 20,20,24 picked olive cloth row 167
+and went green in shadow and blue-white in highlights (bug report
+2026-11-20). A swatch darker than two levels lends the layer's first palette
+row's shading and coverage instead of its own. The black rows have no shading
+and differ only in reflection, which a custom color cannot choose: cloth
+black resolved to the half-reflective row 57 (the lowest black ID), so hoods
+dyed 0,0,0 or 2,2,2 rendered a flat grey sheen. Skin row 31 rises from a
+1-level midtone to white and turned near-black skin white. Do not go back to
+one reference row for all colors either: palette rows fall to black at very
+different rates, and row zero (a light blond for hair) left dark RGB hair two
+to four times brighter and flatter than the same palette color on head 053's
+low-shade hair (bug "Hair Color Palette", 2026-11).
 
 Atlas rows 1536-2047 hold the swatch lookup the shaders read: four groups
 (skin; hair; metal, shared by Metal1/Metal2; cloth, shared by leather and
@@ -189,20 +205,27 @@ authored-diffuse mode keeps its luminance-only RGB and first-row metal
 coverage. Authored normal, specular and roughness maps still pass through
 standard material lighting. Preset lookup and authored colors are unchanged.
 
-The Toolset shades RGB the same way. Its area viewport (NWN.Toolset
-`AreaViewportControl`, package 0.1.0-preview.6 or later) takes the swatch row
-the host passes as `PaletteRow`; `SwlorAreaViewportMaterialProvider` passes
-`GetClosestColorId`'s exact nearest swatch, so the 0.2% of colors the atlas
-lookup resolves to a farther swatch can differ slightly from the game. The
-cloak material sets `CustomColorsUseLayerCoverage`, which keeps the reflective
-cloak coverage rule; the viewport does not model cutout cloaks.
-`TintMapTextureRenderer` (CPU previews) applies the same swatch shading.
+The Toolset's CPU previews (`TintMapTextureRenderer`) shade RGB with
+`TintRgbShading`, a port of `TintRgbShading.py` that `TintRgbShadingTests`
+checks against the reference, including every swatch sent as RGB and the
+reported black and dark neutral dyes. Its area viewport (NWN.Toolset
+`AreaViewportControl`, package 0.1.0-preview.6) still shades RGB with the
+2026-11-17 offset formula in the package's shader and does not yet apply the
+chroma-relative shading or the dark-swatch rule, so near-black and dark neutral
+custom colors look different there than in the game until the package changes.
+It takes the swatch row the host passes as `PaletteRow`;
+`SwlorAreaViewportMaterialProvider` passes `GetClosestColorId`'s exact nearest
+swatch, so the 0.2% of colors the atlas lookup resolves to a farther swatch can
+differ slightly from the game in both Toolset paths. The cloak material sets
+`CustomColorsUseLayerCoverage`, which keeps the reflective cloak coverage rule;
+the viewport does not model cutout cloaks.
 
 Run `TestTintRgb.py --game-data <NWN data directory>` for GPU RGB and metal
 material checks. `TestTintShaderMaterials.py` validates native engine shader/MTR
 and preset parity, including every swatch sent as exact RGB against its
 installed palette row at every shade and layer. `TestPaletteSwatchLookup.py`
-checks the lookup rows without a GPU.
+checks the lookup rows and the shading reference without a GPU, including the
+reported black and dark neutral dyes.
 `python -B -m unittest discover -s tools/tests -p test_toolset_tint_shader.py`
 draws the Toolset's production desktop and ES shader pairs on Windows, checking
 swatch-row RGB shading and coverage, every fifth swatch sent as RGB against its

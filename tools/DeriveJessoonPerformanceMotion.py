@@ -225,6 +225,17 @@ def build():
     return outputs, slides
 
 
+def comparable(value):
+    """Installation rewrites projects with float32 values and its own number format; compare what it keeps."""
+    if isinstance(value, dict):
+        return {key: comparable(item) for key, item in value.items() if key != 'IsIdentity'}
+    if isinstance(value, list):
+        return [comparable(item) for item in value]
+    if isinstance(value, float):
+        return 0.0 if abs(value) < 1e-12 else float(np.float32(value))
+    return value
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--check', action='store_true', help='fail when the committed projects differ')
@@ -236,7 +247,7 @@ def main() -> int:
     for name, text in outputs.items():
         path = PERFORMANCE / f'{name}.swlanim'
         current = path.read_text(encoding='utf-8-sig') if path.exists() else None
-        if current == text:
+        if current is not None and comparable(json.loads(current)) == comparable(json.loads(text)):
             continue
         if arguments.check:
             stale.append(path.name)

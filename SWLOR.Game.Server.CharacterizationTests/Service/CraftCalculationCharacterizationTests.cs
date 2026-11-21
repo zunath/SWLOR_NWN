@@ -39,7 +39,7 @@ public class CraftCalculationCharacterizationTests : FacadeFixture
             AllowConstantOutputs = true
         };
 
-        // An explicit list, sorted by name, not a reflection over Craft: when its facade is removed (P2-Z) the
+        // An explicit list, sorted by name, not a reflection over Craft: when its facade is removed the
         // constants move to their owners and the facade removal tool respells each read, both ways (the parity copy).
         var constants = new (string Name, Type Type, object Value)[]
         {

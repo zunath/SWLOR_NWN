@@ -38,7 +38,7 @@ internal static class HandlerRenames
 
     /// <summary>
     /// The renames file with each pair recorded. A line whose branch side names the old name takes the new one there; that
-    /// includes a split handler (<c>&lt;master&gt; &lt;part&gt; &lt;part&gt;</c>, P4-8), whose part keeps its place on the line.
+    /// includes a split handler (<c>&lt;master&gt; &lt;part&gt; &lt;part&gt;</c>), whose part keeps its place on the line.
     /// </summary>
     public static string Update(string text, IReadOnlyList<(string Old, string New)> pairs)
     {

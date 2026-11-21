@@ -1,7 +1,7 @@
 using SWLOR.FacadeRemoval;
 
 /*
- * Facade removal (P2-Z, Readmes/MaintainabilityRefactorFacadeRemoval.md).
+ * Facade removal (Readmes/MaintainabilityRefactorFacadeRemoval.md).
  *
  * The facades listed in tools/Refactor/RemovedFacades.json are deleted on the branch; static code reaches their services
  * through SWLOR.Game.Server.Composition.GameServices. This tool keeps the callers in that shape, so it can run again after

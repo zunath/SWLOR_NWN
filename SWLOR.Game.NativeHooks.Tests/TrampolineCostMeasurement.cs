@@ -9,7 +9,7 @@ namespace SWLOR.Game.NativeHooks.Tests;
 
 /// <summary>
 /// Measurement, not a check (explicit): nanoseconds per call of the per-frame <c>GetMaxHitPoints</c> trampoline, bound and
-/// unbound, against a copy of the trampoline the game assembly held before (P4-9 and P4-10: a plain static sink field,
+/// unbound, against a copy of the trampoline the game assembly held before (a plain static sink field,
 /// no null check). The difference is the volatile read and the null check.
 /// </summary>
 [TestFixture]

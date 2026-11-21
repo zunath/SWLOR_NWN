@@ -242,7 +242,7 @@ internal static class CallerRewriter
         if (edits.Count == 0)
             return new RewriteResult(text, 0, 0, false);
 
-        // Master's facades live in SWLOR.Game.Server.Service. Since P2-Z3 the branch's files no longer import that namespace
+        // Master's facades live in SWLOR.Game.Server.Service. Since the type move the branch's files no longer import that namespace
         // (nothing is left in it), so a file that reaches a facade again imports it when the tree it is reversed against
         // declares it.
         var rewrites = edits.Count - removed;

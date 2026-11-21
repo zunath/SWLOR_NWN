@@ -282,7 +282,7 @@ internal static class FacadeRemovalRunner
     /// <summary>
     /// True when the project's <c>GlobalUsings.cs</c> imports the <c>GameServices</c> properties globally, or imports
     /// <c>SWLOR.Game.Server.Service</c> globally (master's shape, where it then gets the accessor's global form too). Since
-    /// P2-Z3 the branch's projects no longer import <c>Service</c>; the accessor's global import stays.
+    /// the type move the branch's projects no longer import <c>Service</c>; the accessor's global import stays.
     /// </summary>
     private static bool ImportsGlobally(string project)
     {

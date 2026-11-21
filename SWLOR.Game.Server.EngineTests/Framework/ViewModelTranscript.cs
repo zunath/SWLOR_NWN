@@ -26,7 +26,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.EngineTests.Framework
 {
     /// <summary>
-    /// The binding recorder of the view model split (P5-16h, PR 0), copied from the appearance editor's recorder (P5-16e) and
+    /// The binding recorder of the view model split, copied from the appearance editor's recorder and
     /// widened to the whole window: it is attached to the view model BEFORE <c>Bind</c>, so the opening order is recorded, and it
     /// writes one transcript line for each of the following, in the order they happen, per step.
     /// <list type="bullet">

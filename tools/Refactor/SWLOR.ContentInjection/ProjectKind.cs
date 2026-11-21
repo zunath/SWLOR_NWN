@@ -9,7 +9,7 @@ internal enum ProjectKind
     /// <summary><c>SWLOR.Game.Server</c>.</summary>
     Server,
 
-    /// <summary><c>SWLOR.Game.Server.EngineTests</c>: unconverted classes use the temporary <c>GameServices.Content</c> until wave C9.</summary>
+    /// <summary><c>SWLOR.Game.Server.EngineTests</c>: unconverted classes use the temporary <c>GameServices.Content</c> until they are converted.</summary>
     EngineTests,
 
     /// <summary>A unit-test project: a fixture declares <c>Content</c> from its own container, never a static lookup.</summary>

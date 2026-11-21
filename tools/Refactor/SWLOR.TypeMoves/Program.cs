@@ -1,12 +1,12 @@
 using SWLOR.TypeMoves;
 
 /*
- * Type moves (P2-Z3, Readmes/DependencyInjection.md "No support namespaces"; P5-1c, Readmes/MaintainabilityRefactorDomainOrder.md
+ * Type moves (Readmes/DependencyInjection.md "No support namespaces"; Readmes/MaintainabilityRefactorDomainOrder.md
  * section 5).
  *
  * Moves the types a data file lists out of the namespace each one leaves into the namespace it joins, and keeps every
  * reference in that shape, so it can run again after every merge of master (a mechanical script,
- * tools/Refactor/MechanicalScripts.txt). Two data files use it: tools/Refactor/TypeMoves.json (P2-Z3, the types left
+ * tools/Refactor/MechanicalScripts.txt). Two data files use it: tools/Refactor/TypeMoves.json (the types left
  * directly in SWLOR.Game.Server.Service, through Move-ServiceTypes.ps1) and tools/Refactor/DomainOrderTypeMoves.json (the
  * domain order's moves, each with its own source, through Move-DomainOrderTypes.ps1, which runs after it). A target is any
  * namespace of the server outside the source (Feature to Domain, Domain.Foundation to Core). A run:

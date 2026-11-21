@@ -5,7 +5,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
 /// <summary>
-/// Frame equivalence of the two entries (P4-10). The native entry (<c>ServerManager.Bootstrap</c>) runs its frame work
+/// Frame equivalence of the two entries. The native entry (<c>ServerManager.Bootstrap</c>) runs its frame work
 /// (<see cref="Scheduler"/>, <c>NwTask</c>) inside NWNX's main-loop callback with <c>OBJECT_SELF</c> invalid, from the first
 /// frame, and NWNX refuses a closure aimed at that invalid object, which is then dropped without an exception. The host
 /// entry (<c>SWLOR.Game.Host</c>) must do the same: the package's inline frame delivery and dropped rejected closures.

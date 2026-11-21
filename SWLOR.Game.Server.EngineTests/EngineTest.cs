@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.EngineTests
         /// <summary>
         /// Schedules the suite after the module loads. A hot reload reruns it in the new build (it only reads settings and starts a
         /// timer, <see cref="BootReload.Rerun"/>), so a server that reloads with engine tests on runs the filtered suite again in each
-        /// generation: the <c>HotReloadPlayers</c> scenario checks its player there (P4-15). Reload is off in the normal sweep.
+        /// generation: the <c>HotReloadPlayers</c> scenario checks its player there. Reload is off in the normal sweep.
         /// </summary>
         [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]

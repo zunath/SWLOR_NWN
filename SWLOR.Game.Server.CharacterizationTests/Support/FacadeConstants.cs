@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.CharacterizationTests.Support;
 
 /// <summary>
 /// Keeps a "public constants" snapshot written as an explicit list complete. The lists replaced a reflection over the
-/// facade (P2-ZA): once a facade is removed its constants live on their owners (<c>CombatRules</c>, ...), and the facade
+/// facade: once a facade is removed its constants live on their owners (<c>CombatRules</c>, ...), and the facade
 /// removal tool respells each read in the list, both ways, so the same test compiles on the branch and, reversed, on
 /// master. While the static class still exists (on master, and on the branch until its facade is removed) it is looked
 /// up by name and the list must name every public constant it has, so a constant master adds shows up in the parity run.

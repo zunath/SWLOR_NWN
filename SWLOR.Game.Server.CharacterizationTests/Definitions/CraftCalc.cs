@@ -16,7 +16,7 @@ internal static class CraftCalc
 {
     private static readonly Assembly ServerAssembly = typeof(RecipeDetail).Assembly;
 
-    // The crafting instance, and the service the enhancement calculations moved to in P5-9a. Master has none of them.
+    // The crafting instance, and the service the enhancement calculations moved to. Master has none of them.
     private static readonly Type InstanceType =
         ServerAssembly.GetType("SWLOR.Game.Server.Domain.Crafting.CraftService");
 

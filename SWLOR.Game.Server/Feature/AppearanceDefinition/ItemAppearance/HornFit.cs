@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
@@ -85,13 +86,14 @@ public static class HornFit
             fits[(panpipes, appearance, Gender.Female)] = femalePanpipes;
 
         var femaleKloo = new HornFitOffset(.02f, 0f, 0f, -13f);
-        foreach (var appearance in new[]
-                 {
-                     AppearanceType.Human, AppearanceType.Chiss, AppearanceType.Zabrak, AppearanceType.Twilek,
-                     AppearanceType.Mirialan, AppearanceType.Echani, AppearanceType.KelDor, AppearanceType.Cyborg,
-                     AppearanceType.Trandoshan, AppearanceType.Togruta, AppearanceType.Nautolan,
-                     AppearanceType.Bothan, AppearanceType.Rodian
-                 })
+        var femaleKlooBodies = new[]
+        {
+            AppearanceType.Human, AppearanceType.Chiss, AppearanceType.Zabrak, AppearanceType.Twilek,
+            AppearanceType.Mirialan, AppearanceType.Echani, AppearanceType.KelDor, AppearanceType.Cyborg,
+            AppearanceType.Trandoshan, AppearanceType.Togruta, AppearanceType.Nautolan,
+            AppearanceType.Bothan, AppearanceType.Rodian
+        };
+        foreach (var appearance in femaleKlooBodies)
             fits[(kloo, appearance, Gender.Female)] = femaleKloo;
 
         // The Flanged Jessoon plays on the kloo horn's hold, so each body's Jessoon goes where its kloo horn goes. Its crook bends
@@ -101,6 +103,22 @@ public static class HornFit
         foreach (var gender in new[] { Gender.Male, Gender.Female })
             fits[(jessoon, appearance, gender)] =
                 HornFitTransform.Compose(fits.GetValueOrDefault((kloo, appearance, gender)), JessoonOnKlooHorn);
+
+        // The kloo horn's wide body fills the hands even where its fit leaves its axis outside them; the slim Jessoon has to lie
+        // in the fingers. On these female bodies the kloo horn's tilt stays, but its slide would hold the Jessoon 3 to 5 cm
+        // outside both hands (seen close up in the client), so the shaft stays at the grip.
+        foreach (var appearance in femaleKlooBodies.Append(AppearanceType.MonCalamari))
+            fits[(jessoon, appearance, Gender.Female)] =
+                HornFitTransform.Compose(fits[(kloo, appearance, Gender.Female)], JessoonOnKlooHorn) with
+                {
+                    TranslateX = 0f, TranslateZ = 0f
+                };
+
+        // Ugnaught mouths sit low under the snout, and the kloo horn's reach leaves the Jessoon's mouthpiece at the nose, so it
+        // slides 7 cm down its shaft (seen close up in the client).
+        var ugnaughtJessoon = JessoonOnKlooHorn with { TranslateX = -.018f, TranslateY = -.003f, TranslateZ = -.018f };
+        fits[(jessoon, AppearanceType.Ugnaught, Gender.Male)] = ugnaughtJessoon;
+        fits[(jessoon, AppearanceType.Ugnaught, Gender.Female)] = ugnaughtJessoon;
 
         // The kloo horn's Cathar male fit carries the horn clear of his hands; his hands already bring the Jessoon to his mouth.
         fits[(jessoon, AppearanceType.Cathar, Gender.Male)] = JessoonOnKlooHorn;

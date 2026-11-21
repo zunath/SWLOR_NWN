@@ -136,68 +136,51 @@ public class HornFitTests
             DistanceToLine(Plus(grip, Scale(klooDirection, along)), low, high).Should().BeLessThan(.01d, along.ToString());
     }
 
-    // Full-height female bodies whose hands close on the Jessoon's slim shaft only at the grip.
-    private static readonly AppearanceType[] GripFemaleBodies =
-    {
-        AppearanceType.Human, AppearanceType.Chiss, AppearanceType.Zabrak, AppearanceType.Twilek, AppearanceType.Mirialan,
-        AppearanceType.Echani, AppearanceType.KelDor, AppearanceType.Cyborg, AppearanceType.Trandoshan, AppearanceType.Togruta,
-        AppearanceType.Nautolan, AppearanceType.Bothan, AppearanceType.Rodian, AppearanceType.MonCalamari
-    };
-
     [Test]
-    public void TheJessoonGoesWhereEachBodysKlooHornGoesOnlyWhilePlaying()
+    public void TheJessoonFitsOnlyWhilePlaying()
     {
         foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
         foreach (var gender in new[] { Gender.Male, Gender.Female })
         {
             Fit("jessoon", appearance, 0, gender, false).Should().Be(default(HornFitOffset));
-            if (appearance == AppearanceType.Cathar && gender == Gender.Male || appearance == AppearanceType.Ugnaught ||
-                gender == Gender.Female && GripFemaleBodies.Contains(appearance))
-                continue;
-
-            var kloo = Fit("kloo_horn", appearance, 0, gender, true);
-            var jessoon = Fit("JESSOON", appearance, 0, gender, true);
-            foreach (var point in new[] { JessoonMouthpiece, JessoonShaftLow, JessoonShaftHigh })
-                Distance(Apply(jessoon, point), Apply(kloo, Apply(HornFit.JessoonOnKlooHorn, point)))
-                    .Should().BeLessThan(.0005d, $"{appearance} {gender}");
+            Fit("JESSOON", appearance, 0, gender, true).Should().NotBe(default(HornFitOffset));
         }
     }
 
     [Test]
-    public void OnFullHeightFemaleBodiesTheJessoonKeepsTheKlooHornsTiltWithItsShaftAtTheGrip()
+    public void TheJessoonHoldSlidesTheAlignedJessoonSixCentimetresUpThroughTheHand()
     {
-        foreach (var appearance in GripFemaleBodies)
-        {
-            var onKloo = HornFitTransform.Compose(Fit("kloo_horn", appearance, 0, Gender.Female, true), HornFit.JessoonOnKlooHorn);
-            var jessoon = Fit("jessoon", appearance, 0, Gender.Female, true);
-
-            // The same tilt moves every point of the Jessoon by one shift...
-            var shift = Minus(Apply(jessoon, JessoonShaftLow), Apply(onKloo, JessoonShaftLow));
-            foreach (var point in new[] { JessoonMouthpiece, JessoonShaftHigh })
-                Distance(Minus(Apply(jessoon, point), Apply(onKloo, point)), shift).Should().BeLessThan(.0005d, appearance.ToString());
-
-            // ...which takes back the kloo horn's slide across the hand, 3 cm or more on every body.
-            jessoon.TranslateX.Should().Be(0f, appearance.ToString());
-            jessoon.TranslateZ.Should().Be(0f, appearance.ToString());
-            jessoon.TranslateY.Should().BeApproximately(onKloo.TranslateY, 1e-6f, appearance.ToString());
-            Distance(shift, (0d, 0d, 0d)).Should().BeGreaterThan(.03d, appearance.ToString());
-        }
-    }
-
-    [TestCase(Gender.Male)]
-    [TestCase(Gender.Female)]
-    public void TheUgnaughtJessoonSlidesSevenCentimetresDownItsShaftToTheLowMouth(Gender gender)
-    {
-        var aligned = HornFit.JessoonOnKlooHorn;
-        var jessoon = Fit("jessoon", AppearanceType.Ugnaught, 0, gender, true);
-        var down = Scale(Unit(Minus(Apply(aligned, JessoonShaftLow), Apply(aligned, JessoonShaftHigh))), .07d);
+        // The Jessoon clips move the right hand 6 cm down the body (tools/DeriveJessoonPerformanceMotion.py).
+        var up = Scale(Unit(Minus(JessoonShaftHigh, JessoonShaftLow)), .06d);
         foreach (var point in new[] { JessoonMouthpiece, JessoonShaftLow, JessoonShaftHigh })
-            Distance(Minus(Apply(jessoon, point), Apply(aligned, point)), down).Should().BeLessThan(.001d);
+            Distance(Apply(HornFit.JessoonHold, point), Apply(HornFit.JessoonOnKlooHorn, Plus(point, up))).Should().BeLessThan(.001d);
     }
 
+    [TestCase(AppearanceType.Human, Gender.Male)]
+    [TestCase(AppearanceType.Chiss, Gender.Male)]
+    [TestCase(AppearanceType.Twilek, Gender.Male)]
+    [TestCase(AppearanceType.Droid, Gender.Male)]
+    [TestCase(AppearanceType.Droid, Gender.Female)]
+    public void BodiesOnTheAuthoringSkeletonHoldTheJessoonWhereItsClipsWereSolved(AppearanceType appearance, Gender gender) =>
+        Fit("jessoon", appearance, 0, gender, true).Should().Be(HornFit.JessoonHold);
+
     [Test]
-    public void TheCatharMaleJessoonTakesNoKlooHornBodyFit() =>
-        Fit("jessoon", AppearanceType.Cathar, 0, Gender.Male, true).Should().Be(HornFit.JessoonOnKlooHorn);
+    public void EveryBodyHoldsTheJessoonsStraightBodyInTheRightHand()
+    {
+        // tools/SolveJessoonFits.py keeps the tube within a few centimetres of the right hand, up the straight body
+        // between its bottom joint and the flange, with the mouthpiece at arm's length from the hand.
+        foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
+        foreach (var gender in new[] { Gender.Male, Gender.Female })
+        {
+            var fit = Fit("jessoon", appearance, 0, gender, true);
+            var low = Apply(fit, JessoonShaftLow);
+            var high = Apply(fit, JessoonShaftHigh);
+            var hand = (0d, 0d, 0d);
+            DistanceToLine(hand, low, high).Should().BeLessThan(.035d, $"{appearance} {gender}");
+            Dot(Minus(hand, low), Unit(Minus(high, low))).Should().BeInRange(.10d, .25d, $"{appearance} {gender}");
+            Distance(Apply(fit, JessoonMouthpiece), hand).Should().BeInRange(.35d, .48d, $"{appearance} {gender}");
+        }
+    }
 
     private static (double X, double Y, double Z) Apply(HornFitOffset fit, (double X, double Y, double Z) point) =>
         HornFitTransform.Apply(fit, point.X, point.Y, point.Z);

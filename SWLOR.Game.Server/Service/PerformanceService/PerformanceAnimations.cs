@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -50,6 +51,70 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             [AuthoredAnimation.TambourineHigh] = AuthoredAnimation.TambourineWideHigh,
             [AuthoredAnimation.TambourineFlourish] = AuthoredAnimation.TambourineWideFlourish,
         };
+
+        // The horn motion with the hands spread along the Flanged Jessoon's long body (tools/DeriveJessoonPerformanceMotion.py),
+        // solved on the male Human skeleton, which the droids share.
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoon = new()
+        {
+            [AuthoredAnimation.HornLoop] = AuthoredAnimation.JessoonLoop,
+            [AuthoredAnimation.HornLow] = AuthoredAnimation.JessoonLow,
+            [AuthoredAnimation.HornMid] = AuthoredAnimation.JessoonMid,
+            [AuthoredAnimation.HornHigh] = AuthoredAnimation.JessoonHigh,
+            [AuthoredAnimation.HornFlourish] = AuthoredAnimation.JessoonFlourish,
+        };
+
+        // The same hold solved on the female skeleton.
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonFemale = new()
+        {
+            [AuthoredAnimation.HornLoop] = AuthoredAnimation.JessoonFemaleLoop,
+            [AuthoredAnimation.HornLow] = AuthoredAnimation.JessoonFemaleLow,
+            [AuthoredAnimation.HornMid] = AuthoredAnimation.JessoonFemaleMid,
+            [AuthoredAnimation.HornHigh] = AuthoredAnimation.JessoonFemaleHigh,
+            [AuthoredAnimation.HornFlourish] = AuthoredAnimation.JessoonFemaleFlourish,
+        };
+
+        // The same hold solved on the long-armed Cathar male skeleton.
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonLongArm = new()
+        {
+            [AuthoredAnimation.HornLoop] = AuthoredAnimation.JessoonLongArmLoop,
+            [AuthoredAnimation.HornLow] = AuthoredAnimation.JessoonLongArmLow,
+            [AuthoredAnimation.HornMid] = AuthoredAnimation.JessoonLongArmMid,
+            [AuthoredAnimation.HornHigh] = AuthoredAnimation.JessoonLongArmHigh,
+            [AuthoredAnimation.HornFlourish] = AuthoredAnimation.JessoonLongArmFlourish,
+        };
+
+        // The same hold solved on the Cathar female skeleton.
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonCatharFemale = new()
+        {
+            [AuthoredAnimation.HornLoop] = AuthoredAnimation.JessoonCatharFemaleLoop,
+            [AuthoredAnimation.HornLow] = AuthoredAnimation.JessoonCatharFemaleLow,
+            [AuthoredAnimation.HornMid] = AuthoredAnimation.JessoonCatharFemaleMid,
+            [AuthoredAnimation.HornHigh] = AuthoredAnimation.JessoonCatharFemaleHigh,
+            [AuthoredAnimation.HornFlourish] = AuthoredAnimation.JessoonCatharFemaleFlourish,
+        };
+
+        /// <summary>
+        /// The horn clips are posed for the kloo horn, whose hands sit close together near the top of a short body. The
+        /// Flanged Jessoon is a long saxophone, so it plays copies with the right hand lower on the body and the left hand
+        /// closed on the tube under the flange. One copy cannot put both hands on the tube and the mouthpiece at the mouth on
+        /// every skeleton, so each body plays the copy that fits it best, measured on the compiled banks: the female copies on
+        /// the full-height female bodies, the Cathar female's own copies, the long-armed copies on the Cathar male and the
+        /// short Ugnaught and Ewok bodies, and the male Human copies on the other male bodies and the droids.
+        /// </summary>
+        public static AnimationClip FitToInstrument(
+            AnimationClip clip, string instrumentResref, AppearanceType appearance, Gender gender)
+        {
+            if (clip == null || !string.Equals(instrumentResref, "jessoon", StringComparison.OrdinalIgnoreCase))
+                return clip;
+            var copies = appearance switch
+            {
+                AppearanceType.Cathar => gender == Gender.Female ? _jessoonCatharFemale : _jessoonLongArm,
+                AppearanceType.Ugnaught or AppearanceType.Ewok => _jessoonLongArm,
+                AppearanceType.Droid => _jessoon,
+                _ => gender == Gender.Female ? _jessoonFemale : _jessoon
+            };
+            return copies.TryGetValue(clip, out var copy) ? copy : clip;
+        }
 
         /// <summary>
         /// One clip serves every body, and the singing clips hold the microphone at a Human-height mouth. An Ugnaught's

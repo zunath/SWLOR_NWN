@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
@@ -29,6 +28,13 @@ public static class HornFit
 
     /// <summary>Places the Flanged Jessoon's shaft and mouthpiece where the kloo horn's are, with no body fit.</summary>
     public static readonly HornFitOffset JessoonOnKlooHorn = new(-.035f, .065f, -.017f, 12.3f, -152.4f, 28.6f);
+
+    /// <summary>
+    /// The Jessoon clips hold the instrument where the horn clips hold the kloo horn, with the right hand 6 cm lower on its
+    /// body (tools/DeriveJessoonPerformanceMotion.py), so the Jessoon slides 6 cm up through that hand.
+    /// </summary>
+    public static readonly HornFitOffset JessoonHold =
+        HornFitTransform.Compose(JessoonOnKlooHorn, new HornFitOffset(-.0188f, .0569f, .0034f, 0f));
 
     private static readonly Dictionary<(string Resref, AppearanceType Appearance, Gender Gender), HornFitOffset> _playingFits =
         BuildPlayingFits();
@@ -96,32 +102,41 @@ public static class HornFit
         foreach (var appearance in femaleKlooBodies)
             fits[(kloo, appearance, Gender.Female)] = femaleKloo;
 
-        // The Flanged Jessoon plays on the kloo horn's hold, so each body's Jessoon goes where its kloo horn goes. Its crook bends
-        // the other way and its mouthpiece sits lower on the shaft (measured from both models), so it is turned half a turn
-        // about its shaft, laid along the kloo horn's shaft and slid 7 cm up through the hands.
+        // The Flanged Jessoon plays its own clips (PerformanceAnimations.FitToInstrument): the horn motion with the hands spread
+        // along its long body. Each body's fit hangs it from the right hand so the tube runs through both grips and the
+        // mouthpiece reaches that body's mouth over the whole loop. tools/SolveJessoonFits.py solves them from the compiled
+        // clips; most bodies of one skeleton share a fit, and the rest differ by their heads and hands.
         foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
         foreach (var gender in new[] { Gender.Male, Gender.Female })
-            fits[(jessoon, appearance, gender)] =
-                HornFitTransform.Compose(fits.GetValueOrDefault((kloo, appearance, gender)), JessoonOnKlooHorn);
+            fits[(jessoon, appearance, gender)] = JessoonHold;
 
-        // The kloo horn's wide body fills the hands even where its fit leaves its axis outside them; the slim Jessoon has to lie
-        // in the fingers. On these female bodies the kloo horn's tilt stays, but its slide would hold the Jessoon 3 to 5 cm
-        // outside both hands (seen close up in the client), so the shaft stays at the grip.
-        foreach (var appearance in femaleKlooBodies.Append(AppearanceType.MonCalamari))
-            fits[(jessoon, appearance, Gender.Female)] =
-                HornFitTransform.Compose(fits[(kloo, appearance, Gender.Female)], JessoonOnKlooHorn) with
-                {
-                    TranslateX = 0f, TranslateZ = 0f
-                };
+        var femaleJessoon = new HornFitOffset(-.0146f, .1162f, -.0124f, .84f, -146.14f, 27.88f);
+        foreach (var appearance in new[]
+                 {
+                     AppearanceType.Human, AppearanceType.Chiss, AppearanceType.Zabrak, AppearanceType.Twilek,
+                     AppearanceType.Mirialan, AppearanceType.Echani, AppearanceType.KelDor, AppearanceType.Cyborg,
+                     AppearanceType.Trandoshan, AppearanceType.Togruta, AppearanceType.Nautolan
+                 })
+            fits[(jessoon, appearance, Gender.Female)] = femaleJessoon;
 
-        // Ugnaught mouths sit low under the snout, and the kloo horn's reach leaves the Jessoon's mouthpiece at the nose, so it
-        // slides 7 cm down its shaft (seen close up in the client).
-        var ugnaughtJessoon = JessoonOnKlooHorn with { TranslateX = -.018f, TranslateY = -.003f, TranslateZ = -.018f };
-        fits[(jessoon, AppearanceType.Ugnaught, Gender.Male)] = ugnaughtJessoon;
-        fits[(jessoon, AppearanceType.Ugnaught, Gender.Female)] = ugnaughtJessoon;
-
-        // The kloo horn's Cathar male fit carries the horn clear of his hands; his hands already bring the Jessoon to his mouth.
-        fits[(jessoon, AppearanceType.Cathar, Gender.Male)] = JessoonOnKlooHorn;
+        var heavyHeadJessoon = new HornFitOffset(-.0472f, .1211f, -.0251f, 2.95f, -173.72f, 32.33f);
+        fits[(jessoon, AppearanceType.Trandoshan, Gender.Male)] = heavyHeadJessoon;
+        fits[(jessoon, AppearanceType.MonCalamari, Gender.Male)] = heavyHeadJessoon;
+        fits[(jessoon, AppearanceType.MonCalamari, Gender.Female)] = new(-.0153f, .1176f, -.0099f, 3.37f, -139.11f, 26.14f);
+        fits[(jessoon, AppearanceType.Bothan, Gender.Male)] = new(-.042f, .1162f, -.0142f, 11.35f, -159.97f, 29.58f);
+        var snoutJessoon = new HornFitOffset(-.0402f, .1141f, -.0227f, 2.95f, -173.44f, 31.87f);
+        fits[(jessoon, AppearanceType.Rodian, Gender.Male)] = snoutJessoon;
+        fits[(jessoon, AppearanceType.Wookiee, Gender.Male)] = snoutJessoon;
+        var smallFemaleJessoon = new HornFitOffset(-.0126f, .1077f, -.0119f, 1.23f, -140.49f, 26.61f);
+        fits[(jessoon, AppearanceType.Bothan, Gender.Female)] = smallFemaleJessoon;
+        fits[(jessoon, AppearanceType.Rodian, Gender.Female)] = smallFemaleJessoon;
+        fits[(jessoon, AppearanceType.Wookiee, Gender.Female)] = new(-.0138f, .1096f, -.0115f, 2.05f, -138.74f, 26.71f);
+        fits[(jessoon, AppearanceType.Cathar, Gender.Male)] = new(-.0502f, .1248f, -.0163f, 12.35f, -152.21f, 28.66f);
+        fits[(jessoon, AppearanceType.Cathar, Gender.Female)] = new(-.05f, .1182f, -.0416f, 1.93f, -146.11f, 27.8f);
+        fits[(jessoon, AppearanceType.Ugnaught, Gender.Male)] = new(-.0201f, .0388f, -.0136f, 10.47f, -170.76f, 31.22f);
+        fits[(jessoon, AppearanceType.Ugnaught, Gender.Female)] = new(-.0224f, .0384f, -.0134f, 10.24f, -168.57f, 31.46f);
+        fits[(jessoon, AppearanceType.Ewok, Gender.Male)] = new(-.0367f, .1063f, -.0096f, 9.84f, -170.22f, 31.46f);
+        fits[(jessoon, AppearanceType.Ewok, Gender.Female)] = new(-.0395f, .1055f, -.0103f, 9.89f, -167.44f, 31.37f);
 
         return fits;
     }

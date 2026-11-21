@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
@@ -110,6 +111,79 @@ public class HornFitTests
             else
                 fit.Should().NotBe(default(HornFitOffset), appearance.ToString());
         }
+    }
+
+    // Centreline points measured from the two horn models (wmgfs_m_211 is the Jessoon, wmgfs_m_201 the kloo horn).
+    private static readonly (double X, double Y, double Z) JessoonMouthpiece = (-.060d, .318d, .035d);
+    private static readonly (double X, double Y, double Z) JessoonShaftLow = (.077d, -.26d, -.025d);
+    private static readonly (double X, double Y, double Z) JessoonShaftHigh = (-.055d, .14d, -.001d);
+    private static readonly (double X, double Y, double Z) KlooMouthpiece = (-.155d, .367d, -.007d);
+    private static readonly (double X, double Y, double Z) KlooShaftLow = (.159d, -.55d, -.021d);
+    private static readonly (double X, double Y, double Z) KlooShaftHigh = (-.067d, .21d, -.011d);
+
+    [Test]
+    public void TheJessoonLiesInTheKlooHornsHandsWithItsMouthpieceAtTheKlooHornsMouthpiece()
+    {
+        var fit = HornFit.JessoonOnKlooHorn;
+        Distance(Apply(fit, JessoonMouthpiece), KlooMouthpiece).Should().BeLessThan(.01d);
+
+        // Both hands close on the kloo horn's shaft from the grip to 14 cm above it.
+        var low = Apply(fit, JessoonShaftLow);
+        var high = Apply(fit, JessoonShaftHigh);
+        var klooDirection = Unit(Minus(KlooShaftHigh, KlooShaftLow));
+        var grip = Plus(KlooShaftLow, Scale(klooDirection, -Dot(KlooShaftLow, klooDirection)));
+        foreach (var along in new[] { -.03d, 0d, .03d, .08d, .11d, .14d })
+            DistanceToLine(Plus(grip, Scale(klooDirection, along)), low, high).Should().BeLessThan(.01d, along.ToString());
+    }
+
+    [Test]
+    public void TheJessoonGoesWhereEachBodysKlooHornGoesOnlyWhilePlaying()
+    {
+        foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
+        foreach (var gender in new[] { Gender.Male, Gender.Female })
+        {
+            Fit("jessoon", appearance, 0, gender, false).Should().Be(default(HornFitOffset));
+            if (appearance == AppearanceType.Cathar && gender == Gender.Male)
+                continue;
+
+            var kloo = Fit("kloo_horn", appearance, 0, gender, true);
+            var jessoon = Fit("JESSOON", appearance, 0, gender, true);
+            foreach (var point in new[] { JessoonMouthpiece, JessoonShaftLow, JessoonShaftHigh })
+                Distance(Apply(jessoon, point), Apply(kloo, Apply(HornFit.JessoonOnKlooHorn, point)))
+                    .Should().BeLessThan(.0005d, $"{appearance} {gender}");
+        }
+    }
+
+    [Test]
+    public void TheCatharMaleJessoonTakesNoKlooHornBodyFit() =>
+        Fit("jessoon", AppearanceType.Cathar, 0, Gender.Male, true).Should().Be(HornFit.JessoonOnKlooHorn);
+
+    private static (double X, double Y, double Z) Apply(HornFitOffset fit, (double X, double Y, double Z) point) =>
+        HornFitTransform.Apply(fit, point.X, point.Y, point.Z);
+
+    private static (double X, double Y, double Z) Minus((double X, double Y, double Z) a, (double X, double Y, double Z) b) =>
+        (a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+
+    private static (double X, double Y, double Z) Plus((double X, double Y, double Z) a, (double X, double Y, double Z) b) =>
+        (a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+
+    private static (double X, double Y, double Z) Scale((double X, double Y, double Z) a, double by) =>
+        (a.X * by, a.Y * by, a.Z * by);
+
+    private static double Dot((double X, double Y, double Z) a, (double X, double Y, double Z) b) =>
+        a.X * b.X + a.Y * b.Y + a.Z * b.Z;
+
+    private static (double X, double Y, double Z) Unit((double X, double Y, double Z) a) => Scale(a, 1d / Math.Sqrt(Dot(a, a)));
+
+    private static double Distance((double X, double Y, double Z) a, (double X, double Y, double Z) b) =>
+        Math.Sqrt(Dot(Minus(a, b), Minus(a, b)));
+
+    private static double DistanceToLine((double X, double Y, double Z) point, (double X, double Y, double Z) a,
+        (double X, double Y, double Z) b)
+    {
+        var direction = Unit(Minus(b, a));
+        var offset = Minus(point, a);
+        return Distance(offset, Scale(direction, Dot(offset, direction)));
     }
 
     [TestCase(.013f)]

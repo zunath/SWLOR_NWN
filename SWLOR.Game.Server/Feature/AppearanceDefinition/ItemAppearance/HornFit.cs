@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerformanceService;
@@ -23,6 +24,10 @@ public static class HornFit
     private const string AppliedYVariable = "HORN_FIT_Y";
     private const string AppliedRotateYVariable = "HORN_FIT_ROTATE_Y";
     private const string AppliedRotateZVariable = "HORN_FIT_ROTATE_Z";
+    private const string AppliedRotateXVariable = "HORN_FIT_ROTATE_X";
+
+    /// <summary>Places the Flanged Jessoon's shaft and mouthpiece where the kloo horn's are, with no body fit.</summary>
+    public static readonly HornFitOffset JessoonOnKlooHorn = new(-.035f, .065f, -.017f, 12.3f, -152.4f, 28.6f);
 
     private static readonly Dictionary<(string Resref, AppearanceType Appearance, Gender Gender), HornFitOffset> _playingFits =
         BuildPlayingFits();
@@ -30,6 +35,7 @@ public static class HornFit
     private static Dictionary<(string, AppearanceType, Gender), HornFitOffset> BuildPlayingFits()
     {
         const string kloo = "kloo_horn";
+        const string jessoon = "jessoon";
         const string slitherhorn = "slitherhorn";
         const string panpipes = "panpipes";
         const string tambourine = "tambourine";
@@ -87,6 +93,17 @@ public static class HornFit
                      AppearanceType.Bothan, AppearanceType.Rodian
                  })
             fits[(kloo, appearance, Gender.Female)] = femaleKloo;
+
+        // The Flanged Jessoon plays on the kloo horn's hold, so each body's Jessoon goes where its kloo horn goes. Its crook bends
+        // the other way and its mouthpiece sits lower on the shaft (measured from both models), so it is turned half a turn
+        // about its shaft, laid along the kloo horn's shaft and slid 7 cm up through the hands.
+        foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
+        foreach (var gender in new[] { Gender.Male, Gender.Female })
+            fits[(jessoon, appearance, gender)] =
+                HornFitTransform.Compose(fits.GetValueOrDefault((kloo, appearance, gender)), JessoonOnKlooHorn);
+
+        // The kloo horn's Cathar male fit carries the horn clear of his hands; his hands already bring the Jessoon to his mouth.
+        fits[(jessoon, AppearanceType.Cathar, Gender.Male)] = JessoonOnKlooHorn;
 
         return fits;
     }
@@ -224,7 +241,7 @@ public static class HornFit
     {
         var saved = new HornFitOffset(GetLocalFloat(item, AppliedXVariable), GetLocalFloat(item, AppliedYVariable),
             GetLocalFloat(item, AppliedZVariable), GetLocalFloat(item, AppliedRotateYVariable),
-            GetLocalFloat(item, AppliedRotateZVariable));
+            GetLocalFloat(item, AppliedRotateZVariable), GetLocalFloat(item, AppliedRotateXVariable));
         if (saved == default && fit == default)
             return;
         // CopyItem copies locals but resets visual transforms; UUIDs survive ordinary reloads.
@@ -235,6 +252,7 @@ public static class HornFit
         ApplyChannel(item, ObjectVisualTransform.TranslateZ, previous.TranslateZ, fit.TranslateZ);
         ApplyChannel(item, ObjectVisualTransform.RotateY, previous.RotateY, fit.RotateY);
         ApplyChannel(item, ObjectVisualTransform.RotateZ, previous.RotateZ, fit.RotateZ);
+        ApplyChannel(item, ObjectVisualTransform.RotateX, previous.RotateX, fit.RotateX);
         // The fit and its owner persist on the item, so reloading cannot compound the fit.
         if (fit == default)
         {
@@ -243,6 +261,7 @@ public static class HornFit
             DeleteLocalFloat(item, AppliedZVariable);
             DeleteLocalFloat(item, AppliedRotateYVariable);
             DeleteLocalFloat(item, AppliedRotateZVariable);
+            DeleteLocalFloat(item, AppliedRotateXVariable);
             DeleteLocalString(item, FittedItemVariable);
         }
         else
@@ -252,6 +271,7 @@ public static class HornFit
             SetLocalFloat(item, AppliedZVariable, fit.TranslateZ);
             SetLocalFloat(item, AppliedRotateYVariable, fit.RotateY);
             SetLocalFloat(item, AppliedRotateZVariable, fit.RotateZ);
+            SetLocalFloat(item, AppliedRotateXVariable, fit.RotateX);
             SetLocalString(item, FittedItemVariable, identity);
         }
     }

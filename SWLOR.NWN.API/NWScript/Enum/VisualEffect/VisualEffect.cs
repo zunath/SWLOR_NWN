@@ -846,5 +846,7 @@ namespace SWLOR.NWN.API.NWScript.Enum.VisualEffect
         Vfx_Imp_Breath_Poison = 1125,
         Vfx_Imp_Mirv_BoltGlory = 1126,
         Vfx_Imp_Merciless_Angle = 1127,
+        // Quest-master cue only: the one row that still shakes the camera.
+        Vfx_Fnf_Dm_Earthquake = 1128,
     }
 }

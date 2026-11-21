@@ -295,7 +295,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatAbilityHitService.cs",
-    "Line": 131,
+    "Line": 134,
     "Member": "ApplyGuardedHitNextAttackEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{dmgBonus} DMG{criticalText}{enmityText}\"),\n                    creature,\n                    false)"
@@ -372,45 +372,10 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
-    "Line": 164,
+    "Line": 153,
     "Member": "GetHighHPTargetCriticalDamageAdjustment",
     "Delivery": "Testing only",
     "Call": "_playerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"High Noon +{adjustment}% critical damage\"),\n                    attacker,\n                    false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
-    "Line": 578,
-    "Member": "PrepareAutoAttackCycleCriticalRate",
-    "Delivery": "Testing only",
-    "Call": "_playerFeedback.ShowDiagnosticFloatingText(\n                ColorToken.Combat($\"Attack +{criticalRate}% Critical Rate\"),\n                attacker,\n                false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
-    "Line": 1128,
-    "Member": "ApplyMeleeRepeatedTargetDamageModifier",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat(MeleeRepeatedTargetStack.GetStackText(statusEffectIcon, state.Stacks, maxStacks, stackBonus)),\n                    attacker,\n                    false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
-    "Line": 1191,
-    "Member": "ApplyRangedRepeatedTargetDamageModifier",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Sustained Fire {state.Stacks}/{maxStacks} (+{stackBonus} DMG)\"),\n                    attacker,\n                    false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
-    "Line": 1299,
-    "Member": "ConsumeSameTargetPressureWeaponAbilityDamageBonus",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(ColorToken.Combat($\"Spotter's Rhythm (+{bonus} DMG)\"), attacker, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
-    "Line": 1331,
-    "Member": "ReadySameTargetPressure",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Spotter's Rhythm\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
@@ -498,17 +463,52 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs",
-    "Line": 896,
+    "Line": 899,
     "Member": "ApplyCriticalHitEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Weak Points\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs",
-    "Line": 1101,
+    "Line": 1104,
     "Member": "ApplyNonCriticalAbilityEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Next ranged ability +{currentTotal}% Critical Rate\"),\n                    activator,\n                    false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatRateModifiersService.cs",
+    "Line": 186,
+    "Member": "PrepareAutoAttackCycleCriticalRate",
+    "Delivery": "Testing only",
+    "Call": "_playerFeedback.ShowDiagnosticFloatingText(\n                ColorToken.Combat($\"Attack +{criticalRate}% Critical Rate\"),\n                attacker,\n                false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatRepeatedTargetService.cs",
+    "Line": 149,
+    "Member": "ApplyMeleeRepeatedTargetDamageModifier",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat(MeleeRepeatedTargetStack.GetStackText(statusEffectIcon, state.Stacks, maxStacks, stackBonus)),\n                    attacker,\n                    false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatRepeatedTargetService.cs",
+    "Line": 212,
+    "Member": "ApplyRangedRepeatedTargetDamageModifier",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Sustained Fire {state.Stacks}/{maxStacks} (+{stackBonus} DMG)\"),\n                    attacker,\n                    false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatRepeatedTargetService.cs",
+    "Line": 320,
+    "Member": "ConsumeSameTargetPressureWeaponAbilityDamageBonus",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Combat($\"Spotter's Rhythm (+{bonus} DMG)\"), attacker, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatRepeatedTargetService.cs",
+    "Line": 352,
+    "Member": "ReadySameTargetPressure",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Spotter's Rhythm\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatSuppressionService.cs",

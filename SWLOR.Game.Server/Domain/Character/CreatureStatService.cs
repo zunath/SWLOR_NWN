@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// Movement and walk mode, maximum HP and food HP, player attributes, NPC loading and regeneration: part 2 of the stat split
-    /// (P5-4e, <c>Readmes/MaintainabilityRefactorStatSplit.md</c>), moved from <c>StatService</c> unchanged except that the stat
+    /// (<c>Readmes/MaintainabilityRefactorStatSplit.md</c>), moved from <c>StatService</c> unchanged except that the stat
     /// read it called on its own instance is an <see cref="IStatService"/> call. It is Character's <see cref="IStatEffectListener"/>:
     /// <see cref="RegisterStatEffectListener"/> gives it to the status effects at boot. Static callers reach it through
     /// <c>GameServices.CreatureStat</c>. Its calls into the temporary hit point content and the companion lookup sit behind

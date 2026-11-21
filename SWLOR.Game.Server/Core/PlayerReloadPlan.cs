@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Extension;
 namespace SWLOR.Game.Server.Core
 {
     /// <summary>
-    /// The per-player steps of a hot reload (MaintainabilityRefactorHotReload.md, P4-15): while the old build quiesces, the
+    /// The per-player steps of a hot reload (MaintainabilityRefactorHotReload.md): while the old build quiesces, the
     /// <see cref="PlayerReload.Quiesce"/> handlers of <c>mod_exit</c>, and when the new build activates, the
     /// <see cref="PlayerReload.Restore"/> handlers of <c>mod_enter</c>, each run as its <see cref="PlayerSessionAttribute.Step"/> for
     /// every online player, in manifest order. A normal login or logout never gets here.

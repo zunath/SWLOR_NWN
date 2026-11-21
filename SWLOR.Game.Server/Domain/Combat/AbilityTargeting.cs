@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// The target queries of the ability definitions: friendly and hostile targets around a creature or a location, and where an
-    /// impact lands. Moved from <c>Feature/AbilityDefinition</c> with the namespace changed (P5-3c); the party reads go through
+    /// impact lands. Moved from <c>Feature/AbilityDefinition</c> with the namespace changed; the party reads go through
     /// Combat's <see cref="IPartyRoster"/>. The client targeting data is <c>AbilityClientTargeting</c>'s.
     /// </summary>
     public static class AbilityTargeting

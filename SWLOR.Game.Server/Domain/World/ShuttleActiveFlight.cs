@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// <summary>
     /// A flight in the air (or being built): its route and times, and the live shuttle interior, status console and
     /// boarding point once the instance exists. Was the private class <c>ActiveFlight</c> of <see cref="ShuttleService"/>
-    /// (P5-9c).
+    ///.
     /// </summary>
     public class ShuttleActiveFlight
     {

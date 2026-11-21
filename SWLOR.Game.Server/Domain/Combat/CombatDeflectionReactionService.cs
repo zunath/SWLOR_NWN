@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
-    /// What a deflection sets off: part 6 of the stat split (P5-4d, <c>Readmes/MaintainabilityRefactorStatSplit.md</c>), moved
+    /// What a deflection sets off: part 6 of the stat split (<c>Readmes/MaintainabilityRefactorStatSplit.md</c>), moved
     /// from <c>StatService</c> unchanged except for how it reaches its dependencies. The stat read and the pools it called on its
     /// own instance are <see cref="IStatService"/> calls, and the Combat services it reached through <c>Lazy&lt;&gt;</c> are
     /// plain parameters. <see cref="ApplyDeflectionEffectsNative"/> tracks the deflection, reads every payload into a

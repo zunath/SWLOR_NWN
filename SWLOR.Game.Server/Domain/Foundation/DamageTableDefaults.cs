@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
 
         /// <summary>
         /// Every damage type that uses a defense rating, in enum order: the list <c>CombatDamageCatalogService</c> caches at
-        /// boot, for code below Combat that has no catalog (the stat records, P5-4b). A <c>foreach</c> over it allocates nothing.
+        /// boot, for code below Combat that has no catalog (the stat records). A <c>foreach</c> over it allocates nothing.
         /// </summary>
         public static ImmutableArray<CombatDamageType> GetDefenseDamageTypes() => DefenseDamageTypes;
 

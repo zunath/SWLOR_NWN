@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
     /// Spawning a property into the game world: a structure becomes a placeable, an instanced property becomes an area instance,
-    /// an area property marks its pre-built area. Split from <c>PropertyLoaderService</c> (P5-9b); the members moved unchanged.
+    /// an area property marks its pre-built area. Split from <c>PropertyLoaderService</c>; the members moved unchanged.
     /// </summary>
     public class PropertySpawnService : IPropertySpawnService
     {

@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Domain.Items
 {
     /// <summary>
     /// The currency balance read the lightsaber workbench makes. Items owns the interface and <c>ICurrencyService</c> extends it
-    /// (supply rule 2 of MaintainabilityRefactorDomainOrder.md; P5-15a).
+    /// (supply rule 2 of MaintainabilityRefactorDomainOrder.md).
     /// </summary>
     public interface ICurrencyBalance
     {

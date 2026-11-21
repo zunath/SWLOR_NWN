@@ -2,7 +2,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
 {
     /// <summary>
     /// The property id lookup the craft device terminals make. Foundation owns the interface and <c>IPropertyService</c> extends
-    /// it (supply rule 2 of MaintainabilityRefactorDomainOrder.md; P5-15a), so the terminals need nothing from World.
+    /// it (supply rule 2 of MaintainabilityRefactorDomainOrder.md), so the terminals need nothing from World.
     /// </summary>
     public interface IPropertyIdLookup
     {

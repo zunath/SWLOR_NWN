@@ -2,7 +2,7 @@ namespace SWLOR.Game.Server.Domain.Administration
 {
     /// <summary>
     /// The preparation every DM-spawned creature receives. Administration owns the interface and Creatures answers it
-    /// (<c>DMSpawnPreparation</c>; supply rule 2 of MaintainabilityRefactorDomainOrder.md, P5-15a), so the blueprint catalog
+    /// (<c>DMSpawnPreparation</c>; supply rule 2 of MaintainabilityRefactorDomainOrder.md), so the blueprint catalog
     /// needs nothing from the spawn service.
     /// </summary>
     public interface IDMSpawnPreparation

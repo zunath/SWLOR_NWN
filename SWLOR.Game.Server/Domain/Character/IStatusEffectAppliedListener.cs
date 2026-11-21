@@ -3,7 +3,7 @@ using System;
 namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
-    /// What Combat and the quests are told when a status effect is applied or refreshed (P5-5d,
+    /// What Combat and the quests are told when a status effect is applied or refreshed (
     /// Readmes/MaintainabilityRefactorStatusEffectSplit.md). Character owns the interface; the implementers register themselves
     /// with <see cref="IStatusEffectService.RegisterAppliedListener"/> at boot, so the status effects notify them without holding
     /// them. A listener that has nothing to do for a notice leaves its method empty.

@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// The recast delay reads and writes the player introduction makes. Character owns the interface and
-    /// <c>IRecastService</c> extends it (supply rule 2 of MaintainabilityRefactorDomainOrder.md; P5-15b).
+    /// <c>IRecastService</c> extends it (supply rule 2 of MaintainabilityRefactorDomainOrder.md).
     /// </summary>
     public interface IRecastDelays
     {

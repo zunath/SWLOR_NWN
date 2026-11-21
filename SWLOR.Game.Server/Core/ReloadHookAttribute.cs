@@ -1,7 +1,7 @@
 namespace SWLOR.Game.Server.Core
 {
     /// <summary>
-    /// Marks a public method <c>void Name(IReadOnlyList&lt;uint&gt; players)</c> that a hot reload runs (P4-15,
+    /// Marks a public method <c>void Name(IReadOnlyList&lt;uint&gt; players)</c> that a hot reload runs (
     /// <see cref="ReloadHooks"/>): a closure of the old build is dropped by the reload, so what it would have released stays set in
     /// the engine and what it kept going stops. A <see cref="ReloadHookPhase.Quiesce"/> hook ends that work in the old build; a
     /// <see cref="ReloadHookPhase.Resume"/> hook restarts it in the new one. A static method runs as it is; an instance method runs

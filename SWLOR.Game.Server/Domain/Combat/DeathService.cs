@@ -386,7 +386,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         /// <summary>
         /// Tells the services that keep state by area of effect (the ability auras) that the creature was revived in place, as
-        /// the call into <c>Ability</c> did before the ability split (P5-3c).
+        /// the call into <c>Ability</c> did before the ability split.
         /// </summary>
         protected virtual void ReapplyAuraEffectsForCreature(uint creature)
         {

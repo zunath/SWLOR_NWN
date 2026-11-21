@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// <summary>
     /// Hot reload of the property loader: leaves the loader's bookkeeping on the module while the old build quiesces, and in the
     /// new build registers the property instances and structure placeables that are in the world, takes the carried bookkeeping
-    /// and resumes the queued loads. Split from <c>PropertyLoaderService</c> (P5-9b); the members moved unchanged.
+    /// and resumes the queued loads. Split from <c>PropertyLoaderService</c>; the members moved unchanged.
     /// </summary>
     public class PropertyLoadReloadService : IPropertyLoadReloadService
     {

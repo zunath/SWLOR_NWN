@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Core;
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// The time and scheduler seam of the shuttle services, moved unchanged from <see cref="ShuttleService"/> (P5-9c). Each
+    /// The time and scheduler seam of the shuttle services, moved unchanged from <see cref="ShuttleService"/>. Each
     /// member is <c>virtual</c> so a unit test can set the time and run the tick and the delayed tasks itself
     /// (<c>ClockedShuttleClockService</c> in <c>Tests/Support/ShuttleBench.cs</c>); the bodies are the original calls.
     /// </summary>

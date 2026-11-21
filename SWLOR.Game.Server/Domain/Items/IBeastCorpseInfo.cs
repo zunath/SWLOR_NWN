@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Domain.Items
     /// <summary>
     /// What the loot service needs to know about a beast's corpse: the extractable corpse placeable and how it is named.
     /// Items owns the interface and <c>IBeastMasteryService</c> extends it (supply rule 2 of
-    /// MaintainabilityRefactorDomainOrder.md; P5-15b).
+    /// MaintainabilityRefactorDomainOrder.md).
     /// </summary>
     public interface IBeastCorpseInfo
     {

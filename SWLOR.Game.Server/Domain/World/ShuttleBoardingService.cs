@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// <summary>
     /// Boarding: boarding calls, putting the ticket holders at a flights terminal aboard a departing flight, following them
     /// until they stand in the shuttle, and the messages to those who missed it. The logic moved here unchanged from
-    /// <see cref="ShuttleService"/> (P5-9c).
+    /// <see cref="ShuttleService"/>.
     /// </summary>
     public class ShuttleBoardingService : IShuttleBoardingService
     {

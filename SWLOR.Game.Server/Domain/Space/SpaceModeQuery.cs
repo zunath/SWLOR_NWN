@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Entity;
 namespace SWLOR.Game.Server.Domain.Space
 {
     /// <summary>
-    /// The space mode read the ability activation checks make (<see cref="ISpaceModeQuery"/>, owned by Abilities; P5-3d of
+    /// The space mode read the ability activation checks make (<see cref="ISpaceModeQuery"/>, owned by Abilities; see
     /// Readmes/MaintainabilityRefactorAbilitySplit.md). It is the same read as <see cref="SpaceService.IsPlayerInSpaceMode"/>, a
     /// player whose record names an active ship, and needs only the database, so the activation part takes it without the rest
     /// of the space service.

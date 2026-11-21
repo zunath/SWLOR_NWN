@@ -2,7 +2,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// The quest advance the twin pistol trials make when a player earns a proof. Combat owns the interface and
-    /// <c>IQuestService</c> extends it (supply rule 2 of MaintainabilityRefactorDomainOrder.md; P5-15a).
+    /// <c>IQuestService</c> extends it (supply rule 2 of MaintainabilityRefactorDomainOrder.md).
     /// </summary>
     public interface IQuestAdvancer
     {

@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
     /// The property terminals and menus: the apartment, citizenship and city management terminals and the property menu feat,
-    /// which open their windows. Split from <c>PropertyService</c> (P5-9b); the members moved unchanged.
+    /// which open their windows. Split from <c>PropertyService</c>; the members moved unchanged.
     /// </summary>
     public interface IPropertyTerminalService
     {

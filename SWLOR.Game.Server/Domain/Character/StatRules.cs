@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
         /// <summary>
         /// Raises or lowers a value by a percent, rounding the change up (the rule the ratings, the pools and the healing
-        /// adjustments share; a private member of <c>StatService</c> until the stat split, P5-4c).
+        /// adjustments share; a private member of <c>StatService</c> until the stat split).
         /// </summary>
         public static int ApplyPercentAdjustment(int value, int percentAdjustment)
         {

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// The player records fed by worn gear, the Combat Readiness equipment and the writers that add and remove a player's gear
-    /// stats: part 3 of the stat split (P5-4e, <c>Readmes/MaintainabilityRefactorStatSplit.md</c>), moved from <c>StatService</c>
+    /// stats: part 3 of the stat split (<c>Readmes/MaintainabilityRefactorStatSplit.md</c>), moved from <c>StatService</c>
     /// unchanged except that the stat read and the pools it called on its own instance are <see cref="IStatService"/> calls.
     /// Static callers reach it through <c>GameServices.StatRecord</c>. Its call into the defense damage type list sits behind a
     /// one-line <c>protected virtual</c> method whose body is the original call.

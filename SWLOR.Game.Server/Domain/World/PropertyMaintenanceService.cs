@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
     /// Property maintenance: the boot clean-up of expired leases and properties queued for deletion, the refresh of permissions,
-    /// deleting a property with everything it owns, and returning a starship to a safe dock. Split from <c>PropertyService</c> (P5-9b);
+    /// deleting a property with everything it owns, and returning a starship to a safe dock. Split from <c>PropertyService</c>;
     /// the members moved unchanged.
     /// </summary>
     public class PropertyMaintenanceService : IPropertyMaintenanceService

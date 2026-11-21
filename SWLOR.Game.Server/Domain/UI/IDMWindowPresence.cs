@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Domain.UI
 {
     /// <summary>
     /// The DM presence reads the window service makes: whether a DM controls a player, and where DM windows are shown. UI owns
-    /// the interface and <c>IDMPresenceService</c> extends it (supply rule 2 of MaintainabilityRefactorDomainOrder.md; P5-15a).
+    /// the interface and <c>IDMPresenceService</c> extends it (supply rule 2 of MaintainabilityRefactorDomainOrder.md).
     /// </summary>
     public interface IDMWindowPresence
     {

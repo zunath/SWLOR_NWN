@@ -3,7 +3,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
     /// <summary>
     /// What the item cache asks about a spawned item while it caches a resref: the icon, whether it is a legacy item and
     /// whether the economy restricts it. Foundation owns the interface and Items answers it (<c>ItemCacheInfo</c>; supply
-    /// rule 2 of MaintainabilityRefactorDomainOrder.md, P5-15a), so the cache needs nothing from the item service.
+    /// rule 2 of MaintainabilityRefactorDomainOrder.md), so the cache needs nothing from the item service.
     /// </summary>
     public interface IItemCacheInfo
     {

@@ -2,7 +2,7 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// The player list refresh request the holocom and the name service make. Character owns the interface and
-    /// <c>IPlayerListService</c> extends it (supply rule 2 of MaintainabilityRefactorDomainOrder.md; P5-15a), so the callers
+    /// <c>IPlayerListService</c> extends it (supply rule 2 of MaintainabilityRefactorDomainOrder.md), so the callers
     /// below Social need nothing from it.
     /// </summary>
     public interface IPlayerListRefresh

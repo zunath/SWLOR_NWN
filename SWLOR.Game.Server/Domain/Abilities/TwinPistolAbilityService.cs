@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
     /// <summary>
     /// One paid activation and result across captured weapon impacts. The logic that used to be static in
     /// <c>Service.TwinPistolAbility</c> is moved here unchanged; the per-actor activations and channels are this
-    /// instance's own. It applies ability impacts, so it is an Abilities service (moved from Combat in P5-3f,
+    /// instance's own. It applies ability impacts, so it is an Abilities service (moved from Combat,
     /// Readmes/MaintainabilityRefactorAbilitySplit.md). The paired ranged traits and mastery services are injected; calls into the unconverted
     /// <c>Combat</c>, <c>Ability</c>, <c>StatusEffect</c> and <c>UsePerkFeat</c> code and the native attack cycles sit
     /// behind one-line <c>protected virtual</c> methods whose bodies are the original calls.

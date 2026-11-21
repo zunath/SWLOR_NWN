@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// <summary>
     /// FP, stamina and healing bookkeeping for combat: stat trigger cooldowns, damage-derived healing and its budgets, the
     /// stamina a hostile ability paid and what its hits may refund, and the healing adjustments and what a received heal
-    /// sets off (part 7 of the stat split, P5-4d; until then members of <c>IStatService</c>). The riders that restored FP or
+    /// sets off (part 7 of the stat split; until then members of <c>IStatService</c>). The riders that restored FP or
     /// stamina grant are <c>IResourceRestoredEffectsService</c>'s (part 8).
     /// </summary>
     public interface ICombatResourcesService

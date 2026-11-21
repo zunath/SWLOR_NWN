@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace SWLOR.Game.Server.Core
 {
     /// <summary>
-    /// The online players' NUI windows and conversations across a hot reload (P4-15): the old build takes them down as text, the new
+    /// The online players' NUI windows and conversations across a hot reload: the old build takes them down as text, the new
     /// build puts them back. The UI domain implements it (<c>Domain.UI.PlayerScreenCarry</c>); the composition root hands it to the
     /// bootstrapper (<c>Composition.ReloadWiring</c>).
     /// </summary>

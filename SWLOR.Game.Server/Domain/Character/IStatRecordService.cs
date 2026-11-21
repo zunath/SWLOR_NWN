@@ -10,7 +10,7 @@ using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
-    /// The player records fed by worn gear and the Combat Readiness equipment: part 3 of the stat split (P5-4e; until then
+    /// The player records fed by worn gear and the Combat Readiness equipment: part 3 of the stat split (until then
     /// members of <c>IStatService</c>).
     /// </summary>
     public interface IStatRecordService

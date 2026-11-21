@@ -4,16 +4,16 @@ namespace SWLOR.Game.Server.Composition
 {
     public static partial class GameServices
     {
-        /// <summary>Beast companions: the catalog, taming, spawning and incubation (the static class <c>BeastMastery</c> until P2-ZO).</summary>
+        /// <summary>Beast companions: the catalog, taming, spawning and incubation (the static class <c>BeastMastery</c> until it was removed).</summary>
         public static IBeastMasteryService BeastMastery => FacadeAccessor.Resolve<IBeastMasteryService>();
 
-        /// <summary>Player droids: spawning, the saved equipment snapshot and the droid event handlers (the static class <c>Droid</c> until P2-B12).</summary>
+        /// <summary>Player droids: spawning, the saved equipment snapshot and the droid event handlers (the static class <c>Droid</c> until it was converted).</summary>
         public static IDroidService Droid => FacadeAccessor.Resolve<IDroidService>();
 
-        /// <summary>The droid equipment diagnostics log (the static class <c>DroidEquipmentDiagnostics</c> until P2-ZO).</summary>
+        /// <summary>The droid equipment diagnostics log (the static class <c>DroidEquipmentDiagnostics</c> until it was removed).</summary>
         public static IDroidEquipmentDiagnosticsService DroidEquipmentDiagnostics => FacadeAccessor.Resolve<IDroidEquipmentDiagnosticsService>();
 
-        /// <summary>The incubation field notes that document how to produce a mutated beast (the static class <c>IncubationFieldNote</c> until P2-ZO).</summary>
+        /// <summary>The incubation field notes that document how to produce a mutated beast (the static class <c>IncubationFieldNote</c> until it was removed).</summary>
         public static IIncubationFieldNoteService IncubationFieldNote => FacadeAccessor.Resolve<IIncubationFieldNoteService>();
 
         /// <summary>The colours the tint map writes to the engine's material uniforms for a creature, its worn items and a dropped item.</summary>

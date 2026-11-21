@@ -12,7 +12,7 @@ using SWLOR.NWN.API.NWScript.Enum.Area;
 namespace SWLOR.Game.Server.Domain.Creatures
 {
     /// <summary>
-    /// The spawn registry that was fields of <see cref="SpawnService"/>, moved here unchanged (P5-8c): the spawn tables, the
+    /// The spawn registry that was fields of <see cref="SpawnService"/>, moved here unchanged: the spawn tables, the
     /// spawns of every area, the live spawned objects, the queued respawns and the despawn queues, with the boot handlers that
     /// fill them and the hot reload carry that hands them to the next build. The spawn runtime reads and changes the
     /// collections through <see cref="ISpawnRegistryService"/>.

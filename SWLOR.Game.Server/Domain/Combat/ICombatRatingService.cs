@@ -6,7 +6,7 @@ using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
-    /// The Attack, Accuracy, Defense and Evasion ratings and the deflection and Guard chances (part 5 of the stat split, P5-4c;
+    /// The Attack, Accuracy, Defense and Evasion ratings and the deflection and Guard chances (part 5 of the stat split;
     /// until then members of <c>IStatService</c>).
     /// </summary>
     public interface ICombatRatingService

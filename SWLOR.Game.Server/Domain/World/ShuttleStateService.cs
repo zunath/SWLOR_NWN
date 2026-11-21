@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// Holds the shuttle flight state that was fields of <see cref="ShuttleService"/>, moved here unchanged (P5-9c) so the
+    /// Holds the shuttle flight state that was fields of <see cref="ShuttleService"/>, moved here unchanged so the
     /// shuttle services that split from it share one owner of it.
     /// </summary>
     public class ShuttleStateService : IShuttleStateService

@@ -22,7 +22,7 @@ using SWLOR.Game.Server.Domain.World;
 namespace SWLOR.Game.Server.Composition
 {
     /// <summary>
-    /// Every service the container knows, one line each, grouped by domain (the P0-8 domain map). Converting a service
+    /// Every service the container knows, one line each, grouped by domain (the domain map). Converting a service
     /// adds its line here and its entry to <c>SWLOR.Architecture.Tests/ConvertedServices.json</c>.
     /// Every game service is a singleton: its state lives for the life of the process.
     /// </summary>
@@ -42,22 +42,22 @@ namespace SWLOR.Game.Server.Composition
             // Lazy<IXService> for a constructor parameter that would otherwise make a cycle (LazyDependencyCycleTests).
             services.AddSingleton(typeof(Lazy<>), typeof(ContainerLazy<>));
 
-            // Server process: the process-wide event subscriptions and the teardown that lets go of them (P4-5)
+            // Server process: the process-wide event subscriptions and the teardown that lets go of them
             services.AddSingleton<IProcessEventSource, AppDomainProcessEventSource>();
             services.AddSingleton<IProcessEventSubscriptions, ProcessEventSubscriptions>();
             services.AddSingleton<IServerStaticState, ServerStaticState>();
             services.AddSingleton<IServerTeardown, ServerTeardown>();
             // The native hooks the hook files enable at their boot moments: the process's own on the native entry; the host
-            // registers the one it installs the hooks through (P4-11).
+            // registers the one it installs the hooks through.
             services.AddSingleton<IHookControl, NativeHookTable>();
             // Content: the factory of made content, and the content singletons (written by tools/Refactor/SWLOR.ContentInjection).
             services.AddSingleton<IContentFactory, ContentFactory>();
             ContentRegistrations.Register(services);
-            // The weapon appearance definitions the appearance editor reads, built once with the container (P5-16e).
+            // The weapon appearance definitions the appearance editor reads, built once with the container.
             services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.IWeaponAppearanceCatalog, SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponAppearanceCatalog>();
 
             // Core
-            // The Redis connection DBService takes; a host that keeps it across hot reloads registers its own (P4-10).
+            // The Redis connection DBService takes; a host that keeps it across hot reloads registers its own.
             services.AddSingleton<IRedisConnectionSource, RedisConnectionSource>();
             services.AddSingleton<IDBService, DBService>();
             services.AddSingleton<IAnimationPlayerService, AnimationPlayerService>();
@@ -84,10 +84,10 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IAbilityActivationService, AbilityActivationService>();
             services.AddSingleton<IAbilityActivationStateService, AbilityActivationStateService>();
             services.AddSingleton<IAbilityAuraService, AbilityAuraService>();
-            // The same instance, seen through the interface Combat owns for a creature revived in place (P5-3c).
+            // The same instance, seen through the interface Combat owns for a creature revived in place.
             services.AddSingleton<ICreatureRevivedListener>(provider => provider.GetRequiredService<IAbilityAuraService>());
             services.AddSingleton<IAbilityCatalogService, AbilityCatalogService>();
-            // The same instance, seen through the interface Character owns for the domains below Abilities (P5-3b).
+            // The same instance, seen through the interface Character owns for the domains below Abilities.
             services.AddSingleton<IAbilityCatalog>(provider => provider.GetRequiredService<IAbilityCatalogService>());
             services.AddSingleton<IAbilityCooldownVisualService, AbilityCooldownVisualService>();
             services.AddSingleton<IAbilityDamageDeliveryService, AbilityDamageDeliveryService>();
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IHostedEventsService, HostedEventsService>();
             services.AddSingleton<IDMPreferenceService, DMPreferenceService>();
             services.AddSingleton<IDMPresenceService, DMPresenceService>();
-            // The same instance, seen through the DM avatar read the disguise and the item trash own (P5-15a).
+            // The same instance, seen through the DM avatar read the disguise and the item trash own.
             services.AddSingleton<IDMActorResolver>(provider => provider.GetRequiredService<IDMPresenceService>());
             services.AddSingleton<IDMWindowPresence>(provider => provider.GetRequiredService<IDMPresenceService>());
 
@@ -145,15 +145,15 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IStatRecordService, StatRecordService>();
             services.AddSingleton<IStatusEffectCatalogService, StatusEffectCatalogService>();
             services.AddSingleton<IStatusEffectService, StatusEffectService>();
-            // Part 7 of the status effect split (P5-5e): login, logout, restart and reload; it registers as the holder of logged-out effects.
+            // Part 7 of the status effect split: login, logout, restart and reload; it registers as the holder of logged-out effects.
             services.AddSingleton<IStatusEffectSessionService, StatusEffectSessionService>();
-            // Part 3 of the status effect split (P5-5f): applying a status effect.
+            // Part 3 of the status effect split: applying a status effect.
             services.AddSingleton<IStatusEffectApplicationService, StatusEffectApplicationService>();
-            // Part 4 of the status effect split (P5-5g): the timing, refresh, restart and extension of a status effect.
+            // Part 4 of the status effect split: the timing, refresh, restart and extension of a status effect.
             services.AddSingleton<IStatusEffectDurationService, StatusEffectDurationService>();
-            // Part 6 of the status effect split (P5-5g): the damage and attack notices and the native attack swing.
+            // Part 6 of the status effect split: the damage and attack notices and the native attack swing.
             services.AddSingleton<IStatusEffectCombatEventService, StatusEffectCombatEventService>();
-            // Part 5 of the status effect split (P5-5h): the native effect, the three effect scripts and the ticks.
+            // Part 5 of the status effect split: the native effect, the three effect scripts and the ticks.
             services.AddSingleton<IStatusEffectNativeService, StatusEffectNativeService>();
             services.AddSingleton<ITemporaryStatModifierService, TemporaryStatModifierService>();
             services.AddSingleton<ITintMapStateService, TintMapStateService>();
@@ -162,9 +162,9 @@ namespace SWLOR.Game.Server.Composition
         private static void RegisterCombat(IServiceCollection services)
         {
             // Combat
-            // The ability impacts in progress, which the ability lifecycle writes and Combat reads; the store takes no service (P5-3b).
+            // The ability impacts in progress, which the ability lifecycle writes and Combat reads; the store takes no service.
             services.AddSingleton<IAbilityImpactState, AbilityImpactStore>();
-            // The same instance, seen through the interface Character owns for the active impact (P5-3b).
+            // The same instance, seen through the interface Character owns for the active impact.
             services.AddSingleton<IActiveAbilityImpact>(provider => provider.GetRequiredService<IAbilityImpactState>());
             services.AddSingleton<IBattleGridService, BattleGridService>();
             services.AddSingleton<ICombatAbilityActivationService, CombatAbilityActivationService>();
@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatQueriesService, CombatQueriesService>();
             services.AddSingleton<ICombatRatingService, CombatRatingService>();
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
-            // The same instance, seen through the interfaces the lower domains and the platform own (P5-1g).
+            // The same instance, seen through the interfaces the lower domains and the platform own.
             services.AddSingleton<ICombatRecording>(provider => provider.GetRequiredService<ICombatRecorderService>());
             services.AddSingleton<ICharacterRecording>(provider => provider.GetRequiredService<ICombatRecorderService>());
             services.AddSingleton<ICombatRecordingState>(provider => provider.GetRequiredService<ICombatRecorderService>());
@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatSuppressionService, CombatSuppressionService>();
             services.AddSingleton<IDeathService, DeathService>();
             services.AddSingleton<IEnmityService, EnmityService>();
-            // The same instance, seen through the enmity reads Espionage owns (P5-15b).
+            // The same instance, seen through the enmity reads Espionage owns.
             services.AddSingleton<IEspionageEnmityQuery>(provider => provider.GetRequiredService<IEnmityService>());
             services.AddSingleton<IMeleeTechniqueService, MeleeTechniqueService>();
             services.AddSingleton<IOrdinaryAttackTraitsService, OrdinaryAttackTraitsService>();
@@ -209,18 +209,18 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPvpCombatService, PvpCombatService>();
             services.AddSingleton<IQueuedAttackAnimationService, QueuedAttackAnimationService>();
             services.AddSingleton<IRecastService, RecastService>();
-            // The same instance, seen through the recast delays the player introduction owns (P5-15b).
+            // The same instance, seen through the recast delays the player introduction owns.
             services.AddSingleton<IRecastDelays>(provider => provider.GetRequiredService<IRecastService>());
             services.AddSingleton<IResistanceService, ResistanceService>();
-            // The same instance, seen through the resistance reads the status effects own (P5-5c).
+            // The same instance, seen through the resistance reads the status effects own.
             services.AddSingleton<IStatusResistance>(provider => provider.GetRequiredService<IResistanceService>());
             services.AddSingleton<IResourceRestoredEffectsService, ResourceRestoredEffectsService>();
-            // The same instance, seen through the listener the pools in Character own (P5-4d).
+            // The same instance, seen through the listener the pools in Character own.
             services.AddSingleton<IResourceRestoredListener>(provider => provider.GetRequiredService<IResourceRestoredEffectsService>());
             services.AddSingleton<IStealthService, StealthService>();
-            // The same instance, seen through the stealth reads Espionage owns (P5-15b).
+            // The same instance, seen through the stealth reads Espionage owns.
             services.AddSingleton<IEspionageStealthQuery>(provider => provider.GetRequiredService<IStealthService>());
-            // The same instance, seen through the concealment read the messaging owns (P5-15a).
+            // The same instance, seen through the concealment read the messaging owns.
             services.AddSingleton<IConcealmentQuery>(provider => provider.GetRequiredService<IStealthService>());
             services.AddSingleton<ITargetingService, TargetingService>();
             services.AddSingleton<ITelegraphService, TelegraphService>();
@@ -233,10 +233,10 @@ namespace SWLOR.Game.Server.Composition
         private static void RegisterCompanionsToItems(IServiceCollection services)
         {
             // Companions
-            // The companion questions Character, Items, Creatures and Combat ask; the lookup takes no service (P5-1g).
+            // The companion questions Character, Items, Creatures and Combat ask; the lookup takes no service.
             services.AddSingleton<ICompanionLookup, CompanionLookup>();
             services.AddSingleton<IBeastMasteryService, BeastMasteryService>();
-            // The same instance, seen through the corpse reads the loot owns (P5-15b).
+            // The same instance, seen through the corpse reads the loot owns.
             services.AddSingleton<IBeastCorpseInfo>(provider => provider.GetRequiredService<IBeastMasteryService>());
             services.AddSingleton<IDroidService, DroidService>();
             services.AddSingleton<IDroidEquipmentDiagnosticsService, DroidEquipmentDiagnosticsService>();
@@ -279,7 +279,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IBankService, BankService>();
             services.AddSingleton<ICasinoSlotService, CasinoSlotService>();
             services.AddSingleton<ICurrencyService, CurrencyService>();
-            // The same instance, seen through the balance read the lightsaber workbench owns (P5-15a).
+            // The same instance, seen through the balance read the lightsaber workbench owns.
             services.AddSingleton<ICurrencyBalance>(provider => provider.GetRequiredService<ICurrencyService>());
             services.AddSingleton<IGuildService, GuildService>();
             services.AddSingleton<IGuildTaskXpService, GuildTaskXpService>();
@@ -303,18 +303,18 @@ namespace SWLOR.Game.Server.Composition
         {
             // Quests
             services.AddSingleton<ICapstoneProofService, CapstoneProofService>();
-            // The same instance, seen through the interface Abilities owns for what a hostile ability does to a target (P5-3f).
+            // The same instance, seen through the interface Abilities owns for what a hostile ability does to a target.
             services.AddSingleton<IAbilityImpactObserver>(provider => provider.GetRequiredService<ICapstoneProofService>());
             services.AddSingleton<IFactionService, FactionService>();
             services.AddSingleton<IQuestService, QuestService>();
-            // The same instance, seen through the quest advance the twin pistol trials own (P5-15a).
+            // The same instance, seen through the quest advance the twin pistol trials own.
             services.AddSingleton<IQuestAdvancer>(provider => provider.GetRequiredService<IQuestService>());
             services.AddSingleton<IQuestContractBoardService, QuestContractBoardService>();
             services.AddSingleton<IQuestEncounterService, QuestEncounterService>();
 
             // Space
             services.AddSingleton<ISpaceService, SpaceService>();
-            // The space mode read Abilities owns for its activation checks (P5-3d).
+            // The space mode read Abilities owns for its activation checks.
             services.AddSingleton<ISpaceModeQuery, SpaceModeQuery>();
 
             // Social
@@ -330,7 +330,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IChatPortraitTellsService, ChatPortraitTellsService>();
             services.AddSingleton<IPartyService, PartyService>();
             services.AddSingleton<IPartyRosterService, PartyRosterService>();
-            // The same instance, seen through the interface Combat owns for the domains below Social (P5-3c).
+            // The same instance, seen through the interface Combat owns for the domains below Social.
             services.AddSingleton<IPartyRoster>(provider => provider.GetRequiredService<IPartyRosterService>());
             services.AddSingleton<IPerformanceService, PerformanceService>();
             services.AddSingleton<IPerformanceAudienceService, PerformanceAudienceService>();
@@ -348,31 +348,31 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPerformanceFlourishService, PerformanceFlourishService>();
             services.AddSingleton<IPerformanceWatchingWindowService, PerformanceWatchingWindowService>();
             services.AddSingleton<IPlayerListService, PlayerListService>();
-            // The same instance, seen through the refresh request the holocom owns (P5-15a).
+            // The same instance, seen through the refresh request the holocom owns.
             services.AddSingleton<IPlayerListRefresh>(provider => provider.GetRequiredService<IPlayerListService>());
 
             // UI
             services.AddSingleton<IGuiService, GuiService>();
             services.AddSingleton<IAchievementNotification, AchievementNotificationWindow>();
-            // The same instance, seen through the interface Foundation owns for the domains below the UI (P5-1g).
+            // The same instance, seen through the interface Foundation owns for the domains below the UI.
             services.AddSingleton<IGuiRefreshPublisher>(provider => provider.GetRequiredService<IGuiService>());
 
             // World
             services.AddSingleton<IAreaService, AreaService>();
-            // The same instance, seen through the area reads death and the DM tools own (P5-15a).
+            // The same instance, seen through the area reads death and the DM tools own.
             services.AddSingleton<IAreaLookup>(provider => provider.GetRequiredService<IAreaService>());
             services.AddSingleton<ICoxxionBaseDoorsService, CoxxionBaseDoorsService>();
             services.AddSingleton<IFishingService, FishingService>();
             services.AddSingleton<IFishingFightsService, FishingFightsService>();
             services.AddSingleton<IHoloComService, HoloComService>();
             services.AddSingleton<IMusicService, MusicService>();
-            // The same instance, seen through the interface Abilities owns for what a hostile ability does to a target (P5-3f).
+            // The same instance, seen through the interface Abilities owns for what a hostile ability does to a target.
             services.AddSingleton<IAbilityImpactObserver>(provider => provider.GetRequiredService<IMusicService>());
             services.AddSingleton<INotesService, NotesService>();
             services.AddSingleton<IPlanetService, PlanetService>();
             services.AddSingleton<IPropertyCatalogService, PropertyCatalogService>();
             services.AddSingleton<IPropertyCityGovernanceService, PropertyCityGovernanceService>();
-            // The same instance, seen through the city upgrade read the death penalty owns (P5-15a).
+            // The same instance, seen through the city upgrade read the death penalty owns.
             services.AddSingleton<ICityUpgradeLookup>(provider => provider.GetRequiredService<IPropertyCityGovernanceService>());
             services.AddSingleton<IPropertyLoaderService, PropertyLoaderService>();
             services.AddSingleton<IPropertyLoadRegistryService, PropertyLoadRegistryService>();
@@ -383,7 +383,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPropertyStructurePlacementService, PropertyStructurePlacementService>();
             services.AddSingleton<IPropertyTerminalService, PropertyTerminalService>();
             services.AddSingleton<IPropertyService, PropertyService>();
-            // The same instance, seen through the property id lookup the craft device terminals own (P5-15a).
+            // The same instance, seen through the property id lookup the craft device terminals own.
             services.AddSingleton<IPropertyIdLookup>(provider => provider.GetRequiredService<IPropertyService>());
             services.AddSingleton<IShuttleArrivalService, ShuttleArrivalService>();
             services.AddSingleton<IShuttleBoardingService, ShuttleBoardingService>();

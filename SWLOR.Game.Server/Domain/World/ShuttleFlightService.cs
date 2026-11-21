@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// <summary>
     /// The flights in the air and their shuttle interiors: creating a flight and its instance, giving a flight back its live
     /// interior after a hot reload, tearing the instance down, and looking a flight up by its console or area. The logic
-    /// moved here unchanged from <see cref="ShuttleService"/> (P5-9c).
+    /// moved here unchanged from <see cref="ShuttleService"/>.
     /// </summary>
     public class ShuttleFlightService : IShuttleFlightService
     {

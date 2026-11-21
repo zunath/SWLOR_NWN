@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Domain.UI
     public class GuiService : IGuiService
     {
         // An element bound to an event without an id of its own gets a random GUID as the windows build, so the templates and the
-        // event table differ on every load; windows open across a reload are closed (P4-15) and reopen from the new templates.
+        // event table differ on every load; windows open across a reload are closed and reopen from the new templates.
         [ReloadState(ReloadStateKind.Rerolled)]
         private readonly Dictionary<GuiWindowType, GuiConstructedWindow> _windowTemplates = new();
         [ReloadState(ReloadStateKind.Runtime)]

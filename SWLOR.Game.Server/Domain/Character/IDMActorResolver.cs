@@ -2,7 +2,7 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// The DM avatar behind a creature a DM possesses, which the disguise and the item trash rules read. Character owns the
-    /// interface and <c>IDMPresenceService</c> extends it (supply rule 2 of MaintainabilityRefactorDomainOrder.md; P5-15a).
+    /// interface and <c>IDMPresenceService</c> extends it (supply rule 2 of MaintainabilityRefactorDomainOrder.md).
     /// </summary>
     public interface IDMActorResolver
     {

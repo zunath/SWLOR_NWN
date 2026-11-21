@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// <summary>
     /// Scheduled passenger shuttle flights between planets: the module load, login, logout and area exit handlers and the
     /// login redirect. Tickets, boarding, the flight instances, passenger delivery and arrival are in the narrow shuttle
-    /// services (P5-9c). Static callers reach the container's instance through <c>GameServices.Shuttle</c>; the event handlers
+    /// services. Static callers reach the container's instance through <c>GameServices.Shuttle</c>; the event handlers
     /// are on <see cref="ShuttleService"/>.
     /// </summary>
     public interface IShuttleService

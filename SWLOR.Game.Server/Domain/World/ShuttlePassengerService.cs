@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// <summary>
     /// Finds a passenger among the connected players and puts passengers where a landed flight sends them: the landing
     /// point of the destination, or the player record of one who is offline. The logic moved here unchanged from
-    /// <see cref="ShuttleService"/> (P5-9c).
+    /// <see cref="ShuttleService"/>.
     /// </summary>
     public class ShuttlePassengerService : IShuttlePassengerService
     {

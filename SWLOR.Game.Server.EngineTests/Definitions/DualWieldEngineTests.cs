@@ -987,8 +987,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         "The off-hand's haste participates in the shared timer");
                     var sheet = GameServices.Content.Create<CharacterSheetViewModel>();
                     typeof(CharacterSheetViewModel).GetField("_target", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(sheet, attacker);
-                    var timing = (CharacterSheetWeaponTiming)typeof(CharacterSheetViewModel)
-                        .GetProperty("CharacterSheetWeaponTiming", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(sheet)!;
+                    var ratings = typeof(CharacterSheetViewModel)
+                        .GetProperty("CharacterSheetWeaponRatings", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(sheet)!;
+                    var timing = (CharacterSheetWeaponTiming)typeof(CharacterSheetWeaponRatings)
+                        .GetProperty("CharacterSheetWeaponTiming", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(ratings)!;
                     var delayInfo = timing.GetAttackDelayInfo((ICharacterSheetHost)sheet);
                     var expectedDelay = CombatRules.CalculateEffectiveAttackDelay(GameServices.CombatAttackTiming.CalculateAttackDelay(attacker, 40)) / 1000f;
                     ctx.Assert(expectedDelay < unbuffedDelay / 1000f, "The display fixture has measurably faster off-hand haste");

@@ -372,7 +372,7 @@ public class GuiServiceTests
         var windowId = GuiWindowKey.BuildWindowId(type);
         _service.RegisterElementEvent(_service.BuildEventKey(windowId, element), eventType,
             new GuiMethodDetail(typeof(FakeViewModel).GetMethod(nameof(FakeViewModel.OnClick))!,
-                new List<KeyValuePair<Type, object>> { new(typeof(int), 3) }));
+                new List<KeyValuePair<Type, object>> { new KeyValuePair<Type, object>(typeof(int), 3) }));
     }
 
     [Test]

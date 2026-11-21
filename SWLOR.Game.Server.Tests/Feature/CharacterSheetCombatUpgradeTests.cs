@@ -61,8 +61,8 @@ public class CharacterSheetCombatUpgradeTests
     public void ForceAttackPercentage_UsesTheSameCombinedModifierAsCombat()
     {
         var root = FindRepositoryRoot().FullName;
-        var viewModel = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs"));
-        viewModel.Should().Contain("CombatRating.GetAttackPercentAdjustment(_target, SkillType.Force)");
+        var viewModel = ReadWindowSource("CharacterSheetAccuracyRows.cs");
+        viewModel.Should().Contain("CombatRating.GetAttackPercentAdjustment(host.Target, SkillType.Force)");
         var stats = StatSource.Read();
         ExtractMethod(stats, "private int ApplyPostAttackStatusModifiers(")
             .Should().Contain("GetAttackPercentAdjustment(creature, skillType)");
@@ -155,10 +155,10 @@ public class CharacterSheetCombatUpgradeTests
         ExtractMethod(timing, "public uint GetOffhandAttackWeapon(ICharacterSheetHost host)")
             .Should().Contain("TwinPistolEquipment.GetCompanionWeapon(host.Target)")
             .And.Contain("EquipmentPredicates.GetOffhandAttackWeapon(host.Target)");
-        var stats = ExtractMethod(source, "private void RefreshCharacterStatsList()");
-        stats.Should().Contain("AddStat(\"Critical Rate\", FormatPercent(GetCriticalRate(combatProfile.Skill)), FormatOffHandTooltip(");
-        stats.Should().Contain("GetIsObjectValid(offhandWeapon) ? FormatPercent(GetCriticalRate(Skill.GetWeaponSkill(_target, offhandWeapon))) : null");
-        stats.Should().NotContain("AddStat(\"Off-hand", "off-hand values join the existing rows instead of adding rows");
+        var stats = ExtractMethod(ReadWindowSource("CharacterSheetAccuracyRows.cs"), "public void AddRows(");
+        stats.Should().Contain("addStat(\"Critical Rate\", FormatPercent(GetCriticalRate(host, skill)), FormatOffHandTooltip(");
+        stats.Should().Contain("GetIsObjectValid(offhandWeapon) ? FormatPercent(GetCriticalRate(host, Skill.GetWeaponSkill(host.Target, offhandWeapon))) : null");
+        stats.Should().NotContain("addStat(\"Off-hand", "off-hand values join the existing rows instead of adding rows");
         ExtractMethod(timing, "public (string Value, string Tooltip) GetAttackDelayInfo(ICharacterSheetHost host)")
             .Should().Contain("if (mainHandDelay > 0 && offHandDelay > 0)");
 
@@ -267,28 +267,16 @@ public class CharacterSheetCombatUpgradeTests
     public void CharacterSheet_DisplaysConditionalRangedEvasionAdjustment()
     {
         var root = FindRepositoryRoot();
-        var viewModel = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "GuiDefinition",
-            "ViewModel",
-            "CharacterSheetViewModel.cs"));
-
-        viewModel.Should().Contain("AddStat(\"Ranged Evasion\", FormatPercent(Stat.GetStatAdjustment(_target, StatType.RangedEvasionPercentAdjustment))");
-        viewModel.Should().Contain("Negative values slow attacks.");
+        ReadWindowSource("CharacterSheetUtilityRows.cs")
+            .Should().Contain("addStat(\"Ranged Evasion\", FormatPercent(Stat.GetStatAdjustment(host.Target, StatType.RangedEvasionPercentAdjustment))");
+        ReadWindowSource("CharacterSheetDamageRows.cs").Should().Contain("Negative values slow attacks.");
     }
 
     [Test]
     public void CharacterSheet_IncludesLimitedHasteAndLeadershipDamageReduction()
     {
-        var viewModel = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "GuiDefinition",
-            "ViewModel",
-            "CharacterSheetViewModel.cs"));
+        var survivalRows = ReadWindowSource("CharacterSheetSurvivalRows.cs");
+        var accuracyRows = ReadWindowSource("CharacterSheetAccuracyRows.cs");
 
         var attackDelay = ExtractMethod(ReadWindowSource("CharacterSheetWeaponTiming.cs"), "public (string Value, string Tooltip) GetAttackDelayInfo(ICharacterSheetHost host)");
         attackDelay.Should().Contain("WeaponAttackTiming.GetTimingSkill(host.Target)");
@@ -296,7 +284,7 @@ public class CharacterSheetCombatUpgradeTests
         attackDelay.Should().Contain("limitedAttackDelayReductionPercent");
         attackDelay.Should().Contain("CombatAttackTiming.CalculateAttackDelay(");
 
-        var damageTaken = ExtractMethod(viewModel, "private int GetDamageTakenPercent(CombatDamageType damageType)");
+        var damageTaken = ExtractMethod(survivalRows, "private int GetDamageTakenPercent(ICharacterSheetHost host, CombatDamageType damageType)");
         damageTaken.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         damageTaken.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
         damageTaken.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
@@ -309,10 +297,10 @@ public class CharacterSheetCombatUpgradeTests
                 damageTaken.IndexOf("ApplyDamageTakenPercentAdjustment(percent, leadershipAdjustment)", StringComparison.Ordinal));
         damageTaken.IndexOf("ApplyDamageTakenPercentAdjustment(percent, leadershipAdjustment)", StringComparison.Ordinal)
             .Should().BeLessThan(
-                damageTaken.IndexOf("Stat.GetStatAdjustment(_target, StatType.DamageTakenPercentAdjustment)", StringComparison.Ordinal),
+                damageTaken.IndexOf("Stat.GetStatAdjustment(host.Target, StatType.DamageTakenPercentAdjustment)", StringComparison.Ordinal),
                 "every Leadership channel must remain a separate multiplicative stage before the generic adjustment");
 
-        var applyAdjustment = typeof(CharacterSheetViewModel).GetMethod(
+        var applyAdjustment = typeof(CharacterSheetSurvivalRows).GetMethod(
             "ApplyDamageTakenPercentAdjustment",
             BindingFlags.Static | BindingFlags.NonPublic);
         applyAdjustment.Should().NotBeNull();
@@ -321,11 +309,11 @@ public class CharacterSheetCombatUpgradeTests
         afterLeadershipAdjustment.Should().Be(64,
             "the sheet must mirror runtime's separate multiplicative typed and Leadership stages");
 
-        var criticalRate = ExtractMethod(viewModel, "private int GetCriticalRate(SkillType skillType)");
-        criticalRate.Should().Contain("GameServices.CombatDamageModifiers.GetSkillCriticalRatePercentAdjustment(_target, skillType)");
+        var criticalRate = ExtractMethod(accuracyRows, "private int GetCriticalRate(ICharacterSheetHost host, SkillType skillType)");
+        criticalRate.Should().Contain("CombatDamageModifiers.GetSkillCriticalRatePercentAdjustment(host.Target, skillType)");
         criticalRate.Should().NotContain("GetPersistentNextSkillAbilityCriticalRateBonus");
-        viewModel.Should().Contain("AddStat(\"Next Ability Crit\"");
-        viewModel.Should().Contain("GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(_target, combatProfile.Skill)");
+        accuracyRows.Should().Contain("addStat(\"Next Ability Crit\"");
+        accuracyRows.Should().Contain("CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(host.Target, skill)");
     }
 
     [Test]

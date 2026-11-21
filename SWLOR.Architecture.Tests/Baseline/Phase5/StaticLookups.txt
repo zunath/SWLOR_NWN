@@ -784,7 +784,6 @@ SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/BugReportViewModel.cs | 4
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CasinoSlotViewModel.cs | 4
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ChangeDescriptionViewModel.cs | 4
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs | 38
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs | 88
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterStatRebuildViewModel.cs | 13
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CircuitCraftViewModel.cs | 26
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftMinigameViewModel.cs | 6

@@ -32,6 +32,8 @@ public class WeaponAbilityImpactsTests
     private int _directCalls;
     private int _telegraphedCalls;
     private string? _lastShape;
+    private bool? _lastCenterOnActivator;
+    private Action<AbilityImpactSummary>? _delayedAfterImpact;
     private readonly List<bool> _animations = new();
 
     [SetUp]
@@ -43,6 +45,8 @@ public class WeaponAbilityImpactsTests
         _directCalls = 0;
         _telegraphedCalls = 0;
         _lastShape = null;
+        _lastCenterOnActivator = null;
+        _delayedAfterImpact = null;
         _animations.Clear();
         _bench.Leaf<IAbilityService>()
             .Script(nameof(IAbilityService.ApplyCombatImpact), args =>
@@ -56,7 +60,18 @@ public class WeaponAbilityImpactsTests
             {
                 _telegraphedCalls++;
                 _lastShape = Argument(nameof(IAbilityService.ApplyTelegraphedCombatImpact), args, "shape")?.ToString();
+                _lastCenterOnActivator = (bool?)Argument(nameof(IAbilityService.ApplyTelegraphedCombatImpact), args, "centerOnActivator");
                 RunCallbacks(nameof(IAbilityService.ApplyTelegraphedCombatImpact), args);
+                var afterImpact = (Action<AbilityImpactSummary>?)Argument(nameof(IAbilityService.ApplyTelegraphedCombatImpact), args, "afterImpactAction");
+                var delayed = (float)Argument(nameof(IAbilityService.ApplyTelegraphedCombatImpact), args, "telegraphDuration")! > 0f;
+                if (delayed)
+                {
+                    // A delayed telegraph resolves later: nothing has landed yet and the callback runs with the summary found then.
+                    _delayedAfterImpact = afterImpact;
+                    return 0;
+                }
+
+                afterImpact?.Invoke(new AbilityImpactSummary { ImpactedTargetCount = 1 });
                 return _damagePerHit;
             });
         _bench.Leaf<IStatusEffectApplicationService>().Script(nameof(IStatusEffectApplicationService.ApplyStatusEffect), _ => true);
@@ -74,7 +89,7 @@ public class WeaponAbilityImpactsTests
 
     private static void RunCallbacks(string method, object?[] args)
     {
-        foreach (var name in new[] { "beforeImpact", "afterSuccessfulHit", "beforeSuccessfulImpactRiders", "baseDamageAdjustment", "damagePercentAdjustment" })
+        foreach (var name in new[] { "beforeImpact", "baseDamageAdjustment", "damagePercentAdjustment", "beforeSuccessfulImpactRiders", "afterSuccessfulHit" })
         {
             switch (Argument(method, args, name))
             {
@@ -89,9 +104,6 @@ public class WeaponAbilityImpactsTests
                     break;
             }
         }
-
-        if (Argument(method, args, "afterImpactAction") is Action<AbilityImpactSummary> after)
-            after(new AbilityImpactSummary { ImpactedTargetCount = 1 });
     }
 
     private static WeaponAbilityImpactRequest Request(
@@ -132,12 +144,16 @@ public class WeaponAbilityImpactsTests
     public void ASpentHitPointCostAndTheHostileSelfEffectsComeBeforeTheFirstHit()
     {
         _bench.Leaf<IAbilityImpactState>();
-        var profile = new WeaponAbilityProfile { SelfHastePercent = 10, SelfHasteDurationSeconds = 6, ApplySelfModifiersOnHostileActivation = true };
+        var profile = new WeaponAbilityProfile { HPCostPercent = 10, SelfHastePercent = 10, SelfHasteDurationSeconds = 6, ApplySelfModifiersOnHostileActivation = true };
 
+        // The engine fake gives the activator 100 hit points, so the cost is 10.
         var text = Impact(Request(profile));
 
+        var firstHit = text.IndexOf("Ability.ApplyCombatImpact(", StringComparison.Ordinal);
+        text.IndexOf("ApplyHitPointSpendAbilityEffects(Attacker, 10", StringComparison.Ordinal)
+            .Should().BeGreaterThanOrEqualTo(0).And.BeLessThan(firstHit);
         text.IndexOf("AddCapped(Attacker, AttackDelayReductionPercent, 10, 6", StringComparison.Ordinal)
-            .Should().BeGreaterThanOrEqualTo(0).And.BeLessThan(text.IndexOf("Ability.ApplyCombatImpact(", StringComparison.Ordinal));
+            .Should().BeGreaterThanOrEqualTo(0).And.BeLessThan(firstHit);
     }
 
     [Test]
@@ -163,11 +179,16 @@ public class WeaponAbilityImpactsTests
     [Test]
     public void ARestoreByTargetCountReadsTheImpactSummaryAfterTheLastHit()
     {
+        // Each hit adds one impacted target, so the summary reaches the minimum only after the third and last hit.
         _bench.Leaf<IAbilityImpactState>().Script(nameof(IActiveAbilityImpact.GetActiveAbilityImpactSummary),
-            _ => new AbilityImpactSummary { ImpactedTargetCount = 3 });
-        var profile = new WeaponAbilityProfile { RestoreStaminaIfMinimumTargetsHit = 9, StaminaRestoreMinimumTargets = 3 };
+            _ => new AbilityImpactSummary { ImpactedTargetCount = _directCalls });
+        var profile = new WeaponAbilityProfile { HitCount = 3, RestoreStaminaIfMinimumTargetsHit = 9, StaminaRestoreMinimumTargets = 3 };
 
-        Impact(Request(profile)).Should().Contain("RestoreAbilityHitStamina(Attacker");
+        var text = Impact(Request(profile));
+
+        text.Split("Ability.ApplyCombatImpact(").Length.Should().Be(4);
+        text.IndexOf("RestoreAbilityHitStamina(Attacker", StringComparison.Ordinal)
+            .Should().BeGreaterThan(text.LastIndexOf("Ability.ApplyCombatImpact(", StringComparison.Ordinal));
     }
 
     [Test]
@@ -244,9 +265,24 @@ public class WeaponAbilityImpactsTests
         var instant = new WeaponAbilityProfile { SelfHastePercent = 10, SelfHasteDurationSeconds = 6 };
 
         const string haste = "AddCapped(Attacker, AttackDelayReductionPercent, 10, 6";
-        // Both paths apply the landed modifiers once after the impact; the delayed one applies them a second time when it activates.
-        Impact(Request(delayed, true, AbilityTargetingShapeType.Cone)).Split(haste).Length.Should().Be(3);
+        // The instant path applies the landed modifiers once after the impact. The delayed path lands nothing yet, so it applies them
+        // only when the telegraph resolves and its callback reports a struck target.
         Impact(Request(instant, true, AbilityTargetingShapeType.Cone)).Split(haste).Length.Should().Be(2);
+
+        Impact(Request(delayed, true, AbilityTargetingShapeType.Cone)).Should().NotContain(haste);
+        _delayedAfterImpact.Should().NotBeNull();
+
+        _bench.Run(() => _delayedAfterImpact!(new AbilityImpactSummary { ImpactedTargetCount = 0 })).Should().NotContain(haste);
+        _bench.Run(() => _delayedAfterImpact!(new AbilityImpactSummary { ImpactedTargetCount = 1 })).Split(haste).Length.Should().Be(2);
+    }
+
+    [Test]
+    public void ADelayedTelegraphLandsNothingWhenItIsScheduled()
+    {
+        var text = Impact(Request(new WeaponAbilityProfile { TelegraphDuration = 1.5f, SelfHastePercent = 10, SelfHasteDurationSeconds = 6 }, true, AbilityTargetingShapeType.Cone));
+
+        text.Should().NotContain("AddCapped(Attacker, AttackDelayReductionPercent");
+        _delayedAfterImpact.Should().NotBeNull();
     }
 
     [Test]
@@ -263,10 +299,11 @@ public class WeaponAbilityImpactsTests
     [Test]
     public void ACenteredAreaAbilityIsCenteredOnTheActivator()
     {
-        var text = Impact(Request(new WeaponAbilityProfile(), true, AbilityTargetingShapeType.Cone, AbilityTargetingFlags.OriginOnSelf));
+        Impact(Request(new WeaponAbilityProfile(), true, AbilityTargetingShapeType.Cone, AbilityTargetingFlags.OriginOnSelf));
+        _lastCenterOnActivator.Should().BeTrue();
 
-        text.Should().Contain("ApplyTelegraphedCombatImpact(Attacker, Defender");
-        text.Split("ApplyTelegraphedCombatImpact(")[1].Should().Contain("True");
+        Impact(Request(new WeaponAbilityProfile(), true, AbilityTargetingShapeType.Cone, AbilityTargetingFlags.None));
+        _lastCenterOnActivator.Should().BeFalse();
     }
 
     [Test]

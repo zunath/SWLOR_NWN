@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Native
                 return false;
             }
 
-            replaced = UbjsonTextRepair.RepairStrings(ubjson, out var complete, RepairedText);
+            replaced = UbjsonTextRepair.RepairStrings(ubjson, out var complete, RepairedText, MaxReportSamples);
             if (complete)
                 return true;
 

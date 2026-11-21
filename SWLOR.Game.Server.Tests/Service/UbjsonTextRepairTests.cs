@@ -199,6 +199,21 @@ public class UbjsonTextRepairTests
     }
 
     [Test]
+    public void SampleLimitKeepsTheFirstDistinctSamplesButRepairsEveryString()
+    {
+        var data = Bytes('[', Str('a', 0x80), Str('a', 0x80), Str('b', 0x80), Str('c', 0x80), Str('d', 0x80), ']');
+        var limited = new List<string>();
+        var unlimited = new List<string>();
+
+        Assert.That(UbjsonTextRepair.RepairStrings((byte[])data.Clone(), out _, limited, 2), Is.EqualTo(5));
+        Assert.That(limited, Is.EqualTo(new[] { "a?", "b?" }));
+
+        UbjsonTextRepair.RepairStrings(data, out _, unlimited);
+        Assert.That(unlimited, Is.EqualTo(new[] { "a?", "a?", "b?", "c?", "d?" }), "without a limit every repaired string is kept");
+        Assert.That(data, Is.EqualTo(Bytes('[', Str('a', '?'), Str('a', '?'), Str('b', '?'), Str('c', '?'), Str('d', '?'), ']')));
+    }
+
+    [Test]
     public void LongRepairedStringsAreCut()
     {
         var text = Enumerable.Repeat((int)'a', UbjsonTextRepair.MaxSampleLength + 10).Prepend(0x80).ToArray();

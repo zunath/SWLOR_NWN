@@ -32,17 +32,22 @@ namespace SWLOR.Game.Server.Native
         /// <param name="ubjson">The encoded value, repaired in place.</param>
         /// <param name="complete">False when the data is malformed or exceeds a safety limit.</param>
         /// <param name="repairedText">Receives each repaired string or key, cut to <see cref="MaxSampleLength"/> characters.</param>
+        /// <param name="maxSamples">
+        /// When set, <paramref name="repairedText"/> keeps only the first this many distinct samples; every string is still repaired.
+        /// </param>
         /// <returns>The number of bytes replaced.</returns>
-        public static int RepairStrings(Span<byte> ubjson, out bool complete, ICollection<string> repairedText = null)
+        public static int RepairStrings(Span<byte> ubjson, out bool complete, ICollection<string> repairedText = null,
+            int? maxSamples = null)
         {
             var position = 0;
             var current = EndOfData;
             var replaced = 0;
+            var samples = new SampleSink(repairedText, maxSamples);
             var remaining = new List<long>();
             var states = new List<int>();
 
             complete = StartValue(ubjson, ref position, ref current, GetIgnoringNoOp(ubjson, ref position, ref current),
-                remaining, states, ref replaced, repairedText);
+                remaining, states, ref replaced, samples);
             while (complete && remaining.Count > 0)
             {
                 var top = remaining.Count - 1;
@@ -69,7 +74,7 @@ namespace SWLOR.Game.Server.Native
                     }
 
                     // An unsized object's key reuses the marker already read.
-                    if (isObject && !ReadString(ubjson, ref position, ref current, false, ref replaced, repairedText))
+                    if (isObject && !ReadString(ubjson, ref position, ref current, false, ref replaced, samples))
                     {
                         complete = false;
                         break;
@@ -86,7 +91,7 @@ namespace SWLOR.Game.Server.Native
                     }
 
                     remaining[top]--;
-                    if (isObject && !ReadString(ubjson, ref position, ref current, true, ref replaced, repairedText))
+                    if (isObject && !ReadString(ubjson, ref position, ref current, true, ref replaced, samples))
                     {
                         complete = false;
                         break;
@@ -96,7 +101,7 @@ namespace SWLOR.Game.Server.Native
                 }
 
                 states[top] = state | ChildStarted;
-                complete = StartValue(ubjson, ref position, ref current, marker, remaining, states, ref replaced, repairedText);
+                complete = StartValue(ubjson, ref position, ref current, marker, remaining, states, ref replaced, samples);
             }
 
             return replaced;
@@ -106,7 +111,7 @@ namespace SWLOR.Game.Server.Native
         /// Reads a scalar value whole, or opens a container by pushing it onto the walk's stack.
         /// </summary>
         private static bool StartValue(Span<byte> data, ref int position, ref int current, int marker,
-            List<long> remaining, List<int> states, ref int replaced, ICollection<string> repairedText)
+            List<long> remaining, List<int> states, ref int replaced, SampleSink samples)
         {
             switch (marker)
             {
@@ -130,7 +135,7 @@ namespace SWLOR.Game.Server.Native
                     return ReadSize(data, ref position, ref current, out var digits) &&
                            SkipNumberText(data, ref position, ref current, digits);
                 case 'S':
-                    return ReadString(data, ref position, ref current, true, ref replaced, repairedText);
+                    return ReadString(data, ref position, ref current, true, ref replaced, samples);
                 case '[':
                 case '{':
                     if (remaining.Count >= MaxDepth ||
@@ -185,7 +190,7 @@ namespace SWLOR.Game.Server.Native
 
         // A string is a length number then that many bytes; object keys omit the 'S' marker.
         private static bool ReadString(Span<byte> data, ref int position, ref int current, bool readMarker, ref int replaced,
-            ICollection<string> repairedText)
+            SampleSink samples)
         {
             if (readMarker)
                 Get(data, ref position, ref current);
@@ -200,21 +205,44 @@ namespace SWLOR.Game.Server.Native
             var text = data.Slice(position, (int)length);
             var replacedHere = Utf8TextRepair.ReplaceInvalidBytes(text);
             replaced += replacedHere;
-            if (replacedHere > 0 && repairedText != null)
-                repairedText.Add(Sample(text));
+            if (replacedHere > 0)
+                samples.Add(text);
             position += (int)length;
             current = data[position - 1];
             return true;
         }
 
-        // The repaired bytes are valid UTF-8; keep whole characters only.
-        private static string Sample(Span<byte> text)
+        // Collects repaired text; with a limit it stops building samples once enough distinct ones are kept.
+        private readonly struct SampleSink
         {
-            var value = Encoding.UTF8.GetString(text);
-            if (value.Length <= MaxSampleLength)
-                return value;
-            var cut = char.IsHighSurrogate(value[MaxSampleLength - 1]) ? MaxSampleLength - 1 : MaxSampleLength;
-            return value[..cut] + "...";
+            private readonly ICollection<string> _target;
+            private readonly int? _limit;
+
+            public SampleSink(ICollection<string> target, int? limit)
+            {
+                _target = target;
+                _limit = limit;
+            }
+
+            public void Add(Span<byte> text)
+            {
+                if (_target == null || _target.Count >= _limit)
+                    return;
+
+                var sample = Sample(text);
+                if (_limit == null || !_target.Contains(sample))
+                    _target.Add(sample);
+            }
+
+            // The repaired bytes are valid UTF-8; keep whole characters only.
+            private static string Sample(Span<byte> text)
+            {
+                var value = Encoding.UTF8.GetString(text);
+                if (value.Length <= MaxSampleLength)
+                    return value;
+                var cut = char.IsHighSurrogate(value[MaxSampleLength - 1]) ? MaxSampleLength - 1 : MaxSampleLength;
+                return value[..cut] + "...";
+            }
         }
 
         private static bool ReadLength(Span<byte> data, ref int position, ref int current, int marker, out long length)

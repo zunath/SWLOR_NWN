@@ -866,4 +866,8 @@ Branch `claude/mr-p5-7d`, base `38311bdeb` (P5-16f PR 2).
     repeated target, plain rifle, ranged repeated target (Sustained Fire), same-target pressure (Spotter's Rhythm) and rifle cycle critical. Per phase the
     message kinds and counts, and the damage ranges, match (side and back attacks double the plain hit, Repeated Target 1/5 to 5/5 adds +10 per stack,
     Sustained Fire stacks 1/5 to 4/5, the critical rate notice appears 6 and 4 times in both); attack rolls differ by at most two per phase
-    from timing. The pressure ready bonus on a weapon ability was not driven (no ability cast).
+    from timing. A second run drove the pressure bonus on a weapon ability (`ConsumeSameTargetPressureWeaponAbilityDamageBonus`), same setup at
+    the base and the head: with the ready notice up, Aimed Shot I hit with "Spotter's Rhythm (+25 DMG)" (29 and 26 damage), and Crippling Shot I about
+    8 s later hit with no bonus (15 and 16 damage, then Hamstring) on both. Near the second cast the base showed a fresh plain "Spotter's Rhythm" ready
+    notice, because the pressure had built again since the first hit, and the head did not yet; neither carries a bonus. Takes where a cast missed were
+    dropped on both sides, since a miss leaves the bonus in place.

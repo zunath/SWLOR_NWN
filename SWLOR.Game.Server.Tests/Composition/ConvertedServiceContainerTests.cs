@@ -56,9 +56,9 @@ public class ConvertedServiceContainerTests
         // (SWLOR.Game.Server.Domain.Combat.TemporaryStatModifier before the facade moved to Service.TemporaryStatModifier), so a line
         // belongs to this service when its master name is on that facade or its branch name on the instance; of a split
         // service (Combat), only a line whose branch name is on this class: the facade's handlers went to the parts that own
-        // them. A handler that left for content (Migration's login restoration, P5-1h) is on that content class, so a line whose
+        // them. A handler that left for content (Migration's login restoration) is on that content class, so a line whose
         // branch name is in Feature is not this service's. A master handler split across two services (Mimicry's cache handler and
-        // the trait stat service's, P5-4b) names a branch on each, and the one on the other service's class is that service's.
+        // the trait stat service's) names a branch on each, and the one on the other service's class is that service's.
         var moved = service.Instance.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly)
             .Where(method => method.GetCustomAttributes().Any(a => a.GetType().Name == HandlerAttribute))
             .ToList();
@@ -111,18 +111,18 @@ public class ConvertedServiceContainerTests
     {
         const BindingFlags Declared = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly;
         // Content is the temporary content factory for code not converted yet (MaintainabilityRefactorContentInjection.md); it goes
-        // with GameServices in wave C11.
+        // with GameServices.
         var expected = ConvertedServiceFixtures.Load().Where(service => service.AccessorProperty is not null)
             .Select(service => $"{service.Contract.Name} {service.AccessorProperty}")
             .Append("IContentFactory Content")
-            // The accessors of the interfaces a lower domain owns (P5-1g): static code below the services reaches them.
+            // The accessors of the interfaces a lower domain owns: static code below the services reaches them.
             .Append("ICombatRecording CombatRecording")
             .Append("ICharacterRecording CharacterRecording")
             .Append("ICombatRecordingState CombatRecordingState")
             .Append("ICompanionLookup CompanionQuery")
-            // The ability impact state store Combat owns (P5-3b): a store, not a service, reached by the content that reads an impact.
+            // The ability impact state store Combat owns: a store, not a service, reached by the content that reads an impact.
             .Append("IAbilityImpactState AbilityImpactState")
-            // The party roster reads Combat owns (P5-3c): an interface of the roster, reached by the ability target queries in Combat.
+            // The party roster reads Combat owns: an interface of the roster, reached by the ability target queries in Combat.
             .Append("IPartyRoster PartyRoster")
             // The weapon ability parts (Readmes/MaintainabilityRefactorWeaponAbilitySplit.md): content singletons the unconverted ability base and the status spread snapshot reach here until they are converted.
             .Append("StatusAbilityEffects StatusAbilityEffects")
@@ -142,24 +142,24 @@ public class ConvertedServiceContainerTests
     [Test]
     public void Every_domain_service_in_the_container_is_listed_as_converted()
     {
-        // The interfaces a lower domain owns and a higher service implements (P5-1g): the same instance as the service behind them.
+        // The interfaces a lower domain owns and a higher service implements: the same instance as the service behind them.
         var notServices = new[] { "ICompanionLookup", "ICombatRecording", "ICharacterRecording", "IGuiRefreshPublisher" }
-            // The ability split (P5-3b): the catalog as Character reads it, and the impact state store with its Character read.
+            // The ability split: the catalog as Character reads it, and the impact state store with its Character read.
             .Concat(new[] { "IAbilityCatalog", "IAbilityImpactState", "IActiveAbilityImpact" })
-            // The ability split (P5-3c): the party roster as Combat reads it, and the aura part as the death service's revive listener.
+            // The ability split: the party roster as Combat reads it, and the aura part as the death service's revive listener.
             .Concat(new[] { "IPartyRoster", "ICreatureRevivedListener" })
-            // The ability split (P5-3d): the space mode read the activation checks own, which Space answers.
+            // The ability split: the space mode read the activation checks own, which Space answers.
             .Concat(new[] { "ISpaceModeQuery" })
-            // The ability split (P5-3f): the music and capstone proof services as the hostile impact's observers.
+            // The ability split: the music and capstone proof services as the hostile impact's observers.
             .Concat(new[] { "IAbilityImpactObserver" })
-            // The stat split (P5-4d): the restore riders as the pools' listener, which Combat answers.
+            // The stat split: the restore riders as the pools' listener, which Combat answers.
             .Concat(new[] { "IResourceRestoredListener" })
-            // The inversions of P5-15a: the lower-domain interfaces a higher service implements, and the two adapters Creatures answers.
+            // The inversions: the lower-domain interfaces a higher service implements, and the two adapters Creatures answers.
             .Concat(new[] { "IAreaLookup", "ICityUpgradeLookup", "IQuestAdvancer", "IConcealmentQuery", "ICurrencyBalance",
                 "IPlayerListRefresh", "IItemCacheInfo", "IPropertyIdLookup", "IDMActorResolver", "IDMWindowPresence", "IAIProfileDescription", "IDMSpawnPreparation" })
-            // The inversions of P5-15b: the Espionage, recast, beast corpse reads a higher service implements, and the achievement window UI draws.
+            // The inversions: the Espionage, recast, beast corpse reads a higher service implements, and the achievement window UI draws.
             .Concat(new[] { "IEspionageEnmityQuery", "IEspionageStealthQuery", "IRecastDelays", "IBeastCorpseInfo", "IAchievementNotification" })
-            // The status effect split (P5-5c): the resistance reads the status effects own, which Combat answers.
+            // The status effect split: the resistance reads the status effects own, which Combat answers.
             .Concat(new[] { "IStatusResistance" })
             .ToArray();
         var services = new ServiceCollection();
@@ -189,7 +189,7 @@ public class ConvertedServiceContainerTests
     [Test]
     public void Combat_lists_its_twenty_parts_and_each_part_has_a_GameServices_property()
     {
-        // The cases above would pass vacuously if the list lost its parts. The ability split (P5-3b) added the impact
+        // The cases above would pass vacuously if the list lost its parts. The ability split added the impact
         // geometry and the ability magnitude; the combat split added the damage roll, the defense memory, the rate modifiers and the repeated-target stacks.
         var combat = ConvertedServiceFixtures.Load().Single(service => service.Name == "Combat");
         combat.Parts.Should().HaveCount(20);

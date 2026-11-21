@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
 /// The appearance editor's colour swatches (20 armor targets by 6 dye channels) are bound by name. The fixture holds what the
-/// editor declared and published before its 480 per-channel properties were replaced by ArmorColorRegionCatalog (P5-16e): each
+/// editor declared and published before its 480 per-channel properties were replaced by ArmorColorRegionCatalog: each
 /// swatch, its four binding names and its first region, in publishing order, then every declared property name.
 /// </summary>
 public class ArmorColorRegionCatalogTests

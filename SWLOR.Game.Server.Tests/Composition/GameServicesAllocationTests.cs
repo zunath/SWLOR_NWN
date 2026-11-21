@@ -61,7 +61,7 @@ public class GameServicesAllocationTests
         serverTask.Should().BeSameAs(_host.Provider.GetRequiredService<IServerTaskService>());
     }
 
-    /// <summary>The hot character services (P2-ZD): read on every swing and effect tick through the accessor.</summary>
+    /// <summary>The hot character services: read on every swing and effect tick through the accessor.</summary>
     [Test]
     public void Reading_a_character_GameServices_property_allocates_nothing()
     {
@@ -84,7 +84,7 @@ public class GameServicesAllocationTests
     [Test]
     public void Reading_the_database_through_GameServices_allocates_nothing()
     {
-        // DB is read on many request paths (P2-ZI): the property and a read that does not reach Redis cost nothing more
+        // DB is read on many request paths: the property and a read that does not reach Redis cost nothing more
         // than the instance.
         var instance = _host.Provider.GetRequiredService<IDBService>();
         IDBService db = null!;

@@ -8,7 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Tests.Domain.World;
 
 /// <summary>
-/// Unit tests of the members the registry gained when it was split from the loader (P5-9b): the failure, spawn action and
+/// Unit tests of the members the registry gained when it was split from the loader: the failure, spawn action and
 /// waiter bookkeeping the queue reaches through the registry, and the state a hot reload carries.
 /// </summary>
 [TestFixture]

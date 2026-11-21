@@ -96,7 +96,7 @@ public class AbilityFacadeAllocationTests
         return GC.GetAllocatedBytesForCurrentThread() - before;
     }
 
-    // The reads of IAbilityCatalog (GameServices.AbilityCatalog after P5-3b) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
+    // The reads of IAbilityCatalog (GameServices.AbilityCatalog) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
     [Test]
     public void The_catalog_reads_allocate_nothing()
     {
@@ -109,7 +109,7 @@ public class AbilityFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
-    // The reads of IAbilityActivationService (GameServices.AbilityActivation since P5-3d) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
+    // The reads of IAbilityActivationService (GameServices.AbilityActivation) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
     [Test]
     public void The_last_denial_read_allocates_nothing()
     {
@@ -119,7 +119,7 @@ public class AbilityFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
-    // The reads of IAbilityImpactState (GameServices.AbilityImpactState after P5-3b) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
+    // The reads of IAbilityImpactState (GameServices.AbilityImpactState) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
     [Test]
     public void The_impact_state_reads_allocate_nothing_with_or_without_an_active_impact()
     {
@@ -140,7 +140,7 @@ public class AbilityFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
-    // The reads of ICombatAbilityMagnitudeService (GameServices.CombatAbilityMagnitude after P5-3b) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
+    // The reads of ICombatAbilityMagnitudeService (GameServices.CombatAbilityMagnitude) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
     [Test]
     public void The_magnitude_reads_allocate_nothing_with_or_without_an_active_impact()
     {
@@ -160,7 +160,7 @@ public class AbilityFacadeAllocationTests
     }
 
     // The reads of IAbilityService (stays), IAbilityHostileImpactService (GameServices.AbilityHostileImpact) and IAbilityDamageInputService
-    // (GameServices.AbilityDamageInput, the weapon damage type) since P5-3f (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
+    // (GameServices.AbilityDamageInput, the weapon damage type) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
     [Test]
     public void The_impact_reads_allocate_nothing_with_or_without_an_active_impact()
     {
@@ -176,7 +176,7 @@ public class AbilityFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
-    // The reads of IAbilityImpactState (GameServices.AbilityImpactState after P5-3b) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
+    // The reads of IAbilityImpactState (GameServices.AbilityImpactState) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
     [Test]
     public void The_stat_source_read_allocates_nothing()
     {
@@ -188,7 +188,7 @@ public class AbilityFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
-    // The per-target rules of the damage inputs and the status application (P5-3e) that answer before any engine call, read on
+    // The per-target rules of the damage inputs and the status application that answer before any engine call, read on
     // the bench's parts: the hostile impact calls them through the parts' interfaces, not through GameServices.
     [Test]
     public void The_damage_part_rules_allocate_nothing_with_or_without_an_active_impact()
@@ -208,7 +208,7 @@ public class AbilityFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
-    // The reads of CombatRules and ICombatQueriesService (IsForcePower), IAbilityHostileImpactService, IAbilityImpactState and ICombatAbilityMagnitudeService (P5-3b and P5-3f) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
+    // The reads of CombatRules and ICombatQueriesService (IsForcePower), IAbilityHostileImpactService, IAbilityImpactState and ICombatAbilityMagnitudeService (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
     [Test]
     public void The_pure_rules_allocate_nothing()
     {
@@ -222,7 +222,7 @@ public class AbilityFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
-    // The reads of IAbilityActivationStateService (GameServices.AbilityActivationState after P5-3c) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
+    // The reads of IAbilityActivationStateService (GameServices.AbilityActivationState) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
     [Test]
     public void The_activation_and_queued_attack_reads_allocate_nothing()
     {

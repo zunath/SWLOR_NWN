@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// Part 3 of the stat split, <c>StatRecordService</c> (P5-4e): the gear-fed player records and the Combat Readiness equipment,
+/// Part 3 of the stat split, <c>StatRecordService</c>: the gear-fed player records and the Combat Readiness equipment,
 /// with its defense damage type seam answered. It reads the pools through the bench's stat double.
 /// </summary>
 public sealed class TestStatRecordService : StatRecordService

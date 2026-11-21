@@ -69,7 +69,7 @@ public class PairedRangedTraitsServiceTests
         WeaponAbilityCadenceOnHit = cadenceOnHit
     };
 
-    // RecordSuccessfulWeaponAbilityHit moved here from AbilityService with the ability split (P5-3b); the impact's traits come
+    // RecordSuccessfulWeaponAbilityHit moved here from AbilityService with the ability split; the impact's traits come
     // from the impact state store.
     [Test]
     public void ALandedWeaponSkillHitCompletesTheTrackedTraitsAndObservesCadenceOnce()

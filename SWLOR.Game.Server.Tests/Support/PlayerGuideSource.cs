@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
 /// The text of the player guide wherever it lives: <c>PlayerGuideViewModel.cs</c>, the guide topic types beside it and, once the
-/// split of P5-16h moves the topics into data types, every file that holds the guide's code or text. A test that guards a rule by
+/// split that moves the topics into data types, every file that holds the guide's code or text. A test that guards a rule by
 /// reading the guide uses <see cref="Read"/>, so a <c>NotContain</c> check cannot pass because the text left one file.
 /// </summary>
 /// <remarks>

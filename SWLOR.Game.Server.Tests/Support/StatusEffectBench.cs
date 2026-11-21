@@ -141,16 +141,16 @@ public sealed partial class StatusEffectBench : IDisposable
     /// <summary>Part 2, <c>StatusEffectCatalogService</c>: the definition cache and the creation of effects by type.</summary>
     public TestStatusEffectCatalogService Catalog { get; }
 
-    /// <summary>Part 3, <c>StatusEffectApplicationService</c> (P5-5f): applying an effect.</summary>
+    /// <summary>Part 3, <c>StatusEffectApplicationService</c>: applying an effect.</summary>
     public TestStatusEffectApplicationService Application { get; }
 
-    /// <summary>Part 4, <c>StatusEffectDurationService</c> (P5-5g): timing, refresh, restart and extension.</summary>
+    /// <summary>Part 4, <c>StatusEffectDurationService</c>: timing, refresh, restart and extension.</summary>
     public TestStatusEffectDurationService Duration { get; }
 
-    /// <summary>Part 5, <c>StatusEffectNativeService</c> (P5-5h): the native effects, the three effect scripts and the ticks.</summary>
+    /// <summary>Part 5, <c>StatusEffectNativeService</c>: the native effects, the three effect scripts and the ticks.</summary>
     public TestStatusEffectNativeService Native { get; }
 
-    /// <summary>Part 6, <c>StatusEffectCombatEventService</c> (P5-5g): damage and attack notices and the native attack swing.</summary>
+    /// <summary>Part 6, <c>StatusEffectCombatEventService</c>: damage and attack notices and the native attack swing.</summary>
     public TestStatusEffectCombatEventService CombatEvents { get; }
 
     /// <summary>Part 7, <c>StatusEffectSessionService</c>: login, logout, restart and reload.</summary>

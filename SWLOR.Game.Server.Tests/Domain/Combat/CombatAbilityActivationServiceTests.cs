@@ -69,7 +69,7 @@ public class CombatAbilityActivationServiceTests
     private int _temporaryTotal;
     private object? _currentForceAttack;
 
-    // The nearby friend search asks the party roster (GameServices.PartyRoster, P5-3c) whether a creature in range is in the
+    // The nearby friend search asks the party roster (GameServices.PartyRoster) whether a creature in range is in the
     // activator's party.
     [OneTimeSetUp]
     public void BuildFacades()

@@ -198,19 +198,19 @@ public sealed partial class StatBench : IDisposable
     public TestStatRecordService Record { get; }
 
     /// <summary>
-    /// Part 5, <c>CombatRatingService</c> (Combat, P5-4c): Attack, Accuracy, Defense, Evasion and the deflection and Guard chances.
+    /// Part 5, <c>CombatRatingService</c> (Combat): Attack, Accuracy, Defense, Evasion and the deflection and Guard chances.
     /// It reads the stat adjustment, the NPC stats and the pools through <see cref="Service"/>.
     /// </summary>
     public TestCombatRatingService CombatRating { get; }
 
     /// <summary>
-    /// Part 6, <c>CombatDeflectionReactionService</c> (Combat, P5-4d): what a deflection triggers. It reads the stat adjustment
+    /// Part 6, <c>CombatDeflectionReactionService</c> (Combat): what a deflection triggers. It reads the stat adjustment
     /// and the pools through <see cref="Service"/>.
     /// </summary>
     public TestCombatDeflectionReactionService DeflectionReaction { get; }
 
     /// <summary>
-    /// Part 7, the healing adjustments that joined <c>CombatResourcesService</c> (Combat, P5-4d). It reads the stat adjustment and
+    /// Part 7, the healing adjustments that joined <c>CombatResourcesService</c> (Combat). It reads the stat adjustment and
     /// the pools through <see cref="Service"/>.
     /// </summary>
     public TestCombatResourcesService Healing { get; }

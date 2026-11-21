@@ -63,7 +63,7 @@ public class ScriptHandlerSeamTests
             registry.LoadHandlersFromAssemblies(assemblies, ScriptHandlerTestSupport.OwnersAndTestFixtures);
 
             // Same scripts for each kind and the same handlers inside each script. Only the order is the manifest's
-            // to decide now (the baseline fixture that compared the order with this discovery was deleted by P2-B9).
+            // to decide now (the baseline fixture that compared the order with this discovery was deleted).
             registry.GetActionScriptNames().Should().BeEquivalentTo(
                 legacy.Where(h => !h.Conditional).Select(h => h.Script).Distinct());
             registry.GetConditionalScriptNames().Should().BeEquivalentTo(

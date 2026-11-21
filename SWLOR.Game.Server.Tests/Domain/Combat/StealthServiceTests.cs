@@ -394,7 +394,7 @@ public class StealthServiceTests
     [Test]
     public void A_reload_ends_a_timed_stealth_window_whose_timer_it_drops_and_leaves_other_players_alone()
     {
-        // P4-15: the timer that would end the window is a closure the reload drops.
+        // Hot reload: the timer that would end the window is a closure the reload drops.
         _stealthed.Add(Player);
         _stealthed.Add(Other);
         var generation = _stealth.ScheduleTimedExit(Player, 30f);
@@ -418,7 +418,7 @@ public class StealthServiceTests
     [Test]
     public void A_reload_ends_an_NPCs_timed_stealth_window_too()
     {
-        // P4-15 closure audit: the reload's player list does not name an NPC, so the service remembers whom it started windows on.
+        // Hot reload: the reload's player list does not name an NPC, so the service remembers whom it started windows on.
         _stealthed.Add(Enemy);
         _stealth.ScheduleTimedExit(Enemy, 30f);
         var modesBefore = _engine.CallsTo("SetActionMode").Count;

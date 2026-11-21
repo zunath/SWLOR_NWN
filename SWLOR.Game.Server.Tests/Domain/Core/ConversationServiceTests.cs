@@ -831,7 +831,7 @@ public class ConversationServiceTests
         protected override void DetachWindowForReload(uint player) => Detached.Add(player);
     }
 
-    // ---- a hot reload (P4-15)
+    // ---- a hot reload
 
     [Test]
     public void A_reload_carries_a_registered_conversation_and_resumes_it_at_the_same_line_without_running_actions()

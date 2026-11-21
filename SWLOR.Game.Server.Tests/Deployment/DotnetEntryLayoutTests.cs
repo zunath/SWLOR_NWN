@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Core;
 namespace SWLOR.Game.Server.Tests.Deployment;
 
 /// <summary>
-/// The .NET entry switch (P4-10). One setting, <c>SWLOR_DOTNET_ENTRY</c>, picks the NWNX entry: the host
+/// The .NET entry switch. One setting, <c>SWLOR_DOTNET_ENTRY</c>, picks the NWNX entry: the host
 /// (<c>SWLOR.Game.Host</c> in <c>dotnet/</c>, the game in <c>dotnet/game/</c>) or the native entry
 /// (<c>ServerManager.Bootstrap</c>, the game in <c>dotnet/</c>). Every tool that stages a server writes the same three
 /// <c>NWNX_DOTNET_*</c> values for it, development defaults to the host, and the production deployer defaults to the

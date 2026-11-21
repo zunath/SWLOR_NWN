@@ -455,7 +455,7 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
         var statSource = StatSource.Read();
-        // The reactions read their payloads before they apply them (P5-4d split the two), so the needles span both methods.
+        // The reactions read their payloads before they apply them (the stat split divided the two), so the needles span both methods.
         var applyDeflectionEffects = ExtractMethod(statSource, "public void ApplyDeflectionEffectsNative") +
             ExtractMethod(statSource, "private void ReadDeflectionReaction(");
         var grantNextSkillBonuses = ExtractMethod(
@@ -825,7 +825,7 @@ public class CombatDamageTests
     {
         var abilitySource = AbilitySource.Read();
         var combatSource = CombatSource.Read();
-        // The weapon damage is a damage input of each formula since the ability split (P5-3e).
+        // The weapon damage is a damage input of each formula since the ability split.
         var playerDamage = ExtractMethod(abilitySource, "public bool TryGetCombatImpactDamageInputs");
         var npcDamage = ExtractMethod(abilitySource, "public bool TryGetNPCCombatImpactDamageInputs");
         var impactWeaponDamage = ExtractMethod(combatSource, "public static int GetCombatImpactWeaponDamage");

@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
 /// Pins what each food property subtype adds to a meal. The table was read from the switch in
-/// <c>ConsumableItemDefinition.Food</c> before it was split into named steps (P5-16g): one subtype, one target field.
+/// <c>ConsumableItemDefinition.Food</c> before it was split into named steps: one subtype, one target field.
 /// </summary>
 public class FoodBonusMappingTests
 {

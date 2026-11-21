@@ -10,8 +10,8 @@ public class AbilityLineOfSightTests
     public void TargetedAbilityValidation_RequiresObjectAndVectorLineOfSight()
     {
         var source = AbilitySource.Read().Replace("\r\n", "\n");
-        // The line-of-sight helper moved to the geometry part with the ability split (P5-3b), and CanUseAbility runs its checks
-        // through check methods (P5-3d), so each body is read by member.
+        // The line-of-sight helper moved to the geometry part with the ability split, and CanUseAbility runs its checks
+        // through check methods, so each body is read by member.
         var validationBody = ValidationChain();
         var helperBody = AbilitySource.Members("HasAbilityLineOfSight").Replace("\r\n", "\n");
 
@@ -29,8 +29,8 @@ public class AbilityLineOfSightTests
     public void AimedAreaValidation_UsesLocationWithoutObjectTargetFallback()
     {
         var source = AbilitySource.Read().Replace("\r\n", "\n");
-        // The line-of-sight helper moved to the geometry part with the ability split (P5-3b), and CanUseAbility runs its checks
-        // through check methods (P5-3d), so each body is read by member.
+        // The line-of-sight helper moved to the geometry part with the ability split, and CanUseAbility runs its checks
+        // through check methods, so each body is read by member.
         var validationBody = ValidationChain();
 
         validationBody.Should().Contain("if (ability.RequiresLocationTarget)");
@@ -82,8 +82,8 @@ public class AbilityLineOfSightTests
     public void HostileAreaAbilityValidation_RejectsBlockedAreaTargetsBeforeRecast()
     {
         var source = AbilitySource.Read().Replace("\r\n", "\n");
-        // The line-of-sight helper moved to the geometry part with the ability split (P5-3b), and CanUseAbility runs its checks
-        // through check methods (P5-3d), so each body is read by member.
+        // The line-of-sight helper moved to the geometry part with the ability split, and CanUseAbility runs its checks
+        // through check methods, so each body is read by member.
         var validationBody = ValidationChain();
         var areaValidationBody = AbilitySource.Members("ValidateHostileAreaLineOfSight").Replace("\r\n", "\n");
 
@@ -119,7 +119,7 @@ public class AbilityLineOfSightTests
         telegraphActionBody.Should().Contain("HasAbilityLineOfSight(creator, creature)");
     }
 
-    // CanUseAbility and the checks it runs, in the order it runs them (the ability split, P5-3d).
+    // CanUseAbility and the checks it runs, in the order it runs them (the ability split).
     private static string ValidationChain() =>
         AbilitySource.Members("CanUseAbility", "ValidateActivatorState", "ValidateLineOfSight", "ValidateActivatorReadiness", "ValidateTarget")
             .Replace("\r\n", "\n");

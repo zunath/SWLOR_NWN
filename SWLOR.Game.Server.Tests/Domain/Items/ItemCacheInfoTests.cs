@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Tests.Support;
 namespace SWLOR.Game.Server.Tests.Domain.Items;
 
 /// <summary>
-/// The item reads the item cache makes (P5-15a): each answer is the one the item service gives for the same item.
+/// The item reads the item cache makes: each answer is the one the item service gives for the same item.
 /// </summary>
 [TestFixture]
 public class ItemCacheInfoTests

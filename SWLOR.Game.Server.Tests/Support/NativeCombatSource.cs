@@ -2,7 +2,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
 /// The source of the native weapon roll hooks wherever it lives, for the tests that guard a rule by reading the code.
-/// P5-16a split <c>Native/ResolveAttackRoll.cs</c> and <c>Native/GetDamageRoll.cs</c> into types by responsibility
+/// <c>Native/ResolveAttackRoll.cs</c> and <c>Native/GetDamageRoll.cs</c> were split into types by responsibility
 /// (<c>Native/AttackRoll*.cs</c>, <c>Native/DamageRoll*.cs</c>, <c>Native/WeaponDamageProfile.cs</c>); a test reads the
 /// combined text of a roll and keeps its needles. Each roll's files are combined hook file first, then in the order the
 /// roll runs them, so a needle that orders two calls of one moved method still compares them in that method.

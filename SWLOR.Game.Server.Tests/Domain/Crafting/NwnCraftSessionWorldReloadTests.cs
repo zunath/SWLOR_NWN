@@ -8,7 +8,7 @@ using SWLOR.NWN.API.Testing;
 namespace SWLOR.Game.Server.Tests.Domain.Crafting;
 
 /// <summary>
-/// A character export the old build had scheduled when a hot reload activated a new build (P4-15 closure audit): the export was a
+/// A character export the old build had scheduled when a hot reload activated a new build: the export was a
 /// closure the reload dropped, and while its pending mark stays no later craft result reaches the character file.
 /// </summary>
 [TestFixture]

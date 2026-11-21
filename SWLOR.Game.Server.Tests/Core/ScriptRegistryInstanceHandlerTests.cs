@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Tests.Core;
 
 /// <summary>
 /// Proves how <see cref="ScriptRegistry"/> binds an event handler declared on an instance method (a converted service
-/// whose facade was removed, P2-Z): once, on the container's singleton of the class that declares it, under the name
+/// whose facade was removed): once, on the container's singleton of the class that declares it, under the name
 /// <c>DeclaringType.FullName + "." + Name</c>; never again for a subclass (a test double); and never for a class the
 /// container does not register, which stops the load. Static handlers bind exactly as before.
 /// </summary>

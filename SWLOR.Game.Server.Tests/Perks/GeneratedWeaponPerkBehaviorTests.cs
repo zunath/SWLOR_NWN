@@ -1531,7 +1531,7 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustment");
         combatSource.Should().Contain("new HostileAbilityForceAttackStatusEffect(total)");
         combatSource.Should().Contain("new EnergizedFormsHasteStatusEffect(haste)");
-        // The riders of any FP or Stamina restore left the resources part for their own service in P5-4d.
+        // The riders of any FP or Stamina restore left the resources part for their own service with the stat split.
         var restoredEffectsSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "ResourceRestoredEffectsService.cs"));
         restoredEffectsSource.Should().Contain("new ForceLensForceAttackStatusEffect(forceAttack)");
         restoredEffectsSource.Should().Contain("new ForceLensAttackStatusEffect(attack)");
@@ -1693,7 +1693,7 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().BeGreaterThan(defensiveEffectsIndex,
                 "concealment can convert a provisional hit into an avoided attack");
 
-        // The per-target resolution and its hit roll are parts of their own since the ability split (P5-3f).
+        // The per-target resolution and its hit roll are parts of their own since the ability split.
         var hostileCombatImpactSource = AbilitySource.Member("AbilityHitRollService", "TryResolveHostileImpactHit") +
             AbilitySource.Member("AbilityTargetImpactService", "ApplyHostileCombatImpact");
         hostileCombatImpactSource.Should().Contain("TrackHostileAbilityActivity(activator);");

@@ -75,8 +75,8 @@ public class StatFacadeAllocationTests
 
     // The pins are grouped by the part of the stat split that each member goes to (Readmes/MaintainabilityRefactorStatSplit.md)
     // and still read through Stat: the pull request that moves a part points its group at the part's GameServices property and
-    // registers the part's allocation double (part 5, CombatRating, since P5-4c). Part 7's healing reads go through
-    // CombatResources since P5-4d; the real resources service reads the stat through the allocation double, so it needs none.
+    // registers the part's allocation double (part 5, CombatRating). Part 7's healing reads go through
+    // CombatResources; the real resources service reads the stat through the allocation double, so it needs none.
 
     /// <summary>
     /// Part 1, <c>StatService</c> (stays): the stat adjustment read, the metadata, the equipment action read, the pools, the NPC
@@ -163,7 +163,7 @@ public class StatFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
-    /// <summary>Part 7, the healing adjustments that joined <c>CombatResourcesService</c> (Combat, P5-4d).</summary>
+    /// <summary>Part 7, the healing adjustments that joined <c>CombatResourcesService</c> (Combat).</summary>
     [Test]
     public void TheHealingAdjustmentsAllocateNothing()
     {

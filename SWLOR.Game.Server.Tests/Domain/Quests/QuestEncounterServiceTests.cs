@@ -584,7 +584,7 @@ public class QuestEncounterServiceTests
     [Test]
     public void A_reload_runs_the_idle_check_it_dropped_again_from_the_carried_activity()
     {
-        // P4-15 closure audit: the encounters are carried, but their idle check is a closure the reload drops.
+        // Hot reload: the encounters are carried, but their idle check is a closure the reload drops.
         StartEncounter();
         AgeActivity(Encounter, TimeSpan.FromMinutes(4));
         _locals.ClearCalls();

@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Tests.Core;
 [TestFixture]
 public class ScriptHandlerManifestOrderTests
 {
-    // DB.Load is two handlers since P4-8: Connect (reruns after a hot reload) then SyncIndexes (boot only).
+    // DB.Load is two handlers since the boot handler split: Connect (reruns after a hot reload) then SyncIndexes (boot only).
     private const string DbLoad = "SWLOR.Game.Server.Domain.Foundation.DBService.Connect";
     private const string DbSyncIndexes = "SWLOR.Game.Server.Domain.Foundation.DBService.SyncIndexes";
     private const string OnModulePreload = "SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload";

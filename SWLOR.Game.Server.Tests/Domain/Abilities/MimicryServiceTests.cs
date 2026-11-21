@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Abilities;
 /// <summary>
 /// The Mimicry instance: the technique cache, the trait bonuses, witnessing and learning, the slot budget, equipping, the
 /// saved builds and the handlers. The trait stat bonuses and the elemental resonance are read from the Character service
-/// (<c>MimicryTraitStatsService</c>, P5-4b), built here from the same ability details over a stat reader that answers Trait Potency. The engine and the NWNX plugins are recording fakes, the database an in-memory one,
+/// (<c>MimicryTraitStatsService</c>), built here from the same ability details over a stat reader that answers Trait Potency. The engine and the NWNX plugins are recording fakes, the database an in-memory one,
 /// the quick-cast, DM presence and feedback services scripted stand-ins, and the unconverted statics (Ability, Perk,
 /// Stat, Skill, StatusEffect, CombatPoint, Gui, Scheduler) are answered by a subclass.
 /// </summary>

@@ -48,14 +48,14 @@ public class CraftingStyleStatusEffectTests
         "RemoveOtherCommandStatuses",
         "RemoveStatusEffectBySourceType",
         "RemoveCreature",
-        // Part 3 (P5-5f): the application replaces what it overrides, a type from one source or any, with no worn-off message.
+        // Part 3: the application replaces what it overrides, a type from one source or any, with no worn-off message.
         "RemoveStatusEffectForReplacement",
-        // Logout only (the session part, P5-5e): what does not persist through it, and what a leaving source put on others.
+        // Logout only (the session part): what does not persist through it, and what a leaving source put on others.
         "RemoveNonPersistentStatusEffects",
         "RemoveTrackedNWNEffects",
         "RemoveStatusEffectsFromAllTargetsWhenSourceExits",
         "RemoveStatusEffectById",
-        // The native part (P5-5h) replaces one native effect, named by its tag, and the status effect itself stays.
+        // The native part replaces one native effect, named by its tag, and the status effect itself stays.
         "RemoveNativeStatusEffect"
     };
 

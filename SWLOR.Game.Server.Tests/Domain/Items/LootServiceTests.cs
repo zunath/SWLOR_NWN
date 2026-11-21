@@ -938,7 +938,7 @@ public class LootServiceTests
     [Test]
     public void A_reload_gives_every_corpse_and_extraction_corpse_its_cleanup_again()
     {
-        // P4-15 closure audit: the six-minute cleanup is a closure the reload drops.
+        // Hot reload: the six-minute cleanup is a closure the reload drops.
         const uint extract = 301;
         const uint chest = 302;
         _valid.UnionWith(new[] { Body, extract, chest });

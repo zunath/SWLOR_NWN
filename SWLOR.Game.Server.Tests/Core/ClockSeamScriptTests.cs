@@ -117,7 +117,7 @@ public class ClockSeamScriptTests
     [Test]
     public void AMasterOnlyEntryTheBranchDeletedIsSkippedAndIsNotOwnedByTheSync()
     {
-        // A removed facade (P2-Z): master still has the file, so the parity copy rewrites it; the branch deleted it.
+        // A removed facade: master still has the file, so the parity copy rewrites it; the branch deleted it.
         File.WriteAllText(Path.Combine(_temp, "tools", "Refactor", "ClockSeamFiles.txt"),
             "Service/WithUsings.cs  # a comment\nService/Gone.cs  # master-only (P2-Z: the facade is deleted on the branch)\nService/GoneFolder/**  # master-only\n");
         Write("Service/WithUsings.cs", Utf8WithoutBom, Sample("\n", rewritten: false, coreUsing: false));

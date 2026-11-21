@@ -79,7 +79,7 @@ public class ReloadAdoptionTests
         // The adoption steps that delegate keep their state in the class they delegate to.
         owners.Add(typeof(SWLOR.Game.Server.Domain.World.PropertyLoaderService));
         owners.Add(typeof(SWLOR.Game.Server.Domain.World.PropertyLoadRegistryService));
-        // ShuttleService.AdoptFlights adopts the flights and tickets the shuttle state service holds (P5-9c).
+        // ShuttleService.AdoptFlights adopts the flights and tickets the shuttle state service holds.
         owners.Add(typeof(SWLOR.Game.Server.Domain.World.ShuttleStateService));
 
         var strays = AdoptedFields()

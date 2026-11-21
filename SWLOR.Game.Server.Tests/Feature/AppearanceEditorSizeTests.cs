@@ -9,7 +9,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
-/// The appearance editor was split toward the Phase 5 limits (P5-16e): 1,000 lines and 10 services per type, 150 lines per method.
+/// The appearance editor was split toward the limits: 1,000 lines and 10 services per type, 150 lines per method.
 /// The view model is one file and does not grow; its work lives in the services of Feature/AppearanceEditing.
 /// </summary>
 public class AppearanceEditorSizeTests

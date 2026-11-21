@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Tests.Support;
 namespace SWLOR.Game.Server.Tests.Domain.Items;
 
 /// <summary>
-/// A hot reload drops the closure that applies a delayed item use and releases its user (P4-15), so the old build interrupts the use
+/// A hot reload drops the closure that applies a delayed item use and releases its user, so the old build interrupts the use
 /// while it quiesces (<see cref="ItemService.QuiesceForReload"/>), and only that activity.
 /// </summary>
 [TestFixture]

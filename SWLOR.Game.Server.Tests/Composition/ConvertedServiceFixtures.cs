@@ -79,7 +79,7 @@ public static class ConvertedServiceFixtures
 
     // The full name of the facade the branch removed for a service or a further class, from tools/Refactor/RemovedFacades.json
     // (named relative to SWLOR.Game.Server.Service: Taxi, or QuestService.QuestEncounter for a further facade); null for a service
-    // master never had (CoxxionBaseDoors, P5-13), whose handlers HandlerRenames.txt names by their branch names alone.
+    // master never had (CoxxionBaseDoors), whose handlers HandlerRenames.txt names by their branch names alone.
     private static string? FacadeOf(IReadOnlyList<RemovedFacade> removed, string typeName)
     {
         var facade = removed.SingleOrDefault(entry => entry.Facade == typeName || entry.Facade.EndsWith("." + typeName, StringComparison.Ordinal));
@@ -89,7 +89,7 @@ public static class ConvertedServiceFixtures
     /// <summary>
     /// <c>tools/Refactor/HandlerRenames.txt</c> as (master name, branch name) pairs: a handler the branch renamed, such as
     /// one moved from a removed facade onto the instance method it forwarded to. A handler the branch split into several
-    /// (P4-8) gives one pair per branch handler, in their run order.
+    /// gives one pair per branch handler, in their run order.
     /// </summary>
     public static IReadOnlyList<(string Master, string Branch)> HandlerRenames()
     {

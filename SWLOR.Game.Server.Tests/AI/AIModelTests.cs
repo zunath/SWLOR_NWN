@@ -1167,7 +1167,7 @@ public class AIModelTests
     [Test]
     public void GuardedBiteAISelectionUsesTheSharedAbilityRecastGate()
     {
-        // CanUseAbility runs the recast check as one of the target checks it calls (the ability split, P5-3d).
+        // CanUseAbility runs the recast check as one of the target checks it calls (the ability split).
         var abilityValidation = AbilitySource.Members("CanUseAbility", "ValidateTarget");
 
         abilityValidation.Should().Contain("var (isOnRecast, timeToWait) = _recast.IsOnRecastDelay(activator, ability.RecastGroup);");

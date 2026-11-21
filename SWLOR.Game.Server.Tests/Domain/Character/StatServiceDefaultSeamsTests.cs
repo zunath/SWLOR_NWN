@@ -18,8 +18,8 @@ using SWLOR.Game.Server.Composition;
 namespace SWLOR.Game.Server.Tests.Domain.Character;
 
 /// <summary>
-/// Each one-line call into unconverted code still reaches the code it wraps: the stat service's and, since P5-4c, those of part 5
-/// of the stat split, <c>CombatRatingService</c>; since P5-4d, part 6's (<c>CombatDeflectionReactionService</c>) and part 7's
+/// Each one-line call into unconverted code still reaches the code it wraps: the stat service's and those of part 5
+/// of the stat split, <c>CombatRatingService</c>; part 6's (<c>CombatDeflectionReactionService</c>) and part 7's
 /// (the healing adjustments' temporary modifier in <c>CombatResourcesService</c>).
 /// </summary>
 [NonParallelizable]
@@ -197,7 +197,7 @@ public class StatServiceDefaultSeamsTests
         public void StaminaRestored(uint creature) => ApplyStaminaRestoredEffects(creature);
     }
 
-    // Part 2 of the stat split (P5-4e): the creature stat seams with their default bodies.
+    // Part 2 of the stat split: the creature stat seams with their default bodies.
     private sealed class DefaultCreatureSeams : CreatureStatService
     {
         public DefaultCreatureSeams(
@@ -215,7 +215,7 @@ public class StatServiceDefaultSeamsTests
         public void ScheduleLimitCheck(uint creature) => ScheduleTemporaryHitPointLimitCheck(creature);
     }
 
-    // Part 3 of the stat split (P5-4e): the record seam with its default body.
+    // Part 3 of the stat split: the record seam with its default body.
     private sealed class DefaultRecordSeams : StatRecordService
     {
         public DefaultRecordSeams(IDBService db, IStatService stat)
@@ -226,7 +226,7 @@ public class StatServiceDefaultSeamsTests
         public IReadOnlyList<CombatDamageType> DefenseDamageTypes() => GetDefenseDamageTypes();
     }
 
-    // Part 6 of the stat split (P5-4d): the deflection reaction seams with their default bodies.
+    // Part 6 of the stat split: the deflection reaction seams with their default bodies.
     private sealed class DefaultDeflectionSeams : CombatDeflectionReactionService
     {
         public DefaultDeflectionSeams(ICombatRecorderService combatRecorder, IRecastService recast, IStatService stat)
@@ -251,7 +251,7 @@ public class StatServiceDefaultSeamsTests
         public void NextNoDelay(uint creature, SkillType skill, int seconds) => GrantNextAbilityNoDelay(creature, skill, seconds);
     }
 
-    // Part 7 of the stat split (P5-4d): the healing adjustments' temporary modifier seam with its default body.
+    // Part 7 of the stat split: the healing adjustments' temporary modifier seam with its default body.
     private sealed class DefaultResourcesSeams : CombatResourcesService
     {
         public DefaultResourcesSeams(IStatService stat, IStatusEffectApplicationService statusEffect, ICombatRecorderService combatRecorder,
@@ -265,7 +265,7 @@ public class StatServiceDefaultSeamsTests
             ReplaceTemporaryStatModifier(creature, stat, amount, seconds, group);
     }
 
-    // Part 5 of the stat split (P5-4c): the rating seams with their default bodies.
+    // Part 5 of the stat split: the rating seams with their default bodies.
     private sealed class DefaultRatingSeams : CombatRatingService
     {
         public DefaultRatingSeams(IDBService db, IItemService item, ITwinPistolEquipmentService twinPistolEquipment, IStatService stat)

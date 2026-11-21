@@ -18,7 +18,7 @@ using SWLOR.Game.Server.Domain.World;
 namespace SWLOR.Game.Server.Tests.Composition;
 
 /// <summary>
-/// The interfaces a lower domain owns and a higher service implements (P5-15a): the container hands the lower service the
+/// The interfaces a lower domain owns and a higher service implements: the container hands the lower service the
 /// same instance the higher service's own interface gives, so a state the service keeps is not split across two objects.
 /// </summary>
 [TestFixture]

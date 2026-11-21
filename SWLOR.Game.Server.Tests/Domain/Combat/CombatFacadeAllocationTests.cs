@@ -674,7 +674,7 @@ public class CombatFacadeAllocationTests
         // add a closure and its delegate (88 bytes or more).
         // StoreQueuedWeaponAbilityCriticalRateBonus with a bonus is left out: its temporary modifier writes vary by up to 70
         // bytes between part and GameServices rounds (2399 to 2466 on the base and here alike).
-        // GetAbilityDefenseIgnorePercentAdjustment was pinned at 504 bytes both ways; in two full unit test runs of P2-CB9b the
+        // GetAbilityDefenseIgnorePercentAdjustment was pinned at 504 bytes both ways; in two full unit test runs of the Combat split the
         // part measured 504 and the GameServices call, measured after it, 454 and 376 (below the part: the JIT had optimized the reads
         // in between), so it is compared here, and its old pin stays as an upper budget for both, so an allocation the part
         // and its GameServices call gained together still fails.
@@ -1264,7 +1264,7 @@ public class CombatFacadeAllocationTests
 
     // The world of the activation tests (a container of its own, the constant engine, the clock held still, a status table for
     // both creatures and the stat service that allocates nothing) with an engine whose script context names the defeated or
-    // exiting creature and its killer, for what is left of Combat (CombatService). P2-CB10 moved these five members from
+    // exiting creature and its killer, for what is left of Combat (CombatService). The Combat split moved these five members from
     // static bodies on Combat to the service, so the call through GameServices is the one route that changed; the tests are named to run
     // after every other combat part test of the fixture, for the reason the hit part tests give.
     private static ICombatService InstallServicePart(List<IDisposable> scopes)

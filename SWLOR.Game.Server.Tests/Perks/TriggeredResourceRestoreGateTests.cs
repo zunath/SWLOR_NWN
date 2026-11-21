@@ -54,7 +54,7 @@ public class TriggeredResourceRestoreGateTests : SkillFacadeFixture
     public void DeflectionResourceRestores_AreRateLimited()
     {
         var stat = StatSource.Read();
-        // The reactions read their payloads first and then apply them (P5-4d split the two), so the rule spans both methods.
+        // The reactions read their payloads first and then apply them (the stat split divided the two), so the rule spans both methods.
         var deflection = ExtractMethod(stat, "public void ApplyDeflectionEffectsNative(") +
             ExtractMethod(stat, "private void ReadDeflectionReaction(");
         deflection.Should().Contain("TryUseStatTrigger(creatureId, staminaRestoreStat, staminaRestoreCooldown)");

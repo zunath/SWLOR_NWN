@@ -9,7 +9,7 @@ using SWLOR.NWN.API.Testing;
 namespace SWLOR.Game.Server.Tests.Native;
 
 /// <summary>
-/// The muzzle anchors when a hot reload quiesces the old build (P4-15 closure audit): the pools are this build's memory, so every
+/// The muzzle anchors when a hot reload quiesces the old build: the pools are this build's memory, so every
 /// actor's anchors, an NPC's as well as a player's, are destroyed rather than left in the world for good.
 /// </summary>
 [TestFixture]

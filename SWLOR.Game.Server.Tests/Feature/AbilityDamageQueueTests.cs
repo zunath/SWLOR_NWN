@@ -170,7 +170,7 @@ public class AbilityDamageQueueTests
     [Test]
     public void TrackedAbilityImpacts_FlushQueuedDamageEffectsTogether()
     {
-        // The tracker moved to Combat with the ability split (P5-3b): it queues the damage, and AbilityService flushes the
+        // The tracker moved to Combat with the ability split: it queues the damage, and AbilityService flushes the
         // tracker's queue at the end of the impact, so each body is read by member.
         var source = AbilitySource.Read().Replace("\r\n", "\n");
         var endImpactBody = AbilitySource.Members("EndAbilityImpact").Replace("\r\n", "\n");
@@ -209,8 +209,8 @@ public class AbilityDamageQueueTests
     [Test]
     public void MultiHitWeaponAbilities_ResolveConditionalReflectionPerQueuedHit()
     {
-        // The damage block of the public apply is the delivery part's since the ability split (P5-3e); the public apply is the
-        // hostile impact part's since P5-3f.
+        // The damage block of the public apply is the delivery part's since the ability split; the public apply is the
+        // hostile impact part's since the ability split.
         var primaryImpact = AbilitySource.Member("AbilityHostileImpactService", "ApplyHostileCombatImpact").Replace("\r\n", "\n");
         var delivery = AbilitySource.Members("DeliverHostileImpactDamage").Replace("\r\n", "\n");
 
@@ -224,10 +224,10 @@ public class AbilityDamageQueueTests
     public void UnscaledCombatImpacts_RetainPrimaryDamageHandlingWithoutFormulaScaling()
     {
         var source = AbilitySource.Read().Replace("\r\n", "\n");
-        // The public apply is the hostile impact part's and the formula selection the per-target resolution's (P5-3f).
+        // The public apply is the hostile impact part's and the formula selection the per-target resolution's.
         var primaryImpactBody = AbilitySource.Member("AbilityHostileImpactService", "ApplyHostileCombatImpact").Replace("\r\n", "\n");
         var formulaSelectionBody = AbilitySource.Member("AbilityTargetImpactService", "ApplyHostileCombatImpact").Replace("\r\n", "\n");
-        // The damage inputs part holds the unscaled formula and the delivery part the public apply's damage block (P5-3e).
+        // The damage inputs part holds the unscaled formula and the delivery part the public apply's damage block.
         var unscaledDamageBody = AbilitySource.Members("CalculateUnscaledCombatImpactDamage").Replace("\r\n", "\n");
         var deliveryBody = AbilitySource.Members("DeliverHostileImpactDamage").Replace("\r\n", "\n");
 
@@ -271,7 +271,7 @@ public class AbilityDamageQueueTests
             usePerkFeatSource.IndexOf("public static void ProcessQueuedWeaponAbility()", StringComparison.Ordinal),
             usePerkFeatSource.IndexOf("/// Whenever a player enters the server", StringComparison.Ordinal) -
             usePerkFeatSource.IndexOf("public static void ProcessQueuedWeaponAbility()", StringComparison.Ordinal));
-        // The abort is the impact lifecycle's since the ability split (P5-3f).
+        // The abort is the impact lifecycle's since the ability split.
         var abortImpactBody = AbilitySource.Members("AbortAbilityImpact").Replace("\r\n", "\n");
 
         abortImpactBody.Should().Contain("Remove(activator);");
@@ -352,7 +352,7 @@ public class AbilityDamageQueueTests
             source.IndexOf("private int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
             source.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal));
 
-        // The delayed impact begins through the impact lifecycle's telegraphed begin since the ability split (P5-3f).
+        // The delayed impact begins through the impact lifecycle's telegraphed begin since the ability split.
         var telegraphedBegin = AbilitySource.Members("BeginTelegraphedAbilityImpact").Replace("\r\n", "\n");
 
         buildActionCall.Should().Contain("trackedImpact?.NextAbilityDefenseIgnorePercentAdjustment ?? 0");
@@ -374,7 +374,7 @@ public class AbilityDamageQueueTests
             source.IndexOf("private int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
             source.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal));
 
-        // The delayed impact begins through the impact lifecycle's telegraphed begin since the ability split (P5-3f).
+        // The delayed impact begins through the impact lifecycle's telegraphed begin since the ability split.
         var telegraphedBegin = AbilitySource.Members("BeginTelegraphedAbilityImpact").Replace("\r\n", "\n");
 
         delayedImpactBody.Should().Contain("BeginTelegraphedAbilityImpact(");

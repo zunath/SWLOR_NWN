@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Tests.Core;
 /// Records what a hot reload does with every handler of <c>mod_enter</c> and <c>mod_exit</c> for the players who stay online
 /// (<see cref="PlayerSessionAttribute"/>, <see cref="PlayerReload"/>), and fails when a handler of either script has no decision, when a
 /// decision is made on the wrong script, or when a step does not bind. The snapshot is the reviewed list; the rule is in
-/// <c>Readmes/MaintainabilityRefactorHotReload.md</c> (P4-15).
+/// <c>Readmes/MaintainabilityRefactorHotReload.md</c>.
 /// </summary>
 [TestFixture]
 public class PlayerSessionClassificationTests

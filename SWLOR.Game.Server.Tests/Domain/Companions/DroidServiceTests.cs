@@ -20,7 +20,7 @@ using SWLOR.NWN.API.Testing;
 namespace SWLOR.Game.Server.Tests.Domain.Companions;
 
 /// <summary>
-/// Unit tests of the droid instance (the static <c>Service.Droid</c> until P2-B12): the decisions, the tables and the
+/// Unit tests of the droid instance (the static <c>Service.Droid</c> until it was converted): the decisions, the tables and the
 /// controller-backed saved data that the conversion makes reachable without the engine. Spawning, despawning and the
 /// item snapshot need a server and stay with the engine tests (<c>DroidInventoryEngineTests</c>).
 /// </summary>

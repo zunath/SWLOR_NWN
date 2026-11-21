@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 /// <summary>
 /// A byte-for-byte dump of every player guide topic (name, category, summary, rail summary, blocks, questions and related topics,
-/// in list order), captured on the code before the guide's topics move into data types (P5-16h, PR 3) and compared after it.
+/// in list order), captured on the code before the guide's topics move into data types and compared after it.
 /// Regenerate with <c>SWLOR_UPDATE_SNAPSHOTS=1</c> only for a deliberate content change.
 /// </summary>
 public class PlayerGuideTopicDumpTests : SkillFacadeFixture

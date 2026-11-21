@@ -12,7 +12,7 @@ public sealed record ConvertedServiceTypes(string Name, string Domain, Type Cont
     public IReadOnlyList<Type> Parts { get; init; } = Array.Empty<Type>();
 
     /// <summary>
-    /// The full name of the static facade this class had before the branch removed it (P2-Z), when it had one: only
+    /// The full name of the static facade this class had before the branch removed it, when it had one: only
     /// <c>tools/Refactor/HandlerRenames.txt</c> still names it, as the master name of each handler that moved to
     /// <see cref="Instance"/>. Null for a part, which never had one.
     /// </summary>

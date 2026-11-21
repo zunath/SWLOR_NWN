@@ -195,7 +195,7 @@ public class CombatRecordWriterTests
         source.Should().NotContain("new Thread");
     }
 
-    // Captured from the dedicated-thread writer before P4-6.
+    // Captured from the dedicated-thread writer before it moved to the pool.
     private const string GoldenEvents =
         "{\"type\":\"recording_started\",\"ts_ms\":1760300000000,\"frame\":0,\"label\":\"test\",\"area_name\":\"Arena\",\"area_resref\":\"arena_01\",\"started_utc\":\"2025-10-12T20:13:20.0000000Z\"}\n" +
         "{\"type\":\"participant\",\"ts_ms\":1760300000001,\"frame\":0,\"id\":1,\"name\":\"Healer\",\"player\":true}\n" +

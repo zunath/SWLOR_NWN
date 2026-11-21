@@ -9,7 +9,7 @@ using SWLOR.NWN.API.Testing;
 namespace SWLOR.Game.Server.Tests.Domain.Crafting;
 
 /// <summary>
-/// Scavenge sites when a hot reload has activated a new build (P4-15 closure audit): a hold's lapse and a spent site's destruction are
+/// Scavenge sites when a hot reload has activated a new build: a hold's lapse and a spent site's destruction are
 /// closures the reload drops, so the new build checks each held site again and destroys each spent one.
 /// </summary>
 [TestFixture]

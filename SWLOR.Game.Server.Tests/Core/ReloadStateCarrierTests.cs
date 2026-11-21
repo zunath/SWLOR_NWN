@@ -15,7 +15,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Tests.Core;
 
 /// <summary>
-/// The runtime state a hot reload carries (<see cref="ReloadStateCarrier"/>, P4-15): every <see cref="ReloadStateKind.Carried"/> field
+/// The runtime state a hot reload carries (<see cref="ReloadStateCarrier"/>): every <see cref="ReloadStateKind.Carried"/> field
 /// can be written and read back to the same content, shared objects stay shared, collections are refilled in place, a failure in one
 /// class leaves the others carried, and what cannot cross a reload (a delegate, a type of another assembly) is refused.
 /// </summary>
@@ -185,7 +185,7 @@ public class ReloadStateCarrierTests
     {
         // ReloadStateCarrier.AdoptAll walks the carried classes in the ordinal order of their full names and calls
         // OnCarriedStateAdopted right after it reads a class's fields. The session part's adoption settles the creatures the
-        // tracker part holds (and notifies the stat listener), so the tracker part's name has to sort first. Before P5-5e both
+        // tracker part holds (and notifies the stat listener), so the tracker part's name has to sort first. Before the status effect split both
         // tables were one class's, so nothing else was adopted between them; nothing is now.
         var names = ReloadStateCarrier.CarriedClasses(Game).Select(entry => entry.Type.FullName).ToList();
         var tracker = names.IndexOf(typeof(StatusEffectService).FullName);
@@ -500,7 +500,7 @@ public class ReloadStateCarrierTests
     [Test]
     public void ALocationIsCarriedAsItsAreaPositionAndFacingAndComesBackAsANewOne()
     {
-        // A pending ship launch keeps where the pilot stood (P4-15 closure audit); the old build's location handle does not survive.
+        // A pending ship launch keeps where the pilot stood; the old build's location handle does not survive.
         ReloadStateCarrier.CarriedClasses(Game).Should().Contain(entry =>
             entry.Type.Name == "SpaceService" && entry.Fields.Any(field => field.Name == "_pendingShipLaunches"));
         var engine = new SWLOR.NWN.API.Testing.FakeNWScript();

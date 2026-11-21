@@ -6,7 +6,7 @@ using SWLOR.TypeMoves;
 namespace SWLOR.Game.Server.Tests.Tools;
 
 /// <summary>
-/// Runs <c>tools/Refactor/SWLOR.TypeMoves</c> (P2-Z3) over a small repository in a temporary folder: the listed files move
+/// Runs <c>tools/Refactor/SWLOR.TypeMoves</c> over a small repository in a temporary folder: the listed files move
 /// with their namespace; qualified names, <c>using static</c> and aliases follow; a file that names a moved type gets the new
 /// using at its sorted place; a using of the old namespace goes unless a type that stays there still binds through it; a
 /// name the move would rebind is qualified; other text, the handler manifest and its rename list follow; the run is

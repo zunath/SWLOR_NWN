@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Core;
 /// static <c>DB</c> class did: key and index formats, the order of the commands of a write, the entity cache of a
 /// script context, the write version, the retry of a search and the boot sequence. The connection comes from the
 /// server's <see cref="RedisConnectionSource"/> with its settings and connect call replaced; <see cref="IDBService.Load"/>
-/// runs the two boot handlers <see cref="IDBService.Connect"/> and <see cref="IDBService.SyncIndexes"/> (P4-8).
+/// runs the two boot handlers <see cref="IDBService.Connect"/> and <see cref="IDBService.SyncIndexes"/>.
 /// </summary>
 [TestFixture]
 public class DBServiceTests

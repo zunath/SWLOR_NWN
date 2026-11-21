@@ -47,8 +47,8 @@ public static class ClockSeamSources
         ReadManifest(repositoryRoot).Select(entry => entry.Path).ToList();
 
     /// <summary>
-    /// The manifest entries and whether each is marked <c># master-only</c>: a file the branch deleted (a removed facade,
-    /// P2-Z) that master still has, so the parity copy rewrites master's version but the branch need not have it.
+    /// The manifest entries and whether each is marked <c># master-only</c>: a file the branch deleted (a removed facade)
+    /// that master still has, so the parity copy rewrites master's version but the branch need not have it.
     /// </summary>
     public static IReadOnlyList<(string Path, bool MasterOnly)> ReadManifest(string repositoryRoot) =>
         File.ReadAllLines(ManifestPath(repositoryRoot))

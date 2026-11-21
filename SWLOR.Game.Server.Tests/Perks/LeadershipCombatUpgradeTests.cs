@@ -405,7 +405,7 @@ public class LeadershipCombatUpgradeTests
             "all direct ability damage paths apply typed Leadership in the explicit post-conversion stage");
         (ability.Split("ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType)").Length - 1)
             .Should().Be(2);
-        // The unscaled formula is the damage inputs part's since the ability split (P5-3e).
+        // The unscaled formula is the damage inputs part's since the ability split.
         var unscaledBody = AbilitySource.Members("CalculateUnscaledCombatImpactDamage");
         unscaledBody.Should().NotBeEmpty();
         var conversionIndex = unscaledBody.IndexOf(
@@ -596,7 +596,7 @@ public class LeadershipCombatUpgradeTests
             "genericAdjustment",
             "typedLeadershipReductionAlreadyApplied",
             "targetStatusDamagePercentAdjustment");
-        // An instance member of the damage taken part since P2-CB8: CombatMembers calls it on the installed container's part.
+        // An instance member of the damage taken part since the Combat split: CombatMembers calls it on the installed container's part.
         return (int)CombatMembers.Invoke("ApplyDamageTakenPercentageModifiers", new object[]
         {
             damage,

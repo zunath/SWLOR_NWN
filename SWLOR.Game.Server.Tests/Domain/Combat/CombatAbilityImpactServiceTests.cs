@@ -85,7 +85,7 @@ public class CombatAbilityImpactServiceTests
     [OneTimeSetUp]
     public void BuildFacades()
     {
-        // The friendly target search of the party buff asks the party roster (GameServices.PartyRoster, P5-3c); the instance
+        // The friendly target search of the party buff asks the party roster (GameServices.PartyRoster); the instance
         // takes a party service that answers the same.
         _partyProxy = ScriptedProxy.Create<IPartyService>(out var partyCalls);
         partyCalls.On(nameof(IPartyService.IsInParty), args =>

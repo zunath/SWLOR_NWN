@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Tests.Core;
 
 /// <summary>
 /// Runs the handler-name helpers of <c>tools/Refactor/RefactorCommon.ps1</c> and <c>MasterCopy.ps1</c> on a small throwaway
-/// repository: master's handler names meet the branch's manifest under the P2-Z2 namespace moves, both before the move (the
+/// repository: master's handler names meet the branch's manifest under the namespace moves, both before the move (the
 /// sync reads master as it is) and after it (the parity copy, where <c>Move-SupportNamespaces.ps1</c> ran).
 /// </summary>
 /// <remarks>
@@ -114,7 +114,7 @@ public class HandlerRenameNamespaceMoveTests
     [Test]
     public void ATypeMovedOutOfServiceTakesItsNewNameWithOrWithoutARenameLine()
     {
-        // P2-Z3 (tools/Refactor/TypeMoves.json) moved single types out of Service; their handlers carry the new type name.
+        // The type move (tools/Refactor/TypeMoves.json) moved single types out of Service; their handlers carry the new type name.
         Write("tools/Refactor/TypeMoves.json", "{ \"from\": \"SWLOR.Game.Server.Service\", \"types\": [ "
             + "{ \"type\": \"Gauge\", \"to\": \"SWLOR.Game.Server.Domain.Gadgets\" }, { \"type\": \"Meter\", \"to\": \"SWLOR.Game.Server.Domain.Foundation\" } ] }");
         Write("manifest.txt", Manifest + "  action      " + Server + "Domain.Gadgets.Gauge.Load\n  action      " + Server + "Domain.Foundation.Meter.Tick\n");
@@ -147,7 +147,7 @@ public class HandlerRenameNamespaceMoveTests
     [Test]
     public void AHandlerTheBranchSplitBecomesAllItsPartsInOrderWhereMastersOneHandlerWas()
     {
-        // P4-8: master's one handler is two on the branch, a part a hot reload reruns and a boot-only part.
+        // Boot handler split: master's one handler is two on the branch, a part a hot reload reruns and a boot-only part.
         Write("manifest.txt", Manifest
             + "mod_preload\n"
             + "  action      " + Server + "Domain.Gadgets.GaugeService.Connect\n"

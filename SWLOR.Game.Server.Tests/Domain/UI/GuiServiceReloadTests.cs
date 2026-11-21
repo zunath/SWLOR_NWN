@@ -15,7 +15,7 @@ using SWLOR.NWN.API.Testing;
 namespace SWLOR.Game.Server.Tests.Domain.UI;
 
 /// <summary>
-/// What a hot reload does with the open NUI windows (P4-15, <see cref="GuiService.CloseWindowsForReload"/>): the old build closes
+/// What a hot reload does with the open NUI windows (<see cref="GuiService.CloseWindowsForReload"/>): the old build closes
 /// every one as the player would, the new build reopens those whose view model takes no payload, and a carried conversation's
 /// window leaves the screen without its close callback.
 /// </summary>

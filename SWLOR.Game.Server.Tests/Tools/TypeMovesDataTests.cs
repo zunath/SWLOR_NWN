@@ -8,7 +8,7 @@ using SWLOR.TypeMoves;
 namespace SWLOR.Game.Server.Tests.Tools;
 
 /// <summary>
-/// Keeps <c>tools/Refactor/TypeMoves.json</c> (P2-Z3) in step with the branch: each type moves to a declared domain, the
+/// Keeps <c>tools/Refactor/TypeMoves.json</c> in step with the branch: each type moves to a declared domain, the
 /// branch is in the tool's shape (every listed file at its new path, none at its old one, no folder <c>Service</c> left),
 /// and each moved handler has its manifest line under the new name with a rename line. Also proves the data file's checks.
 /// </summary>

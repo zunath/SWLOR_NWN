@@ -11,9 +11,9 @@ using static SWLOR.Game.Server.Tests.Core.ScriptHandlerTestSupport;
 namespace SWLOR.Game.Server.Tests.Core;
 
 /// <summary>
-/// The parity tool (<c>tools/Refactor/Test-MaintainabilityParity.ps1</c>) against the handlers Phase 4 changed (P4-16). It
+/// The parity tool (<c>tools/Refactor/Test-MaintainabilityParity.ps1</c>) against the handlers the hot reload work changed. It
 /// compares master's reflection order with the branch's handler files by handler name, so (a) a handler master has once and
-/// the branch splits into parts (P4-8) must map onto its parts through <c>HandlerRenames.txt</c>, and (b) the reload
+/// the branch splits into parts must map onto its parts through <c>HandlerRenames.txt</c>, and (b) the reload
 /// classification attributes (<c>[BootPhase]</c>, <c>[PlayerSession]</c>, <c>[ReloadState]</c>) must never reach those files.
 /// </summary>
 [TestFixture]

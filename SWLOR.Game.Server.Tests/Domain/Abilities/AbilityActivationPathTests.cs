@@ -294,7 +294,7 @@ public class AbilityActivationPathTests
     [Test]
     public void A_reload_interrupts_a_cast_in_progress_so_the_caster_is_not_left_busy()
     {
-        // P4-15: the closure that would finish the cast and clear the busy flag is dropped by the reload.
+        // Hot reload: the closure that would finish the cast and clear the busy flag is dropped by the reload.
         _catalog[Feat] = Ability_(AbilityActivationType.Casted, delay: 2f);
         UsePerkFeat.TryUseAbility(Caster, Target, Feat, Nowhere()).Should().BeTrue();
         _log.Clear();

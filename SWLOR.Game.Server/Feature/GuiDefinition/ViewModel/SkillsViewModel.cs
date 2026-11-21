@@ -277,6 +277,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             DB.Set(dbPlayer);
 
+            // A lock decides what can decay at the skill cap, so an open Distribute RP XP window must recheck its limit.
+            Gui.PublishRefreshEvent(Player, new RPXPRefreshEvent());
+
             DecayLockColors[index] = GetDecayLockColor(isLocked, true);
             DecayLockTexts[index] = GetDecayLockText(isLocked, true);
         };
@@ -314,8 +317,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     selections[index] = savedSelection;
             }
 
-            if (changed)
-                DB.Set(dbPlayer);
+            if (!changed)
+                return;
+
+            DB.Set(dbPlayer);
+
+            // A limit decides what can decay at the skill cap, so an open Distribute RP XP window must recheck its limit.
+            Gui.PublishRefreshEvent(Player, new RPXPRefreshEvent());
         }
 
         public Action OnClickDistributeRPXP() => () =>

@@ -166,4 +166,20 @@ public class CombatRateModifiersServiceTests : CombatModifierTestBase
         _rate.PrepareAutoAttackCycleCriticalRate(Attacker, SkillType.Rifle).Should().Be(0);
         _rate.PrepareAutoAttackCycleCriticalRate(Attacker, SkillType.Rifle).Should().Be(25);
     }
+
+    [Test]
+    public void ForgettingTheCycleCountRestartsTheCycleWithoutTouchingOtherCreatures()
+    {
+        Stat(Attacker, StatType.RangedAutoAttackCycleCriticalRateRequiredCount, 2);
+        Stat(Attacker, StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment, 40);
+        Stat(Defender, StatType.RangedAutoAttackCycleCriticalRateRequiredCount, 2);
+        Stat(Defender, StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment, 40);
+
+        _rate.PrepareAutoAttackCycleCriticalRate(Attacker, SkillType.Rifle).Should().Be(0);
+        _rate.PrepareAutoAttackCycleCriticalRate(Defender, SkillType.Rifle).Should().Be(0);
+        _rate.ForgetAutoAttackCycleCriticalRateCount(Attacker);
+
+        _rate.PrepareAutoAttackCycleCriticalRate(Attacker, SkillType.Rifle).Should().Be(0, "the forgotten creature starts at 1 of 2 again");
+        _rate.PrepareAutoAttackCycleCriticalRate(Defender, SkillType.Rifle).Should().Be(40, "the other creature kept its count");
+    }
 }

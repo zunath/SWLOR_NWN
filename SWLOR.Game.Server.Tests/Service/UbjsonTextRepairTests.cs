@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Native;
@@ -184,5 +185,28 @@ public class UbjsonTextRepairTests
     {
         Assert.That(Repair(Bytes('H', 'i', text.Length, text)), Is.EqualTo((0, complete)));
         Assert.That(Repair(Bytes('H', 'i', 1, 0xE9)).Complete, Is.False);
+    }
+
+    [Test]
+    public void RepairedStringsAndKeysAreSampled()
+    {
+        var data = Bytes('{', Key('k', 0xE9, 'y'), Str('o', 'k'), Key('n'), Str('S', 'l', 0xE1, 'i', 'n', 'e'), '}');
+        var samples = new List<string>();
+
+        Assert.That(UbjsonTextRepair.RepairStrings(data, out var complete, samples), Is.EqualTo(2));
+        Assert.That(complete, Is.True);
+        Assert.That(samples, Is.EqualTo(new[] { "k?y", "Sl?ine" }), "only strings that needed a repair are sampled");
+    }
+
+    [Test]
+    public void LongRepairedStringsAreCut()
+    {
+        var text = Enumerable.Repeat((int)'a', UbjsonTextRepair.MaxSampleLength + 10).Prepend(0x80).ToArray();
+        var data = Bytes('S', 'i', text.Length, text.Select(value => (byte)value).ToArray());
+        var samples = new List<string>();
+
+        UbjsonTextRepair.RepairStrings(data, out _, samples);
+
+        Assert.That(samples.Single(), Is.EqualTo("?" + new string('a', UbjsonTextRepair.MaxSampleLength - 1) + "..."));
     }
 }

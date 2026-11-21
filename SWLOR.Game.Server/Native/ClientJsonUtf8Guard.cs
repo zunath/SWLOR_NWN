@@ -15,6 +15,13 @@ namespace SWLOR.Game.Server.Native
     public static unsafe class ClientJsonUtf8Guard
     {
         private const string ReadJsonSymbol = "_ZN10CNWMessage8ReadJSONB5cxx11Ev";
+        private const string NuiEventSymbol = "_ZN11CNWSMessage28HandlePlayerToServerNuiEventEP10CNWSPlayerh";
+
+        // The engine's "no player" id; CNWMessage.m_dwPlayerID holds it while a client message is read.
+        private const uint NoPlayer = 0xFFFFFFFF;
+
+        /// <summary>The most repaired strings kept for one sender's report.</summary>
+        public const int MaxReportSamples = 3;
 
         // CNWMessage read state, as CNWMessage::ReadINT uses it.
         private const int ReadBufferOffset = 0x38;
@@ -40,9 +47,14 @@ namespace SWLOR.Game.Server.Native
         private const int NodeValueOffset = 64;
 
         private static readonly TimeSpan ReportDelay = TimeSpan.FromSeconds(10);
-        private static readonly Dictionary<uint, (string Account, uint Player, int Replaced, int Rejected)> PendingReports = new();
+        private static readonly Dictionary<uint, ClientJsonRepairReport> PendingReports = new();
+        private static readonly List<string> RepairedText = new();
         private static bool _reportScheduled;
         private static FunctionHook* _readJsonHook;
+        private static FunctionHook* _nuiEventHook;
+
+        // The player whose NUI message the engine is handling, so a repair names its sender.
+        private static uint _nuiSender = NoPlayer;
 
         /// <summary>The number of invalid UTF-8 bytes replaced since the module loaded.</summary>
         public static long ReplacedByteCount { get; private set; }
@@ -56,9 +68,30 @@ namespace SWLOR.Game.Server.Native
             if (_readJsonHook != null)
                 return;
 
+            var program = NativeLibrary.GetMainProgramHandle();
             delegate* unmanaged<void*, void*, void*> readJson = &ReadJson;
-            _readJsonHook = NWNXAPI.RequestFunctionHook(NativeLibrary.GetExport(NativeLibrary.GetMainProgramHandle(), ReadJsonSymbol),
+            _readJsonHook = NWNXAPI.RequestFunctionHook(NativeLibrary.GetExport(program, ReadJsonSymbol),
                 (IntPtr)readJson, HookOrder.Earliest);
+            delegate* unmanaged<void*, void*, byte, int> nuiEvent = &HandleNuiEvent;
+            _nuiEventHook = NWNXAPI.RequestFunctionHook(NativeLibrary.GetExport(program, NuiEventSymbol),
+                (IntPtr)nuiEvent, HookOrder.Earliest);
+        }
+
+        // Every NUI event and bind update a client sends passes through here before its JSON is read.
+        [UnmanagedCallersOnly]
+        private static int HandleNuiEvent(void* message, void* player, byte minor)
+        {
+            var previous = _nuiSender;
+            _nuiSender = player == null ? NoPlayer : CNWSPlayer.FromPointer(player).m_nPlayerID;
+            try
+            {
+                var original = (delegate* unmanaged<void*, void*, byte, int>)_nuiEventHook->m_trampoline;
+                return original(message, player, minor);
+            }
+            finally
+            {
+                _nuiSender = previous;
+            }
         }
 
         // ReadJSON returns the decoded json through a hidden result pointer, ahead of the message pointer.
@@ -67,6 +100,7 @@ namespace SWLOR.Game.Server.Native
         {
             var replaced = 0;
             bool rejected;
+            RepairedText.Clear();
             try
             {
                 rejected = !RepairPendingUbjson((byte*)message, out replaced);
@@ -85,7 +119,7 @@ namespace SWLOR.Game.Server.Native
                 // A rejected payload decodes to the engine's error text, so string values are still checked.
                 replaced += ReplaceInvalidStringValues((byte*)json);
                 if (replaced > 0 || rejected)
-                    Record(CNWMessage.FromPointer((IntPtr)message).m_dwPlayerID, replaced, rejected);
+                    Record(GetSender((byte*)message), replaced, rejected, RepairedText);
             }
             catch (Exception exception)
             {
@@ -111,11 +145,12 @@ namespace SWLOR.Game.Server.Native
                 return false;
             }
 
-            replaced = UbjsonTextRepair.RepairStrings(ubjson, out var complete);
+            replaced = UbjsonTextRepair.RepairStrings(ubjson, out var complete, RepairedText);
             if (complete)
                 return true;
 
             replaced = 0;
+            RepairedText.Clear();
             ubjson[0] = UnreadableMarker;
             return false;
         }
@@ -229,10 +264,16 @@ namespace SWLOR.Game.Server.Native
             return Utf8TextRepair.ReplaceInvalidBytes(new Span<byte>(data, (int)length));
         }
 
+        // The engine leaves the message's own player id unset while it reads a client message.
+        private static uint GetSender(byte* message)
+        {
+            return _nuiSender != NoPlayer ? _nuiSender : CNWMessage.FromPointer((IntPtr)message).m_dwPlayerID;
+        }
+
         /// <summary>
         /// Counts a repair or rejection and adds it to the sender's next report, written at most once per delay.
         /// </summary>
-        private static void Record(uint playerId, int replaced, bool rejected)
+        private static void Record(uint playerId, int replaced, bool rejected, IEnumerable<string> repairedText)
         {
             ReplacedByteCount += replaced;
             if (rejected)
@@ -242,10 +283,12 @@ namespace SWLOR.Game.Server.Native
             {
                 // Read the sender now: the client may leave before the report is written.
                 var client = NWNXLib.g_pAppManager.m_pServerExoApp.GetClientObjectByPlayerId(playerId);
-                report = (client?.GetPlayerName()?.ToString() ?? $"client {playerId}", client?.m_oidPCObject ?? OBJECT_INVALID, 0, 0);
+                report = new ClientJsonRepairReport(client?.GetPlayerName()?.ToString() ?? $"client {playerId}",
+                    client?.m_oidPCObject ?? OBJECT_INVALID);
+                PendingReports[playerId] = report;
             }
 
-            PendingReports[playerId] = (report.Account, report.Player, report.Replaced + replaced, report.Rejected + (rejected ? 1 : 0));
+            report.Add(replaced, rejected, repairedText, MaxReportSamples);
             if (_reportScheduled)
                 return;
 
@@ -261,8 +304,7 @@ namespace SWLOR.Game.Server.Native
                 var character = GetIsObjectValid(report.Player)
                     ? $"{PlayerName.GetAuditName(report.Player)} - {GetPCPublicCDKey(report.Player)}"
                     : "no character";
-                Log.Write(LogGroup.Server, $"Client NUI data from {report.Account} ({character}): " +
-                                           $"replaced {report.Replaced} invalid UTF-8 byte(s), rejected {report.Rejected} unreadable payload(s).");
+                Log.Write(LogGroup.Server, report.Describe(character));
             }
 
             PendingReports.Clear();

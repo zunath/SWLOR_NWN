@@ -264,7 +264,7 @@ public class AbilityImpactVisualEffectTests
     }
 
     [Test]
-    public void VisualEffectTable_NeverShakesTheCamera()
+    public void VisualEffectTable_ShakesTheCameraOnlyForTheDmEarthquake()
     {
         var table = File.ReadAllLines(Path.Combine(FindRepositoryRoot(), "SWLOR_Haks", "sw_2da", "visualeffects.2da"));
         var header = Regex.Split(table.First(line => line.TrimStart().StartsWith("Label ")).Trim(), @"\s+");
@@ -275,9 +275,25 @@ public class AbilityImpactVisualEffectTests
         var shaking = table.Where(line => Regex.IsMatch(line, @"^\s*\d+\s"))
             .Select(line => Regex.Split(line.Trim(), @"\s+"))
             .Where(row => shakeColumns.Any(column => row.Length > column && row[column] != "****"))
-            .Select(row => row[1]);
+            .Select(row => $"{row[0]} {row[1]}");
 
-        shaking.Should().BeEmpty("players asked for combat without camera shake");
+        // Players asked for combat without camera shake. Quest masters keep one shaking row
+        // to cue big moments with ##dm_visualeffect; no ability may use it.
+        shaking.Should().Equal($"{(int)VisualEffect.Vfx_Fnf_Dm_Earthquake} VFX_FNF_DM_EARTHQUAKE");
+    }
+
+    [Test]
+    public void DmEarthquake_IsNeverUsedByGameCode()
+    {
+        var source = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server");
+        var users = Directory.EnumerateFiles(source, "*.cs", SearchOption.AllDirectories)
+            .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}") &&
+                           !path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}"))
+            .Where(path => Regex.IsMatch(File.ReadAllText(path), @"Vfx_Fnf_Dm_Earthquake|\(VisualEffect\)\s*1128\b"))
+            .Select(path => Path.GetRelativePath(source, path))
+            .ToList();
+
+        users.Should().BeEmpty("the earthquake's camera shake is for quest masters only");
     }
 
     [Test]

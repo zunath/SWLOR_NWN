@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatSuppressionService _suppression;
         private readonly ICombatActivityService _combatActivity;
         private readonly ICombatDamageModifiersService _damageModifiers;
+        private readonly ICombatRateModifiersService _rateModifiers;
         private readonly IStatService _stat;
         private readonly ICombatRatingService _combatRating;
         private readonly IStatusEffectService _statusEffect;
@@ -35,6 +36,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatSuppressionService suppression,
             ICombatActivityService combatActivity,
             ICombatDamageModifiersService damageModifiers,
+            ICombatRateModifiersService rateModifiers,
             IStatService stat,
             ICombatRatingService combatRating,
             IStatusEffectService statusEffect,
@@ -48,6 +50,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _suppression = suppression;
             _combatActivity = combatActivity;
             _damageModifiers = damageModifiers;
+            _rateModifiers = rateModifiers;
             _stat = stat;
             _combatRating = combatRating;
             _statusEffect = statusEffect;
@@ -177,9 +180,9 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
 
             totalAdjustment += GetCriticalRateAgainstSunderedTargetAdjustment(attacker, defender);
-            totalAdjustment += _damageModifiers.GetTargetStatusCriticalRateAdjustment(attacker, defender);
-            totalAdjustment += _damageModifiers.GetSideAttackCriticalRateAdjustment(attacker, defender, skillType);
-            totalAdjustment += _damageModifiers.GetBackAttackCriticalRateAdjustment(attacker, defender, skillType);
+            totalAdjustment += _rateModifiers.GetTargetStatusCriticalRateAdjustment(attacker, defender);
+            totalAdjustment += _rateModifiers.GetSideAttackCriticalRateAdjustment(attacker, defender, skillType);
+            totalAdjustment += _rateModifiers.GetBackAttackCriticalRateAdjustment(attacker, defender, skillType);
 
             return CalculateAbilityCriticalChance(totalAdjustment);
         }
@@ -240,7 +243,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             var accuracy = GetAbilityAccuracy(attacker, defender, skillType, skillLevelOverride, statOverride) + accuracyFlatAdjustment;
             var evasion = _combatRating.GetEvasion(defender, SkillType.Invalid, skillType);
-            evasion = _damageModifiers.ApplySideAttackEvasionIgnore(attacker, defender, skillType, evasion);
+            evasion = _rateModifiers.ApplySideAttackEvasionIgnore(attacker, defender, skillType, evasion);
 
             var modifier = hitChancePercentAdjustment + GetAbilityHitOrCriticalAdjustment(
                 attacker,
@@ -260,7 +263,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 StatType.TargetedAbilityHitChancePercentAdjustment);
             modifier += _queries.GetPhysicalAndForceAbilityHitChanceAdjustment(attacker, skillType);
             modifier += GetIncomingAbilityHitChanceAdjustment(defender, skillType);
-            modifier += _damageModifiers.GetSideAttackHitChanceAdjustment(attacker, defender, skillType);
+            modifier += _rateModifiers.GetSideAttackHitChanceAdjustment(attacker, defender, skillType);
             modifier += _combatActivity.GetIdleAbilityHitChanceAdjustment(attacker, skillType);
             modifier += _suppression.ConsumeSuppressionRangedAttackAccuracyAdjustment(attacker, defender, skillType);
             modifier += GetHitChanceAgainstSunderedTargetAdjustment(attacker, defender);

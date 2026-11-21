@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// Damage roll modifiers for combat: the critical roll and its mitigation, the outgoing and target-status
-    /// modifiers of a damage roll, the attack and defense adjustments around it, and the per-attacker damage stacks.
+    /// modifiers of a damage roll, and the attack and defense adjustments around it.
     /// </summary>
     public interface ICombatDamageModifiersService
     {
@@ -32,11 +32,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             int criticalDamagePercentAdjustment = 0);
 
         int GetSkillCriticalRatePercentAdjustment(uint attacker, SkillType skillType);
-
-        int GetAutoAttackCriticalRateAdjustment(
-            uint attacker,
-            uint defender,
-            int cycleCriticalRateAdjustment);
 
         int ApplyRangedAttackDefenseIgnore(uint attacker, int defense, SkillType skillType);
 
@@ -105,27 +100,9 @@ namespace SWLOR.Game.Server.Domain.Combat
             bool isLandedAttack = true,
             AbilityDetail ability = null);
 
-        int ApplySideAttackDamageModifier(uint attacker, uint defender, SkillType skillType, int damage);
-
-        int GetSideAttackHitChanceAdjustment(uint attacker, uint defender, SkillType skillType);
-
-        int GetSideAttackCriticalRateAdjustment(uint attacker, uint defender, SkillType skillType);
-
-        int ApplyBackAttackDamageModifier(uint attacker, uint defender, SkillType skillType, int damage);
-
-        int GetBackAttackCriticalRateAdjustment(uint attacker, uint defender, SkillType skillType);
-
-        int ApplySideAttackEvasionIgnore(uint attacker, uint defender, SkillType skillType, int evasion);
-
-        int PrepareAutoAttackCycleCriticalRate(uint attacker, SkillType skillType);
-
-        void ClearAutoAttackCycleCriticalRateTracker(uint creature);
-
         int GetLowHPAttackAdjustment(uint attacker);
 
         int GetLowFPAttackAdjustment(uint attacker);
-
-        int GetTargetStatusCriticalRateAdjustment(uint attacker, uint defender);
 
         int ApplyDamageTypeDealtModifiers(uint attacker, int damage, CombatDamageType damageType);
 
@@ -168,25 +145,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             int damage,
             bool isAreaAbility);
 
-        void ClearRangedRepeatedTargetDamageTracker(uint creature);
-
-        void ApplySameTargetPressureDamageEffects(uint attacker, uint defender, SkillType skillType);
-
-        int GetSameTargetPressureWeaponAbilityDamageBonus(
-            uint attacker,
-            uint target,
-            SkillType skillType);
-
-        void ConsumeSameTargetPressureWeaponAbilityDamageBonus(
-            uint attacker,
-            uint target,
-            SkillType skillType,
-            int damage);
-
         int ApplyStatusSourceDefenseModifiers(uint attacker, uint defender, int defense);
 
         int ApplyStatusSourceAccuracyModifiers(uint attacker, uint defender, int accuracy);
-
-        void ForgetDamageModifierState(uint creature);
     }
 }

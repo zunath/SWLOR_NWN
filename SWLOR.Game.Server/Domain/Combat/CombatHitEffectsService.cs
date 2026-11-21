@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatSuppressionService _suppression;
         private readonly ICombatActivityService _combatActivity;
         private readonly ICombatDamageModifiersService _damageModifiers;
+        private readonly ICombatRepeatedTargetService _repeatedTarget;
         private readonly ICombatAbilityHitService _abilityHit;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
@@ -58,6 +59,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatSuppressionService suppression,
             ICombatActivityService combatActivity,
             ICombatDamageModifiersService damageModifiers,
+            ICombatRepeatedTargetService repeatedTarget,
             ICombatAbilityHitService abilityHit,
             IStatService stat,
             IStatusEffectService statusEffect,
@@ -79,6 +81,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _suppression = suppression;
             _combatActivity = combatActivity;
             _damageModifiers = damageModifiers;
+            _repeatedTarget = repeatedTarget;
             _abilityHit = abilityHit;
             _stat = stat;
             _statusEffect = statusEffect;
@@ -502,7 +505,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             // consuming it, so Venatic Recovery cannot trigger twice during one prolonged engagement.
             _combatActivity.ApplyFirstCombatAttackStaminaRestore(attacker);
 
-            _damageModifiers.ApplySameTargetPressureDamageEffects(attacker, defender, skillType);
+            _repeatedTarget.ApplySameTargetPressureDamageEffects(attacker, defender, skillType);
             ApplySideAttackDamageEffects(attacker, defender, skillType, damage);
             ApplyDamageDealtStaminaRestore(attacker, skillType);
             ApplyDamageDealtAttackDelayReduction(attacker, skillType);

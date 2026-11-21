@@ -37,12 +37,12 @@ namespace SWLOR.Game.Server.Native
                 criticalModifier += GameServices.CombatAbilityBonus.ConsumeNextAttackGuardedHitCriticalRateBonus(attacker.m_idSelf);
                 criticalModifier += GameServices.CombatAttackTiming.ConsumeNextAutoAttackCriticalRateBonus(attacker.m_idSelf, weaponSkillType);
                 criticalModifier += GameServices.CombatAbilityBonus.PrepareOpeningAutoAttack(attacker.m_idSelf, weaponSkillType);
-                criticalModifier += GameServices.CombatDamageModifiers.GetAutoAttackCriticalRateAdjustment(
+                criticalModifier += GameServices.CombatRateModifiers.GetAutoAttackCriticalRateAdjustment(
                     attacker.m_idSelf,
                     defender.m_idSelf,
                     autoAttackCycleCriticalRate);
-                criticalModifier += GameServices.CombatDamageModifiers.GetSideAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
-                criticalModifier += GameServices.CombatDamageModifiers.GetBackAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
+                criticalModifier += GameServices.CombatRateModifiers.GetSideAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
+                criticalModifier += GameServices.CombatRateModifiers.GetBackAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
                 var criticalSkillRank = GetCriticalSkillRank(attacker, weapon);
                 var criticalRate = CombatRules.CalculateCriticalRate(
                     criticalStat,

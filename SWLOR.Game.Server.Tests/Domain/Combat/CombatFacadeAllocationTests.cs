@@ -523,7 +523,7 @@ public class CombatFacadeAllocationTests
         }
     }
 
-    private sealed record BonusParts(ICombatAbilityBonusService Bonus, ICombatDamageModifiersService Modifiers, AbilityDetail Hostile);
+    private sealed record BonusParts(ICombatAbilityBonusService Bonus, ICombatDamageModifiersService Modifiers, AbilityDetail Hostile, ICombatRateModifiersService Rate, ICombatRepeatedTargetService Repeated);
 
     // The same world as the timing parts (a container of its own, the constant engine, the clock held still, a status table
     // for both creatures and the stat service that allocates nothing), with the ability bonus and damage modifier parts.
@@ -533,7 +533,7 @@ public class CombatFacadeAllocationTests
         var container = FacadeContainer.Current;
         var hostile = new AbilityDetail { IsHostileAbility = true, SkillType = SkillType.Rifle, EffectiveLevelPerkType = PerkType.DoubleShot };
         hostile.Requirements.Add(new AbilityRequirementStamina(10));
-        return new BonusParts(container.Get<ICombatAbilityBonusService>(), container.Get<ICombatDamageModifiersService>(), hostile);
+        return new BonusParts(container.Get<ICombatAbilityBonusService>(), container.Get<ICombatDamageModifiersService>(), hostile, container.Get<ICombatRateModifiersService>(), container.Get<ICombatRepeatedTargetService>());
     }
 
     [Test]
@@ -544,7 +544,7 @@ public class CombatFacadeAllocationTests
         var scopes = new List<IDisposable>();
         try
         {
-            var (bonus, modifiers, hostile) = InstallBonusParts(scopes);
+            var (bonus, modifiers, hostile, rate, repeated) = InstallBonusParts(scopes);
             var sink = 0;
             var fsink = 0f;
             var reads = new (string Name, Action Part, Action Forwarder)[]
@@ -561,20 +561,20 @@ public class CombatFacadeAllocationTests
                 // Damage roll modifiers.
                 ("TryUseIncomingCriticalHitDowngrade", () => sink += modifiers.TryUseIncomingCriticalHitDowngrade(Defender, 2) ? 1 : 0, () => sink += GameServices.CombatDamageModifiers.TryUseIncomingCriticalHitDowngrade(Defender, 2) ? 1 : 0),
                 ("ApplyCriticalDamageModifier", () => sink += modifiers.ApplyCriticalDamageModifier(Attacker, 100, 2), () => sink += GameServices.CombatDamageModifiers.ApplyCriticalDamageModifier(Attacker, 100, 2)),
-                ("GetAutoAttackCriticalRateAdjustment", () => sink += modifiers.GetAutoAttackCriticalRateAdjustment(Attacker, Defender, 5), () => sink += GameServices.CombatDamageModifiers.GetAutoAttackCriticalRateAdjustment(Attacker, Defender, 5)),
+                ("GetAutoAttackCriticalRateAdjustment", () => sink += rate.GetAutoAttackCriticalRateAdjustment(Attacker, Defender, 5), () => sink += GameServices.CombatRateModifiers.GetAutoAttackCriticalRateAdjustment(Attacker, Defender, 5)),
                 ("ApplyRangedAttackDefenseIgnore", () => sink += modifiers.ApplyRangedAttackDefenseIgnore(Attacker, 100, SkillType.Rifle), () => sink += GameServices.CombatDamageModifiers.ApplyRangedAttackDefenseIgnore(Attacker, 100, SkillType.Rifle)),
                 ("ApplyOrdinaryAttackDamageMultiplier", () => sink += modifiers.ApplyOrdinaryAttackDamageMultiplier(Attacker, 100), () => sink += GameServices.CombatDamageModifiers.ApplyOrdinaryAttackDamageMultiplier(Attacker, 100)),
                 ("ApplyAbilityShapeDamageModifier", () => sink += modifiers.ApplyAbilityShapeDamageModifier(Attacker, 100, true, hostile), () => sink += GameServices.CombatDamageModifiers.ApplyAbilityShapeDamageModifier(Attacker, 100, true, hostile)),
                 ("ApplyThrowingSingleTargetDamageModifier", () => sink += modifiers.ApplyThrowingSingleTargetDamageModifier(Attacker, SkillType.Throwing, 100, false, null!), () => sink += GameServices.CombatDamageModifiers.ApplyThrowingSingleTargetDamageModifier(Attacker, SkillType.Throwing, 100, false, null!)),
                 ("ApplyMimicryAbilityDamageModifier", () => sink += modifiers.ApplyMimicryAbilityDamageModifier(Attacker, 100, SkillType.Mimicry, true), () => sink += GameServices.CombatDamageModifiers.ApplyMimicryAbilityDamageModifier(Attacker, 100, SkillType.Mimicry, true)),
                 ("ApplySkillAbilityDamageModifier", () => sink += modifiers.ApplySkillAbilityDamageModifier(Attacker, 100, SkillType.Rifle, true), () => sink += GameServices.CombatDamageModifiers.ApplySkillAbilityDamageModifier(Attacker, 100, SkillType.Rifle, true)),
-                ("ApplySideAttackDamageModifier", () => sink += modifiers.ApplySideAttackDamageModifier(Attacker, Defender, SkillType.Rifle, 100), () => sink += GameServices.CombatDamageModifiers.ApplySideAttackDamageModifier(Attacker, Defender, SkillType.Rifle, 100)),
-                ("GetSideAttackHitChanceAdjustment", () => sink += modifiers.GetSideAttackHitChanceAdjustment(Attacker, Defender, SkillType.Rifle), () => sink += GameServices.CombatDamageModifiers.GetSideAttackHitChanceAdjustment(Attacker, Defender, SkillType.Rifle)),
-                ("GetSideAttackCriticalRateAdjustment", () => sink += modifiers.GetSideAttackCriticalRateAdjustment(Attacker, Defender, SkillType.Rifle), () => sink += GameServices.CombatDamageModifiers.GetSideAttackCriticalRateAdjustment(Attacker, Defender, SkillType.Rifle)),
-                ("ApplySideAttackEvasionIgnore", () => sink += modifiers.ApplySideAttackEvasionIgnore(Attacker, Defender, SkillType.Rifle, 100), () => sink += GameServices.CombatDamageModifiers.ApplySideAttackEvasionIgnore(Attacker, Defender, SkillType.Rifle, 100)),
-                ("ClearAutoAttackCycleCriticalRateTracker", () => modifiers.ClearAutoAttackCycleCriticalRateTracker(Attacker), () => GameServices.CombatDamageModifiers.ClearAutoAttackCycleCriticalRateTracker(Attacker)),
+                ("ApplySideAttackDamageModifier", () => sink += rate.ApplySideAttackDamageModifier(Attacker, Defender, SkillType.Rifle, 100), () => sink += GameServices.CombatRateModifiers.ApplySideAttackDamageModifier(Attacker, Defender, SkillType.Rifle, 100)),
+                ("GetSideAttackHitChanceAdjustment", () => sink += rate.GetSideAttackHitChanceAdjustment(Attacker, Defender, SkillType.Rifle), () => sink += GameServices.CombatRateModifiers.GetSideAttackHitChanceAdjustment(Attacker, Defender, SkillType.Rifle)),
+                ("GetSideAttackCriticalRateAdjustment", () => sink += rate.GetSideAttackCriticalRateAdjustment(Attacker, Defender, SkillType.Rifle), () => sink += GameServices.CombatRateModifiers.GetSideAttackCriticalRateAdjustment(Attacker, Defender, SkillType.Rifle)),
+                ("ApplySideAttackEvasionIgnore", () => sink += rate.ApplySideAttackEvasionIgnore(Attacker, Defender, SkillType.Rifle, 100), () => sink += GameServices.CombatRateModifiers.ApplySideAttackEvasionIgnore(Attacker, Defender, SkillType.Rifle, 100)),
+                ("ClearAutoAttackCycleCriticalRateTracker", () => rate.ClearAutoAttackCycleCriticalRateTracker(Attacker), () => GameServices.CombatRateModifiers.ClearAutoAttackCycleCriticalRateTracker(Attacker)),
                 ("GetLowHPAttackAdjustment", () => sink += modifiers.GetLowHPAttackAdjustment(Attacker), () => sink += GameServices.CombatDamageModifiers.GetLowHPAttackAdjustment(Attacker)),
-                ("GetTargetStatusCriticalRateAdjustment", () => sink += modifiers.GetTargetStatusCriticalRateAdjustment(Attacker, Defender), () => sink += GameServices.CombatDamageModifiers.GetTargetStatusCriticalRateAdjustment(Attacker, Defender)),
+                ("GetTargetStatusCriticalRateAdjustment", () => sink += rate.GetTargetStatusCriticalRateAdjustment(Attacker, Defender), () => sink += GameServices.CombatRateModifiers.GetTargetStatusCriticalRateAdjustment(Attacker, Defender)),
                 ("ApplyDamageTypeDealtModifiers", () => sink += modifiers.ApplyDamageTypeDealtModifiers(Attacker, 100, CombatDamageType.Poison), () => sink += GameServices.CombatDamageModifiers.ApplyDamageTypeDealtModifiers(Attacker, 100, CombatDamageType.Poison)),
                 ("GetNearbyStatusTargetAttackAdjustment", () => sink += modifiers.GetNearbyStatusTargetAttackAdjustment(Attacker), () => sink += GameServices.CombatDamageModifiers.GetNearbyStatusTargetAttackAdjustment(Attacker)),
                 ("ApplyTwinBladeAbilityShapeDamageModifier", () => sink += modifiers.ApplyTwinBladeAbilityShapeDamageModifier(Attacker, SkillType.TwinBlade, 100, true, true), () => sink += GameServices.CombatDamageModifiers.ApplyTwinBladeAbilityShapeDamageModifier(Attacker, SkillType.TwinBlade, 100, true, true)),
@@ -583,8 +583,8 @@ public class CombatFacadeAllocationTests
                 ("ApplySkillAreaAbilityDamageModifier", () => sink += modifiers.ApplySkillAreaAbilityDamageModifier(Attacker, SkillType.Rifle, 100, true), () => sink += GameServices.CombatDamageModifiers.ApplySkillAreaAbilityDamageModifier(Attacker, SkillType.Rifle, 100, true)),
                 ("ApplyRangedAbilityLongRangeDamageModifier", () => sink += modifiers.ApplyRangedAbilityLongRangeDamageModifier(Attacker, Defender, SkillType.Rifle, 100), () => sink += GameServices.CombatDamageModifiers.ApplyRangedAbilityLongRangeDamageModifier(Attacker, Defender, SkillType.Rifle, 100)),
                 ("ApplyAreaAbilityAfterDeflectionDamageModifier", () => sink += modifiers.ApplyAreaAbilityAfterDeflectionDamageModifier(Attacker, SkillType.Rifle, 100, true), () => sink += GameServices.CombatDamageModifiers.ApplyAreaAbilityAfterDeflectionDamageModifier(Attacker, SkillType.Rifle, 100, true)),
-                ("ClearRangedRepeatedTargetDamageTracker", () => modifiers.ClearRangedRepeatedTargetDamageTracker(Attacker), () => GameServices.CombatDamageModifiers.ClearRangedRepeatedTargetDamageTracker(Attacker)),
-                ("ApplySameTargetPressureDamageEffects", () => modifiers.ApplySameTargetPressureDamageEffects(Attacker, Defender, SkillType.Rifle), () => GameServices.CombatDamageModifiers.ApplySameTargetPressureDamageEffects(Attacker, Defender, SkillType.Rifle)),
+                ("ClearRangedRepeatedTargetDamageTracker", () => repeated.ClearRangedRepeatedTargetDamageTracker(Attacker), () => GameServices.CombatRepeatedTarget.ClearRangedRepeatedTargetDamageTracker(Attacker)),
+                ("ApplySameTargetPressureDamageEffects", () => repeated.ApplySameTargetPressureDamageEffects(Attacker, Defender, SkillType.Rifle), () => GameServices.CombatRepeatedTarget.ApplySameTargetPressureDamageEffects(Attacker, Defender, SkillType.Rifle)),
             };
 
             foreach (var (name, part, forwarder) in reads)
@@ -611,7 +611,7 @@ public class CombatFacadeAllocationTests
         var scopes = new List<IDisposable>();
         try
         {
-            var (bonus, modifiers, hostile) = InstallBonusParts(scopes);
+            var (bonus, modifiers, hostile, rate, repeated) = InstallBonusParts(scopes);
             var sink = 0;
             var fsink = 0f;
             var reads = new (string Name, long Bytes, Action Part, Action Forwarder)[]
@@ -646,7 +646,7 @@ public class CombatFacadeAllocationTests
                 ("ApplyTargetStatusAttackModifiers", 152, () => sink += modifiers.ApplyTargetStatusAttackModifiers(Attacker, Defender, 100, SkillType.Vibroblade), () => sink += GameServices.CombatDamageModifiers.ApplyTargetStatusAttackModifiers(Attacker, Defender, 100, SkillType.Vibroblade)),
                 ("GetLowFPAttackAdjustment", 312, () => sink += modifiers.GetLowFPAttackAdjustment(Attacker), () => sink += GameServices.CombatDamageModifiers.GetLowFPAttackAdjustment(Attacker)),
                 ("ApplyStatusSourceDefenseModifiers", 64, () => sink += modifiers.ApplyStatusSourceDefenseModifiers(Attacker, Defender, 100), () => sink += GameServices.CombatDamageModifiers.ApplyStatusSourceDefenseModifiers(Attacker, Defender, 100)),
-                ("ForgetDamageModifierState", 256, () => modifiers.ForgetDamageModifierState(Attacker), () => GameServices.CombatDamageModifiers.ForgetDamageModifierState(Attacker)),
+                ("ForgetDamageModifierState", 256, () => repeated.ForgetDamageModifierState(Attacker), () => GameServices.CombatRepeatedTarget.ForgetDamageModifierState(Attacker)),
             };
 
             foreach (var (name, bytes, part, forwarder) in reads)
@@ -683,7 +683,7 @@ public class CombatFacadeAllocationTests
         var scopes = new List<IDisposable>();
         try
         {
-            var (bonus, modifiers, hostile) = InstallBonusParts(scopes);
+            var (bonus, modifiers, hostile, rate, repeated) = InstallBonusParts(scopes);
             var sink = 0;
             var reads = new (string Name, Action Part, Action Forwarder)[]
             {
@@ -692,11 +692,11 @@ public class CombatFacadeAllocationTests
                 ("GetQueuedWeaponAbilityActivationHitChanceAdjustment", () => sink += bonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(Attacker, SkillType.Rifle, hostile), () => sink += GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(Attacker, SkillType.Rifle, hostile)),
                 ("ApplyCriticalDamageModifier", () => sink += modifiers.ApplyCriticalDamageModifier(Attacker, 100, 2, SkillType.Rifle, Defender), () => sink += GameServices.CombatDamageModifiers.ApplyCriticalDamageModifier(Attacker, 100, 2, SkillType.Rifle, Defender)),
                 ("GetSkillCriticalRatePercentAdjustment", () => sink += modifiers.GetSkillCriticalRatePercentAdjustment(Attacker, SkillType.Rifle), () => sink += GameServices.CombatDamageModifiers.GetSkillCriticalRatePercentAdjustment(Attacker, SkillType.Rifle)),
-                ("ApplyBackAttackDamageModifier", () => sink += modifiers.ApplyBackAttackDamageModifier(Attacker, Defender, SkillType.Rifle, 100), () => sink += GameServices.CombatDamageModifiers.ApplyBackAttackDamageModifier(Attacker, Defender, SkillType.Rifle, 100)),
-                ("GetBackAttackCriticalRateAdjustment", () => sink += modifiers.GetBackAttackCriticalRateAdjustment(Attacker, Defender, SkillType.Rifle), () => sink += GameServices.CombatDamageModifiers.GetBackAttackCriticalRateAdjustment(Attacker, Defender, SkillType.Rifle)),
-                ("PrepareAutoAttackCycleCriticalRate", () => sink += modifiers.PrepareAutoAttackCycleCriticalRate(Attacker, SkillType.Rifle), () => sink += GameServices.CombatDamageModifiers.PrepareAutoAttackCycleCriticalRate(Attacker, SkillType.Rifle)),
-                ("GetSameTargetPressureWeaponAbilityDamageBonus", () => sink += modifiers.GetSameTargetPressureWeaponAbilityDamageBonus(Attacker, Defender, SkillType.Rifle), () => sink += GameServices.CombatDamageModifiers.GetSameTargetPressureWeaponAbilityDamageBonus(Attacker, Defender, SkillType.Rifle)),
-                ("ConsumeSameTargetPressureWeaponAbilityDamageBonus", () => modifiers.ConsumeSameTargetPressureWeaponAbilityDamageBonus(Attacker, Defender, SkillType.Rifle, 10), () => GameServices.CombatDamageModifiers.ConsumeSameTargetPressureWeaponAbilityDamageBonus(Attacker, Defender, SkillType.Rifle, 10)),
+                ("ApplyBackAttackDamageModifier", () => sink += rate.ApplyBackAttackDamageModifier(Attacker, Defender, SkillType.Rifle, 100), () => sink += GameServices.CombatRateModifiers.ApplyBackAttackDamageModifier(Attacker, Defender, SkillType.Rifle, 100)),
+                ("GetBackAttackCriticalRateAdjustment", () => sink += rate.GetBackAttackCriticalRateAdjustment(Attacker, Defender, SkillType.Rifle), () => sink += GameServices.CombatRateModifiers.GetBackAttackCriticalRateAdjustment(Attacker, Defender, SkillType.Rifle)),
+                ("PrepareAutoAttackCycleCriticalRate", () => sink += rate.PrepareAutoAttackCycleCriticalRate(Attacker, SkillType.Rifle), () => sink += GameServices.CombatRateModifiers.PrepareAutoAttackCycleCriticalRate(Attacker, SkillType.Rifle)),
+                ("GetSameTargetPressureWeaponAbilityDamageBonus", () => sink += repeated.GetSameTargetPressureWeaponAbilityDamageBonus(Attacker, Defender, SkillType.Rifle), () => sink += GameServices.CombatRepeatedTarget.GetSameTargetPressureWeaponAbilityDamageBonus(Attacker, Defender, SkillType.Rifle)),
+                ("ConsumeSameTargetPressureWeaponAbilityDamageBonus", () => repeated.ConsumeSameTargetPressureWeaponAbilityDamageBonus(Attacker, Defender, SkillType.Rifle, 10), () => GameServices.CombatRepeatedTarget.ConsumeSameTargetPressureWeaponAbilityDamageBonus(Attacker, Defender, SkillType.Rifle, 10)),
                 ("CalculateDamageWithCriticalMitigation", () => sink += modifiers.CalculateDamageWithCriticalMitigation(Defender, 100, 50, 20, 80, 10, 2).Damage, () => sink += GameServices.CombatDamageModifiers.CalculateDamageWithCriticalMitigation(Defender, 100, 50, 20, 80, 10, 2).Damage),
                 ("ApplyStatusSourceAccuracyModifiers", () => sink += modifiers.ApplyStatusSourceAccuracyModifiers(Attacker, Defender, 100), () => sink += GameServices.CombatDamageModifiers.ApplyStatusSourceAccuracyModifiers(Attacker, Defender, 100)),
                 ("ApplyDamageDealtModifiers(13)", () => sink += modifiers.ApplyDamageDealtModifiers(Attacker, Defender, 100, SkillType.Rifle, CombatDamageType.Physical, false, true, true, null!, out _, 0, 0, true), () => sink += GameServices.CombatDamageModifiers.ApplyDamageDealtModifiers(Attacker, Defender, 100, SkillType.Rifle, CombatDamageType.Physical, false, true, true, null!, out _, 0, 0, true)),

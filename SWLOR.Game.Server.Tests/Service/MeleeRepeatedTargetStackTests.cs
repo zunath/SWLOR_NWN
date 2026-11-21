@@ -61,9 +61,9 @@ public class MeleeRepeatedTargetStackTests
     public void Combat_FloatsRundownTextOnlyForPlayersWhenTheStackRises()
     {
         var root = FindRepositoryRoot();
-        var combat = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Combat", "CombatDamageModifiersService.cs")).Replace("\r\n", "\n");
-        var start = combat.IndexOf("private int ApplyMeleeRepeatedTargetDamageModifier(", StringComparison.Ordinal);
-        var end = combat.IndexOf("private int ApplyRangedRepeatedTargetDamageModifier(", start, StringComparison.Ordinal);
+        var combat = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Combat", "CombatRepeatedTargetService.cs")).Replace("\r\n", "\n");
+        var start = combat.IndexOf("public int ApplyMeleeRepeatedTargetDamageModifier(", StringComparison.Ordinal);
+        var end = combat.IndexOf("public int ApplyRangedRepeatedTargetDamageModifier(", start, StringComparison.Ordinal);
         var body = combat.Substring(start, end - start);
 
         body.Should().Contain("var stackRaised = state.RegisterHit(defender, maxStacks);");

@@ -70,7 +70,7 @@ public class AbilityServiceDefaultSeamsTests
 
     private static AbilityDamageDeliveryService DamageDeliveryPart() =>
         new(FacadeForwarder.For<IStatusEffectCombatEventService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IAbilityDarkForceService>(),
-            FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatHitEffectsService>(),
+            FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatRepeatedTargetService>(), FacadeForwarder.For<ICombatHitEffectsService>(),
             FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatAbilityBonusService>());
 
     private static AbilityStatusApplicationService StatusApplicationPart() =>
@@ -81,7 +81,7 @@ public class AbilityServiceDefaultSeamsTests
         new(FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatRatingService>(),
             FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatAbilityBonusService>(),
             FacadeForwarder.For<ICombatAbilityImpactService>(),
-            FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(),
+            FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatRepeatedTargetService>(), FacadeForwarder.For<ICombatDamageTakenService>(),
             FacadeForwarder.For<ICombatAbilityMagnitudeService>(), FacadeForwarder.For<IResistanceService>());
 
     private static AbilityDamageStageService DamageStagePart() =>

@@ -331,12 +331,12 @@ public class CombatSourceTests
         debts.Should().NotContainKey(0xFFFFFFF1);
     }
 
-    [TestCase("_autoAttackCycleCriticalCounts")]
-    [TestCase("_repeatedTargetDamageStates")]
-    [TestCase("_meleeRepeatedTargetDamageStates")]
-    [TestCase("_rangedRepeatedTargetDamageStates")]
-    [TestCase("_sameTargetPressureStates")]
-    public void ReflectionReachesTheDamageModifierTablesOfTheInstalledContainer(string name)
+    [TestCase("_autoAttackCycleCriticalCounts", typeof(CombatRateModifiersService))]
+    [TestCase("_repeatedTargetDamageStates", typeof(CombatRepeatedTargetService))]
+    [TestCase("_meleeRepeatedTargetDamageStates", typeof(CombatRepeatedTargetService))]
+    [TestCase("_rangedRepeatedTargetDamageStates", typeof(CombatRepeatedTargetService))]
+    [TestCase("_sameTargetPressureStates", typeof(CombatRepeatedTargetService))]
+    public void ReflectionReachesTheDamageModifierTablesOfTheInstalledContainer(string name, Type owner)
     {
         // The damage modifier stacks moved from static fields of Combat to the instance; a test that reads one by name
         // gets the installed container's table.
@@ -346,8 +346,8 @@ public class CombatSourceTests
         var field = CombatMembers.FindField(name);
         field.Should().NotBeNull();
         field!.IsStatic.Should().BeFalse();
-        field.DeclaringType.Should().Be(typeof(CombatDamageModifiersService));
-        CombatMembers.FieldValue<object>(name).Should().BeSameAs(field.GetValue(facades.Get<ICombatDamageModifiersService>()));
+        field.DeclaringType.Should().Be(owner);
+        CombatMembers.FieldValue<object>(name).Should().BeSameAs(field.GetValue(owner == typeof(CombatRateModifiersService) ? facades.Get<ICombatRateModifiersService>() : facades.Get<ICombatRepeatedTargetService>()));
     }
 
     [TestCase("_criticalHitSequenceStates", typeof(CombatHitEffectsService))]

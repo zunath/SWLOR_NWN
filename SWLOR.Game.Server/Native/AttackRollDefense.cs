@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Native
         internal static int GetDefenderEvasion(CNWSCreature attacker, CNWSCreature defender, SkillType abilitySkillType)
         {
             var defenderEvasion = CombatRating.GetEvasionNative(defender, abilitySkillType);
-            defenderEvasion = GameServices.CombatDamageModifiers.ApplySideAttackEvasionIgnore(
+            defenderEvasion = GameServices.CombatRateModifiers.ApplySideAttackEvasionIgnore(
                 attacker.m_idSelf,
                 defender.m_idSelf,
                 abilitySkillType,

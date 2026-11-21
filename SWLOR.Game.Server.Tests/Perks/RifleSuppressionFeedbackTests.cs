@@ -79,7 +79,7 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().Contain("RangedRepeatedTargetDamageBonusMax");
         combat.Should().Contain("RangedRepeatedTargetDamageDurationSeconds");
         combat.Should().Contain("public static void ClearRangedRepeatedTargetDamageTracker(uint creature)");
-        var rangedRepeatedStart = combat.IndexOf("private static int ApplyRangedRepeatedTargetDamageModifier(", StringComparison.Ordinal);
+        var rangedRepeatedStart = combat.IndexOf("public static int ApplyRangedRepeatedTargetDamageModifier(", StringComparison.Ordinal);
         var rangedRepeatedBody = combat
             .Substring(rangedRepeatedStart, combat.IndexOf("public static void ClearRangedRepeatedTargetDamageTracker(", rangedRepeatedStart, StringComparison.Ordinal) - rangedRepeatedStart)
             .Replace("\r\n", "\n");

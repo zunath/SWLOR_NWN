@@ -899,11 +899,11 @@ namespace SWLOR.Game.Server.Service
             if (signature != null)
                 signature.DerelictLooted = true;
 
-            var credits = DerelictRules.SalvageCredits(boarding.TierIndex, boarding.SalvageIndustry);
             var scrap = DerelictRules.SalvageScrap(boarding.SalvageIndustry);
             var items = Enumerable.Repeat(DerelictRules.ScrapResref(boarding.TierIndex), scrap).ToList();
             var table = Loot.GetLootTableByName(SignatureSiteRules.CacheLootTable(boarding.SpaceTier, boarding.WildSpace));
-            items.AddRange(Enumerable.Range(0, DerelictTuning.SalvageItemPulls).Select(_ => table.GetRandomItem().Resref));
+            var credits = DerelictRules.SalvageCredits(boarding.TierIndex, boarding.SalvageIndustry) +
+                          RollLootPulls(table, DerelictTuning.SalvageItemPulls, items);
 
             GiveGoldToCreature(pilot, credits);
             ShipHold.DeliverYield(pilot, items);

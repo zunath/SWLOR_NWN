@@ -237,12 +237,13 @@ namespace SWLOR.Game.Server.Service
 
             signature.Completed = true;
             FactionAgents.OnSiteCompleted(signature, user, cache);
-            var credits = SignatureSiteRules.SiteCredits(signature.Type, signature.Tier);
+            var table = Loot.GetLootTableByName(SignatureSiteRules.CacheLootTable(signature.Tier, signature.WildSpace));
+            var items = new List<string>();
+            var credits = SignatureSiteRules.SiteCredits(signature.Type, signature.Tier) +
+                          RollLootPulls(table, ScanningTuning.CacheItemPulls, items);
             if (credits > 0)
                 GiveGoldToCreature(user, credits);
 
-            var table = Loot.GetLootTableByName(SignatureSiteRules.CacheLootTable(signature.Tier, signature.WildSpace));
-            var items = Enumerable.Range(0, ScanningTuning.CacheItemPulls).Select(_ => table.GetRandomItem().Resref).ToList();
             ShipHold.DeliverYield(user, items);
 
             SendMessageToPC(user, ColorToken.Green($"You open the {GetName(cache)}: {credits} credits."));

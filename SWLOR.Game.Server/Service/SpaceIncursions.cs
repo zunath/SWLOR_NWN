@@ -661,19 +661,30 @@ namespace SWLOR.Game.Server.Service
         /// <summary>The resref of a loot table's gold entry (<c>AddGold</c>).</summary>
         private const string LootGoldResref = "nw_it_gold001";
 
+        /// <summary>Rolls one loot pull into a payout (see <see cref="RollLootPulls"/>).</summary>
+        private static void AddPull(IncursionPayout payout, LootService.LootTable table) =>
+            payout.Credits += RollLootPulls(table, 1, payout.Items);
+
         /// <summary>
-        /// Rolls one loot pull into a payout, with its quantity rolled as dropped loot rolls it (1 to the entry's maximum).
-        /// A gold entry adds that amount to the credits, since gold never sits in an inventory; anything else adds that
-        /// many of its item, each given on its own.
+        /// Rolls <paramref name="pulls"/> loot pulls, each with its quantity rolled as dropped loot rolls it (1 to the
+        /// entry's maximum). An item entry adds that many of its item to <paramref name="items"/>, each given on its own;
+        /// a gold entry's amount is returned as credits, since gold never sits in an inventory or a hold.
         /// </summary>
-        private static void AddPull(IncursionPayout payout, LootService.LootTable table)
+        /// <returns>The credits the gold entries rolled.</returns>
+        internal static int RollLootPulls(LootService.LootTable table, int pulls, List<string> items)
         {
-            var item = table.GetRandomItem();
-            var quantity = Random.Next(Math.Max(1, item.MaxQuantity)) + 1;
-            if (item.Resref == LootGoldResref)
-                payout.Credits += quantity;
-            else if (!string.IsNullOrWhiteSpace(item.Resref))
-                payout.Items.AddRange(Enumerable.Repeat(item.Resref, quantity));
+            var credits = 0;
+            for (var pull = 0; pull < pulls; pull++)
+            {
+                var item = table.GetRandomItem();
+                var quantity = Random.Next(Math.Max(1, item.MaxQuantity)) + 1;
+                if (item.Resref == LootGoldResref)
+                    credits += quantity;
+                else if (!string.IsNullOrWhiteSpace(item.Resref))
+                    items.AddRange(Enumerable.Repeat(item.Resref, quantity));
+            }
+
+            return credits;
         }
 
         /// <summary>

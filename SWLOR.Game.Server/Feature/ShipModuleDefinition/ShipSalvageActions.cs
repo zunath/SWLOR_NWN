@@ -219,7 +219,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     if (reward.Count > 0)
                         yield.AddRange(reward);
                     else
-                        yield.Add(Loot.GetLootTableByName(ShipSalvageRules.RareFindTable(wreck.Tier, wreck.Difficulty, wreck.WildSpace)).GetRandomItem().Resref);
+                    {
+                        // The pull keeps its rolled quantity; a gold entry is paid as credits, since gold never sits in a hold.
+                        var rareTable = Loot.GetLootTableByName(ShipSalvageRules.RareFindTable(wreck.Tier, wreck.Difficulty, wreck.WildSpace));
+                        var rareCredits = Space.RollLootPulls(rareTable, 1, yield);
+                        if (rareCredits > 0)
+                            GiveGoldToCreature(activator, rareCredits);
+                    }
                 }
 
                 var areaAurodium = GetLocalInt(GetArea(target), ShipSalvageRules.AurodiumPercentVariable);

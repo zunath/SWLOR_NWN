@@ -3942,7 +3942,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ShipModuleDefinition/ShipSalvageActions.cs",
-    "Line": 235,
+    "Line": 241,
     "Member": "SalvageWreck",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{GetName(target)} has been fully salvaged.\")"
@@ -8618,14 +8618,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 977,
+    "Line": 988,
     "Member": "BroadcastIncursion",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceIncursions.cs",
-    "Line": 985,
+    "Line": 996,
     "Member": "MessageIncursionArea",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
@@ -8828,7 +8828,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceScanSites.cs",
-    "Line": 248,
+    "Line": 249,
     "Member": "OpenSiteCache",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"You open the {GetName(cache)}: {credits} credits.\"))"

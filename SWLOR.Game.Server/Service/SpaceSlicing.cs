@@ -647,9 +647,9 @@ namespace SWLOR.Game.Server.Service
             if (signature != null && !signature.Completed)
             {
                 signature.Completed = true;
-                credits = SignatureSiteRules.LockedCacheCredits(signature.Tier);
                 var table = Loot.GetLootTableByName(SignatureSiteRules.CacheLootTable(signature.Tier, signature.WildSpace));
-                items.AddRange(Enumerable.Range(0, ScanningTuning.CacheItemPulls).Select(_ => table.GetRandomItem().Resref));
+                credits = SignatureSiteRules.LockedCacheCredits(signature.Tier) +
+                          RollLootPulls(table, ScanningTuning.CacheItemPulls, items);
             }
 
             var pilot = GetIsObjectValid(ship) ? ship : slicer;

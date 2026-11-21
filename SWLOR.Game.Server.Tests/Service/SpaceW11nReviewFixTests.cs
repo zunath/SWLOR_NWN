@@ -272,12 +272,27 @@ public class SpaceW11nReviewFixTests
         var incursions = ReadSource("Service", "SpaceIncursions.cs").Replace("\r\n", "\n");
         var roll = Between(incursions, "private static IncursionPayout RollPulls(", "/// The character-file local prefix");
         roll.Should().Contain("AddPull(payout, lootTable);").And.NotContain("payout.Items.Add(lootTable.GetRandomItem().Resref);");
-        roll.Should().Contain("var quantity = Random.Next(Math.Max(1, item.MaxQuantity)) + 1;")
-            .And.Contain("payout.Items.AddRange(Enumerable.Repeat(item.Resref, quantity));", "an item pull keeps its rolled quantity, as dropped loot does");
-        roll.Should().Contain("if (item.Resref == LootGoldResref)").And.Contain("payout.Credits += quantity;",
+        roll.Should().Contain("payout.Credits += RollLootPulls(table, 1, payout.Items);");
+        var pulls = Between(incursions, "internal static int RollLootPulls(", "return credits;");
+        pulls.Should().Contain("var quantity = Random.Next(Math.Max(1, item.MaxQuantity)) + 1;")
+            .And.Contain("items.AddRange(Enumerable.Repeat(item.Resref, quantity));", "an item pull keeps its rolled quantity, as dropped loot does");
+        pulls.Should().Contain("if (item.Resref == LootGoldResref)").And.Contain("credits += quantity;",
             "gold never sits in an inventory, so a gold item would never count as given and the payout would stay pending forever");
         incursions.Should().Contain("private const string LootGoldResref = \"nw_it_gold001\";");
         ReadSource("Service", "SpaceRiftRuns.cs").Should().Contain("AddPull(spoils, table);").And.NotContain("table.GetRandomItem().Resref");
+    }
+
+    [Test]
+    public void CacheAndSalvageLootPulls_KeepTheirRolledQuantityAndPayGoldAsCredits()
+    {
+        ReadSource("Service", "SpaceScanSites.cs").Should().Contain("RollLootPulls(table, ScanningTuning.CacheItemPulls, items);")
+            .And.NotContain("GetRandomItem().Resref");
+        ReadSource("Service", "SpaceSlicing.cs").Should().Contain("RollLootPulls(table, ScanningTuning.CacheItemPulls, items);")
+            .And.NotContain("GetRandomItem().Resref");
+        ReadSource("Service", "SpaceDerelicts.cs").Should().Contain("RollLootPulls(table, DerelictTuning.SalvageItemPulls, items);")
+            .And.NotContain("GetRandomItem().Resref");
+        ReadSource("Feature", "ShipModuleDefinition", "ShipSalvageActions.cs").Should().Contain("Space.RollLootPulls(rareTable, 1, yield);")
+            .And.Contain("GiveGoldToCreature(activator, rareCredits);");
     }
 
     [Test]

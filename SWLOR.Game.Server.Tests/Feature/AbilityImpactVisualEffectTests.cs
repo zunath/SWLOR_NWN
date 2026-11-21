@@ -275,12 +275,11 @@ public class AbilityImpactVisualEffectTests
         var shaking = table.Where(line => Regex.IsMatch(line, @"^\s*\d+\s"))
             .Select(line => Regex.Split(line.Trim(), @"\s+"))
             .Where(row => shakeColumns.Any(column => row.Length > column && row[column] != "****"))
-            .Select(row => row[1]);
+            .Select(row => $"{row[0]} {row[1]}");
 
         // Players asked for combat without camera shake. Quest masters keep one shaking row
         // to cue big moments with ##dm_visualeffect; no ability may use it.
-        shaking.Should().Equal(new[] { "VFX_FNF_DM_EARTHQUAKE" });
-        ((int)VisualEffect.Vfx_Fnf_Dm_Earthquake).Should().Be(1128);
+        shaking.Should().Equal($"{(int)VisualEffect.Vfx_Fnf_Dm_Earthquake} VFX_FNF_DM_EARTHQUAKE");
     }
 
     [Test]

@@ -793,7 +793,7 @@ public class CombatDamageTests
 
         var weaponAbilityBaseSource = WeaponAbilitySource.Read();
         weaponAbilityBaseSource.Should().Contain(
-            "GameServices.CombatAbilityBonus.StoreQueuedWeaponAbilityActivationIdleBonuses(activator, skillType);");
+            "CombatAbilityBonus.StoreQueuedWeaponAbilityActivationIdleBonuses(activator, skillType);");
         combatSource.Should().Contain("public static void StoreQueuedWeaponAbilityActivationIdleBonuses(");
         combatSource.Should().Contain("QueuedWeaponAbilityIdleDamageBonus");
         combatSource.Should().Contain("QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment");

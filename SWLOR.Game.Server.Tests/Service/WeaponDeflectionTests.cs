@@ -151,9 +151,9 @@ public class WeaponDeflectionTests
         combatSource.Should().Contain("fpRestore > 0 && fpRestoreSource == source");
         combatSource.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(activator, source)");
         abilitySource.Should().Contain(
-            "GameServices.CombatDamageTaken.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee)");
+            "CombatDamageTaken.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee)");
         abilitySource.Should().Contain(
-            "GameServices.CombatDamageTaken.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged)");
+            "CombatDamageTaken.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged)");
         forceSupportSource.Should().Contain("Stat.GetGrantedDeflectionStatType(sourceStatType)");
         sentinelGuardSource.Should().Contain("Stat.GetGrantedDeflectionStatType(");
         sentinelGuardSource.Should().Contain("StatGroup.Stats[_deflectionStatType]");

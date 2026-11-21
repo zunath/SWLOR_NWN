@@ -12,6 +12,13 @@ public static class WeaponAbilitySource
     public static readonly IReadOnlyList<string> PartFiles = new[]
     {
         "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponActiveAbilityDefinitionBase.cs",
+        "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbilityProfile.cs",
+        "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/StatusAbilityEffects.cs",
+        "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilityTemporaryModifiers.cs",
+        "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilityStatusRiders.cs",
+        "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilityDamageModifiers.cs",
+        "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilitySelfEffects.cs",
+        "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilityHitEffects.cs",
     };
 
     /// <summary>The types of the parts: a call through a field of one of these types was a call on the same instance before the move.</summary>

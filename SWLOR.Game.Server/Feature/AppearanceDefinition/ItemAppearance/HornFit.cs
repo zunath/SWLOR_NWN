@@ -24,6 +24,10 @@ public static class HornFit
     private const string AppliedYVariable = "HORN_FIT_Y";
     private const string AppliedRotateYVariable = "HORN_FIT_ROTATE_Y";
     private const string AppliedRotateZVariable = "HORN_FIT_ROTATE_Z";
+    private const string AppliedRotateXVariable = "HORN_FIT_ROTATE_X";
+
+    /// <summary>Places the Flanged Jessoon's shaft and mouthpiece where the kloo horn's are, with no body fit.</summary>
+    public static readonly HornFitOffset JessoonOnKlooHorn = new(-.035f, .065f, -.017f, 12.3f, -152.4f, 28.6f);
 
     private static readonly Dictionary<(string Resref, AppearanceType Appearance, Gender Gender), HornFitOffset> _playingFits =
         BuildPlayingFits();
@@ -90,23 +94,16 @@ public static class HornFit
                  })
             fits[(kloo, appearance, Gender.Female)] = femaleKloo;
 
-        // The Flanged Jessoon plays on the kloo horn's hold. Its mouthpiece sits 5.5 cm lower on the shaft and off to the
-        // side of the kloo horn's (measured from both models), so each body's kloo fit plus that difference reaches the mouth.
-        var jessoonMouthpiece = new HornFitOffset(-.096f, .055f, -.04f, 0f);
+        // The Flanged Jessoon plays on the kloo horn's hold, so each body's Jessoon goes where its kloo horn goes. Its crook bends
+        // the other way and its mouthpiece sits lower on the shaft (measured from both models), so it is turned half a turn
+        // about its shaft, laid along the kloo horn's shaft and slid 7 cm up through the hands.
         foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
         foreach (var gender in new[] { Gender.Male, Gender.Female })
-        {
-            var klooFit = fits.GetValueOrDefault((kloo, appearance, gender));
-            fits[(jessoon, appearance, gender)] = new HornFitOffset(
-                jessoonMouthpiece.TranslateX + klooFit.TranslateX,
-                jessoonMouthpiece.TranslateY + klooFit.TranslateY,
-                jessoonMouthpiece.TranslateZ + klooFit.TranslateZ,
-                jessoonMouthpiece.RotateY + klooFit.RotateY,
-                jessoonMouthpiece.RotateZ + klooFit.RotateZ);
-        }
+            fits[(jessoon, appearance, gender)] =
+                HornFitTransform.Compose(fits.GetValueOrDefault((kloo, appearance, gender)), JessoonOnKlooHorn);
 
-        // The kloo horn's Cathar male fit swings the longer Jessoon out past his hands; this lifts it to his lips instead.
-        fits[(jessoon, AppearanceType.Cathar, Gender.Male)] = new HornFitOffset(-.096f, .10f, -.11f, 0f);
+        // The kloo horn's Cathar male fit carries the horn clear of his hands; his hands already bring the Jessoon to his mouth.
+        fits[(jessoon, AppearanceType.Cathar, Gender.Male)] = JessoonOnKlooHorn;
 
         return fits;
     }
@@ -244,7 +241,7 @@ public static class HornFit
     {
         var saved = new HornFitOffset(GetLocalFloat(item, AppliedXVariable), GetLocalFloat(item, AppliedYVariable),
             GetLocalFloat(item, AppliedZVariable), GetLocalFloat(item, AppliedRotateYVariable),
-            GetLocalFloat(item, AppliedRotateZVariable));
+            GetLocalFloat(item, AppliedRotateZVariable), GetLocalFloat(item, AppliedRotateXVariable));
         if (saved == default && fit == default)
             return;
         // CopyItem copies locals but resets visual transforms; UUIDs survive ordinary reloads.
@@ -255,6 +252,7 @@ public static class HornFit
         ApplyChannel(item, ObjectVisualTransform.TranslateZ, previous.TranslateZ, fit.TranslateZ);
         ApplyChannel(item, ObjectVisualTransform.RotateY, previous.RotateY, fit.RotateY);
         ApplyChannel(item, ObjectVisualTransform.RotateZ, previous.RotateZ, fit.RotateZ);
+        ApplyChannel(item, ObjectVisualTransform.RotateX, previous.RotateX, fit.RotateX);
         // The fit and its owner persist on the item, so reloading cannot compound the fit.
         if (fit == default)
         {
@@ -263,6 +261,7 @@ public static class HornFit
             DeleteLocalFloat(item, AppliedZVariable);
             DeleteLocalFloat(item, AppliedRotateYVariable);
             DeleteLocalFloat(item, AppliedRotateZVariable);
+            DeleteLocalFloat(item, AppliedRotateXVariable);
             DeleteLocalString(item, FittedItemVariable);
         }
         else
@@ -272,6 +271,7 @@ public static class HornFit
             SetLocalFloat(item, AppliedZVariable, fit.TranslateZ);
             SetLocalFloat(item, AppliedRotateYVariable, fit.RotateY);
             SetLocalFloat(item, AppliedRotateZVariable, fit.RotateZ);
+            SetLocalFloat(item, AppliedRotateXVariable, fit.RotateX);
             SetLocalString(item, FittedItemVariable, identity);
         }
     }

@@ -19,6 +19,11 @@ public static class WeaponAbilitySource
         "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilityDamageModifiers.cs",
         "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilitySelfEffects.cs",
         "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilityHitEffects.cs",
+        "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilityHitRiders.cs",
+        "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilityImpactEffects.cs",
+        "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilityFriendlyTargets.cs",
+        "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilityActivations.cs",
+        "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilityImpacts.cs",
     };
 
     /// <summary>The types of the parts: a call through a field of one of these types was a call on the same instance before the move.</summary>

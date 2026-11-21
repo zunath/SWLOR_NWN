@@ -2807,32 +2807,32 @@
     "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                        ColorToken.Combat($\"{profile.CriticalRateIfIdleFeedbackLabel} +{profile.CriticalRateIfIdle}% Critical Rate\"),\n                        activator,\n                        false)"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbilityProfile.cs",
-    "Line": 370,
-    "Member": "ExtendSourceStatusEffects",
+    "File": "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilityFriendlyTargets.cs",
+    "Line": 100,
+    "Member": "ApplyFriendlyTargetStatus",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Extended {extendedCount} {statusLabel} by {SourceStatusExtensionSeconds}s\"),\n                    activator,\n                    false)"
+    "Call": "SendMessageToPC(activator, $\"Effect failed to apply: {canApply}\")"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbilityProfile.cs",
-    "Line": 399,
+    "File": "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilityHitRiders.cs",
+    "Line": 134,
+    "Member": "ExtendSourceStatusEffects",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Extended {extendedCount} {statusLabel} by {profile.SourceStatusExtensionSeconds}s\"),\n                    activator,\n                    false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilityHitRiders.cs",
+    "Line": 163,
     "Member": "ConsumeSourceStatusEffects",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"You consume your Venom and Infection setup.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbilityProfile.cs",
-    "Line": 482,
+    "File": "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/WeaponAbilityImpactEffects.cs",
+    "Line": 101,
     "Member": "AfterImpact",
     "Delivery": "Testing only",
-    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                        ColorToken.Combat($\"{RestoreStaminaIfAnyCriticalHitFeedbackLabel} restored {restored} STM\"),\n                        activator,\n                        false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbilityProfile.cs",
-    "Line": 621,
-    "Member": "ApplyFriendlyTargetStatus",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(activator, $\"Effect failed to apply: {canApply}\")"
+    "Call": "PlayerFeedback.ShowDiagnosticFloatingText(\n                        ColorToken.Combat($\"{profile.RestoreStaminaIfAnyCriticalHitFeedbackLabel} restored {restored} STM\"),\n                        activator,\n                        false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceOutfitService.cs",

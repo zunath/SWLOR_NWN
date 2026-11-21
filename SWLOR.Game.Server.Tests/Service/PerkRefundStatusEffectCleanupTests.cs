@@ -154,6 +154,7 @@ public class PerkRefundStatusEffectCleanupTests
             .EnumerateFiles(abilityRoot, "*.cs", SearchOption.AllDirectories)
             .Where(path => !path.EndsWith("ActiveAbilityDefinitionBase.cs", StringComparison.Ordinal))
             .Where(path => !path.EndsWith("StatusAbilityEffects.cs", StringComparison.Ordinal))
+            .Where(path => !path.EndsWith("WeaponAbilityActivations.cs", StringComparison.Ordinal))
             .Where(path =>
             {
                 var source = File.ReadAllText(path);

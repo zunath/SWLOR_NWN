@@ -4,22 +4,19 @@ namespace SWLOR.Game.Server.Composition
 {
     public static partial class GameServices
     {
-        /// <summary>What toggle, self status and party status abilities do when they run. Temporary: the weapon ability base and profile reach the part here until they are converted.</summary>
+        /// <summary>What toggle, self status and party status abilities do when they run. Temporary: the weapon ability base reaches the part here until it is converted.</summary>
         public static StatusAbilityEffects StatusAbilityEffects => FacadeAccessor.Resolve<StatusAbilityEffects>();
 
-        /// <summary>What a weapon ability profile adds to damage, critical rate and defense ignore. Temporary: the weapon ability base and profile reach the part here until they are converted.</summary>
-        public static WeaponAbilityDamageModifiers WeaponAbilityDamageModifiers => FacadeAccessor.Resolve<WeaponAbilityDamageModifiers>();
+        /// <summary>The activation step of a weapon ability. Temporary: the weapon ability base reaches the part here until it is converted.</summary>
+        public static WeaponAbilityActivations WeaponAbilityActivations => FacadeAccessor.Resolve<WeaponAbilityActivations>();
 
-        /// <summary>The resource and modifier effects of each landed hit of a weapon ability. Temporary: the weapon ability base and profile reach the part here until they are converted.</summary>
-        public static WeaponAbilityHitEffects WeaponAbilityHitEffects => FacadeAccessor.Resolve<WeaponAbilityHitEffects>();
+        /// <summary>Friendly and self-status weapon abilities and their target validation. Temporary: the weapon ability base reaches the part here until it is converted.</summary>
+        public static WeaponAbilityFriendlyTargets WeaponAbilityFriendlyTargets => FacadeAccessor.Resolve<WeaponAbilityFriendlyTargets>();
 
-        /// <summary>What a weapon ability gives its caster. Temporary: the weapon ability base and profile reach the part here until they are converted.</summary>
-        public static WeaponAbilitySelfEffects WeaponAbilitySelfEffects => FacadeAccessor.Resolve<WeaponAbilitySelfEffects>();
+        /// <summary>The hostile impact of a weapon ability. Temporary: the weapon ability base reaches the part here until it is converted.</summary>
+        public static WeaponAbilityImpacts WeaponAbilityImpacts => FacadeAccessor.Resolve<WeaponAbilityImpacts>();
 
-        /// <summary>The statuses a landed weapon ability hit adds to its target. Temporary: the weapon ability base and profile reach the part here until they are converted.</summary>
+        /// <summary>The statuses a landed weapon ability hit adds to its target. Temporary: the status spread snapshot, a data type the container does not build, reads the source statuses through the part until it is converted.</summary>
         public static WeaponAbilityStatusRiders WeaponAbilityStatusRiders => FacadeAccessor.Resolve<WeaponAbilityStatusRiders>();
-
-        /// <summary>The temporary stat modifiers a weapon ability profile writes. Temporary: the weapon ability base and profile reach the part here until they are converted.</summary>
-        public static WeaponAbilityTemporaryModifiers WeaponAbilityTemporaryModifiers => FacadeAccessor.Resolve<WeaponAbilityTemporaryModifiers>();
     }
 }

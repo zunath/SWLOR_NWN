@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow
 {
@@ -54,9 +55,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow
         int ForceAccuracy { get; set; }
         int Evasion { get; set; }
 
+        string Control { get; set; }
+        string Craftsmanship { get; set; }
+
         void ShowModal(string prompt, Action confirmAction);
         void LoadData();
         void RefreshHitPoints();
         void RefreshCharacterStatsList();
+        void RefreshStatsTable(IEnumerable<StatEntry> rows);
+        void RefreshResistancesTable(IEnumerable<ResistanceEntry> rows);
+        void RefreshCraftingTable(IEnumerable<CraftEntry> rows);
     }
 }

@@ -197,11 +197,11 @@ public class WeaponDeflectionTests
     public void CharacterSheetAndGuide_ExplainSplitScopeAndReplacementRule()
     {
         var sheet = ReadSource(
-            "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs");
+            "SWLOR.Game.Server", "Feature", "GuiDefinition", "CharacterSheetWindow", "CharacterSheetSurvivalRows.cs");
         var guide = PlayerGuideSource.Read();
 
-        sheet.Should().Contain("AddStat(\"Melee Deflection\"");
-        sheet.Should().Contain("AddStat(\"Ranged Deflection\"");
+        sheet.Should().Contain("addStat(\"Melee Deflection\"");
+        sheet.Should().Contain("addStat(\"Ranged Deflection\"");
         sheet.Should().Contain("Shield Deflection replaces weapon deflection");
         guide.Should().Contain("Deflection does not work against activated combat abilities or Force powers");
         guide.Should().Contain("Each incoming weapon auto-attack gets its own deflection attempt");

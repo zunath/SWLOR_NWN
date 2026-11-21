@@ -30,12 +30,14 @@ SWLOR.Game.Server/Domain/Combat/CombatAbilityHitService.cs -> Feature/StatusEffe
 SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs -> Feature/AbilityDefinition | 2
 SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs -> Feature/StatusEffectDefinition | 28
 SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs -> Feature/StatusEffectDefinition | 2
-SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs -> Feature/StatusEffectDefinition | 14
+SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs -> Feature/StatusEffectDefinition | 9
 SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Feature/StatusEffectDefinition | 5
 SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs -> Feature/StatusEffectDefinition | 17
+SWLOR.Game.Server/Domain/Combat/CombatRateModifiersService.cs -> Feature/StatusEffectDefinition | 2
 SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Combat/CombatRepeatedTargetService.cs -> Feature/StatusEffectDefinition | 3
 SWLOR.Game.Server/Domain/Combat/CombatResourcesService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Combat/CombatRules.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Combat/CombatService.cs -> Feature/StatusEffectDefinition | 3

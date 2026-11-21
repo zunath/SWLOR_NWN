@@ -352,7 +352,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "the idle qualification must be captured before the delayed impact begins");
         weaponBaseSource.Should().Contain("GetWeaponAbilityActivationIdleCriticalRateBonus(activator)");
         weaponBaseSource.Should().Contain("GetWeaponAbilityActivationIdleDefenseIgnorePercent(activator)");
-        weaponBaseSource.Should().Contain("GameServices.CombatAbilityBonus.ClearWeaponAbilityActivationIdleBonuses(activator);");
+        weaponBaseSource.Should().Contain("CombatAbilityBonus.ClearWeaponAbilityActivationIdleBonuses(activator);");
         var snapshotSource = CombatSource.Read();
         snapshotSource.Should().Contain("isIdle ? criticalRatePercentAdjustment : 0");
         snapshotSource.Should().Contain("isIdle ? defenseIgnorePercent : 0");
@@ -993,7 +993,7 @@ public class GeneratedWeaponPerkBehaviorTests
 
         pathogenSource.Should().Contain("SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) }");
         pathogenSource.Should().NotContain("ConsumeSourceStatusEffectsOnHit = true");
-        generatedAbilitySource.Should().Contain("StatusEffectDuration.ExtendStatusEffectDuration(\n                        target,\n                        statusEffectType,\n                        activator,");
+        generatedAbilitySource.Should().Contain("StatusEffectDuration.ExtendStatusEffectDuration(\n                    target,\n                    statusEffectType,\n                    activator,");
     }
 
     [Test]

@@ -210,3 +210,45 @@ After PR 3, a master edit to those ranges is ported by hand to the owning part. 
 - **Coverage left by the PR 1 fixture** (1,387 of 1,390 lines and 1,416 of 1,436 branches reached) : `Base.cs:1432` and `:1497` are guards that cannot be reached (`ApplyFriendlyTargetStatus` and `ApplySelfStatusEffect` run only after `HasFriendlyTargetStatus` and `HasImmediateSelfStatusEffect` have proved the factory is not null),
   `:2030` is the same kind (`ObjectSnapshot.InShape` returns only valid objects); `:318, :320, :415, :417` are the `?.` on an idle snapshot the closures always pass (only direct callers pass none); `:1354` is a duration that is never zero (its callers pass 30 at least); `:1873` and `:930` keep one outcome no shipped or probed profile reaches
   (a drawn shape the ability never uses; a duration with every amount zero). The map's gate for the parts is that the same fixture, run on the new parts, shows the moved ranges at least this covered.
+
+## 12. PR 2 as built
+
+Built from `43ef913f1`. The status ability effects and layers 0 and 1 are in `Feature/AbilityDefinition/WeaponAbility/`. Each part is a content singleton: it was written as a `static class` that reaches services through `GameServices`, and
+`Apply-ContentInjection.ps1` made it an instance class with constructor injection (`-Check` is clean, 0 refusals, 32 singletons). The base reaches an entry part through a temporary property of the same name in `Composition/GameServices.WeaponAbility.cs`.
+
+| Part | Lines (file) | Constructor services | What it holds |
+|---|---|---|---|
+| `StatusAbilityEffects` | 93 | 6: `Ability`, `CombatRecorder`, `Party`, `S`, `A`, `C` | `ToggleSelfStatus`, `ApplyToggleStatus`, `ApplySelfStatus`, `ApplyStatusToNearbyParty` (`Func` and `Type` overloads) |
+| `WeaponAbilityTemporaryModifiers` | 183 | 1: `TemporaryStatModifier` | `ReplaceTemporary`, `ReplaceTemporaryTarget`, `ReplaceTemporaryPayload`, `ApplyTemporaryDefeatedEnemyModifiers` |
+| `WeaponAbilityStatusRiders` | 227 | 7: `CombatActivity`, `CombatDefenseMemory`, `CombatQueries`, `CombatSuppression`, `S`, `A`, `C` | `GetAppliedCategories`, `ApplyConditionalStatus`, `ApplyTargetConditionalStatus`, `ApplyStatusSpread`, `SpreadStatusToNearbyHostile`, `ApplySuppressionEffects`, `IsBleeding`, `ReadSpreadSource` |
+| `WeaponAbilityDamageModifiers` | 331 | 9: 8 services (`CombatAbilityBonus`, `CombatActivity`, `CombatDefenseMemory`, `CombatQueries`, `CombatResources`, `PlayerFeedback`, `Stat`, `S`) and `WeaponAbilityStatusRiders` | the damage, percent, critical rate and defense ignore adjustments, `ResolveImpactStatus`, the idle snapshots and activation preparation |
+| `WeaponAbilitySelfEffects` | 171 | 10: 8 services (`AbilityImmunity`, `CombatAbilityActivation`, `CombatDamageTaken`, `CombatRecorder`, `CombatResources`, `Enmity`, `A`, `TemporaryStatModifier`) and the parts `StatusAbilityEffects` and `WeaponAbilityTemporaryModifiers` | `SpendHitPoints`, `AfterActivation`, `AfterHostileActivation`, `ApplyLandedImpactModifiers` and the private self effects |
+| `WeaponAbilityHitEffects` | 113 | 5: `CombatActivity`, `CombatResources`, `Stat`, `A` and `WeaponAbilityTemporaryModifiers` | the resource restore and drain, the target modifiers and the protected-target self modifiers |
+
+Base after: `WeaponActiveAbilityDefinitionBase.cs` is 500 lines (2,041 before) with 27 static lookup lines (169 before) and no longer appears in `ServicesPerType.txt` (24 before) or `LargeTypes.txt`.
+`WeaponAbilityProfile.cs` is 758 lines and appears in `ServicesPerType.txt` with 15 services (all lookups) and 70 lookup lines; it still holds the bodies PR 3 moves (`HitRiders`, `ImpactEffects`, `FriendlyTargets`, `Impacts` and the activation closure).
+Baselines regenerated: `StaticLookups`, `ServicesPerType`, `LargeTypes`, `StaticState` (re-keyed to `WeaponAbilityProfile`), `DebtReport.md`, `PlayerMessageAudit.json` (39 rows re-keyed). No edge key was added or removed, so `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` are unchanged.
+
+Departures from the map:
+
+- **The profile became a top-level type in this PR, not PR 3.** A part takes the profile as its first parameter, and a `protected` nested type cannot be named in the public signature of a part, so `WeaponAbilityProfile` moved to `Feature/AbilityDefinition/WeaponAbilityProfile.cs` (public, same namespace, so the derived files need no `using`).
+  Its two snapshot types stay nested; `ModifierSource` is an `internal` get-only property, so it is not one of the public settings the fixtures read. The base is therefore 500 lines now, not about 1,400, and PR 3 starts from a profile that is already its own file.
+- **Registration needed no seed line.** The parts are static classes at the start, so the tool treats them as singleton candidates (section 5's question 2 did not arise); `Composition/ContentRegistrations.cs` gained six lines.
+- **Delegates.** The 12 public profile methods the closures and tests call stay as one-line delegates to the parts (`GameServices.WeaponAbility...`). The private methods that moved have no delegate: the profile code that still calls them (`AfterSuccessfulHit`, `AfterImpact`, `BeforeSuccessfulImpactRiders`,
+  `ApplyTargetUsingAbilityEffects`) calls the part directly with `this`. `StatusSpreadSnapshot.Capture` reads the two statuses through `WeaponAbilityStatusRiders.ReadSpreadSource` and keeps its cache.
+- **`DamageModifiers` calls `StatusRiders`** (`IsBleeding`, public on `StatusRiders`) so the one-line predicate has one home; this adds one part dependency (9 services) and keeps the layer order (1 calls 0).
+- **`HitEffects` has no `IContentFactory`.** `ChallengeEnmityStatusEffect` is not content that takes services, so `new ChallengeEnmityStatusEffect(...)` stays; the part takes 5 (4 services and `TemporaryModifiers`), not the 6 of the map.
+- **`SelfEffects` is at the limit of 10** (8 services and 2 parts: it calls `StatusAbilityEffects.ApplyStatusToNearbyParty` and `TemporaryModifiers`); `StatusAbilityEffects` gained the `Type` overload `ApplyNearbyPartyStatus` needs.
+- The base's closures of `ConfigureToggle`, `ConfigureSelfStatus` and `ConfigurePartyStatus` are one call each into `StatusAbilityEffects`; the protected statics `ToggleSelfStatus` and `ApplyStatusToNearbyParty` keep their signatures and forward to it.
+
+Tests: `WeaponAbilityProfileReader` finds the profile type as `typeof(WeaponAbilityProfile)`; `WeaponAbilitySource` lists the new files; `GeneratedWeaponPerkBehaviorTests`, `CombatDamageTests` and `WeaponDeflectionTests` read the injected service text (`CombatAbilityBonus.X(...)` for `GameServices.CombatAbilityBonus.X(...)`) and one
+indentation changed with the profile's move out of the base class; `PerkRefundStatusEffectCleanupTests` skips `StatusAbilityEffects.cs` like the base; `WeaponAbilityPartTests` fails a part over 10 constructor services or a part cycle. The settings and call-trace fixtures are unchanged.
+
+### PR 2 proof beyond the fixtures
+
+- **Moved bodies verbatim (section 8, item 5).** A token-aware comparison of the 75 methods that existed in `Base.cs` at `43ef913f1` (57 in the profile class, 18 in the base) with their text now: 72 are token-identical once `static` and the access modifiers, the
+  `GameServices.` and part-name receivers, the `profile.` or `this` receiver (and the `profile` parameter and first argument) and the `WeaponAbilityProfile.` nested-type prefix are removed. The three that differ moved on purpose: the snapshot's `Capture` reads
+  the two statuses through `WeaponAbilityStatusRiders.ReadSpreadSource`, and the toggle and self-status closure bodies of `ConfigureToggle` and `ConfigureSelfStatus` became calls into `StatusAbilityEffects`, whose bodies hold the same lines. The diff of `Module/`, `SWLOR_Haks/` and every derived definition against `43ef913f1` is empty.
+- **Part tests (item 8).** One class per part with recording stand-ins for the services (`WeaponAbilityPartBench`): idle windows and the activation snapshot, recent-target windows, guarded-hit status, low hit points and bleeding bonuses, critical rate, the conditional and spread riders (the snapshot reads once), suppression, the resource restore and drain, target modifiers, the hit point spend,
+  haste and immunities, the toggle, self status and party status. The spread cap itself and the ward and guarded-ally checks need creature state the fakes cannot give; `WeaponStatusSpreadTests` covers the cap and the call-trace fixture drives the guarded and ward paths.
+- **Engine tests (item 7).** `PerkTracker`, `StaminaRecovery`, the Force, General, Mimicry utility, Mimicry technique and Twin Blade ability behavior sweeps and every `Characterization` scenario (79 tests) run in the engine container at `43ef913f1` and at the branch head: 79 of 79 pass in both with identical per-test results, and the Characterization snapshots (Ability/* and the weapon proc and attack scenarios) matched with no snapshot change.

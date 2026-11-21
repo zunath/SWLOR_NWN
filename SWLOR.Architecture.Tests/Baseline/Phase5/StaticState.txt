@@ -33,7 +33,7 @@ SWLOR.Game.Server.Domain.Foundation.ActiveAbilityAnimationCatalog | 1
 SWLOR.Game.Server.Domain.Foundation.ColorToken | 1
 SWLOR.Game.Server.Domain.Gameplay.ServerRestart | 1
 SWLOR.Game.Server.Feature.AbilityDefinition.NPC.InnateAbilityProfile | 8
-SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase | 1
+SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbilityProfile | 1
 SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.ArmorAppearanceCatalog | 2
 SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.ArmorPartAppearance | 1
 SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit | 1

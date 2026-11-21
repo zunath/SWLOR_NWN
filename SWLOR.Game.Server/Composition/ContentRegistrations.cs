@@ -44,6 +44,12 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow.PerkListBuilder>();
             services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow.PerkPurchaseService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.PlaceableScripts>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility.StatusAbilityEffects>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility.WeaponAbilityDamageModifiers>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility.WeaponAbilityHitEffects>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility.WeaponAbilitySelfEffects>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility.WeaponAbilityStatusRiders>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility.WeaponAbilityTemporaryModifiers>();
         }
 
         internal static IEnumerable<ContentSignature> Signatures()

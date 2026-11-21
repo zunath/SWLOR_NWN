@@ -5,14 +5,13 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// Finds the <c>WeaponAbilityProfile</c> an ability was configured with and reads it by reflection. The profile is a nested type of the
-/// base that definitions cannot name from outside, so it is found where the closures capture it, as the CombatSim reader does.
+/// Finds the <c>WeaponAbilityProfile</c> an ability was configured with and reads it by reflection. The profile is found where the closures
+/// capture it, as the CombatSim reader does.
 /// </summary>
 public static class WeaponAbilityProfileReader
 {
     /// <summary>The profile type.</summary>
-    public static readonly Type ProfileType =
-        typeof(WeaponActiveAbilityDefinitionBase).GetNestedType("WeaponAbilityProfile", BindingFlags.NonPublic | BindingFlags.Public)!;
+    public static readonly Type ProfileType = typeof(WeaponAbilityProfile);
 
     /// <summary>The shared default profile.</summary>
     public static object Default => ProfileType.GetField("Empty", BindingFlags.Public | BindingFlags.Static)!.GetValue(null)!;

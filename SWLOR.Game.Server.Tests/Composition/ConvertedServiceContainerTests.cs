@@ -124,6 +124,13 @@ public class ConvertedServiceContainerTests
             .Append("IAbilityImpactState AbilityImpactState")
             // The party roster reads Combat owns (P5-3c): an interface of the roster, reached by the ability target queries in Combat.
             .Append("IPartyRoster PartyRoster")
+            // The weapon ability parts (Readmes/MaintainabilityRefactorWeaponAbilitySplit.md): content singletons the unconverted ability base and profile reach, removed with the rest at wave C11.
+            .Append("StatusAbilityEffects StatusAbilityEffects")
+            .Append("WeaponAbilityDamageModifiers WeaponAbilityDamageModifiers")
+            .Append("WeaponAbilityHitEffects WeaponAbilityHitEffects")
+            .Append("WeaponAbilitySelfEffects WeaponAbilitySelfEffects")
+            .Append("WeaponAbilityStatusRiders WeaponAbilityStatusRiders")
+            .Append("WeaponAbilityTemporaryModifiers WeaponAbilityTemporaryModifiers")
             .OrderBy(text => text, StringComparer.Ordinal);
 
         typeof(GameServices).GetProperties(Declared).Select(property => $"{property.PropertyType.Name} {property.Name}")

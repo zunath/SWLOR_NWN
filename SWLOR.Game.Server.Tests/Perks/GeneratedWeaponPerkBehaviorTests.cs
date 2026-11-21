@@ -341,10 +341,12 @@ public class GeneratedWeaponPerkBehaviorTests
         oneShotSource.Should().Contain("DefenseIgnoreIfIdle = 25");
 
         var weaponBaseSource = WeaponAbilitySource.Read();
-        var activationIndex = weaponBaseSource.IndexOf(
-            "profile.PrepareActivationIdleBonuses(activator);",
+        weaponBaseSource.Should().Contain("WeaponAbilityDamageModifiers.PrepareActivationIdleBonuses(profile, activator);");
+        var definitionSource = File.ReadAllText(WeaponAbilitySource.Paths()[0]);
+        var activationIndex = definitionSource.IndexOf(
+            ".HasActivationAction((activator, target, level, targetLocation) =>",
             StringComparison.Ordinal);
-        var impactIndex = weaponBaseSource.IndexOf(
+        var impactIndex = definitionSource.IndexOf(
             ".HasImpactAction((activator, target, level, targetLocation) =>",
             StringComparison.Ordinal);
         activationIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -436,10 +438,10 @@ public class GeneratedWeaponPerkBehaviorTests
         var root = FindRepositoryRoot();
         var source = WeaponAbilitySource.Read();
         var snapshotIndex = source.IndexOf(
-            "GameServices.CombatAbilityBonus.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(activator, skill);",
+            "CombatAbilityBonus.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(activator, skill);",
             StringComparison.Ordinal);
         snapshotIndex.Should().BeGreaterThanOrEqualTo(0);
-        source.Should().NotContain("GameServices.CombatActivity.TrackHostileAbilityActivity(activator, true);",
+        source.Should().NotContain("TrackHostileAbilityActivity(activator, true);",
             "queued ability use is recorded only after the queue succeeds");
         var combatSource = CombatSource.Read();
         var openingSnapshotIndex = combatSource.IndexOf(
@@ -467,7 +469,7 @@ public class GeneratedWeaponPerkBehaviorTests
         var root = FindRepositoryRoot();
         var source = WeaponAbilitySource.Read();
         source.Should().Contain("if (isHostile && !profile.IsQueuedWeaponAbility)");
-        source.Should().Contain("GameServices.CombatActivity.StoreAbilityActivationIdleBonuses(activator, skill);");
+        source.Should().Contain("CombatActivity.StoreAbilityActivationIdleBonuses(activator, skill);");
 
         var combatSource = CombatSource.Read();
         combatSource.Should().Contain("CalculateIdleSkillAbilityBonuses(activator, skillType)");
@@ -1816,11 +1818,11 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var weaponBaseSource = WeaponAbilitySource.Read();
         weaponBaseSource.Should().Contain("UsePerkFeat.InterruptAbilityActivationFromHit(target)");
-        weaponBaseSource.Should().Contain("Extended {extendedCount} {statusLabel} by {SourceStatusExtensionSeconds}s");
-        weaponBaseSource.Should().Contain("public bool HasImmediateSelfStatusEffect()");
-        weaponBaseSource.Should().Contain("SelfStatusEffectFactory != null && SelfStatDurationSeconds <= 0",
+        weaponBaseSource.Should().Contain("Extended {extendedCount} {statusLabel} by {profile.SourceStatusExtensionSeconds}s");
+        weaponBaseSource.Should().Contain("public static bool HasImmediateSelfStatusEffect(WeaponAbilityProfile profile)");
+        weaponBaseSource.Should().Contain("profile.SelfStatusEffectFactory != null && profile.SelfStatDurationSeconds <= 0",
             "resource-gated status factories must be applied by ApplySelfModifiers after the gate, not as permanent immediate statuses");
-        weaponBaseSource.Should().Contain("if (profile.HasImmediateSelfStatusEffect())");
+        weaponBaseSource.Should().Contain("if (HasImmediateSelfStatusEffect(profile))");
     }
 
     [Test]
@@ -1829,17 +1831,17 @@ public class GeneratedWeaponPerkBehaviorTests
         var root = FindRepositoryRoot();
         var source = WeaponAbilitySource.Read();
 
-        source.Should().Contain("public string ValidateFriendlyTargetStatus(uint activator, uint target)");
-        source.Should().Contain("target = ResolveFriendlyTarget(activator, target);");
-        source.Should().Contain("public uint ResolveFriendlyTarget(uint activator, uint target)");
+        source.Should().Contain("public string ValidateFriendlyTargetStatus(WeaponAbilityProfile profile, uint activator, uint target)");
+        source.Should().Contain("target = ResolveFriendlyTarget(profile, activator, target);");
+        source.Should().Contain("public static uint ResolveFriendlyTarget(WeaponAbilityProfile profile, uint activator, uint target)");
         source.Should().Contain("You do not have an active Guarded target within range.");
         source.Should().Contain("return GuardedStatusEffect.GetActiveGuardedTarget(activator);");
         source.Should().Contain("AbilityTargeting.ValidateFriendlyTarget(activator, target, false)");
         source.Should().Contain("GuardedStatusEffect.IsActiveGuardedBySource(target, activator)");
-        source.Should().Contain("ApplyFriendlyTargetEffects(activator, target, temporaryHPEffectKey)");
+        source.Should().Contain("ApplyFriendlyTargetEffects(profile, activator, target, temporaryHPEffectKey)");
         source.Should().Contain("statusEffect.ReassignSource(activator)");
         source.Should().Contain("if (!profile.RequiresGuardedTarget)");
-        source.Should().Contain("return profile.ValidateFriendlyTargetStatus(activator, target)");
+        source.Should().Contain("return GameServices.WeaponAbilityFriendlyTargets.ValidateFriendlyTargetStatus(profile, activator, target)");
         source.Should().NotContain("profileFactory");
 
         var canApplyIndex = source.IndexOf("var canApply = statusEffect.CanApply(target)", StringComparison.Ordinal);

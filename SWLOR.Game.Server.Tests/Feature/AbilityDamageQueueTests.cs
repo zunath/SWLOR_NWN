@@ -419,9 +419,9 @@ public class AbilityDamageQueueTests
             weaponAbilitySource.IndexOf("var totalDamage = 0;", StringComparison.Ordinal) -
             weaponAbilitySource.IndexOf("if (isArea && ShouldUseTelegraphedCombatImpact", StringComparison.Ordinal));
 
-        telegraphedAreaBranch.Should().Contain("profile.GetBaseDamageAdjustment(\n                                    activator,\n                                    impactedTarget,\n                                    activationIdleBonusSnapshot)",
+        telegraphedAreaBranch.Should().Contain("WeaponAbilityDamageModifiers.GetBaseDamageAdjustment(profile,\n                            activator,\n                            impactedTarget,\n                            activationIdleBonusSnapshot)",
             "delayed damage must read the activation's immutable snapshot rather than shared creature state");
-        telegraphedAreaBranch.Should().Contain("finally\n                        {\n                            profile.ClearActivationIdleBonusSnapshots(activator);\n                        }",
+        telegraphedAreaBranch.Should().Contain("finally\n                {\n                    WeaponAbilityDamageModifiers.ClearActivationIdleBonusSnapshots(activator);\n                }",
             "shared snapshots must be cleared even if telegraph creation fails");
         telegraphedAreaBranch.Should().Contain("clearActivationIdleBonusSnapshots: false",
             "the post-impact hook must not repeat the cleanup performed by the guarded scheduling block");
@@ -429,12 +429,12 @@ public class AbilityDamageQueueTests
             "an older telegraph completion must never clear a newer activation's shared snapshots");
 
         var hostileImpactSetup = weaponAbilitySource.Substring(
-            weaponAbilitySource.IndexOf("profile.SpendHitPoints(activator);", StringComparison.Ordinal),
+            weaponAbilitySource.IndexOf("WeaponAbilitySelfEffects.SpendHitPoints(profile, activator);", StringComparison.Ordinal),
             weaponAbilitySource.IndexOf("if (isArea && ShouldUseTelegraphedCombatImpact", StringComparison.Ordinal) -
-            weaponAbilitySource.IndexOf("profile.SpendHitPoints(activator);", StringComparison.Ordinal));
-        hostileImpactSetup.Should().Contain("var activationIdleBonusSnapshot = profile.CaptureActivationIdleBonusSnapshot(activator);");
+            weaponAbilitySource.IndexOf("WeaponAbilitySelfEffects.SpendHitPoints(profile, activator);", StringComparison.Ordinal));
+        hostileImpactSetup.Should().Contain("var activationIdleBonusSnapshot = WeaponAbilityDamageModifiers.CaptureActivationIdleBonusSnapshot(activator);");
         hostileImpactSetup.Should().Contain("AbilityImpactState.AddActiveAbilityDefenseIgnorePercentAdjustment(");
-        hostileImpactSetup.Should().Contain("profile.GetDefenseIgnorePercent(activator, activationIdleBonusSnapshot)",
+        hostileImpactSetup.Should().Contain("WeaponAbilityDamageModifiers.GetDefenseIgnorePercent(profile, activator, activationIdleBonusSnapshot)",
             "the activation's defense-ignore snapshot must join the current tracked impact before instant or delayed damage resolves");
         weaponAbilitySource.Should().NotContain("GameServices.CombatAttackTiming.GrantNextSkillAbilityBonuses(activator, skillType, 0, 0, 1, defenseIgnore)",
             "granting a next-ability rider after BeginAbilityImpact would leak defense ignore to a later ability");

@@ -7,10 +7,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,100 | 13,123 uses | none: GameServices and FacadeAccessor deleted |
+| 1. Static service lookup | `StaticLookups.txt` | 1,100 | 13,041 uses | none: GameServices and FacadeAccessor deleted |
 | 2. Large types | `LargeTypes.txt` | 20 | 30,237 lines | none over 1,000 lines |
-| 3. Long methods | `LongMethods.txt` | 9 | 2,710 lines | none over 150 lines (400 for layout) |
-| 4. Services per type | `ServicesPerType.txt` | 16 | 247 services | none over 10 services |
+| 3. Long methods | `LongMethods.txt` | 8 | 2,419 lines | none over 150 lines (400 for layout) |
+| 4. Services per type | `ServicesPerType.txt` | 15 | 232 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 33 | 43 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 104 | 226 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 30 | 103 edges | none |
@@ -20,8 +20,8 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 ## 1. Static service lookup
 
-- 1,100 files, 13,123 uses: 833 using directives and 12,290 uses in code (7,508 in a static context).
-- SWLOR.Game.Server: 648 file(s), 5,533 use(s) (Feature/ 538, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
+- 1,100 files, 13,041 uses: 833 using directives and 12,208 uses in code (7,494 in a static context).
+- SWLOR.Game.Server: 648 file(s), 5,451 use(s) (Feature/ 538, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 243 file(s), 5,389 use(s).
 - SWLOR.Game.Server.Tests: 180 file(s), 2,043 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
@@ -33,7 +33,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - SWLOR.CLI: 1 file(s), 5 use(s).
 - SWLOR.CombatSim: 1 file(s), 2 use(s).
 - SWLOR.Toolset.Tests: 1 file(s), 2 use(s).
-- Content (Feature/) uses in code: 4,244 (1,635 in a static context).
+- Content (Feature/) uses in code: 4,162 (1,621 in a static context).
 - Content (Feature/) types that use it: 536. Static classes: 75. Instance classes that use it from a static member: 199 (157 only from static members).
 
 Largest 15 of 1,100 (all in `StaticLookups.txt`):
@@ -84,17 +84,16 @@ Largest 15 of 20 (all in `LargeTypes.txt`):
 
 ## 3. Long methods
 
-- 8 methods over 150 lines and 1 GUI layout methods over 400.
+- 7 methods over 150 lines and 1 GUI layout methods over 400.
 - Exempt and over the limit: 84 (content data 78, data catalog member 6).
 
-Largest 9 of 9 (all in `LongMethods.txt`):
+Largest 8 of 8 (all in `LongMethods.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel.LoadShip` | 532 | ShipManagementViewModel.cs |
 | `SWLOR.Game.Server.Feature.UsePerkFeat.ActivateAbility` | 432 | UsePerkFeat.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ShipManagementDefinition.BuildWindow` | 414 | layout, ShipManagementDefinition.cs |
-| `SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase.ConfigureWeaponAbility` | 291 | WeaponActiveAbilityDefinitionBase.cs |
 | `SWLOR.Game.Server.Domain.Companions.DroidService.SpawnDroid` | 272 | DroidService.cs |
 | `SWLOR.Game.Server.Domain.Character.SkillService.GiveSkillXP` | 239 | SkillService.cs |
 | `SWLOR.Game.Server.Domain.Items.ItemService.UseItem` | 189 | ItemService.cs |
@@ -103,10 +102,10 @@ Largest 9 of 9 (all in `LongMethods.txt`):
 
 ## 4. Services per type
 
-- 16 types use more than 10 services: 13 through the constructor only, 3 through the lookup only, 0 through both.
+- 15 types use more than 10 services: 13 through the constructor only, 2 through the lookup only, 0 through both.
 - Exempt and over the limit: 0 (none).
 
-Largest 15 of 16 (all in `ServicesPerType.txt`):
+Largest 15 of 15 (all in `ServicesPerType.txt`):
 
 | Entry | Services | Detail |
 |---|---:|---|
@@ -116,7 +115,6 @@ Largest 15 of 16 (all in `ServicesPerType.txt`):
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 18 | constructor 18, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 16 | constructor 16, lookup 0 |
 | `SWLOR.Game.Server.Domain.Creatures.AIService` | 15 | constructor 15, lookup 0 |
-| `SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbilityProfile` | 15 | constructor 0, lookup 15 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Companions.BeastMasteryService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Companions.DroidService` | 14 | constructor 14, lookup 0 |
@@ -125,6 +123,7 @@ Largest 15 of 16 (all in `ServicesPerType.txt`):
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 12 | constructor 12, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.AbilityDamageInputService` | 11 | constructor 11, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 11 | constructor 11, lookup 0 |
+| `SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade.HeavyVibrobladeActiveAbilityDefinitionBase` | 11 | constructor 0, lookup 11 |
 
 ## 5. Deferred resolution
 

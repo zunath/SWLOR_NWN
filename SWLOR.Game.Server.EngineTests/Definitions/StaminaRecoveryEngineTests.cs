@@ -163,7 +163,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
                 try
                 {
                     var before = Stat.GetCurrentStamina(player);
-                    profile.AfterImpact(player, 0, 0, summary);
+                    WeaponAbilityParts.Get<SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility.WeaponAbilityImpactEffects>().AfterImpact(profile, player, 0, 0, summary);
                     ctx.AssertEqual(before + System.Math.Min(4, System.Math.Max(0, cost - 1)), Stat.GetCurrentStamina(player), "a landed critical refunds once even when damage is fully resisted");
                     GameServices.CombatResources.RestoreAbilityHitStamina(player, ability, 100);
                     ctx.AssertEqual(cost > 0 ? 24 : 25, Stat.GetCurrentStamina(player), "combined authored and perk refunds leave at least one stamina spent");

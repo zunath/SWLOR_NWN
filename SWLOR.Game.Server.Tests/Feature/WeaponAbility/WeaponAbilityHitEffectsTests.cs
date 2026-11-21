@@ -1,9 +1,11 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Tests.Support.CombatTranscriptBench;
 
@@ -91,6 +93,52 @@ public class WeaponAbilityHitEffectsTests
         var profile = new WeaponAbilityProfile { DrainTargetFPIfActivatorFPAboveThreshold = 6 };
 
         _bench.Run(() => _part.ApplyResourceConditionalDrain(profile, Attacker, Defender)).Should().NotContain("ReduceFP");
+    }
+
+    private static WeaponAbilityProfile Interrupting() => new()
+    {
+        TargetUsingAbilityDrainStamina = 4,
+        TargetUsingAbilityDrainFP = 5,
+        TargetUsingAbilityStatusEffect = typeof(DisorientedStatusEffect),
+        TargetUsingAbilityStatusDurationSeconds = 6
+    };
+
+    [Test]
+    public void ATargetThatIsNotUsingAnAbilityIsLeftAlone()
+    {
+        StatusEffectCategory? categories = new DisorientedStatusEffect().Categories;
+
+        var text = _bench.Run(() => categories = _part.ApplyTargetUsingAbilityEffects(Interrupting(), Attacker, Defender, CombatDamageType.Physical));
+
+        categories.Should().BeNull();
+        text.Should().NotContain("ReduceStamina").And.NotContain("ReduceFP").And.NotContain("ApplyStatusEffect");
+    }
+
+    [Test]
+    public void ATargetUsingAnAbilityLosesResourcesAndGetsTheStatusWhoseCategoriesAreReturned()
+    {
+        _bench.Leaf<ICombatActivityService>().Script(nameof(ICombatActivityService.IsUsingAbility), _ => true);
+        _bench.Leaf<IStatusEffectApplicationService>().Script(nameof(IStatusEffectApplicationService.ApplyStatusEffect), _ => true);
+        StatusEffectCategory? categories = null;
+
+        var text = _bench.Run(() => categories = _part.ApplyTargetUsingAbilityEffects(Interrupting(), Attacker, Defender, CombatDamageType.Physical));
+
+        categories.Should().Be(new DisorientedStatusEffect().Categories);
+        text.Should().Contain("ReduceStamina(Defender, 4").And.Contain("ReduceFP(Defender, 5")
+            .And.Contain("ApplyStatusEffect(Attacker, Defender, DisorientedStatusEffect, 6");
+    }
+
+    [Test]
+    public void ATargetUsingAnAbilityStillLosesResourcesWhenThereIsNoStatusToApply()
+    {
+        _bench.Leaf<ICombatActivityService>().Script(nameof(ICombatActivityService.IsUsingAbility), _ => true);
+        var profile = new WeaponAbilityProfile { TargetUsingAbilityDrainStamina = 4 };
+        StatusEffectCategory? categories = new DisorientedStatusEffect().Categories;
+
+        var text = _bench.Run(() => categories = _part.ApplyTargetUsingAbilityEffects(profile, Attacker, Defender, CombatDamageType.Physical));
+
+        categories.Should().BeNull();
+        text.Should().Contain("ReduceStamina(Defender, 4").And.NotContain("ReduceFP").And.NotContain("ApplyStatusEffect");
     }
 
     [Test]

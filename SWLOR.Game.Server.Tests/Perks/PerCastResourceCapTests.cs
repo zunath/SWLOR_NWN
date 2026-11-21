@@ -109,7 +109,7 @@ public class PerCastResourceCapTests
     {
         // The restore is keyed off landing the cone, so a target that resists the hit down to
         // zero must still pay out. AfterImpact returns early once damage is zero.
-        var source = ReadSource("Feature", "AbilityDefinition", "WeaponActiveAbilityDefinitionBase.cs");
+        var source = WeaponAbilitySource.Read();
         var restore = source.IndexOf("if (RestoreFPAfterRangedDeflection > 0 &&", StringComparison.Ordinal);
         var damageOnlyReturn = source.IndexOf("if (totalDamage <= 0)", StringComparison.Ordinal);
 

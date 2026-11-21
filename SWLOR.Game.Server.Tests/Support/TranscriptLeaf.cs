@@ -25,6 +25,13 @@ public class TranscriptLeaf : DispatchProxy
     /// <summary>Writes an argument as text; set by the bench so creature ids read as names.</summary>
     public Func<object?, string> Format { get; set; } = TranscriptFormat.Plain;
 
+    /// <summary>
+    /// Answers the members no script covers: it returns whether it answered and the answer, and when it declines the member answers
+    /// with the empty value of its return type. A transcript that varies what the leaves report (every check true, every other check true)
+    /// sets it once, instead of scripting each member.
+    /// </summary>
+    public Func<MethodInfo, object?[], (bool Handled, object? Value)>? Fallback { get; set; }
+
     /// <summary>Answers calls to <paramref name="member"/> with the result of <paramref name="answer"/>.</summary>
     public TranscriptLeaf Script(string member, Func<object?[], object?> answer)
     {
@@ -57,6 +64,13 @@ public class TranscriptLeaf : DispatchProxy
                 ExceptionDispatchInfo.Capture(exception.InnerException!).Throw();
                 throw;
             }
+        }
+
+        if (Fallback != null)
+        {
+            var (handled, value) = Fallback(targetMethod, arguments);
+            if (handled)
+                return value;
         }
 
         return EmptyValue(targetMethod.ReturnType);

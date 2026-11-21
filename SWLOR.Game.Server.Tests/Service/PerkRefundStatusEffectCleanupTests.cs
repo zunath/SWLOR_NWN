@@ -140,12 +140,7 @@ public class PerkRefundStatusEffectCleanupTests
     public void ConfigureToggle_MarksStatusForPerkRefundCleanup()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "AbilityDefinition",
-            "WeaponActiveAbilityDefinitionBase.cs"));
+        var source = WeaponAbilitySource.Read();
 
         source.Should().Contain(".RemoveStatusEffectOnPerkRefund(type)");
     }

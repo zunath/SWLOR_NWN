@@ -7,21 +7,21 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,101 | 13,211 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 21 | 31,354 lines | none over 1,000 lines |
+| 1. Static service lookup | `StaticLookups.txt` | 1,100 | 13,123 uses | none: GameServices and FacadeAccessor deleted |
+| 2. Large types | `LargeTypes.txt` | 20 | 30,237 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 9 | 2,710 lines | none over 150 lines (400 for layout) |
-| 4. Services per type | `ServicesPerType.txt` | 17 | 266 services | none over 10 services |
+| 4. Services per type | `ServicesPerType.txt` | 16 | 247 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 33 | 43 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 104 | 226 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 30 | 103 edges | none |
 | 8. Static entry points and static state | `StaticState.txt` | 138 | 264 members | each kept with an approved reason, or removed |
-| 9. References up the domain order | `UpwardEdges.txt` | 125 | 274 members | none: every reference follows the domain order |
+| 9. References up the domain order | `UpwardEdges.txt` | 126 | 274 members | none: every reference follows the domain order |
 | 10. Sink work | `SinkWork.txt` | 15 | 2,114 lines | none: a sink only forwards |
 
 ## 1. Static service lookup
 
-- 1,101 files, 13,211 uses: 834 using directives and 12,377 uses in code (7,508 in a static context).
-- SWLOR.Game.Server: 649 file(s), 5,621 use(s) (Feature/ 539, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
+- 1,100 files, 13,123 uses: 833 using directives and 12,290 uses in code (7,508 in a static context).
+- SWLOR.Game.Server: 648 file(s), 5,533 use(s) (Feature/ 538, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 243 file(s), 5,389 use(s).
 - SWLOR.Game.Server.Tests: 180 file(s), 2,043 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
@@ -33,10 +33,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - SWLOR.CLI: 1 file(s), 5 use(s).
 - SWLOR.CombatSim: 1 file(s), 2 use(s).
 - SWLOR.Toolset.Tests: 1 file(s), 2 use(s).
-- Content (Feature/) uses in code: 4,331 (1,635 in a static context).
-- Content (Feature/) types that use it: 537. Static classes: 75. Instance classes that use it from a static member: 199 (157 only from static members).
+- Content (Feature/) uses in code: 4,244 (1,635 in a static context).
+- Content (Feature/) types that use it: 536. Static classes: 75. Instance classes that use it from a static member: 199 (157 only from static members).
 
-Largest 15 of 1,101 (all in `StaticLookups.txt`):
+Largest 15 of 1,100 (all in `StaticLookups.txt`):
 
 | Entry | Uses | Detail |
 |---|---:|---|
@@ -54,15 +54,15 @@ Largest 15 of 1,101 (all in `StaticLookups.txt`):
 | `SWLOR.Game.Server.EngineTests/Definitions/TwinPistolCrossSkillEngineTests.cs` | 92 | 92 in a static context, 0 import(s) |
 | `SWLOR.Game.Server.EngineTests/Definitions/TwinPistolCastCancellationEngineTests.cs` | 91 | 91 in a static context, 0 import(s) |
 | `SWLOR.Game.Server.Tests/Perks/GeneratedWeaponPerkBehaviorTests.cs` | 91 | 3 in a static context, 1 import(s) |
-| `SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs` | 88 | 0 in a static context, 1 import(s) |
+| `SWLOR.Game.Server.EngineTests/Definitions/TwinPistolPvpBalanceEngineTests.cs` | 85 | 85 in a static context, 0 import(s) |
 
 ## 2. Large types
 
-- 21 types over 1,000 lines, 31,354 lines in all.
+- 20 types over 1,000 lines, 30,237 lines in all.
 - Exempt and over the limit: 191 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1, owner exception 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
-Largest 15 of 21 (all in `LargeTypes.txt`):
+Largest 15 of 20 (all in `LargeTypes.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
@@ -103,17 +103,16 @@ Largest 9 of 9 (all in `LongMethods.txt`):
 
 ## 4. Services per type
 
-- 17 types use more than 10 services: 13 through the constructor only, 3 through the lookup only, 1 through both.
+- 16 types use more than 10 services: 13 through the constructor only, 3 through the lookup only, 0 through both.
 - Exempt and over the limit: 0 (none).
 
-Largest 15 of 17 (all in `ServicesPerType.txt`):
+Largest 15 of 16 (all in `ServicesPerType.txt`):
 
 | Entry | Services | Detail |
 |---|---:|---|
 | `SWLOR.Game.Server.Feature.UsePerkFeat` | 31 | constructor 0, lookup 31 |
 | `SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService` | 21 | constructor 21, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 20 | constructor 20, lookup 0 |
-| `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel` | 19 | constructor 4, lookup 15 |
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 18 | constructor 18, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 16 | constructor 16, lookup 0 |
 | `SWLOR.Game.Server.Domain.Creatures.AIService` | 15 | constructor 15, lookup 0 |
@@ -125,6 +124,7 @@ Largest 15 of 17 (all in `ServicesPerType.txt`):
 | `SWLOR.Game.Server.Domain.Combat.CombatService` | 12 | constructor 12, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 12 | constructor 12, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.AbilityDamageInputService` | 11 | constructor 11, lookup 0 |
+| `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 11 | constructor 11, lookup 0 |
 
 ## 5. Deferred resolution
 
@@ -234,12 +234,12 @@ Largest 15 of 138 (all in `StaticState.txt`):
 
 ## 9. References up the domain order
 
-- 274 members in 84 files reference a domain above their own: 35 directions, 52 unit edges.
+- 274 members in 86 files reference a domain above their own: 35 directions, 52 unit edges.
 - Logic: 221 members in 26 directions; content: 53 members in 9 directions.
 - From the hook logic in Platform/Native (P5-16b): 123 members in 52 lines.
 - By direction: Platform -> Combat 52, Platform -> Foundation 36, Platform -> Character 27, Combat -> Creatures 17, Foundation content -> Gameplay content 12, Character content -> Abilities content 10, Combat -> Abilities 10, Combat -> Social 9, Items -> Combat 9, UI content -> Gameplay content 9, Character -> Combat 7, Foundation -> Character 6, Foundation -> UI 6, Foundation content -> Character content 6, Platform -> Items 6, Foundation content -> UI content 5, Character -> Abilities 4, Character -> Creatures 4, Character -> Social 4, Quests -> Economy 4, UI content -> Abilities content 4, Combat -> Quests 3, Combat -> World 3, Items -> Crafting 3, Items content -> Abilities content 3, Character -> Companions 2, Character -> Quests 2, Gameplay content -> Abilities content 2, Gameplay content -> Quests content 2, Platform -> Abilities 2, Character -> Items 1, Items -> Companions 1, Items -> World 1, Platform -> Creatures 1, World -> Space 1.
 
-Largest 15 of 125 (all in `UpwardEdges.txt`):
+Largest 15 of 126 (all in `UpwardEdges.txt`):
 
 | Entry | Members | Detail |
 |---|---:|---|

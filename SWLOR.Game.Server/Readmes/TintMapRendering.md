@@ -1162,6 +1162,37 @@ a new opt-in. Confirm it against the pre-conversion PLT before adding one.
 compares each opt-in mask's edges with resolved-color filtering on the GPU.
 Rebuild `sw_tint_mtr.hak` after a change and restart the client.
 
+## Draw ProgFX coatings on tint materials
+
+Environment-map visual effects (`progfx.2da` Type 1: stoneskin, greater
+stoneskin, barkskin, Shadow Shield, petrify, ice skin) make the client draw a
+legacy mesh with the effect's `vdu_tex_*` texture in place of its diffuse.
+The client never swaps a texture an MTR binds, so tint materials showed no
+coating. Every generated tint MTR therefore binds `texture8 progfx_coat`
+(`texture4` on `cloaktint`, whose atlases fill 6-9) and declares
+`parameter float progFxCoat 0.0`. Every complete tint refresh writes the active
+coat's atlas cell plus one after its shader reset. When the engine applies or
+removes a coating visual effect or petrification, `ProgFxCoatRenderer` runs a
+complete refresh 0.5 s later: the client reloads the creature's materials for
+those effects and drops every shader parameter, dyes included, so writing only
+the coat left parts at their default palette rows. `ProgFxCoatEffectHooks`
+observes the engine's own visual-effect and petrify handlers: NWNX effect events
+skip visual effects, and a DM's `##dm_visualeffect` applies one outside any
+script. Without a duration, `##dm_visualeffect 14` applies an instant effect,
+which never coats anything, not even a plain creature model; test with a
+duration such as `##dm_visualeffect 14 60`. The tint shaders then use the coat as the diffuse color, its
+alpha as the environment coverage, and the coat as the vertex-lit environment
+map, like the client's legacy path. At zero the palette path is unchanged.
+
+`SWLOR_Haks/tools/ProgFxCoatAtlas.py` builds `sw_vfx/progfx_coat.tga` (4 x 2
+cells of 256 texels; hak overrides such as SWLOR's `vdu_tex_grstone` win over
+stock). Its cell order must match `ProgFxCoatRenderer.CoatTextures`; a new
+coating texture needs a cell in both. The coat lines are kept out of material
+profile signatures, so they never rename scoped aliases. Native robe meshes
+and worn helmets that render as separate attachments do not receive creature
+material parameters and stay uncoated. The client's procedural animation of
+`vdu_tex_shade` is not reproduced; the coat uses its static base texture.
+
 ## Regression scene and checks
 
 ### Cover native body-part texture fallbacks

@@ -27,7 +27,7 @@ public class AbilityLineOfSightTests
         // Denials route through the local Deny helper (which both records the reason for the
         // engine-test harness and sends the player-facing message).
         validationBody.Should().Contain("return Deny(\"You cannot see your target.\");");
-        validationBody.Should().Contain("SendMessageToPC(activator, reason);");
+        validationBody.Should().Contain("SendMessageToPC(user, reason);");
         helperBody.Should().Contain("LineOfSightObject(activator, target)");
         helperBody.Should().Contain("LineOfSightVector(GetPosition(activator), GetPosition(target))");
     }

@@ -546,7 +546,7 @@ namespace SWLOR.CraftSim.Progression
                             $"The experiment cuts up to {ExperimentRules.TimeCutCapPercent}% of a job's time (`ExperimentRules.TimeCutCapPercent`), which the cohort takes as the best case.");
             text.AppendLine();
             text.AppendLine($"Time at the terminal per job: an experiment of {a.ResearchTrials} trials at {Number(a.ResearchSecondsPerTrial, 0)} s, plus {Number(a.ResearchVisitSeconds, 0)} s to start the job and {Number(a.ResearchVisitSeconds, 0)} s to collect it " +
-                            $"({Number(a.ResearchTrials * a.ResearchSecondsPerTrial + 2 * a.ResearchVisitSeconds, 0)} s; unmeasured). The recipe researched is the one the research window lists (`Craft.IsResearchableRecipe`: weapons, armor and food) that needs no learning and whose level pays the most against the rank within the tier. " +
+                            $"({Number(a.ResearchTrials * a.ResearchSecondsPerTrial + 2 * a.ResearchVisitSeconds, 0)} s; unmeasured). The recipe researched is the one the research window lists (`Craft.IsResearchableRecipe`: weapons, armor and food, and the space revamp's ship modules and deeds) that needs no learning and whose level pays the most against the rank within the tier. " +
                             "\"Fast loop\" keeps every slot on level-1 jobs for new blueprints; \"climb\" runs each slot up one blueprint from level 1 to 10. Base XP is the chart XP for the recipe level against the rank.");
             text.AppendLine();
             var table = new MarkdownTable(

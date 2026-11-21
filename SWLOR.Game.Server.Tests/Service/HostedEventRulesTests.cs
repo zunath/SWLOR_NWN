@@ -47,6 +47,7 @@ public class HostedEventRulesTests
         HostedEventRules.GetJoinRefusal(Running(), new HostedEventTravelState { IsDead = true }).Should().Be(HostedEventRules.DeadCannotJoin);
         HostedEventRules.GetJoinRefusal(Running(), new HostedEventTravelState { IsInCombat = true }).Should().Be(HostedEventRules.CombatCannotJoin);
         HostedEventRules.GetJoinRefusal(Running(), new HostedEventTravelState { IsInSpace = true }).Should().Be(HostedEventRules.SpaceCannotJoin);
+        HostedEventRules.GetJoinRefusal(Running(), new HostedEventTravelState { IsAtCrewStation = true }).Should().Be(HostedEventRules.CrewStationCannotJoin);
         HostedEventRules.GetJoinRefusal(Running(), new HostedEventTravelState { IsInOutOfCharacterArea = true }).Should().Be(HostedEventRules.OutOfCharacterCannotJoin);
         HostedEventRules.GetJoinRefusal(Running(), new HostedEventTravelState { IsDM = true }).Should().Be(HostedEventRules.DMsUseDMTools);
     }
@@ -85,6 +86,7 @@ public class HostedEventRulesTests
         HostedEventRules.GetLeaveRefusal(atEvent with { IsInCombat = true }, ignoreCombat: true).Should().BeEmpty();
         HostedEventRules.GetLeaveRefusal(atEvent with { IsDead = true }, ignoreCombat: true).Should().Be(HostedEventRules.DeadCannotLeave);
         HostedEventRules.GetLeaveRefusal(atEvent with { IsInSpace = true }, ignoreCombat: true).Should().Be(HostedEventRules.SpaceCannotLeave);
+        HostedEventRules.GetLeaveRefusal(atEvent with { IsAtCrewStation = true }, ignoreCombat: true).Should().Be(HostedEventRules.CrewStationCannotLeave);
     }
 
     [TestCase("2026-11-20 19:30", true)]

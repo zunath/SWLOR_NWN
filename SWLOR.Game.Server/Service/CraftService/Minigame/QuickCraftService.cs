@@ -30,7 +30,10 @@ public static class QuickCraftService
             return eligibility;
 
         if (!Craft.CanPlayerCraftRecipe(player, recipeType))
-            return QuickCraftEligibility.Refused("Recipe requirements not met.");
+        {
+            var problem = Craft.GetRequirementProblem(player, recipeType);
+            return QuickCraftEligibility.Refused(string.IsNullOrWhiteSpace(problem) ? "Recipe requirements not met." : problem);
+        }
 
         return QuickCraftEligibility.Eligible;
     }
@@ -59,7 +62,7 @@ public static class QuickCraftService
         if (quantity < 1)
             return "You do not have the materials for this recipe.";
 
-        var batch = new QuickCraftBatch(NwnQuickCraftWorld.Instance, player, Craft.GetRecipe(recipeType), quantity);
+        var batch = new QuickCraftBatch(NwnQuickCraftWorld.Instance, player, recipeType, Craft.GetRecipe(recipeType), quantity);
         batch.OnEnded += finished =>
         {
             Batches.Remove(player);

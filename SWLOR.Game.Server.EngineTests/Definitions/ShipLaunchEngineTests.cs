@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(Space.IsPlayerInSpaceMode(actor.Creature), "successful launch activates the ship");
                     ctx.AssertEqual(spaceArea, GetArea(actor.Creature), "the pilot crossed into a distinct space area");
                     ctx.AssertEqual(OBJECT_INVALID, (uint)ShipClones()["engine-launch-ship/" + actor.Id], "completed launch marks controls occupied before the old NPC is destroyed");
-                    var ship = Space.GetShipDetailByItemTag("ShipDeedLightFreighter");
+                    var ship = Space.GetShipDetailByItemTag("sd_striker");
                     ctx.AssertEqual(ship.Appearance, GetAppearanceType(actor.Creature), "successful launch applies the ship model");
                     var clone = GetLocalObject(actor.Creature, "SPACE_PILOT_CLONE");
                     ctx.Assert(GetIsObjectValid(clone), "successful launch creates a Pilot clone");
@@ -350,7 +350,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Func<PlayerAbilityFixture, uint, WorldProperty, Task> test)
         {
             using var actor = await PlayerAbilityFixture.CreateAsync(ctx);
-            actor.Update(player => player.Perks[PerkType.Starships] = 1);
             var statusWindows = new[] { GuiWindowType.PlayerStatus, GuiWindowType.PlayerStatusPortrait, GuiWindowType.PlayerStatusPortraitSpace };
             var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
                 .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
@@ -366,7 +365,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var ship = new PlayerShip
             {
                 Id = "engine-launch-ship/" + actor.Id, PropertyId = property.Id, OwnerPlayerId = actor.Id,
-                Status = new ShipStatus { ItemTag = "ShipDeedLightFreighter", Hull = 50, MaxHull = 50 }
+                Status = new ShipStatus { ItemTag = "sd_striker", Hull = 50, MaxHull = 50 }
             };
             var permission = new WorldPropertyPermission { Id = "engine-launch-permission/" + actor.Id, PropertyId = property.Id, PlayerId = actor.Id };
             permission.Permissions[PropertyPermissionType.PilotShip] = true;

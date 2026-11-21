@@ -564,12 +564,22 @@ the new appearance after both.
 `--config` points the tool at another model list in the same format. `tools/TrophyStandModels.json` holds the ten furniture
 Trophy Stands, which are new blueprints (resref = model name) rather than stations swapped in place;
 `tools/FieldCotModels.json` holds the five Meshy Field Cots the same way.
+`tools/GardenPlotModels.json` holds the garden plots: the empty bed is the Garden Plot blueprint, and the sprouting, ripe
+and withered models have a null `blueprint` because Farming creates them at run time (their rows are the `FarmingRules`
+stage appearances). Each stage is only its plants: Meshy builds a whole bed per concept image and the frames came out
+different at every stage, so the plants were cut out of each stage bed (the faces above its soil and inside the rim) and
+stand on the empty bed's soil at `FarmingRules.GetCropModelHeight`. The sapling is a separate Meshy text-to-3d young tree.
+Check a Meshy bed's soil from above and at a low angle before shipping: the empty bed came with frame shards poking
+through the soil and a few down-facing dents, which show in the game as specks. Re-exporting a model that is already in the haks
+but not yet on the live server needs `replaces_haks_resources: true` in the manifest.
 
 ### Meshy placeables
 
 The Trophy Stands came from Meshy (opt-in and paid; see the weapon section above for the approval rule) with one owner-made
 concept image each, `model_type: smart-topology`, `ai_model: meshy-t2`, `target_polycount: 8000`, `texture_model: meshy-7`
-and `enable_pbr: true` (15 credits each). Meshy output differs from TRELLIS output in three ways:
+and `enable_pbr: true` (15 credits each). For anything with foliage use `ai_model: meshy-t2.5` at a higher
+`target_polycount` (the garden plots used 12,000 for the bed and 20,000 per crop, same price): at 8,000 on `meshy-t2`
+seedlings came out as pegs and plants as blobs. Meshy output differs from TRELLIS output in three ways:
 
 - **Winding.** Meshy builds a model from separate open parts (a skull, a chain, a cloth). An open part has no meaningful
   signed volume, so `near_closed` rejects good models, and `reorient: propagate` turned 18-23 percent of their area against
@@ -578,7 +588,10 @@ and `enable_pbr: true` (15 credits each). Meshy output differs from TRELLIS outp
   cloth-draped Veilcarved stand is the high one) and `max_opposed_fraction`. Check open parts such as cloth and wings from
   behind in the client.
 - **Normals.** Meshy ships a tangent-space normal map for its own mesh. Reprojection fails (faces with no texel-center
-  coverage), so use `normal_basis_policy: "authored_tangents"` (the stands used `authored_angle_limit_degrees: 2`).
+  coverage), so use `normal_basis_policy: "authored_tangents"` (the stands used `authored_angle_limit_degrees: 2`). When
+  packaging stops with "Authored tangent conflict ... do not average" (the garden plot beds, whose soil and leaves split
+  tangents at many shared corners), use `"authored_tangent_seams"`: export keeps Meshy's exact corner normals and
+  packaging keeps each tangent seam instead of averaging it, as the weapon exporter does.
 - **Tangents.** Meshy GLBs carry no `TANGENT` attribute. When the computed MikkTSpace tangents differ between corners of
   one vertex, export stops with "Missing source tangent requires splitting a Mikk seam". Re-export that GLB from Blender 4.0
   with `export_tangents=True` (it splits those vertices) and replace any zero-length tangent with a unit vector

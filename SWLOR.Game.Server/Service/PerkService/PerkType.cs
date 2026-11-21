@@ -864,11 +864,68 @@ namespace SWLOR.Game.Server.Service.PerkService
         RichPickings = 936,
         Jackpot = 937,
 
+
+        AceDisablingShot = 1000,
+        AceDoubleShot = 1001,
+        AcePointBlankBurst = 1002,
+        AceStance = 1003,
+        AceInTheHole = 1004,
+        AceMobileFootwork = 1005,
+        AceSustainedFire = 1006,
+        AceKitingInstinct = 1007,
+        AceHighNoon = 1008,
+        AceEvasiveReload = 1009,
+
+        OrdnanceVolley = 1010,
+        OrdnanceProximityWarheads = 1011,
+        OrdnanceShrapnelWarheads = 1012,
+        OrdnanceFlareMissile = 1013,
+        OrdnanceClusterWarheads = 1014,
+        OrdnanceConcussionBarrage = 1015,
+        OrdnanceShipStance = 1016,
+        OrdnanceSaturationFire = 1017,
+        OrdnanceBombardiersRhythm = 1018,
+        OrdnanceSaturationStrike = 1019,
+
+        BulwarkShieldRam = 1020,
+        BulwarkAngerStrike = 1021,
+        BulwarkBulwark = 1022,
+        BulwarkDefiance = 1023,
+        BulwarkFortification = 1024,
+        BulwarkHail = 1025,
+        BulwarkShipStance = 1026,
+        BulwarkCriticalWard = 1027,
+        BulwarkUnbreakable = 1028,
+        BulwarkInvincible = 1029,
+
+        CommandEmergencyRepair = 1030,
+        CommandMarkTarget = 1031,
+        CommandRepairEfficiency = 1032,
+        CommandFocusFire = 1033,
+        CommandCrewMorale = 1034,
+        CommandBreakFormation = 1035,
+        CommandFormation = 1036,
+        CommandPresence = 1037,
+        CommandFleetAction = 1038,
+
+        // Gathering: the Space Industry group.
+        Prospector = 1039,
+        DeepCore = 1040,
+        RapidExtraction = 1041,
+        GasSiphoning = 1042,
+        SalvageExpert = 1043,
+        TraitHunter = 1044,
+
+        // Droid protocols: industrial droid AI instructions (PerkGroupType.Droid).
+        EfficiencyProtocol = 1056,
+        DamageControlProtocol = 1057,
+        SurveyProtocol = 1058,
+        ProspectingProtocol = 1059,
+
         ForceDecoy = 938,
         CloudMind = 939,
         SharedPresence = 940,
 
-        // IDs 650, 860-863, 882-883, 902-903, 919-923 and 941+ are free.,
         Dance = 950,
         LightFeet = 951,
         CrowdPleaser = 952,
@@ -893,6 +950,12 @@ namespace SWLOR.Game.Server.Service.PerkService
         PerfectPitch = 971,
         Virtuoso = 972,
 
-        // IDs 650, 844-949, and 973+ are free.
+
+        // The Farmer line of Agriculture (Player City Revamp). The City Revamp reserves 1100-1149.
+        CropManagement = 1100,
+        BountifulHarvest = 1101,
+        SeedSaver = 1102,
+
+        // IDs 650, 860-863, 882-883, 902-903, 919-923, 941-949, 973-999, 1045-1055, 1060-1099 and 1103+ are free.
     }
 }

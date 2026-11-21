@@ -1,0 +1,110 @@
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.Game.Server.Service.TradeService;
+
+namespace SWLOR.Game.Server.Tests.Service;
+
+/// <summary>The exchange trade journal that keeps a trade's gold and cargo change together across a restart.</summary>
+public class PendingTradeTests
+{
+    [Test]
+    public void APendingTrade_RoundTripsThroughTheCharacterFileLocal()
+    {
+        var trade = new PendingTrade { Id = "t1", ShipId = "s1", Commodity = CommodityType.Grain, Units = -12, Credits = 0 };
+
+        PendingTrade.TryParse(trade.Serialize(), out var parsed).Should().BeTrue();
+        parsed.Should().BeEquivalentTo(trade);
+        PendingTrade.TryParse(string.Empty, out _).Should().BeFalse();
+        PendingTrade.TryParse("t1|s1|8|x|0", out _).Should().BeFalse();
+        PendingTrade.TryParse(null, out _).Should().BeFalse();
+    }
+
+    [Test]
+    public void APurchase_IsLoadedOnce()
+    {
+        var cargo = new Dictionary<CommodityType, CargoLot>();
+        var trade = new PendingTrade { Id = "buy", ShipId = "s1", Commodity = CommodityType.Grain, Units = 10, Credits = 600 };
+
+        trade.ApplyTo(cargo, string.Empty).Should().BeTrue();
+        trade.ApplyTo(cargo, "buy").Should().BeFalse("the ship already records the trade");
+        CargoHoldRules.GetUnits(cargo, CommodityType.Grain).Should().Be(10);
+        cargo[CommodityType.Grain].CostBasis.Should().Be(600);
+    }
+
+    [Test]
+    public void ASale_UnloadsWhatTheBayStillHolds()
+    {
+        var cargo = new Dictionary<CommodityType, CargoLot>();
+        CargoHoldRules.AddUnits(cargo, CommodityType.Grain, 5, 300);
+        var trade = new PendingTrade { Id = "sell", ShipId = "s1", Commodity = CommodityType.Grain, Units = -8 };
+
+        trade.ApplyTo(cargo, "earlier").Should().BeTrue();
+        CargoHoldRules.GetUnits(cargo, CommodityType.Grain).Should().Be(0);
+    }
+
+    [Test]
+    public void BuyAndSell_SaveTheGoldWithTheMarkBeforeTheCargo()
+    {
+        var trade = ReadServerSource("Service", "Trade.cs");
+        trade.Should().Contain("ObjectPlugin.SetString(player, PendingTradeVariable, trade.Serialize(), true);\n                    return true;\n                },\n                () => CharacterCheckpoint.Save(player),",
+                "the gold and the mark are saved at once, before the cargo changes")
+            .And.Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void ApplyPendingTrade()")
+            .And.Contain("AssignCommand(player, () => CompleteBuy(player, shipId, exchangeType, dockId, commodity, units));",
+                "TakeGoldFromCreature does nothing from a NUI handler, so the purchase completes on the player's queue");
+
+        var complete = trade[trade.IndexOf("private static void CompleteBuy(", StringComparison.Ordinal)..];
+        var save = complete.IndexOf("if (!SaveTradeGold(player, trade,", StringComparison.Ordinal);
+        save.Should().BeGreaterThan(0);
+        complete.IndexOf("if (!TryPlanBuy(player, shipId, exchangeType, dockId, commodity, units, out var ship, out var detail, out var dock, out var order))",
+                StringComparison.Ordinal)
+            .Should().BeInRange(0, save, "purchases queued together are planned against the cargo and credits as they are when each runs");
+        complete.IndexOf("() => TakeGoldFromCreature(order.Credits, player, true),", StringComparison.Ordinal)
+            .Should().BeGreaterThan(save, "the payment is taken inside the save, which puts it back when the file cannot be saved");
+
+        trade.Should().Contain("if (ship == null || ship.OwnerPlayerId != playerId)",
+                "a former owner's mark never changes a ship that has changed owners")
+            .And.Contain("ship.LastTradeIds[playerId] = trade.Id;", "each player's last trade is kept apart");
+
+        foreach (var method in new[] { "public static void Buy(", "public static void Sell(" })
+        {
+            var body = trade[trade.IndexOf(method, StringComparison.Ordinal)..];
+            body.IndexOf("if (!SaveTradeGold(player, trade,", StringComparison.Ordinal)
+                .Should().BeLessThan(body.IndexOf("RecordTrade(ship, player, trade);", StringComparison.Ordinal), method);
+            System.Text.RegularExpressions.Regex.IsMatch(body, @"if \(!SaveTradeGold\(player, trade,[\s\S]*?\)\)\)\n\s+(\{[\s\S]*?)?return;\n(\s+\}\n)?\n\s+RecordTrade\(")
+                .Should().BeTrue($"{method} stops before the cargo changes when the character could not be saved");
+        }
+    }
+
+    [Test]
+    public void ASaleIsReservedOnTheShip_SoNoOtherPilotSpillsUnitsAlreadyPaidFor()
+    {
+        var trade = ReadServerSource("Service", "Trade.cs");
+        var sell = trade[trade.IndexOf("public static void Sell(", StringComparison.Ordinal)..];
+        var reserve = sell.IndexOf("ship.PendingSaleTradeId = trade.Id;\n            DB.Set(ship);", StringComparison.Ordinal);
+        var save = sell.IndexOf("if (!SaveTradeGold(player, trade,", StringComparison.Ordinal);
+        var record = sell.IndexOf("RecordTrade(ship, player, trade);", StringComparison.Ordinal);
+        reserve.Should().BeInRange(0, save, "the reservation is saved before the proceeds");
+        sell[save..record].Should().Contain("ship.PendingSaleTradeId = string.Empty;", "a failed save gives the ship back");
+        var saved = sell[record..];
+        saved.IndexOf("ship.PendingSaleTradeId = string.Empty;", StringComparison.Ordinal)
+            .Should().BeInRange(0, saved.IndexOf("DB.Set(ship);", StringComparison.Ordinal), "the reservation goes with the bay change");
+
+        var login = trade[trade.IndexOf("public static void ApplyPendingTrade()", StringComparison.Ordinal)..];
+        login.IndexOf("ApplyTradeMark(player, playerId, trade);", StringComparison.Ordinal)
+            .Should().BeInRange(0, login.IndexOf("reserved.PendingSaleTradeId = string.Empty;", StringComparison.Ordinal),
+                "the owner's login applies the mark, then lifts the reservation, with or without a mark");
+
+        ReadServerSource("Service", "Space.cs").Should().Contain("if (!string.IsNullOrWhiteSpace(dbShip.PendingSaleTradeId))",
+            "no pilot launches a ship whose sale a restart interrupted");
+    }
+
+    private static string ReadServerSource(params string[] path)
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+            directory = directory.Parent;
+
+        var full = Path.Combine(new[] { directory!.FullName, "SWLOR.Game.Server" }.Concat(path).ToArray());
+        return File.ReadAllText(full).Replace("\r\n", "\n");
+    }
+}

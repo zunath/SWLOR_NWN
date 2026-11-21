@@ -91,6 +91,7 @@ services:
             SWLOR_HOLONET_WEBHOOK_URL: ""
             SWLOR_DM_SHOUT_WEBHOOK_URL: ""
             SWLOR_PROPERTY_BROADCAST_WEBHOOK_URL: ""
+            SWLOR_DM_STORY_HOOK_WEBHOOK_URL: ""
             SWLOR_SERVER_NOTIFICATION_WEBHOOK_URL: ""
             SWLOR_LIVE_MAX_SECONDS: ${SWLOR_LIVE_MAX_SECONDS}
         extra_hosts:

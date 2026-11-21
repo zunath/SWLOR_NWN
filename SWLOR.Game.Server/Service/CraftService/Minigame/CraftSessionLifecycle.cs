@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.CraftService.Minigame;
@@ -50,7 +51,8 @@ public sealed class CraftSessionLifecycle
 
     /// <summary>
     /// Commits the recipe's components, the selected enhancements and the blueprint, charging the blueprint's credits and one
-    /// licensed run as the original crafting window did. Nothing is taken when any step is refused.
+    /// licensed run as the original crafting window did, and a station Shipyard's fee for a Capital hull. Nothing is taken when any
+    /// step is refused.
     /// </summary>
     public CraftSessionStartResult Start(uint player, Player dbPlayer, CraftSessionStartRequest request)
     {
@@ -59,7 +61,11 @@ public sealed class CraftSessionLifecycle
             Fail(player, dbPlayer, CraftSessionEndReason.Replaced);
 
         if (!_world.CanCraft(player, request.Recipe))
-            return CraftSessionStartResult.Refused("Recipe requirements not met!");
+        {
+            // A requirement of the recipe's own says what is missing in its own words (a planet identity recipe says where to craft it).
+            var problem = _world.GetRequirementProblem(player, request.Recipe);
+            return CraftSessionStartResult.Refused(string.IsNullOrWhiteSpace(problem) ? "Recipe requirements not met!" : problem);
+        }
 
         var recipe = _world.GetRecipe(request.Recipe);
         if (request.HasBlueprint)
@@ -68,6 +74,11 @@ public sealed class CraftSessionLifecycle
             if (!string.IsNullOrEmpty(problem))
                 return CraftSessionStartResult.Refused(problem);
         }
+
+        // A station Shipyard's fee (space revamp) must be payable beside the blueprint's credits.
+        var feeProblem = _world.ValidateStationFee(player, recipe, request.HasBlueprint ? request.BlueprintItem : OBJECT_INVALID);
+        if (!string.IsNullOrEmpty(feeProblem))
+            return CraftSessionStartResult.Refused(feeProblem);
 
         // Every check runs before anything is taken, so a refusal never has items to give back.
         if (request.EnhancementItems.Any(item => item != OBJECT_INVALID && !_world.HasEnhancement(player, item)))
@@ -82,6 +93,7 @@ public sealed class CraftSessionLifecycle
             .ToList();
 
         var blueprint = request.HasBlueprint ? _world.ChargeBlueprint(player, request.BlueprintItem) : null;
+        var stationFee = _world.ChargeStationFee(player, recipe);
         var sessionId = Guid.NewGuid().ToString();
 
         // The components, enhancements and blueprint charge are out of the inventory in memory; the file still has them until it is written.
@@ -96,7 +108,11 @@ public sealed class CraftSessionLifecycle
             BlueprintLevel = blueprint?.Level ?? 0,
             StartedUtc = _world.UtcNow,
             Components = components,
-            Enhancements = enhancements
+            Enhancements = enhancements,
+            StationFee = stationFee?.Fee ?? 0,
+            StationFeePropertyId = stationFee?.PropertyId,
+            CityId = _world.GetStationCityId(player),
+            WorkshopBonus = _world.GetWorkshopBonus(player, recipe.Skill)
         };
         _world.SaveRecord(dbPlayer);
         _world.PersistCharacter(player);
@@ -132,7 +148,7 @@ public sealed class CraftSessionLifecycle
         var outcome = CraftOutcomeRules.CalculateSuccess(
             quality,
             recipe.Level,
-            PacedBaseXp(record, recipe, GetRank(dbPlayer, recipe), actionsTaken),
+            PacedBaseXp(dbPlayer, record, recipe, GetRank(dbPlayer, recipe), actionsTaken),
             firstTime,
             blueprintLevel,
             recipe.Category == RecipeCategoryType.Food,
@@ -158,6 +174,9 @@ public sealed class CraftSessionLifecycle
         if (recipe.Category == RecipeCategoryType.Food)
             _world.ApplyFoodBonus(item, outcome.FoodDurationBonusSeconds, outcome.FoodBonusCharges);
 
+        // What the committed components pass on (ship component traits) is stamped before the blueprint's bonuses, which add to it.
+        _world.ApplyComponentTraits(item, record.Recipe, recipe, record.Components);
+
         if (session.HasBlueprint)
             _world.ApplyBlueprintBonuses(player, item, recipe, session.Blueprint);
 
@@ -170,9 +189,11 @@ public sealed class CraftSessionLifecycle
         var units = _world.PrepareUnits(player, item, recipe);
         var output = units.Count > 0 ? RecordReturn(player, dbPlayer, units.Select(unit => unit.Serialized).ToList()) : null;
         dbPlayer.ActiveCraftSession = null;
+        QueueStationFee(dbPlayer, record);
         if (outcome.Xp > 0)
             AddPendingXp(dbPlayer, recipe.Skill, outcome.Xp);
         _world.SaveRecord(dbPlayer);
+        CreditStationFees(player, dbPlayer);
 
         // The full quantity stays accounted for: units in the inventory stay in the return, the rest move to the held items until there is room.
         var held = units.Where(unit => !_world.DeliverUnit(player, unit)).Select(unit => unit.Serialized).ToList();
@@ -224,7 +245,7 @@ public sealed class CraftSessionLifecycle
             _random,
             enhancements.Count,
             record.Components.Count,
-            PacedBaseXp(record, recipe, GetRank(dbPlayer, recipe), actionsTaken ?? record.ActionsTaken),
+            PacedBaseXp(dbPlayer, record, recipe, GetRank(dbPlayer, recipe), actionsTaken ?? record.ActionsTaken),
             record.BlueprintLevel);
 
         var kept = new List<string>();
@@ -244,6 +265,7 @@ public sealed class CraftSessionLifecycle
         dbPlayer.HeldCraftItems ??= new List<string>();
         dbPlayer.HeldCraftItems.AddRange(kept);
         dbPlayer.ActiveCraftSession = null;
+        QueueStationFee(dbPlayer, record);
 
         // The failure's XP is entitled on the record, saved with the settlement it belongs to. It is given after the save (at once for a
         // living player), and stays there while the player is dead or when the server stops before it is given.
@@ -251,6 +273,7 @@ public sealed class CraftSessionLifecycle
             AddPendingXp(dbPlayer, recipe.Skill, failure.Xp);
 
         _world.SaveRecord(dbPlayer);
+        CreditStationFees(player, dbPlayer);
         _world.EndStationWork(player);
 
         // Returns what fits, and exports the character when it did. When nothing comes back the file already lacks the committed
@@ -294,6 +317,9 @@ public sealed class CraftSessionLifecycle
         var file = _world.LoadedSequence(player);
         var changed = false;
         var placed = new List<string>();
+
+        // Fees whose payment the file holds are credited (once); a fee whose payment the file predates was rolled back with the gold.
+        CreditStationFees(player, dbPlayer, atLogin: true);
 
         var pending = dbPlayer.PendingCraftReturns;
         if (pending is { Count: > 0 })
@@ -346,6 +372,7 @@ public sealed class CraftSessionLifecycle
     public CraftSettlement SettleLeftover(uint player, Player dbPlayer, CraftSessionEndReason reason)
     {
         GrantPendingXp(player, dbPlayer);
+        CreditStationFees(player, dbPlayer);
         var settlement = Fail(player, dbPlayer, reason);
         if (!settlement.Settled)
             ReturnHeldItems(player, dbPlayer);
@@ -412,6 +439,86 @@ public sealed class CraftSessionLifecycle
     }
 
     /// <summary>
+    /// Lists a fee a quick craft took from the player (no session holds it) for the station's treasury, at the next craft file sequence,
+    /// saves the record and asks for an export. It is credited once a character file holds the payment (<see cref="CreditStationFees"/>).
+    /// </summary>
+    public void QueueStationFee(uint player, Player dbPlayer, StationFeeCharge charge)
+    {
+        if (charge == null || charge.Fee <= 0)
+            return;
+
+        dbPlayer.PendingStationFees ??= new List<PendingStationFee>();
+        dbPlayer.PendingStationFees.Add(new PendingStationFee
+        {
+            Id = Guid.NewGuid().ToString(),
+            PropertyId = charge.PropertyId,
+            Fee = charge.Fee,
+            Sequence = _world.AdvanceFileSequence(player)
+        });
+        _world.SaveRecord(dbPlayer);
+        _world.PersistCharacter(player);
+    }
+
+    /// <summary>
+    /// Credits the station treasury with every fee whose payment a character file holds, each once, and forgets it. While playing that is
+    /// a fee at or below the exported sequence; at login (<paramref name="atLogin"/>) one at or below the loaded file's, and a fee above
+    /// it is dropped uncredited, because the crash that lost the file's payment gave the player the credits back. Returns whether any
+    /// fee was settled.
+    /// <para>
+    /// The credit and its id are saved on the station before the player's save forgets the fee, so a stop in between leaves a fee the
+    /// next call finds already credited (<see cref="ICraftSessionWorld.CreditStationFee"/>): the treasury is paid exactly once.
+    /// </para>
+    /// </summary>
+    public bool CreditStationFees(uint player, Player dbPlayer, bool atLogin = false)
+    {
+        var pending = dbPlayer.PendingStationFees;
+        if (pending == null || pending.Count == 0)
+            return false;
+
+        var held = atLogin ? _world.LoadedSequence(player) : _world.ExportedSequence(player);
+        var settled = false;
+        foreach (var fee in pending.ToList())
+        {
+            if (fee.Sequence <= held)
+            {
+                _world.CreditStationFee(player, fee);
+                pending.Remove(fee);
+                settled = true;
+            }
+            else if (atLogin)
+            {
+                pending.Remove(fee);
+                settled = true;
+                _world.LogCraft(player, $"had a station fee of {fee.Fee} credits dropped uncredited: the character file (sequence {held}) predates its payment (sequence {fee.Sequence}).");
+            }
+        }
+
+        if (settled)
+            _world.SaveRecord(dbPlayer);
+
+        return settled;
+    }
+
+    /// <summary>
+    /// Moves an ending craft's station fee to the player's pending fees, in the save that ends the craft. Its payment left the player
+    /// with the craft's debit, so it waits on the debit's sequence.
+    /// </summary>
+    private static void QueueStationFee(Player dbPlayer, CraftSessionRecord record)
+    {
+        if (record.StationFee <= 0)
+            return;
+
+        dbPlayer.PendingStationFees ??= new List<PendingStationFee>();
+        dbPlayer.PendingStationFees.Add(new PendingStationFee
+        {
+            Id = record.SessionId,
+            PropertyId = record.StationFeePropertyId,
+            Fee = record.StationFee,
+            Sequence = record.DebitSequence
+        });
+    }
+
+    /// <summary>
     /// Lists items just put in the inventory as a pending return at the next craft file sequence. The caller saves the record, in the same
     /// save that takes the items off the record, and then exports the character.
     /// </summary>
@@ -450,14 +557,16 @@ public sealed class CraftSessionLifecycle
 
     /// <summary>
     /// The recipe's base XP held to the modeled pace: scaled by the share the craft's actions earned in the time since it began
-    /// (<see cref="CraftMinigameXp.PaceShare"/>), by the world's clock.
+    /// (<see cref="CraftMinigameXp.PaceShare"/>), by the world's clock, and then by the points the player's city adds for a craft made at
+    /// a station in it (Artisans' Charter), judged now and for the city the craft recorded when it started.
     /// </summary>
-    private int PacedBaseXp(CraftSessionRecord record, RecipeDetail recipe, int rank, int actionsTaken)
+    private int PacedBaseXp(Player dbPlayer, CraftSessionRecord record, RecipeDetail recipe, int rank, int actionsTaken)
     {
         var elapsedSeconds = (_world.UtcNow - record.StartedUtc).TotalSeconds;
-        return CraftMinigameXp.ScaleBaseXp(
+        var paced = CraftMinigameXp.ScaleBaseXp(
             CraftMinigameXp.BaseXp(recipe, rank),
             CraftMinigameXp.PaceShare(elapsedSeconds, actionsTaken));
+        return EdictBonusRules.ScaleCraftXp(paced, _world.GetCraftXpBonusPoints(dbPlayer, record.CityId));
     }
 
     private static void AddPendingXp(Player dbPlayer, SkillType skill, int xp)

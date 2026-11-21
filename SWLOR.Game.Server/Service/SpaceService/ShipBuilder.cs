@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -136,6 +134,54 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Sets the number of mid power nodes on this ship.
+        /// </summary>
+        /// <param name="midPowerNodes">The number of mid power nodes to set.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder MidPowerNodes(int midPowerNodes)
+        {
+            _activeShip.MidPowerNodes = midPowerNodes;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the size class of this ship.
+        /// </summary>
+        /// <param name="size">The ship size.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder Size(ShipSize size)
+        {
+            _activeShip.Size = size;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the role of this ship.
+        /// </summary>
+        /// <param name="role">The ship role.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder Role(ShipRole role)
+        {
+            _activeShip.Role = role;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the manufacturer of this ship.
+        /// </summary>
+        /// <param name="manufacturer">The ship manufacturer.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder Manufacturer(ShipManufacturer manufacturer)
+        {
+            _activeShip.Manufacturer = manufacturer;
+
+            return this;
+        }
+
+        /// <summary>
         /// Sets the number of ship configuration nodes on this ship.
         /// By default ships should have 1 configuration node.
         /// </summary>
@@ -162,25 +208,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
-        /// Indicates a player must have the perk at a specific level in order to use the ship.
+        /// Gives the ship a droid bay that holds one working droid (plan section 27).
         /// </summary>
-        /// <param name="perkType">The type of perk to require</param>
-        /// <param name="requiredLevel">The minimum level required</param>
         /// <returns>A ship builder with the configured options.</returns>
-        public ShipBuilder RequirePerk(PerkType perkType, int requiredLevel)
+        public ShipBuilder DroidBay()
         {
-            if (requiredLevel < 0)
-            {
-                Log.Write(LogGroup.Error, $"Failed to add required perk to {_activeShip.Name} because requiredLevel cannot be less than zero.");
-                return this;
-            }
-            if (requiredLevel > 100)
-            {
-                Log.Write(LogGroup.Error, $"Failed to add required perk to {_activeShip.Name} because requiredLevel cannot be greater than 100.");
-                return this;
-            }
-
-            _activeShip.RequiredPerks[perkType] = requiredLevel;
+            _activeShip.HasDroidBay = true;
 
             return this;
         }
@@ -193,6 +226,17 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public ShipBuilder InteriorLayout(PropertyLayoutType layout)
         {
             _activeShip.Layout = layout;
+            return this;
+        }
+
+        /// <summary>
+        /// Attaches the revamp hull this ship is built from.
+        /// </summary>
+        /// <param name="hull">The hull entry.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder Hull(ShipHullEntry hull)
+        {
+            _activeShip.Hull = hull;
             return this;
         }
 

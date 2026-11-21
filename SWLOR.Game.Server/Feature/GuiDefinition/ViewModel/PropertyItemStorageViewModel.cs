@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.HouseSpecializationService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -491,10 +492,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!categoryPermission.Permissions[PropertyPermissionType.AccessStorage])
                     return;
 
+                if (RefuseWhileShipListed(propertyId))
+                    return;
+
                 var property = DB.Get<WorldProperty>(propertyId);
                 var itemCount = GetItemCount();
 
-                if (itemCount >= property.ItemStorageCount)
+                // Deposits stop at the limit, and stay stopped while a house that left its Storehouse is over it. Withdrawals never check.
+                if (!HouseSpecializationRules.CanDeposit(itemCount, property.ItemStorageCount))
                 {
                     Instructions = $"Property item storage limit reached!";
                     InstructionsColor = GuiColor.Red;
@@ -532,6 +537,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             });
         };
 
+        /// <summary>
+        /// A ship listed on the market is locked until it sells or the listing ends (plan section 7), so its stored items
+        /// stay as the buyer's summary showed them.
+        /// </summary>
+        private bool RefuseWhileShipListed(string propertyId)
+        {
+            if (!ShipTransfer.IsPropertyListedForSale(propertyId))
+                return false;
+
+            Instructions = "This ship is listed for sale. Its storage cannot change until the listing ends.";
+            InstructionsColor = GuiColor.Red;
+            return true;
+        }
+
         public Action OnRetrieveItem() => () =>
         {
             ClearInstructions();
@@ -547,6 +566,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var categoryPermission = GetCategoryPermission(playerId, categoryId);
 
             if (!categoryPermission.Permissions[PropertyPermissionType.AccessStorage])
+                return;
+
+            if (RefuseWhileShipListed(propertyId))
                 return;
 
             var property = DB.Get<WorldProperty>(propertyId);

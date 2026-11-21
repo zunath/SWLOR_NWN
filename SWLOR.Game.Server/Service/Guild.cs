@@ -71,10 +71,12 @@ namespace SWLOR.Game.Server.Service
             var rankBonus = 0.25f * dbGuild.Rank;
             var perkBonus = Perk.GetPerkLevel(player, PerkType.GuildRelations) * 0.05f;
             var socialBonus = GetAbilityModifier(AbilityType.Social, player) * 0.05f;
+            var charterBonus = EdictEffects.GetGuildCharterBonus(dbPlayer);
             var amount = baseAmount +
                          (perkBonus * baseAmount) +
                          (rankBonus * baseAmount) +
-                         (socialBonus * baseAmount);
+                         (socialBonus * baseAmount) +
+                         (charterBonus * baseAmount);
 
             return (int)amount;
         }

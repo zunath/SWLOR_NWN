@@ -475,6 +475,26 @@
     "type": "resref",
     "value": "t3platform"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_1"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "SPACE_ELITE_T3, 66, 5"
+        }
+      }
+    ]
+  },
   "WalkRate": {
     "type": "int",
     "value": 1

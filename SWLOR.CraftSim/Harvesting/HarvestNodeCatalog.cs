@@ -53,11 +53,10 @@ namespace SWLOR.CraftSim.Harvesting
                 if (!tables.TryGetValue(table, out LootTable lootTable))
                     throw new InvalidDataException($"{Path.GetFileName(file)} names the loot table {table}, which no definition builds.");
 
-                var totalWeight = lootTable.Sum(item => (double)item.Weight);
-                var gemWeight = ProspectingGems.GemEntries(lootTable).Sum(item => (double)item.Weight);
+                // The game's own share, which leaves a tree's woodlot sapling out of the weight.
                 nodes.Add(new HarvestNodeType(
                     Path.GetFileName(file)[..^".utp.json".Length], table, tier, ProspectingGems.HasGems(lootTable),
-                    totalWeight <= 0 ? 0 : gemWeight / totalWeight));
+                    ProspectingGems.GemChance(lootTable)));
             }
 
             return nodes;

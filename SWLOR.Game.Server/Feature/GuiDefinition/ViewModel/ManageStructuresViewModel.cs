@@ -82,6 +82,42 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string ItemStorageText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool IsFurnitureCountVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+
+        /// <summary>
+        /// Shows the furniture placed against its limit (on a ship, with how many pieces add storage) and the items stored
+        /// against the storage. Cities and stations count buildings and structures instead, so they show neither.
+        /// </summary>
+        private void RefreshFurnitureCount(WorldProperty property)
+        {
+            IsFurnitureCountVisible = property != null &&
+                                      property.PropertyType != PropertyType.City &&
+                                      property.Layout != PropertyLayoutType.Station;
+            if (!IsFurnitureCountVisible)
+            {
+                FurnitureCount = string.Empty;
+                ItemStorageText = string.Empty;
+                return;
+            }
+
+            var query = new DBQuery<WorldPropertyCategory>()
+                .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), property.Id, false);
+            var itemCount = DB.Search(query).Sum(x => x.Items.Count);
+            FurnitureCount = Property.DescribeFurniture(property);
+            ItemStorageText = FurnitureStorageRules.DescribeItemStorage(itemCount, property.ItemStorageCount);
+        }
+
         public bool IsManagePropertyEnabled
         {
             get => Get<bool>();
@@ -89,6 +125,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public bool IsOpenStorageEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        /// <summary>Whether the property is a house in a city, which has a specialization anyone inside can read and its owner can change.</summary>
+        public bool IsHouseSpecializationVisible
         {
             get => Get<bool>();
             set => Set(value);
@@ -164,6 +207,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             query.AddPaging(StructuresPerPage, SelectedPageIndex * StructuresPerPage);
             var structures = DB.Search(query);
             _structurePropertyIds.Clear();
+            RefreshFurnitureCount(DB.Get<WorldProperty>(propertyId));
 
             foreach (var structure in structures)
             {
@@ -226,6 +270,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _skipPaginationSearch = true;
             Instructions = string.Empty;
+            FurnitureCount = string.Empty;
+            ItemStorageText = string.Empty;
+            IsFurnitureCountVisible = false;
             InstructionColor = GuiColor.Green;
 
             var area = GetArea(Player);
@@ -244,6 +291,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ManageButtonText = property.PropertyType == PropertyType.Apartment
                 ? "Manage Property"
                 : "Permissions";
+            IsHouseSpecializationVisible = property.PropertyType == PropertyType.House && HouseSpecializations.IsInCity(property);
             StructureName = string.Empty;
             SelectedPageIndex = 0;
             LoadPropertyPermissions(property);
@@ -275,7 +323,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var permission = GetPermission();
                 var structureDetail = Property.GetStructureByType(structure.StructureType);
 
-                PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffect.Vfx_Dur_Aura_Green);
+                Highlight(placeable, VisualEffect.Vfx_Dur_Aura_Green);
                 _currentPosition = GetPosition(placeable);
                 _currentFacing = GetFacing(placeable);
 
@@ -292,7 +340,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var propertyId = _structurePropertyIds[SelectedStructureIndex];
             var placeable = Property.GetPlaceableByPropertyId(propertyId);
-            PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffect.None);
+            Highlight(placeable, VisualEffect.None);
+        }
+
+        /// <summary>A garden plot's crop is a model of its own standing in the plot, so it lights up with the plot.</summary>
+        private void Highlight(uint placeable, VisualEffect effect)
+        {
+            PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, effect);
+            var cropModel = Farming.GetCropModel(placeable);
+            if (GetIsObjectValid(cropModel))
+                PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, cropModel, effect);
         }
 
         public Action OnCloseWindow() => () =>
@@ -354,6 +411,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ClearStructureHighlight();
             Search();
             _skipPaginationSearch = false;
+        };
+
+        public Action OnOpenHouseSpecialization() => () =>
+        {
+            var propertyId = Property.GetPropertyId(GetArea(Player));
+            if (string.IsNullOrWhiteSpace(propertyId))
+                return;
+
+            Gui.TogglePlayerWindow(Player, GuiWindowType.HouseSpecialization, new HouseSpecializationPayload(propertyId));
         };
 
         public Action OnManageProperty() => () =>
@@ -422,9 +488,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var structureDetail = Property.GetStructureByType(structure.StructureType);
 
+                // A ship listed on the market is locked until it sells or the listing ends (plan section 7).
+                if (ShipTransfer.IsPropertyListedForSale(structure.ParentPropertyId))
+                {
+                    Instructions = "This ship is listed for sale.";
+                    InstructionColor = GuiColor.Red;
+                    return;
+                }
+
                 if (!structureDetail.CanBeRetrieved)
                 {
                     Instructions = "This structure cannot be retrieved.";
+                    InstructionColor = GuiColor.Red;
+                    return;
+                }
+
+                var corralError = structure.StructureType == StructureType.Corral
+                    ? Corrals.GetRetrieveError(structure, GetObjectUUID(Player))
+                    : string.Empty;
+                if (!string.IsNullOrEmpty(corralError))
+                {
+                    Instructions = corralError;
+                    InstructionColor = GuiColor.Red;
+                    return;
+                }
+
+                if (structure.StructureType == StructureType.Starport &&
+                    Station.IsStation(parentProperty) &&
+                    Station.CountStarports(parentProperty.Id) <= 1)
+                {
+                    Instructions = "A station must keep a Starport.";
                     InstructionColor = GuiColor.Red;
                     return;
                 }
@@ -436,7 +529,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var categories = DB.Search(query).ToList();
                 var itemCount = categories.Sum(x => x.Items.Count);
 
-                if (itemCount > parentProperty.ItemStorageCount - structure.ItemStorageCount)
+                // A ship counts only its best pieces of furniture for storage, so picking up one may cost less than it gives.
+                var storageLost = Property.GetStorageLostOnRetrieval(parentProperty, structure);
+                if (itemCount > parentProperty.ItemStorageCount - storageLost)
                 {
                     Instructions = $"Remove items from storage first.";
                     InstructionColor = GuiColor.Red;
@@ -444,6 +539,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 var item = ObjectPlugin.Deserialize(structure.SerializedItem);
+
+                // A Fermentation Vat takes the colors it has copied with it, on the item, and gives them back when it is placed again.
+                if (structure.StructureType == StructureType.FermentationVat)
+                    FermentationVats.WriteStarters(structure.Id, item);
+
                 if (!Item.TryAcquireItem(Player, item))
                 {
                     Instructions = Item.InventoryFullShortMessage;
@@ -453,7 +553,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // Remove the structure from the parent's child list.
                 parentProperty.ChildPropertyIds[PropertyChildType.Structure].Remove(structure.Id);
-                parentProperty.ItemStorageCount -= structure.ItemStorageCount;
+                parentProperty.ItemStorageCount -= storageLost;
 
                 DB.Set(parentProperty);
 
@@ -468,6 +568,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SelectedStructureIndex = -1;
 
                 DestroyObject(placeable);
+                RefreshFurnitureCount(parentProperty);
                 LoadStructure();
             });
         };
@@ -529,6 +630,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SetFacing(facing);
                 ObjectPlugin.SetPosition(placeable, position);
             });
+            FollowStructure(placeable);
+        }
+
+        /// <summary>
+        /// A garden plot's crop is a model of its own, so it takes each change of the plot's position or facing with it. The facing
+        /// changes run as the placeable's own commands, so this is queued after them.
+        /// </summary>
+        private static void FollowStructure(uint placeable)
+        {
+            AssignCommand(placeable, () => Farming.MatchCropModel(placeable));
         }
 
         public Action OnDiscardChanges() => () =>
@@ -548,6 +659,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             facing = GameMath.NormalizeDegrees(facing);
 
             AssignCommand(placeable, () => SetFacing(facing));
+            FollowStructure(placeable);
         };
 
         public Action OnRotateCounterClockwise() => () =>
@@ -562,6 +674,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             facing = GameMath.NormalizeDegrees(facing);
 
             AssignCommand(placeable, () => SetFacing(facing));
+            FollowStructure(placeable);
         };
 
         private void AdjustFacing(float facing)
@@ -572,6 +685,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var placeable = Property.GetPlaceableByPropertyId(structure.Id);
             AssignCommand(placeable, () => SetFacing(facing));
+            FollowStructure(placeable);
         }
 
         public Action OnSetFacingNorth() => () =>
@@ -607,6 +721,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             position.Z += z;
 
             ObjectPlugin.SetPosition(placeable, position);
+            FollowStructure(placeable);
         }
 
         public Action OnYAxisUp() => () =>
@@ -656,6 +771,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             position.Z = z;
             ObjectPlugin.SetPosition(placeable, position);
+            FollowStructure(placeable);
         };
     }
 }

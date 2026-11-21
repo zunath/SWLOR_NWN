@@ -52,6 +52,8 @@ namespace SWLOR.Game.Server.Service
         public const float MinimumMovementSpeedMultiplier = 0f;
         public const float MaximumMovementSpeedMultiplier = 1.5f;
         private const string WalkToggleVariable = "WALK_TOGGLE";
+        /// <summary>The ship speed multiplier of a pilot in space, set by Space and applied to the movement rate.</summary>
+        public const string ShipMovementSpeedVariable = "SPACE_SHIP_SPEED";
         private const string WalkRestoreMovementRateVariable = "WALK_RESTORE_MOVEMENT_RATE";
         private const string WalkRestoreBaseMovementRateVariable = "WALK_RESTORE_BASE_MOVEMENT_RATE";
         private const string WalkRestoreMaximumMovementRateVariable = "WALK_RESTORE_MAX_MOVEMENT_RATE";
@@ -1059,7 +1061,11 @@ namespace SWLOR.Game.Server.Service
                 : hasMovementRateRestore
                     ? GetLocalFloat(creature, WalkRestoreMaximumMovementRateVariable)
                     : MaximumMovementSpeedMultiplier;
-            return Math.Clamp(movementRate, MinimumMovementSpeedMultiplier, maximumMovementRate);
+            var clampedRate = Math.Clamp(movementRate, MinimumMovementSpeedMultiplier, maximumMovementRate);
+
+            // A pilot in space moves at the speed of the ship's hull and modules.
+            var shipSpeed = isWalking ? 0f : GetLocalFloat(creature, ShipMovementSpeedVariable);
+            return shipSpeed > 0f ? clampedRate * shipSpeed : clampedRate;
         }
 
         private static float GetMovementSpeedAdjustment(uint creature)
@@ -2781,7 +2787,7 @@ namespace SWLOR.Game.Server.Service
             return Math.Max(0, ApplyPercentAdjustment(amount, adjustment));
         }
 
-        private static int ApplyPercentAdjustment(int value, int percentAdjustment)
+        public static int ApplyPercentAdjustment(int value, int percentAdjustment)
         {
             if (percentAdjustment == 0)
                 return value;
@@ -3019,7 +3025,10 @@ namespace SWLOR.Game.Server.Service
                 .StatGroup
                 .CraftSkillBonuses[CraftSkillBonusType.Control][craftingSkillType];
 
-            return control + statusBonus;
+            // A house Workshop adds its bonus to a craft of its chosen skill; a craft that is open keeps the bonus it opened with.
+            var workshopBonus = HouseSpecializations.GetWorkshopBonus(player, dbPlayer, craftingSkillType);
+
+            return control + statusBonus + workshopBonus;
         }
         /// <summary>
         /// Calculates the total Craftsmanship for a player in a given crafting skill.
@@ -3048,7 +3057,10 @@ namespace SWLOR.Game.Server.Service
                 .StatGroup
                 .CraftSkillBonuses[CraftSkillBonusType.Craftsmanship][craftingSkillType];
 
-            return control + statusBonus;
+            // A house Workshop adds its bonus to a craft of its chosen skill; a craft that is open keeps the bonus it opened with.
+            var workshopBonus = HouseSpecializations.GetWorkshopBonus(player, dbPlayer, craftingSkillType);
+
+            return control + statusBonus + workshopBonus;
         }
 
         /// <summary>

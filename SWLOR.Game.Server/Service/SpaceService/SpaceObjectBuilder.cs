@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
@@ -7,7 +6,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
     {
         private readonly Dictionary<string, SpaceObjectDetail> _spaceObjects = new Dictionary<string, SpaceObjectDetail>();
         private SpaceObjectDetail _activeSpaceObject;
-        private string _creatureTag;
 
         /// <summary>
         /// Creates a new space object.
@@ -16,7 +14,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <returns>A ship enemy builder with the configured options.</returns>
         public SpaceObjectBuilder Create(string objectTag)
         {
-            _creatureTag = objectTag;
             _activeSpaceObject = new SpaceObjectDetail();
             _spaceObjects[objectTag] = _activeSpaceObject;
 
@@ -31,32 +28,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public SpaceObjectBuilder ItemTag(string itemTag)
         {
             _activeSpaceObject.ShipItemTag = itemTag;
-
-            return this;
-        }
-
-        /// <summary>
-        /// Adds the specified ship module to the enemy's loadout.
-        /// </summary>
-        /// <param name="shipModuleItemTag">Item tag of the ship module to attach.</param>
-        /// <returns>A ship enemy builder with the configured options.</returns>
-        public SpaceObjectBuilder ShipModule(string shipModuleItemTag)
-        {
-            if (!Space.IsRegisteredShipModule(shipModuleItemTag))
-            {
-                Log.Write(LogGroup.Error, $"Failed to add {shipModuleItemTag} to ship enemy with tag {_creatureTag} as this module is not registered. Please ensure you entered the correct module tag.");
-                return this;
-            }
-
-            var shipModule = Space.GetShipModuleDetailByItemTag(shipModuleItemTag);
-            if (shipModule.PowerType == ShipModulePowerType.High)
-            {
-                _activeSpaceObject.HighPoweredModules.Add(shipModuleItemTag);
-            }
-            else
-            {
-                _activeSpaceObject.LowPowerModules.Add(shipModuleItemTag);
-            }
 
             return this;
         }

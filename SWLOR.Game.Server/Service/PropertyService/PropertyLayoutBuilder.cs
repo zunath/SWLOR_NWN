@@ -71,6 +71,18 @@ namespace SWLOR.Game.Server.Service.PropertyService
         }
 
         /// <summary>
+        /// Sets how many pieces of furniture add item storage, the best first. Pieces past it decorate only.
+        /// </summary>
+        /// <param name="storagePieceLimit">The number of pieces that add storage; 0 for every piece.</param>
+        /// <returns>A PropertyLayoutBuilder with the configured options.</returns>
+        public PropertyLayoutBuilder StoragePieceLimit(int storagePieceLimit)
+        {
+            _currentLayout.StoragePieceLimit = storagePieceLimit;
+
+            return this;
+        }
+
+        /// <summary>
         /// Specifies the number of buildings which can be placed within a city.
         /// Only applicable for cities.
         /// </summary>

@@ -397,6 +397,8 @@ namespace SWLOR.Game.Server.Service
                 IsDead = GetIsDead(player),
                 IsInCombat = GetIsInCombat(player) || Enmity.HasEnmity(player),
                 IsInSpace = !isDM && Space.IsPlayerInSpaceMode(player),
+                // A crew member's station keeps them with the ship, and its check would pull them back to the console.
+                IsAtCrewStation = !isDM && Space.IsAtCrewStation(player),
                 IsInOutOfCharacterArea = OutOfCharacterAreaResrefs.Contains(GetResRef(GetArea(player))),
                 CurrentEventId = isDM ? string.Empty : GetReturnPoint(player)?.EventId ?? string.Empty,
             };

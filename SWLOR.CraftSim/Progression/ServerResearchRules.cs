@@ -13,7 +13,8 @@ namespace SWLOR.CraftSim.Progression
     {
         private static readonly Lazy<Func<RecipeDetail, bool>> Predicate = new(() =>
         {
-            var method = typeof(Craft).GetMethod("IsResearchableRecipe", BindingFlags.NonPublic | BindingFlags.Static)
+            // The space revamp made the rule public (its Research Terminal tests ask it directly); either visibility is the same rule.
+            var method = typeof(Craft).GetMethod("IsResearchableRecipe", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
                 ?? throw new InvalidDataException("Craft no longer has an IsResearchableRecipe method; update ServerResearchRules.");
             return detail => (bool)method.Invoke(null, new object[] { detail })!;
         });

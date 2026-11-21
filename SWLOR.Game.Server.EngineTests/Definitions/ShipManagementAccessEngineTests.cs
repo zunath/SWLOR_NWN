@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     /// </summary>
     public static class ShipManagementAccessEngineTests
     {
-        private const string ShipItemTag = "ShipDeedLightFreighter";
+        private const string ShipItemTag = "sd_striker";
         private const string DockAreaResref = "engine_shipaccess";
         private const int UnpagedSearchLimit = 50;
         private const int PageSize = 25;

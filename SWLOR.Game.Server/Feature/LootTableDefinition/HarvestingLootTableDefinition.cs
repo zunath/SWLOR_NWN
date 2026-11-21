@@ -5,6 +5,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 {
     public class HarvestingLootTableDefinition : ILootTableDefinition
     {
+        /// <summary>The frequency of each tier 3 to 5 crop seed in its node's table: 1, the weight of the emerald in the jasioclase and hyphae tables.</summary>
+        private const int SeedFrequency = 1;
+
         private readonly LootTableBuilder _builder = new();
 
         public Dictionary<string, LootTable> BuildLootTables()
@@ -17,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             VegetablePatches();
             AsteroidMining();
             StripMining();
+            GasHarvesting();
 
             return _builder.Build();
         }
@@ -42,31 +46,41 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("raw_arkoxit", 50);
         }
 
+        /// <summary>
+        /// Each tree's table also holds its woodlot sapling as a rare drop, weight 1 against 50 for the tier's wood
+        /// (<c>WoodlotRules.SaplingDropWeight</c>, which a test keeps equal). Prospecting treats it as neither ore nor a gem
+        /// (<c>ProspectingGems</c>). Names and weights stay literals: the space balance tools read this file as text.
+        /// </summary>
         private void Trees()
         {
             _builder.Create("HARVESTING_TREE")
                 .AddItem("wood", 50)
                 .AddItem("fine_wood", 5)
-                .AddItem("jade", 5);
+                .AddItem("jade", 5)
+                .AddItem("sapling_wood", 1);
             _builder.Create("HARVESTING_OAK_TREE")
                 .AddItem("fine_wood", 50)
                 .AddItem("wood", 10)
-                .AddItem("agate", 4);
+                .AddItem("agate", 4)
+                .AddItem("sapling_fine", 1);
             _builder.Create("HARVESTING_ANCIENT_TREE")
                 .AddItem("ancient_wood", 50)
                 .AddItem("fine_wood", 20)
                 .AddItem("wood", 2)
-                .AddItem("citrine", 3);
+                .AddItem("citrine", 3)
+                .AddItem("sapling_ancient", 1);
             _builder.Create("HARVESTING_ARACIA_TREE")
                 .AddItem("aracia_wood", 50)
                 .AddItem("ancient_wood", 20)
                 .AddItem("fine_wood", 2)
-                .AddItem("ruby", 2);
+                .AddItem("ruby", 2)
+                .AddItem("sapling_aracia", 1);
             _builder.Create("HARVESTING_HYPHAE_TREE")
                 .AddItem("hyphae_wood", 50)
                 .AddItem("aracia_wood", 20)
                 .AddItem("ancient_wood", 2)
-                .AddItem("emerald", 1);
+                .AddItem("emerald", 1)
+                .AddItem("sapling_hyphae", 1);
         }
 
         private void Bushes()
@@ -80,15 +94,18 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("SCAVENGING_BUSH_3")
                 .AddItem("fiberp_good", 50)
                 .AddItem("fiberp_flawed", 20)
-                .AddItem("fiberp_ruined", 5);
+                .AddItem("fiberp_ruined", 5)
+                .AddItem("seed_fiber_3", SeedFrequency);
             _builder.Create("SCAVENGING_BUSH_4")
                 .AddItem("fiberp_imperfect", 50)
                 .AddItem("fiberp_good", 20)
-                .AddItem("fiberp_flawed", 5);
+                .AddItem("fiberp_flawed", 5)
+                .AddItem("seed_fiber_4", SeedFrequency);
             _builder.Create("SCAVENGING_BUSH_5")
                 .AddItem("fiberp_high", 50)
                 .AddItem("fiberp_imperfect", 20)
-                .AddItem("fiberp_good", 5);
+                .AddItem("fiberp_good", 5)
+                .AddItem("seed_fiber_5", SeedFrequency);
         }
         private void Herbs()
         {
@@ -97,11 +114,14 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("HERBS_2")
                 .AddItem("herb_m", 50);
             _builder.Create("HERBS_3")
-                .AddItem("herb_c", 50);
+                .AddItem("herb_c", 50)
+                .AddItem("seed_seaweed", SeedFrequency);
             _builder.Create("HERBS_4")
-                .AddItem("herb_t", 50);
+                .AddItem("herb_t", 50)
+                .AddItem("seed_desert_sage", SeedFrequency);
             _builder.Create("HERBS_5")
-                .AddItem("herb_x", 50);
+                .AddItem("herb_x", 50)
+                .AddItem("seed_oregano", SeedFrequency);
         }
 
         private void SupplyCrates()
@@ -145,7 +165,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("herb_c", 5)
                 .AddItem("h_acorn", 20)
                 .AddItem("s_pineapple", 20)
-                .AddItem("veggie_clump", 20);
+                .AddItem("veggie_clump", 20)
+                .AddItem("seed_acorn", SeedFrequency)
+                .AddItem("seed_pineapple", SeedFrequency)
+                .AddItem("seed_veg_clump", SeedFrequency);
 
             _builder.Create("VEGETABLES_PATCH_4")
                 .AddItem("ginger", 10)
@@ -154,78 +177,123 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("plant_butter", 10)
                 .AddItem("walnut", 10)
                 .AddItem("cornucopia", 5)
-                .AddItem("herb_t", 5);
+                .AddItem("herb_t", 5)
+                .AddItem("seed_ginger", SeedFrequency)
+                .AddItem("seed_melon", SeedFrequency)
+                .AddItem("seed_mushroom", SeedFrequency)
+                .AddItem("seed_walnut", SeedFrequency)
+                .AddItem("seed_cornucopia", SeedFrequency);
 
             _builder.Create("VEGETABLES_PATCH_5")
                 .AddItem("herb_x", 5)
                 .AddItem("turnip", 20)
                 .AddItem("tofu", 20)
                 .AddItem("dried_bonito", 10)
-                .AddItem("tomato", 10);
+                .AddItem("tomato", 10)
+                .AddItem("seed_turnip", SeedFrequency)
+                .AddItem("seed_tomato", SeedFrequency);
         }
 
         private void AsteroidMining()
         {
             _builder.Create("ASTEROID_TILARIUM")
-                .AddItem("ore_tilarium", 30)
-                .AddItem("aluminum", 2)
-                .AddItem("quadrenium", 1);
+                .AddItem("ore_tilarium", 3090)
+                .AddItem("ore_durelium", 412)
+                .AddItem("aluminum", 206, isRare: true)
+                .AddItem("quadrenium", 103);
 
             _builder.Create("ASTEROID_CURRIAN")
-                .AddItem("ore_currian", 30)
-                .AddItem("steel", 2)
-                .AddItem("vintrium", 1);
+                .AddItem("ore_currian", 3390)
+                .AddItem("ore_durelium", 452)
+                .AddItem("steel", 226, isRare: true)
+                .AddItem("vintrium", 113);
+
+            // Durelium asteroids of the Viscara Asteroid Belt (W6c): Durelium is the main ore beside the tier's own.
+            _builder.Create("ASTEROID_DURELIUM_1")
+                .AddItem("ore_durelium", 2310)
+                .AddItem("ore_tilarium", 770)
+                .AddItem("aluminum", 154, isRare: true)
+                .AddItem("quadrenium", 77);
+
+            _builder.Create("ASTEROID_DURELIUM_2")
+                .AddItem("ore_durelium", 3420)
+                .AddItem("ore_currian", 1140)
+                .AddItem("steel", 228, isRare: true)
+                .AddItem("vintrium", 114);
 
             _builder.Create("ASTEROID_IDAILIA")
-                .AddItem("ore_idailia", 30)
-                .AddItem("obsidian", 2)
-                .AddItem("ionite", 1);
+                .AddItem("ore_idailia", 12000)
+                .AddItem("obsidian", 100, isRare: true)
+                .AddItem("ionite", 50);
 
             _builder.Create("ASTEROID_BARINIUM")
-                .AddItem("ore_barinium", 30)
-                .AddItem("crystal", 2)
-                .AddItem("katrium", 1);
+                .AddItem("ore_barinium", 12960)
+                .AddItem("crystal", 54, isRare: true)
+                .AddItem("katrium", 27);
 
             _builder.Create("ASTEROID_GOSTIAN")
-                .AddItem("ore_gostian", 30)
-                .AddItem("diamond", 2)
-                .AddItem("zinsiam", 1);
+                .AddItem("ore_gostian", 16320)
+                .AddItem("diamond", 34)
+                .AddItem("zinsiam", 17, isRare: true);
 
             _builder.Create("ASTEROID_ARDANIUM")
-                .AddItem("ore_arda", 9)
-                .AddItem("zinsiam", 1);
+                .AddItem("ore_arda", 1312)
+                .AddItem("ore_gostian", 10496)
+                .AddItem("zinsiam", 41, isRare: true);
+        }
+
+        /// <summary>Gas clouds (plan section 12): Tibanna Gas, harvested by the Gas Harvester.</summary>
+        private void GasHarvesting()
+        {
+            _builder.Create("GAS_TIBANNA")
+                .AddItem("gas_tibanna", 1);
         }
 
         private void StripMining()
         {
             _builder.Create("ASTEROID_TILARIUM_STRIP")
-                .AddItem("ore_tilarium", 30)
-                .AddItem("aluminum", 10)
-                .AddItem("quadrenium", 5);
+                .AddItem("ore_tilarium", 7410)
+                .AddItem("ore_durelium", 988)
+                .AddItem("aluminum", 494, isRare: true)
+                .AddItem("quadrenium", 247);
 
             _builder.Create("ASTEROID_CURRIAN_STRIP")
-                .AddItem("ore_currian", 30)
-                .AddItem("steel", 10)
-                .AddItem("vintrium", 5);
+                .AddItem("ore_currian", 8190)
+                .AddItem("ore_durelium", 1092)
+                .AddItem("steel", 546, isRare: true)
+                .AddItem("vintrium", 273);
+
+            _builder.Create("ASTEROID_DURELIUM_1_STRIP")
+                .AddItem("ore_durelium", 5550)
+                .AddItem("ore_tilarium", 1850)
+                .AddItem("aluminum", 370, isRare: true)
+                .AddItem("quadrenium", 185);
+
+            _builder.Create("ASTEROID_DURELIUM_2_STRIP")
+                .AddItem("ore_durelium", 8220)
+                .AddItem("ore_currian", 2740)
+                .AddItem("steel", 548, isRare: true)
+                .AddItem("vintrium", 274);
 
             _builder.Create("ASTEROID_IDAILIA_STRIP")
-                .AddItem("ore_idailia", 30)
-                .AddItem("obsidian", 10)
-                .AddItem("ionite", 5);
+                .AddItem("ore_idailia", 20880)
+                .AddItem("obsidian", 522, isRare: true)
+                .AddItem("ionite", 261);
 
             _builder.Create("ASTEROID_BARINIUM_STRIP")
-                .AddItem("ore_barinium", 30)
-                .AddItem("crystal", 10)
-                .AddItem("katrium", 5);
+                .AddItem("ore_barinium", 25440)
+                .AddItem("crystal", 318, isRare: true)
+                .AddItem("katrium", 159);
 
             _builder.Create("ASTEROID_GOSTIAN_STRIP")
-                .AddItem("ore_gostian", 30)
-                .AddItem("diamond", 10)
-                .AddItem("zinsiam", 5);
+                .AddItem("ore_gostian", 32640)
+                .AddItem("diamond", 204)
+                .AddItem("zinsiam", 102, isRare: true);
 
             _builder.Create("ASTEROID_ARDANIUM_STRIP")
-                .AddItem("ore_arda", 30)
-                .AddItem("zinsiam", 5);
+                .AddItem("ore_arda", 2720)
+                .AddItem("ore_gostian", 21760)
+                .AddItem("zinsiam", 255, isRare: true);
         }
     }
 }

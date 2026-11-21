@@ -5,12 +5,16 @@ using SWLOR.CombatSim.Data;
 using SWLOR.CombatSim.Report;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
+using SWLOR.CombatSim.SpaceCombat.Report;
+using SWLOR.CombatSim.SpaceCombat.Scenario;
 
 const string Usage = """
 SWLOR combat simulator
 
   run <scenario.json> [--rules pre-tuning,current] [--rules-file custom.json]... [--runs 200] [--seed 1] [--out report.md] [--json results.json] [--detail]
       Runs the scenario under each rule set and prints a comparison; --json also writes the raw per-rule-set results.
+  space <space-scenario.json> [--runs 300] [--seed 1] [--out report.md] [--json results.json]
+      Runs a ship-vs-ship space fight (see Scenarios/Space) and reports time to kill, win rate, what the attackers have left and damage per second.
   rules [--name current]
       Prints a rule preset as JSON, to copy into a --rules-file and edit.
   abilities [--out abilities.csv]
@@ -28,6 +32,7 @@ try
     return args[0] switch
     {
         "run" => Run(args.Skip(1).ToArray()),
+        "space" => RunSpace(args.Skip(1).ToArray()),
         "rules" => PrintRules(args.Skip(1).ToArray()),
         "abilities" => DumpAbilities(args.Skip(1).ToArray()),
         _ => Fail($"Unknown command '{args[0]}'.")
@@ -70,6 +75,43 @@ static int Run(string[] args)
 
     if (options.TryGetValue("--json", out var json))
         OutputFile.WriteAllText(json[0], JsonConvert.SerializeObject(summaries, Formatting.Indented));
+
+    if (options.TryGetValue("--out", out var output))
+    {
+        OutputFile.WriteAllText(output[0], report);
+        Console.WriteLine($"Wrote {output[0]}");
+    }
+    else
+    {
+        Console.WriteLine(report);
+    }
+
+    return 0;
+}
+
+static int RunSpace(string[] args)
+{
+    if (args.Length == 0)
+        return Fail("space needs a scenario file.");
+
+    var options = CommandLineOptions.Parse(args.Skip(1).ToArray(), new[] { "--runs", "--seed", "--out", "--json" });
+    var outputs = new[] { "--json", "--out" }
+        .Where(options.ContainsKey)
+        .Select(option => (option, options[option][0]))
+        .ToList();
+    var collision = CommandLineOptions.FindOutputCollision(outputs, new List<(string, string)> { ("scenario", args[0]) });
+    if (collision != null)
+        return Fail(collision);
+
+    var scenario = SpaceScenarioSpec.Load(args[0]);
+    var runs = CommandLineOptions.GetInt(options, "--runs", SpaceBatchRunner.DefaultRuns, 1, BatchRunner.MaximumRuns);
+    var seed = CommandLineOptions.GetInt(options, "--seed", 1, int.MinValue);
+
+    var summary = SpaceBatchRunner.Run(scenario, runs, seed);
+    var report = SpaceMarkdownReport.Build(scenario, summary);
+
+    if (options.TryGetValue("--json", out var json))
+        OutputFile.WriteAllText(json[0], JsonConvert.SerializeObject(summary, Formatting.Indented));
 
     if (options.TryGetValue("--out", out var output))
     {

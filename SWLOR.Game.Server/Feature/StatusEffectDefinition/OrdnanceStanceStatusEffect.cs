@@ -16,6 +16,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             StatGroup.Stats[StatType.ThrowingAreaAbilityDamagePercentAdjustment] = 10;
             StatGroup.Stats[StatType.ThrowingSingleTargetDamagePercentAdjustment] = -10;
+
+            // A pilot's ship launchers read the space stats: +10% area ability damage, -10% single-target damage.
+            StatGroup.Stats[StatType.SpaceLauncherAreaAbilityDamagePercentAdjustment] = 10;
+            StatGroup.Stats[StatType.SpaceLauncherSingleTargetDamagePercentAdjustment] = -10;
         }
     }
 }

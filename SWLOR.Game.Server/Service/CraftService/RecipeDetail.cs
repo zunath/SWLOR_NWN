@@ -6,6 +6,9 @@ namespace SWLOR.Game.Server.Service.CraftService
     public class RecipeDetail
     {
         public int Quantity { get; set; }
+
+        /// <summary>The name shown in the recipe lists. Null shows the crafted item's name.</summary>
+        public string Name { get; set; }
         public string Resref { get; set; }
         public List<IRecipeRequirement> Requirements { get; set; }
         public Dictionary<string, int> Components { get; set; }

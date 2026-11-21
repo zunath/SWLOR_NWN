@@ -3,6 +3,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -10,10 +11,13 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
-    // Production has run player migration 26 and server migration 31. The next release adds player migration
-    // NextPlayerVersion and server migration NextServerVersion. Neither is registered until it holds real work, because
-    // booting a build records the highest registered version and an empty one would skip work later folded into it.
-    // Update these at each post-release cleanup.
+    // Production has run player migration 26 and server migration 31. Master's next release adds player migration
+    // NextPlayerVersion and server migration NextServerVersion once they hold real work. The space revamp sits above them,
+    // at player 28 and server 33, and the city revamp, launched with space, at server 34, so either release can ship first:
+    // the one that ships second keeps or moves above the first's versions. Update these at each post-release cleanup.
+    private const int SpacePlayerVersion = 28;
+    private const int SpaceServerVersion = 33;
+    private const int CityServerVersion = 34;
     private const int ReleasedPlayerVersion = 26;
     private const int ReleasedServerVersion = 31;
     private const int NextPlayerVersion = ReleasedPlayerVersion + 1;
@@ -21,14 +25,17 @@ public class MigrationDataTests
     private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Service.Migration).Assembly;
 
     [Test]
-    public void CharacterMigrationsHaveUniqueVersionsAndAtMostOneNextPass()
+    public void CharacterMigrationsHaveUniqueVersionsAndOneSpacePass()
     {
         var migrations = CharacterMigrations.ImplementationTypes
             .Select(type => Activator.CreateInstance(type)!).ToArray();
         migrations.Select(CharacterMigrations.VersionOf).Should().OnlyHaveUniqueItems();
-        migrations.Select(CharacterMigrations.VersionOf).Where(version => version > NextPlayerVersion).Should().BeEmpty(
-            $"the next release receives at most one player pass, as migration {NextPlayerVersion}");
-        CharacterMigrations.LatestVersion.Should().BeInRange(ReleasedPlayerVersion, NextPlayerVersion);
+        // 26 shipped with the crafting revamp; 28 is the space revamp's, above master's next release (27).
+        migrations.Where(migration => CharacterMigrations.VersionOf(migration) > ReleasedPlayerVersion).Select(migration => migration.GetType())
+            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_28_ConvertSpaceItems") },
+                "the space revamp receives one combined player-item pass");
+        CharacterMigrations.VersionOf("_28_ConvertSpaceItems").Should().Be(SpacePlayerVersion).And.BeGreaterThan(NextPlayerVersion);
+        CharacterMigrations.LatestVersion.Should().Be(SpacePlayerVersion);
     }
 
     [Test]
@@ -99,9 +106,16 @@ public class MigrationDataTests
         var remaining = ServerAssembly.GetTypes()
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IServerMigration).IsAssignableFrom(type))
             .Select(type => (IServerMigration)Activator.CreateInstance(type)!).ToArray();
-        remaining.Where(server => server.Version <= baseline).Should().BeEmpty("retired migrations are removed, not kept beside the baseline");
-        remaining.Where(server => server.Version != NextServerVersion).Should().BeEmpty(
-            $"the next release adds at most one combined stored-item pass, as server migration {NextServerVersion}");
+        remaining.Should().OnlyContain(server => server.Version > baseline, "retired migrations are removed, not kept beside the baseline");
+        remaining.Select(server => server.GetType()).Should().BeEquivalentTo(
+            new[] { typeof(_32_NextReleaseServerMigration), typeof(_33_ConvertSpaceItems), typeof(_34_PlayerCityRevamp) },
+            $"master's next release has one server migration ({NextServerVersion}), the space revamp's one stored-item pass " +
+            "sits above it, and the city revamp's one pass follows it");
+        new _32_NextReleaseServerMigration().Version.Should().Be(NextServerVersion);
+        new _33_ConvertSpaceItems().ExecutionType.Should().Be(MigrationExecutionType.PostCacheLoad);
+        new _33_ConvertSpaceItems().Version.Should().Be(SpaceServerVersion).And.BeGreaterThan(NextServerVersion);
+        new _34_PlayerCityRevamp().ExecutionType.Should().Be(MigrationExecutionType.PostDatabaseLoad);
+        new _34_PlayerCityRevamp().Version.Should().Be(CityServerVersion);
     }
 
     private static object? Invoke(string type, string method, params object[] args) =>

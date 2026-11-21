@@ -57,6 +57,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
         ApartmentSmallStyleFurnished = 112,
         ApartmentMediumStyleUnfurnished = 113,
         ApartmentMediumStyleFurnished = 114,
+
+        Station = 115,
     }
 
 }

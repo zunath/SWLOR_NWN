@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.DisguiseService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PvpCombatService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -355,6 +356,8 @@ namespace SWLOR.Game.Server.Service
             // the activation delay does not falsely block it and DateLastActivated is not re-stamped.
             if (dbPlayer.ActiveDisguiseId == disguise.Id)
             {
+                // Asking for the disguise already shown undoes a change that is waiting for PvP combat to end.
+                PvpCombatWindow.CancelQueuedIdentity(player, dbPlayer);
                 ApplyAppearance(player, disguise);
                 RefreshDisguiseDisplay(player);
                 Log.WriteStructured(LogGroup.PlayerName,
@@ -366,6 +369,10 @@ namespace SWLOR.Game.Server.Service
             var delayError = ValidateActivationDelay(player, playerId);
             if (!string.IsNullOrWhiteSpace(delayError))
                 return Reject(delayError);
+
+            // During PvP combat the change waits for the window to end, so nobody gives away a disguise mid-fight.
+            if (PvpCombatWindow.RequestIdentity(player, dbPlayer, disguise.Id, out var queuedMessage) == PvpCombatChangeOutcome.Queued)
+                return ActivateDisguiseResult.Queued(queuedMessage);
 
             var previousDisguiseId = dbPlayer.ActiveDisguiseId;
 
@@ -401,6 +408,9 @@ namespace SWLOR.Game.Server.Service
 
             ApplyAppearance(player, disguise);
             RefreshDisguiseDisplay(player);
+
+            // A disguise that shows the PvP flag must see the bounty notice before a city can target it.
+            BountyConsent.PromptIfNeeded(player);
             return ActivateDisguiseResult.Success();
         }
 
@@ -414,6 +424,13 @@ namespace SWLOR.Game.Server.Service
                 Log.WriteStructured(LogGroup.PlayerName,
                     "Disguise deactivation rejected: PlayerId={PlayerId} PlayerName={PlayerName} Reason={Reason}",
                     playerId, GetName(player), "No active disguise.");
+                return false;
+            }
+
+            // During PvP combat the change waits for the window to end, so nobody drops a disguise mid-fight.
+            if (PvpCombatWindow.RequestIdentity(player, dbPlayer, string.Empty, out var queuedMessage) == PvpCombatChangeOutcome.Queued)
+            {
+                SendMessageToPC(player, ColorToken.Combat(queuedMessage));
                 return false;
             }
 
@@ -472,7 +489,16 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (IsActiveDisguise(player, disguiseId))
+            {
+                // Retiring the disguise shown would change identity mid-fight, which PvP combat holds back.
+                if (PvpCombatWindow.IsOpen(player))
+                {
+                    SendMessageToPC(player, ColorToken.Combat("You are in PvP combat, so you cannot retire the disguise you are showing yet."));
+                    return false;
+                }
+
                 Deactivate(player);
+            }
 
             disguise.IsRetired = true;
             disguise.DateRetired = DateTime.UtcNow;

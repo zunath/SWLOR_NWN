@@ -73,7 +73,7 @@ public static class AbandonedStationDockMasterEngineTests
                 OwnerPlayerId = actor.Id, PropertyId = property.Id,
                 Status = new ShipStatus
                 {
-                    ItemTag = "ShipDeedLightFreighter", Hull = 50, MaxHull = 50,
+                    ItemTag = "sd_striker", Hull = 50, MaxHull = 50,
                     Shield = 50, MaxShield = 50, Capacitor = 50, MaxCapacitor = 50
                 }
             };

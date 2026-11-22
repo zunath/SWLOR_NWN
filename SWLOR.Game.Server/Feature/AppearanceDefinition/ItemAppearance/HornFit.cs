@@ -36,6 +36,10 @@ public static class HornFit
     public static readonly HornFitOffset JessoonHold =
         HornFitTransform.Compose(JessoonOnKlooHorn, new HornFitOffset(-.0188f, .0569f, .0034f, 0f));
 
+    /// <summary>The Jessoon turned in the right hand as every Jessoon set holds it, moved in that hand.</summary>
+    private static HornFitOffset JessoonInHand(float x, float y, float z) =>
+        new(x, y, z, JessoonHold.RotateY, JessoonHold.RotateZ, JessoonHold.RotateX);
+
     private static readonly Dictionary<(string Resref, AppearanceType Appearance, Gender Gender), HornFitOffset> _playingFits =
         BuildPlayingFits();
 
@@ -102,41 +106,39 @@ public static class HornFit
         foreach (var appearance in femaleKlooBodies)
             fits[(kloo, appearance, Gender.Female)] = femaleKloo;
 
-        // The Flanged Jessoon plays its own clips (PerformanceAnimations.FitToInstrument): the horn motion with the hands spread
-        // along its long body. Each body's fit hangs it from the right hand so the tube runs through both grips and the
-        // mouthpiece reaches that body's mouth over the whole loop. tools/SolveJessoonFits.py solves them from the compiled
-        // clips; most bodies of one skeleton share a fit, and the rest differ by their heads and hands.
+        // The Flanged Jessoon plays its own clips, one set per body (PerformanceAnimations.FitToInstrument), each with the
+        // hands where the male Human's sit on it and the mouthpiece at that body's mouth. Every set holds the instrument
+        // turned the same way in the right hand, so a body playing its own set only moves it in that hand
+        // (tools/DeriveJessoonPerformanceMotion.py prints these). KelDor, the droids and the female Rodian play another
+        // body's set and keep the fit tools/SolveJessoonFits.py solves for their own hands and mouth.
         foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
-        foreach (var gender in new[] { Gender.Male, Gender.Female })
-            fits[(jessoon, appearance, gender)] = JessoonHold;
+        {
+            fits[(jessoon, appearance, Gender.Male)] = JessoonHold;
+            fits[(jessoon, appearance, Gender.Female)] = JessoonInHand(-.0465f, .1299f, -.0176f);
+        }
 
-        var femaleJessoon = new HornFitOffset(-.0146f, .1162f, -.0124f, .84f, -146.14f, 27.88f);
-        foreach (var appearance in new[]
-                 {
-                     AppearanceType.Human, AppearanceType.Chiss, AppearanceType.Zabrak, AppearanceType.Twilek,
-                     AppearanceType.Mirialan, AppearanceType.Echani, AppearanceType.KelDor, AppearanceType.Cyborg,
-                     AppearanceType.Trandoshan, AppearanceType.Togruta, AppearanceType.Nautolan
-                 })
-            fits[(jessoon, appearance, Gender.Female)] = femaleJessoon;
+        fits[(jessoon, AppearanceType.Trandoshan, Gender.Male)] = JessoonInHand(-.059f, .1329f, -.0166f);
+        fits[(jessoon, AppearanceType.Trandoshan, Gender.Female)] = JessoonInHand(-.0581f, .1186f, -.0095f);
+        fits[(jessoon, AppearanceType.MonCalamari, Gender.Male)] = JessoonInHand(-.0431f, .1559f, -.0215f);
+        fits[(jessoon, AppearanceType.MonCalamari, Gender.Female)] = JessoonInHand(-.0368f, .1086f, .0032f);
+        fits[(jessoon, AppearanceType.Bothan, Gender.Male)] = JessoonInHand(-.0511f, .1189f, -.0131f);
+        fits[(jessoon, AppearanceType.Bothan, Gender.Female)] = JessoonInHand(-.0496f, .1388f, -.0264f);
+        fits[(jessoon, AppearanceType.Rodian, Gender.Male)] = JessoonInHand(-.0408f, .1206f, -.0506f);
+        fits[(jessoon, AppearanceType.Wookiee, Gender.Male)] = JessoonInHand(-.0417f, .1456f, -.0228f);
+        fits[(jessoon, AppearanceType.Wookiee, Gender.Female)] = JessoonInHand(-.0482f, .1466f, -.0535f);
+        fits[(jessoon, AppearanceType.Cathar, Gender.Male)] = JessoonInHand(-.0289f, .1366f, -.0095f);
+        fits[(jessoon, AppearanceType.Cathar, Gender.Female)] = JessoonInHand(-.0188f, .1262f, .0116f);
+        fits[(jessoon, AppearanceType.Ugnaught, Gender.Male)] = JessoonInHand(-.0477f, .1266f, -.0242f);
+        fits[(jessoon, AppearanceType.Ugnaught, Gender.Female)] = JessoonInHand(-.0429f, .1156f, -.0052f);
+        fits[(jessoon, AppearanceType.Ewok, Gender.Male)] = JessoonInHand(-.0392f, .1402f, -.002f);
+        fits[(jessoon, AppearanceType.Ewok, Gender.Female)] = JessoonInHand(-.0261f, .1298f, -.0013f);
 
-        var heavyHeadJessoon = new HornFitOffset(-.0472f, .1211f, -.0251f, 2.95f, -173.72f, 32.33f);
-        fits[(jessoon, AppearanceType.Trandoshan, Gender.Male)] = heavyHeadJessoon;
-        fits[(jessoon, AppearanceType.MonCalamari, Gender.Male)] = heavyHeadJessoon;
-        fits[(jessoon, AppearanceType.MonCalamari, Gender.Female)] = new(-.0153f, .1176f, -.0099f, 3.37f, -139.11f, 26.14f);
-        fits[(jessoon, AppearanceType.Bothan, Gender.Male)] = new(-.042f, .1162f, -.0142f, 11.35f, -159.97f, 29.58f);
-        var snoutJessoon = new HornFitOffset(-.0402f, .1141f, -.0227f, 2.95f, -173.44f, 31.87f);
-        fits[(jessoon, AppearanceType.Rodian, Gender.Male)] = snoutJessoon;
-        fits[(jessoon, AppearanceType.Wookiee, Gender.Male)] = snoutJessoon;
-        var smallFemaleJessoon = new HornFitOffset(-.0126f, .1077f, -.0119f, 1.23f, -140.49f, 26.61f);
-        fits[(jessoon, AppearanceType.Bothan, Gender.Female)] = smallFemaleJessoon;
-        fits[(jessoon, AppearanceType.Rodian, Gender.Female)] = smallFemaleJessoon;
-        fits[(jessoon, AppearanceType.Wookiee, Gender.Female)] = new(-.0138f, .1096f, -.0115f, 2.05f, -138.74f, 26.71f);
-        fits[(jessoon, AppearanceType.Cathar, Gender.Male)] = new(-.0502f, .1248f, -.0163f, 12.35f, -152.21f, 28.66f);
-        fits[(jessoon, AppearanceType.Cathar, Gender.Female)] = new(-.05f, .1182f, -.0416f, 1.93f, -146.11f, 27.8f);
-        fits[(jessoon, AppearanceType.Ugnaught, Gender.Male)] = new(-.0201f, .0388f, -.0136f, 10.47f, -170.76f, 31.22f);
-        fits[(jessoon, AppearanceType.Ugnaught, Gender.Female)] = new(-.0224f, .0384f, -.0134f, 10.24f, -168.57f, 31.46f);
-        fits[(jessoon, AppearanceType.Ewok, Gender.Male)] = new(-.0367f, .1063f, -.0096f, 9.84f, -170.22f, 31.46f);
-        fits[(jessoon, AppearanceType.Ewok, Gender.Female)] = new(-.0395f, .1055f, -.0103f, 9.89f, -167.44f, 31.37f);
+        fits[(jessoon, AppearanceType.KelDor, Gender.Male)] = new(-.0364f, .1277f, -.0255f, 13.43f, -159.65f, 31.65f);
+        fits[(jessoon, AppearanceType.KelDor, Gender.Female)] = new(-.0443f, .1287f, -.0217f, 12.94f, -144.7f, 28f);
+        fits[(jessoon, AppearanceType.Rodian, Gender.Female)] = new(-.044f, .1381f, -.0361f, 13.64f, -154.55f, 29.57f);
+        var droidJessoon = new HornFitOffset(-.034f, .1276f, -.0216f, 13.02f, -154.58f, 31.57f);
+        fits[(jessoon, AppearanceType.Droid, Gender.Male)] = droidJessoon;
+        fits[(jessoon, AppearanceType.Droid, Gender.Female)] = droidJessoon;
 
         return fits;
     }

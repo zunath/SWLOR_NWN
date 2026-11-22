@@ -53,65 +53,101 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         };
 
         // The horn motion with the hands spread along the Flanged Jessoon's long body (tools/DeriveJessoonPerformanceMotion.py),
-        // solved on the male Human skeleton, which the droids share.
-        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoon = new()
-        {
-            [AuthoredAnimation.HornLoop] = AuthoredAnimation.JessoonLoop,
-            [AuthoredAnimation.HornLow] = AuthoredAnimation.JessoonLow,
-            [AuthoredAnimation.HornMid] = AuthoredAnimation.JessoonMid,
-            [AuthoredAnimation.HornHigh] = AuthoredAnimation.JessoonHigh,
-            [AuthoredAnimation.HornFlourish] = AuthoredAnimation.JessoonFlourish,
-        };
+        // one set per body: each holds the instrument at that body's mouth with its hands where the male Human's are.
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonHuman = JessoonSet(
+            AuthoredAnimation.JessoonHumanLoop, AuthoredAnimation.JessoonHumanLow, AuthoredAnimation.JessoonHumanMid,
+            AuthoredAnimation.JessoonHumanHigh, AuthoredAnimation.JessoonHumanFlourish);
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonHumanFemale = JessoonSet(
+            AuthoredAnimation.JessoonHumanFemaleLoop, AuthoredAnimation.JessoonHumanFemaleLow, AuthoredAnimation.JessoonHumanFemaleMid,
+            AuthoredAnimation.JessoonHumanFemaleHigh, AuthoredAnimation.JessoonHumanFemaleFlourish);
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonTrandoshan = JessoonSet(
+            AuthoredAnimation.JessoonTrandoshanLoop, AuthoredAnimation.JessoonTrandoshanLow, AuthoredAnimation.JessoonTrandoshanMid,
+            AuthoredAnimation.JessoonTrandoshanHigh, AuthoredAnimation.JessoonTrandoshanFlourish);
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonTrandoshanFemale = JessoonSet(
+            AuthoredAnimation.JessoonTrandoshanFemaleLoop, AuthoredAnimation.JessoonTrandoshanFemaleLow, AuthoredAnimation.JessoonTrandoshanFemaleMid,
+            AuthoredAnimation.JessoonTrandoshanFemaleHigh, AuthoredAnimation.JessoonTrandoshanFemaleFlourish);
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonMonCalamari = JessoonSet(
+            AuthoredAnimation.JessoonMonCalamariLoop, AuthoredAnimation.JessoonMonCalamariLow, AuthoredAnimation.JessoonMonCalamariMid,
+            AuthoredAnimation.JessoonMonCalamariHigh, AuthoredAnimation.JessoonMonCalamariFlourish);
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonMonCalamariFemale = JessoonSet(
+            AuthoredAnimation.JessoonMonCalamariFemaleLoop, AuthoredAnimation.JessoonMonCalamariFemaleLow, AuthoredAnimation.JessoonMonCalamariFemaleMid,
+            AuthoredAnimation.JessoonMonCalamariFemaleHigh, AuthoredAnimation.JessoonMonCalamariFemaleFlourish);
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonBothan = JessoonSet(
+            AuthoredAnimation.JessoonBothanLoop, AuthoredAnimation.JessoonBothanLow, AuthoredAnimation.JessoonBothanMid,
+            AuthoredAnimation.JessoonBothanHigh, AuthoredAnimation.JessoonBothanFlourish);
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonBothanFemale = JessoonSet(
+            AuthoredAnimation.JessoonBothanFemaleLoop, AuthoredAnimation.JessoonBothanFemaleLow, AuthoredAnimation.JessoonBothanFemaleMid,
+            AuthoredAnimation.JessoonBothanFemaleHigh, AuthoredAnimation.JessoonBothanFemaleFlourish);
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonRodian = JessoonSet(
+            AuthoredAnimation.JessoonRodianLoop, AuthoredAnimation.JessoonRodianLow, AuthoredAnimation.JessoonRodianMid,
+            AuthoredAnimation.JessoonRodianHigh, AuthoredAnimation.JessoonRodianFlourish);
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonWookiee = JessoonSet(
+            AuthoredAnimation.JessoonWookieeLoop, AuthoredAnimation.JessoonWookieeLow, AuthoredAnimation.JessoonWookieeMid,
+            AuthoredAnimation.JessoonWookieeHigh, AuthoredAnimation.JessoonWookieeFlourish);
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonWookieeFemale = JessoonSet(
+            AuthoredAnimation.JessoonWookieeFemaleLoop, AuthoredAnimation.JessoonWookieeFemaleLow, AuthoredAnimation.JessoonWookieeFemaleMid,
+            AuthoredAnimation.JessoonWookieeFemaleHigh, AuthoredAnimation.JessoonWookieeFemaleFlourish);
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonCathar = JessoonSet(
+            AuthoredAnimation.JessoonCatharLoop, AuthoredAnimation.JessoonCatharLow, AuthoredAnimation.JessoonCatharMid,
+            AuthoredAnimation.JessoonCatharHigh, AuthoredAnimation.JessoonCatharFlourish);
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonCatharFemale = JessoonSet(
+            AuthoredAnimation.JessoonCatharFemaleLoop, AuthoredAnimation.JessoonCatharFemaleLow, AuthoredAnimation.JessoonCatharFemaleMid,
+            AuthoredAnimation.JessoonCatharFemaleHigh, AuthoredAnimation.JessoonCatharFemaleFlourish);
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonUgnaught = JessoonSet(
+            AuthoredAnimation.JessoonUgnaughtLoop, AuthoredAnimation.JessoonUgnaughtLow, AuthoredAnimation.JessoonUgnaughtMid,
+            AuthoredAnimation.JessoonUgnaughtHigh, AuthoredAnimation.JessoonUgnaughtFlourish);
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonUgnaughtFemale = JessoonSet(
+            AuthoredAnimation.JessoonUgnaughtFemaleLoop, AuthoredAnimation.JessoonUgnaughtFemaleLow, AuthoredAnimation.JessoonUgnaughtFemaleMid,
+            AuthoredAnimation.JessoonUgnaughtFemaleHigh, AuthoredAnimation.JessoonUgnaughtFemaleFlourish);
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonEwok = JessoonSet(
+            AuthoredAnimation.JessoonEwokLoop, AuthoredAnimation.JessoonEwokLow, AuthoredAnimation.JessoonEwokMid,
+            AuthoredAnimation.JessoonEwokHigh, AuthoredAnimation.JessoonEwokFlourish);
+        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonEwokFemale = JessoonSet(
+            AuthoredAnimation.JessoonEwokFemaleLoop, AuthoredAnimation.JessoonEwokFemaleLow, AuthoredAnimation.JessoonEwokFemaleMid,
+            AuthoredAnimation.JessoonEwokFemaleHigh, AuthoredAnimation.JessoonEwokFemaleFlourish);
 
-        // The same hold solved on the female skeleton.
-        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonFemale = new()
+        private static Dictionary<AnimationClip, AnimationClip> JessoonSet(
+            AnimationClip loop, AnimationClip low, AnimationClip mid, AnimationClip high, AnimationClip flourish) => new()
         {
-            [AuthoredAnimation.HornLoop] = AuthoredAnimation.JessoonFemaleLoop,
-            [AuthoredAnimation.HornLow] = AuthoredAnimation.JessoonFemaleLow,
-            [AuthoredAnimation.HornMid] = AuthoredAnimation.JessoonFemaleMid,
-            [AuthoredAnimation.HornHigh] = AuthoredAnimation.JessoonFemaleHigh,
-            [AuthoredAnimation.HornFlourish] = AuthoredAnimation.JessoonFemaleFlourish,
-        };
-
-        // The same hold solved on the long-armed Cathar male skeleton.
-        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonLongArm = new()
-        {
-            [AuthoredAnimation.HornLoop] = AuthoredAnimation.JessoonLongArmLoop,
-            [AuthoredAnimation.HornLow] = AuthoredAnimation.JessoonLongArmLow,
-            [AuthoredAnimation.HornMid] = AuthoredAnimation.JessoonLongArmMid,
-            [AuthoredAnimation.HornHigh] = AuthoredAnimation.JessoonLongArmHigh,
-            [AuthoredAnimation.HornFlourish] = AuthoredAnimation.JessoonLongArmFlourish,
-        };
-
-        // The same hold solved on the Cathar female skeleton.
-        private static readonly Dictionary<AnimationClip, AnimationClip> _jessoonCatharFemale = new()
-        {
-            [AuthoredAnimation.HornLoop] = AuthoredAnimation.JessoonCatharFemaleLoop,
-            [AuthoredAnimation.HornLow] = AuthoredAnimation.JessoonCatharFemaleLow,
-            [AuthoredAnimation.HornMid] = AuthoredAnimation.JessoonCatharFemaleMid,
-            [AuthoredAnimation.HornHigh] = AuthoredAnimation.JessoonCatharFemaleHigh,
-            [AuthoredAnimation.HornFlourish] = AuthoredAnimation.JessoonCatharFemaleFlourish,
+            [AuthoredAnimation.HornLoop] = loop,
+            [AuthoredAnimation.HornLow] = low,
+            [AuthoredAnimation.HornMid] = mid,
+            [AuthoredAnimation.HornHigh] = high,
+            [AuthoredAnimation.HornFlourish] = flourish,
         };
 
         /// <summary>
         /// The horn clips are posed for the kloo horn, whose hands sit close together near the top of a short body. The
-        /// Flanged Jessoon is a long saxophone, so it plays copies with the right hand lower on the body and the left hand
-        /// closed on the tube under the flange. One copy cannot put both hands on the tube and the mouthpiece at the mouth on
-        /// every skeleton, so each body plays the copy that fits it best, measured on the compiled banks: the female copies on
-        /// the full-height female bodies, the Cathar female's own copies, the long-armed copies on the Cathar male and the
-        /// short Ugnaught and Ewok bodies, and the male Human copies on the other male bodies and the droids.
+        /// Flanged Jessoon is a long saxophone, so it plays copies with the right hand low on the body and the left hand
+        /// closed on the tube under the flange. Every body holds the same instrument, so its hands belong at the same
+        /// places on it, and the bodies' arms, heads and hands differ too much for one copy: each body plays the copy solved
+        /// on it. KelDor and the droids hold it well in the Human copies, and the female Rodian in the female Bothan's.
         /// </summary>
         public static AnimationClip FitToInstrument(
             AnimationClip clip, string instrumentResref, AppearanceType appearance, Gender gender)
         {
             if (clip == null || !string.Equals(instrumentResref, "jessoon", StringComparison.OrdinalIgnoreCase))
                 return clip;
-            var copies = appearance switch
+            var copies = (appearance, female: gender == Gender.Female) switch
             {
-                AppearanceType.Cathar => gender == Gender.Female ? _jessoonCatharFemale : _jessoonLongArm,
-                AppearanceType.Ugnaught or AppearanceType.Ewok => _jessoonLongArm,
-                AppearanceType.Droid => _jessoon,
-                _ => gender == Gender.Female ? _jessoonFemale : _jessoon
+                (AppearanceType.Droid, _) => _jessoonHuman,
+                (AppearanceType.Trandoshan, false) => _jessoonTrandoshan,
+                (AppearanceType.Trandoshan, true) => _jessoonTrandoshanFemale,
+                (AppearanceType.MonCalamari, false) => _jessoonMonCalamari,
+                (AppearanceType.MonCalamari, true) => _jessoonMonCalamariFemale,
+                (AppearanceType.Bothan, false) => _jessoonBothan,
+                (AppearanceType.Bothan or AppearanceType.Rodian, true) => _jessoonBothanFemale,
+                (AppearanceType.Rodian, false) => _jessoonRodian,
+                (AppearanceType.Wookiee, false) => _jessoonWookiee,
+                (AppearanceType.Wookiee, true) => _jessoonWookieeFemale,
+                (AppearanceType.Cathar, false) => _jessoonCathar,
+                (AppearanceType.Cathar, true) => _jessoonCatharFemale,
+                (AppearanceType.Ugnaught, false) => _jessoonUgnaught,
+                (AppearanceType.Ugnaught, true) => _jessoonUgnaughtFemale,
+                (AppearanceType.Ewok, false) => _jessoonEwok,
+                (AppearanceType.Ewok, true) => _jessoonEwokFemale,
+                (_, true) => _jessoonHumanFemale,
+                _ => _jessoonHuman
             };
             return copies.TryGetValue(clip, out var copy) ? copy : clip;
         }

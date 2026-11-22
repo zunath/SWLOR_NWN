@@ -156,19 +156,34 @@ public class HornFitTests
             Distance(Apply(HornFit.JessoonHold, point), Apply(HornFit.JessoonOnKlooHorn, Plus(point, up))).Should().BeLessThan(.001d);
     }
 
-    [TestCase(AppearanceType.Human, Gender.Male)]
-    [TestCase(AppearanceType.Chiss, Gender.Male)]
-    [TestCase(AppearanceType.Twilek, Gender.Male)]
-    [TestCase(AppearanceType.Droid, Gender.Male)]
-    [TestCase(AppearanceType.Droid, Gender.Female)]
-    public void BodiesOnTheAuthoringSkeletonHoldTheJessoonWhereItsClipsWereSolved(AppearanceType appearance, Gender gender) =>
-        Fit("jessoon", appearance, 0, gender, true).Should().Be(HornFit.JessoonHold);
+    [TestCase(AppearanceType.Human)]
+    [TestCase(AppearanceType.Chiss)]
+    [TestCase(AppearanceType.Twilek)]
+    public void MaleHumanBodiesHoldTheJessoonWhereItsReferenceClipsWereSolved(AppearanceType appearance) =>
+        Fit("jessoon", appearance, 0, Gender.Male, true).Should().Be(HornFit.JessoonHold);
+
+    [TestCase(AppearanceType.Human, Gender.Female)]
+    [TestCase(AppearanceType.Trandoshan, Gender.Male)]
+    [TestCase(AppearanceType.MonCalamari, Gender.Female)]
+    [TestCase(AppearanceType.Wookiee, Gender.Male)]
+    [TestCase(AppearanceType.Cathar, Gender.Female)]
+    [TestCase(AppearanceType.Ewok, Gender.Male)]
+    public void EveryJessoonSetHoldsTheInstrumentTurnedTheSameWayInTheRightHand(AppearanceType appearance, Gender gender)
+    {
+        // tools/DeriveJessoonPerformanceMotion.py turns each hand on the instrument as the reference does, so a body
+        // playing its own set only moves the Jessoon in its hand.
+        var fit = Fit("jessoon", appearance, 0, gender, true);
+        (fit.RotateX, fit.RotateY, fit.RotateZ).Should().Be((HornFit.JessoonHold.RotateX, HornFit.JessoonHold.RotateY,
+            HornFit.JessoonHold.RotateZ));
+        fit.Should().NotBe(HornFit.JessoonHold);
+    }
 
     [Test]
     public void EveryBodyHoldsTheJessoonsStraightBodyInTheRightHand()
     {
-        // tools/SolveJessoonFits.py keeps the tube within a few centimetres of the right hand, up the straight body
-        // between its bottom joint and the flange, with the mouthpiece at arm's length from the hand.
+        // Every set puts the right hand's mesh centre at the same place low on the straight body, so the hand node sits
+        // there too, a few centimetres off the tube (up to 5 on the large Rodian and Wookiee hands), with the mouthpiece
+        // the same reach above it.
         foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
         foreach (var gender in new[] { Gender.Male, Gender.Female })
         {
@@ -176,9 +191,9 @@ public class HornFitTests
             var low = Apply(fit, JessoonShaftLow);
             var high = Apply(fit, JessoonShaftHigh);
             var hand = (0d, 0d, 0d);
-            DistanceToLine(hand, low, high).Should().BeLessThan(.035d, $"{appearance} {gender}");
-            Dot(Minus(hand, low), Unit(Minus(high, low))).Should().BeInRange(.10d, .25d, $"{appearance} {gender}");
-            Distance(Apply(fit, JessoonMouthpiece), hand).Should().BeInRange(.35d, .48d, $"{appearance} {gender}");
+            DistanceToLine(hand, low, high).Should().BeLessThan(.055d, $"{appearance} {gender}");
+            Dot(Minus(hand, low), Unit(Minus(high, low))).Should().BeInRange(.10d, .17d, $"{appearance} {gender}");
+            Distance(Apply(fit, JessoonMouthpiece), hand).Should().BeInRange(.43d, .50d, $"{appearance} {gender}");
         }
     }
 

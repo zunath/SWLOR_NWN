@@ -3840,154 +3840,604 @@
     "ProjectPath": "design/animations/performance/TambourineWideFlourish.swlanim"
   },
   {
-    "Name": "JessoonLoop",
-    "AnimationName": "sw_jsn_loop",
+    "Name": "JessoonHumanLoop",
+    "AnimationName": "sw_jhm_loop",
     "Duration": 5.2,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/performance/JessoonLoop.swlanim"
+    "ProjectPath": "design/animations/performance/JessoonHumanLoop.swlanim"
   },
   {
-    "Name": "JessoonLow",
-    "AnimationName": "sw_jsn_low",
+    "Name": "JessoonHumanLow",
+    "AnimationName": "sw_jhm_low",
     "Duration": 0.5,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/performance/JessoonLow.swlanim"
+    "ProjectPath": "design/animations/performance/JessoonHumanLow.swlanim"
   },
   {
-    "Name": "JessoonMid",
-    "AnimationName": "sw_jsn_mid",
+    "Name": "JessoonHumanMid",
+    "AnimationName": "sw_jhm_mid",
     "Duration": 0.5,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/performance/JessoonMid.swlanim"
+    "ProjectPath": "design/animations/performance/JessoonHumanMid.swlanim"
   },
   {
-    "Name": "JessoonHigh",
-    "AnimationName": "sw_jsn_high",
+    "Name": "JessoonHumanHigh",
+    "AnimationName": "sw_jhm_high",
     "Duration": 0.5,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/performance/JessoonHigh.swlanim"
+    "ProjectPath": "design/animations/performance/JessoonHumanHigh.swlanim"
   },
   {
-    "Name": "JessoonFlourish",
-    "AnimationName": "sw_jsn_flour",
+    "Name": "JessoonHumanFlourish",
+    "AnimationName": "sw_jhm_flour",
     "Duration": 1.5,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/performance/JessoonFlourish.swlanim"
+    "ProjectPath": "design/animations/performance/JessoonHumanFlourish.swlanim"
   },
   {
-    "Name": "JessoonFemaleLoop",
-    "AnimationName": "sw_jsf_loop",
+    "Name": "JessoonHumanFemaleLoop",
+    "AnimationName": "sw_jhf_loop",
     "Duration": 5.2,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/performance/JessoonFemaleLoop.swlanim"
+    "ProjectPath": "design/animations/performance/JessoonHumanFemaleLoop.swlanim"
   },
   {
-    "Name": "JessoonFemaleLow",
-    "AnimationName": "sw_jsf_low",
+    "Name": "JessoonHumanFemaleLow",
+    "AnimationName": "sw_jhf_low",
     "Duration": 0.5,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/performance/JessoonFemaleLow.swlanim"
+    "ProjectPath": "design/animations/performance/JessoonHumanFemaleLow.swlanim"
   },
   {
-    "Name": "JessoonFemaleMid",
-    "AnimationName": "sw_jsf_mid",
+    "Name": "JessoonHumanFemaleMid",
+    "AnimationName": "sw_jhf_mid",
     "Duration": 0.5,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/performance/JessoonFemaleMid.swlanim"
+    "ProjectPath": "design/animations/performance/JessoonHumanFemaleMid.swlanim"
   },
   {
-    "Name": "JessoonFemaleHigh",
-    "AnimationName": "sw_jsf_high",
+    "Name": "JessoonHumanFemaleHigh",
+    "AnimationName": "sw_jhf_high",
     "Duration": 0.5,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/performance/JessoonFemaleHigh.swlanim"
+    "ProjectPath": "design/animations/performance/JessoonHumanFemaleHigh.swlanim"
   },
   {
-    "Name": "JessoonFemaleFlourish",
-    "AnimationName": "sw_jsf_flour",
+    "Name": "JessoonHumanFemaleFlourish",
+    "AnimationName": "sw_jhf_flour",
     "Duration": 1.5,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/performance/JessoonFemaleFlourish.swlanim"
+    "ProjectPath": "design/animations/performance/JessoonHumanFemaleFlourish.swlanim"
   },
   {
-    "Name": "JessoonLongArmLoop",
-    "AnimationName": "sw_jsl_loop",
+    "Name": "JessoonTrandoshanLoop",
+    "AnimationName": "sw_jtm_loop",
     "Duration": 5.2,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/performance/JessoonLongArmLoop.swlanim"
+    "ProjectPath": "design/animations/performance/JessoonTrandoshanLoop.swlanim"
   },
   {
-    "Name": "JessoonLongArmLow",
-    "AnimationName": "sw_jsl_low",
+    "Name": "JessoonTrandoshanLow",
+    "AnimationName": "sw_jtm_low",
     "Duration": 0.5,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/performance/JessoonLongArmLow.swlanim"
+    "ProjectPath": "design/animations/performance/JessoonTrandoshanLow.swlanim"
   },
   {
-    "Name": "JessoonLongArmMid",
-    "AnimationName": "sw_jsl_mid",
+    "Name": "JessoonTrandoshanMid",
+    "AnimationName": "sw_jtm_mid",
     "Duration": 0.5,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/performance/JessoonLongArmMid.swlanim"
+    "ProjectPath": "design/animations/performance/JessoonTrandoshanMid.swlanim"
   },
   {
-    "Name": "JessoonLongArmHigh",
-    "AnimationName": "sw_jsl_high",
+    "Name": "JessoonTrandoshanHigh",
+    "AnimationName": "sw_jtm_high",
     "Duration": 0.5,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/performance/JessoonLongArmHigh.swlanim"
+    "ProjectPath": "design/animations/performance/JessoonTrandoshanHigh.swlanim"
   },
   {
-    "Name": "JessoonLongArmFlourish",
-    "AnimationName": "sw_jsl_flour",
+    "Name": "JessoonTrandoshanFlourish",
+    "AnimationName": "sw_jtm_flour",
     "Duration": 1.5,
     "Targets": [
       "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
-    "ProjectPath": "design/animations/performance/JessoonLongArmFlourish.swlanim"
+    "ProjectPath": "design/animations/performance/JessoonTrandoshanFlourish.swlanim"
+  },
+  {
+    "Name": "JessoonTrandoshanFemaleLoop",
+    "AnimationName": "sw_jtf_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonTrandoshanFemaleLoop.swlanim"
+  },
+  {
+    "Name": "JessoonTrandoshanFemaleLow",
+    "AnimationName": "sw_jtf_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonTrandoshanFemaleLow.swlanim"
+  },
+  {
+    "Name": "JessoonTrandoshanFemaleMid",
+    "AnimationName": "sw_jtf_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonTrandoshanFemaleMid.swlanim"
+  },
+  {
+    "Name": "JessoonTrandoshanFemaleHigh",
+    "AnimationName": "sw_jtf_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonTrandoshanFemaleHigh.swlanim"
+  },
+  {
+    "Name": "JessoonTrandoshanFemaleFlourish",
+    "AnimationName": "sw_jtf_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonTrandoshanFemaleFlourish.swlanim"
+  },
+  {
+    "Name": "JessoonMonCalamariLoop",
+    "AnimationName": "sw_jmm_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonMonCalamariLoop.swlanim"
+  },
+  {
+    "Name": "JessoonMonCalamariLow",
+    "AnimationName": "sw_jmm_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonMonCalamariLow.swlanim"
+  },
+  {
+    "Name": "JessoonMonCalamariMid",
+    "AnimationName": "sw_jmm_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonMonCalamariMid.swlanim"
+  },
+  {
+    "Name": "JessoonMonCalamariHigh",
+    "AnimationName": "sw_jmm_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonMonCalamariHigh.swlanim"
+  },
+  {
+    "Name": "JessoonMonCalamariFlourish",
+    "AnimationName": "sw_jmm_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonMonCalamariFlourish.swlanim"
+  },
+  {
+    "Name": "JessoonMonCalamariFemaleLoop",
+    "AnimationName": "sw_jmf_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonMonCalamariFemaleLoop.swlanim"
+  },
+  {
+    "Name": "JessoonMonCalamariFemaleLow",
+    "AnimationName": "sw_jmf_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonMonCalamariFemaleLow.swlanim"
+  },
+  {
+    "Name": "JessoonMonCalamariFemaleMid",
+    "AnimationName": "sw_jmf_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonMonCalamariFemaleMid.swlanim"
+  },
+  {
+    "Name": "JessoonMonCalamariFemaleHigh",
+    "AnimationName": "sw_jmf_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonMonCalamariFemaleHigh.swlanim"
+  },
+  {
+    "Name": "JessoonMonCalamariFemaleFlourish",
+    "AnimationName": "sw_jmf_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonMonCalamariFemaleFlourish.swlanim"
+  },
+  {
+    "Name": "JessoonBothanLoop",
+    "AnimationName": "sw_jbm_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonBothanLoop.swlanim"
+  },
+  {
+    "Name": "JessoonBothanLow",
+    "AnimationName": "sw_jbm_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonBothanLow.swlanim"
+  },
+  {
+    "Name": "JessoonBothanMid",
+    "AnimationName": "sw_jbm_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonBothanMid.swlanim"
+  },
+  {
+    "Name": "JessoonBothanHigh",
+    "AnimationName": "sw_jbm_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonBothanHigh.swlanim"
+  },
+  {
+    "Name": "JessoonBothanFlourish",
+    "AnimationName": "sw_jbm_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonBothanFlourish.swlanim"
+  },
+  {
+    "Name": "JessoonBothanFemaleLoop",
+    "AnimationName": "sw_jbf_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonBothanFemaleLoop.swlanim"
+  },
+  {
+    "Name": "JessoonBothanFemaleLow",
+    "AnimationName": "sw_jbf_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonBothanFemaleLow.swlanim"
+  },
+  {
+    "Name": "JessoonBothanFemaleMid",
+    "AnimationName": "sw_jbf_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonBothanFemaleMid.swlanim"
+  },
+  {
+    "Name": "JessoonBothanFemaleHigh",
+    "AnimationName": "sw_jbf_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonBothanFemaleHigh.swlanim"
+  },
+  {
+    "Name": "JessoonBothanFemaleFlourish",
+    "AnimationName": "sw_jbf_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonBothanFemaleFlourish.swlanim"
+  },
+  {
+    "Name": "JessoonRodianLoop",
+    "AnimationName": "sw_jrm_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonRodianLoop.swlanim"
+  },
+  {
+    "Name": "JessoonRodianLow",
+    "AnimationName": "sw_jrm_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonRodianLow.swlanim"
+  },
+  {
+    "Name": "JessoonRodianMid",
+    "AnimationName": "sw_jrm_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonRodianMid.swlanim"
+  },
+  {
+    "Name": "JessoonRodianHigh",
+    "AnimationName": "sw_jrm_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonRodianHigh.swlanim"
+  },
+  {
+    "Name": "JessoonRodianFlourish",
+    "AnimationName": "sw_jrm_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonRodianFlourish.swlanim"
+  },
+  {
+    "Name": "JessoonWookieeLoop",
+    "AnimationName": "sw_jwm_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonWookieeLoop.swlanim"
+  },
+  {
+    "Name": "JessoonWookieeLow",
+    "AnimationName": "sw_jwm_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonWookieeLow.swlanim"
+  },
+  {
+    "Name": "JessoonWookieeMid",
+    "AnimationName": "sw_jwm_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonWookieeMid.swlanim"
+  },
+  {
+    "Name": "JessoonWookieeHigh",
+    "AnimationName": "sw_jwm_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonWookieeHigh.swlanim"
+  },
+  {
+    "Name": "JessoonWookieeFlourish",
+    "AnimationName": "sw_jwm_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonWookieeFlourish.swlanim"
+  },
+  {
+    "Name": "JessoonWookieeFemaleLoop",
+    "AnimationName": "sw_jwf_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonWookieeFemaleLoop.swlanim"
+  },
+  {
+    "Name": "JessoonWookieeFemaleLow",
+    "AnimationName": "sw_jwf_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonWookieeFemaleLow.swlanim"
+  },
+  {
+    "Name": "JessoonWookieeFemaleMid",
+    "AnimationName": "sw_jwf_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonWookieeFemaleMid.swlanim"
+  },
+  {
+    "Name": "JessoonWookieeFemaleHigh",
+    "AnimationName": "sw_jwf_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonWookieeFemaleHigh.swlanim"
+  },
+  {
+    "Name": "JessoonWookieeFemaleFlourish",
+    "AnimationName": "sw_jwf_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonWookieeFemaleFlourish.swlanim"
+  },
+  {
+    "Name": "JessoonCatharLoop",
+    "AnimationName": "sw_jcm_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonCatharLoop.swlanim"
+  },
+  {
+    "Name": "JessoonCatharLow",
+    "AnimationName": "sw_jcm_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonCatharLow.swlanim"
+  },
+  {
+    "Name": "JessoonCatharMid",
+    "AnimationName": "sw_jcm_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonCatharMid.swlanim"
+  },
+  {
+    "Name": "JessoonCatharHigh",
+    "AnimationName": "sw_jcm_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonCatharHigh.swlanim"
+  },
+  {
+    "Name": "JessoonCatharFlourish",
+    "AnimationName": "sw_jcm_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonCatharFlourish.swlanim"
   },
   {
     "Name": "JessoonCatharFemaleLoop",
@@ -4038,5 +4488,205 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/performance/JessoonCatharFemaleFlourish.swlanim"
+  },
+  {
+    "Name": "JessoonUgnaughtLoop",
+    "AnimationName": "sw_jum_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonUgnaughtLoop.swlanim"
+  },
+  {
+    "Name": "JessoonUgnaughtLow",
+    "AnimationName": "sw_jum_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonUgnaughtLow.swlanim"
+  },
+  {
+    "Name": "JessoonUgnaughtMid",
+    "AnimationName": "sw_jum_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonUgnaughtMid.swlanim"
+  },
+  {
+    "Name": "JessoonUgnaughtHigh",
+    "AnimationName": "sw_jum_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonUgnaughtHigh.swlanim"
+  },
+  {
+    "Name": "JessoonUgnaughtFlourish",
+    "AnimationName": "sw_jum_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonUgnaughtFlourish.swlanim"
+  },
+  {
+    "Name": "JessoonUgnaughtFemaleLoop",
+    "AnimationName": "sw_juf_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonUgnaughtFemaleLoop.swlanim"
+  },
+  {
+    "Name": "JessoonUgnaughtFemaleLow",
+    "AnimationName": "sw_juf_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonUgnaughtFemaleLow.swlanim"
+  },
+  {
+    "Name": "JessoonUgnaughtFemaleMid",
+    "AnimationName": "sw_juf_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonUgnaughtFemaleMid.swlanim"
+  },
+  {
+    "Name": "JessoonUgnaughtFemaleHigh",
+    "AnimationName": "sw_juf_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonUgnaughtFemaleHigh.swlanim"
+  },
+  {
+    "Name": "JessoonUgnaughtFemaleFlourish",
+    "AnimationName": "sw_juf_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonUgnaughtFemaleFlourish.swlanim"
+  },
+  {
+    "Name": "JessoonEwokLoop",
+    "AnimationName": "sw_jem_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonEwokLoop.swlanim"
+  },
+  {
+    "Name": "JessoonEwokLow",
+    "AnimationName": "sw_jem_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonEwokLow.swlanim"
+  },
+  {
+    "Name": "JessoonEwokMid",
+    "AnimationName": "sw_jem_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonEwokMid.swlanim"
+  },
+  {
+    "Name": "JessoonEwokHigh",
+    "AnimationName": "sw_jem_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonEwokHigh.swlanim"
+  },
+  {
+    "Name": "JessoonEwokFlourish",
+    "AnimationName": "sw_jem_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonEwokFlourish.swlanim"
+  },
+  {
+    "Name": "JessoonEwokFemaleLoop",
+    "AnimationName": "sw_jef_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonEwokFemaleLoop.swlanim"
+  },
+  {
+    "Name": "JessoonEwokFemaleLow",
+    "AnimationName": "sw_jef_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonEwokFemaleLow.swlanim"
+  },
+  {
+    "Name": "JessoonEwokFemaleMid",
+    "AnimationName": "sw_jef_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonEwokFemaleMid.swlanim"
+  },
+  {
+    "Name": "JessoonEwokFemaleHigh",
+    "AnimationName": "sw_jef_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonEwokFemaleHigh.swlanim"
+  },
+  {
+    "Name": "JessoonEwokFemaleFlourish",
+    "AnimationName": "sw_jef_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/JessoonEwokFemaleFlourish.swlanim"
   }
 ]

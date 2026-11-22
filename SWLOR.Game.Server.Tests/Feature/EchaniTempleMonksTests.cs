@@ -330,6 +330,34 @@ public class EchaniTempleMonksTests
             Variables(points[finish])["ECHANI_TRANSFER"].GetString().Should().Be("WP_eshan_to_keshpeaks");
     }
 
+    [TestCase("es_monk_path_012", "es_monk_path_river_up_lower", "es_monk_path_river_up_upper", "es_monk_path_013", true)]
+    [TestCase("es_monk_path_026", "es_monk_path_river_down_upper", "es_monk_path_river_down_lower", "es_monk_path_027", false)]
+    public void Riverway_UsesBothRampLandings(string start, string firstLanding, string secondLanding, string finish, bool uphill)
+    {
+        var area = Read("Module/git/pw_sc_esh_riverw.git.json");
+        var points = Value(area, "WaypointList").EnumerateArray()
+            .Where(point => Value(point, "Tag").GetString()!.StartsWith("es_monk_path_"))
+            .ToDictionary(point => Value(point, "Tag").GetString()!);
+        Variables(points[start])["ECHANI_NEXT"].GetString().Should().Be(firstLanding);
+        Variables(points[firstLanding])["ECHANI_NEXT"].GetString().Should().Be(secondLanding);
+        Variables(points[secondLanding])["ECHANI_NEXT"].GetString().Should().Be(finish);
+
+        var upper = points[uphill ? secondLanding : firstLanding];
+        var lower = points[uphill ? firstLanding : secondLanding];
+        Value(upper, "XPosition").GetDouble().Should().BeInRange(47, 50);
+        Value(lower, "XPosition").GetDouble().Should().BeInRange(61, 64);
+        Value(upper, "ZPosition").GetDouble().Should().BeApproximately(5, 0.01);
+        Value(lower, "ZPosition").GetDouble().Should().BeApproximately(0, 0.01);
+        foreach (var landing in new[] { upper, lower })
+        {
+            Value(landing, "YPosition").GetDouble().Should().BeApproximately(84.5, 0.1,
+                "both landings align with the walkable center between the ramp's arch supports");
+            Variables(landing)["ECHANI_SCENE"].GetString().Should().BeEmpty();
+            Variables(landing).Should().NotContainKey("ECHANI_TRANSFER");
+        }
+    }
+
+
     [Test]
     public void Route_IsOneClosedLoopAndEveryAreaChangeHasAnExistingTransferDestination()
     {

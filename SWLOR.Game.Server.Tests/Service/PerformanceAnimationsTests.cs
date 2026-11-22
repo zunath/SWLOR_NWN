@@ -10,6 +10,58 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class PerformanceAnimationsTests
 {
+    [TestCase(AppearanceType.Human, Gender.Male, "sw_jhm")]
+    [TestCase(AppearanceType.Chiss, Gender.Male, "sw_jhm")]
+    [TestCase(AppearanceType.KelDor, Gender.Male, "sw_jhm")]
+    [TestCase(AppearanceType.Droid, Gender.Male, "sw_jhm")]
+    [TestCase(AppearanceType.Droid, Gender.Female, "sw_jhm")]
+    [TestCase(AppearanceType.Human, Gender.Female, "sw_jhf")]
+    [TestCase(AppearanceType.KelDor, Gender.Female, "sw_jhf")]
+    [TestCase(AppearanceType.Trandoshan, Gender.Male, "sw_jtm")]
+    [TestCase(AppearanceType.Trandoshan, Gender.Female, "sw_jtf")]
+    [TestCase(AppearanceType.MonCalamari, Gender.Male, "sw_jmm")]
+    [TestCase(AppearanceType.MonCalamari, Gender.Female, "sw_jmf")]
+    [TestCase(AppearanceType.Bothan, Gender.Male, "sw_jbm")]
+    [TestCase(AppearanceType.Bothan, Gender.Female, "sw_jbf")]
+    [TestCase(AppearanceType.Rodian, Gender.Male, "sw_jrm")]
+    [TestCase(AppearanceType.Rodian, Gender.Female, "sw_jbf")]
+    [TestCase(AppearanceType.Wookiee, Gender.Male, "sw_jwm")]
+    [TestCase(AppearanceType.Wookiee, Gender.Female, "sw_jwf")]
+    [TestCase(AppearanceType.Cathar, Gender.Male, "sw_jcm")]
+    [TestCase(AppearanceType.Cathar, Gender.Female, "sw_jcf")]
+    [TestCase(AppearanceType.Ugnaught, Gender.Male, "sw_jum")]
+    [TestCase(AppearanceType.Ugnaught, Gender.Female, "sw_juf")]
+    [TestCase(AppearanceType.Ewok, Gender.Male, "sw_jem")]
+    [TestCase(AppearanceType.Ewok, Gender.Female, "sw_jef")]
+    public void TheFlangedJessoonPlaysTheCopiesSolvedForTheBody(AppearanceType appearance, Gender gender, string copies)
+    {
+        var horns = new[]
+        {
+            AuthoredAnimation.HornLoop, AuthoredAnimation.HornLow, AuthoredAnimation.HornMid, AuthoredAnimation.HornHigh,
+            AuthoredAnimation.HornFlourish
+        };
+        foreach (var horn in horns)
+        {
+            var played = PerformanceAnimations.FitToInstrument(horn, "JESSOON", appearance, gender);
+            played.Name.Should().Be(copies + horn.Name["sw_hrn".Length..]);
+            played.Duration.Should().Be(horn.Duration);
+        }
+    }
+
+    [Test]
+    public void OtherInstrumentsAndClipsPlayUnchanged()
+    {
+        PerformanceAnimations.FitToInstrument(AuthoredAnimation.HornLoop, "kloo_horn", AppearanceType.Human, Gender.Female)
+            .Should().BeSameAs(AuthoredAnimation.HornLoop);
+        PerformanceAnimations.FitToInstrument(AuthoredAnimation.HornLoop, "", AppearanceType.Human, Gender.Male)
+            .Should().BeSameAs(AuthoredAnimation.HornLoop);
+        PerformanceAnimations.FitToInstrument(AuthoredAnimation.VocalsLoop, "jessoon", AppearanceType.Human, Gender.Male)
+            .Should().BeSameAs(AuthoredAnimation.VocalsLoop);
+        PerformanceAnimations.FitToInstrument(AuthoredAnimation.PlayInstrument, "jessoon", AppearanceType.Human, Gender.Male)
+            .Should().BeSameAs(AuthoredAnimation.PlayInstrument);
+        PerformanceAnimations.FitToInstrument(null, "jessoon", AppearanceType.Human, Gender.Male).Should().BeNull();
+    }
+
     [Test]
     public void EveryRoutineHasItsOwnLoop()
     {
@@ -112,6 +164,7 @@ public class PerformanceAnimationsTests
     [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Vocals, "night_microbrand", NamedAnimationHold.ClearTorch)]
     [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Horns, "KLOO_HORN", NamedAnimationHold.Auto)]
     [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Horns, "slitherhorn", NamedAnimationHold.LiftInPlace)]
+    [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Horns, "jessoon", NamedAnimationHold.Auto)]
     [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Strings, "guitar", NamedAnimationHold.Keep)]
     [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Pipes, "panpipes", NamedAnimationHold.Auto)]
     [TestCase(PerformanceKind.Music, PerformanceInstrumentFamily.Percussion, "tambourine", NamedAnimationHold.Auto)]

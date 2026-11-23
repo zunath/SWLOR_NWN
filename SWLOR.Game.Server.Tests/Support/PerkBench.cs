@@ -170,6 +170,9 @@ public sealed class PerkBench : IDisposable
 
     public uint Self { get; set; } = Player;
 
+    /// <summary>True to build the cache from every perk list of the server, as the running server does, in place of <see cref="Definitions"/>.</summary>
+    public bool UseServerPerkLists { get; set; }
+
     public SkillType DecayedSkill { get; set; } = SkillType.Mimicry;
 
     /// <summary>The perks the cache build finds.</summary>

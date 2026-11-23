@@ -5,7 +5,8 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// <summary>The seams the catalog code calls: the definition search, the droid test and the droid perk level.</summary>
 public sealed partial class TestPerkService
 {
-    protected override IEnumerable<Type> GetPerkListDefinitionTypes() => new[] { typeof(BenchPerkList) };
+    protected override IEnumerable<Type> GetPerkListDefinitionTypes() =>
+        _bench.UseServerPerkLists ? base.GetPerkListDefinitionTypes() : new[] { typeof(BenchPerkList) };
 
     protected override bool IsDroid(uint creature) => _bench.Droids.Contains(creature);
 

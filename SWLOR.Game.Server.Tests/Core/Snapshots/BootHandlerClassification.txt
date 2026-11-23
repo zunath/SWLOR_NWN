@@ -133,10 +133,10 @@ mod_load (49)
   Rerun       SWLOR.Game.Server.Feature.StoreManagement.LoadStores
   BootOnly    SWLOR.Game.Server.Feature.StoreManagement.ProcessStores
   BootOnly    SWLOR.Game.Server.Feature.TlkOverrides.OverrideTlks
-  Rerun       SWLOR.Game.Server.Domain.Companions.ProgFxCoatService.LoadCoatingVisualEffects
   Rerun       SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.LoadAppearances
   Rerun       SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.MarketBuyViewModel.LoadCategories
   Rerun       SWLOR.Game.Server.Domain.World.CoxxionBaseDoorsService.LoadDoors
+  Rerun       SWLOR.Game.Server.Domain.Companions.ProgFxCoatService.LoadCoatingVisualEffects
 
 app_shutdown (2)
   Retire      SWLOR.Game.Server.Domain.Combat.CombatRecorderService.StopOnShutdown

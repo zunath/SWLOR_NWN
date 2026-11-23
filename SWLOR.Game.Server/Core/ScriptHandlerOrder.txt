@@ -132,10 +132,10 @@ mod_load  # run by the engine as the module OnModuleLoad event, which EventRegis
   action      SWLOR.Game.Server.Feature.StoreManagement.LoadStores
   action      SWLOR.Game.Server.Feature.StoreManagement.ProcessStores
   action      SWLOR.Game.Server.Feature.TlkOverrides.OverrideTlks
-  action      SWLOR.Game.Server.Domain.Companions.ProgFxCoatService.LoadCoatingVisualEffects
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.LoadAppearances
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.MarketBuyViewModel.LoadCategories
   action      SWLOR.Game.Server.Domain.World.CoxxionBaseDoorsService.LoadDoors
+  action      SWLOR.Game.Server.Domain.Companions.ProgFxCoatService.LoadCoatingVisualEffects
 
 == OTHER SCRIPTS (alphabetical; the registry never reads its script names in order) ==
 

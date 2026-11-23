@@ -53,6 +53,7 @@ public class HeadLodColorRefreshTests
                 public static readonly List<Action> Callbacks = new();
                 public static readonly List<bool> Cancelled = new();
                 public static readonly List<object[]> Writes = new();
+                public static readonly List<object[]> CoatCalls = new();
                 public static readonly Dictionary<TintMapLayerType, TintMapColorSelection> Colors = new();
                 public static int ResourceQueries;
                 public static bool GetIsObjectValid(uint actor) => actor == 11 ? UnequippedItemValid : actor == 9 ? HasHelmet : actor == 100 || Valid && actor == Actual;
@@ -114,6 +115,12 @@ public class HeadLodColorRefreshTests
                     public static bool IsShownByOwner(uint helmet) => World.HelmetVisible;
                     public static void Apply(uint creature, IReadOnlyList<TintMapMaterialSelection> selections) => World.HeadProjectionRefreshes++;
                 }
+                public static class ProgFxCoatRenderer
+                {
+                    public static void Apply(uint creature, IReadOnlyList<TintMapMaterialSelection> selections,
+                        bool reset, int sequence = 0) => World.CoatCalls.Add(new object[]
+                            { creature, selections.Select(selection => selection.Material.Resref).ToArray(), reset, sequence });
+                }
                 public static class TintMapService
                 {
                     {{string.Join(Environment.NewLine, serviceMethods)}}
@@ -148,7 +155,8 @@ public class HeadLodColorRefreshTests
     {
         _refresh.GetMethod("Clear")!.Invoke(null, null);
         Get<List<Action>>("Callbacks").Clear(); Get<List<bool>>("Cancelled").Clear();
-        Writes.Clear(); Selections.Clear(); Get<HashSet<string>>("Lods").Clear(); Colors.Clear();
+        Writes.Clear();
+        ((List<object[]>)_world.GetField("CoatCalls")!.GetValue(null)!).Clear(); Selections.Clear(); Get<HashSet<string>>("Lods").Clear(); Colors.Clear();
         Set("Actual", 42u); Set("ExecutingActor", 42u); Set("Valid", true); Set("Playable", true);
         Set("HasHelmet", false); Set("HelmetVisible", false); Set("Head", 316); Set("BasePhenotype", 0);
         Set("UnequippedItemValid", true); Set("UnequippedBaseItem", BaseItem.Helmet);
@@ -158,6 +166,21 @@ public class HeadLodColorRefreshTests
         Get<HashSet<string>>("Lods").Add("pfh0_head316");
         Selections.Add(Selection("pfh0_head316", "head_mat", Enum.GetValues<TintMapLayerType>()));
         Selections.Add(Selection("pfh0_chest001", "outfit_mat", Enum.GetValues<TintMapLayerType>(), true));
+    }
+
+    [Test]
+    public void CoatingReplayUsesOnlyTheHeadMaterialsAndTheCurrentRefreshSequence()
+    {
+        var calls = (List<object[]>)_world.GetField("CoatCalls")!.GetValue(null)!;
+        Call("Start");
+        Call("Step");
+        calls.Should().HaveCount(2);
+        foreach (var row in calls)
+        {
+            ((string[])row[1]).Should().Equal("head_mat");
+            ((bool)row[2]).Should().BeFalse();
+        }
+        calls.Select(row => (int)row[3]).Should().Equal(1, 2);
     }
 
     [Test]

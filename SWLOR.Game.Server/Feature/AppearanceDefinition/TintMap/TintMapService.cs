@@ -211,6 +211,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             GetEffectiveColor(creature, selection, layer));
                 }
             }
+            ProgFxCoatRenderer.Apply(creature, selections, resetShaderOverrides);
             HeadLodColorRefresh.Update(creature, selections);
         }
 
@@ -223,6 +224,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     WriteMaterialColor(creature, selection.Material.Resref, layer,
                         GetEffectiveColor(creature, selection, layer), sequence);
             }
+            ProgFxCoatRenderer.Apply(creature, selections.Where(HeadTintChannels.IsHead).ToList(), false, sequence);
         }
 
         private static void ProjectNativeRobeColors(uint creature, IReadOnlyList<TintMapMaterialSelection> selections,
@@ -454,7 +456,10 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     .Select(selection => GetSavedColor(selection, layer, includeGlobalColor: false))
                     .Distinct().ToList();
                 if (colors.Count == 1 && colors[0] > 0)
+                {
                     SetLocalInt(creature, stateVariable, colors[0]);
+                    SaveDroidOverrides(creature, new[] { stateVariable }, colors[0]);
+                }
             }
             SavePlayerOverrides(creature);
         }

@@ -1,6 +1,7 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
@@ -32,6 +33,7 @@ public class SkillRankLimitTests
         _cache.Clear();
         foreach (var type in Enum.GetValues<SkillType>())
             _cache[type] = type.GetAttribute<SkillType, SkillAttribute>();
+        Relog();
     }
 
     /// <summary>Restores the shared cache so this fixture cannot affect other tests.</summary>
@@ -240,6 +242,73 @@ public class SkillRankLimitTests
         var maxed = CreatePlayer(50, (SkillType.Mimicry, S(50)));
         Award(maxed, SkillType.Mimicry, 100);
         WarningKeys.Should().BeEmpty();
+    }
+
+    [Test]
+    public void LimitWarning_IsSentOncePerSkillPerLogin()
+    {
+        var player = CreatePlayer(28, (SkillType.Leadership, S(28, limit: 28)));
+
+        Award(player, SkillType.Leadership, 100).Should().Be(0);
+        WarningKeys.Should().Equal("SKILL_LIMIT");
+        Warnings.Should().ContainSingle().Which.Should().Contain("limit of 28");
+
+        for (var award = 0; award < 5; award++)
+        {
+            Award(player, SkillType.Leadership, 100).Should().Be(0);
+            WarningKeys.Should().BeEmpty("the player already learned why this skill stopped gaining XP");
+        }
+
+        player.Skills[SkillType.Leadership].Rank.Should().Be(28);
+        player.Skills[SkillType.Leadership].XP.Should().Be(0);
+    }
+
+    [Test]
+    public void LimitWarning_AnotherLimitedSkill_StillWarnsOnce()
+    {
+        var player = CreatePlayer(48,
+            (SkillType.Leadership, S(28, limit: 28)),
+            (SkillType.Unarmed, S(20, limit: 20)));
+
+        Award(player, SkillType.Leadership, 100);
+        WarningKeys.Should().Equal("SKILL_LIMIT");
+
+        Award(player, SkillType.Unarmed, 100);
+        WarningKeys.Should().Equal("SKILL_LIMIT");
+        Warnings.Should().ContainSingle().Which.Should().Contain("Unarmed").And.Contain("limit of 20");
+
+        Award(player, SkillType.Unarmed, 100);
+        WarningKeys.Should().BeEmpty();
+        Award(player, SkillType.Leadership, 100);
+        WarningKeys.Should().BeEmpty();
+    }
+
+    [Test]
+    public void LimitWarning_IsSentAgainAfterRelogging()
+    {
+        var player = CreatePlayer(28, (SkillType.Leadership, S(28, limit: 28)));
+        Award(player, SkillType.Leadership, 100);
+        Award(player, SkillType.Leadership, 100);
+        WarningKeys.Should().BeEmpty();
+
+        Relog();
+
+        Award(player, SkillType.Leadership, 100);
+        WarningKeys.Should().Equal("SKILL_LIMIT");
+        Award(player, SkillType.Leadership, 100);
+        WarningKeys.Should().BeEmpty();
+    }
+
+    [TestCase(nameof(Skill.ResetLimitWarningsOnEnter), ScriptName.OnModuleEnter, "GetEnteringObject()")]
+    [TestCase(nameof(Skill.ResetLimitWarningsOnExit), ScriptName.OnModuleExit, "GetExitingObject()")]
+    public void LimitWarning_IsForgottenWhenThePlayerEntersOrLeaves(string handler, string script, string playerSource)
+    {
+        typeof(Skill).GetMethod(handler)!.GetCustomAttributes<NWNEventHandler>()
+            .Should().ContainSingle(attribute => attribute.Script == script);
+
+        var source = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "Skill.cs"));
+        ExtractMethod(source, $"public static void {handler}()")
+            .Should().Contain(playerSource).And.Contain("ForgetLimitWarnings(GetObjectUUID(player))");
     }
 
     // ---- GiveSkillXP: languages ----
@@ -528,6 +597,38 @@ public class SkillRankLimitTests
         player.Skills[SkillType.Throwing].Rank.Should().Be(0);
     }
 
+    [TestCase(0, 0)]
+    [TestCase(20, 20)]
+    [TestCase(35, 35)]
+    [TestCase(null, 0)]
+    public void AtTheCap_ALimitBelowTheRank_MovesRanksFromThatSkillIntoAnother(int? limit, int remainingRank)
+    {
+        // Everything else is locked: the unlocked skill's ranks above its limit are all that can move.
+        var player = CreatePlayer(Skill.SkillCap,
+            (SkillType.Piloting, S(36, limit: limit)),
+            (SkillType.Espionage, S(8)));
+        var movableRanks = 36 - remainingRank;
+        var expected = Enumerable.Range(8, movableRanks).Sum(Skill.GetRequiredXP);
+
+        Skill.GetMaxDistributableXP(player, SkillType.Espionage).Should().Be(expected);
+        Award(player, SkillType.Espionage, expected).Should().Be(expected);
+        player.Skills[SkillType.Espionage].Rank.Should().Be(8 + movableRanks);
+        player.Skills[SkillType.Piloting].Rank.Should().Be(remainingRank);
+    }
+
+    [TestCase(36)]
+    [TestCase(50)]
+    public void AtTheCap_ALimitAtOrAboveTheRank_LetsNothingMove(int limit)
+    {
+        var player = CreatePlayer(Skill.SkillCap,
+            (SkillType.Piloting, S(36, limit: limit)),
+            (SkillType.Espionage, S(8)));
+
+        Skill.GetMaxDistributableXP(player, SkillType.Espionage).Should().Be(0);
+        Award(player, SkillType.Espionage, 1000).Should().Be(0);
+        player.Skills[SkillType.Piloting].Rank.Should().Be(36);
+    }
+
     [Test]
     public void MaxDistributableXP_AcceptsOneXPToCompleteARankTheCapHeldBack()
     {
@@ -588,6 +689,35 @@ public class SkillRankLimitTests
     }
 
     [Test]
+    public void RPXPWindow_RechecksItsLimitAtConfirm_BeforeRefusing()
+    {
+        var source = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server",
+            "Feature", "GuiDefinition", "ViewModel", "DistributeRPXPViewModel.cs"));
+        var confirm = ExtractMethod(source, "public Action OnClickConfirm() => () =>");
+
+        var recheck = confirm.IndexOf("_maxDistributableXP = GetMaxDistributableXP();", StringComparison.Ordinal);
+        var refuse = confirm.IndexOf("if (_maxDistributableXP <= 0)", StringComparison.Ordinal);
+
+        recheck.Should().BeGreaterThan(0);
+        refuse.Should().BeGreaterThan(recheck, "a limit cached when the window opened must not refuse XP");
+    }
+
+    [TestCase("protected override void OnClientPropertyUpdated(string propertyName)", "DB.Set(dbPlayer);")]
+    [TestCase("public Action ToggleDecayLock() => () =>", "DB.Set(dbPlayer);")]
+    public void SkillsWindow_LimitAndLockChanges_RefreshAnOpenRPXPWindow(string signature, string save)
+    {
+        var source = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server",
+            "Feature", "GuiDefinition", "ViewModel", "SkillsViewModel.cs"));
+        var method = ExtractMethod(source, signature);
+
+        var saved = method.IndexOf(save, StringComparison.Ordinal);
+        var refresh = method.IndexOf("Gui.PublishRefreshEvent(Player, new RPXPRefreshEvent());", StringComparison.Ordinal);
+
+        saved.Should().BeGreaterThan(0);
+        refresh.Should().BeGreaterThan(saved, "the RP XP window rechecks its limit from the saved record");
+    }
+
+    [Test]
     public void FullRebuild_RefundAllSkills_LeavesRankLimitsUntouched()
     {
         var source = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server",
@@ -640,6 +770,8 @@ public class SkillRankLimitTests
     private static List<SkillType> DecayCandidates(Player player, SkillType skill) =>
         (List<SkillType>)typeof(Skill).GetMethod("GetDecayCandidates", BindingFlags.NonPublic | BindingFlags.Static)!
             .Invoke(null, new object[] { player, skill })!;
+
+    private void Relog() => _harness.GetMethod("Relog")!.Invoke(null, null);
 
     private T Field<T>(string name) => (T)_harness.GetField(name)!.GetValue(null)!;
     private List<string> Warnings => Field<List<string>>("Warnings");

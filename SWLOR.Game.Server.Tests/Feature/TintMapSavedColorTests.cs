@@ -33,7 +33,7 @@ public class TintMapSavedColorTests
                 "SWLOR.Game.Server", "Feature", "AppearanceDefinition", "TintMap", "TintMapService.cs")))
             .GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Where(node => new[] { "GetSavedColor", "GetEffectiveColor", "SetStoredColor", "SetPaletteColor",
-                    "CaptureCurrentHeadColors", "ResetHeadColorToInheritance", "GetCreatureTintSnapshotVariables", "SavePlayerOverrides",
+                    "CaptureCurrentHeadColors", "SaveDroidOverrides", "RestoreDroidOverrides", "ResetHeadColorToInheritance", "GetCreatureTintSnapshotVariables", "SavePlayerOverrides",
                     "RestorePlayerOverrides", "UpdatePlayerTintOverrides", "GetStandardColor" }.Contains(node.Identifier.ValueText))
             .Select(method => method.WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword),
                 SyntaxFactory.Token(SyntaxKind.StaticKeyword))).NormalizeWhitespace());
@@ -50,12 +50,15 @@ public class TintMapSavedColorTests
             using SWLOR.NWN.API.NWScript.Enum;
             using SWLOR.NWN.API.NWScript.Enum.Item;
             using Entity = SWLOR.Game.Server.Entity;
+            using Newtonsoft.Json;
             public static class SavedColorHarness
             {
                 public static readonly Dictionary<string, int> Locals = new();
                 public static readonly Dictionary<string, int> EquippedArmorLocals = new();
                 public static readonly List<TintMapMaterialSelection> Selections = new();
                 public static Entity.Player Player = new("test-player");
+                public static bool IsDroid;
+                public static string ControllerJson = "{}";
                 public static bool ExplicitPreset;
                 public static bool HasArmor;
                 public static int ArmorDye;
@@ -70,7 +73,7 @@ public class TintMapSavedColorTests
                 private static void SetLocalInt(uint item, string name, int value) => Locals[name] = value;
                 private static void DeleteLocalInt(uint item, string name) => Locals.Remove(name);
                 private static bool GetIsObjectValid(uint item) => item != 0;
-                private static bool GetIsPC(uint item) => true;
+                private static bool GetIsPC(uint item) => !IsDroid;
                 private static bool GetIsDM(uint item) => false;
                 private static bool GetIsDMPossessed(uint item) => false;
                 private static string GetObjectUUID(uint item) => "test-player";
@@ -97,7 +100,17 @@ public class TintMapSavedColorTests
                     TintMapLayerType layer, TintMapColorSelection color) { }
                 private static void ApplyCurrentColorsAndPublish(uint creature) { }
                 private static void RemoveDroidOverrides(uint creature, IReadOnlyList<string> names) { }
-                private static void SaveDroidOverrides(uint creature, IReadOnlyList<string> names, int value) { }
+                private static class Droid
+                {
+                    public static bool IsDroid(uint creature) => SavedColorHarness.IsDroid;
+                    public static uint GetControllerItem(uint creature) => 200u;
+                    public static ControllerRecord LoadConstructedDroid(uint item) => JsonConvert.DeserializeObject<ControllerRecord>(ControllerJson)!;
+                    public static void SaveConstructedDroid(uint item, ControllerRecord record) => ControllerJson = JsonConvert.SerializeObject(record);
+                }
+                public class ControllerRecord
+                {
+                    public Dictionary<string, int> TintOverrides { get; set; } = new();
+                }
                 private static class TintMapMaterialRegistry
                 {
                     public const int PaletteColorCount =
@@ -142,6 +155,8 @@ public class TintMapSavedColorTests
         EquippedArmorLocals.Clear();
         Selections.Clear();
         _harness.GetField("Player")!.SetValue(null, new SWLOR.Game.Server.Entity.Player("test-player"));
+        _harness.GetField("IsDroid")!.SetValue(null, false);
+        _harness.GetField("ControllerJson")!.SetValue(null, "{}");
         _harness.GetField("ExplicitPreset")!.SetValue(null, false);
         _harness.GetField("HasArmor")!.SetValue(null, false);
         _harness.GetField("ArmorDye")!.SetValue(null, 0);
@@ -227,6 +242,35 @@ public class TintMapSavedColorTests
         Locals[TintMapVariable.GetHeadColorStateName(layer)] = 31;
         Invoke("RestorePlayerOverrides", 1u);
         Read(newHead, layer).Should().Be(color, "the durable state replaces stale exported locals");
+    }
+
+    [TestCaseSource(nameof(AdditionalHeadLayers))]
+    public void CapturedDroidHeadPaletteAndRgbColorsSurviveControllerReload(TintMapLayerType layer)
+    {
+        _harness.GetField("IsDroid")!.SetValue(null, true);
+        var oldHead = Head("pmh0_head312", "old_material", layer);
+        var nextHead = Head("pmh0_head313", "next_material", layer);
+        var state = TintMapVariable.GetHeadColorStateName(layer);
+        foreach (var value in new[] { 1, 176, new TintMapColor(17, 83, 209).ToStoredValue(),
+                     new TintMapColor(0, 0, 0).ToStoredValue() })
+        {
+            Locals.Clear();
+            Selections.Clear();
+            Selections.Add(oldHead);
+            _harness.GetField("ControllerJson")!.SetValue(null,
+                "{\"TintOverrides\":{\"unrelated\":27}}");
+            Locals[TintMapVariable.GetName(oldHead.Material.Resref, layer)] = value;
+            Invoke("CaptureCurrentHeadColors", 1u);
+            var json = (string)_harness.GetField("ControllerJson")!.GetValue(null)!;
+            var saved = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, int>>>(json)!["TintOverrides"];
+            saved[state].Should().Be(value);
+            saved["unrelated"].Should().Be(27);
+            Locals.Clear();
+            Selections.Clear();
+            Selections.Add(nextHead);
+            Invoke("RestoreDroidOverrides", 1u, saved);
+            Read(nextHead, layer).Should().Be(value, "recreating a droid reads the durable controller, not its old locals");
+        }
     }
 
     [TestCaseSource(nameof(AdditionalHeadLayers))]

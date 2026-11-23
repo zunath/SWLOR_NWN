@@ -59,7 +59,7 @@ case "$action" in
         [[ "$2" =~ ^[0-9]+$ ]] && [ "$2" -ge 1 ] && [ "$2" -le 20 ] || die "Scroll count must be 1..20"
         w=$(window)
         xdotool windowfocus --sync "$w"
-        xdotool mousemove --window "$w" 640 360
+        xdotool mousemove --window "$w" "$(( ${SWLOR_LIVE_WINDOW_WIDTH:-1280} / 2 ))" "$(( ${SWLOR_LIVE_WINDOW_HEIGHT:-720} / 2 ))"
         xdotool click --repeat "$2" --delay 200 "$button"
         sleep 1
         ;;

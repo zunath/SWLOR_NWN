@@ -2814,7 +2814,8 @@ public class TintMapReviewTests
         Regex.Matches(code, @"\bSetupSpecularity\s*\(").Count.Should().Be(1);
         code.LastIndexOf("FragmentColor =", lighting, StringComparison.Ordinal).Should().Be(diffuse,
             "the diffuse input used to rebuild specularity must also be the input to lighting");
-        code.LastIndexOf("fEnvMapLevel =", lighting, StringComparison.Ordinal).Should().Be(environment,
+        // A ProgFX coat may replace the palette coverage, but only before the final diffuse.
+        code.LastIndexOf("fEnvMapLevel =", lighting, StringComparison.Ordinal).Should().BeLessThan(diffuse,
             "later environment writes must not leave derived specularity stale again");
 
         code.Should().MatchRegex(

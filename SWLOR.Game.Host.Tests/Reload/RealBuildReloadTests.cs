@@ -280,6 +280,7 @@ public class RealBuildReloadTests
         yield return (nameof(NativeSinkSet.PlayerFileCheckpoint), PlayerFileCheckpointTrampolines.Sink);
         yield return (nameof(NativeSinkSet.PlayerListNamePrivacy), PlayerListNamePrivacyTrampolines.Sink);
         yield return (nameof(NativeSinkSet.PlayerSlotAssignment), PlayerSlotAssignmentTrampolines.Sink);
+        yield return (nameof(NativeSinkSet.ProgFxCoatEffectHooks), ProgFxCoatEffectHooksTrampolines.Sink);
         yield return (nameof(NativeSinkSet.QuickbarFeatLoading), QuickbarFeatLoadingTrampolines.Sink);
         yield return (nameof(NativeSinkSet.ResolveAttackRoll), ResolveAttackRollTrampolines.Sink);
         yield return (nameof(NativeSinkSet.SavedPlayerInventory), SavedPlayerInventoryTrampolines.Sink);

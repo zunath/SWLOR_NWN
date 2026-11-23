@@ -33,8 +33,9 @@ public class TintMapApplyServiceTests
         _world.Add(Creature, ObjectType.Creature);
         _world.Add(Item, ObjectType.Item);
         var droid = ScriptedProxy.Create<IDroidService>(out _);
+        var coat = ScriptedProxy.Create<IProgFxCoatService>(out _);
         var twin = ScriptedProxy.Create<ITwinPistolEquipmentService>(out _);
-        _service = new TintMapApplyService(droid, twin);
+        _service = new TintMapApplyService(droid, coat, twin);
     }
 
     [TearDown]

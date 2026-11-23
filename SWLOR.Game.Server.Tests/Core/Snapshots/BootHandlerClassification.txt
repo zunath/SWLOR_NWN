@@ -87,7 +87,7 @@ mod_cache_aft (16)
   Rerun       SWLOR.Game.Server.Feature.UnarmedTechniqueProfile.Register
   Rerun       SWLOR.Game.Server.Feature.ChatCommandDefinition.DMSpawnChatCommand.CacheSpawnBeastEggHelp
 
-mod_load (47)
+mod_load (49)
   Rerun       SWLOR.Game.Server.Domain.Character.AchievementService.ReserveGuiIds
   Rerun       SWLOR.Game.Server.Domain.World.AreaService.RemoveInstancesFromCache
   Rerun       SWLOR.Game.Server.Core.FrameProfiler.Load
@@ -115,6 +115,7 @@ mod_load (47)
   NativeHook  SWLOR.Game.Server.Native.PlayerFileCheckpoint.RegisterHooks
   NativeHook  SWLOR.Game.Server.Native.PlayerListNamePrivacy.RegisterHook
   NativeHook  SWLOR.Game.Server.Native.PlayerSlotAssignment.RegisterHook
+  NativeHook  SWLOR.Game.Server.Native.ProgFxCoatEffectHooks.RegisterHooks
   NativeHook  SWLOR.Game.Server.Native.QuickbarFeatLoading.RegisterHook
   NativeHook  SWLOR.Game.Server.Native.ResolveAttackRoll.RegisterHook
   NativeHook  SWLOR.Game.Server.Native.SavedPlayerInventory.RegisterHook
@@ -132,6 +133,7 @@ mod_load (47)
   Rerun       SWLOR.Game.Server.Feature.StoreManagement.LoadStores
   BootOnly    SWLOR.Game.Server.Feature.StoreManagement.ProcessStores
   BootOnly    SWLOR.Game.Server.Feature.TlkOverrides.OverrideTlks
+  Rerun       SWLOR.Game.Server.Domain.Companions.ProgFxCoatService.LoadCoatingVisualEffects
   Rerun       SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.LoadAppearances
   Rerun       SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.MarketBuyViewModel.LoadCategories
   Rerun       SWLOR.Game.Server.Domain.World.CoxxionBaseDoorsService.LoadDoors
@@ -142,6 +144,6 @@ app_shutdown (2)
 
 == TOTALS ==
 BootOnly    19
-NativeHook  15
-Rerun       85
+NativeHook  16
+Rerun       86
 Retire      2

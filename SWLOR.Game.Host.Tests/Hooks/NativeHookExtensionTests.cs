@@ -34,7 +34,7 @@ public unsafe class NativeHookExtensionTests
     }
 
     [Test]
-    public void Installing_every_extension_resolves_the_36_engine_functions_and_requests_no_hook()
+    public void Installing_every_extension_resolves_the_41_engine_functions_and_requests_no_hook()
     {
         var functions = new RecordingFunctions();
         var options = HostOptions.Create(_ => throw new InvalidOperationException("not created here"), new NativeHookTable(functions));
@@ -43,7 +43,7 @@ public unsafe class NativeHookExtensionTests
             extension.Install();
 
         functions.Requests.Should().Be(0, "the game enables each hook from its own handler");
-        functions.Exports.Should().HaveCount(36).And.OnlyHaveUniqueItems();
+        functions.Exports.Should().HaveCount(41).And.OnlyHaveUniqueItems();
     }
 
     [Test]

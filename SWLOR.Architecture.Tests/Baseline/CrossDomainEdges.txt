@@ -236,9 +236,6 @@ Domain/Economy -> Domain/UI | 12
 # Economy -> World (1 edge)
 Domain/Economy -> Domain/World | 7
 
-# Foundation -> Abilities (1 edge)
-Feature/MigrationDefinition -> Domain/Abilities | 4
-
 # Foundation -> Character (4 edges)
 Domain/Foundation -> Domain/Character | 6
 Feature/DialogDefinition -> Domain/Character | 19
@@ -253,18 +250,13 @@ Feature/SnippetDefinition -> Domain/Combat | 2
 # Foundation -> Companions (1 edge)
 Feature/MigrationDefinition -> Domain/Companions | 50
 
-# Foundation -> Crafting (1 edge)
-Feature/MigrationDefinition -> Domain/Crafting | 2
-
 # Foundation -> Economy (2 edges)
 Feature/DialogDefinition -> Domain/Economy | 10
 Feature/MigrationDefinition -> Domain/Economy | 2
 
-# Foundation -> Gameplay (5 edges)
+# Foundation -> Gameplay (3 edges)
 Domain/Foundation -> Feature.PistolAnimationRemap | 1
-Feature/MigrationDefinition -> Feature.BasicVibrobladeCompatibility | 2
 Feature/MigrationDefinition -> Feature.EquipmentStats | 1
-Feature/MigrationDefinition -> Feature.PistolBaseItemCompatibility | 6
 Feature/SnippetDefinition -> Feature.PlaceableScripts | 4
 
 # Foundation -> Items (3 edges)

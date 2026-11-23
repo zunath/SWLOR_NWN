@@ -7,10 +7,13 @@ namespace SWLOR.Game.Server.Native
 {
     /// <summary>
     /// Makes the JSON that clients send with NUI events and bind updates safe for the engine to decode and log: enables
-    /// the <c>CNWMessage::ReadJSON</c> hook that forwards to <see cref="ClientJsonUtf8GuardSink"/>, and keeps its counters.
+    /// the <c>CNWMessage::ReadJSON</c> and <c>CNWSMessage::HandlePlayerToServerNuiEvent</c> hooks that forward to <see cref="ClientJsonUtf8GuardSink"/>, and keeps its counters.
     /// </summary>
     public static class ClientJsonUtf8Guard
     {
+        /// <summary>The most repaired strings kept for one sender's report.</summary>
+        public const int MaxReportSamples = 3;
+
         /// <summary>The number of invalid UTF-8 bytes replaced since the module loaded.</summary>
         public static long ReplacedByteCount { get; internal set; }
 

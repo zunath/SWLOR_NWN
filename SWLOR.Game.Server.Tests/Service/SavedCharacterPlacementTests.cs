@@ -36,7 +36,7 @@ public class SavedCharacterPlacementTests
             [(int)BaseItem.LargeBox] = (2, 2),
             [(int)BaseItem.Ring] = (1, 1),
         };
-        _container.Get<IMigrationService>().CharacterData.Load(sizes, new Dictionary<int, (int, int)>(), new Dictionary<string, string>());
+        _container.Get<IMigrationService>().CharacterData.Load(sizes, new Dictionary<int, (int, int)>());
     }
 
     [TearDown]

@@ -71,7 +71,12 @@ public class BeastIncubationTranscriptTests
         public CombatTranscriptBench Bench { get; }
         public int DnaManipulationLevel { get; set; } = 1;
         public string PropertyId { get; set; } = "property-1";
-        public IBeastMasteryService Beast => Bench.Get<IBeastMasteryService>();
+
+        /// <summary>The beast catalog (the stay-part).</summary>
+        public IBeastMasteryService Beasts => Bench.Get<IBeastMasteryService>();
+
+        /// <summary>The incubator and egg code: the service that holds it, so a split changes this one line.</summary>
+        public IBeastMasteryService Incubation => Bench.Get<IBeastMasteryService>();
 
         public void Dispose()
         {
@@ -122,7 +127,8 @@ public class BeastIncubationTranscriptTests
     {
         using var scene = new Scene();
         var bench = scene.Bench;
-        var beast = scene.Beast;
+        var beast = scene.Beasts;
+        var incubation = scene.Incubation;
         beast.CacheData();
         var dna = BeastWithoutMutations(beast);
         bench.Lines.Clear();
@@ -130,37 +136,37 @@ public class BeastIncubationTranscriptTests
         bench.Step("the player lacks the DNA Manipulation perk", () =>
         {
             scene.DnaManipulationLevel = 0;
-            beast.UseIncubator();
+            incubation.UseIncubator();
             scene.DnaManipulationLevel = 1;
         });
         bench.Step("the incubator has no property", () =>
         {
             scene.PropertyId = " ";
-            beast.UseIncubator();
+            incubation.UseIncubator();
             scene.PropertyId = "property-1";
         });
-        bench.Step("no job runs: the window opens for an empty incubator", () => beast.UseIncubator());
+        bench.Step("no job runs: the window opens for an empty incubator", () => incubation.UseIncubator());
         bench.Step("another player's job is still running", () =>
         {
             var job = Job(dna, 0);
             job.PlayerId = "uuid-Defender";
             job.DateCompleted = DateTime.UtcNow.AddDays(3).AddHours(12).AddMinutes(30).AddSeconds(30);
             bench.Db.With(job);
-            beast.UseIncubator();
+            incubation.UseIncubator();
         });
         bench.Step("another player's job has finished", () =>
         {
             var job = bench.Db.Get<IncubationJob>("job-1");
             job.DateCompleted = DateTime.UtcNow.AddDays(-1);
             bench.Db.With(job);
-            beast.UseIncubator();
+            incubation.UseIncubator();
         });
         bench.Step("the player's own job: the window opens with the job", () =>
         {
             var job = bench.Db.Get<IncubationJob>("job-1");
             job.PlayerId = "uuid-Attacker";
             bench.Db.With(job);
-            beast.UseIncubator();
+            incubation.UseIncubator();
         });
 
         AssertGolden("SWLOR.Game.Server.Tests/Fixtures/CompanionTranscripts/BeastUseIncubator.txt", bench.Text);
@@ -171,7 +177,8 @@ public class BeastIncubationTranscriptTests
     {
         using var scene = new Scene();
         var bench = scene.Bench;
-        var beast = scene.Beast;
+        var beast = scene.Beasts;
+        var incubation = scene.Incubation;
         beast.CacheData();
         var mutating = BeastWithOpenMutations(beast);
         var plain = BeastWithoutMutations(beast);
@@ -181,7 +188,7 @@ public class BeastIncubationTranscriptTests
         void Finish(string label, IncubationJob job) => bench.Step(label, () =>
         {
             bench.Db.With(job);
-            beast.CreateBeastEgg(job, Attacker);
+            incubation.CreateBeastEgg(job, Attacker);
             foreach (var deleted in bench.Db.Deleted.ToArray())
                 bench.Lines.Add("DB.Deleted IncubationJob " + deleted);
             bench.Db.Deleted.Clear();
@@ -194,14 +201,14 @@ public class BeastIncubationTranscriptTests
         Finish("a middle chance", Job(mutating, 500));
         Finish("a second middle chance", Job(mutating, 500));
 
-        bench.Step("an egg by beast type", () => beast.CreateBeastEgg(mutating, Attacker));
+        bench.Step("an egg by beast type", () => incubation.CreateBeastEgg(mutating, Attacker));
         bench.Step("the egg of a job with no resistance purities and no experience penalty", () =>
         {
             var job = Job(plain, 0);
             job.ResistancePurities = new Dictionary<ResistanceType, int>();
             job.XPPenalty = 0;
             bench.Db.With(job);
-            beast.CreateBeastEgg(job, Attacker);
+            incubation.CreateBeastEgg(job, Attacker);
         });
 
         AssertGolden("SWLOR.Game.Server.Tests/Fixtures/CompanionTranscripts/BeastCreateEgg.txt", bench.Text);

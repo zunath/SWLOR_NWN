@@ -105,7 +105,11 @@ public class MimicryWitnessTranscriptTests
         public bool Recording { get; set; } = true;
         public int Perception { get; set; } = 12;
 
-        public IMimicryService Mimicry => Bench.Get<IMimicryService>();
+        /// <summary>The technique catalog (the stay-part).</summary>
+        public IMimicryService Techniques => Bench.Get<IMimicryService>();
+
+        /// <summary>The witness and learn code: the service that holds it, so a split changes this one line.</summary>
+        public IMimicryService Witness => Bench.Get<IMimicryService>();
 
         public List<uint> Nearby => _nearby;
 
@@ -163,8 +167,8 @@ public class MimicryWitnessTranscriptTests
     {
         using var scene = new Scene();
         var bench = scene.Bench;
-        var mimicry = scene.Mimicry;
-        mimicry.CacheData();
+        var mimicry = scene.Witness;
+        scene.Techniques.CacheData();
         bench.Lines.Clear();
 
         bench.Step("a creature uses an ability no technique maps to", () => mimicry.OnCreatureAbilityUsed(NpcOne, Unrelated));
@@ -215,8 +219,8 @@ public class MimicryWitnessTranscriptTests
     {
         using var scene = new Scene();
         var bench = scene.Bench;
-        var mimicry = scene.Mimicry;
-        mimicry.CacheData();
+        var mimicry = scene.Witness;
+        scene.Techniques.CacheData();
         scene.SetPerk(Attacker, PerkType.CombatAnalyzer, 1);
         scene.SetPerk(Defender, PerkType.CombatAnalyzer, 1);
         scene.SetPerk(Attacker, PerkType.PatternRecognition, 5);

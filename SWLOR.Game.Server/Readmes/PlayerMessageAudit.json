@@ -2836,7 +2836,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/QuestContractEditorViewModel.cs",
-    "Line": 557,
+    "Line": 566,
     "Member": "OnClickPublish",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Your quest contract has been published.\", Player, false)"
@@ -7197,63 +7197,63 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestContractBoard.cs",
-    "Line": 131,
+    "Line": 136,
     "Member": "GrantCarriedEntitlements",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Configuration modules were retired, since ship roles are now built into each hull. \" +\n                    $\"You received {item.RetiredSpaceCredits} credits for the ones in {item.Name}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestContractBoard.cs",
-    "Line": 173,
+    "Line": 178,
     "Member": "NotifyPendingDeliveries",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(DeliveriesWaitingMessage))"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestContractBoard.cs",
-    "Line": 548,
+    "Line": 597,
     "Member": "VoidActiveContractQuests",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"The contract '{contract.Title}' has been {reason}. It has been removed from your journal.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestContractBoard.cs",
-    "Line": 581,
+    "Line": 630,
     "Member": "ClaimDeliveries",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have no pending contract deliveries.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestContractBoard.cs",
-    "Line": 624,
+    "Line": 673,
     "Member": "ClaimDeliveries",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Your contract claim could not be saved. Its recovery checkpoint has been retained; please try again later.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestContractBoard.cs",
-    "Line": 630,
+    "Line": 679,
     "Member": "ClaimDeliveries",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You claimed {totalCredits} credits and {totalItems} item(s) from your quest contract deliveries.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestContractBoard.cs",
-    "Line": 632,
+    "Line": 681,
     "Member": "ClaimDeliveries",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Your inventory is full. Make room, then claim your remaining deliveries.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestContractBoard.cs",
-    "Line": 634,
+    "Line": 683,
     "Member": "ClaimDeliveries",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Some of your deliveries could not be claimed. Please try again.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestContractBoard.cs",
-    "Line": 822,
+    "Line": 871,
     "Member": "NotifyDeliveryRecipientIfOnline",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(DeliveriesWaitingMessage))"

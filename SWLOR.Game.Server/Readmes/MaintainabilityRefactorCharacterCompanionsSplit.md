@@ -752,4 +752,45 @@ The open questions of the first draft, settled by the coordinator (2026-11-23); 
 
 ## Progress
 
-P5-10a: this guide (2026-11-23). Next: P5-10b1 and P5-10b2.
+P5-10a: this guide (2026-11-23). P5-10b2: test groundwork for Mimicry, Beast and Droid (2026-11-23, "P5-10b2 as built" below). Next: P5-10b1, then the split PRs.
+
+
+### P5-10b2 as built (2026-11-23)
+
+Tests only; no production file changed. A later PR of the Mimicry, Beast or Droid chain edits one file list per service in `MimicryBeastDroidSource`, the receiver one accessor returns
+(`TestMimicry`, `TestBeastMastery`, `TestDroid`, and the one property per part on a transcript scene), and the receiver text of the tests of its own members. It edits no other bench, double or fixture.
+
+- **Source reader** (`Tests/Support/MimicryBeastDroidSource.cs`): one file list and one part-interface set per service, read through `PartSourceFiles` as `EnmitySource` does (`Read`, `Paths`,
+  `AllPaths`, `Method`, `Member`, `InstanceMethod`, `RelativePath`). **Departure:** it is not in `CharacterCompanionsSource`, which P5-10b1 builds for Perk, Skill and PlayerName; the two share no line,
+  and the owner can fold them at cutover. Reads it replaced: `MimicryTests` (the wiring test reads every Mimicry file; the `RevokeTechniqueFeat` slice is now `Member`), `DMPossessionPlayerLoopTests` (two
+  harness reads), `PlayerMessageAuditTests` (the Mimicry failures test reads every Mimicry file; the gameplay-outcome file list gains `AllPaths()` de-duplicated by full path, and its two literal entries
+  stay so b1's edit of the same two lines does not conflict), `TintMapReviewTests` (the `DroidService.cs` read). **The map's count differs:** only these four files read the three services; `AbilitySourceTests`
+  names `MimicryService.cs` as a path `IsAbilityFile` must refuse, and an engine test names it in a comment.
+- **Doubles** (`Tests/Support/TestMimicry*.cs`, `TestBeastMastery*.cs`, `TestDroid*.cs`): the three nested doubles (`TestMimicry`, `TestBeastMastery`, `AmmunitionDroidService`) are top-level `partial`
+  classes with one file per part for the seams its code calls and a `.Shared` file for seams two parts call (Mimicry: witness `GetNpcLevel`, `GiveSkillXP`, `GetDeltaXP`, `HasCombatPoints`,
+  `ScheduleRepeating`; loadout `IsFeatRegistered`, `GetAbilityDetail`, the two status effect removals; shared `GetPerkLevel`. Beast: events the control, restore and rest seams and `ReturnItem`; shared
+  `GetPerkLevel`, `SyncGrantedFeats`, `TogglePlayerWindow`. Droid: inventory `ReadGeneratedAmmunitionFlags`). **Departure:** Beast has no spawn or incubation file, since every seam of those two parts is shared.
+  The accessors (`Techniques`, `Witness`, `Loadout`; `Beasts`, `Spawn`, `Events`, `Incubation`; `Droids`, `Spawn`, `Inventory`, `Events`, `Despawn`, `Restore`) are properties that return the double itself, and
+  `MimicryServiceTests`, `BeastMasteryServiceTests`, `DroidServiceTests` and `DroidServiceWorldTests` call each member through the accessor of its part (the doubles' own state stays on the double).
+  **Departure:** `DroidWorld` builds no service, so the Droid accessors are on `TestDroid` (a constructor over a `DroidWorld`, and one over the facade forwarders); `DroidWorld` gained an optional `OrderedLog` instead.
+- **Transcripts** (`Tests/Fixtures/CompanionTranscripts/*.txt`, `-text` in `.gitattributes`, LF): each line is a call to a leaf, an engine write or a `Random` draw, in order. Mimicry and Beast run on the P5-7b bench
+  (`CombatTranscriptBench`, seed 20261118) with their own leaf lists; Droid runs on `DroidWorld` with `OrderedLog` and `ObservedScriptedProxy` (the engine, the four plugins and the 14 neighbours; seed 20261123).
+  - `MimicryWitnessTranscriptTests`: `MimicryWitness.txt` (`TryRecordWitness` and the analysis credit through `OnCreatureAbilityUsed`: 12 steps) and `MimicryLearn.txt` (`TryLearnTechniques` through
+    `OnCreatureDeath`: 7 steps, the `D100` rolls, the learned-technique writes, messages, skill XP and sound).
+  - `BeastIncubationTranscriptTests`: `BeastUseIncubator.txt` (6 steps) and `BeastCreateEgg.txt` (job eggs with mutation suppressed, impossible, and chances 0, 1000, 500, 500, with the `Next(1000)` and weighted draws,
+    the field note, every purity property, the vendor bonus and the job removal; an egg by beast type). The scenes run on the whole beast catalog, and the first step names the two beasts chosen by a rule
+    (most mutations a job rich in enzymes qualifies for; first with none), so a catalog edit shows in line one. The running-job message reads 29 seconds on any run under a second.
+  - `DroidSpawnTranscriptTests`: `DroidSpawn.txt` (`SpawnDroid` in six summons: nothing saved; saved appearance, tint, portrait and sound set; a saved loadout with a stored container and a pending return;
+    two refused items kept under a retry key and restored by the next summon; an open AI window with no custom name; the delayed heal included). The controller's property reads are left out. `DroidWorld.ItemIds`
+    gives a deserialized item the droid item id it was saved with (a serialized item carries its locals) so no `Guid` reaches the text. **Not covered:** droid perks (the perk facade) and the paths that mint
+    an identifier with `Guid.NewGuid` (an item that cannot be handed back, an item with no valid copy). `TheSavedItemSetIsRestoredToTheSameSlotsAndCarriedItems` is the restore test run before and after the cut with
+    the same item set (slots, possessors, carried items, items handed back, the saved controller data).
+  - P5-10e1 gives the witness part `ISkillXPService`, so it adds that leaf to `MimicryWitnessTranscriptTests.Leaves` and the `Skill.GiveSkillXP` lines of `MimicryLearn.txt` take the new label: the one intended fixture edit.
+- **Engine tests:** none are new (the skill decay test is P5-10b1's). Run on this base through `scripts/run-engine-tests.sh` (a scratch copy with the repo root fixed and CRLF removed; no `jq`, so the report was
+  read directly): the categories and names of the map's Mimicry, Beast and Droid lists (`MimicryLoadouts`, `MimicryObservation`, `MimicryDescriptions`, the Mimicry potency tests, `MimicryTraitPotency`,
+  `PlayerTechniques`, the Beastmaster ability behaviors (`PlayerBeastAbilityEngineTests`), `Incubation`, `CapstoneProof`, `TankEnmity`, every `Droid` name or category, `ItemClaimSpace`): 112 selected, 110 passed,
+  1 skipped (the opt-in view model transcript), **1 failed: `Migration expands blueprint alternatives inside serialized droid inventories`** (`KeyNotFoundException` for `DroidLightsaberBoost1` in
+  `CraftService.GetRecipe`: the droid migration names a recipe no definition registers). It fails on the base as it stands, the PR changes no production code, and no split touches it; a split PR's engine run must expect it.
+- **Unit tests** (`SWLOR.Game.Server.Tests`, filters `Mimicry`, `Beast`, `Droid`, `Incubation`, `PlayerMessageAudit`, `ConvertedServiceContainer`, `DMPossessionPlayerLoop`): 1,585 passed, 0 failed, including the
+  six new tests; the transcripts are identical across repeated runs. `SWLOR.Architecture.Tests`: 297 passed, no baseline changed.
+- **Client evidence:** none. No production file changed and nothing in game changes; the transcripts and the engine run are the evidence, as for P5-7b.

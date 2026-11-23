@@ -92,6 +92,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return dbPlayer?.MarketListingLimit > 0 ? dbPlayer.MarketListingLimit : Entity.Player.DefaultMarketListingLimit;
         }
 
+        private DBQuery<MarketItem> GetListingsQuery(string playerId)
+        {
+            var market = PlayerMarket.GetMarketRegion(_regionType);
+            return new DBQuery<MarketItem>()
+                .AddFieldSearch(nameof(MarketItem.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(MarketItem.MarketId), market.MarketId, false);
+        }
+
         private void LoadData()
         {
             var itemIconResrefs = new GuiBindingList<string>();
@@ -103,11 +111,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _itemIds.Clear();
             _itemPrices.Clear();
             var playerId = GetObjectUUID(Player);
-            var market = PlayerMarket.GetMarketRegion(_regionType);
-            var query = new DBQuery<MarketItem>()
-                .AddFieldSearch(nameof(MarketItem.PlayerId), playerId, false)
-                .AddFieldSearch(nameof(MarketItem.MarketId), market.MarketId, false)
-                .OrderBy(nameof(MarketItem.Name));
+            var query = GetListingsQuery(playerId).OrderBy(nameof(MarketItem.Name));
             var records = DB.Search(query);
             var count = 0;
 
@@ -277,7 +281,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     FloatingTextStringOnCreature("This listing has already been removed or sold.", Player, false);
                 }
 
-                LoadData();
+                var currentIndex = _itemIds.IndexOf(itemId);
+                if (currentIndex >= 0)
+                {
+                    _itemIds.RemoveAt(currentIndex);
+                    ItemIconResrefs.RemoveAt(currentIndex);
+                    ItemNames.RemoveAt(currentIndex);
+                    _itemPrices.RemoveAt(currentIndex);
+                    ItemPriceNames.RemoveAt(currentIndex);
+                    ItemListed.RemoveAt(currentIndex);
+                    ListingCheckboxEnabled.RemoveAt(currentIndex);
+                }
+
+                _itemCount = (int)DB.SearchCount(GetListingsQuery(GetObjectUUID(Player)));
+                UpdateItemCount();
             });
         }
 

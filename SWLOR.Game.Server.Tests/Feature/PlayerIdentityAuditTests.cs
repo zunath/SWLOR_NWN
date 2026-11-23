@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -28,8 +29,8 @@ public class PlayerIdentityAuditTests
     [OneTimeSetUp]
     public void CompileAuditHarness()
     {
-        var getAuditName = SWLOR.Game.Server.Tests.Service.DMPossessionHarness.InstanceMethod("Domain/Character/PlayerNameService.cs", "GetAuditName");
-        var getAuditIdentity = SWLOR.Game.Server.Tests.Service.DMPossessionHarness.InstanceMethod("Domain/Character/PlayerNameService.cs", "GetAuditIdentity");
+        var getAuditName = CharacterCompanionsSource.PlayerName.InstanceMethod("GetAuditName");
+        var getAuditIdentity = CharacterCompanionsSource.PlayerName.InstanceMethod("GetAuditIdentity");
         var connect = ExtractMethod("Feature", "Auditing.cs", "AuditClientConnection");
         var disconnect = ExtractMethod("Feature", "Auditing.cs", "AuditClientDisconnection");
         var chat = ExtractMethod("Feature", "Auditing.cs", "AuditChatMessages");

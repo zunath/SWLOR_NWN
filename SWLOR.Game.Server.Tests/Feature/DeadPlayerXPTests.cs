@@ -9,8 +9,7 @@ public class DeadPlayerXPTests
     [Test]
     public void SkillXP_GuardsDeadPlayersAtAwardBoundary()
     {
-        var source = ReadServerSource("Domain", "Character", "SkillService.cs");
-        var method = ExtractMethod(source, "public int GiveSkillXP(");
+        var method = CharacterCompanionsSource.Skill.Member("GiveSkillXP");
 
         AssertDeadPlayerGuardExitsBefore(method, "player", "return 0;", "var modifiedSkills");
     }

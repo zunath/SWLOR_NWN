@@ -50,12 +50,13 @@ public class PlayerMessageAuditTests
     {
         var root = FindRepositoryRoot();
         var files = new[] { "Domain/Space/SpaceService.cs",
-            "Domain/Quests/FactionService.cs", "Domain/Economy/GuildService.cs", "Domain/Character/SkillService.cs", "Domain/Companions/BeastMasteryService.cs",
+            "Domain/Quests/FactionService.cs", "Domain/Economy/GuildService.cs", "Domain/Companions/BeastMasteryService.cs",
             "Domain/Quests/QuestObjectives.cs", "Domain/Quests/KillTargetObjective.cs", "Feature/RoleplayXP.cs", "Domain/Abilities/MimicryService.cs",
             "Domain/World/FishingService.cs", "Domain/World/WeatherService.cs", "Feature/ScavengePoint.cs",
             "Feature/StatusEffectDefinition/GuardedStatusEffect.cs" }
             .Select(relative => Path.Combine(root, "SWLOR.Game.Server", relative)).ToList();
         files.AddRange(StatusEffectSource.Paths());
+        files.AddRange(CharacterCompanionsSource.Skill.Paths());
         files.AddRange(AbilitySource.Paths());
         files.AddRange(Directory.EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server", "Feature", "ShipModuleDefinition"), "*.cs"));
 
@@ -179,8 +180,7 @@ public class PlayerMessageAuditTests
     [Test]
     public void SkillCapWarnings_ShareOneProductionLimitAcrossSkillsAndOutcomes()
     {
-        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Domain", "Character", "SkillService.cs");
-        var keys = ReadCalls(file).Where(call => MethodName(call) == "SendWarningToPlayer")
+        var keys = CharacterCompanionsSource.Skill.Paths().SelectMany(ReadCalls).Where(call => MethodName(call) == "SendWarningToPlayer")
             .Select(call => call.ArgumentList.Arguments[1].Expression.ToString()).ToArray();
         keys.Where(key => key != "\"SKILL_LIMIT\"").Should().HaveCount(2).And.OnlyContain(key => key == "\"SKILL_CAP\"",
             "the same global cap condition must not produce a burst of warnings when one kill awards several skills");

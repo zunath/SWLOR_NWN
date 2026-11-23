@@ -141,6 +141,13 @@ namespace SWLOR.Game.Server.Entity
         public HashSet<string> PaidCraftFees { get; set; }
 
         /// <summary>
+        /// The last exchange trade each player paid a tariff on into <see cref="Treasury"/> (player id to trade id), saved with
+        /// the credit, so a tariff a restart interrupted is paid once at the trader's next login (<c>PendingTrade</c>). Cities
+        /// only; records saved before this existed hold null, which means none.
+        /// </summary>
+        public Dictionary<string, string> LastTariffTradeIds { get; set; }
+
+        /// <summary>
         /// Credits earned from sources that cannot be withdrawn, such as City Affairs gains. Upkeep, Edicts and projects
         /// spend them before <see cref="Treasury"/>; the treasury withdrawal never touches them. Only applicable to City
         /// property types.
@@ -219,6 +226,14 @@ namespace SWLOR.Game.Server.Entity
         /// election opens.
         /// </summary>
         public int NeglectCount { get; set; }
+
+        /// <summary>
+        /// A City Affairs decision or expiry whose effects this record holds but whose situation may not be saved yet, or null.
+        /// It is saved with the treasury, modifier and neglect changes, and cleared once the situation is saved; a restart in
+        /// between leaves it for the next City Affairs pass to settle the situation from (CityAffairs.SettlePendingOutcome).
+        /// Older records load null.
+        /// </summary>
+        public CitySituationOutcome PendingSituationOutcome { get; set; }
 
         /// <summary>
         /// 0 normally. 1 after a recall election ended empty: the city is marked Abandoned and the second recall is

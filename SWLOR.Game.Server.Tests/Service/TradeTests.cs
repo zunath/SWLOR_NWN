@@ -361,7 +361,7 @@ public class TradeTests
         sell.Should().Contain("var xp = TradeRules.GetSaleXp(profit, ship.Cargo.TryGetValue(commodity, out var soldLot) ? soldLot.XpEarned : 0);")
             .And.Contain("restOfLot.XpEarned += xp;");
         sell.IndexOf("restOfLot.XpEarned += xp;", StringComparison.Ordinal)
-            .Should().BeLessThan(sell.IndexOf("DB.Set(ship);\n            DB.Set(state);", StringComparison.Ordinal), "the lot's total is saved with the bay");
+            .Should().BeInRange(0, sell.IndexOf("DB.Set(ship);\n            if (trade.ApplyPressureTo(state,", StringComparison.Ordinal), "the lot's total is saved with the bay");
     }
 
     // Cargo spill

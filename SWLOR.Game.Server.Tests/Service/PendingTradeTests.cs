@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -10,13 +11,81 @@ public class PendingTradeTests
     [Test]
     public void APendingTrade_RoundTripsThroughTheCharacterFileLocal()
     {
-        var trade = new PendingTrade { Id = "t1", ShipId = "s1", Commodity = CommodityType.Grain, Units = -12, Credits = 0 };
+        var trade = new PendingTrade
+        {
+            Id = "t1", ShipId = "s1", Commodity = CommodityType.Grain, Units = -12, Credits = 0,
+            Exchange = TradeExchangeType.Viscara, CityId = "city1", Tariff = 45
+        };
 
         PendingTrade.TryParse(trade.Serialize(), out var parsed).Should().BeTrue();
         parsed.Should().BeEquivalentTo(trade);
+        var npc = new PendingTrade { Id = "t2", ShipId = "s1", Commodity = CommodityType.Grain, Units = 3, Credits = 90, Exchange = TradeExchangeType.Viscara };
+        PendingTrade.TryParse(npc.Serialize(), out var parsedNpc).Should().BeTrue();
+        parsedNpc.Should().BeEquivalentTo(npc, "an NPC dock's mark has no city and no tariff");
         PendingTrade.TryParse(string.Empty, out _).Should().BeFalse();
-        PendingTrade.TryParse("t1|s1|8|x|0", out _).Should().BeFalse();
+        PendingTrade.TryParse("t1|s1|8|x|0|1||0", out _).Should().BeFalse();
+        PendingTrade.TryParse("t1|s1|8|-12|0", out _).Should().BeFalse("a mark without its market and tariff cannot be replayed");
         PendingTrade.TryParse(null, out _).Should().BeFalse();
+    }
+
+    [Test]
+    public void ATradesPressure_IsPutOnItsMarketOncePerPlayer()
+    {
+        var now = new DateTime(2026, 11, 23, 12, 0, 0, DateTimeKind.Utc);
+        var state = new TradeExchangeState { Exchange = TradeExchangeType.Viscara };
+        var sale = new PendingTrade { Id = "sell", ShipId = "s1", Commodity = CommodityType.Grain, Units = -8, Exchange = TradeExchangeType.Viscara };
+
+        sale.ApplyPressureTo(state, "p1", now).Should().BeTrue();
+        sale.ApplyPressureTo(state, "p1", now).Should().BeFalse("the exchange records the trade with its pressure");
+        state.Markets[CommodityType.Grain].Pressure.Should().Be(8, "a sale floods the market");
+
+        var purchase = new PendingTrade { Id = "buy", ShipId = "s1", Commodity = CommodityType.Grain, Units = 3, Credits = 90, Exchange = TradeExchangeType.Viscara };
+        purchase.ApplyPressureTo(state, "p2", now).Should().BeTrue("another player's trade is kept apart");
+        state.Markets[CommodityType.Grain].Pressure.Should().Be(5, "a purchase drains the market");
+
+        new TradeExchangeState { Exchange = TradeExchangeType.Viscara, LastTradeIds = null }
+            .Invoking(older => sale.ApplyPressureTo(older, "p1", now)).Should().NotThrow("older records load without the trade ids");
+        sale.ApplyPressureTo(new TradeExchangeState { Exchange = TradeExchangeType.Tatooine }, "p1", now)
+            .Should().BeFalse("a mark presses only its own exchange");
+    }
+
+    [Test]
+    public void ATradesTariff_IsPaidToItsCityOnce()
+    {
+        var city = new WorldProperty { Id = "city1", Treasury = 1000, LastTariffTradeIds = null };
+        var trade = new PendingTrade { Id = "buy", ShipId = "s1", Commodity = CommodityType.Grain, Units = 3, Credits = 90, CityId = "city1", Tariff = 12 };
+
+        trade.PayTariffTo(city, "p1").Should().BeTrue();
+        trade.PayTariffTo(city, "p1").Should().BeFalse("the city records the trade with the credit");
+        city.Treasury.Should().Be(1012);
+
+        trade.PayTariffTo(new WorldProperty { Id = "city2" }, "p1").Should().BeFalse("only the trade's own city is paid");
+        new PendingTrade { Id = "npc", ShipId = "s1", Units = 3, Tariff = 0 }.PayTariffTo(city, "p1").Should().BeFalse("an NPC dock takes no tariff");
+        city.Treasury.Should().Be(1012);
+    }
+
+    [Test]
+    public void LoginRecovery_ReplaysTheMarketPressureAndTariffOfAnInterruptedTrade()
+    {
+        var trade = ReadServerSource("Service", "Trade.cs");
+        var login = trade[trade.IndexOf("public static void ApplyPendingTrade()", StringComparison.Ordinal)..];
+        login = login[..login.IndexOf("foreach (var reserved", StringComparison.Ordinal)];
+        login.Should().Contain("ApplyTradeMark(player, playerId, trade);")
+            .And.Contain("if (PressMarket(trade, playerId))")
+            .And.Contain("if (PayTariff(trade, player))");
+
+        var buy = trade[trade.IndexOf("private static void CompleteBuy(", StringComparison.Ordinal)..];
+        buy = buy[..buy.IndexOf("public static void Sell(", StringComparison.Ordinal)];
+        buy.IndexOf("DB.Set(ship);", StringComparison.Ordinal)
+            .Should().BeLessThan(buy.IndexOf("PressMarket(trade, GetObjectUUID(player));", StringComparison.Ordinal));
+        buy.Should().NotContain("AddPressure(", "the market changes only through the mark, which records it once");
+
+        var sell = trade[trade.IndexOf("public static void Sell(", StringComparison.Ordinal)..];
+        sell.Should().Contain("if (trade.ApplyPressureTo(state, GetObjectUUID(player), now))\n                DB.Set(state);");
+
+        var city = ReadServerSource("Service", "TradeCity.cs");
+        city.Should().Contain("private static bool PayTariff(PendingTrade trade, uint player)")
+            .And.Contain("if (!trade.PayTariffTo(city, GetObjectUUID(player)))\n                return false;\n\n            DB.Set(city);");
     }
 
     [Test]
@@ -96,6 +165,21 @@ public class PendingTradeTests
 
         ReadServerSource("Service", "Space.cs").Should().Contain("if (!string.IsNullOrWhiteSpace(dbShip.PendingSaleTradeId))",
             "no pilot launches a ship whose sale a restart interrupted");
+    }
+
+    [Test]
+    public void TheExchangeWindow_RefreshesAgainAfterAPurchaseCompletesOnThePlayersQueue()
+    {
+        var window = ReadServerSource("Feature", "GuiDefinition", "ViewModel", "TradeExchangeViewModel.cs");
+        var placeOrder = window[window.IndexOf("private void PlaceOrder(bool buying)", StringComparison.Ordinal)..];
+        placeOrder = placeOrder[..placeOrder.IndexOf("public Action OnClickBuy()", StringComparison.Ordinal)];
+
+        var buy = placeOrder.IndexOf("Trade.Buy(Player, shipId, _exchange, _dockId, _rows[index], GetOrderUnits());", StringComparison.Ordinal);
+        var queued = placeOrder.IndexOf("AssignCommand(Player, Refresh);", StringComparison.Ordinal);
+        buy.Should().BeGreaterThanOrEqualTo(0);
+        queued.Should().BeGreaterThan(buy, "the refresh is queued behind the purchase Trade.Buy queued, so it reads the new credits and cargo");
+        placeOrder.Should().NotContain("if (!buying)\n                AssignCommand(Player, Refresh);",
+            "purchases refresh on the queue as sales do, so Sell is enabled once the first unit is bought");
     }
 
     private static string ReadServerSource(params string[] path)

@@ -181,6 +181,9 @@ namespace SWLOR.Game.Server.Service
             if (city.IsQueuedForDeletion)
                 return;
 
+            // First, so a situation a restart left open after its outcome reached the city never takes it again.
+            SettlePendingOutcome(city);
+
             var changed = CityOfficers.RemoveDepartedOfficers(city);
             changed |= SituationRules.PruneModifiers(city.Modifiers, now);
             if (changed)
@@ -226,9 +229,7 @@ namespace SWLOR.Game.Server.Service
 
             city.NeglectCount = RecallRules.AddExpired(city.NeglectCount, 1);
 
-            // The situation is saved first, so a restart between the two writes never applies its outcome twice.
-            DB.Set(situation);
-            DB.Set(city);
+            SaveOutcome(city, situation);
 
             if (detail != null && !string.IsNullOrWhiteSpace(detail.IgnoredGazetteText))
                 CityGazette.Post(city.Id, CityGazetteEntryType.Decision, detail.IgnoredGazetteText, isHook: detail.IgnoredIsHook);
@@ -369,6 +370,9 @@ namespace SWLOR.Game.Server.Service
             if (!CityOfficers.CanHandle(city, playerId))
                 return CityDecisionResult.Refused("Only the mayor and the city's officers can decide situations.");
 
+            // A situation whose outcome reached the city before a restart is settled now, so it is never decided twice.
+            SettlePendingOutcome(city);
+
             var situation = string.IsNullOrWhiteSpace(situationId) ? null : DB.Get<CitySituation>(situationId);
             if (situation == null || situation.CityId != city.Id)
                 return CityDecisionResult.Refused("That situation is no longer here.");
@@ -414,9 +418,7 @@ namespace SWLOR.Game.Server.Service
             var change = ApplyEffects(city, situation, choice.Effects, now, situations, entry?.Id ?? string.Empty, subjectCredits);
             city.NeglectCount = 0;
 
-            // The situation is saved first, so a restart between the two writes never applies its effects twice.
-            DB.Set(situation);
-            DB.Set(city);
+            SaveOutcome(city, situation);
 
             GiveReward(player, playerId, city);
             Log.Write(LogGroup.Property, $"Player '{playerId}' ({title}) decided '{situation.Type}' for city '{city.CustomName}' ({city.Id}): '{choice.Text}'. Treasury change: {change}.");
@@ -445,6 +447,48 @@ namespace SWLOR.Game.Server.Service
             var xp = SituationRules.GetLeadershipXp(Skill.GetDeltaXP(level - leadership.Rank));
             if (xp > 0)
                 Skill.GiveSkillXP(player, SkillType.Leadership, xp, false, false);
+        }
+
+        #endregion
+
+        #region Saving outcomes
+
+        /// <summary>
+        /// Saves a decided or expired situation together with the effects it put on the city. The city is saved first, holding
+        /// the outcome beside its treasury, modifier and neglect changes in one write; then the situation; then the city without
+        /// the outcome. A restart after the first write leaves the outcome for <see cref="SettlePendingOutcome"/>, so the
+        /// situation is settled once and its effects are never lost or applied twice.
+        /// </summary>
+        private static void SaveOutcome(WorldProperty city, CitySituation situation)
+        {
+            city.PendingSituationOutcome = CitySituationOutcome.Capture(situation);
+            DB.Set(city);
+
+            DB.Set(situation);
+
+            city.PendingSituationOutcome = null;
+            DB.Set(city);
+        }
+
+        /// <summary>
+        /// Settles the situation of an outcome a restart left on the city record (<see cref="SaveOutcome"/>): its effects are
+        /// already in the city, so only the situation is saved, and only when it is still open. Then the outcome is cleared.
+        /// </summary>
+        public static void SettlePendingOutcome(WorldProperty city)
+        {
+            var outcome = city?.PendingSituationOutcome;
+            if (outcome == null)
+                return;
+
+            var situation = string.IsNullOrWhiteSpace(outcome.SituationId) ? null : DB.Get<CitySituation>(outcome.SituationId);
+            if (outcome.ApplyTo(situation))
+            {
+                DB.Set(situation);
+                Log.Write(LogGroup.Property, $"Situation '{situation.Type}' of city '{city.CustomName}' ({city.Id}) was settled as {outcome.State} after a restart; its effects were already saved with the city.");
+            }
+
+            city.PendingSituationOutcome = null;
+            DB.Set(city);
         }
 
         #endregion

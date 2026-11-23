@@ -115,8 +115,9 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             // TakeGoldFromCreature does nothing from a NUI handler (the module runs it), so the purchase completes on the
-            // player's action queue: the payment is saved in the character file with a mark naming the cargo change, then
-            // the cargo, so a restart in between leaves a mark the next login applies once (ApplyPendingTrade).
+            // player's action queue: the payment is saved in the character file with a mark naming the cargo change, the
+            // market pressure and the tariff, then each of those, so a restart in between leaves a mark whose outstanding
+            // effects the next login applies once (ApplyPendingTrade).
             AssignCommand(player, () => CompleteBuy(player, shipId, exchangeType, dockId, commodity, units));
         }
 
@@ -160,7 +161,7 @@ namespace SWLOR.Game.Server.Service
             if (!TryPlanBuy(player, shipId, exchangeType, dockId, commodity, units, out var ship, out var detail, out var dock, out var order))
                 return;
 
-            var trade = new PendingTrade { Id = Guid.NewGuid().ToString(), ShipId = ship.Id, Commodity = commodity, Units = order.Units, Credits = order.Credits };
+            var trade = NewTrade(ship, exchangeType, dock, commodity, order.Units, order.Credits, order.Tariff);
             if (!SaveTradeGold(player, trade,
                     () => TakeGoldFromCreature(order.Credits, player, true),
                     () => GiveGoldToCreature(player, order.Credits)))
@@ -169,11 +170,8 @@ namespace SWLOR.Game.Server.Service
             RecordTrade(ship, player, trade);
             DB.Set(ship);
 
-            var now = DateTime.UtcNow;
-            var state = GetExchangeState(exchangeType, now);
-            AddPressure(state, commodity, -order.Units, now);
-            DB.Set(state);
-            PayTariff(dock, order.Tariff, player);
+            PressMarket(trade, GetObjectUUID(player));
+            PayTariff(trade, player);
 
             var reduced = order.WasReduced ? " (all that fits and you can afford)" : string.Empty;
             SendMessageToPC(player, ColorToken.Green($"Bought {order.Units} {detail.Name} for {order.Credits} credits{DescribeTariff(order, dock)}{reduced}."));
@@ -207,15 +205,16 @@ namespace SWLOR.Game.Server.Service
             if (TryBustContrabandSale(player, ship, dock, exchangeType, commodity))
                 return;
 
-            // The proceeds are saved in the character file with a mark naming the cargo change, then the cargo: a restart
-            // in between leaves a mark the next login applies once (ApplyPendingTrade). The sale's cost basis is read
-            // from a copy of the lot, so the bay changes only through the mark.
+            // The proceeds are saved in the character file with a mark naming the cargo change, the market pressure and the
+            // tariff, then each of those: a restart in between leaves a mark whose outstanding effects the next login applies
+            // once (ApplyPendingTrade). The sale's cost basis is read from a copy of the lot, so the bay changes only
+            // through the mark.
             var cost = CargoHoldRules.RemoveUnits(CopyLot(ship.Cargo, commodity), commodity, order.Units);
             // The XP cap belongs to the lot: what earlier sales from it gave counts against it, and the rest of the lot
             // keeps the total, saved with the bay.
             var profit = order.Credits - cost;
             var xp = TradeRules.GetSaleXp(profit, ship.Cargo.TryGetValue(commodity, out var soldLot) ? soldLot.XpEarned : 0);
-            var trade = new PendingTrade { Id = Guid.NewGuid().ToString(), ShipId = ship.Id, Commodity = commodity, Units = -order.Units };
+            var trade = NewTrade(ship, exchangeType, dock, commodity, -order.Units, 0, order.Tariff);
 
             // The sale is reserved on the ship first, so a restart before the bay is saved cannot let another pilot fly the
             // ship and spill units already paid for: the ship waits for its owner's login (ApplyPendingTrade).
@@ -234,10 +233,10 @@ namespace SWLOR.Game.Server.Service
             if (xp > 0 && ship.Cargo.TryGetValue(commodity, out var restOfLot))
                 restOfLot.XpEarned += xp;
             ship.PendingSaleTradeId = string.Empty;
-            AddPressure(state, commodity, order.Units, now);
             DB.Set(ship);
-            DB.Set(state);
-            PayTariff(dock, order.Tariff, player);
+            if (trade.ApplyPressureTo(state, GetObjectUUID(player), now))
+                DB.Set(state);
+            PayTariff(trade, player);
 
             var profitText = profit >= 0 ? $"a profit of {profit}" : $"a loss of {-profit}";
             SendMessageToPC(player, ColorToken.Green($"Sold {order.Units} {detail.Name} for {order.Credits} credits{DescribeTariff(order, dock)}, {profitText}."));
@@ -249,8 +248,38 @@ namespace SWLOR.Game.Server.Service
             Space.RecordTradeEarnings(player, profit);
         }
 
-        /// <summary>The character-file local naming the last exchange trade's cargo change (<see cref="PendingTrade"/>).</summary>
+        /// <summary>The character-file local naming the last exchange trade's effects (<see cref="PendingTrade"/>).</summary>
         private const string PendingTradeVariable = "TRADE_PENDING";
+
+        /// <summary>A trade's mark: its cargo change, the market it presses, and the tariff a city dock takes.</summary>
+        private static PendingTrade NewTrade(PlayerShip ship, TradeExchangeType exchangeType, TradeDock dock, CommodityType commodity,
+            int units, int credits, int tariff)
+        {
+            var isCity = dock != null && dock.IsCity;
+            return new PendingTrade
+            {
+                Id = Guid.NewGuid().ToString(),
+                ShipId = ship.Id,
+                Commodity = commodity,
+                Units = units,
+                Credits = credits,
+                Exchange = exchangeType,
+                CityId = isCity ? dock.CityId ?? string.Empty : string.Empty,
+                Tariff = isCity ? Math.Max(0, tariff) : 0
+            };
+        }
+
+        /// <summary>Puts a trade's pressure on its exchange's market once. True when the market changed.</summary>
+        private static bool PressMarket(PendingTrade trade, string playerId)
+        {
+            var now = DateTime.UtcNow;
+            var state = GetExchangeState(trade.Exchange, now);
+            if (!trade.ApplyPressureTo(state, playerId, now))
+                return false;
+
+            DB.Set(state);
+            return true;
+        }
 
         /// <summary>
         /// Moves the trade's gold and saves it in the character file at once, together with the mark naming its cargo change.
@@ -295,9 +324,10 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Applies the cargo change of a trade whose gold the character file holds but whose bay a restart did not save, then
-        /// lifts the sale reservations a restart left on the player's ships: a sale whose proceeds never reached the character
-        /// file has no mark, so its units simply stay in the bay.
+        /// Applies the outstanding effects of a trade whose gold the character file holds but whose cargo change, market
+        /// pressure or tariff a restart did not save, each once, then lifts the sale reservations a restart left on the
+        /// player's ships: a sale whose proceeds never reached the character file has no mark, so its units simply stay in
+        /// the bay.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ApplyPendingTrade()
@@ -308,7 +338,13 @@ namespace SWLOR.Game.Server.Service
 
             var playerId = GetObjectUUID(player);
             if (PendingTrade.TryParse(ObjectPlugin.GetString(player, PendingTradeVariable), out var trade))
+            {
                 ApplyTradeMark(player, playerId, trade);
+                if (PressMarket(trade, playerId))
+                    Log.Write(LogGroup.Space, $"TRADE RECOVER - {PlayerName.GetAuditName(player)} - pressed {trade.Exchange} {trade.Commodity} by {trade.Pressure} after a restart.");
+                if (PayTariff(trade, player))
+                    Log.Write(LogGroup.Space, $"TRADE RECOVER - {PlayerName.GetAuditName(player)} - paid the {trade.Tariff} credit tariff of trade {trade.Id} to city {trade.CityId} after a restart.");
+            }
 
             foreach (var reserved in PlayerShipAccess.GetOwnedShips(playerId).Where(owned => !string.IsNullOrWhiteSpace(owned.PendingSaleTradeId)))
             {
@@ -332,18 +368,6 @@ namespace SWLOR.Game.Server.Service
             ship.LastTradeIds[playerId] = trade.Id;
             DB.Set(ship);
             Log.Write(LogGroup.Space, $"TRADE RECOVER - {PlayerName.GetAuditName(player)} - applied {trade.Units} {trade.Commodity} to ship {ship.Id} after a restart.");
-        }
-
-        private static void AddPressure(TradeExchangeState state, CommodityType commodity, int units, DateTime now)
-        {
-            if (!state.Markets.TryGetValue(commodity, out var market))
-            {
-                market = new TradeMarketState { UpdatedAt = now };
-                state.Markets[commodity] = market;
-            }
-
-            market.Pressure += units;
-            market.UpdatedAt = now;
         }
 
         private static string DescribeTariff(TradeOrder order, TradeDock dock)

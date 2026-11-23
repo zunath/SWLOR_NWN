@@ -480,9 +480,11 @@ public class TradeStandingTests
         ReadServerSource("Service", "Property.cs").Should().Contain("property.Taxes[PropertyTaxType.Exchange] = 0;");
 
         var trade = ReadServerSource("Service", "Trade.cs");
-        trade.Split("PayTariff(dock, order.Tariff, player);").Length.Should().Be(3, "buying and selling both pay the treasury");
+        trade.Split("PayTariff(trade, player);").Length.Should().Be(3, "buying and selling both pay the treasury");
+        trade.Split(", order.Tariff);").Length.Should().Be(3, "each trade's mark carries the tariff it pays");
         trade.Should().Contain("dock.TariffPercent");
-        ReadServerSource("Service", "TradeCity.cs").Should().Contain("city.Treasury += tariff;");
+        ReadServerSource("Service", "TradeCity.cs").Should().Contain("trade.PayTariffTo(city, GetObjectUUID(player))");
+        ReadServerSource("Service", "TradeService", "PendingTrade.cs").Should().Contain("city.Treasury += Tariff;");
 
         var window = ReadServerSource("Feature", "GuiDefinition", "TradeExchangeDefinition.cs");
         window.Should().Contain("model => model.TariffText").And.Contain("model => model.StandingText");

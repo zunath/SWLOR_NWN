@@ -59,20 +59,23 @@ namespace SWLOR.Game.Server.Service
             };
         }
 
-        /// <summary>Pays a tariff into the city treasury.</summary>
-        private static void PayTariff(TradeDock dock, int tariff, uint player)
+        /// <summary>
+        /// Pays a trade's tariff into the city treasury once: the city records the trade in the same save as the credit, so
+        /// the login that replays an interrupted trade (<see cref="ApplyPendingTrade"/>) never pays it twice. True when paid.
+        /// </summary>
+        private static bool PayTariff(PendingTrade trade, uint player)
         {
-            if (tariff <= 0 || dock == null || !dock.IsCity)
-                return;
+            if (trade.Tariff <= 0 || string.IsNullOrWhiteSpace(trade.CityId))
+                return false;
 
-            var city = DB.Get<WorldProperty>(dock.CityId);
-            if (city == null)
-                return;
+            var city = DB.Get<WorldProperty>(trade.CityId);
+            if (!trade.PayTariffTo(city, GetObjectUUID(player)))
+                return false;
 
-            city.Treasury += tariff;
             DB.Set(city);
-            CityTreasuryHistoryLog.Record(city, CityTreasuryEntryType.ExchangeTariffs, tariff);
-            Log.Write(LogGroup.Property, $"TRADE TARIFF - {PlayerName.GetAuditName(player)} paid {tariff} credits to the treasury of {city.CustomName} ({city.Id}).");
+            CityTreasuryHistoryLog.Record(city, CityTreasuryEntryType.ExchangeTariffs, trade.Tariff);
+            Log.Write(LogGroup.Property, $"TRADE TARIFF - {PlayerName.GetAuditName(player)} paid {trade.Tariff} credits to the treasury of {city.CustomName} ({city.Id}).");
+            return true;
         }
     }
 }

@@ -459,9 +459,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             Refresh();
 
-            // A customs bust takes the fine and the cargo on the player's queue, after this handler.
-            if (!buying)
-                AssignCommand(Player, Refresh);
+            // A purchase completes on the player's queue (TakeGoldFromCreature does nothing from a NUI handler), and a customs
+            // bust takes the fine and the cargo there too, so the window refreshes again once those have run.
+            AssignCommand(Player, Refresh);
         }
 
         public Action OnClickBuy() => () => PlaceOrder(true);

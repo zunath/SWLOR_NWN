@@ -405,6 +405,7 @@ namespace SWLOR.Game.Server.Service
         public static (GuiBindingList<string>, GuiBindingList<GuiColor>) BuildRecipeDetail(uint player, RecipeType recipe, BlueprintDetail blueprint)
         {
             var detail = GetRecipe(recipe);
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
             var recipeDetails = new GuiBindingList<string>();
             var recipeDetailColors = new GuiBindingList<GuiColor>();
 
@@ -425,7 +426,7 @@ namespace SWLOR.Game.Server.Service
 
             var requiredSkillRank = GetRequiredSkillRankForRecipe(detail);
             recipeDetails.Add($"{Skill.GetSkillDetails(detail.Skill).Name} rank {requiredSkillRank}");
-            recipeDetailColors.Add(string.IsNullOrWhiteSpace(CheckRecipeSkillRequirement(DB.Get<Player>(GetObjectUUID(player)), detail))
+            recipeDetailColors.Add(string.IsNullOrWhiteSpace(CheckRecipeSkillRequirement(dbPlayer, detail))
                 ? GuiColor.Green
                 : GuiColor.Red);
 
@@ -438,7 +439,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var req in detail.Requirements)
             {
                 recipeDetails.Add(req.RequirementText);
-                recipeDetailColors.Add(string.IsNullOrWhiteSpace(req.CheckRequirements(player))
+                recipeDetailColors.Add(dbPlayer != null && string.IsNullOrWhiteSpace(req.CheckRequirements(player))
                     ? GuiColor.Green
                     : GuiColor.Red);
             }

@@ -199,10 +199,9 @@ public class RiftRunTests
             "a cleared mark that failed to save is remembered, since the saved file still refunds the key");
         var pay = runs[runs.IndexOf("private static void PayRiftRun(", StringComparison.Ordinal)..];
         pay = pay[..pay.IndexOf("SaveIncursions();", StringComparison.Ordinal)];
-        pay.Should().Contain("var participants = run.Pilots.Concat(run.Pilots.SelectMany(GetShipCrewPlayers)).Distinct().ToList();",
-            "every pilot and everyone aboard their ships is checked, wherever the key user rode");
-        pay.Should().Contain("var unsavedKeyUsers = participants.Where(x => !IsRiftKeySpendSaved(x)).ToList();");
-        var gate = pay.IndexOf("if (unsavedKeyUsers.Count > 0)", StringComparison.Ordinal);
+        runs.Should().Contain("KeyUser = spentKey ? user : OBJECT_INVALID,", "the run remembers who spent the key");
+        new RiftRun().KeyUser.Should().Be(SWLOR.NWN.API.NWScript.NWScript.OBJECT_INVALID, "a run opened without a key has no key user");
+        var gate = pay.IndexOf("if (!IsRiftKeySpendSaved(run.KeyUser))", StringComparison.Ordinal);
         gate.Should().BeGreaterThan(0);
         pay.IndexOf("return;", gate, StringComparison.Ordinal)
             .Should().BeLessThan(pay.IndexOf("CapitalBattleRules.AddPending(", StringComparison.Ordinal),

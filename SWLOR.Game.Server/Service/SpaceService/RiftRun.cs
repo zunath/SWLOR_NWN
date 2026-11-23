@@ -26,6 +26,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int FinishedSecondsLeft { get; set; }
 
         public uint Area { get; set; }
+
+        /// <summary>
+        /// The player whose spent Rift Key opened the run (OBJECT_INVALID for a run opened without one). Kept apart from
+        /// <see cref="Pilots"/>, since a key user who leaves the controls is no longer a pilot but their key still counts.
+        /// </summary>
+        public uint KeyUser { get; set; } = OBJECT_INVALID;
+
         public List<uint> Pilots { get; set; } = new();
         public Dictionary<uint, Location> Origins { get; set; } = new();
 

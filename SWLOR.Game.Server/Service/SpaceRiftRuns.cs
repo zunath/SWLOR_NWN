@@ -254,6 +254,7 @@ namespace SWLOR.Game.Server.Service
                 StartedAt = now,
                 NextAt = now.AddSeconds(RiftRunTuning.WaveDelaySeconds),
                 Area = area,
+                KeyUser = spentKey ? user : OBJECT_INVALID,
                 Pilots = pilots,
             };
             _riftRuns[run.Id] = run;
@@ -498,15 +499,15 @@ namespace SWLOR.Game.Server.Service
             var collecting = new Dictionary<string, uint>();
 
             // A key user whose spent key is not saved as spent yet still has the key's refund in their character file. The
-            // whole run pays nothing then: any ship's spoils beside the refunded key would let the party keep both.
-            var participants = run.Pilots.Concat(run.Pilots.SelectMany(GetShipCrewPlayers)).Distinct().ToList();
-            var unsavedKeyUsers = participants.Where(x => !IsRiftKeySpendSaved(x)).ToList();
-            if (unsavedKeyUsers.Count > 0)
+            // whole run pays nothing then: any ship's spoils beside the refunded key would let the party keep both. The run
+            // keeps the key user apart from its pilots, so one who left the controls is still checked.
+            if (!IsRiftKeySpendSaved(run.KeyUser))
             {
-                foreach (var player in participants.Except(unsavedKeyUsers).Where(GetIsObjectValid))
+                var participants = run.Pilots.Concat(run.Pilots.SelectMany(GetShipCrewPlayers)).Distinct()
+                    .Where(x => x != run.KeyUser && GetIsObjectValid(x));
+                foreach (var player in participants)
                     SendMessageToPC(player, ColorToken.Red("The Rift Key that opened this pocket could not be saved as spent, so the run pays no spoils and the key goes back to its user."));
-                Log.Write(LogGroup.Space, $"RIFT RUN SPOILS WITHHELD - {run.Key.Resref} - unsaved key user(s): " +
-                                          string.Join(", ", unsavedKeyUsers.Select(PlayerName.GetAuditName)));
+                Log.Write(LogGroup.Space, $"RIFT RUN SPOILS WITHHELD - {run.Key.Resref} - key user {PlayerName.GetAuditName(run.KeyUser)}");
                 return;
             }
 

@@ -37,6 +37,8 @@ public class WeatherServiceTests
     private const uint Dm = 5004;
     private const uint Possessed = 5005;
     private const uint Monster = 5006;
+    private const uint DmPlaceable = 5100;
+    private const uint AuthoredPlaceable = 5101;
     private const uint Door = 5007;
 
     private WeatherWorld _world = null!;
@@ -1115,6 +1117,22 @@ public class WeatherServiceTests
         _world.Hits().Select(hit => hit.Target).Should().Equal(Door, Monster);
         _world.Knockdowns().Should().Equal(Monster);
         _world.Engine.CountOf("PlayVoiceChat").Should().Be(1);
+    }
+
+    [Test]
+    public void Lightning_spares_DM_placed_placeables_but_still_hits_other_targets()
+    {
+        ThunderstormOver(Meadow);
+        _world.AddPlaceable(DmPlaceable, Meadow);
+        _world.SetInt(DmPlaceable, "DM_SPAWNED_PLACEABLE", 1);
+        _world.AddPlaceable(AuthoredPlaceable, Meadow);
+        _world.AddCreature(Monster, Meadow);
+        _world.StrikeReaches(Meadow, DmPlaceable, AuthoredPlaceable, Monster);
+
+        Strike(Meadow);
+
+        _world.LocationVisuals().Should().Equal(VisualEffect.Vfx_Imp_Lightning_M);
+        _world.Hits().Select(hit => hit.Target).Should().Equal(AuthoredPlaceable, Monster);
     }
 
     [Test]

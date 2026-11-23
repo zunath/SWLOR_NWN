@@ -610,6 +610,38 @@ public class SkillRankLimitTests
         player.Skills[SkillType.Throwing].Rank.Should().Be(0);
     }
 
+    [TestCase(0, 0)]
+    [TestCase(20, 20)]
+    [TestCase(35, 35)]
+    [TestCase(null, 0)]
+    public void AtTheCap_ALimitBelowTheRank_MovesRanksFromThatSkillIntoAnother(int? limit, int remainingRank)
+    {
+        // Everything else is locked: the unlocked skill's ranks above its limit are all that can move.
+        var player = CreatePlayer(SkillService.SkillCap,
+            (SkillType.Piloting, S(36, limit: limit)),
+            (SkillType.Espionage, S(8)));
+        var movableRanks = 36 - remainingRank;
+        var expected = Enumerable.Range(8, movableRanks).Sum(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP);
+
+        Skill.GetMaxDistributableXP(player, SkillType.Espionage).Should().Be(expected);
+        Award(player, SkillType.Espionage, expected).Should().Be(expected);
+        player.Skills[SkillType.Espionage].Rank.Should().Be(8 + movableRanks);
+        player.Skills[SkillType.Piloting].Rank.Should().Be(remainingRank);
+    }
+
+    [TestCase(36)]
+    [TestCase(50)]
+    public void AtTheCap_ALimitAtOrAboveTheRank_LetsNothingMove(int limit)
+    {
+        var player = CreatePlayer(SkillService.SkillCap,
+            (SkillType.Piloting, S(36, limit: limit)),
+            (SkillType.Espionage, S(8)));
+
+        Skill.GetMaxDistributableXP(player, SkillType.Espionage).Should().Be(0);
+        Award(player, SkillType.Espionage, 1000).Should().Be(0);
+        player.Skills[SkillType.Piloting].Rank.Should().Be(36);
+    }
+
     [Test]
     public void MaxDistributableXP_AcceptsOneXPToCompleteARankTheCapHeldBack()
     {
@@ -667,6 +699,35 @@ public class SkillRankLimitTests
         confirm.Should().Contain("dbPlayer.UnallocatedXP -= Math.Min(acceptedXP, dbPlayer.UnallocatedXP);");
         confirm.Split("UnallocatedXP -=").Length.Should().Be(2, "RP XP is only debited once, after the award");
         confirm.Substring(refuse, cap - refuse).Should().Contain("return;");
+    }
+
+    [Test]
+    public void RPXPWindow_RechecksItsLimitAtConfirm_BeforeRefusing()
+    {
+        var source = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server",
+            "Feature", "GuiDefinition", "ViewModel", "DistributeRPXPViewModel.cs"));
+        var confirm = ExtractMethod(source, "public Action OnClickConfirm() => () =>");
+
+        var recheck = confirm.IndexOf("_maxDistributableXP = GetMaxDistributableXP();", StringComparison.Ordinal);
+        var refuse = confirm.IndexOf("if (_maxDistributableXP <= 0)", StringComparison.Ordinal);
+
+        recheck.Should().BeGreaterThan(0);
+        refuse.Should().BeGreaterThan(recheck, "a limit cached when the window opened must not refuse XP");
+    }
+
+    [TestCase("protected override void OnClientPropertyUpdated(string propertyName)", "DB.Set(dbPlayer);")]
+    [TestCase("public Action ToggleDecayLock() => () =>", "DB.Set(dbPlayer);")]
+    public void SkillsWindow_LimitAndLockChanges_RefreshAnOpenRPXPWindow(string signature, string save)
+    {
+        var source = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server",
+            "Feature", "GuiDefinition", "ViewModel", "SkillsViewModel.cs"));
+        var method = ExtractMethod(source, signature);
+
+        var saved = method.IndexOf(save, StringComparison.Ordinal);
+        var refresh = method.IndexOf("Gui.PublishRefreshEvent(Player, new RPXPRefreshEvent());", StringComparison.Ordinal);
+
+        saved.Should().BeGreaterThan(0);
+        refresh.Should().BeGreaterThan(saved, "the RP XP window rechecks its limit from the saved record");
     }
 
     [Test]

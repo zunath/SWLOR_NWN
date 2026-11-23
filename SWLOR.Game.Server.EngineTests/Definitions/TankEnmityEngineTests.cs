@@ -385,7 +385,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             catch (Exception error)
             {
-                throw new InvalidOperationException($"{error.Message}; enemy={enemy:X} expected={target:X} actual={GetAttackTarget(enemy):X} leader={Enmity.GetHighestEnmityAttackTarget(enemy):X} action={GetCurrentAction(enemy)} busy={Activity.IsBusy(enemy)} leash={AI.IsLeashEvading(enemy)} distance={GetDistanceBetween(enemy, target):F1} table={string.Join(',', Enmity.GetEnmityTable(enemy).Select(entry => $"{entry.Key:X}:{entry.Value}"))}", error);
+                throw new InvalidOperationException($"{error.Message}; enemy={enemy:X} expected={target:X} actual={GetAttackTarget(enemy):X} leader={Enmity.GetHighestEnmityAttackTarget(enemy):X} action={GetCurrentAction(enemy)} busy={Activity.IsBusy(enemy)} leash={CreatureAIRules.IsLeashEvading(enemy)} distance={GetDistanceBetween(enemy, target):F1} table={string.Join(',', Enmity.GetEnmityTable(enemy).Select(entry => $"{entry.Key:X}:{entry.Value}"))}", error);
             }
         }
 

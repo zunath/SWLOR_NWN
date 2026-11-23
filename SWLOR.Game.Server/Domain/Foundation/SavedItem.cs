@@ -173,16 +173,6 @@ internal sealed class SavedItem
         });
     }
 
-    /// <summary>Deletes every local of this name and NWN variable type (1 integer, 2 float, 3 string, 4 object, 5 location).</summary>
-    public void DeleteLocal(string name, int variableType)
-    {
-        var locals = Locals(false);
-        locals?.Children.RemoveAll(variable => StoredObjectData.ReadVariableName(variable) == name &&
-            StoredObjectData.ReadInteger(variable, "Type") == variableType);
-    }
-
-    public void DeleteAllLocals() => Locals(false)?.Children.Clear();
-
     internal Field Locals(bool create)
     {
         var locals = Node.Fields.SingleOrDefault(x => x.Name == "VarTable" && x.Type == 15);
@@ -335,21 +325,6 @@ internal static class SavedGff
             node.Fields.Add(Scalar(type, name, value));
         else
             field.Data = Payload(field.Type, value);
-    }
-
-    public static float ReadFloat(Node node, string name)
-    {
-        var field = node.Fields.FirstOrDefault(x => x.Name == name && x.Type == 8);
-        return field == null || field.Data.Length < 4 ? 0f : BitConverter.ToSingle(field.Data, 0);
-    }
-
-    public static void WriteFloat(Node node, string name, float value)
-    {
-        var field = node.Fields.FirstOrDefault(x => x.Name == name && x.Type == 8);
-        if (field == null)
-            node.Fields.Add(StoredObjectData.MakeField(8, name, BitConverter.GetBytes(value)));
-        else
-            field.Data = BitConverter.GetBytes(value);
     }
 
     public static void WriteString(Node node, string name, string value)

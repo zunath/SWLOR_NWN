@@ -41,6 +41,8 @@ public class InvertedInterfaceRegistrationTests
         (typeof(IBeastCorpseInfo), typeof(IBeastMasteryService)),
         (typeof(IAIProfileDescription), typeof(IAIService)),
         (typeof(IDMSpawnPreparation), typeof(ISpawnObjectService)),
+        (typeof(ICombatLeash), typeof(IAIService)),
+        (typeof(ICompanionTargetQuery), typeof(ICompanionControlService)),
     };
 
     private static ContainerHost Build()

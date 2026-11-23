@@ -4,7 +4,7 @@ using SWLOR.Game.Contracts;
 namespace SWLOR.Game.NativeHooks;
 
 /// <summary>
-/// The process's native hooks: the trampolines of the 17 hook files, each with the engine functions it hooks, its install
+/// The process's native hooks: the trampolines of the 18 hook files, each with the engine functions it hooks, its install
 /// guard and its bound sink. NWNX calls a trampoline for the life of the process, so their state is process-wide (static);
 /// every instance of this class is a view of that one set, which the native entry creates for itself and the host hands
 /// the game through its services. Installing (<see cref="Enable"/>) and binding (<see cref="Bind"/>) are separate:
@@ -47,6 +47,7 @@ public sealed class NativeHookTable : IHookControl, INativeSinkBinding
             case NativeHookId.PlayerFileCheckpoint: PlayerFileCheckpointTrampolines.Resolve(_native); break;
             case NativeHookId.PlayerListNamePrivacy: PlayerListNamePrivacyTrampolines.Resolve(_native); break;
             case NativeHookId.PlayerSlotAssignment: PlayerSlotAssignmentTrampolines.Resolve(_native); break;
+            case NativeHookId.ProgFxCoatEffectHooks: ProgFxCoatEffectHooksTrampolines.Resolve(_native); break;
             case NativeHookId.QuickbarFeatLoading: QuickbarFeatLoadingTrampolines.Resolve(_native); break;
             case NativeHookId.ResolveAttackRoll: ResolveAttackRollTrampolines.Resolve(_native); break;
             case NativeHookId.SavedPlayerInventory: SavedPlayerInventoryTrampolines.Resolve(_native); break;
@@ -73,6 +74,7 @@ public sealed class NativeHookTable : IHookControl, INativeSinkBinding
             case NativeHookId.PlayerFileCheckpoint: PlayerFileCheckpointTrampolines.Enable(_native); break;
             case NativeHookId.PlayerListNamePrivacy: PlayerListNamePrivacyTrampolines.Enable(_native); break;
             case NativeHookId.PlayerSlotAssignment: PlayerSlotAssignmentTrampolines.Enable(_native); break;
+            case NativeHookId.ProgFxCoatEffectHooks: ProgFxCoatEffectHooksTrampolines.Enable(_native); break;
             case NativeHookId.QuickbarFeatLoading: QuickbarFeatLoadingTrampolines.Enable(_native); break;
             case NativeHookId.ResolveAttackRoll: ResolveAttackRollTrampolines.Enable(_native); break;
             case NativeHookId.SavedPlayerInventory: SavedPlayerInventoryTrampolines.Enable(_native); break;
@@ -99,6 +101,7 @@ public sealed class NativeHookTable : IHookControl, INativeSinkBinding
             NativeHookId.PlayerFileCheckpoint => PlayerFileCheckpointTrampolines.IsEnabled,
             NativeHookId.PlayerListNamePrivacy => PlayerListNamePrivacyTrampolines.IsEnabled,
             NativeHookId.PlayerSlotAssignment => PlayerSlotAssignmentTrampolines.IsEnabled,
+            NativeHookId.ProgFxCoatEffectHooks => ProgFxCoatEffectHooksTrampolines.IsEnabled,
             NativeHookId.QuickbarFeatLoading => QuickbarFeatLoadingTrampolines.IsEnabled,
             NativeHookId.ResolveAttackRoll => ResolveAttackRollTrampolines.IsEnabled,
             NativeHookId.SavedPlayerInventory => SavedPlayerInventoryTrampolines.IsEnabled,
@@ -126,6 +129,7 @@ public sealed class NativeHookTable : IHookControl, INativeSinkBinding
         PlayerFileCheckpointTrampolines.Bind(sinks.PlayerFileCheckpoint);
         PlayerListNamePrivacyTrampolines.Bind(sinks.PlayerListNamePrivacy);
         PlayerSlotAssignmentTrampolines.Bind(sinks.PlayerSlotAssignment);
+        ProgFxCoatEffectHooksTrampolines.Bind(sinks.ProgFxCoatEffectHooks);
         QuickbarFeatLoadingTrampolines.Bind(sinks.QuickbarFeatLoading);
         ResolveAttackRollTrampolines.Bind(sinks.ResolveAttackRoll);
         SavedPlayerInventoryTrampolines.Bind(sinks.SavedPlayerInventory);
@@ -151,6 +155,7 @@ public sealed class NativeHookTable : IHookControl, INativeSinkBinding
         PlayerFileCheckpointTrampolines.Unbind(sinks.PlayerFileCheckpoint);
         PlayerListNamePrivacyTrampolines.Unbind(sinks.PlayerListNamePrivacy);
         PlayerSlotAssignmentTrampolines.Unbind(sinks.PlayerSlotAssignment);
+        ProgFxCoatEffectHooksTrampolines.Unbind(sinks.ProgFxCoatEffectHooks);
         QuickbarFeatLoadingTrampolines.Unbind(sinks.QuickbarFeatLoading);
         ResolveAttackRollTrampolines.Unbind(sinks.ResolveAttackRoll);
         SavedPlayerInventoryTrampolines.Unbind(sinks.SavedPlayerInventory);

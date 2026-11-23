@@ -344,9 +344,10 @@ playback. After installing, compile the banks and regenerate the clothing bridge
 `performance/` holds the Performance skill's motion. The two ability activation clips, `Dance`
 (`sw_pf_dance`) and `PlayInstrument` (`sw_pf_play`), are in the active inventory with native-sourced
 recipes in `performance/choreographies.json`: native `pause1` and `pausewalkl` with directed hands, so
-they end in native idle like every inventory clip. The other 59 clips are activity clips like
+they end in native idle like every inventory clip. The other 144 clips are activity clips like
 Fishing's (`activity: "Performing"`, empty `abilityDefinition`). Fifteen are authored in
-`performance/recipe.json`, thirty-seven in `performance/props-recipe.json`; seven SWG loops are imported through `performance/swg-imports.json`.
+`performance/recipe.json`, thirty-seven in `performance/props-recipe.json`; seven SWG loops are imported through `performance/swg-imports.json`;
+eighty-five Flanged Jessoon copies of the horn clips are derived by `tools/DeriveJessoonPerformanceMotion.py`.
 
 | Group | Clips (project Id = internal name) | Length |
 |---|---|---|
@@ -355,6 +356,7 @@ Fishing's (`activity: "Performing"`, empty `abilityDefinition`). Fifteen are aut
 | Dance flourishes | DanceSpin `sw_dn_spin`, DanceDip `sw_dn_dip` | 1.5 s |
 | Strings | StringsLoop `sw_str_loop` (5.2 s), StringsLow/Mid/High `sw_str_low/mid/high` (0.5 s), StringsFlourish `sw_str_flour` (1.5 s) | |
 | Horns | HornLoop `sw_hrn_loop` (5.2 s), HornLow/Mid/High `sw_hrn_low/mid/high` (0.5 s), HornFlourish `sw_hrn_flour` (1.5 s) | |
+| Flanged Jessoon | JessoonHumanLoop/Low/Mid/High/Flourish `sw_jhm_*`; the other sets likewise, `sw_j` + body letter + `m`/`f` (HumanFemale `jhf`, Trandoshan `jtm`/`jtf`, MonCalamari `jmm`/`jmf`, Bothan `jbm`/`jbf`, Rodian `jrm`, Wookiee `jwm`/`jwf`, Cathar `jcm`/`jcf`, Ugnaught `jum`/`juf`, Ewok `jem`/`jef`) | As the horn clips |
 | Vocals | VocalsLoop `sw_voc_loop` (5.2 s), VocalsLow/Mid/High `sw_voc_low/mid/high` (0.5 s), VocalsFlourish `sw_voc_flour` (1.5 s) | |
 | Vocals, low mouth | VocalsLowMouthLoop `sw_vlm_loop` (5.2 s), VocalsLowMouthLow/Mid/High `sw_vlm_low/mid/high` (0.5 s), VocalsLowMouthFlourish `sw_vlm_flour` (1.5 s) | |
 | Vocals, mid mouth | VocalsMidMouthLoop `sw_vmm_loop` (5.2 s), VocalsMidMouthLow/High `sw_vmm_low/high` (0.5 s), VocalsMidMouthFlourish `sw_vmm_flour` (1.5 s) | |
@@ -453,7 +455,8 @@ ordinary clips. The recipe tool writes the five copies from the ordinary vocals,
 them only in the microphone arm. Install them like any other clip, then add them to the robe layers with
 `ExtendRobeAnimations.py --baseline <pre-change-sha> --variant sw_voc_loop=sw_vlm_loop ... --output <new-output> --apply`:
 each variant copies an owned clip's garment tracks, events and part IDs and takes only the body rotations
-that differ, so no robe is regenerated.
+that differ, so no robe is regenerated. A clip the extension does not own (the horn clips live in the base bridges)
+is copied from the bridge each layer extends, which carries the identical rig, and one clip may give several variants.
 
 Wookiees have three more sets, selected the same way. A female Wookiee's mouth sits between a Human's and an
 Ugnaught's, so she sings with `VocalsMidMouth` (`sw_vmm_*`, the hand 5 cm lower). A Wookiee's large hands
@@ -475,6 +478,9 @@ time an overflow bank takes a clip:
 - Name the bank when adding the robe variants: `--variant sw_tam_loop=sw_twd_loop ... --body-bank
   sw_cr_creature/ab_a_ba_005.mdl --body-bank sw_cr_creature/ab_a_fa_005.mdl`. The banks of a rig must add
   the clips together, every existing clip must be unchanged, and the bank is then recorded with the others.
+- A variant only one body plays can be limited to that body's robe layer with `@` and the layer's body prefix
+  (`--variant sw_hrn_loop=sw_jhf_loop@pfh`); the manifest records the limit, and `--check` expects the other layers
+  to inherit the body bank's copy.
 
 To publish a revision of these three families, generate the recipe into a staging directory, copy the
 fifteen changed projects and the manifest, `install-active` them into `a_ba` and `a_fa`, and compile
@@ -500,6 +506,23 @@ The kloo horn only lines up once the instrument's polearm carry layer is gone. M
 to `sw_nohold` stops the layer refreshing but cannot remove one already on the character, which
 leaves the horn on the shoulder, so its opening `PlayInstrument` clip plays once on the Dodge Side
 carrier to remove it. Later clips stay on the looping carrier.
+
+The Flanged Jessoon (`wmgfs_m_211`, a long Bith saxophone) plays its own copies of the five horn clips.
+`tools/DeriveJessoonPerformanceMotion.py` writes them from the horn projects. The male Human set is the reference: the
+body motion and the instrument path stay, the right hand slides 6 cm down the body and the left hand closes on the tube
+under the flange with the right hand's grip mirrored, so the hands sit 20 cm apart on the straight body instead of
+bunched under the mouthpiece. Every body holds the same instrument, so its hands belong at the same places on it, but
+the bodies' arms, heads and hands differ too much for one copy. Each distinct body (skeleton, hand part and mouth)
+therefore has its own set, seventeen in all: it holds the Jessoon at that body's mouth at the reference's angle to the
+head, and puts each visible hand (the centre of the hand mesh, not the hand node, which sits differently in each body's
+hand) where the reference hand sits on the instrument, turned the same way. A short arm keeps the right hand as low as it
+reaches, in whole centimetres (`--rises` finds it). KelDor and the droids play the Human sets and the female Rodian the
+female Bothan's, which they match within a centimetre or two. `PerformanceAnimations.FitToInstrument` picks the set by
+appearance and gender, and `tools/SolveJessoonFits.py` solves each body's `HornFit` from the compiled banks, keeping
+that species' hands where its set puts them and the mouthpiece where the client-checked horn fits put it. Install the
+eighty-five projects like any other clip, then add them to the robe layers in one `--variant` run, each set limited to
+its own skeleton's layer (`sw_hrn_loop=sw_jhf_loop@pfh`, and so on, with both `--body-bank` spill banks); robe wearers of
+other bodies never play it, so the other layers do not carry it.
 
 The slitherhorn keeps the carry layer: its mouthpiece reaches the lips from that pose, and sits at
 the chest without it. It is fitted in item-local coordinates from close male and female

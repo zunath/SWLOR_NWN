@@ -36,13 +36,14 @@ public class NativeSinkBindingTests
         ("WeaponAttackAnimation", typeof(WeaponAttackAnimationSink), typeof(IWeaponAttackAnimationSink), 2, 2, true),
         ("CombatRecorderEffectHooks", typeof(CombatRecorderEffectHooksSink), typeof(ICombatRecorderEffectHooksSink), 2, 2, true),
         ("LegacyItemProperties", typeof(LegacyItemPropertiesSink), typeof(ILegacyItemPropertiesSink), 1, 1, true),
-        ("ClientJsonUtf8Guard", typeof(ClientJsonUtf8GuardSink), typeof(IClientJsonUtf8GuardSink), 1, 1, true),
+        ("ClientJsonUtf8Guard", typeof(ClientJsonUtf8GuardSink), typeof(IClientJsonUtf8GuardSink), 2, 2, true),
         ("GetDamageRoll", typeof(GetDamageRollSink), typeof(IGetDamageRollSink), 1, 1, false),
         ("NeckAppearanceSerialization", typeof(NeckAppearanceSerializationSink), typeof(INeckAppearanceSerializationSink), 1, 1, true),
         ("OnAIActionAttackObject", typeof(OnAIActionAttackObjectSink), typeof(IOnAIActionAttackObjectSink), 1, 1, false),
         ("PlayerCreation", typeof(PlayerCreationSink), typeof(IPlayerCreationSink), 1, 1, true),
         ("PlayerListNamePrivacy", typeof(PlayerListNamePrivacySink), typeof(IPlayerListNamePrivacySink), 1, 1, true),
         ("PlayerSlotAssignment", typeof(PlayerSlotAssignmentSink), typeof(IPlayerSlotAssignmentSink), 1, 1, true),
+        ("ProgFxCoatEffectHooks", typeof(ProgFxCoatEffectHooksSink), typeof(IProgFxCoatEffectHooksSink), 4, 4, true),
         ("QuickbarFeatLoading", typeof(QuickbarFeatLoadingSink), typeof(IQuickbarFeatLoadingSink), 1, 1, true),
         ("ResolveAttackRoll", typeof(ResolveAttackRollSink), typeof(IResolveAttackRollSink), 1, 1, false),
         ("SavedPlayerInventory", typeof(SavedPlayerInventorySink), typeof(ISavedPlayerInventorySink), 1, 1, true),
@@ -115,7 +116,7 @@ public class NativeSinkBindingTests
     {
         Contracts.GetTypes().Where(type => type.IsInterface && type.Name.EndsWith("Sink"))
             .Should().BeEquivalentTo(Pairs.Select(pair => pair.Interface));
-        Pairs.Should().HaveCount(17);
+        Pairs.Should().HaveCount(18);
     }
 
     [Test]
@@ -126,7 +127,7 @@ public class NativeSinkBindingTests
             .GroupBy(method => method.DeclaringType!.Name)
             .ToDictionary(group => group.Key, group => group.Count());
 
-        entryPoints.Values.Sum().Should().Be(36);
+        entryPoints.Values.Sum().Should().Be(41);
         entryPoints.Keys.Should().BeEquivalentTo(Pairs.Select(pair => pair.HookFile + "Trampolines"));
         foreach (var pair in Pairs)
             entryPoints[pair.HookFile + "Trampolines"].Should().Be(pair.EntryPoints, pair.HookFile);

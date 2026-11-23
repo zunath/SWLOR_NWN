@@ -1453,7 +1453,7 @@ block-body 228 [Dancing lets you perform for nearby players. While they watch, t
 block-title 25 [Performance - Instruments]
 block-body 192 [Playing an instrument rewards your audience the same way, with mind and crafting bonuses from your music sets. Musicians within range of each other form a band and play the band leader's song.]
 block-title 35 [Performance - Supported Instruments]
-block-body 337 [Equip a Guitar, Lute, Harp, Kloo Horn, Slitherhorn, Pan(toran) Pipes, or Tambourine to play. Violin (M) and Violin (F) require a Violin Bow in your right hand. Equip Microphone, Plain or Microphone, Branded to sing using your Play Instrument perks. Singers join bands and use the same music sets and audience benefits as other musicians.]
+block-body 354 [Equip a Guitar, Lute, Harp, Kloo Horn, Slitherhorn, Flanged Jessoon, Pan(toran) Pipes, or Tambourine to play. Violin (M) and Violin (F) require a Violin Bow in your right hand. Equip Microphone, Plain or Microphone, Branded to sing using your Play Instrument perks. Singers join bands and use the same music sets and audience benefits as other musicians.]
 block-title 21 [Performance - Singing]
 block-body 282 [Match Low, Mid, and High notes to sing melodic phrases, with breath rests between them. Vocals and pipes use single notes at every tempo. Roleplay mode lets you perform through lyrics, speech, or emotes instead of matching cues. Your audience hears the band's selected Cantina song.]
 block-title 19 [Performance - Songs]

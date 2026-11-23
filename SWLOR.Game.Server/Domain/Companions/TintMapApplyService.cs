@@ -21,13 +21,39 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// <summary>How long a queued refresh waits so the engine has finished the change that caused it.</summary>
         public const float RefreshDelaySeconds = 0.2f;
 
+        // Clients reload the materials when a coating effect message arrives; resend after that.
+        private const float CoatRefreshDelaySeconds = 0.5f;
+
         private readonly IDroidService _droid;
+        private readonly IProgFxCoatService _progFxCoat;
         private readonly ITwinPistolEquipmentService _twinPistolEquipment;
 
-        public TintMapApplyService(IDroidService droid, ITwinPistolEquipmentService twinPistolEquipment)
+        public TintMapApplyService(IDroidService droid, IProgFxCoatService progFxCoat, ITwinPistolEquipmentService twinPistolEquipment)
         {
             _droid = droid;
+            _progFxCoat = progFxCoat;
             _twinPistolEquipment = twinPistolEquipment;
+        }
+
+        public void QueueCoatRefresh(uint creature)
+        {
+            DelayCommand(CoatRefreshDelaySeconds, () => RefreshAfterCoatChange(creature));
+        }
+
+        private void RefreshAfterCoatChange(uint creature)
+        {
+            if (!GetIsObjectValid(creature))
+                return;
+
+            // Plain creature models take the client's own coat and have no tint state to resend.
+            if (TintMapModelResolver.GetCurrentSelections(creature).Count == 0)
+                return;
+
+            // Applying or removing an environment-map effect makes the client reload the creature's
+            // materials, which drops every shader parameter, dyes included. Writing only the coat
+            // left parts at their default palette rows, so resend the complete tint state.
+            ApplyCurrentColors(creature);
+            NWNXLib.g_pAppManager.m_pServerExoApp.SetForceUpdate();
         }
 
         public void ApplyCurrentColors(uint creature, bool resetShaderOverrides = true)
@@ -96,6 +122,8 @@ namespace SWLOR.Game.Server.Domain.Companions
                             TintMapColorResolver.GetEffectiveColor(creature, selection, layer));
                 }
             }
+
+            _progFxCoat.Apply(creature, selections, resetShaderOverrides);
         }
 
         private void ProjectNativeRobeColors(uint creature, IReadOnlyList<TintMapMaterialSelection> selections,

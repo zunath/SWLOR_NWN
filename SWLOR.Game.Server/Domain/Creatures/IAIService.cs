@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Domain.Creatures
@@ -8,7 +9,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
     /// decision engine (profiles, per-creature state, action selection). Static callers reach the container's
     /// instance through <c>GameServices.AI</c>; the event handlers are on <see cref="AIService"/>.
     /// </summary>
-    public interface IAIService : IAIProfileDescription
+    public interface IAIService : IAIProfileDescription, ICombatLeash
     {
         /// <summary>
         /// When the module cache is built, the AI profiles of every profile definition are loaded and validated.
@@ -124,33 +125,6 @@ namespace SWLOR.Game.Server.Domain.Creatures
         /// <param name="creature">The creature to retrieve from.</param>
         /// <returns>A set of AIFlags specified on a creature.</returns>
         AIFlag GetAIFlag(uint creature);
-
-        bool IsLeashEvading(uint creature);
-
-        bool TryStartCombatLeashEvade(uint creature, uint target);
-
-        bool IsInAggroRange(uint creature, uint target);
-
-        /// <summary>
-        /// Re-enters the normal proximity-aggro path when a later native Spot check reveals a
-        /// stealthed player who is still inside the observer's aggro aura. Non-AI observers and
-        /// targets that no longer satisfy the ordinary aggro guards are ignored.
-        /// </summary>
-        void TryAcquireAggroAfterDetection(uint observer, uint target);
-
-        /// <summary>
-        /// Runs the normal proximity-aggro path for every enemy within aggro range of a creature
-        /// that just became visible. Their aggro auras only check on entry, so enemies the creature
-        /// reached while hidden would otherwise ignore it until it left the aura and came back.
-        /// </summary>
-        void AcquireAggroFromNearbyEnemies(uint target);
-
-        /// <summary>
-        /// Stops a chase whose proximity threat has expired, using the normal return-home behavior.
-        /// </summary>
-        void StopCombatAfterProximityLoss(uint enemy);
-
-        bool IsCreatureAIEnabled(uint creature);
 
         /// <summary>
         /// Forgets the AI state (phase, cooldowns, cached actions) of a creature.

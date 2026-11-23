@@ -497,6 +497,8 @@ namespace SWLOR.Game.Server.Domain.World
             foreach (var target in ObjectSnapshot.InShape(Shape.Sphere, range, location, false, targets))
             {
                 if (!GetIsObjectValid(target)) continue;
+                // Scenery a DM placed for an event is never destroyed by the weather.
+                if (GetObjectType(target) == ObjectType.Placeable && GetLocalInt(target, "DM_SPAWNED_PLACEABLE") == 1) continue;
                 var damage = WeatherConditions.GetLightningDamage(power, GetDistanceBetweenLocations(location, GetLocation(target)));
                 if (damage <= 0 || GetIsDM(target) || GetIsDMPossessed(target)) continue;
                 damage = GetProtectedDamage(target, damage, CombatDamageType.Electrical);

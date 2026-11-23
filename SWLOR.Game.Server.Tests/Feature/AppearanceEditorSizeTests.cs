@@ -19,8 +19,10 @@ public class AppearanceEditorSizeTests
 
     // Owner decision 2026-11-18 (MaintainabilityRefactorAppearanceEditorSplit.md, section 6): the view model's declared bindings keep it
     // above MaximumTypeLines once the real moves are done; it is exempt from the type size measure (Exemptions.json) and held at its
-    // measured size so it does not grow. Its services and methods keep their limits.
-    private const int MaximumViewModelLines = 1337;
+    // measured size so it does not grow. Its services and methods keep their limits. Owner decision 2026-11-23: it is the one size
+    // exception, so lines that master's own changes add raise this cap to the new measured size (1,338 after the Wardrobe picture
+    // reload fix added the Outfits tab flag to the window's first load).
+    private const int MaximumViewModelLines = 1338;
     private const int MaximumMethodLines = 150;
 
     [Test]

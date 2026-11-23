@@ -9927,7 +9927,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Weather.cs",
-    "Line": 340,
+    "Line": 342,
     "Member": "Thunderstorm",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, WeatherFeedbackText.Lightning)"

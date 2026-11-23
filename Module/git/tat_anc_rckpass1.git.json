@@ -3068,11 +3068,11 @@
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 30
+          "type": "cexostring",
+          "value": "TATOOINE_RESOURCE_GENERAL"
         }
       },
       {

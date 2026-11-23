@@ -23,17 +23,14 @@ namespace SWLOR.Game.Server.Domain.Creatures
     /// <c>SWLOR.Game.Server.Domain.Creatures.NPCAI</c>, moved here unchanged. The event handlers run on the container's
     /// instance; static callers reach it through <c>GameServices.AI</c>.
     /// </summary>
-    public class AIService : IAIService
+    public class AIService : IAIService, IStealthAggroListener
     {
         public const string ProfileLocalVariable = "AI_PROFILE";
         public const string ProfileIdLocalVariable = "AI_PROFILE_ID";
 
-        private const float AggroRadius = 8.5f;
-        private const float ReturnHomeRadius = 15f;
         private const float CombatLeashRadius = 45f;
         private const float LeashEvadeMovementRateFactor = 3.0f;
         private const int ProximityEnmityAmount = 1;
-        private const string LeashEvadeActiveVariable = "AI_LEASH_EVADE_ACTIVE";
         private const string LeashEvadeRestorePlotFlagVariable = "AI_LEASH_EVADE_RESTORE_PLOT_FLAG";
         private const string LeashEvadeRestoreMovementRateVariable = "AI_LEASH_EVADE_RESTORE_MOVEMENT_RATE";
         private const string LeashEvadeReturnQueuedVariable = "AI_LEASH_EVADE_RETURN_QUEUED";
@@ -41,7 +38,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly IPartyRoster _party;
         private readonly ICompanionLookup _companions;
         private readonly IDMPresenceService _dmPresence;
-        private readonly Lazy<IAbilityActivationService> _activation;
+        private readonly IAbilityActivationService _activation;
         private readonly IAbilityCatalog _catalog;
         private readonly IActivityService _activity;
         private readonly Lazy<ICompanionControlService> _companionControl;
@@ -49,10 +46,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly IConversationService _conversation;
         private readonly Lazy<IEnmityService> _enmity;
         private readonly Lazy<IEspionageInfiltrationService> _espionageInfiltration;
-        private readonly Lazy<IPerkService> _perk;
-        private readonly Lazy<ICreatureStatService> _stat;
-        private readonly Lazy<IStatusEffectService> _statusEffect;
-        private readonly Lazy<IStealthService> _stealth;
+        private readonly IPerkService _perk;
+        private readonly ICreatureStatService _stat;
+        private readonly IStatusEffectService _statusEffect;
+        private readonly IStealthService _stealth;
 
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
@@ -65,7 +62,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             IPartyRoster party,
             ICompanionLookup companions,
             IDMPresenceService dmPresence,
-            Lazy<IAbilityActivationService> activation,
+            IAbilityActivationService activation,
             IAbilityCatalog catalog,
             IActivityService activity,
             Lazy<ICompanionControlService> companionControl,
@@ -73,10 +70,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
             IConversationService conversation,
             Lazy<IEnmityService> enmity,
             Lazy<IEspionageInfiltrationService> espionageInfiltration,
-            Lazy<IPerkService> perk,
-            Lazy<ICreatureStatService> stat,
-            Lazy<IStatusEffectService> statusEffect,
-            Lazy<IStealthService> stealth)
+            IPerkService perk,
+            ICreatureStatService stat,
+            IStatusEffectService statusEffect,
+            IStealthService stealth)
         {
             _party = party;
             _companions = companions;
@@ -103,6 +100,17 @@ namespace SWLOR.Game.Server.Domain.Creatures
             ValidateProfiles();
         }
 
+        /// <summary>
+        /// Gives stealth this service as the listener of its detection notices. A reload runs boot handlers that rerun before it
+        /// adopts the carried state, so the list is full when the first detection runs.
+        /// </summary>
+        [BootPhase(BootReload.Rerun)]
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
+        public void RegisterStealthAggroListener()
+        {
+            _stealth.RegisterAggroListener(this);
+        }
+
         [NWNEventHandler(ScriptName.OnDMToggleAIAfter)]
         public void DMToggleAIAfter()
         {
@@ -113,7 +121,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 return;
             }
 
-            if (!IsAIEnabled(creature))
+            if (!CreatureAIRules.IsCreatureAIEnabled(creature))
             {
                 ClearAIState(creature);
             }
@@ -125,7 +133,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         [NWNEventHandler(ScriptName.OnCreatureHeartbeatAfter)]
         public void CreatureHeartbeat()
         {
-            if (!IsAIEnabled(OBJECT_SELF))
+            if (!CreatureAIRules.IsCreatureAIEnabled(OBJECT_SELF))
                 return;
 
             RestoreNPCStats(true);
@@ -139,7 +147,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         [NWNEventHandler(ScriptName.OnCreaturePerceptionAfter)]
         public void CreaturePerception()
         {
-            if (!IsAIEnabled(OBJECT_SELF))
+            if (!CreatureAIRules.IsCreatureAIEnabled(OBJECT_SELF))
                 return;
 
             // This is a stripped-down version of the default NWN perception event.
@@ -154,7 +162,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         public void CreatureCombatRoundEnd()
         {
             var creature = OBJECT_SELF;
-            if (!IsAIEnabled(creature))
+            if (!CreatureAIRules.IsCreatureAIEnabled(creature))
                 return;
 
             var handled = false;
@@ -195,10 +203,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
         public void CreaturePhysicalAttacked()
         {
             var creature = OBJECT_SELF;
-            if (!IsAIEnabled(creature))
+            if (!CreatureAIRules.IsCreatureAIEnabled(creature))
                 return;
 
-            if (IsLeashEvading(creature))
+            if (CreatureAIRules.IsLeashEvading(creature))
                 return;
 
             if (TryStartLeashEvade(creature, GetHighestOrEventTarget(creature, GetLastAttacker(creature))))
@@ -215,10 +223,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
         public void CreatureDamaged()
         {
             var creature = OBJECT_SELF;
-            if (!IsAIEnabled(creature))
+            if (!CreatureAIRules.IsCreatureAIEnabled(creature))
                 return;
 
-            if (IsLeashEvading(creature))
+            if (CreatureAIRules.IsLeashEvading(creature))
                 return;
 
             if (TryStartLeashEvade(creature, GetHighestOrEventTarget(creature, GetLastDamager(creature))))
@@ -245,7 +253,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         public void CreatureDisturbed()
         {
             var creature = OBJECT_SELF;
-            if (!IsAIEnabled(creature))
+            if (!CreatureAIRules.IsCreatureAIEnabled(creature))
                 return;
 
             if (!ProcessTrigger(creature, AITriggerType.Disturbed))
@@ -301,8 +309,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
         {
             var creature = OBJECT_SELF;
             var blocker = GetBlockingDoor();
-            if (!IsAIEnabled(creature) ||
-                IsLeashEvading(creature) ||
+            if (!CreatureAIRules.IsCreatureAIEnabled(creature) ||
+                CreatureAIRules.IsLeashEvading(creature) ||
                 GetObjectType(blocker) != ObjectType.Creature)
             {
                 return;
@@ -320,10 +328,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
         {
             var entering = GetEnteringObject();
             var self = GetAreaOfEffectCreator(OBJECT_SELF);
-            if (!IsAIEnabled(self))
+            if (!CreatureAIRules.IsCreatureAIEnabled(self))
                 return;
 
-            if (IsLeashEvading(self))
+            if (CreatureAIRules.IsLeashEvading(self))
                 return;
 
             // Target is invisible
@@ -332,7 +340,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 return;
             }
 
-            if (!IsInAggroRange(self, entering))
+            if (!CreatureAIRules.IsInAggroRange(self, entering))
                 return;
 
             if (!GetIsEnemy(entering, self))
@@ -341,7 +349,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 // Non-enemy entered aggro range. If they're the same faction and fighting someone, help them out!
                 if (GetFactionEqual(entering, self) &&
                     GetIsEnemy(attackTarget, self) &&
-                    IsInAggroRange(self, attackTarget))
+                    CreatureAIRules.IsInAggroRange(self, attackTarget))
                 {
                     TryAddProximityEnmity(attackTarget, self);
                 }
@@ -364,7 +372,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         {
             var exiting = GetExitingObject();
             var self = GetAreaOfEffectCreator(OBJECT_SELF);
-            if (!IsAIEnabled(self) || !GetIsObjectValid(exiting))
+            if (!CreatureAIRules.IsCreatureAIEnabled(self) || !GetIsObjectValid(exiting))
                 return;
 
             CompleteInfiltration(exiting, self);
@@ -375,7 +383,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
             foreach (var ally in allies)
             {
-                if (!IsAIEnabled(ally) || IsInAggroRange(ally, exiting))
+                if (!CreatureAIRules.IsCreatureAIEnabled(ally) || CreatureAIRules.IsInAggroRange(ally, exiting))
                     continue;
 
                 RemoveProximityEnmity(exiting, ally);
@@ -388,7 +396,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             uint eventTarget = OBJECT_INVALID,
             bool bypassDecisionThrottle = false)
         {
-            if (trigger != AITriggerType.Death && !IsAIEnabled(creature))
+            if (trigger != AITriggerType.Death && !CreatureAIRules.IsCreatureAIEnabled(creature))
                 return false;
 
             return ProcessProfileTrigger(
@@ -476,10 +484,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
             var aiFlags = GetAIFlag(self);
             var homeLocation = GetLocalLocation(self, "HOME_LOCATION");
             var isOutsideHomeRadius = aiFlags.HasFlag(AIFlag.ReturnHome) &&
-                                      IsOutsideHomeRadius(self, homeLocation);
+                                      CreatureAIRules.IsOutsideHomeRadius(self, homeLocation);
             var highestEnmityTarget = GetHighestEnmityTarget(self);
 
-            if (IsLeashEvading(self))
+            if (CreatureAIRules.IsLeashEvading(self))
             {
                 if (!TryEndLeashEvadeAtHome(self, homeLocation))
                     ContinueLeashEvadeReturn(self, homeLocation);
@@ -652,18 +660,18 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private bool IsTargetBeyondLeash(uint creature, uint target, Location homeLocation)
         {
             var leashRadius = GetCombatLeashRadius(creature, target);
-            var creatureOutsideLeashRadius = IsOutsideHomeRadius(creature, homeLocation, leashRadius);
+            var creatureOutsideLeashRadius = CreatureAIRules.IsOutsideHomeRadius(creature, homeLocation, leashRadius);
 
             if (!GetIsObjectValid(target))
                 return creatureOutsideLeashRadius;
 
-            if (!IsOutsideHomeRadius(target, homeLocation, leashRadius))
+            if (!CreatureAIRules.IsOutsideHomeRadius(target, homeLocation, leashRadius))
                 return false;
 
             var targetMaster = GetMaster(target);
             if (GetIsObjectValid(targetMaster) &&
                 GetIsPC(targetMaster) &&
-                !IsOutsideHomeRadius(targetMaster, homeLocation, leashRadius) &&
+                !CreatureAIRules.IsOutsideHomeRadius(targetMaster, homeLocation, leashRadius) &&
                 !creatureOutsideLeashRadius)
             {
                 return false;
@@ -702,18 +710,12 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 : 0f;
         }
 
-        public bool IsLeashEvading(uint creature)
-        {
-            return GetIsObjectValid(creature) &&
-                   GetLocalBool(creature, LeashEvadeActiveVariable);
-        }
-
         private void StartLeashEvade(uint creature, Location homeLocation)
         {
-            if (IsLeashEvading(creature))
+            if (CreatureAIRules.IsLeashEvading(creature))
                 return;
 
-            SetLocalBool(creature, LeashEvadeActiveVariable, true);
+            SetLocalBool(creature, CreatureAIRules.LeashEvadeActiveVariable, true);
             SetLocalBool(creature, LeashEvadeRestorePlotFlagVariable, GetPlotFlag(creature));
             SetLocalInt(creature, LeashEvadeRestoreMovementRateVariable, GetMovementRate(creature));
             SetPlotFlag(creature, true);
@@ -726,7 +728,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             ExecuteScript(ScriptName.OnCreatureLeashStarted, creature);
             DelayCommand(0.2f, () =>
             {
-                if (IsLeashEvading(creature))
+                if (CreatureAIRules.IsLeashEvading(creature))
                     ApplyLeashEvadeMovementRate(creature);
             });
             ContinueLeashEvadeReturn(creature, homeLocation);
@@ -756,8 +758,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         private bool TryEndLeashEvadeAtHome(uint creature, Location homeLocation)
         {
-            if (!IsLeashEvading(creature) ||
-                IsOutsideHomeRadius(creature, homeLocation))
+            if (!CreatureAIRules.IsLeashEvading(creature) ||
+                CreatureAIRules.IsOutsideHomeRadius(creature, homeLocation))
             {
                 return false;
             }
@@ -770,10 +772,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
         {
             DeleteLocalBool(creature, LeashEvadeReturnQueuedVariable);
 
-            if (!IsLeashEvading(creature))
+            if (!CreatureAIRules.IsLeashEvading(creature))
                 return;
 
-            if (IsOutsideHomeRadius(creature, homeLocation))
+            if (CreatureAIRules.IsOutsideHomeRadius(creature, homeLocation))
             {
                 if (!GetIsObjectValid(GetAreaFromLocation(homeLocation)))
                     return;
@@ -788,13 +790,13 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         private void EndLeashEvade(uint creature)
         {
-            if (!IsLeashEvading(creature))
+            if (!CreatureAIRules.IsLeashEvading(creature))
                 return;
 
             SetCurrentHitPoints(creature, GetMaxHitPoints(creature));
             SetPlotFlag(creature, GetLocalBool(creature, LeashEvadeRestorePlotFlagVariable));
             DeleteLocalBool(creature, LeashEvadeRestorePlotFlagVariable);
-            DeleteLocalBool(creature, LeashEvadeActiveVariable);
+            DeleteLocalBool(creature, CreatureAIRules.LeashEvadeActiveVariable);
             DeleteLocalBool(creature, LeashEvadeReturnQueuedVariable);
             RestoreLeashEvadeMovementRate(creature);
             ExecuteScript(ScriptName.OnCreatureLeashEnded, creature);
@@ -809,7 +811,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         {
             // Removing control effects can request another attack before evade cleanup finishes.
             // Report it as handled so callers neither restart cleanup nor resume combat.
-            if (IsLeashEvading(creature))
+            if (CreatureAIRules.IsLeashEvading(creature))
                 return true;
 
             var homeLocation = GetLocalLocation(creature, "HOME_LOCATION");
@@ -858,7 +860,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         {
             var homeLocation = GetLocalLocation(enemy, "HOME_LOCATION");
             if (!GetAIFlag(enemy).HasFlag(AIFlag.ReturnHome) ||
-                !IsOutsideHomeRadius(enemy, homeLocation))
+                !CreatureAIRules.IsOutsideHomeRadius(enemy, homeLocation))
             {
                 return false;
             }
@@ -898,7 +900,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         private void RemoveEnemySourcedStatusEffects(uint creature)
         {
-            var effects = _statusEffect.Value.GetCreatureStatusEffects(creature)
+            var effects = _statusEffect.GetCreatureStatusEffects(creature)
                 .GetAllEffects()
                 .Where(effect => GetIsObjectValid(effect.Source) &&
                                  GetIsEnemy(effect.Source, creature))
@@ -906,23 +908,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
             foreach (var effect in effects)
             {
-                _statusEffect.Value.RemoveStatusEffect(creature, effect.GetType(), effect.Source, false);
+                _statusEffect.RemoveStatusEffect(creature, effect.GetType(), effect.Source, false);
             }
-        }
-
-        private bool IsOutsideHomeRadius(uint creature, Location homeLocation, float radius = ReturnHomeRadius)
-        {
-            return GetIsObjectValid(GetAreaFromLocation(homeLocation)) &&
-                   (GetAreaFromLocation(homeLocation) != GetArea(creature) ||
-                    GetDistanceBetweenLocations(GetLocation(creature), homeLocation) > radius);
-        }
-
-        public bool IsInAggroRange(uint creature, uint target)
-        {
-            return GetIsObjectValid(target) &&
-                   GetArea(creature) == GetArea(target) &&
-                   GetDistanceBetween(creature, target) <= AggroRadius &&
-                   LineOfSightObject(target, creature);
         }
 
         /// <summary>
@@ -932,7 +919,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         /// </summary>
         public void TryAcquireAggroAfterDetection(uint observer, uint target)
         {
-            if (!IsAIEnabled(observer))
+            if (!CreatureAIRules.IsCreatureAIEnabled(observer))
                 return;
 
             if (!TryAcquireAggro(observer, target))
@@ -947,9 +934,9 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         public void AcquireAggroFromNearbyEnemies(uint target)
         {
-            foreach (var enemy in ObjectSnapshot.InShape(Shape.Sphere, AggroRadius, GetLocation(target), false, ObjectType.Creature))
+            foreach (var enemy in ObjectSnapshot.InShape(Shape.Sphere, CreatureAIRules.AggroRadius, GetLocation(target), false, ObjectType.Creature))
             {
-                if (!GetIsPC(enemy) && IsAIEnabled(enemy))
+                if (!GetIsPC(enemy) && CreatureAIRules.IsCreatureAIEnabled(enemy))
                     TryAcquireAggro(enemy, target);
             }
         }
@@ -960,7 +947,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 !GetIsObjectValid(target) ||
                 GetIsDead(target) ||
                 GetHasEffect(target, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility) ||
-                !IsInAggroRange(self, target) ||
+                !CreatureAIRules.IsInAggroRange(self, target) ||
                 !GetIsEnemy(target, self) ||
                 TryStartLeashEvade(self, target) ||
                 !TryAddProximityEnmity(target, self))
@@ -980,7 +967,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
             foreach (var ally in allies)
             {
-                if (!IsAIEnabled(ally)) continue;
+                if (!CreatureAIRules.IsCreatureAIEnabled(ally)) continue;
                 if (!GetIsEnemy(target, ally)) continue;
                 if (GetDistanceBetween(self, ally) > 5f) continue;
                 if (!LineOfSightObject(target, ally)) continue;
@@ -1026,17 +1013,6 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 return;
 
             AssignCommand(enemy, () => ClearAllActions());
-        }
-
-        public bool IsCreatureAIEnabled(uint creature)
-        {
-            return IsAIEnabled(creature);
-        }
-
-        private bool IsAIEnabled(uint creature)
-        {
-            return GetIsObjectValid(creature) &&
-                   GetAILevel(creature) != AILevel.VeryLow;
         }
 
         // ---- Profile decision engine (formerly SWLOR.Game.Server.Domain.Creatures.NPCAI) ----
@@ -1839,17 +1815,17 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         protected virtual bool RemoveTrackedProximityEnmity(uint creature, uint enemy) => _enmity.Value.RemoveProximityEnmity(creature, enemy);
 
-        protected virtual void RestoreNPCStats(bool outOfCombatRegen) => _stat.Value.RestoreNPCStats(outOfCombatRegen, _enmity.Value);
+        protected virtual void RestoreNPCStats(bool outOfCombatRegen) => _stat.RestoreNPCStats(outOfCombatRegen, _enmity.Value);
 
-        protected virtual void LoadNPCStats() => _stat.Value.LoadNPCStats();
+        protected virtual void LoadNPCStats() => _stat.LoadNPCStats();
 
-        protected virtual void ApplyCreatureMovementRate(uint creature) => _stat.Value.ApplyCreatureMovementRate(creature);
+        protected virtual void ApplyCreatureMovementRate(uint creature) => _stat.ApplyCreatureMovementRate(creature);
 
         protected virtual bool TryBeginInfiltration(uint player, uint npc) => _espionageInfiltration.Value.TryBegin(player, npc);
 
         protected virtual void CompleteInfiltration(uint player, uint npc) => _espionageInfiltration.Value.Complete(player, npc);
 
-        protected virtual bool CanAcquireAggro(uint observer, uint target) => _stealth.Value.CanAcquireAggro(observer, target);
+        protected virtual bool CanAcquireAggro(uint observer, uint target) => _stealth.CanAcquireAggro(observer, target);
 
         protected virtual bool IsControlledCompanion(uint creature) => _companionControl.Value.IsControlledCompanion(creature);
 
@@ -1858,10 +1834,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
         protected virtual uint ResolveHostileAbilityTarget(uint companion, AbilityDetail ability, uint authorizedTarget, uint selectedTarget) =>
             _companionControl.Value.ResolveHostileAbilityTarget(companion, ability, authorizedTarget, selectedTarget);
 
-        protected virtual int GetPerkLevel(uint creature, PerkType perkType) => _perk.Value.GetPerkLevel(creature, perkType);
+        protected virtual int GetPerkLevel(uint creature, PerkType perkType) => _perk.GetPerkLevel(creature, perkType);
 
         protected virtual bool CanActivateAbility(uint activator, uint target, FeatType feat, int effectiveLevel, Location targetLocation) =>
-            _activation.Value.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);
+            _activation.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);
 
         protected virtual bool TryUseAbility(uint creature, uint target, FeatType feat, Location targetLocation) =>
             UsePerkFeat.TryUseAbility(creature, target, feat, targetLocation);

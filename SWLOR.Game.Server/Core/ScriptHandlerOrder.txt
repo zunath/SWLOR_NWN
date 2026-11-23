@@ -71,6 +71,7 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
 mod_cache_aft  # run by EventRegistration.OnModulePreload through ExecuteScript, after every mod_cache_bef handler
   action      SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.CacheData
   action      SWLOR.Game.Server.Domain.Creatures.AIService.CacheAIData
+  action      SWLOR.Game.Server.Domain.Creatures.AIService.RegisterStealthAggroListener
   action      SWLOR.Game.Server.Domain.Foundation.ConversationService.CacheData
   action      SWLOR.Game.Server.Domain.Administration.DMBlueprintCatalogService.LoadCustomPalettes
   action      SWLOR.Game.Server.Domain.UI.GuiService.CacheData

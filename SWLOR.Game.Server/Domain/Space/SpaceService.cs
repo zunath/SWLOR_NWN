@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Domain.Space
 
         private readonly IAbilityAuraService _abilityAura;
         private readonly IAbilityCooldownVisualService _abilityCooldownVisual;
-        private readonly IAIService _ai;
+        private readonly ICombatLeash _leash;
         private readonly IAreaService _area;
         private readonly IDBService _db;
         private readonly IEnmityService _enmity;
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Domain.Space
         public SpaceService(
             IAbilityAuraService abilityAura,
             IAbilityCooldownVisualService abilityCooldownVisual,
-            IAIService ai,
+            ICombatLeash leash,
             IAreaService area,
             IDBService db,
             IEnmityService enmity,
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Domain.Space
         {
             _abilityAura = abilityAura;
             _abilityCooldownVisual = abilityCooldownVisual;
-            _ai = ai;
+            _leash = leash;
             _area = area;
             _db = db;
             _enmity = enmity;
@@ -2022,7 +2022,7 @@ namespace SWLOR.Game.Server.Domain.Space
             var targetShipStatus = GetShipStatus(target);
 
             // Leashed ships neither take nor deal damage while they return home, like plot-flagged ground enemies.
-            if (targetShipStatus == null || _ai.IsLeashEvading(target) || _ai.IsLeashEvading(attacker))
+            if (targetShipStatus == null || CreatureAIRules.IsLeashEvading(target) || CreatureAIRules.IsLeashEvading(attacker))
                 return;
 
             var remainingDamage = amount;
@@ -2122,7 +2122,7 @@ namespace SWLOR.Game.Server.Domain.Space
             var targetShipStatus = GetShipStatus(target);
 
             // Leashed ships neither take nor deal damage while they return home, like plot-flagged ground enemies.
-            if (targetShipStatus == null || _ai.IsLeashEvading(target) || _ai.IsLeashEvading(attacker))
+            if (targetShipStatus == null || CreatureAIRules.IsLeashEvading(target) || CreatureAIRules.IsLeashEvading(attacker))
                 return;
 
             if (targetShipStatus.Hull > 0)
@@ -2329,7 +2329,7 @@ namespace SWLOR.Game.Server.Domain.Space
 
             foreach (var (creature, shipStatus) in _shipNPCs)
             {
-                if (_ai.IsLeashEvading(creature))
+                if (CreatureAIRules.IsLeashEvading(creature))
                     continue;
 
                 ApplyAutoShipRecovery(creature, shipStatus);
@@ -2339,7 +2339,7 @@ namespace SWLOR.Game.Server.Domain.Space
                 if (!GetIsObjectValid(target)) continue;
 
                 // Ships follow the same combat leash as ground enemies.
-                if (_ai.TryStartCombatLeashEvade(creature, target))
+                if (_leash.TryStartCombatLeashEvade(creature, target))
                     continue;
 
                 // Determine which modules are available.
@@ -2443,7 +2443,7 @@ namespace SWLOR.Game.Server.Domain.Space
         /// </summary>
         public bool CanShipFire(uint ship)
         {
-            return !GetIsDead(ship) && !_ai.IsLeashEvading(ship);
+            return !GetIsDead(ship) && !CreatureAIRules.IsLeashEvading(ship);
         }
 
         /// <summary>

@@ -8,10 +8,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
 | 1. Static service lookup | `StaticLookups.txt` | 1,101 | 13,039 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 19 | 28,779 lines | none over 1,000 lines |
+| 2. Large types | `LargeTypes.txt` | 18 | 27,692 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 8 | 2,419 lines | none over 150 lines (400 for layout) |
-| 4. Services per type | `ServicesPerType.txt` | 15 | 236 services | none over 10 services |
-| 5. Deferred resolution | `DeferredResolution.txt` | 32 | 38 parameters | none |
+| 4. Services per type | `ServicesPerType.txt` | 15 | 238 services | none over 10 services |
+| 5. Deferred resolution | `DeferredResolution.txt` | 31 | 37 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 106 | 226 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 27 | 94 edges | none |
 | 8. Static entry points and static state | `StaticState.txt` | 138 | 264 members | each kept with an approved reason, or removed |
@@ -58,17 +58,17 @@ Largest 15 of 1,101 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 19 types over 1,000 lines, 28,779 lines in all.
+- 18 types over 1,000 lines, 27,692 lines in all.
 - Exempt and over the limit: 191 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1, owner exception 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
-Largest 15 of 19 (all in `LargeTypes.txt`):
+Largest 15 of 18 (all in `LargeTypes.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 2,768 | SpaceService.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel` | 2,081 | ShipManagementViewModel.cs |
-| `SWLOR.Game.Server.Domain.Creatures.AIService` | 1,854 | AIService.cs |
+| `SWLOR.Game.Server.Domain.Creatures.AIService` | 1,857 | AIService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 1,720 | CombatAbilityImpactService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 1,719 | CombatHitEffectsService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatRecorderService` | 1,691 | CombatRecorderService.cs |
@@ -109,12 +109,12 @@ Largest 15 of 15 (all in `ServicesPerType.txt`):
 
 | Entry | Services | Detail |
 |---|---:|---|
-| `SWLOR.Game.Server.Feature.UsePerkFeat` | 31 | constructor 0, lookup 31 |
+| `SWLOR.Game.Server.Feature.UsePerkFeat` | 32 | constructor 0, lookup 32 |
 | `SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService` | 21 | constructor 21, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 21 | constructor 21, lookup 0 |
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 18 | constructor 18, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 16 | constructor 16, lookup 0 |
-| `SWLOR.Game.Server.Domain.Creatures.AIService` | 15 | constructor 15, lookup 0 |
+| `SWLOR.Game.Server.Domain.Creatures.AIService` | 16 | constructor 16, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Companions.BeastMasteryService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Companions.DroidService` | 14 | constructor 14, lookup 0 |
@@ -127,12 +127,12 @@ Largest 15 of 15 (all in `ServicesPerType.txt`):
 
 ## 5. Deferred resolution
 
-- 38 deferred constructor parameters in 22 files (Lazy 38, Func 0), taken by 22 types, deferring 25 distinct services.
-- By direction in the domain order: up 2, down 20, inside one domain 16.
+- 37 deferred constructor parameters in 22 files (Lazy 37, Func 0), taken by 22 types, deferring 24 distinct services.
+- By direction in the domain order: up 2, down 20, inside one domain 15.
 - Up: Character -> Combat 1, Items -> Combat 1.
 - IServiceProvider outside Composition/: 0 uses.
 
-Largest 15 of 32 (all in `DeferredResolution.txt`):
+Largest 15 of 31 (all in `DeferredResolution.txt`):
 
 | Entry | Parameters | Detail |
 |---|---:|---|

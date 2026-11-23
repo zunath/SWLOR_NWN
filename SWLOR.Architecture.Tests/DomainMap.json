@@ -111,7 +111,7 @@
     },
     "Creatures": {
       "services": [
-        "AI", "Spawn", "NPCGroup", "NPC", "CompanionControl"
+        "AI", "Spawn", "NPCGroup", "NPC", "CompanionControl", "CompanionPositioning", "CompanionTargetAuthority"
       ],
       "featureFolders": [
         "AIDefinition", "SpawnDefinition"

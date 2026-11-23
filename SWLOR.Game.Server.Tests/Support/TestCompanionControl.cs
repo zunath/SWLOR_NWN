@@ -12,46 +12,83 @@ using static SWLOR.NWN.API.NWScript.NWScript;
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// The companion control instance with the calls into the services that are not converted yet answered by the test,
-/// and the clock set by the test. The seams are in partial files by the part whose code calls them (<c>.Control</c>, <c>.Store</c>,
-/// <c>.Authority</c>; <c>.Shared</c> holds the seams several parts call).
+/// The companion control instance (part CC-1) with the three parts it calls: the store (<see cref="Store"/>), the positioning
+/// part (<see cref="Positioning"/>) and the target authority (<see cref="Authority"/>). The calls into the services that are
+/// not converted yet are answered by the test and the clock is the test's: the values are on one <see cref="CompanionTestState"/>
+/// the four instances share, and the properties here read and write it. The seams of this instance are in
+/// <c>TestCompanionControl.Control.cs</c>; each part's are on its own double.
 /// </summary>
 public sealed partial class TestCompanionControl : CompanionControlService
 {
     public TestCompanionControl(IAIService ai, ICompanionLookup beastMastery)
-        : base(ai, beastMastery, FacadeForwarder.For<IAbilityActivationService>(), FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatQueriesService>())
+        : this(ai, beastMastery, new CompanionTestState())
     {
     }
 
-    public DateTime Now { get; set; } = new(2026, 1, 1, 12, 0, 0, DateTimeKind.Utc);
-    public HashSet<uint> Droids { get; } = new();
-    public HashSet<uint> Busy { get; } = new();
-    public Dictionary<uint, ActivityStatusType> BusyTypes { get; } = new();
-    public HashSet<uint> RestEffect { get; } = new();
-    public List<uint> ClearedBusy { get; } = new();
-    public List<uint> InterruptedActivations { get; } = new();
-    public List<uint> Dequeued { get; } = new();
-    public Dictionary<uint, DateTime> OffensiveAt { get; } = new();
-    public float WeaponRange { get; set; } = 5f;
-    public Dictionary<uint, List<FeatType>> Feats { get; } = new();
-    public Dictionary<FeatType, AbilityDetail> Registered { get; } = new();
-    public HashSet<FeatType> UsableFeats { get; } = new();
-    public Dictionary<PerkType, int> PerkLevels { get; } = new();
-    public List<int> UsedLevels { get; } = new();
-    public int AbilityLookups { get; set; }
+    private TestCompanionControl(IAIService ai, ICompanionLookup beastMastery, CompanionTestState state)
+        : this(ai, state, new TestCompanionControlStoreService(beastMastery, state))
+    {
+    }
 
-    // One accessor per part of the CompanionControl split (Readmes/MaintainabilityRefactorCreaturesSplit.md). Each is the one
-    // instance until its part moves; the tests call the accessor of the part that owns the member.
+    private TestCompanionControl(IAIService ai, CompanionTestState state, TestCompanionControlStoreService store)
+        : this(ai, state, store, new TestCompanionPositioningService(store, state))
+    {
+    }
+
+    private TestCompanionControl(
+        IAIService ai,
+        CompanionTestState state,
+        TestCompanionControlStoreService store,
+        TestCompanionPositioningService positioning)
+        : this(ai, state, store, positioning, new TestCompanionTargetAuthorityService(store, positioning, state))
+    {
+    }
+
+    private TestCompanionControl(
+        IAIService ai,
+        CompanionTestState state,
+        TestCompanionControlStoreService store,
+        TestCompanionPositioningService positioning,
+        TestCompanionTargetAuthorityService authority)
+        : base(ai, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStatusEffectService>(), store, positioning, authority)
+    {
+        State = state;
+        Store = store;
+        Positioning = positioning;
+        Authority = authority;
+    }
+
+    private CompanionTestState State { get; }
+
+    public DateTime Now { get => State.Now; set => State.Now = value; }
+    public HashSet<uint> Droids => State.Droids;
+    public HashSet<uint> Busy => State.Busy;
+    public Dictionary<uint, ActivityStatusType> BusyTypes => State.BusyTypes;
+    public HashSet<uint> RestEffect => State.RestEffect;
+    public List<uint> ClearedBusy => State.ClearedBusy;
+    public List<uint> InterruptedActivations => State.InterruptedActivations;
+    public List<uint> Dequeued => State.Dequeued;
+    public Dictionary<uint, DateTime> OffensiveAt => State.OffensiveAt;
+    public float WeaponRange { get => State.WeaponRange; set => State.WeaponRange = value; }
+    public Dictionary<uint, List<FeatType>> Feats => State.Feats;
+    public Dictionary<FeatType, AbilityDetail> Registered => State.Registered;
+    public HashSet<FeatType> UsableFeats => State.UsableFeats;
+    public Dictionary<PerkType, int> PerkLevels => State.PerkLevels;
+    public List<int> UsedLevels => State.UsedLevels;
+    public int AbilityLookups { get => State.AbilityLookups; set => State.AbilityLookups = value; }
+
+    // One accessor per part of the CompanionControl split (Readmes/MaintainabilityRefactorCreaturesSplit.md); the tests call
+    // the accessor of the part that owns the member.
 
     /// <summary>The orders, the owner events and the combat round (part CC-1).</summary>
     public TestCompanionControl Control => this;
 
     /// <summary>The registered companions and their state (part CC-2).</summary>
-    public TestCompanionControl Store => this;
+    public TestCompanionControlStoreService Store { get; }
 
     /// <summary>The mode position and the follow action (part CC-3).</summary>
-    public TestCompanionControl Positioning => this;
+    public TestCompanionPositioningService Positioning { get; }
 
     /// <summary>The authorized target, the defensive threats and the hostile ability checks (part CC-4).</summary>
-    public TestCompanionControl Authority => this;
+    public TestCompanionTargetAuthorityService Authority { get; }
 }

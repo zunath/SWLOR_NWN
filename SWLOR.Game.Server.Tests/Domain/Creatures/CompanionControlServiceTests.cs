@@ -1191,7 +1191,7 @@ public class CompanionControlServiceTests
         _bench.ExitingObject = _enemy.Id;
         CompanionControl.OnOwnerAreaExit();
 
-        CompanionControl.IsRegisteredCompanion(_companion.Id).Should().BeFalse();
+        CompanionTargetAuthority.IsRegisteredCompanion(_companion.Id).Should().BeFalse();
     }
 
     [Test]

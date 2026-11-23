@@ -938,8 +938,8 @@
     "Call": "SpeakString(action.Text)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs",
-    "Line": 1034,
+    "File": "SWLOR.Game.Server/Domain/Creatures/CompanionPositioningService.cs",
+    "Line": 115,
     "Member": "SendResponse",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(master, $\"{GetName(companion)}: {response}\")"

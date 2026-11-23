@@ -66,6 +66,7 @@ public class AbilityActivationPathTests
             services.Replace(ServiceDescriptor.Singleton(Recast()));
             services.Replace(ServiceDescriptor.Singleton(Activity()));
             services.Replace(ServiceDescriptor.Singleton(Companions()));
+            services.Replace(ServiceDescriptor.Singleton(CompanionTargets()));
         });
         _scope = _facades.Install();
         _engine = new FakeNWScript();
@@ -129,12 +130,19 @@ public class AbilityActivationPathTests
     private ICompanionControlService Companions()
     {
         var companions = ScriptedProxy.Create<ICompanionControlService>(out var proxy);
+        proxy.On("TryProcessPendingDefensiveReaction", args => false)
+            .On("ResumeModePosition", args => null);
+        return companions;
+    }
+
+    /// <summary>The caster is a companion whose authorized target is none and whose hostile abilities are authorized.</summary>
+    private ICompanionTargetAuthorityService CompanionTargets()
+    {
+        var targets = ScriptedProxy.Create<ICompanionTargetAuthorityService>(out var proxy);
         proxy.On("IsRegisteredCompanion", args => (uint)args[0]! == Caster)
             .On("PeekAuthorizedTarget", args => AbilityBench.ObjectInvalid)
-            .On("TryProcessPendingDefensiveReaction", args => false)
-            .On("ResumeModePosition", args => null)
             .On("IsHostileAbilityTargetAuthorized", args => true);
-        return companions;
+        return targets;
     }
 
     private AbilityDetail Ability_(AbilityActivationType type, float delay = 0f) => new()

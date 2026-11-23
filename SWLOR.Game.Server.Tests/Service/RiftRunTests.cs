@@ -199,10 +199,15 @@ public class RiftRunTests
             "a cleared mark that failed to save is remembered, since the saved file still refunds the key");
         var pay = runs[runs.IndexOf("private static void PayRiftRun(", StringComparison.Ordinal)..];
         pay = pay[..pay.IndexOf("SaveIncursions();", StringComparison.Ordinal)];
-        pay.IndexOf("if (!IsRiftKeySpendSaved(pilot))", StringComparison.Ordinal)
+        pay.Should().Contain("var participants = run.Pilots.Concat(run.Pilots.SelectMany(GetShipCrewPlayers)).Distinct().ToList();",
+            "every pilot and everyone aboard their ships is checked, wherever the key user rode");
+        pay.Should().Contain("var unsavedKeyUsers = participants.Where(x => !IsRiftKeySpendSaved(x)).ToList();");
+        var gate = pay.IndexOf("if (unsavedKeyUsers.Count > 0)", StringComparison.Ordinal);
+        gate.Should().BeGreaterThan(0);
+        pay.IndexOf("return;", gate, StringComparison.Ordinal)
             .Should().BeLessThan(pay.IndexOf("CapitalBattleRules.AddPending(", StringComparison.Ordinal),
-                "no spoils are recorded for a key user whose file still refunds the key");
-        pay.Should().Contain("aboard = aboard.Where(IsRiftKeySpendSaved).ToList();");
+                "no ship's spoils are recorded while the key that opened the run can still be refunded");
+        pay.Should().NotContain("aboard.Where(IsRiftKeySpendSaved)", "the gate is run-wide, not per recipient");
         var settled = runs[runs.IndexOf("private static bool IsRiftKeySpendSaved(", StringComparison.Ordinal)..];
         settled.IndexOf("if (CharacterCheckpoint.Save(player))", StringComparison.Ordinal)
             .Should().BeLessThan(settled.IndexOf("ObjectPlugin.SetString(player, PendingRiftKeyVariable, resref, true);", StringComparison.Ordinal),

@@ -119,6 +119,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (GetIsPC(_target) && !GetIsDM(_target))
             {
+                var playerId = GetObjectUUID(_target);
+                var dbPlayer = DB.Get<Player>(playerId);
+                if (dbPlayer == null)
+                {
+                    Header = "This character has no player record.";
+                    return;
+                }
+
                 var dmName = GetName(Player);
                 var oldName = GetName(_target);
                 CreaturePlugin.SetOriginalName(_target, NewFirstName, false);
@@ -128,8 +136,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!string.IsNullOrWhiteSpace(NewLastName))
                     newFullName += $" {NewLastName}";
 
-                var playerId = GetObjectUUID(_target);
-                var dbPlayer = DB.Get<Player>(playerId);
                 dbPlayer.Name = newFullName;
                 DB.Set(dbPlayer);
 

@@ -91,10 +91,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     var carried = Snapshot(player);
                     var model = (MarketListingViewModel)Gui.GetPlayerWindow(player, GuiWindowType.MarketListing).ViewModel;
-                    RemoveListing(ctx, model, listing.Id);
+                    var index = ListingIds(model).IndexOf(listing.Id);
+                    ctx.Assert(index >= 0, "The listing is visible when its confirmation opens");
+                    Call(model, "RemoveListing", index);
+
+                    model.SearchText = "No matching listings";
+                    model.OnClickSearch()();
+                    ctx.AssertEqual(0, ListingIds(model).Count, "The search hides the row while confirmation is pending");
+
+                    model.OnModalConfirmClick()();
                     AssertCarriedIntact(ctx, player, carried);
                     ctx.Assert(DB.Get<MarketItem>(listing.Id) == null, "The removed listing leaves the market");
                     ctx.AssertEqual(1, CountCarried(player, LargeItemResref), "The listed item returns to the inventory");
+                    ctx.AssertEqual(0, ListingIds(model).Count, "The filtered list stays empty");
                 });
             }
             finally

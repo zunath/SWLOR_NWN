@@ -336,14 +336,15 @@ namespace SWLOR.Game.Server.Service
                 : Skill.GetDeltaXP(recipe.Level - skillRank);
         }
 
-        private static string CheckRecipeSkillRequirement(uint player, RecipeDetail recipe)
+        private static string CheckRecipeSkillRequirement(Player dbPlayer, RecipeDetail recipe)
         {
+            if (dbPlayer == null)
+                return "A player character is required to craft.";
+
             var requiredRank = GetRequiredSkillRankForRecipe(recipe);
             if (requiredRank <= 0)
                 return string.Empty;
 
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
             var skillRank = dbPlayer.Skills.TryGetValue(recipe.Skill, out var skill)
                 ? skill.Rank
                 : 0;
@@ -424,7 +425,7 @@ namespace SWLOR.Game.Server.Service
 
             var requiredSkillRank = GetRequiredSkillRankForRecipe(detail);
             recipeDetails.Add($"{Skill.GetSkillDetails(detail.Skill).Name} rank {requiredSkillRank}");
-            recipeDetailColors.Add(string.IsNullOrWhiteSpace(CheckRecipeSkillRequirement(player, detail))
+            recipeDetailColors.Add(string.IsNullOrWhiteSpace(CheckRecipeSkillRequirement(DB.Get<Player>(GetObjectUUID(player)), detail))
                 ? GuiColor.Green
                 : GuiColor.Red);
 
@@ -527,7 +528,8 @@ namespace SWLOR.Game.Server.Service
         public static bool CanPlayerCraftRecipe(uint player, RecipeType recipeType)
         {
             var recipe = GetRecipe(recipeType);
-            if (!string.IsNullOrWhiteSpace(CheckRecipeSkillRequirement(player, recipe)))
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (!string.IsNullOrWhiteSpace(CheckRecipeSkillRequirement(dbPlayer, recipe)))
                 return false;
 
             if (recipe.Requirements.Count <= 0) return true;

@@ -251,6 +251,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RemoveListing(int index)
         {
+            if (index < 0 || index >= _itemIds.Count)
+                return;
+
             ClosePriceWindow();
             var itemId = _itemIds[index];
 
@@ -258,8 +261,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var dbListing = DB.Get<MarketItem>(itemId);
 
-                // The item was either bought or removed already.
-                // Remove it from the client's view, but don't take any action on the server.
                 if (dbListing != null)
                 {
                     var deserialized = ObjectPlugin.Deserialize(dbListing.Data);
@@ -273,19 +274,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 else
                 {
-                    FloatingTextStringOnCreature("Your listing for '' has been removed or sold already.", Player, false);
+                    FloatingTextStringOnCreature("This listing has already been removed or sold.", Player, false);
                 }
 
-                _itemIds.RemoveAt(index);
-                ItemIconResrefs.RemoveAt(index);
-                ItemNames.RemoveAt(index);
-                _itemPrices.RemoveAt(index);
-                ItemPriceNames.RemoveAt(index);
-                ItemListed.RemoveAt(index);
-                ListingCheckboxEnabled.RemoveAt(index);
-
-                _itemCount--;
-                UpdateItemCount();
+                LoadData();
             });
         }
 

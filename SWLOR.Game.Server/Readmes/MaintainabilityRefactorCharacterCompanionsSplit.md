@@ -32,7 +32,7 @@ built or run.
 
 ## Decisions
 
-Proposed for the coordinator's review; change only on a finding in review. The open ones are at the end.
+Reviewed by the coordinator; change only on a finding in review. The questions the first draft left open are settled at the end.
 
 - **D1. One stay-part per service, layered by who calls what.** The stay-part keeps the original class and interface name and the
   members most callers use, so the fewest holders change. The other parts are new services behind new interfaces, each one
@@ -50,14 +50,19 @@ Proposed for the coordinator's review; change only on a finding in review. The o
   sets `_perkFeatCacheLoaded = false`. Both are state the new parts own, and a call up from the stay-part would be a cycle.
   `PerkStatBonusService.CachePerkStatBonuses` and `PerkGrantedFeatService.ResetPerkFeatCache` become `Rerun` boot handlers on
   `OnModuleCacheBefore`, listed right after `PerkService.CacheData` in `ScriptHandlerOrder.txt` (line 41 today). Mimicry gets the
-  same for the witness sweep (`CacheData` schedules it today; D6 in "State, handlers and reload").
+  same for the witness sweep (`CacheData` schedules it today). `ResetPerkFeatCache` is likely a no-op in production: a hot reload builds new
+  instances whose flag starts false, and the flag only matters if a feat read runs between the two cache events. The PR keeps it (verbatim
+  behaviour) unless P5-10b's reload check shows the instance is always new, in which case the PR deletes it and says why.
 - **D6. `PerkStatBonusService` uses `StatRules.AggregateStatAdjustment` directly.** `PerkService.AggregateStatAdjustment` is a
   one-line seam over `IStatService.AggregateStatAdjustment`, which is `StatRules.AggregateStatAdjustment`
   (`StatService.cs` line 100). The part calls the static rule in the seam's body (four uses, one line changed). This is what
   lets the part sit under `StatService`, which reads it, without a `Lazy<IStatService>`.
 - **D7. Upward edges that P5-10 owns are inverted where the part that needs them is built,** with Character-owned (or
   Foundation-owned) one-member ports implemented by the lower-level interface extending the port, as `IBeastCorpseInfo` and
-  `IPlayerListRefresh` do. They are in "The upward references". No `Lazy<>`, `Func<>` or late lookup is added anywhere.
+  `IPlayerListRefresh` do. They are in "The upward references". No `Lazy<>`, `Func<>` or late lookup is added by a split, with one
+  exception that moves rather than grows: the port `IPlayerListRefresh` makes `PN-3 -> PlayerListService -> PN-3` a cycle, so `PlayerListService`
+  swaps its `Lazy<IPlayerNameService>` for a plain PN-1 parameter and a new `Lazy<IPlayerNameOverrideService>` (count unchanged at 2). P5-15
+  removes it by making `QueueRefresh` a notice that `PlayerListService` subscribes to.
 - **D8. The two long methods are cut into named steps in the same pull request that moves them.** `GiveSkillXP` (239) becomes a
   main method of about 100 lines plus `ApplyXPBonuses`, `RepayXPDebt`, `ClearXPAtRankCeiling` and `AwardRanks`, with a private
   `RankUpOutcome` carrying the locals across (the rank-up flag, XP spent on ranks, the modified and decayed skill lists, the
@@ -67,8 +72,14 @@ Proposed for the coordinator's review; change only on a finding in review. The o
 - **D9. `GetWeaponSkill` stays on `SkillService`** (19 non-test call sites, 5 of them native). It needs the twin-pistol pair test, so
   `SkillService` takes Combat-owned `ITwinPistolEquipmentService` today. A Character-owned `ITwinPistolPairQuery` port (one member,
   `IsActivePair`) replaces it. `TwinPistolEquipmentService` and `ItemService` keep their `Lazy<ISkillService>` (the path
-  `SkillService -> TwinPistolEquipmentService` stays); open question 3.
-- **D10. No master freeze is needed** (open question 1): none of the six master files changed since the last sync
+  `SkillService -> TwinPistolEquipmentService` stays). P5-15 records the other option (a separate weapon-skill part, about 70 lines,
+  19 call-site edits) when it breaks those two `Lazy<>`.
+- **D11. Order: top layer first.** A chain that pulled a middle layer out first would close a constructor cycle (the stay-part still calls
+  the part that left, and the part takes the stay-part). Each chain therefore moves its top layer first, as the Combat map did, and the stay-part
+  keeps the middle layer's members as public until their own PR: Skill SK-3 then SK-2, PlayerName PN-2 then PN-3, Droid DR-4 and DR-5, then
+  DR-6 and DR-2, then DR-3; Perk (c, d) and Mimicry and Beast are already top-down or flat. Beast h1 runs before Perk d so
+  `BeastMasteryService` never carries both `IPerkService` and `IPerkGrantedFeatService` (that would be 15 services).
+- **D10. No master freeze is needed** (settled): none of the six master files changed since the last sync
   (`a184c9ef2`), and November has one commit each on three of them (Skill, PlayerName, Beast), three on Droid and none on Perk and Mimicry.
 
 ## What the code is
@@ -144,9 +155,8 @@ No method is over 100 (the longest is `SpawnBeast`, 82).
 | Events and terminal: the twelve droid event handlers (one of them death), the assembly terminal, the appearance edit | 145 |
 | Despawn: `DespawnDroid`, `ClearTemporaryData`, `RemoveAssociate`, `OnPlayerExit`, `DroidOnDeath` | 85 |
 
-`SpawnDroid` is 277 lines with its doc comment (272 by the guard), `LoadDroidPartItemPropertyDetails` 130. The class has a protected
-parameterless constructor (979-992) and a protected virtual `ReadGeneratedAmmunitionFlags` for the tests; both go with the part
-that calls them (inventory sync).
+`SpawnDroid` is 277 lines with its doc comment (272 by the guard), `LoadDroidPartItemPropertyDetails` 130. The class has a protected virtual `ReadGeneratedAmmunitionFlags` for the tests (979-992), which goes with the part
+that calls it (inventory sync); there is no parameterless constructor.
 
 ## Dependencies
 
@@ -235,6 +245,7 @@ Layers, bottom to top (a scan of the final constructor graph with these parts fi
 - Perk: PK-1 < PK-2, PK-3, PK-4 < PK-5. Skill: SK-1 < SK-2 < SK-3. PlayerName: PN-1 < PN-3 < PN-2. Mimicry: MI-1 < MI-2, MI-3.
 - Beast: BM-1 < BM-2, BM-3, BM-4. Droid: DR-1 < DR-3 < DR-6 < DR-2; DR-3 < DR-5, DR-4.
 - Between services: PK-4 < BM-2 and DR-2; SK-3 < MI-2; PK-1 < MI-2, MI-3, BM-1, BM-4.
+- These are the final dependencies. The PRs move the top layer first (D11), so the stay-part holds the middle layer's members, public, until their PR.
 
 ### Members by part (line counts)
 
@@ -268,16 +279,16 @@ Fields are summed (`N tables, L lines`); sizes are member lines.
 - **PN-1:** 8 fields 9; `ReleaseKnownNamesOnExit` 9, `GetDisplayName` 4, `GetAuditName` 9, `GetAuditIdentity` 12, `GetDisplayNameByPlayerId` 27, `GetPlainDisplayNameByPlayerId` 35,
   `GetKnownNameOrFallbackByPlayerId` 25, `GetColoredDisplayName` 22, `SanitizeKnownName` 25, `GetKnownNames` 18, `FindKnownNames` 20, `BuildStaffDisplayName` 7,
   `ResolveDisplayName` 30, two `Build*WithDescriptor` 4, `CanUseKnownName` 8, `ShouldShowDescriptorForNamedPlayers` 28, `ShouldShowOwnDescriptor` 17, two `TryGetKnownName` 5 and 9,
-  six identity seams 5 each (391). New public members: `ForgetKnownNames`, `ForgetDescriptorSetting`, and the identity seams made public.
+  six identity seams 5 each (391). New or promoted public members: `ForgetKnownNames`, `ForgetDescriptorSetting`, `GetKnownNames`, `IsDisguiseIdentityKey` (a seventh seam, 5 lines) and the identity seams.
 - **PN-2:** `SearchKnownPlayerIdsByName` 27, `ValidateKnownName` 10, `ValidateKnownNameInput` 7, `ValidateKnownNameAssignment` 17, `SetKnownName` 18, `ValidateKnownNameTarget` 10,
   `ContainsColorToken` 7, `ValidateKnownNameIsUnique` 22, `ForgetKnownName` 18, `DeleteKnownNameReferences` 36 (182).
-- **PN-3:** 4 fields 6 (`AfkPlayers`, `_afkMovementCheck`, the staff marker, the tell variable); `ApplyNameOverridesOnEnter` 23, `ClearAfkOnExit` 7, `IsAfk` 1, `OnCarriedStateAdopted` 18,
+- **PN-3:** 3 fields 5 (`AfkPlayers`, `_afkMovementCheck`, the staff marker; the tell variable stays on PN-1); `ApplyNameOverridesOnEnter` 23, `ClearAfkOnExit` 7, `IsAfk` 1, `OnCarriedStateAdopted` 18,
   `ToggleAfk` 14, `RemoveAfk` 13, `CheckAfkMovement` 18, the two suffix reads 6, `PreventAmbiguousTellTargets` 46, `GetChatDisplayName` 4,
   `SendChatMessageWithChatNameOverride` 13, `GetColoredChatDisplayName` 10, `RefreshNameOverridesForObserver` 27, `RefreshNameOverridesForPlayer` 5,
   `ApplyNameOverridesForPlayer` 38, `ApplyNameOverridesForDMObserver` 13, `ApplyTrueNameOverride` 14, `ApplyNameOverride` 21, `CanApplyChatNameOverride` 9,
   `ApplyChatNameOverride` 13, `RestoreNameOverride` 20, `ResolveChatDisplayName` 26, `CountDisplayNameMatches` 19, seams `ScheduleRepeating`, `EnsureUnknownDisplayName` 5 (430).
 - **MI-1:** 7 fields 19; `CacheData` 68 (4 lines lighter), `GetResistanceBonus` 25, `GetTechniqueIcon` 8, `CarryTechniqueDescriptions` 13, `AdoptTechniqueDescriptions` 17,
-  `GetTechniqueDescription` 8, `GetTechniqueDetail` 7, `IsTechnique` 7, `TechniqueCount` 4, seams 2 each (193). New: `TryGetTechniqueForNpcFeat`, `EnumerateTechniques`.
+  `GetTechniqueDescription` 8, `GetTechniqueDetail` 7, `IsTechnique` 7, `TechniqueCount` 4, seams 2 each (193). New: `TryGetTechnique`, `TryGetTechniqueForNpcFeat`, `EnumerateTechniques`.
 - **MI-2:** 17 fields and constants 38; `OnCreatureAbilityUsed` 28, `GetNearbyPlayers` 12, `TryRecordAnalysis` 20, `CombatPointXPDistributed` 27, `CalculateAnalysisXP` 12,
   `ClearAnalysisOnPlayerExit` 18, `TryRecordWitness` 45, `OnCreatureDeath` 17, `SweepStaleWitnesses` 28, `TryLearnTechniques` 69, `CalculateLearnChance` 19,
   `GrantAllTechniques` 29, six seams 2 to 4 (392). New: the boot handler `ScheduleWitnessSweep`.
@@ -324,7 +335,10 @@ Fields are summed (`N tables, L lines`); sizes are member lines.
   `CraftService` also read the catalog and gain one. The chart reads that the rank rules need (`GetRequiredXP`) stay on SK-1.
 - `GiveSkillXP` calls `GetRankCeiling`, `GetDecayCandidates` and `ShouldDecaySkillRank` (SK-2) and `GetRequiredXP`, `GetSkillDetails` (SK-1); SK-2 calls
   `GetSkillDetails` and `GetRequiredXP` (SK-1) and reads `_allSkillsContributingToCap` through `GetAllContributingSkills`. The cap set `_skillCapContributingSkillTypes`
-  moves with its only reader, `IsSkillCapContributingSkill`. `SkillCap` is already a public constant.
+  moves with its only reader, `IsSkillCapContributingSkill`. `SkillCap` is already a public constant. `IsSkillCapContributingSkill` runs in a per-skill loop
+  (`GetTotalContributingSkillRanks`), so it must not read `GetAllContributingSkills()` (a `ToDictionary` copy): SK-1 gets a no-copy member
+  `TryIsContributingSkill(SkillType, out bool contributes)` that returns false while the table is empty, and SK-2 then uses its static fallback set, as the old code did.
+- Until e2, `GetDecayCandidates` and `ShouldDecaySkillRank` (private today) are public on `SkillService` for SK-3; e2 moves both to SK-2 and SK-3 changes receiver (3 sites in `GiveSkillXP`).
 - The SK-3 constructor builds `SkillXPMessageQueue` with a closure that calls `GetSkillDetails`; it reads it through `ISkillService`.
 - `AddMissingSkills` (a login handler over the catalog and the database) stays on SK-1.
 
@@ -333,7 +347,7 @@ Fields are summed (`N tables, L lines`); sizes are member lines.
   script-context hook is registered on first fill). Two other parts write to them: `DeleteKnownNameReferences` (PN-2) removes observer entries, and
   `RefreshNameOverridesForObserver` (PN-3) removes a descriptor setting. They call two new PN-1 members, `ForgetKnownNames(observerId)` and
   `ForgetDescriptorSetting(observerId)`, which hold the one `Remove` line each.
-- PN-1 is the only holder of the two `Lazy<>`. The six one-line seams over them (`GetActiveDisguise`, `GetDisplayDescriptor`, `GetIdentityKey`,
+- PN-1 is the only holder of the two `Lazy<>`. The seven one-line seams over them (`IsDisguiseIdentityKey` below, and `GetActiveDisguise`, `GetDisplayDescriptor`, `GetIdentityKey`,
   `ShouldScrambleAccountName`, `EnsureUnknownDisplayName`, `GetUnknownDisplayNameByPlayerId`) become public on PN-1 and PN-2 and PN-3 call them there. Without that, each part
   would hold its own `Lazy<>` (a scan finds all of them needed): 2 become about 5. PN-1's private helpers PN-3 calls (`ResolveDisplayName`, `BuildDisplayNameWithDescriptor`,
   `BuildStaffDisplayName`) become public too.
@@ -341,11 +355,18 @@ Fields are summed (`N tables, L lines`); sizes are member lines.
   `CommunicationService` (10 services today) on one part, `IPlayerNameOverrideService`, in place of `IPlayerNameService`.
 - AFK stays with the overrides: the `[AFK]` suffix is read by every override and written by `ToggleAfk` and the movement check, which refresh the overrides. `AfkPlayers`
   keeps `[ReloadState(Carried)]` and gets `[ReloadCarriedFrom]` for its old class name; `OnCarriedStateAdopted` (restart the check, reapply every override) moves with it.
-- `ApplyNameOverride` becomes public on PN-3 (PN-2 calls it after `SetKnownName` and `ForgetKnownName`). `CountDisplayNameMatches` moves with its only caller, the tell handler.
+- `ApplyNameOverride` (private today) is public on `PlayerNameService` from f1, because `SetKnownName` and `ForgetKnownName` (PN-2) call it at lines 512, 566 and 573; it moves
+  to PN-3 in f2 and PN-2 changes receiver. `CountDisplayNameMatches` moves with its only caller, the tell handler.
+- `GetKnownNames(observer, createIfMissing)` (private, 648) is called from PN-2 at the search, `SetKnownName` and `ForgetKnownName`, and from PN-1's own reads: it becomes public on PN-1.
+- `SearchKnownPlayerIdsByName` also calls `_disguise.Value.IsDisguiseIdentityKey` (line 393), which needs a seventh public seam on PN-1, `IsDisguiseIdentityKey`; PN-1
+  stays the only holder of the two `Lazy<>`.
+- `DirectTellVariable` stays on `PlayerNameService` (a public constant read by `PlayerListService.cs:241,248` and `DMPlayerSearchViewModel.cs:528,535`); the tell handler in PN-3 reads it there.
 
 **Mimicry.**
-- The technique tables stay on MI-1 and the two other parts read them through two new members, `TryGetTechniqueForNpcFeat(npcFeat, out technique)` (one table lookup
-  in `OnCreatureAbilityUsed`) and `EnumerateTechniques()` (the loops in `GrantAllTechniques` and the loadout reads); `GetTechniqueDetail` and `IsTechnique` are already there.
+- `_techniques` has ten keyed reads outside `CacheData` (lines 284, 511, 657, 687, 813, 988, 1072, 1080, 1189, 1216) and loops in `GrantAllTechniques` (589) and the cache. The existing
+  `GetTechniqueDetail` and `IsTechnique` normalise their key through `_quickCast.GetOriginalFeat` (1249, 1257), which changes the key, so they cannot stand in for the raw reads. MI-1 gets
+  `TryGetTechnique(feat, out detail)` (the raw table read, no normalisation), `TryGetTechniqueForNpcFeat(npcFeat, out technique, out detail)` (returns both the technique feat and its
+  detail, so `OnCreatureAbilityUsed` does one call) and `EnumerateTechniques()` (the loops); MI-2 and MI-3 read through them.
 - `CacheData` schedules the witness sweep (`_witnessSweepScheduled`, `ScheduleRepeating(SweepStaleWitnesses, 5 min)`); that is witness state. The four lines become
   a `Rerun` boot handler `ScheduleWitnessSweep` on `OnModuleCacheAfter` right after `MimicryService.CacheData` (D5). `_witnessSweepScheduled` is marked `Runtime` (the part
   owns a rerun handler). The first sweep is five minutes after boot, so the handler order against other handlers does not matter.
@@ -361,6 +382,7 @@ Fields are summed (`N tables, L lines`); sizes are member lines.
 - `IBeastMasteryService : IBeastCorpseInfo` (Items-owned, `GetBeastName`) stays on the stay-part, with the registration alias `AddSingleton<IBeastCorpseInfo>(...)`, so
   `LootService` does not change.
 - `UseIncubator` and `OpenStablesMenu` both open a window (`TogglePlayerWindow`, a one-line seam over `IGuiService`); each part keeps its own seam.
+- `ApplyStats` (private, 497) becomes public on BM-1 in h1, where `SpawnBeast` (BM-2) calls it; `GiveBeastXP` calls it in place.
 - The incubation part no longer needs the stay-part to hold `IIncubationFieldNoteService`, so that service's `Lazy<IBeastMasteryService>` becomes plain.
 
 **Droid.**
@@ -372,8 +394,14 @@ Fields are summed (`N tables, L lines`); sizes are member lines.
   spawn (greeting) and despawn (farewell) through a new DR-1 member `GetPersonality`.
 - `UpdateEquippedItemSnapshot` stays on DR-1 (it reads only the controller item and the constructed droid and has seven domain callers, the tint-map services).
 - `DroidOnDeath` goes with despawn: it repeats `DespawnDroid`'s cleanup steps (`ClearTemporaryData`, `CloseAppearanceEditor`, `ReturnRejectedItems`, `SaveItemSnapshot`).
-- The protected parameterless constructor (979-992) and `ReadGeneratedAmmunitionFlags` go to DR-3; `DroidServiceTests`, `DroidServiceWorldTests` and `ItemServiceTests`
-  subclass or construct `DroidService` today (Tests).
+- The protected virtual `ReadGeneratedAmmunitionFlags` (979-992) goes to DR-3; `DroidServiceTests`, `DroidServiceWorldTests` and `DroidWorld` subclass or construct `DroidService`
+  today (`ItemServiceTests` only reads `DroidService.DroidResref`; Tests).
+- Promoted private members (names and bodies unchanged). Until i3 they are public on `DroidService`: `AcquireDroidItem`, `IsStoredItem` and `ReturnRejectedItems` in i1
+  (called by `DroidOnDisturbed`, `DespawnDroid`, `DroidOnDeath`), `CanGiveItemToDroid` and `GetDroidItemId` in i2 (called by `RestoreDroidItem` and the inventory restore); i3 moves
+  all five to DR-3 and the callers change receiver. `ApplyStats` (Beast) is public on BM-1 from h1.
+- `constructedDroid` is a class, so it passes by reference. `SpawnDroid` loads it once (`LoadConstructedDroid(controller)`, line 595) and hands the same object to
+  `IDroidRestoreService.RestoreInventory(droid, player, controller, constructed)`, then `RestoreAppearance(droid, controller, constructed)`, then `FinishSpawn(droid, controller)`;
+  each step mutates it and saves through `SaveConstructedDroid` at the places the old code did (lines 647, 737-762), so the saved data and the read-after-write order are unchanged.
 
 ## The upward references and how each goes
 
@@ -386,9 +414,9 @@ Fields are summed (`N tables, L lines`); sizes are member lines.
 |---|---|---|---|---|
 | Character -> Abilities: Perk `IQuickCastService` (`KnowsFeat`, `RemoveFeat`, `ApplyPreferences`) | 4 | port `IFeatHotBar`; `IQuickCastService : IFeatHotBar`; registered with a forwarding lambda | Character | d |
 | Character -> Combat: Perk `Lazy<ICombatService>` (`RefreshStatDrivenTrackerEffects`) | 3 | port `IStatDrivenTrackerRefresh`; `ICombatService : IStatDrivenTrackerRefresh` (the member exists; one interface line, no class change) | Character | d |
-| Character -> Combat: Skill `ITwinPistolEquipmentService` (`IsActivePair`) | 3 | port `ITwinPistolPairQuery`; `ITwinPistolEquipmentService : ITwinPistolPairQuery` | Character | e1 |
+| Character -> Combat: Skill `ITwinPistolEquipmentService` (`IsActivePair`) | 3 | port `ITwinPistolPairQuery`; `ITwinPistolEquipmentService : ITwinPistolPairQuery` | Character | e2 |
 | Character -> Social: PlayerName `IPlayerListService` (`QueueRefresh`) | 6 | the existing `IPlayerListRefresh` | Character | f1, f2 |
-| Character -> Social: PlayerName `IChatPortraitTellsService` (`RefuseStalePortraitTell`) | 3 | port `IPortraitTellGuard`; `IChatPortraitTellsService : IPortraitTellGuard` | Character | f1 |
+| Character -> Social: PlayerName `IChatPortraitTellsService` (`RefuseStalePortraitTell`) | 3 | port `IPortraitTellGuard`; `IChatPortraitTellsService : IPortraitTellGuard` | Character | f2 |
 | Foundation -> Character: `ConversationService`, `PlayerFeedbackService` -> `IPlayerNameService.GetDisplayName` | 3 + 3 | port `IDisplayNameLookup`; `IPlayerNameService : IDisplayNameLookup`; the Foundation services take the port | Foundation | f1 |
 | Character -> Companions (Perk -> Beast and Droid) | 11 | done in P5-1g (`ICompanionLookup`); P5-10 keeps the lookup | Character | none |
 
@@ -407,20 +435,21 @@ No holder gains a `Lazy<>`. The numbers that matter are the services at or near 
 | `CombatQueriesService` (7) | c: keeps `IPerkService` (`IsPerkInCategory`) and gains `IPerkStatBonusService` | 8 |
 | `AbilityDamageStageService` (10), `CombatAbilityHitService` (13), `CombatAbilityMagnitudeService` (3) | c: `IPerkService` -> `IPerkForceAffinityService` (affinity reads only) | same |
 | `AbilityActivationService` (8) | d: `IPerkService` -> `IPerkGrantedFeatService`; e: nothing; g1: `IMimicryService` -> `IMimicryLoadoutService` (`IsTechniqueEquipped`) | same |
-| `BeastMasteryService` (14), `DroidService` (14) | d: the `SyncGrantedFeats` seam reads `IPerkGrantedFeatService` (the seam line and one constructor type) | split later |
+| `BeastSpawnService` (born in h1 on `IPerkService`), `DroidService` (14) | d: the `SyncGrantedFeats` seam reads `IPerkGrantedFeatService` (the seam line and one constructor type, in each) | same |
+| `BeastMasteryService` (14) | h1 runs before d: it keeps `IPerkService` (`GetPerkLevel`) and never holds `IPerkGrantedFeatService` | 10 after h1 |
 | `ResistanceService` (4) | none: `GetResistanceBonus` stays on `IMimicryService` | same |
-| `MimicryService` (11) | g1: loses `IGuiService`, `IStatusEffectService`; g2: loses five more | 9, then 4 |
-| `TrapsService` (10), `PerformanceAudienceService` (10), `EspionageInfiltrationService` (6), `SlicingSessionService` (9), `GuildTaskXpService` (4) | e2: `ISkillService` -> `ISkillXPService` (they use `GiveSkillXP` and the XP formulas only) | same |
-| `CombatPointService` (8), `LanguageService` (3), `CraftService` (6) | e2: keep `ISkillService` and gain `ISkillXPService` | +1 each |
-| `CommunicationService` (10) | f1: `IPlayerNameService` -> `IPlayerNameOverrideService` (`GetColoredChatDisplayName`, `SendChatMessageWithChatNameOverride`) | same |
-| `PlayerListService` (9) | f1: keeps `IPlayerNameService`, gains `IPlayerNameOverrideService` (`IsAfk`) | 10 |
-| `DisguiseService` (7), `PlayerDescriptorService` (3), `PlayerIntroductionService` (3) | f1, f2: gain the override and known-name parts | +2, +2, +1 |
+| `MimicryService` (11) | g1: loses `IGuiService`, `IStatusEffectService`; g2: loses five more (g1 and g2 follow d and e1) | 9, then 4 |
+| `TrapsService` (10), `PerformanceAudienceService` (10), `EspionageInfiltrationService` (6), `SlicingSessionService` (9), `GuildTaskXpService` (3) | e1: `ISkillService` -> `ISkillXPService` (they use `GiveSkillXP` and the XP formulas only) | same |
+| `CombatPointService` (7), `LanguageService` (3), `CraftService` (5) | e1: keep `ISkillService` and gain `ISkillXPService` | 8, 4, 6 |
+| `CommunicationService` (9) | f2: `IPlayerNameService` -> `IPlayerNameOverrideService` (`GetColoredChatDisplayName`, `SendChatMessageWithChatNameOverride`) | same |
+| `PlayerListService` (8) | f2: keeps `IPlayerNameService`, gains `Lazy<IPlayerNameOverrideService>` (`IsAfk`; the cycle `PN-3 -> IPlayerListRefresh -> PlayerListService -> PN-3`) and its PN-1 `Lazy<>` becomes plain | 9; `Lazy<>` count stays 2 (P5-15 takes it) |
+| `DisguiseService` (7), `PlayerDescriptorService` (3), `PlayerIntroductionService` (3) | f1, f2: gain the known-name and override parts | +2, +2, +1 |
 | `ConversationService`, `PlayerFeedbackService` (Foundation) | f1: `IPlayerNameService` -> `IDisplayNameLookup` | same |
 | `IncubationFieldNoteService` | h1: `Lazy<IBeastMasteryService>` becomes plain | `Lazy<>` -1 |
 | `TintMapApplyService`, `TintMapCarryService`, `TintMapDroidOverrideService`, `TintMapItemColorService` | none: `UpdateEquippedItemSnapshot` stays on `IDroidService` | same |
 | `DroidEquipmentDiagnosticsService` | i2: `Lazy<IDroidService>` becomes plain (the stay-part no longer holds the diagnostics) | `Lazy<>` -1 |
 | `StealthService`, `AIService` | d: `Lazy<IPerkService>` becomes plain wherever it is still lazy (P5-8e already does it for `AIService`) | `Lazy<>` -1 each |
-| `ChatPortraitTellsService` | f1: `Lazy<IPlayerNameService>` becomes plain (it reads only the stay-part) | `Lazy<>` -1 |
+| `ChatPortraitTellsService` | f2: `Lazy<IPlayerNameService>` becomes plain (it reads only the stay-part) | `Lazy<>` -1 |
 
 Interfaces that keep their holders on the stay-part:
 
@@ -471,17 +500,18 @@ question is whether the target still reaches the owner through plain parameters:
 |---|---|---|
 | `PerkService -> Lazy<IStatService>` | gone (PK-3 plain, PK-2 uses `StatRules`) | `StatService` reads PK-2 and PK-1 but not PK-3 |
 | `PerkService -> Lazy<ICombatService>` | gone (PK-5 takes `IStatDrivenTrackerRefresh`, plain) | nothing in `CombatService`'s closure reaches PK-5 |
-| `SkillService -> Lazy<IStatService>` | gone (SK-3 plain) | `StatService` reads SK-1 only |
+| `SkillService -> Lazy<IStatService>` | gone in e1 (SK-3 plain; the stay-part no longer calls it) | `StatService` reads SK-1 only |
 | `MimicryService -> Lazy<IStatService>` | stays on MI-1 | `StatService -> ... -> ResistanceService -> MI-1`; the potency read needs the stat service |
 | `MimicryService -> Lazy<IStatService>` (witness) | gone (MI-2 plain) | no service in the stat closure takes MI-2 |
 | `MimicryService -> Lazy<ICombatPointService>` | gone (MI-2 plain) | `AbilityActivationService` takes MI-3 only; MI-2 is reached by content |
 | `PlayerNameService -> Lazy<IDisguiseService>`, `Lazy<IPlayerDescriptorService>` | stay on PN-1 | `DisguiseService` and `PlayerDescriptorService` call PN-1 |
 | `StealthService`, `AIService -> Lazy<IPerkService>` | become plain in d | PK-1 reaches two classes |
-| `ChatPortraitTellsService -> Lazy<IPlayerNameService>` | becomes plain in f1 | it reads PN-1 only; PN-1 does not reach it |
-| `PlayerListService -> Lazy<>` for PN-1 | becomes plain in f1; the one for PN-3 stays | `PN-3 -> IPlayerListRefresh -> PlayerListService -> PN-3` |
+| `ChatPortraitTellsService -> Lazy<IPlayerNameService>` | becomes plain in f2 (until then the stay-part holds the chat portrait service) | it reads PN-1 only; PN-1 does not reach it |
+| `PlayerListService -> Lazy<IPlayerNameService>` (PN-1) | becomes plain in f2 | PN-1 does not reach it |
+| `PlayerListService -> Lazy<IPlayerNameOverrideService>` (PN-3, new) | added in f2, count stays 2; P5-15 removes it (`QueueRefresh` as a notice) | `PN-3 -> IPlayerListRefresh -> PlayerListService -> PN-3` |
 | `IncubationFieldNoteService -> Lazy<IBeastMasteryService>` | becomes plain in h1 | BM-1 no longer holds the field notes |
 | `DroidEquipmentDiagnosticsService -> Lazy<IDroidService>` | becomes plain in i2 | DR-1 no longer holds the diagnostics |
-| `TwinPistolEquipmentService`, `ItemService -> Lazy<ISkillService>` | stay | `SkillService -> ITwinPistolPairQuery -> TwinPistolEquipmentService -> ...` (D9; open question 3) |
+| `TwinPistolEquipmentService`, `ItemService -> Lazy<ISkillService>` | stay | `SkillService -> ITwinPistolPairQuery -> TwinPistolEquipmentService -> ...` (D9) |
 
 `LazyDependencyCycleTests` fails on a needless `Lazy<>`, so each PR turns the ones its change makes needless into plain parameters in the same PR, even in a file another item owns
 (`StealthService.cs`, `PlayerListService.cs`). The six services' own `DeferredResolution.txt` lines go from seven parameters to three (Mimicry stay 1, PlayerName stay 2). Target 4 is met
@@ -509,7 +539,8 @@ by Perk, Skill, Beast and Droid; Mimicry (the potency read) and PlayerName (the 
   (41), `SkillService.CacheData`, `LoadMappings`, `CacheXPChartData`, `AddMissingSkills` (47-49, 767), `PlayerNameService.ReleaseKnownNamesOnExit` (837), `MimicryService.CacheData` (79),
   `BeastMasteryService.CacheData` (24) and `CombatPointXPDistributed` (310), `DroidService.CacheData`. Two handlers on `OnCombatPointXPDistribute` (Beast 310, Mimicry 311) keep their relative order.
 - **Added handlers** (all `Rerun` boot handlers, listed directly after the handler they were cut from, `SplitBootHandlerTests`' `ServiceSplitMasterHandlers` naming master's `Perk.CacheData`
-  and `Mimicry.CacheData`): `PerkStatBonusService.CachePerkStatBonuses` and `PerkGrantedFeatService.ResetPerkFeatCache` (after line 41), `MimicryWitnessService.ScheduleWitnessSweep`
+  and `Mimicry.CacheData`; `tools/Refactor/HandlerRenames.txt` line 114 already maps `Mimicry.CacheData` to two services, `MimicryService` and `MimicryTraitStatsService`, so `ScheduleWitnessSweep`
+  is its third part): `PerkStatBonusService.CachePerkStatBonuses` and `PerkGrantedFeatService.ResetPerkFeatCache` (after line 41), `MimicryWitnessService.ScheduleWitnessSweep`
   (after line 79). `BootHandlerClassification.txt` gains three lines and re-keys `PerkService.CachePerkFeatData`. A missing `Rerun` on `CachePerkStatBonuses` would leave every perk stat
   bonus empty after a hot reload, so the classification test and an engine reload check cover it.
 - **Session classification** (`PlayerSessionClassification.txt`): `SkillService.ResetLimitWarningsOnEnter` and `ResetLimitWarningsOnExit`, `PlayerNameService.ApplyNameOverridesOnEnter` and
@@ -521,15 +552,18 @@ by Perk, Skill, Beast and Droid; Mimicry (the potency read) and PlayerName (the 
   newly `Carried`.
 - **What a hot reload must recheck.** After a reload: a player's perk stat bonuses and force affinity equal the values before (the two Rerun handlers); feat sync and the hot bar after a perk purchase; an AFK
   player stays AFK with the tag, and a tell between two named players still resolves (PN-3); a witnessed technique can still be learned and the analysis observers still block combat-point credit (MI-2); an
-  equipped technique stays equipped (MI-3); a summoned droid keeps its equipment through a reload (DR-3). Run `scripts/run-hot-reload-check.sh --engine-filter HotReloadPlayers --reloads 2` on c, d, f1, g2
-  and i3, plus the state round trips in `ReloadStateCarrierTests` and `ReloadDigestTests` for the three moved carried fields.
+  equipped technique stays equipped (MI-3); a summoned droid keeps its equipment through a reload (DR-3). Run `scripts/run-hot-reload-check.sh --engine-filter HotReloadPlayers --reloads 2` on
+  every PR that moves a handler, a boot registration or runtime state, keyed to the order below: c (the stat-bonus handler), d (the feat handler and reset), e1 (`_limitWarningsSent`, `_xpMessages`, the two
+  session handlers), f2 (`AfkPlayers`, three handlers, the adopter), g1 (`OnMimicrySkillDecay`, `OnPlayerLogin`), g2 (the sweep handler, the two carried tables), h1 (three handlers,
+  `_incubationDayOverrides`), h2 (the 16 handler lines), i1 (17 handler lines: 13 event and terminal, 4 despawn) and i3 (6 inventory handler lines). Plus the state round trips in
+  `ReloadStateCarrierTests` and `ReloadDigestTests` for the three moved carried fields.
 - **Attribution scopes.** `BeginSetupAttribution` is called by `SpawnBeast` (BM-2) and the droid closing steps (DR-6); P5-7j keeps it on the recorder stay-part, so the text does not change.
 
 ## Tests
 
 - **Source readers by name** (12 test files, 31 reads of the six files by path, plus `InstanceMethod` harness reads): `PlayerNameRecognitionTests` (16 reads of `PlayerNameService.cs`),
   `PlayerIdentityAuditTests` (2 harness reads: `GetAuditName`, `GetAuditIdentity`), `MimicryTests` (2), `DMPossessionPlayerLoopTests` (harness: `OnCreatureAbilityUsed`, `GetNearbyPlayers`, both MI-2),
-  `PerkRefundStatusEffectCleanupTests` (2), `SkillXPAwardTests` (2), `PlayerMessageAuditTests` (2, the file list at lines 53-54), `DeadPlayerXPTests`, `PerksWindowTests`, `TintMapReviewTests`
+  `PerkRefundStatusEffectCleanupTests` (2), `SkillXPAwardTests` (2; e1 edits it, its harness names members), `PlayerMessageAuditTests` (2, the file list at lines 53-54), `DeadPlayerXPTests`, `PerksWindowTests`, `TintMapReviewTests`
   (reads `DroidService.cs`), `CrossSkillPerkInteractionSafetyTests`, `SkillRankLimitTests`, `PerkStatBonusTests`. P5-10b adds `CharacterCompanionsSource` (the source of a member wherever it lives,
   as `CreaturesSource` does) with one group per service, and points every read at it, so no later PR edits them. The `ClockSeamSourceGuardTests` list names `Domain/Character/PerkService.cs` (the clock
   reads are `UnlockPerkForPlayer`, PK-1, and the decay handler, PK-5, so d adds `PerkRefundService.cs`) and `tools/Refactor/ClockSeamFiles.txt` line 99 follows.
@@ -537,22 +571,22 @@ by Perk, Skill, Beast and Droid; Mimicry (the potency read) and PlayerName (the 
   `PlayerMessageAuditTests` gets the part files. `StaticLookups.txt` line 317 (`BeastMasteryServiceTests.cs`, 10). `tools/Refactor/HandlerRenames.txt`.
 - **Benches and doubles.** `PerkBench` (255 lines) subclasses `PerkService` and answers its seams; `PerkServiceTests` (908 lines, 45 tests), `SkillServiceTests` (979, 60), `PlayerNameServiceTests`
   (1,256, 112), `MimicryServiceTests` (1,420, 80) with `MimicryTests` (1,440, 53), `BeastMasteryServiceTests` (1,808, 105), `DroidServiceTests` (321, 23) with `DroidServiceWorldTests` (939, 45), `DroidWorld`
-  (409) and `ItemServiceTests` (it builds a `DroidService`) each subclass one service. P5-10b gives each a part accessor (`Catalog`, `StatBonus`, `Affinity`, `Feats`, `Refund`; `Catalog`, `Rank`, `XP`; `Names`,
+  (409) each subclass or build one service. P5-10b gives each a part accessor (`Catalog`, `StatBonus`, `Affinity`, `Feats`, `Refund`; `Catalog`, `Rank`, `XP`; `Names`,
   `KnownNames`, `Overrides`; `Techniques`, `Witness`, `Loadout`; `Beasts`, `Spawn`, `Events`, `Incubation`; `Droids`, `Spawn`, `Inventory`, `Events`, `Despawn`, `Restore`) that is the one instance until a part moves,
   and splits each double into partial files by the part whose code calls each seam. Each PR then moves the tests of its members into a test class per part (the stay-part keeps the shared bench).
 - **Unit test splits by PR** (every old test name is kept; the stay-part's class keeps the shared bench):
   c: `PerkServiceTests` gives the stat-bonus tests (with `PerkStatBonusTests`) to `PerkStatBonusServiceTests` and the force-affinity tests to `PerkForceAffinityServiceTests`;
   d: the feat tests to `PerkGrantedFeatServiceTests`, the refund tests with `PerkRefundStatusEffectCleanupTests` (10) to `PerkRefundServiceTests`, and `PerkTriggerTests` stays;
-  e1: the rank-rule tests of `SkillServiceTests` and `SkillRankLimitTests` (46, mostly `GetRankLimit`, `GetRankCeiling`, `GetMaxDistributableXP`) to `SkillRankServiceTests`;
-  e2: the award tests of `SkillServiceTests` with `SkillXPAwardTests` (10) and `SkillXPMessageQueueTests` (4) to `SkillXPServiceTests`;
-  f1: `PlayerNameServiceTests` (112) gives the override, AFK and tell tests to `PlayerNameOverrideServiceTests`; f2: the validation and write tests to `PlayerKnownNameServiceTests`;
+  e1: the award tests of `SkillServiceTests` with `SkillXPAwardTests` (10) and `SkillXPMessageQueueTests` (4) to `SkillXPServiceTests`;
+  e2: the rank-rule tests of `SkillServiceTests` and `SkillRankLimitTests` (46, mostly `GetRankLimit`, `GetRankCeiling`, `GetMaxDistributableXP`) to `SkillRankServiceTests`;
+  f1: `PlayerNameServiceTests` (112) gives the validation and write tests to `PlayerKnownNameServiceTests`; f2: the override, AFK and tell tests to `PlayerNameOverrideServiceTests`;
   g1: `MimicryServiceTests` (80) and `MimicryTests` (53) give the slot, equip and loadout tests (with `MimicryLoadoutTests`, 10) to `MimicryLoadoutServiceTests`; g2: the witness and learn tests to `MimicryWitnessServiceTests`;
   h1: `BeastMasteryServiceTests` (105) gives the spawn and incubation tests to `BeastSpawnServiceTests` and `BeastIncubationServiceTests`; h2: the event tests to `BeastEventServiceTests`;
-  i1 to i3: `DroidServiceTests` (23) and `DroidServiceWorldTests` (45) split into `DroidInventoryServiceTests`, `DroidSpawnServiceTests` (with `DroidRestoreService`), `DroidDespawnServiceTests` and `DroidEventServiceTests`, and `DroidWorld` gains the part accessors.
+  i1 to i3: `DroidServiceTests` (23) and `DroidServiceWorldTests` (45) split in the PR order into `DroidEventServiceTests` and `DroidDespawnServiceTests` (i1), `DroidSpawnServiceTests` with `DroidRestoreService` (i2) and `DroidInventoryServiceTests` (i3); `DroidWorld` gains the part accessors.
 - **Allocation pins and forwarding tests.** `PerkFacadeAllocationTests` (5 tests) and `SkillFacadeAllocationTests` (2) pin zero-byte reads through the facade; they are re-pointed by the call-text tool and the
   bytes stay.
 - **New proof, written against the current code in P5-10b** (as P5-7b did): an ordered call-and-draw transcript of `GiveSkillXP` (bonuses, debt, rank-ups with decay, the cap warnings and the `Random` draws),
-  of `SpawnDroid` (every engine call and database write, the order D8 must keep), of `TryLearnTechniques` and `TryRecordWitness`, of `UseIncubator` and `CreateBeastEgg` (seeded draws), and of
+  of `SpawnDroid` (every engine call and database write, the order D8 must keep), a new engine test `SkillXPAwardDecayEngineTests` that awards XP for a rank gained at the skill cap and asserts the random decay, `SWLOR_SKILL_LOST_BY_DECAY` and the `OnSwlorLoseSkill` handlers (`RemovePerkLevelOnSkillDecay`, `OnMimicrySkillDecay`) run, of `TryLearnTechniques` and `TryRecordWitness`, of `UseIncubator` and `CreateBeastEgg` (seeded draws), and of
   `PreventAmbiguousTellTargets`; a fixture of every perk's `GetStatSources`, `GetForceAffinity*` and `GetCurrentActiveAbilityFeats` on the full catalog (the D5 equivalence); a catalog test that no `PerkType`
   appears in two definitions; the `DroidWorld` restore test run before and after the cut with the same item set.
 - **Counts.** The tests that name the six services are about 630 `[Test]` and `[TestCase]` attributes in 18 files (above). The characterization tests that read skill and perk rules
@@ -570,66 +604,73 @@ by Perk, Skill, Beast and Droid; Mimicry (the potency read) and PlayerName (the 
   its text-level ancestor); the report lists each member that differs, and each difference must be one of the changes this guide names (D3, D6, D8, the promoted members, the seams).
 - **Engine tests, base against head** (host entry, same module and haks; per-test outcomes must match): c: `PerkLevelBehaviorEngineTests`, `PerkSweepEngineTests`, `CombatPerkRegressionEngineTests`,
   `PerkTrackerRegressionEngineTests`; d: `PlayerPerkFeatRestorationEngineTests`, `AutomaticTargetingOwnershipEngineTests`, `PerformancePerkEngineTests`, `PerkTrackerRegressionEngineTests`; e1, e2:
-  `BareHandedAttackSkillEngineTests`, `TwinPistolCrossSkillEngineTests`, `WeaponAbilityCrossSkillTraitEngineTests`, `DroidWeaponSkillMigrationEngineTests`, `MimicryObservationEngineTests`; f1, f2: `AfkNameEngineTests`,
+  `SkillXPAwardDecayEngineTests` (new), `BareHandedAttackSkillEngineTests`, `TwinPistolCrossSkillEngineTests`, `WeaponAbilityCrossSkillTraitEngineTests`, `DroidWeaponSkillMigrationEngineTests`, `MimicryObservationEngineTests`; f1, f2: `AfkNameEngineTests`,
   `DMPossessedNameEngineTests`, `PlayerListEngineTests`, `PlayerListNamePrivacyEngineTests`, `DisguiseKnownNameEngineTests`, `PlayerDataCacheEngineTests`, `DMPlayerExamineEngineTests`; g1, g2: `MimicryLoadoutEngineTests`,
   `MimicryObservationEngineTests`, `MimicryDescriptionEngineTests`, `MimicryPotencyEngineTests`, `MimicryTraitPotencyEngineTests`, `PlayerTechniqueLearningEngineTests`; h1, h2: `PlayerBeastAbilityEngineTests`,
   `IncubatorCompleteJobEngineTests`, `CapstoneProofEngineTests`, `TankEnmityEngineTests`; i1 to i3: `DroidInventoryEngineTests`, `MigrationDroidEngineTests`, `DroidCombatWeaponEngineTests`, the five droid migration tests,
   `DroidStatusImmunityEngineTests`, `DroidWeaponPairEngineTests`, `StationReturnInventorySpaceEngineTests`, `TankEnmityEngineTests`.
-- **CombatSim** (seed 1, 50 runs) byte-identical on c and e2: it reads `CombatRules`, `StatusEffectRules` and `StatRules` only, so a difference means a rule changed.
-- **Client evidence** (AGENTS.md; the Combat map took none and P5-7d took it anyway). One NWN client at the base and at the head, same module, haks and steps, per PR:
+- **CombatSim** (seed 1, 50 runs) byte-identical on c and e1: it reads `CombatRules`, `StatusEffectRules` and `StatRules` only, so a difference means a rule changed.
+- **Client evidence** (AGENTS.md; the Combat map took none and P5-7d took it anyway). One NWN client at the base and at the head, same module, haks and steps, on every split PR (no waivers, the owner rule):
   c: the Perks window text of a Force perk (affinity multipliers) and a perk with a stat bonus on the character sheet; a Force heal and a damage ability, magnitude and hit messages. d: buy a perk (feat and hot bar),
-  refund it (feats and status effects removed), relog (feats restored). e1: the Skills window ranks and limits, Distribute RP XP. e2: kill an enemy for skill XP, a rank-up message, the skill-cap warning, an XP debt
-  repayment message. f1: the AFK tag in the player list and over the head, a known name, a tell between two players (the two-client recipe). f2: `/name` set, forget and the validation messages. g1: the Techniques
-  window equip, unequip, loadout apply, relog restore. g2: an NPC technique used in view, then learned after the kill (message and sound). h1: call a beast, the incubator (use, egg creation), DNA extraction. h2: beast combat
-  round, death and rest, the stables terminal, an item given to a beast. i1: give and take droid items, an equip refusal, the saved snapshot. i2: summon a droid (appearance, equipment, greeting). i3: droid death and despawn,
-  the assembly terminal and the appearance editor. Per phase the message kinds and counts match; random-dependent numbers are compared by range.
+  refund it (feats and status effects removed), relog (feats restored), and gain a rank at the skill cap so a random skill decays (the perk it supported is refunded: `RemovePerkLevelOnSkillDecay`). e1: kill an enemy for skill XP, a rank-up message, the skill-cap warning, an XP debt repayment message, and a rank gained at the skill cap (random decay, its message and refresh). e2: the Skills
+  window ranks and limits, Distribute RP XP. f1: `/name` set, forget and the validation messages. f2: the AFK tag in the player list and over the head, a known name, a tell between two players (the two-client recipe). g1: the Techniques
+  window equip, unequip, loadout apply, relog restore, and a skill decay at the cap that drops the Mimicry rank (`OnMimicrySkillDecay` unequips what no longer fits). g2: an NPC technique used in view, then learned after the kill (message and sound). h1: call a beast, the incubator (use, egg creation), DNA extraction. h2: beast combat
+  round, death and rest, the stables terminal, an item given to a beast. i1: droid combat round, death and despawn, the assembly terminal and the appearance editor. i2: summon a droid (appearance,
+  equipment, greeting). i3: give and take droid items, an equip refusal, the saved snapshot. Per phase the message kinds and counts match; random-dependent numbers are compared by range.
 
 ## Order
 
 One pull request per row. Rows of different chains may be open at once and merge one at a time (they share `ServiceRegistrations.cs`, `GameServices.<Domain>.cs`, `ConvertedServices.json`, `RemovedFacades.json` and the
-Phase 5 baselines; each later PR rebases and regenerates the baselines). Lines are member lines moved. In flight: P5-7 (the Combat services: next `P5-7e1`, `P5-7g`, `P5-7i1`, with `P5-7j` the recorder), P5-8 (Creatures: `P5-8e`
-to `P5-8h` are queued), P5-16 (`UsePerkFeat`, the character sheet). Files other running items own: P5-7 `CombatAbilityHitService.cs` (split in P5-7g) and `CombatService.cs`; P5-8 `AIService.cs`,
-`CompanionControlService.cs`, `StealthService.cs` (P5-8e); P5-16 `UsePerkFeat.cs`, the character sheet view models.
+Phase 5 baselines; each later PR rebases and regenerates the baselines). Lines are member lines moved. Each chain moves its top layer first (D11); the stay-part keeps the middle layer's members public until their PR.
+In flight: P5-7 (the Combat services: next `P5-7e1`, `P5-7e2`, `P5-7g`, `P5-7i1`, with `P5-7j` the recorder and `P5-7k` Enmity and Stealth later), P5-8 (Creatures: `P5-8e` to `P5-8h` are queued), P5-16 (`UsePerkFeat`,
+the character sheet). Files other running items own: P5-7 `CombatAbilityHitService.cs` (e2, g), `AbilityDamageStageService.cs` (e1), `StealthService.cs` (k) and `CombatService.cs`; P5-8 `AIService.cs`,
+`CompanionControlService.cs`, `StealthService.cs` (e); P5-16 `UsePerkFeat.cs`, the character sheet view models.
 
 | PR | Contents | Lines | Other files touched | Waits for |
 |---|---|---:|---|---|
 | P5-10a | This guide; the Phase 5 and Status rows link it | 0 | `Readmes` | - |
-| P5-10b1 | Test groundwork for Perk, Skill, PlayerName: `CharacterCompanionsSource`, bench accessors, split doubles, the readers repointed, the new transcripts and fixtures. No production code | 0 | tests only | P5-10a |
+| P5-10b1 | Test groundwork for Perk, Skill, PlayerName: `CharacterCompanionsSource`, bench accessors, split doubles, the readers repointed, the new transcripts and fixtures, the skill-decay engine test. No production code | 0 | tests only | P5-10a |
 | P5-10b2 | The same for Mimicry, Beast, Droid | 0 | tests only | P5-10a |
-| P5-10c | PK-3 `PerkForceAffinityService`, PK-2 `PerkStatBonusService` (new boot handler, `StatRules`); `PerkService` 1,486 -> about 1,130, `Lazy<IStatService>` gone | 348 | `StatService.cs`, `CombatQueriesService.cs`, `CombatAbilityHitService.cs`, `CombatAbilityMagnitudeService.cs`, `AbilityDamageStageService.cs`, 3 content files | b1; P5-7g for `CombatAbilityHitService.cs` |
-| P5-10d | PK-4 `PerkGrantedFeatService`, PK-5 `PerkRefundService`, ports `IFeatHotBar` and `IStatDrivenTrackerRefresh`; `PerkService` off `LargeTypes.txt` (about 640), `Lazy<ICombatService>` gone | 508 | `AbilityActivationService.cs`, `BeastMasteryService.cs`, `DroidService.cs` (one seam line each), `StealthService.cs`, `IQuickCastService.cs`, `ICombatService.cs`, `UsePerkFeat.cs`, 7 content files | c |
-| P5-10e1 | SK-2 `SkillRankService`, port `ITwinPistolPairQuery` | 203 | `CharacterSheetAttributesTab.cs`, `CharacterSheetViewModel.cs`, `SkillsViewModel.cs`, `DistributeRPXPViewModel.cs`, `ITwinPistolEquipmentService.cs` | b1; P5-16h sheet PRs |
-| P5-10e2 | SK-3 `SkillXPService`, `GiveSkillXP` cut; `SkillService` off `LargeTypes.txt` and `LongMethods.txt`, `Lazy<IStatService>` gone | 347 | 9 domain services, 8 static helpers, 7 content files | e1 |
-| P5-10f1 | PN-3 `PlayerNameOverrideService`, ports `IPortraitTellGuard` and `IDisplayNameLookup`; `PlayerNameService` off `LargeTypes.txt`; carried `AfkPlayers` re-keyed | 430 | `CommunicationService.cs`, `PlayerListService.cs`, `ChatPortraitTellsService.cs`, `ConversationService.cs`, `PlayerFeedbackService.cs`, `DisguiseService.cs`, `PlayerDescriptorService.cs`, 5 content files | b1 |
-| P5-10f2 | PN-2 `PlayerKnownNameService` | 182 | `DisguiseService.cs`, `PlayerDescriptorService.cs`, `PlayerIntroductionService.cs`, 2 content files | f1 |
-| P5-10g1 | MI-3 `MimicryLoadoutService`; `MimicryService` off `LargeTypes.txt` and `ServicesPerType.txt` (11 -> 9) | 667 | `AbilityActivationService.cs`, 2 content files | b2 |
-| P5-10g2 | MI-2 `MimicryWitnessService` (new boot handler, carried tables re-keyed); `Lazy<ICombatPointService>` and one `Lazy<IStatService>` gone | 392 | `UsePerkFeat.cs`, `DMPlayerChatCommand.cs` | g1; e2 (so the part is born on `ISkillXPService`) |
-| P5-10h1 | BM-2 `BeastSpawnService`, BM-4 `BeastIncubationService`; `BeastMasteryService` off `LargeTypes.txt` and `ServicesPerType.txt` (14 -> 10), `IncubationFieldNoteService` `Lazy<>` plain | 395 | 7 content files | b2; d |
+| P5-10c | PK-3 `PerkForceAffinityService`, PK-2 `PerkStatBonusService` (new boot handler, `StatRules`); `PerkService` 1,486 -> about 1,130, `Lazy<IStatService>` gone | 348 | `StatService.cs`, `CombatQueriesService.cs`, `CombatAbilityHitService.cs` (field and constructor type, and the call at `TryResolveAbilityHit` line 272, which stays on the stay-part), `CombatAbilityMagnitudeService.cs`, `AbilityDamageStageService.cs`, 3 content files | b1; P5-7e1 and P5-7e2 (or the one-line rebase named under Conflicts) |
+| P5-10d | PK-4 `PerkGrantedFeatService`, PK-5 `PerkRefundService`, ports `IFeatHotBar` and `IStatDrivenTrackerRefresh`; `PerkService` off `LargeTypes.txt` (about 640), `Lazy<ICombatService>` gone | 508 | `AbilityActivationService.cs`, `BeastSpawnService.cs` and `DroidService.cs` (one seam line and one constructor type each), `StealthService.cs`, `IQuickCastService.cs`, `ICombatService.cs`, `UsePerkFeat.cs`, 7 content files | c; h1 |
+| P5-10e1 | SK-3 `SkillXPService`, `GiveSkillXP` cut; `GetDecayCandidates` and `ShouldDecaySkillRank` public on `SkillService`; `SkillService` 1,182 -> about 830, off `LargeTypes.txt` and `LongMethods.txt`, `Lazy<IStatService>` gone | 347 | 9 domain services, 8 static helpers, 7 content files, `SkillXPAwardTests` | b1 |
+| P5-10e2 | SK-2 `SkillRankService` (no-copy `TryIsContributingSkill`), port `ITwinPistolPairQuery`; `SkillService` about 620; SK-3 takes `ISkillRankService` (3 sites) | 203 | `CharacterSheetAttributesTab.cs`, `CharacterSheetViewModel.cs`, `SkillsViewModel.cs`, `DistributeRPXPViewModel.cs`, `ITwinPistolEquipmentService.cs` | e1; P5-16h sheet PRs |
+| P5-10f1 | PN-2 `PlayerKnownNameService`; `ApplyNameOverride`, `GetKnownNames`, the seven identity seams public on `PlayerNameService`; `PlayerNameService` 1,039 -> about 860, off `LargeTypes.txt` | 182 | `DisguiseService.cs`, `PlayerDescriptorService.cs`, `PlayerIntroductionService.cs`, `ConversationService.cs`, `PlayerFeedbackService.cs` (the `IDisplayNameLookup` port), 2 content files | b1 |
+| P5-10f2 | PN-3 `PlayerNameOverrideService`, port `IPortraitTellGuard`; carried `AfkPlayers` re-keyed; PN-2 takes `IPlayerNameOverrideService`; `ChatPortraitTellsService` `Lazy<>` plain; `PlayerListService` `Lazy<>` swap | 430 | `CommunicationService.cs`, `PlayerListService.cs`, `ChatPortraitTellsService.cs`, `DisguiseService.cs`, `PlayerDescriptorService.cs`, 5 content files | f1 |
+| P5-10g1 | MI-3 `MimicryLoadoutService`; `MimicryService` 1,307 -> about 650, off `LargeTypes.txt` and `ServicesPerType.txt` (11 -> 9) | 667 | `AbilityActivationService.cs`, 2 content files | b2; d (both edit `AbilityActivationService.cs`); e1 (both edit `MimicryService.cs`) |
+| P5-10g2 | MI-2 `MimicryWitnessService` (new boot handler, carried tables re-keyed, on `ISkillXPService`); `Lazy<ICombatPointService>` and one `Lazy<IStatService>` gone | 392 | `UsePerkFeat.cs`, `DMPlayerChatCommand.cs` | g1; e1 |
+| P5-10h1 | BM-2 `BeastSpawnService` (on `IPerkService`), BM-4 `BeastIncubationService`, `ApplyStats` public; `BeastMasteryService` 1,240 -> about 890, off `LargeTypes.txt` and `ServicesPerType.txt` (14 -> 10), `IncubationFieldNoteService` `Lazy<>` plain | 395 | 7 content files | b2 |
 | P5-10h2 | BM-3 `BeastEventService` | 243 | none | h1 |
-| P5-10i1 | DR-3 `DroidInventoryService` | 270 | 1 content file | b2; the other splits (owner decision 5); d |
-| P5-10i2 | DR-6 `DroidRestoreService`, DR-2 `DroidSpawnService`, `SpawnDroid` cut; `DroidService` off `ServicesPerType.txt` (14 -> 6; 1 after i3) and `LongMethods.txt`; `DroidEquipmentDiagnosticsService` `Lazy<>` plain | 305 | 1 content file | i1 |
-| P5-10i3 | DR-5 `DroidDespawnService`, DR-4 `DroidEventService`; close-out: README, Status, this guide's Progress | 230 | none | i2 |
+| P5-10i1 | DR-4 `DroidEventService` and DR-5 `DroidDespawnService`; `AcquireDroidItem`, `IsStoredItem`, `ReturnRejectedItems` public; `DroidService` 1,194 -> about 940, off `LargeTypes.txt`, 14 -> 11 services | 230 | none | b2; d |
+| P5-10i2 | DR-6 `DroidRestoreService` and DR-2 `DroidSpawnService`, `SpawnDroid` cut; `CanGiveItemToDroid`, `GetDroidItemId` public; `DroidService` off `ServicesPerType.txt` (11 -> 2) and `LongMethods.txt`; `DroidEquipmentDiagnosticsService` `Lazy<>` plain | 305 | 1 content file | i1 |
+| P5-10i3 | DR-3 `DroidInventoryService` (the five helpers move; DR-4, DR-5, DR-6 and DR-2 change receiver); close-out: README, Status, this guide's Progress | 270 | 1 content file | i2; the other splits (owner decision 5) |
 
-**Parallel groups.** Chains Perk (c, d), Skill (e1, e2) and PlayerName (f1, f2) touch no common service file and can run together (three agents, the Phase 5 limit); Mimicry (g1, g2) and Beast (h1, h2) can start when b2 is
-merged and a slot is free. g2 waits for e2 (both edit `MimicryService.cs`'s `GiveSkillXP` line), h1 for d (both edit `BeastMasteryService.cs`'s `SyncGrantedFeats` seam). Droid (i1 to i3) is last by owner decision 5 and
-after d. It calls `IAIService.SetAIProfile`, which stays on the AI core, so P5-8 does not conflict. Two rows never work on the same files at once: c waits for P5-7g
-(or, if P5-7g slips, edits `CombatAbilityHitService.cs` in two lines and P5-7g rebases); e1 waits for the two P5-16h character sheet PRs (or rebases onto them: scripted receiver edits); d and g2 edit `UsePerkFeat.cs` by script, as
-P5-8f, P5-7g and P5-7j do, on different lines.
+Intermediate sizes and service counts (checked for each row): after e1 `SkillService` has 3 services, SK-3 5; after f1 `PlayerNameService` has 5 services and PN-2 3; after i1 `DroidService` has 11 services (still
+over 10, `ServicesPerType.txt` keeps a line), DR-4 5, DR-5 4; after i2 `DroidService` has 2, DR-6 7, DR-2 7; after i3 DR-4 6, DR-5 5, DR-3 2; after h1 `BeastMasteryService` has 10 and BM-2 5, BM-4 8; after g1
+`MimicryService` has 9 and MI-3 7.
+
+**Parallel groups.**
+- **Group 1 (after b1, three agents):** Perk (c, d), Skill (e1, e2) and PlayerName (f1, f2). They share no service file. c also waits for P5-7e1 and e2.
+- **Group 2 (after b2, as slots free):** Beast (h1, h2), which runs before d so `BeastMasteryService` never carries both perk interfaces; Mimicry (g1, g2) after d and e1 (d and g1 both edit `AbilityActivationService.cs`;
+  e1 and g1 both edit `MimicryService.cs`, and e1 hands g2 the `ISkillXPService` it is born on).
+- **Group 3 (last, owner decision 5):** Droid (i1, i2, i3), after d and after the other splits. It calls `IAIService.SetAIProfile`, which stays on the AI core, so P5-8 does not conflict.
+- Within a chain the rows are serial. Two rows never work on the same files at once: e2 waits for the two P5-16h character sheet PRs (or rebases onto them: scripted receiver edits); d and g2 edit `UsePerkFeat.cs` by script, as
+  P5-8f, P5-7g and P5-7j do, on different lines.
 
 ### Baseline lines each PR changes
 
 | File | c | d | e1 | e2 | f1 | f2 | g1 | g2 | h1 | h2 | i1 | i2 | i3 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `LargeTypes.txt` | `PerkService` about 1,130 | line gone | `SkillService` about 985 (line gone if measured at 1,000 or less) | `SkillService` line gone if e1 left it over 1,000 (e1 projects about 985; e2 about 620) | `PlayerNameService` line gone | - | `MimicryService` line gone (about 650) | - | `BeastMasteryService` line gone (about 890) | - | `DroidService` line gone (about 920) | - | - |
-| `ServicesPerType.txt` | - | - | - | - | - | - | `MimicryService` 11 -> gone (9) | - | `BeastMasteryService` 14 -> 10, line gone | - | - | `DroidService` 14 -> 6, line gone | - |
-| `LongMethods.txt` | - | - | - | `GiveSkillXP` gone | - | - | - | - | - | - | - | `SpawnDroid` gone | - |
-| `DeferredResolution.txt` | `PerkService.cs` Character line gone | `PerkService.cs` Combat line gone; `StealthService.cs` Character 5 -> 4 | - | `SkillService.cs` line gone | `ChatPortraitTellsService.cs` line gone; `PlayerListService.cs` Character 2 -> 1 | - | - | `MimicryService.cs` Combat line gone | `IncubationFieldNoteService.cs` line gone | - | - | `DroidEquipmentDiagnosticsService.cs` line gone | - |
-| `UpwardEdges.txt` | - | `PerkService.cs` Abilities and Combat gone | `SkillService.cs` Combat gone | - | `PlayerNameService.cs` Social 4 -> 2; `ConversationService.cs`, `PlayerFeedbackService.cs` Character shrink | `PlayerNameService.cs` Social gone | - | - | - | - | - | - | - |
-| `LogicToContent.txt` | - | - | - | - | - | - | - | - | - | `BeastMasteryService.cs` two lines re-keyed to `BeastEventService.cs` | - | - | `DroidService.cs` line re-keyed to `DroidEventService.cs` |
+| `LargeTypes.txt` | `PerkService` about 1,130 | line gone | `SkillService` line gone (about 830) | - | `PlayerNameService` line gone (about 860) | - | `MimicryService` line gone (about 650) | - | `BeastMasteryService` line gone (about 890) | - | `DroidService` line gone (about 940) | - | - |
+| `ServicesPerType.txt` | - | - | - | - | - | - | `MimicryService` 11 -> gone (9) | - | `BeastMasteryService` 14 -> 10, line gone | - | `DroidService` 14 -> 11 | `DroidService` line gone (2) | - |
+| `LongMethods.txt` | - | - | `GiveSkillXP` gone | - | - | - | - | - | - | - | - | `SpawnDroid` gone | - |
+| `DeferredResolution.txt` | `PerkService.cs` Character line gone | `PerkService.cs` Combat line gone; `StealthService.cs` Character 5 -> 4 | `SkillService.cs` line gone | - | - | `ChatPortraitTellsService.cs` line gone; `PlayerListService.cs` Character stays 2 (one plain, one new `Lazy<>`; P5-15 takes it) | - | `MimicryService.cs` Combat line gone | `IncubationFieldNoteService.cs` line gone | - | - | `DroidEquipmentDiagnosticsService.cs` line gone | - |
+| `UpwardEdges.txt` | - | `PerkService.cs` Abilities and Combat gone | - | `SkillService.cs` Combat gone | `PlayerNameService.cs` Social shrinks; `ConversationService.cs`, `PlayerFeedbackService.cs` Character shrink | `PlayerNameService.cs` Social gone | - | - | - | - | - | - | - |
+| `LogicToContent.txt` | - | - | - | - | - | - | - | - | - | `BeastMasteryService.cs` two lines re-keyed to `BeastEventService.cs` | `DroidService.cs` line re-keyed to `DroidEventService.cs` | - | - |
 | `StaticLookups.txt` | - | - | - | - | - | - | - | - | `BeastMasteryServiceTests.cs` follows its bench | - | - | - | - |
 
 `DomainCycles.txt`, `StaticState.txt` and `SinkWork.txt` have no lines for these files. `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` change only in member counts (revert them as P5-5g did). `DebtReport.md` is
-regenerated with each. The sizes after the first PR of a chain are projections from the member counts; the pull request records the measured ones. Handler snapshot files change as in "State, handlers and reload".
+regenerated with each. The sizes are projections from the member counts; the pull request records the measured ones. Handler snapshot files change as in "State, handlers and reload".
 Also each PR: `ServiceRegistrations.cs`, `GameServices.<Domain>.cs`, `ConvertedServices.json`, `RemovedFacades.json`, `HandlerRenames.txt`, `ScriptHandlerOrder.txt`, `ClockSeamFiles.txt` where a part reads the clock,
 `PlayerMessageAudit.json` rows.
 
@@ -638,9 +679,10 @@ Also each PR: `ServiceRegistrations.cs`, `GameServices.<Domain>.cs`, `ConvertedS
 **With in-flight work.**
 
 - **P5-7 (Combat).** No P5-7 PR edits the six files (the Combat guide says so: `RefreshStatDrivenTrackerEffects` stays on `ICombatService`, and Beast and Droid call only `BeginSetupAttribution`, which P5-7j keeps on the recorder
-  stay-part; `MimicryService`'s `Lazy<ICombatPointService>` is untouched). P5-10 edits three Combat-owned files: `CombatAbilityHitService.cs` in c (one call and one constructor type; P5-7g moves that call into
-  `CombatAbilityHitAdjustmentService`, so c either follows P5-7g and edits the new part, or goes first and P5-7g rebases), `ICombatService.cs` in d (one inherited interface), and `ITwinPistolEquipmentService.cs`
-  in e1 (one inherited interface). If P5-7j moves `BeginSetupAttribution`, P5-7j edits the single call line in `BeastSpawnService` and `DroidRestoreService`.
+  stay-part; `MimicryService`'s `Lazy<ICombatPointService>` is untouched). P5-10 edits Combat-owned files: `CombatAbilityHitService.cs` in c (the field and constructor type, and the call at `TryResolveAbilityHit` line 272, which
+  stays on the stay-part when P5-7g splits the file; P5-7e2 also edits the file), `AbilityDamageStageService.cs` in c (P5-7e1 edits it), `StealthService.cs` in d (one parameter; P5-7k and P5-8e also edit it),
+  `ICombatService.cs` in d and `ITwinPistolEquipmentService.cs` in e2 (one inherited interface each). c waits for P5-7e1 and e2; if either slips, c names the one-line rebase for each file: the field, the
+  constructor type and the call (`CombatAbilityHitService`), the field and its three uses (`AbilityDamageStageService`). d rebases the one `StealthService` parameter onto P5-7k and P5-8e whichever lands first. If P5-7j moves `BeginSetupAttribution`, P5-7j edits the single call line in `BeastSpawnService` and `DroidRestoreService`.
 - **P5-8 (Creatures).** `AIService`, `CompanionControlService`, `SpawnService` call only `IPerkService.GetPerkLevel` (stay-part) and `IBeastMasteryService`/`IDroidService` through `ICompanionLookup`, so none of their
   parts changes. `StealthService.cs` (P5-8e edits it) loses a `Lazy<IPerkService>` in d, one parameter. `UsePerkFeat.cs` (D2 of the Creatures guide, nine sites by script) is edited by d and g2 by script on other lines.
 - **P5-16.** Content types named there that P5-10 touches by scripted receiver edits only: `UsePerkFeat` (d, g2), `CharacterSheetAttributesTab`, `CharacterSheetViewModel`, `PerkListBuilder` (c, e1), `DistributeRPXPViewModel` (e1, e2).
@@ -673,34 +715,29 @@ Members whose signature or call text changes:
 - **Property name only:** every row of "Callers". `RemovedFacades.json` lists the owners; `-Reverse` maps master's text back.
 - **Private members that become public** (names and bodies unchanged): `PlayerNameService.ResolveDisplayName`, `BuildDisplayNameWithDescriptor`, `BuildStaffDisplayName`, `GetActiveDisguise`, `GetDisplayDescriptor`, `GetIdentityKey`,
   `ShouldScrambleAccountName`, `EnsureUnknownDisplayName`, `GetUnknownDisplayNameByPlayerId`, `ApplyNameOverride`; `DroidService`'s six constants. New members: `PerkService.EnumerateAllPerks`, `GetPerkMaxLevel`,
-  `GetPerksWithSkillRequirement`; `MimicryService.TryGetTechniqueForNpcFeat`, `EnumerateTechniques`; `PlayerNameService.ForgetKnownNames`, `ForgetDescriptorSetting`; `DroidService.GetPersonality`; the three boot handlers.
+  `GetPerksWithSkillRequirement`; `MimicryService.TryGetTechnique`, `TryGetTechniqueForNpcFeat`, `EnumerateTechniques`; `PlayerNameService.ForgetKnownNames`, `ForgetDescriptorSetting`; `DroidService.GetPersonality`; the three boot handlers.
 - **Changed bodies (a master edit to these ports by hand):** `PerkService.CachePerks` (two lines out), `MimicryService.CacheData` (four lines out), `PerkService.AggregateStatAdjustment` (one line), `SkillService.GiveSkillXP`
   (the cut) and `DroidService.SpawnDroid` (the cut): a master edit inside either body ports to the step that now holds it.
 - **Nested types** `StatBonusGroup` and `TargetedStatBonusGroup` move into `PerkStatBonusService`; a master change to them ports to that file.
 - `feature/space-revamp`'s `DroidService` calls port by the range table (above).
 
-## Open questions
+## Settled questions
 
-Each needs the coordinator's or owner's decision; the recommendation is the guide's text.
+The open questions of the first draft, settled by the coordinator (2026-11-23); recorded as decisions.
 
-1. **Master freeze?** None (recommended; D10). Three of the six files have one November commit each, `Droid.cs` three, and none has a commit since the sync; per-file windows as in P5-7 would cost more than the edits they prevent. A master edit
-   inside a moved range is ported by hand with a Port log row.
-2. **Do the upward edges go in P5-10?** Yes (recommended): Appendix C names P5-10 for Character -> Abilities, Character -> Social and the display-name lookup, and the other two (Perk -> Combat, Skill -> Combat) cost one interface
-   line each. Alternative: leave all six rows for P5-15 and keep the `UpwardEdges.txt` lines (about 14 members).
-3. **`GetWeaponSkill`: stay on `SkillService` with the port (D9, recommended) or its own part?** Its own part (about 70 lines, `ISkillWeaponService`) would remove the `Lazy<ISkillService>` from `TwinPistolEquipmentService` and
-   `ItemService`, at the cost of 19 call-site edits (5 native, among them the P5-16 attack roll types). Recommendation: stay now, take the two `Lazy<>` in P5-15.
-4. **Perk cache rebuild:** two new `Rerun` boot handlers (D5, recommended) or a state core service under `PerkService` that holds the stat-bonus tables and the feat-cache flag and is filled by `CachePerks`. The core keeps
-   one handler and adds one service and one interface; the handlers cost a handler-order line and the equivalence fixture. Recommendation: handlers.
-5. **`StatRules.AggregateStatAdjustment` in `PerkStatBonusService` (D6)?** Recommended: a one-line change to the seam body (the pure rule `IStatService` already forwards to). Alternative: keep `IStatService` and a `Lazy<>` on the part.
-6. **Droid in six parts.** Recommended: the split in "Parts" (every part at or under 7 services, `SpawnDroid` cut across `DroidSpawnService` and `DroidRestoreService`). Alternative: ask an exemption for a 14-service `DroidSpawnService`
-   (against target 2). Order stays last (owner decision 5); if `feature/space-revamp` has not landed by then, the PRs go ahead and record where each piece went.
-7. **Client evidence for code-move PRs.** Required by AGENTS.md for any change with an in-game surface unless the owner waives it; the list per PR is in "Tests" (precedent: P5-7d took it although its map said none). Recommendation: take it, one
-   session per PR from the list, and report counts per phase. A waiver for the Beast events and Droid events PRs (h2, i3), which only re-home handlers whose behaviour the engine tests already pin, is the cheapest to give.
-8. **One test-groundwork PR or two?** Two (recommended, b1 and b2): the Character three and the Abilities and Companions three share no test file except `ItemServiceTests`, and b1 unblocks the first three chains.
+1. **Master freeze:** none (D10). A master edit inside a moved range is ported by hand with a Port log row.
+2. **Upward edges:** inverted in P5-10, where the part that needs them is built ("The upward references").
+3. **`GetWeaponSkill`:** stays on `SkillService` with `ITwinPistolPairQuery` (D9); P5-15 records the separate weapon-part option.
+4. **Perk cache rebuild:** two `Rerun` boot handlers (D5).
+5. **`StatRules.AggregateStatAdjustment`** used directly in `PerkStatBonusService` (D6).
+6. **Droid:** six parts, moved top layer first (D11).
+7. **Client evidence:** on every split PR, no waivers (owner rule); the list per PR is in "Tests".
+8. **Test groundwork:** two PRs, b1 and b2.
 
 ## Risks
 
-- **Services at 10.** `TrapsService`, `CommunicationService` and `PerformanceAudienceService` are at 10 by a source scan (the baseline lists only types over 10); each stays at 10 only because of two placements: the XP formulas with `GiveSkillXP` (Skill) and the chat display names with the overrides (PlayerName). A reviewer should confirm by regenerating `ServicesPerType.txt` in e2 and f1 that none appears.
+- **Services at 10.** `TrapsService` and `PerformanceAudienceService` are at 10 constructor parameters (the baseline lists only types over 10); each stays at 10 only because of the XP-formula placement
+  (Skill). `CommunicationService` (9) and `PlayerListService` (8, 9 after f2) have room. A reviewer should confirm by regenerating `ServicesPerType.txt` in e1 and f2 that none appears.
 - **Boot order.** The three new handlers must run in `Rerun`. The classification snapshot and the reload check cover a missing attribute; a wrong position in `ScriptHandlerOrder.txt` would let a later `OnModuleCacheBefore`
   handler read an empty stat-bonus table (none reads it at cache time today).
 - **Handler sharing between PRs.** c and d both insert lines after `PerkService.CacheData` (41); each PR lists its lines and the second rebases.

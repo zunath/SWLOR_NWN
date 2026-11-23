@@ -889,7 +889,10 @@ namespace SWLOR.Game.Server.Service
             return SpawnExclusion.TryPickLegalPosition(
                 detail.Area,
                 spawnClass,
-                () => GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area)),
+                // Random placeables (resource nodes, terminals) only use points with room to walk around them.
+                () => GetPositionFromLocation(isPlaceable
+                    ? Walkmesh.GetRandomPlaceableLocation(detail.Area)
+                    : Walkmesh.GetRandomLocation(detail.Area)),
                 SpawnSpacing.MaximumAttempts,
                 out position,
                 isPlaceable ? GetActivePlaceableSpawnPositions(detail.Area) : null);

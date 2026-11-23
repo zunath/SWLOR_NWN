@@ -16,8 +16,7 @@ SWLOR.Game.Server.Domain.Character.PlayerNameService | 1039
 SWLOR.Game.Server.Domain.Character.SkillService | 1182
 SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService | 1203
 SWLOR.Game.Server.Domain.Combat.CombatAbilityBonusService | 1061
-SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService | 1720
-SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService | 1609
+SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService | 1723
 SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService | 1719
 SWLOR.Game.Server.Domain.Combat.CombatRecorderService | 1691
 SWLOR.Game.Server.Domain.Combat.EnmityService | 1244

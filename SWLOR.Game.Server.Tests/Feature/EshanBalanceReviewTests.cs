@@ -114,9 +114,12 @@ public class EshanBalanceReviewTests
         var xpPerKill = standard.Rewards.OfType<XPReward>().Single().Amount / count;
         var goldPerKill = standard.Rewards.OfType<GoldReward>().Single().Amount / count;
         var elite = new KorribanQuestlineDefinition().BuildQuests()["prove_dominance"];
-        var quests = new EshanQuestDefinition().BuildQuests();
+        // The original Eshan bounty board uses eshan_ ids; the planet expansion quests (esh_) are pinned to their zone
+        // rates by PlanetQuestExpansionTests.
+        var quests = new EshanQuestDefinition().BuildQuests()
+            .Where(quest => quest.Key.StartsWith("eshan_", StringComparison.Ordinal)).ToArray();
         quests.Should().HaveCount(12);
-        foreach (var quest in quests.Values)
+        foreach (var quest in quests.Select(pair => pair.Value))
         {
             var objective = quest.States[1].GetObjectives().OfType<KillTargetObjective>().Single();
             quest.Rewards.OfType<XPReward>().Single().Amount.Should().Be(objective.Amount == 1

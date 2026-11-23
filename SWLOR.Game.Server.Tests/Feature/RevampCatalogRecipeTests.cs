@@ -96,17 +96,16 @@ public class RevampCatalogRecipeTests
     [Test]
     public void EveryDockhandStore_SellsBasicMissilesBesideTheStarterLauncher()
     {
-        // The launcher fires one ship_missile per shot, so a store that sells it must sell the ammunition too
-        // (plan section 14: "the lowest-tier missile"). Checked on the blueprint and every placed copy.
+        // The launcher fires one ship_missile per shot, so the store that sells it must sell the ammunition too
+        // (plan section 14: "the lowest-tier missile"). Every placed copy carries the blueprint's stock.
         var root = FindRepositoryRoot();
-        var stores = new List<(string Name, JsonElement Store)>();
+        var placed = new List<(string Name, JsonElement Store)>();
         var documents = new List<JsonDocument>();
         try
         {
             var blueprint = JsonDocument.Parse(File.ReadAllText(
                 Path.Combine(root, "Module", "utm", "dockhand_store.utm.json"), Encoding.Latin1));
             documents.Add(blueprint);
-            stores.Add(("dockhand_store.utm", blueprint.RootElement));
 
             foreach (var path in Directory.GetFiles(Path.Combine(root, "Module", "git"), "*.git.json"))
             {
@@ -118,51 +117,68 @@ public class RevampCatalogRecipeTests
                 documents.Add(area);
                 foreach (var store in area.RootElement.GetProperty("StoreList").GetProperty("value").EnumerateArray())
                 {
-                    if (store.TryGetProperty("ResRef", out var resref) &&
-                        resref.GetProperty("value").GetString() == "dockhand_store")
+                    if (new[] { "ResRef", "TemplateResRef", "Tag" }.Any(field =>
+                            store.TryGetProperty(field, out var value) &&
+                            value.GetProperty("value").GetString() == "dockhand_store"))
                     {
-                        stores.Add((Path.GetFileName(path), store));
+                        placed.Add((Path.GetFileName(path), store));
                     }
                 }
             }
 
+            placed.Should().HaveCount(14, "the review counted 14 placed dockhand stores");
+
+            var expected = ReadStock(blueprint.RootElement);
             var problems = new List<string>();
-            var launcherStores = 0;
-            foreach (var (name, store) in stores)
+            foreach (var (name, store) in placed.Prepend(("dockhand_store.utm", blueprint.RootElement)))
             {
-                foreach (var panel in store.GetProperty("StoreList").GetProperty("value").EnumerateArray())
+                var stock = ReadStock(store);
+                if (!stock.SequenceEqual(expected))
+                    problems.Add($"{name}: stock differs from the dockhand_store blueprint");
+
+                var launcherPanels = stock.Where(item => item.Resref == "sm_missl_00").Select(item => item.Panel).ToList();
+                var missiles = stock.Where(item => item.Resref == "ship_missile").ToList();
+                if (launcherPanels.Count != 1 || missiles.Count != 1 ||
+                    missiles[0].Panel != launcherPanels[0] || !missiles[0].Infinite)
                 {
-                    if (!panel.TryGetProperty("ItemList", out var itemList))
-                        continue;
-
-                    var items = itemList.GetProperty("value").EnumerateArray().Select(item => (
-                        Resref: (item.TryGetProperty("TemplateResRef", out var template) ? template : item.GetProperty("InventoryRes"))
-                            .GetProperty("value").GetString(),
-                        X: item.GetProperty("Repos_PosX").GetProperty("value").GetInt32(),
-                        Y: item.GetProperty("Repos_Posy").GetProperty("value").GetInt32(),
-                        Infinite: item.TryGetProperty("Infinite", out var infinite) && infinite.GetProperty("value").GetInt32() == 1))
-                        .ToList();
-                    if (items.All(item => item.Resref != "sm_missl_00"))
-                        continue;
-
-                    launcherStores++;
-                    var missile = items.Where(item => item.Resref == "ship_missile").ToList();
-                    if (missile.Count != 1 || !missile[0].Infinite)
-                        problems.Add($"{name}: the starter launcher's panel needs one infinite ship_missile");
-
-                    if (items.GroupBy(item => (item.X, item.Y)).Any(group => group.Count() > 1))
-                        problems.Add($"{name}: two items share a store slot");
+                    problems.Add($"{name}: needs the starter launcher and one infinite ship_missile in the same panel");
                 }
+
+                if (stock.GroupBy(item => (item.Panel, item.X, item.Y)).Any(group => group.Count() > 1))
+                    problems.Add($"{name}: two items share a store slot");
             }
 
             problems.Should().BeEmpty();
-            launcherStores.Should().BeGreaterThanOrEqualTo(14, "the blueprint and its 13 placed copies sell the starter launcher");
         }
         finally
         {
             foreach (var document in documents)
                 document.Dispose();
         }
+    }
+
+    private static List<(int Panel, string? Resref, int X, int Y, bool Infinite)> ReadStock(JsonElement store)
+    {
+        var stock = new List<(int Panel, string? Resref, int X, int Y, bool Infinite)>();
+        foreach (var panel in store.GetProperty("StoreList").GetProperty("value").EnumerateArray())
+        {
+            if (!panel.TryGetProperty("ItemList", out var itemList))
+                continue;
+
+            var panelId = panel.GetProperty("__struct_id").GetInt32();
+            foreach (var item in itemList.GetProperty("value").EnumerateArray())
+            {
+                stock.Add((
+                    panelId,
+                    (item.TryGetProperty("TemplateResRef", out var template) ? template : item.GetProperty("InventoryRes"))
+                        .GetProperty("value").GetString(),
+                    item.GetProperty("Repos_PosX").GetProperty("value").GetInt32(),
+                    item.GetProperty("Repos_Posy").GetProperty("value").GetInt32(),
+                    item.TryGetProperty("Infinite", out var infinite) && infinite.GetProperty("value").GetInt32() == 1));
+            }
+        }
+
+        return stock;
     }
 
     private static string FindRepositoryRoot()

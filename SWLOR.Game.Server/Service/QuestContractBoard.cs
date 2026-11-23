@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
@@ -32,6 +33,10 @@ namespace SWLOR.Game.Server.Service
         public const int MinimumPostingFee = 100;
         public const int MinRewardCredits = 1;
         public const int MaxItemSearchResults = 50;
+
+        /// <summary>Shown when a contract asks for an item the space update retired.</summary>
+        public const string RetiredObjectiveMessage =
+            "Retired ship deeds and modules, including configuration modules, cannot be contract objectives. Ask for their current versions instead.";
 
         private const string DeliveriesWaitingMessage = "Contract deliveries are waiting for you. Visit any Contract Board to claim your items and credits.";
 
@@ -500,6 +505,13 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Whether an item cannot be a contract objective because the space update retired it: a retired ship deed or
+        /// module (converted to its replacement wherever it is stored) or a configuration module (refunded and destroyed).
+        /// Nobody can hold one, so a contract asking for one could never be completed.
+        /// </summary>
+        public static bool IsRetiredObjectiveItem(string resref) => LegacySpaceItemCatalog.IsLegacySpaceItem(resref);
+
+        /// <summary>
         /// Withdraws a published contract that can no longer be completed, the way a takedown does: the escrowed reward
         /// and the posting fee go back to the author in a delivery (<see cref="QuestContractRetirement"/>), held
         /// submissions return to their submitters, and the quest leaves accepted players' journals. Does nothing to a
@@ -908,6 +920,9 @@ namespace SWLOR.Game.Server.Service
 
                 if (objective.Quantity < 1 || objective.Quantity > MaxObjectiveQuantity)
                     return $"Objective quantities must be between 1 and {MaxObjectiveQuantity}.";
+
+                if (IsRetiredObjectiveItem(objective.ItemResref))
+                    return RetiredObjectiveMessage;
 
                 var itemName = resolveItemName(objective.ItemResref);
                 if (string.IsNullOrWhiteSpace(itemName))

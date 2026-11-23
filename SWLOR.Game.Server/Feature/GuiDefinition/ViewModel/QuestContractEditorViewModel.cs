@@ -381,7 +381,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _selectedSearchIndex = -1;
 
-            var results = Cache.SearchItemsByName(ItemSearchText, QuestContractBoard.MaxItemSearchResults);
+            // Retired ship deeds and modules cannot be objectives, so they are not offered.
+            var results = Cache.SearchItemsByName(ItemSearchText, QuestContractBoard.MaxItemSearchResults)
+                .Where(x => !QuestContractBoard.IsRetiredObjectiveItem(x.Resref))
+                .ToList();
 
             _searchResults.Clear();
             var labels = new GuiBindingList<string>();
@@ -435,6 +438,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var selected = _searchResults[_selectedSearchIndex];
+
+            if (QuestContractBoard.IsRetiredObjectiveItem(selected.Resref))
+            {
+                StatusText = QuestContractBoard.RetiredObjectiveMessage;
+                return;
+            }
 
             if (draft.Objectives.Any(x => x.ItemResref == selected.Resref))
             {

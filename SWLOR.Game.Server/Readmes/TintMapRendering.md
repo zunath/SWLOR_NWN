@@ -53,6 +53,13 @@ palette's reflectance coverage. Removing specular-map bindings alone is not
 sufficient on an environment-disabled profile. `HeadTintAssets.py --check`
 validates both the metadata profile and the declared fragment shader.
 
+Masked eye/lens emission intentionally pierces fog, as requested by the owner.
+Only authored detail-glow masks and designated glow layers bypass fog attenuation;
+skin, hair, metal and whole-surface effects retain native fog. All paths still
+receive native final color correction, and visual-effect coatings suppress head
+emission. `TestHeadTintMaterials.py` checks this distinction with native fog and
+color-correction GPU comparisons.
+
 Female Human 316-318 use `metalReflectanceScale=0.04` to retain their subdued
 authored finish. This scales the native palette's environment coverage only on
 Metal 1/2 before the installed engine derives specularity and roughness. It does

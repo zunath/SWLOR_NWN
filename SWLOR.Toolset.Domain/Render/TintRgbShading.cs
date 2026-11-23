@@ -25,13 +25,18 @@ namespace SWLOR.Toolset.Domain.Render
         // Colors this many levels from their swatch take none of a near-neutral swatch's leftover hue.
         private const double SwatchReach = 16.0;
 
+        // Reflection coverage fades from the swatch row's (within half a level) to the layer's first row's (this far).
+        private const double CoverageReach = 8.0;
+
         /// <summary>
         /// Shades a custom color across one palette row. The swatch lends its contrast (row luminance
         /// over midtone luminance) to the color's own luminance, and its change of hue and saturation
         /// from shade to shade relative to the color's own chroma, so a neutral color stays neutral on
         /// a colored swatch's row and a color equal to a swatch renders exactly like that row. A swatch
         /// darker than two levels (the black rows, skin row 31) is replaced by the layer's first row,
-        /// its shading and coverage.
+        /// its shading and coverage. Coverage (alpha) fades from the swatch row's to the first row's
+        /// within eight levels of the swatch, so neighbouring colors do not flip between a shiny and a
+        /// painted metal row's reflection when their nearest swatch changes.
         /// </summary>
         /// <param name="color">The requested color.</param>
         /// <param name="palette">The decoded palette atlas, top-first RGBA.</param>
@@ -45,10 +50,11 @@ namespace SWLOR.Toolset.Domain.Render
             var midpointX = 128 * (width - 1) / 255;
 
             var rowStart = swatchImageRow * width * 4;
+            var firstStart = firstImageRow * width * 4;
             var midpoint = Read(pixels, rowStart + midpointX * 4);
             if (Luminance(midpoint) < DarkSwatch)
             {
-                rowStart = firstImageRow * width * 4;
+                rowStart = firstStart;
                 midpoint = Read(pixels, rowStart + midpointX * 4);
             }
 
@@ -64,6 +70,8 @@ namespace SWLOR.Toolset.Domain.Render
             var distance = Math.Sqrt(
                 Square(target.R - midpoint.R) + Square(target.G - midpoint.G) + Square(target.B - midpoint.B));
             var near = Math.Clamp(1.0 - distance * 255.0 / SwatchReach, 0.0, 1.0);
+            // Full swatch coverage within half a level, so rounding on an exact swatch cannot blend it.
+            var keep = Math.Clamp((CoverageReach - distance * 255.0) / (CoverageReach - 0.5), 0.0, 1.0);
             var luminance = Luminance(target);
 
             var output = new byte[width * 4];
@@ -84,7 +92,8 @@ namespace SWLOR.Toolset.Domain.Render
                 output[x * 4] = ToByte(grey + u * ChromaU.R + v * ChromaV.R);
                 output[x * 4 + 1] = ToByte(grey + u * ChromaU.G + v * ChromaV.G);
                 output[x * 4 + 2] = ToByte(grey + u * ChromaU.B + v * ChromaV.B);
-                output[x * 4 + 3] = pixels[offset + 3];
+                var firstAlpha = pixels[firstStart + x * 4 + 3] / 255.0;
+                output[x * 4 + 3] = ToByte(firstAlpha + (pixels[offset + 3] / 255.0 - firstAlpha) * keep);
             }
 
             return output;

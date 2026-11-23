@@ -239,6 +239,14 @@ public sealed class WeatherSettlementTests
                     WeatherWorld.ObjectTypes[id] = ObjectType.Creature;
                 }
                 public static void SetCreatureArea(uint id, uint area) => WeatherWorld.CreatureAreas[id] = area;
+                public static void SetPlaceableTarget(uint id, uint area, bool dmSpawned)
+                {
+                    WeatherWorld.CreatureAreas[id] = area;
+                    WeatherWorld.ObjectTypes[id] = ObjectType.Placeable;
+                    if (dmSpawned) WeatherWorld.Integers[(id, "DM_SPAWNED_PLACEABLE")] = 1;
+                    if (!WeatherWorld.Targets.ContainsKey(area)) WeatherWorld.Targets[area] = new List<uint>();
+                    WeatherWorld.Targets[area].Add(id);
+                }
                 public static void SetTarget(uint id, uint area)
                 {
                     WeatherWorld.CreatureAreas[id] = area;
@@ -384,6 +392,22 @@ public sealed class WeatherSettlementTests
     }
 
     [Test]
+    public void LightningInWilderness_SparesDmSpawnedPlaceablesButStillHitsOtherTargets()
+    {
+        SetWeatherable(1, true);
+        Call("SetPlaceableTarget", 40u, 1u, true);
+        Call("SetPlaceableTarget", 41u, 1u, false);
+        SetTarget(10, 1);
+
+        Strike(1, 100);
+
+        LightningVisualCount.Should().Be(1, "the bolt still shows where it lands");
+        DamageCount(40).Should().Be(0, "a DM placed this placeable for an event");
+        DamageCount(41).Should().Be(1, "authored placeables in wilderness still take lightning damage");
+        DamageCount(10).Should().Be(1, "creatures beside the DM placeable are still struck");
+    }
+
+    [Test]
     public void LightningDamageCallbacksCannotRestartTheOuterTargetSearch()
     {
         SetWeatherable(1, true);
@@ -459,6 +483,8 @@ public sealed class WeatherSettlementTests
     [TestCase("v_repubbase_ext")]
     [TestCase("dan_repgarrison")]
     [TestCase("dath_cz_baseok")]
+    [TestCase("dan_enclosemount")]
+    [TestCase("dath_landingpad")]
     public void CoreSettlementAreas_AuthorWEATHERHAZARDSAFE(string resref)
     {
         var path = Path.Combine(FindRoot(), "Module", "git", $"{resref}.git.json");

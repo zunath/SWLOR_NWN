@@ -1077,7 +1077,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             foreach (var (variableName, savedColor) in tintOverrides)
             {
-                if (string.IsNullOrWhiteSpace(variableName) || savedColor <= 0)
+                if (string.IsNullOrWhiteSpace(variableName) ||
+                    savedColor <= 0 && !(savedColor == TintMapVariable.HeadColorInheritance &&
+                                         TintMapVariable.IsHeadColorStateName(variableName)))
                     continue;
 
                 SetLocalInt(droid, variableName, savedColor);

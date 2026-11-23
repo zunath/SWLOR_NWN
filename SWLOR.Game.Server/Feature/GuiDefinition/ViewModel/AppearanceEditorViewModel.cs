@@ -1165,8 +1165,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (IsEquipmentSelected && (SelectedItemTypeIndex != 0 || _colorTarget == ColorTarget.Global))
                 return TintMapColor.TryFromStoredValue(
                     GetLocalInt(GetItem(), TintMapVariable.GetItemGlobalColorStateName(layer)), out color);
-            var customColors = selections
-                .Where(selection => TintMapService.TryGetCustomColor(selection, layer, out _))
+            // A legacy RGB override can coexist with a preset on another head material.
+            // Compare every effective head accessory color before claiming a shared value.
+            var colorSelections = IsAppearanceSelected && !TintMapVariable.IsCreatureColorLayer(layer) &&
+                                  selections.All(HeadTintChannels.IsHead)
+                ? selections
+                : selections.Where(selection => TintMapService.TryGetCustomColor(selection, layer, out _));
+            var customColors = colorSelections
                 .Select(selection => TintMapService.GetEffectiveDisplayColor(_target, selection, layer))
                 .Distinct().ToList();
             color = customColors.Count == 1 ? customColors[0] : default;

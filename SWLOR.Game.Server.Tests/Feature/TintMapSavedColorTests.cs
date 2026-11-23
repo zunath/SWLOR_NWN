@@ -274,6 +274,40 @@ public class TintMapSavedColorTests
     }
 
     [TestCaseSource(nameof(AdditionalHeadLayers))]
+    public void DroidControllerReloadPreservesHeadInheritanceOverLegacyMaterialColors(TintMapLayerType layer)
+    {
+        _harness.GetField("IsDroid")!.SetValue(null, true);
+        var head = Head("pmh0_head313", "legacy_material", layer);
+        Selections.Add(head);
+        var state = TintMapVariable.GetHeadColorStateName(layer);
+        var legacy = TintMapVariable.GetName(head.Material.Resref, layer);
+        var colors = new Dictionary<string, int>
+        {
+            [state] = TintMapVariable.HeadColorInheritance,
+            [legacy] = new TintMapColor(17, 83, 209).ToStoredValue()
+        };
+        _harness.GetField("ControllerJson")!.SetValue(null,
+            JsonConvert.SerializeObject(new { TintOverrides = colors }));
+        var json = (string)_harness.GetField("ControllerJson")!.GetValue(null)!;
+        var restored = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, int>>>(json)!["TintOverrides"];
+        Invoke("RestoreDroidOverrides", 1u, restored);
+        Locals[state].Should().Be(TintMapVariable.HeadColorInheritance);
+        Locals[legacy].Should().Be(colors[legacy]);
+        Read(head, layer).Should().Be(0, "the durable reset suppresses stale exported material colors");
+    }
+
+    [TestCase("TMH_7", 0)]
+    [TestCase("TMH_7", -2)]
+    [TestCase("TMH_0", -1)]
+    [TestCase("TM_legacy_7", -1)]
+    [TestCase("TMH_100", -1)]
+    public void DroidControllerReloadRejectsOtherNonpositiveValues(string variable, int value)
+    {
+        Invoke("RestoreDroidOverrides", 1u, new Dictionary<string, int> { [variable] = value });
+        Locals.Should().NotContainKey(variable);
+    }
+
+    [TestCaseSource(nameof(AdditionalHeadLayers))]
     public void HeadChannelsCannotRecolorEquipmentOrBodyMaterials(TintMapLayerType layer)
     {
         Locals[TintMapVariable.GetHeadColorStateName(layer)] = new TintMapColor(17, 83, 209).ToStoredValue();

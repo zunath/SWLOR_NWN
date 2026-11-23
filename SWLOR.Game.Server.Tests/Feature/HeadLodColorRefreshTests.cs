@@ -107,7 +107,13 @@ public class HeadLodColorRefreshTests
             namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             {
                 public static class TintMapModelResolver
-                { public static IReadOnlyList<TintMapMaterialSelection> GetCurrentSelections(uint creature) => World.Selections; }
+                {
+                    public static IReadOnlyList<TintMapMaterialSelection> GetCurrentSelections(uint creature)
+                    {
+                        if (creature != World.Actual) throw new Exception("Resolver lost its creature identity");
+                        return World.Selections;
+                    }
+                }
                 public static class RobeModelRenderer
                 { public static int GetBasePhenotype(uint actor) => World.BasePhenotype; }
                 public static class HelmetModelRenderer
@@ -126,7 +132,7 @@ public class HeadLodColorRefreshTests
                     {{string.Join(Environment.NewLine, serviceMethods)}}
                     private static TintMapColorSelection GetEffectiveColor(uint actor, TintMapMaterialSelection selection, TintMapLayerType layer)
                     {
-                        if (selection.PaletteSource != World.Actual || selection.CreaturePaletteSource != World.Actual)
+                        if (actor != World.Actual || selection.PaletteSource != World.Actual || selection.CreaturePaletteSource != World.Actual)
                             throw new Exception("Deferred selections lost their creature identity");
                         return World.Colors.TryGetValue(layer, out var value) ? value : new(17, null);
                     }

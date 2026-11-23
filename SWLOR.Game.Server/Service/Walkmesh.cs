@@ -16,6 +16,8 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<uint, List<uint>> _noSpawnZoneTriggers = new();
         private static Dictionary<string, List<Vector3>> _walkmeshesByArea = new();
+        private static Dictionary<string, List<Vector3>> _placeableSpawnPointsByArea = new();
+        private static readonly Dictionary<int, bool> _surfaceMaterialIsWalkable = new();
         private static readonly Dictionary<ushort, bool> _placeableHasWalkmesh = new();
         private static readonly (float X, float Y)[] _stepDirections =
         {
@@ -23,6 +25,18 @@ namespace SWLOR.Game.Server.Service
             (-1f, 0f), (-0.7071f, -0.7071f), (0f, -1f), (0.7071f, -0.7071f),
         };
         private const int AreaBakeStep = 2;
+
+        /// <summary>
+        /// Raised whenever the bake rules change, so a cache written by an older build is baked again at startup even
+        /// when the module itself did not change.
+        /// </summary>
+        public const int BakeVersion = 2;
+
+        // Areas with these spawn tables get random placeable spawns, which need the stricter placeable points.
+        private static readonly string[] _spawnTableVariables =
+        {
+            "RESOURCE_SPAWN_TABLE_ID", "SLICING_TERMINAL_SPAWN_TABLE_ID", "CREATURE_SPAWN_TABLE_ID",
+        };
         private static bool _bakingRan;
 
         /// <summary>
@@ -31,19 +45,26 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleContentChange)]
         public static void LoadWalkmeshes()
         {
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             StoreNoSpawnZoneTriggers();
+            _placeableSpawnPointsByArea = new Dictionary<string, List<Vector3>>();
 
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
                 BakeArea(area);
+                if (HasSpawnTable(area))
+                    _placeableSpawnPointsByArea[GetResRef(area)] = BakePlaceablePoints(area);
             }
 
             var serverConfig = DB.Get<ModuleCache>("SWLOR_CACHE") ?? new ModuleCache{ Id = "SWLOR_CACHE" };
             serverConfig.WalkmeshesByArea = _walkmeshesByArea;
+            serverConfig.PlaceableSpawnPointsByArea = _placeableSpawnPointsByArea;
+            serverConfig.WalkmeshBakeVersion = BakeVersion;
             DB.Set(serverConfig);
 
             _bakingRan = true;
-            Console.WriteLine($"Baked {_walkmeshesByArea.Count} areas.");
+            Console.WriteLine($"Baked {_walkmeshesByArea.Count} areas ({_placeableSpawnPointsByArea.Count} with placeable " +
+                              $"spawn points) in {stopwatch.Elapsed.TotalSeconds:0.0} s.");
         }
 
         /// <summary>
@@ -81,7 +102,17 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var serverConfig = DB.Get<ModuleCache>("SWLOR_CACHE");
+            if (serverConfig?.WalkmeshesByArea == null ||
+                serverConfig.PlaceableSpawnPointsByArea == null ||
+                serverConfig.WalkmeshBakeVersion != BakeVersion)
+            {
+                Console.WriteLine("Cached walkmeshes come from an older bake. Baking them again.");
+                LoadWalkmeshes();
+                return;
+            }
+
             _walkmeshesByArea = serverConfig.WalkmeshesByArea;
+            _placeableSpawnPointsByArea = serverConfig.PlaceableSpawnPointsByArea;
             Console.WriteLine($"Loaded {_walkmeshesByArea.Count} area walkmeshes.");
         }
 
@@ -207,6 +238,98 @@ namespace SWLOR.Game.Server.Service
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Retrieves a random location for a randomly placed placeable (resource node, terminal). These points also
+        /// leave room to walk around the placeable, so it cannot block a passage. An area without such points falls
+        /// back to the ordinary random spawn points.
+        /// </summary>
+        /// <param name="area">The area to retrieve a random location for.</param>
+        /// <returns>A random location within an area.</returns>
+        public static Location GetRandomPlaceableLocation(uint area)
+        {
+            var points = GetPlaceableSpawnPoints(area);
+            if (points.Count <= 0)
+                return GetRandomLocation(area);
+
+            var position = points[Random.Next(points.Count)];
+            return Location(area, position, 0.0f);
+        }
+
+        /// <summary>
+        /// Returns the baked points of an area where a placeable leaves room to be walked around. The startup bake works
+        /// them out for every area with a spawn table; any other area works them out on its first placeable spawn.
+        /// </summary>
+        /// <param name="area">The area to retrieve the points for.</param>
+        /// <returns>The subset of the area's random spawn points that suit placeables.</returns>
+        public static IReadOnlyList<Vector3> GetPlaceableSpawnPoints(uint area)
+        {
+            var resref = GetResRef(area);
+            if (!_placeableSpawnPointsByArea.TryGetValue(resref, out var points))
+                _placeableSpawnPointsByArea[resref] = points = BakePlaceablePoints(area);
+
+            return points;
+        }
+
+        private static bool HasSpawnTable(uint area)
+        {
+            foreach (var variable in _spawnTableVariables)
+            {
+                if (!string.IsNullOrWhiteSpace(GetLocalString(area, variable)))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static List<Vector3> BakePlaceablePoints(uint area)
+        {
+            var points = new List<Vector3>();
+            var nativeArea = NWNXLib.g_pAppManager.m_pServerExoApp.GetAreaByGameObjectID(area);
+            if (nativeArea == null || !_walkmeshesByArea.TryGetValue(GetResRef(area), out var baked))
+                return points;
+
+            var grid = new WalkableGrid(
+                GetAreaSize(Dimension.Width, area) * 10f,
+                GetAreaSize(Dimension.Height, area) * 10f,
+                (x, y) => SampleGround(area, x, y));
+            foreach (var position in baked)
+            {
+                if (LeavesWalkingRoom(nativeArea, grid, position))
+                    points.Add(position);
+            }
+
+            return points;
+        }
+
+        private static (bool Walkable, float Height) SampleGround(uint area, float x, float y)
+        {
+            var location = Location(area, Vector3(x, y), 0.0f);
+            var material = GetSurfaceMaterial(location);
+            if (!_surfaceMaterialIsWalkable.TryGetValue(material, out var walkable))
+                _surfaceMaterialIsWalkable[material] = walkable = Get2DAString("surfacemat", "Walk", material) == "1";
+
+            return (walkable, GetGroundHeight(location));
+        }
+
+        /// <summary>
+        /// Returns true when a node placed at the point leaves the ground around it connected (see
+        /// <see cref="PlaceableSpawnRoom"/>). A line is walkable when the tile walkmesh carries it (cave walls and cliffs
+        /// block it, see <see cref="WalkableGrid"/>) and it crosses no placeable walkmesh. NoNonWalkPolys alone sees
+        /// only placeables: it reports a line through a cave wall as clear.
+        /// </summary>
+        private static bool LeavesWalkingRoom(CNWSArea nativeArea, WalkableGrid grid, Vector3 position)
+        {
+            const float BelowGround = 1.0f;
+            const float AboveGround = 2.0f;
+            var minZ = position.Z - BelowGround;
+            var maxZ = position.Z + AboveGround;
+
+            return PlaceableSpawnRoom.LeavesWalkingRoom(position.X, position.Y,
+                (fromX, fromY, toX, toY) =>
+                    grid.IsLineWalkable(fromX, fromY, toX, toY) &&
+                    nativeArea.NoNonWalkPolys(fromX, fromY, toX, toY, minZ, maxZ, 0.0f) != 0);
         }
 
         /// <summary>

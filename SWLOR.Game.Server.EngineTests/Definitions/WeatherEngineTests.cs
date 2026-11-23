@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service.WeatherService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     wildernessAreas++;
                 }
             }
-            ctx.AssertEqual(38, protectedAreas, "All authored outdoor settlement and faction base markers survive module packing");
+            ctx.AssertEqual(40, protectedAreas, "All authored outdoor settlement and faction base markers survive module packing");
             ctx.AssertEqual(2, wildernessAreas, "Both wilderness controls were loaded");
 
             var city = ctx.CreateInstancedArea("tat_tocheemain");
@@ -65,6 +66,58 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) < hp, 3f,
                 "the unprotected lightning control to deal damage");
             ctx.SetResultDetail($"Verified {protectedAreas} packed settlement markers, two harmful wilderness controls, copied city weather visuals, and actual lightning immunity. Removing protection in the private instance restored lightning damage.");
+        }
+
+        [EngineTest("Lightning spares DM-placed placeables but still strikes authored ones", Category = "Weather")]
+        public static async Task LightningSparesDMPlacedPlaceables(EngineTestContext ctx)
+        {
+            // A private city copy without its marker behaves like wilderness.
+            var area = ctx.CreateInstancedArea("tat_tocheemain");
+            DeleteLocalInt(area, "WEATHER_HAZARD_SAFE");
+            var predicate = typeof(WeatherRuntime).GetMethod("IsHazardousWeatherArea",
+                BindingFlags.Static | BindingFlags.NonPublic)!;
+            ctx.Assert((bool)predicate.Invoke(null, new object[] { area })!, "The unmarked copy has weather hazards");
+
+            var position = GetPositionFromLocation(ctx.GetArenaLocation());
+            var location = Location(area, position, 0f);
+            var witness = ctx.SpawnCreature("nw_bandit001");
+            ObjectPlugin.AddToArea(witness, area, position);
+            await ctx.WaitFrameAsync();
+            SetPlotFlag(witness, false);
+            Stat.SetNPCMaxHitPoints(witness, 200, true);
+
+            var dmPlaced = OBJECT_INVALID;
+            var authored = OBJECT_INVALID;
+            await ctx.ExecuteInCreatureContextAsync(area, () =>
+            {
+                dmPlaced = CreateObject(ObjectType.Placeable, "mando_crate", location);
+                authored = CreateObject(ObjectType.Placeable, "mando_crate", location);
+            });
+            ctx.Track(dmPlaced);
+            ctx.Track(authored);
+            ctx.Assert(GetIsObjectValid(dmPlaced) && GetIsObjectValid(authored), "Both crates exist");
+            foreach (var crate in new[] { dmPlaced, authored })
+            {
+                SetPlotFlag(crate, false);
+                ObjectPlugin.SetMaxHitPoints(crate, 20000);
+                ApplyEffectToObject(DurationType.Instant, EffectHeal(20000), crate);
+            }
+            // The same marker every DM spawn path records; the bandit stands in for the DM.
+            DMActions.MarkDMSpawnedPlaceable(witness, dmPlaced);
+            await ctx.WaitFrameAsync();
+
+            var witnessHp = GetCurrentHitPoints(witness);
+            var dmPlacedHp = GetCurrentHitPoints(dmPlaced);
+            var authoredHp = GetCurrentHitPoints(authored);
+            var bolt = typeof(WeatherRuntime).GetMethod("Thunderstorm", BindingFlags.Static | BindingFlags.NonPublic)!;
+            await ctx.ExecuteInCreatureContextAsync(area,
+                () => bolt.Invoke(null, new object[] { location, 40 }));
+            await ctx.WaitUntilAsync(() => GetCurrentHitPoints(authored) < authoredHp && GetCurrentHitPoints(witness) < witnessHp,
+                3f, "the bolt to strike the authored crate and the creature beside it");
+            await ctx.WaitFrameAsync();
+
+            ctx.AssertEqual(dmPlacedHp, GetCurrentHitPoints(dmPlaced), "The DM-placed crate takes no lightning damage");
+            ctx.SetResultDetail($"One bolt hit the authored crate ({authoredHp} -> {GetCurrentHitPoints(authored)}) and the creature ({witnessHp} -> {GetCurrentHitPoints(witness)}); the DM-placed crate beside them stayed at {GetCurrentHitPoints(dmPlaced)}.");
         }
 
         private static int CountKnockdowns(uint target)

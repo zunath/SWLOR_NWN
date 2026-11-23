@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace SWLOR.Game.NativeHooks.Tests.Support;
 
 /// <summary>
-/// Stand-ins for the 36 hooked engine functions, one per entry point (<see cref="HookedFunctions"/> order), each with the
+/// Stand-ins for the 41 hooked engine functions, one per entry point (<see cref="HookedFunctions"/> order), each with the
 /// engine function's signature. Each records its entry point and arguments and returns its entry point + 1.
 /// </summary>
 internal static unsafe class EngineStandIns
@@ -23,6 +23,7 @@ internal static unsafe class EngineStandIns
             (nint)(delegate* unmanaged<void*, uint, uint, void*, int>)&DMWhisper,
             (nint)(delegate* unmanaged<void*, uint, uint, void*, int>)&DMSilentShout,
             (nint)(delegate* unmanaged<void*, void*, void*>)&ReadJson,
+            (nint)(delegate* unmanaged<void*, void*, byte, int>)&HandleNuiEvent,
             (nint)(delegate* unmanaged<void*, void*, void*, int, int>)&ApplyDamage,
             (nint)(delegate* unmanaged<void*, void*, void*, int, int>)&ApplyHeal,
             (nint)(delegate* unmanaged<void*, void*, int, int, int, int, int, int>)&GetDamageRoll,
@@ -35,6 +36,10 @@ internal static unsafe class EngineStandIns
             (nint)(delegate* unmanaged<void*, void*, void*, void*, int, int, int, int, uint>)&ReadStats,
             (nint)(delegate* unmanaged<void*, uint, void*, int>)&PlayerListAdd,
             (nint)(delegate* unmanaged<void*, uint, uint*, int>)&SetSlidingWindow,
+            (nint)(delegate* unmanaged<void*, void*, void*, int, int>)&ApplyVisualEffect,
+            (nint)(delegate* unmanaged<void*, void*, void*, int>)&RemoveVisualEffect,
+            (nint)(delegate* unmanaged<void*, void*, void*, int, int>)&ApplyPetrify,
+            (nint)(delegate* unmanaged<void*, void*, void*, int>)&RemovePetrify,
             (nint)(delegate* unmanaged<void*, void*, void*, void>)&LoadQuickButtons,
             (nint)(delegate* unmanaged<void*, void*, void>)&ResolveAttackRoll,
             (nint)(delegate* unmanaged<void*, void*, int>)&CompareItem,
@@ -76,159 +81,194 @@ internal static unsafe class EngineStandIns
     }
 
     [UnmanagedCallersOnly]
-    private static int ApplyDamage(void* handler, void* target, void* effect, int loading)
+    private static int HandleNuiEvent(void* message, void* player, byte minor)
     {
-        CallLog.EngineFunction(10, 4, (long)handler, (long)target, (long)effect, loading);
+        CallLog.EngineFunction(10, 3, (long)message, (long)player, minor);
         return 11;
     }
 
     [UnmanagedCallersOnly]
-    private static int ApplyHeal(void* handler, void* target, void* effect, int loading)
+    private static int ApplyDamage(void* handler, void* target, void* effect, int loading)
     {
         CallLog.EngineFunction(11, 4, (long)handler, (long)target, (long)effect, loading);
         return 12;
     }
 
     [UnmanagedCallersOnly]
+    private static int ApplyHeal(void* handler, void* target, void* effect, int loading)
+    {
+        CallLog.EngineFunction(12, 4, (long)handler, (long)target, (long)effect, loading);
+        return 13;
+    }
+
+    [UnmanagedCallersOnly]
     private static int GetDamageRoll(void* stats, void* target, int offHand, int critical, int sneak, int death, int forceMax)
     {
-        CallLog.EngineFunction(12, 7, (long)stats, (long)target, offHand, critical, sneak, death, forceMax);
-        return 13;
+        CallLog.EngineFunction(13, 7, (long)stats, (long)target, offHand, critical, sneak, death, forceMax);
+        return 14;
     }
 
     [UnmanagedCallersOnly]
     private static int LoadItem(void* item, void* resource, void* structure, int first, int second)
     {
-        CallLog.EngineFunction(13, 5, (long)item, (long)resource, (long)structure, first, second);
-        return 14;
+        CallLog.EngineFunction(14, 5, (long)item, (long)resource, (long)structure, first, second);
+        return 15;
     }
 
     [UnmanagedCallersOnly]
     private static void AddItemAppearance(void* message, void* player, void* item) =>
-        CallLog.EngineFunction(14, 3, (long)message, (long)player, (long)item);
+        CallLog.EngineFunction(15, 3, (long)message, (long)player, (long)item);
 
     [UnmanagedCallersOnly]
     private static int AttackObject(void* creature, void* node)
     {
-        CallLog.EngineFunction(15, 2, (long)creature, (long)node);
-        return 16;
+        CallLog.EngineFunction(16, 2, (long)creature, (long)node);
+        return 17;
     }
 
     [UnmanagedCallersOnly]
     private static uint ValidateCreate(void* server, void* client, void* data, uint size)
     {
-        CallLog.EngineFunction(16, 4, (long)server, (long)client, (long)data, size);
-        return 17;
-    }
-
-    [UnmanagedCallersOnly]
-    private static int SaveCreature(void* creature, void* resource, void* structure, int a, int b, int c, int d)
-    {
-        CallLog.EngineFunction(17, 7, (long)creature, (long)resource, (long)structure, a, b, c, d);
+        CallLog.EngineFunction(17, 4, (long)server, (long)client, (long)data, size);
         return 18;
     }
 
     [UnmanagedCallersOnly]
-    private static int LoadCreature(void* creature, void* resource, void* structure, int a, int b, int c, int d)
+    private static int SaveCreature(void* creature, void* resource, void* structure, int a, int b, int c, int d)
     {
         CallLog.EngineFunction(18, 7, (long)creature, (long)resource, (long)structure, a, b, c, d);
         return 19;
     }
 
     [UnmanagedCallersOnly]
+    private static int LoadCreature(void* creature, void* resource, void* structure, int a, int b, int c, int d)
+    {
+        CallLog.EngineFunction(19, 7, (long)creature, (long)resource, (long)structure, a, b, c, d);
+        return 20;
+    }
+
+    [UnmanagedCallersOnly]
     private static uint ReadStats(void* stats, void* resource, void* structure, void* appearance, int a, int b, int c, int d)
     {
-        CallLog.EngineFunction(19, 8, (long)stats, (long)resource, (long)structure, (long)appearance, a, b, c, d);
-        return 20;
+        CallLog.EngineFunction(20, 8, (long)stats, (long)resource, (long)structure, (long)appearance, a, b, c, d);
+        return 21;
     }
 
     [UnmanagedCallersOnly]
     private static int PlayerListAdd(void* message, uint recipient, void* player)
     {
-        CallLog.EngineFunction(20, 3, (long)message, recipient, (long)player);
-        return 21;
+        CallLog.EngineFunction(21, 3, (long)message, recipient, (long)player);
+        return 22;
     }
 
     [UnmanagedCallersOnly]
     private static int SetSlidingWindow(void* netLayer, uint connection, uint* window)
     {
-        CallLog.EngineFunction(21, 3, (long)netLayer, connection, (long)window);
-        return 22;
+        CallLog.EngineFunction(22, 3, (long)netLayer, connection, (long)window);
+        return 23;
+    }
+
+    [UnmanagedCallersOnly]
+    private static int ApplyVisualEffect(void* handler, void* target, void* effect, int loading)
+    {
+        CallLog.EngineFunction(23, 4, (long)handler, (long)target, (long)effect, loading);
+        return 24;
+    }
+
+    [UnmanagedCallersOnly]
+    private static int RemoveVisualEffect(void* handler, void* target, void* effect)
+    {
+        CallLog.EngineFunction(24, 3, (long)handler, (long)target, (long)effect);
+        return 25;
+    }
+
+    [UnmanagedCallersOnly]
+    private static int ApplyPetrify(void* handler, void* target, void* effect, int loading)
+    {
+        CallLog.EngineFunction(25, 4, (long)handler, (long)target, (long)effect, loading);
+        return 26;
+    }
+
+    [UnmanagedCallersOnly]
+    private static int RemovePetrify(void* handler, void* target, void* effect)
+    {
+        CallLog.EngineFunction(26, 3, (long)handler, (long)target, (long)effect);
+        return 27;
     }
 
     [UnmanagedCallersOnly]
     private static void LoadQuickButtons(void* creature, void* resource, void* structure) =>
-        CallLog.EngineFunction(22, 3, (long)creature, (long)resource, (long)structure);
+        CallLog.EngineFunction(27, 3, (long)creature, (long)resource, (long)structure);
 
     [UnmanagedCallersOnly]
     private static void ResolveAttackRoll(void* creature, void* target) =>
-        CallLog.EngineFunction(23, 2, (long)creature, (long)target);
+        CallLog.EngineFunction(28, 2, (long)creature, (long)target);
 
     [UnmanagedCallersOnly]
     private static int CompareItem(void* item, void* other)
     {
-        CallLog.EngineFunction(24, 2, (long)item, (long)other);
-        return 25;
+        CallLog.EngineFunction(29, 2, (long)item, (long)other);
+        return 30;
     }
 
     [UnmanagedCallersOnly]
     private static uint JumpToPoint(void* creature, void* node)
     {
-        CallLog.EngineFunction(25, 2, (long)creature, (long)node);
-        return 26;
+        CallLog.EngineFunction(30, 2, (long)creature, (long)node);
+        return 31;
     }
 
     [UnmanagedCallersOnly]
     private static int AddDriveAction(void* creature, ushort group, void* start, int bearing, int path, int flags, int generate)
     {
-        CallLog.EngineFunction(26, 7, (long)creature, group, (long)start, bearing, path, flags, generate);
-        return 27;
+        CallLog.EngineFunction(31, 7, (long)creature, group, (long)start, bearing, path, flags, generate);
+        return 32;
     }
 
     [UnmanagedCallersOnly]
     private static void SetCONBase(void* stats, byte score, int recalculate) =>
-        CallLog.EngineFunction(27, 3, (long)stats, score, recalculate);
+        CallLog.EngineFunction(32, 3, (long)stats, score, recalculate);
 
     [UnmanagedCallersOnly]
     private static void ApplyEffect(void* target, void* effect, int loading, int initial) =>
-        CallLog.EngineFunction(28, 4, (long)target, (long)effect, loading, initial);
+        CallLog.EngineFunction(33, 4, (long)target, (long)effect, loading, initial);
 
     [UnmanagedCallersOnly]
     private static void RemoveEffect(void* target, void* effect) =>
-        CallLog.EngineFunction(29, 2, (long)target, (long)effect);
+        CallLog.EngineFunction(34, 2, (long)target, (long)effect);
 
     [UnmanagedCallersOnly]
     private static int RemoveEffectById(void* target, ulong id)
     {
-        CallLog.EngineFunction(30, 2, (long)target, (long)id);
-        return 31;
+        CallLog.EngineFunction(35, 2, (long)target, (long)id);
+        return 36;
     }
 
     [UnmanagedCallersOnly]
     private static sbyte CalcStatModifier(void* stats, byte score)
     {
-        CallLog.EngineFunction(31, 2, (long)stats, score);
-        return 32;
+        CallLog.EngineFunction(36, 2, (long)stats, score);
+        return 37;
     }
 
     [UnmanagedCallersOnly]
-    private static void DestroyStats(void* stats) => CallLog.EngineFunction(32, 1, (long)stats);
+    private static void DestroyStats(void* stats) => CallLog.EngineFunction(37, 1, (long)stats);
 
     [UnmanagedCallersOnly]
     private static short GetMaxHitPoints(void* creature, int includeToughness)
     {
-        CallLog.EngineFunction(33, 2, (long)creature, includeToughness);
-        return 34;
+        CallLog.EngineFunction(38, 2, (long)creature, includeToughness);
+        return 39;
     }
 
     [UnmanagedCallersOnly]
     private static uint ComputeUpdate(void* message, void* player, void* obj, void* last, int playerObject)
     {
-        CallLog.EngineFunction(34, 5, (long)message, (long)player, (long)obj, (long)last, playerObject);
-        return 35;
+        CallLog.EngineFunction(39, 5, (long)message, (long)player, (long)obj, (long)last, playerObject);
+        return 40;
     }
 
     [UnmanagedCallersOnly]
     private static void WriteUpdate(void* message, void* player, void* obj, void* last, uint updates, uint appearance) =>
-        CallLog.EngineFunction(35, 6, (long)message, (long)player, (long)obj, (long)last, updates, appearance);
+        CallLog.EngineFunction(40, 6, (long)message, (long)player, (long)obj, (long)last, updates, appearance);
 }

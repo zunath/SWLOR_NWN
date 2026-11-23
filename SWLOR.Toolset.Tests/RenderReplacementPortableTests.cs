@@ -473,25 +473,21 @@ namespace SWLOR.Toolset.Tests
                 (byte)Math.Clamp(swatch.Green - 4, 0, 255),
                 (byte)Math.Clamp(swatch.Blue + 4, 0, 255));
             TintMapPaletteColors.GetClosestColorId(layer, offsetColor).Should().Be(swatchId);
-            var scale = Luminance(shadeRgb) / Math.Max(Luminance((swatch.Red, swatch.Green, swatch.Blue)), 1f);
-            Pixel(Render(offsetColor), 0, 0).Should().Be((
-                Shade(shadeRgb.Item1, offsetColor.Red, swatch.Red, scale),
-                Shade(shadeRgb.Item2, offsetColor.Green, swatch.Green, scale),
-                Shade(shadeRgb.Item3, offsetColor.Blue, swatch.Blue, scale),
-                (byte)255),
-                "other colors offset the swatch row by their difference, scaled by the row's shading");
+            var palette = TextureLoader.Load(Index(), "palette")!;
+            var shaded = TintRgbShading.ShadeRow(
+                offsetColor,
+                palette,
+                TintMapTextureRenderer.PaletteImageRow(palette, baseRow + swatchId),
+                TintMapTextureRenderer.PaletteImageRow(palette, baseRow));
+            var x = shade * (palette.Width - 1) / 255 * 4;
+            Pixel(Render(offsetColor), 0, 0).Should().Be((shaded[x], shaded[x + 1], shaded[x + 2], (byte)255),
+                "other colors take the tint shaders' RGB shading of their swatch's row");
 
             TextureImage Render(TintMapColor color) => TintMapTextureRenderer.Render(Index(), "sample_material", material,
                 new Dictionary<int, int>(), new Dictionary<string, int>
                 {
                     [TintMapVariable.GetName("sample_material", layer)] = color.ToStoredValue()
                 })!;
-
-            static float Luminance((byte R, byte G, byte B) color) =>
-                color.R * 0.2126f + color.G * 0.7152f + color.B * 0.0722f;
-
-            static byte Shade(byte swatchShade, byte component, byte midpoint, float shadeScale) =>
-                (byte)Math.Clamp(MathF.Round(swatchShade + (component - midpoint) * shadeScale), 0, 255);
         }
 
         // The synthetic palette fills only the layer's first row, so the color's nearest swatch row

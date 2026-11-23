@@ -242,6 +242,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IDroidEquipmentDiagnosticsService, DroidEquipmentDiagnosticsService>();
             services.AddSingleton<IIncubationFieldNoteService, IncubationFieldNoteService>();
             services.AddSingleton<ITintMapDroidOverrideService, TintMapDroidOverrideService>();
+            services.AddSingleton<IProgFxCoatService, ProgFxCoatService>();
             services.AddSingleton<ITintMapApplyService, TintMapApplyService>();
             services.AddSingleton<ITintMapItemColorService, TintMapItemColorService>();
             services.AddSingleton<ITintMapCarryService, TintMapCarryService>();

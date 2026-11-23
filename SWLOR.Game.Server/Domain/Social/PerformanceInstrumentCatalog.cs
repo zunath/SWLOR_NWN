@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Domain.Social
                 ["harp"] = PerformanceInstrumentFamily.Strings,
                 ["kloo_horn"] = PerformanceInstrumentFamily.Horns,
                 ["slitherhorn"] = PerformanceInstrumentFamily.Horns,
+                ["jessoon"] = PerformanceInstrumentFamily.Horns,
                 ["night_microplain"] = PerformanceInstrumentFamily.Vocals,
                 ["night_microbrand"] = PerformanceInstrumentFamily.Vocals,
                 ["panpipes"] = PerformanceInstrumentFamily.Pipes,
@@ -33,10 +34,12 @@ namespace SWLOR.Game.Server.Domain.Social
 
         /// <summary>
         /// These props and the violin's bow are posed without the polearm carry layer. The slitherhorn's mouthpiece
-        /// is modelled to reach the lips from that layer, so it keeps the layer.
+        /// is modelled to reach the lips from that layer, so it keeps the layer. The Flanged Jessoon is held like the
+        /// kloo horn; with the layer it rests on the shoulder.
         /// </summary>
         public static bool PlaysWithoutCarryLayer(string resref) =>
             string.Equals(resref, "kloo_horn", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(resref, "jessoon", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(resref, "panpipes", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(resref, "tambourine", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(resref, "violin_m", StringComparison.OrdinalIgnoreCase) ||

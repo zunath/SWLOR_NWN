@@ -6,7 +6,7 @@ using SWLOR.Game.NativeHooks.Tests.Support;
 namespace SWLOR.Game.NativeHooks.Tests;
 
 /// <summary>
-/// What each of the 36 trampolines does: with no sink bound it runs the engine function with the arguments it was called
+/// What each of the 41 trampolines does: with no sink bound it runs the engine function with the arguments it was called
 /// with and returns its result; with a sink bound it forwards the same arguments and the engine function to the sink
 /// (the three hooks whose sink replaces the engine function pass none) and returns the sink's result; unbinding returns it
 /// to the engine function.

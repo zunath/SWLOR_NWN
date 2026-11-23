@@ -40,6 +40,7 @@ internal sealed class WeatherWorld : IDisposable
     private readonly HashSet<uint> _unnatural = new();
     private readonly HashSet<uint> _dead = new();
     private readonly HashSet<uint> _creatures = new();
+    private readonly HashSet<uint> _placeables = new();
     private readonly Dictionary<uint, uint> _areaOf = new();
     private readonly Dictionary<uint, (int Width, int Height)> _sizes = new();
     private readonly Dictionary<uint, int> _skyboxes = new();
@@ -113,7 +114,7 @@ internal sealed class WeatherWorld : IDisposable
         Engine.SetReturnHandler("GetObjectType", arguments =>
             _creatures.Contains((uint)arguments[0]!) || _cast.ReceivingPlayer((uint)arguments[0]!) != Invalid
                 ? ObjectType.Creature
-                : ObjectType.Door);
+                : _placeables.Contains((uint)arguments[0]!) ? ObjectType.Placeable : ObjectType.Door);
         Engine.SetReturnHandler("Random", arguments => _rolls.Count > 0 ? _rolls.Dequeue() : (int)arguments[0]! - 1);
         Engine.SetReturnHandler("d3", _ => D3);
         Engine.SetReturnHandler("d6", arguments => 3 * (int)arguments[0]!);
@@ -278,6 +279,13 @@ internal sealed class WeatherWorld : IDisposable
         _valid.Add(fixture);
         Cast.Place(fixture, area);
         _areaOf[fixture] = area;
+    }
+
+    /// <summary>A placeable that a lightning strike can reach.</summary>
+    public void AddPlaceable(uint placeable, uint area)
+    {
+        AddFixture(placeable, area);
+        _placeables.Add(placeable);
     }
 
     /// <summary>A DM possesses a creature that stands in an area; their avatar waits wherever it was.</summary>

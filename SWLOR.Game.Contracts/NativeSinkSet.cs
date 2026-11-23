@@ -17,6 +17,7 @@ public sealed class NativeSinkSet
         IPlayerFileCheckpointSink playerFileCheckpoint,
         IPlayerListNamePrivacySink playerListNamePrivacy,
         IPlayerSlotAssignmentSink playerSlotAssignment,
+        IProgFxCoatEffectHooksSink progFxCoatEffectHooks,
         IQuickbarFeatLoadingSink quickbarFeatLoading,
         IResolveAttackRollSink resolveAttackRoll,
         ISavedPlayerInventorySink savedPlayerInventory,
@@ -35,6 +36,7 @@ public sealed class NativeSinkSet
         PlayerFileCheckpoint = playerFileCheckpoint ?? throw new ArgumentNullException(nameof(playerFileCheckpoint));
         PlayerListNamePrivacy = playerListNamePrivacy ?? throw new ArgumentNullException(nameof(playerListNamePrivacy));
         PlayerSlotAssignment = playerSlotAssignment ?? throw new ArgumentNullException(nameof(playerSlotAssignment));
+        ProgFxCoatEffectHooks = progFxCoatEffectHooks ?? throw new ArgumentNullException(nameof(progFxCoatEffectHooks));
         QuickbarFeatLoading = quickbarFeatLoading ?? throw new ArgumentNullException(nameof(quickbarFeatLoading));
         ResolveAttackRoll = resolveAttackRoll ?? throw new ArgumentNullException(nameof(resolveAttackRoll));
         SavedPlayerInventory = savedPlayerInventory ?? throw new ArgumentNullException(nameof(savedPlayerInventory));
@@ -54,6 +56,7 @@ public sealed class NativeSinkSet
     public IPlayerFileCheckpointSink PlayerFileCheckpoint { get; }
     public IPlayerListNamePrivacySink PlayerListNamePrivacy { get; }
     public IPlayerSlotAssignmentSink PlayerSlotAssignment { get; }
+    public IProgFxCoatEffectHooksSink ProgFxCoatEffectHooks { get; }
     public IQuickbarFeatLoadingSink QuickbarFeatLoading { get; }
     public IResolveAttackRollSink ResolveAttackRoll { get; }
     public ISavedPlayerInventorySink SavedPlayerInventory { get; }

@@ -38,14 +38,37 @@ public sealed unsafe class ClientJsonUtf8GuardSink : IClientJsonUtf8GuardSink
     private const int NodeValueOffset = 64;
 
     private static readonly TimeSpan ReportDelay = TimeSpan.FromSeconds(10);
-    private readonly Dictionary<uint, (string Account, uint Player, int Replaced, int Rejected)> _pendingReports = new();
+    // The engine's "no player" id; CNWMessage.m_dwPlayerID holds it while a client message is read.
+    private const uint NoPlayer = 0xFFFFFFFF;
+
+    private readonly Dictionary<uint, ClientJsonRepairReport> _pendingReports = new();
+    private readonly List<string> _repairedText = new();
     private bool _reportScheduled;
+
+    // The player whose NUI message the engine is handling, so a repair names its sender.
+    private uint _nuiSender = NoPlayer;
+
+    // Every NUI event and bind update a client sends passes through here before its JSON is read.
+    public int HandleNuiEvent(void* message, void* player, byte minor, nint original)
+    {
+        var previous = _nuiSender;
+        _nuiSender = player == null ? NoPlayer : CNWSPlayer.FromPointer(player).m_nPlayerID;
+        try
+        {
+            return ((delegate* unmanaged<void*, void*, byte, int>)original)(message, player, minor);
+        }
+        finally
+        {
+            _nuiSender = previous;
+        }
+    }
 
     // ReadJSON returns the decoded json through a hidden result pointer, ahead of the message pointer.
     public void* ReadJson(void* result, void* message, nint original)
     {
         var replaced = 0;
         bool rejected;
+        _repairedText.Clear();
         try
         {
             rejected = !RepairPendingUbjson((byte*)message, out replaced);
@@ -63,7 +86,7 @@ public sealed unsafe class ClientJsonUtf8GuardSink : IClientJsonUtf8GuardSink
             // A rejected payload decodes to the engine's error text, so string values are still checked.
             replaced += ReplaceInvalidStringValues((byte*)json);
             if (replaced > 0 || rejected)
-                Record(CNWMessage.FromPointer((IntPtr)message).m_dwPlayerID, replaced, rejected);
+                Record(GetSender((byte*)message), replaced, rejected, _repairedText);
         }
         catch (Exception exception)
         {
@@ -76,7 +99,7 @@ public sealed unsafe class ClientJsonUtf8GuardSink : IClientJsonUtf8GuardSink
     /// <summary>
     /// Repairs the UBJSON that ReadJSON is about to decode, or makes it unreadable. Returns false when rejected.
     /// </summary>
-    private static bool RepairPendingUbjson(byte* message, out int replaced)
+    private bool RepairPendingUbjson(byte* message, out int replaced)
     {
         replaced = 0;
         if (!TryGetPendingUbjson(message, out var lengthField, out var ubjson, out var overruns))
@@ -89,11 +112,12 @@ public sealed unsafe class ClientJsonUtf8GuardSink : IClientJsonUtf8GuardSink
             return false;
         }
 
-        replaced = UbjsonTextRepair.RepairStrings(ubjson, out var complete);
+        replaced = UbjsonTextRepair.RepairStrings(ubjson, out var complete, _repairedText, ClientJsonUtf8Guard.MaxReportSamples);
         if (complete)
             return true;
 
         replaced = 0;
+        _repairedText.Clear();
         ubjson[0] = UnreadableMarker;
         return false;
     }
@@ -207,10 +231,16 @@ public sealed unsafe class ClientJsonUtf8GuardSink : IClientJsonUtf8GuardSink
         return Utf8TextRepair.ReplaceInvalidBytes(new Span<byte>(data, (int)length));
     }
 
+    // The engine leaves the message's own player id unset while it reads a client message.
+    private uint GetSender(byte* message)
+    {
+        return _nuiSender != NoPlayer ? _nuiSender : CNWMessage.FromPointer((IntPtr)message).m_dwPlayerID;
+    }
+
     /// <summary>
     /// Counts a repair or rejection and adds it to the sender's next report, written at most once per delay.
     /// </summary>
-    private void Record(uint playerId, int replaced, bool rejected)
+    private void Record(uint playerId, int replaced, bool rejected, IEnumerable<string> repairedText)
     {
         ClientJsonUtf8Guard.ReplacedByteCount += replaced;
         if (rejected)
@@ -220,10 +250,12 @@ public sealed unsafe class ClientJsonUtf8GuardSink : IClientJsonUtf8GuardSink
         {
             // Read the sender now: the client may leave before the report is written.
             var client = NWNXLib.g_pAppManager.m_pServerExoApp.GetClientObjectByPlayerId(playerId);
-            report = (client?.GetPlayerName()?.ToString() ?? $"client {playerId}", client?.m_oidPCObject ?? OBJECT_INVALID, 0, 0);
+            report = new ClientJsonRepairReport(client?.GetPlayerName()?.ToString() ?? $"client {playerId}",
+                client?.m_oidPCObject ?? OBJECT_INVALID);
+            _pendingReports[playerId] = report;
         }
 
-        _pendingReports[playerId] = (report.Account, report.Player, report.Replaced + replaced, report.Rejected + (rejected ? 1 : 0));
+        report.Add(replaced, rejected, repairedText, ClientJsonUtf8Guard.MaxReportSamples);
         if (_reportScheduled)
             return;
 
@@ -239,8 +271,7 @@ public sealed unsafe class ClientJsonUtf8GuardSink : IClientJsonUtf8GuardSink
             var character = GetIsObjectValid(report.Player)
                 ? $"{PlayerName.GetAuditName(report.Player)} - {GetPCPublicCDKey(report.Player)}"
                 : "no character";
-            Log.Write(LogGroup.Server, $"Client NUI data from {report.Account} ({character}): " +
-                                       $"replaced {report.Replaced} invalid UTF-8 byte(s), rejected {report.Rejected} unreadable payload(s).");
+            Log.Write(LogGroup.Server, report.Describe(character));
         }
 
         _pendingReports.Clear();

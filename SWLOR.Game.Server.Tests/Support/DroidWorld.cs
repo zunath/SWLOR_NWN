@@ -44,8 +44,15 @@ public sealed class DroidWorld : IDisposable
     private uint _propertyOwner;
     private uint _next = 1000;
 
-    public DroidWorld()
+    private readonly OrderedLog _log;
+
+    /// <summary>
+    /// Builds the world. With a <paramref name="log"/>, every call that reaches the engine, the four plugins and the neighbours is written to it
+    /// in call order (the transcript of a droid operation); without one the world is the plain recording engine every other test uses.
+    /// </summary>
+    public DroidWorld(OrderedLog log = null)
     {
+        _log = log;
         Engine = new FakeNWScript();
         Locals = new LocalVariables(Engine);
         Objects = new FakeObjectPlugin();
@@ -53,33 +60,33 @@ public sealed class DroidWorld : IDisposable
         Creatures = new FakeCreaturePlugin();
         Events = new FakeEventsPlugin();
 
-        Ai = Proxy<IAIService>(out var ai);
+        Ai = Proxy<IAIService>("Ai", out var ai);
         AiCalls = ai;
-        Recorder = Proxy<ICombatRecorderService>(out var recorder);
+        Recorder = Proxy<ICombatRecorderService>("Recorder", out var recorder);
         RecorderCalls = recorder.On("BeginSetupAttribution", _ => new CombatRecordAttributionScope());
-        Companion = Proxy<ICompanionControlService>(out var companion);
+        Companion = Proxy<ICompanionControlService>("Companion", out var companion);
         CompanionCalls = companion;
-        Diagnostics = Proxy<IDroidEquipmentDiagnosticsService>(out var diagnostics);
+        Diagnostics = Proxy<IDroidEquipmentDiagnosticsService>("Diagnostics", out var diagnostics);
         DiagnosticsCalls = diagnostics;
-        Gui = Proxy<IGuiService>(out var gui);
+        Gui = Proxy<IGuiService>("Gui", out var gui);
         GuiCalls = gui;
-        Item = Proxy<IItemService>(out var item);
+        Item = Proxy<IItemService>("Item", out var item);
         ItemCalls = item;
-        Perk = Proxy<IPerkService>(out var perk);
+        Perk = Proxy<IPerkService>("Perk", out var perk);
         PerkCalls = perk;
-        Glove = Proxy<IPowerGloveEquipmentService>(out var glove);
+        Glove = Proxy<IPowerGloveEquipmentService>("Glove", out var glove);
         GloveCalls = glove;
-        Race = Proxy<IRaceService>(out var race);
+        Race = Proxy<IRaceService>("Race", out var race);
         RaceCalls = race;
-        Recast = Proxy<IRecastService>(out var recast);
+        Recast = Proxy<IRecastService>("Recast", out var recast);
         RecastCalls = recast;
-        Resistance = Proxy<IResistanceService>(out var resistance);
+        Resistance = Proxy<IResistanceService>("Resistance", out var resistance);
         ResistanceCalls = resistance;
-        Stat = Proxy<ICreatureStatService>(out var stat);
+        Stat = Proxy<ICreatureStatService>("Stat", out var stat);
         StatCalls = stat;
-        StatusEffect = Proxy<IStatusEffectApplicationService>(out var statusEffect);
+        StatusEffect = Proxy<IStatusEffectApplicationService>("StatusEffect", out var statusEffect);
         StatusEffectCalls = statusEffect;
-        Twin = Proxy<ITwinPistolEquipmentService>(out var twin);
+        Twin = Proxy<ITwinPistolEquipmentService>("Twin", out var twin);
         TwinCalls = twin;
 
         foreach (var name in new[] { "SetAIProfile" }) AiCalls.On(name, _ => null);
@@ -122,11 +129,11 @@ public sealed class DroidWorld : IDisposable
         _containers.Remove(Controller);
 
         InstallEngine();
-        _scopes.Add(NWScriptRuntime.Override(Engine));
-        _scopes.Add(ObjectPluginRuntime.Override(Objects));
-        _scopes.Add(ItemPluginRuntime.Override(Items));
-        _scopes.Add(CreaturePluginRuntime.Override(Creatures));
-        _scopes.Add(EventsPluginRuntime.Override(Events));
+        _scopes.Add(NWScriptRuntime.Override(Observe<INWScript>(Engine, "Engine")));
+        _scopes.Add(ObjectPluginRuntime.Override(Observe<IObjectPlugin>(Objects, "ObjectPlugin")));
+        _scopes.Add(ItemPluginRuntime.Override(Observe<IItemPlugin>(Items, "ItemPlugin")));
+        _scopes.Add(CreaturePluginRuntime.Override(Observe<ICreaturePlugin>(Creatures, "CreaturePlugin")));
+        _scopes.Add(EventsPluginRuntime.Override(Observe<IEventsPlugin>(Events, "EventsPlugin")));
     }
 
     public FakeNWScript Engine { get; }
@@ -172,12 +179,18 @@ public sealed class DroidWorld : IDisposable
     public bool MoveToFails { get; set; }
     public int Weight { get; set; }
 
+    /// <summary>The droid item id a deserialized item already carries (by serialized text), as an item that was saved with one does.</summary>
+    public Dictionary<string, string> ItemIds { get; } = new();
+
     /// <summary>Serialized text of the items an acquire refuses to take (by serialized text).</summary>
     public HashSet<string> RefusedBlobs { get; } = new();
 
     public uint Droid { get; private set; } = ObjectInvalid;
 
-    private static T Proxy<T>(out ScriptedProxy proxy) where T : class => ScriptedProxy.Create<T>(out proxy);
+    private T Proxy<T>(string label, out ScriptedProxy proxy) where T : class =>
+        _log == null ? ScriptedProxy.Create<T>(out proxy) : ObservedScriptedProxy.Create<T>(_log, label, out proxy);
+
+    private T Observe<T>(T target, string label) where T : class => _log == null ? target : _log.Wrap(target, label);
 
     /// <summary>Creates an object the engine knows.</summary>
     public uint Create(string resRef, BaseItem baseItem = BaseItem.Invalid, bool container = false)
@@ -360,7 +373,12 @@ public sealed class DroidWorld : IDisposable
         Objects.SetReturnHandler("Serialize", args =>
         {
             var item = (uint)args[0]!;
-            return $"blob:{ResRefOf(item)}:{(int)_baseItems.GetValueOrDefault(item)}:{(_containers.Contains(item) ? 1 : 0)}:{++_next}";
+            var blob = $"blob:{ResRefOf(item)}:{(int)_baseItems.GetValueOrDefault(item)}:{(_containers.Contains(item) ? 1 : 0)}:{++_next}";
+            // A serialized item carries its local variables, so the copy it deserializes into has the droid item id the original had.
+            var carriedId = Locals.String(item, "DROID_ITEM_ID");
+            if (!string.IsNullOrEmpty(carriedId))
+                ItemIds[blob] = carriedId;
+            return blob;
         });
         Objects.SetReturnHandler("Deserialize", args =>
         {
@@ -370,6 +388,8 @@ public sealed class DroidWorld : IDisposable
                 return ObjectInvalid;
             var created = Create(parts[1], (BaseItem)int.Parse(parts[2]), parts[3] == "1");
             _blobs[created] = text;
+            if (ItemIds.TryGetValue(text, out var itemId))
+                Engine.SetLocalString(created, "DROID_ITEM_ID", itemId);
             return created;
         });
         Objects.SetReturnHandler("AcquireItem", args =>

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
@@ -39,16 +38,14 @@ namespace SWLOR.Game.Server.Domain.Character
         private long _nextMovementSamplerId;
 
         private readonly IDBService _db;
-        private readonly IAIService _ai;
         private readonly IEspionageStealthQuery _stealth;
         private readonly IEspionageEnmityQuery _enmity;
         private readonly IStatService _stat;
         private readonly ISkillService _skill;
 
-        public EspionageInfiltrationService(IDBService db, IAIService ai, IEspionageStealthQuery stealth, IEspionageEnmityQuery enmity, IStatService stat, ISkillService skill)
+        public EspionageInfiltrationService(IDBService db, IEspionageStealthQuery stealth, IEspionageEnmityQuery enmity, IStatService stat, ISkillService skill)
         {
             _db = db;
-            _ai = ai;
             _stealth = stealth;
             _enmity = enmity;
             _stat = stat;
@@ -99,7 +96,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 return;
             }
 
-            if (!_ai.IsInAggroRange(observer, target))
+            if (!CreatureAIRules.IsInAggroRange(observer, target))
                 return;
 
             UpdateMaximumTravelDistance(target, attempt);
@@ -305,10 +302,10 @@ namespace SWLOR.Game.Server.Domain.Character
                 GetLocalInt(player, IEspionageStealthQuery.CombatEntryWindowVariable) != 0 ||
                 !IsBypassXpEligible(HasGrantedStealth(player), IsStealthDetectionBlocked(npc)) ||
                 HasNonProximityEnmityForCreature(player) ||
-                !_ai.IsCreatureAIEnabled(npc) ||
+                !CreatureAIRules.IsCreatureAIEnabled(npc) ||
                 CreaturePlugin.GetFaction(npc) != HostileFactionId ||
                 !GetIsEnemy(player, npc) ||
-                !_ai.IsInAggroRange(npc, player) ||
+                !CreatureAIRules.IsInAggroRange(npc, player) ||
                 HasNonProximityEnmity(npc) ||
                 GetNPCStats(npc).Level <= 0)
             {

@@ -71,7 +71,7 @@ public class SpaceModeQueryTests
     public void The_query_answers_as_the_space_service_does()
     {
         var space = new SpaceService(
-            abilityAura: null!, abilityCooldownVisual: null!, ai: null!, area: null!, db: _db, enmity: null!, gui: null!,
+            abilityAura: null!, abilityCooldownVisual: null!, leash: null!, area: null!, db: _db, enmity: null!, gui: null!,
             messaging: null!, perk: null!, planet: null!, playerName: null!, property: null!, race: null!, recast: null!,
             creatureStat: null!, stat: null!, statusEffect: null!, tintMap: null!);
         var query = new SpaceModeQuery(_db);

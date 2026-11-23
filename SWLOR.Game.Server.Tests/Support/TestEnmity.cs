@@ -20,13 +20,13 @@ namespace SWLOR.Game.Server.Tests.Support;
 internal sealed partial class TestEnmity : EnmityService
 {
     public TestEnmity(
-        IAIService ai,
+        ICombatLeash leash,
         IActivityService activity,
         IPartyService party,
         IHoloComService holoCom,
         ICompanionLookup beastMastery)
-        : base(ai, activity, party, holoCom, beastMastery, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IStealthService>(),
-            FacadeForwarder.For<ICompanionControlService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatAttackTimingService>(), FacadeForwarder.For<ICombatQueriesService>())
+        : base(leash, activity, party, holoCom, beastMastery, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IStealthService>(),
+            FacadeForwarder.For<ICompanionTargetQuery>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatAttackTimingService>(), FacadeForwarder.For<ICombatQueriesService>())
     {
     }
 

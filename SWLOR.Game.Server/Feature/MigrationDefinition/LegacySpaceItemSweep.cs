@@ -24,9 +24,46 @@ public sealed class LegacySpaceItemSweep
     private readonly HashSet<string> _paidOwners = new();
     private readonly LegacySpaceItemTally _totals = new();
     private readonly object _totalsLock = new();
+    private readonly ConcurrentBag<string> _unachievableContracts = new();
+
+    /// <summary>Saved as the takedown reason of a contract withdrawn by <see cref="RetireUnachievableContracts"/>.</summary>
+    public const string RetiredContractReason = "Withdrawn by the space update: it asked for a ship configuration module, which was retired.";
 
     public LegacySpaceItemSweep(int version = StoredItemSweep.LegacySpaceItemsVersion) => _version = version;
     public LegacySpaceItemTally Totals => _totals;
+
+    /// <summary>The published contracts the pass found asking for a retired configuration module.</summary>
+    public IReadOnlyCollection<string> UnachievableContracts => _unachievableContracts.ToArray();
+
+    /// <summary>
+    /// Whether a contract asks for an item nothing replaces: a configuration module. Characters lose those modules in the
+    /// upgrade and any copy picked up later is refunded and destroyed, so such a contract can never be completed.
+    /// </summary>
+    public static bool AsksForRetiredItem(IEnumerable<QuestContractObjective> objectives) =>
+        objectives?.Any(x => LegacySpaceItemCatalog.TryGetConfigurationModule(x.ItemResref, out _)) == true;
+
+    /// <summary>Worker thread: notes a published contract that asks for a retired item, withdrawn after the pass.</summary>
+    public void NoteContract(QuestContract contract)
+    {
+        if (contract.Status == QuestContractStatus.Published && AsksForRetiredItem(contract.Objectives))
+            _unachievableContracts.Add(contract.Id);
+    }
+
+    /// <summary>
+    /// Main thread, after the pass has saved every contract: withdraws each contract <see cref="NoteContract"/> found, the
+    /// way a takedown does, refunding the escrowed reward and the posting fee to its author
+    /// (<see cref="QuestContractBoard.RetireContract"/>). A withdrawn contract is no longer published, so a rerun skips it.
+    /// Returns the number of contracts noted.
+    /// </summary>
+    public int RetireUnachievableContracts()
+    {
+        var contracts = UnachievableContracts;
+        foreach (var contractId in contracts)
+            QuestContractBoard.RetireContract(contractId, RetiredContractReason,
+                "withdrawn: it asked for a ship configuration module, which the space update retired",
+                "asked for a ship configuration module, which the space update retired, so it was withdrawn.");
+        return contracts.Count;
+    }
 
     /// <summary>
     /// Converts one stored item. <paramref name="ownerId"/> is the player owed credits and designs (null when nobody
@@ -75,7 +112,7 @@ public sealed class LegacySpaceItemSweep
     /// Points a contract's collection objectives for retired deeds and modules at the items they became, with the new
     /// names, so the converted items satisfy them. Two retired items that became the same item make one objective for
     /// their combined quantity, since a quest tracks each item once (<see cref="MigrateItemProgresses"/>). Objectives
-    /// for configuration modules stay: nothing replaces them.
+    /// for configuration modules stay, since nothing replaces them; their published contracts are withdrawn (<see cref="NoteContract"/>).
     /// </summary>
     public static bool MigrateObjectives(List<QuestContractObjective> objectives)
     {

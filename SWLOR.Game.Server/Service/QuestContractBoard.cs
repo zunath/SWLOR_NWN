@@ -500,6 +500,43 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Withdraws a published contract that can no longer be completed, the way a takedown does: the escrowed reward
+        /// and the posting fee go back to the author in a delivery (<see cref="QuestContractRetirement"/>), held
+        /// submissions return to their submitters, and the quest leaves accepted players' journals. Does nothing to a
+        /// contract that is not published, so a rerun changes nothing.
+        /// </summary>
+        /// <param name="reason">Saved as the takedown reason.</param>
+        /// <param name="playerReason">Shown to accepted players: "The contract 'X' has been {playerReason}."</param>
+        /// <param name="authorNotice">Shown to the author at their next login, after the contract's title.</param>
+        public static void RetireContract(string contractId, string reason, string playerReason, string authorNotice)
+        {
+            var contract = DB.Get<QuestContract>(contractId);
+            if (contract == null || contract.Status != QuestContractStatus.Published)
+                return;
+
+            var refundSaved = DB.Get<QuestContractDelivery>(QuestContractRetirement.RefundDeliveryId(contract.Id)) != null;
+            var refund = QuestContractRetirement.Retire(contract, refundSaved, CalculatePostingFee(contract.RewardCredits), reason, DateTime.UtcNow);
+            if (refund != null)
+            {
+                DB.Set(refund);
+                var author = DB.Get<Player>(contract.AuthorPlayerId);
+                if (author != null)
+                {
+                    author.UpgradeNotices ??= new List<string>();
+                    author.UpgradeNotices.Add($"Your contract '{contract.Title}' {authorNotice} Its reward and posting fee are waiting for you at any Contract Board.");
+                    DB.Set(author);
+                }
+            }
+
+            DB.Set(contract);
+            ReleaseSubmissions(contract.Id);
+            Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
+            VoidActiveContractQuests(contract, playerReason);
+
+            Log.Write(LogGroup.QuestContract, $"Contract '{contract.Id}' ('{contract.Title}') was withdrawn: {reason}", true);
+        }
+
+        /// <summary>
         /// Removes a voided contract's quest from every online player who had accepted it: clears it
         /// from their quest list, removes the journal entry, refreshes their quest UI, and notifies
         /// them of the reason. Offline players are cleaned up by <see cref="Quest.LoadPlayerQuests"/>

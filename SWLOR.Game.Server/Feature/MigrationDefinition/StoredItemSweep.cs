@@ -34,6 +34,8 @@ internal static class StoredItemSweep
         var totals = space.Totals;
         Log.Write(LogGroup.Migration, $"Migration #{version}: Stored space items: {string.Join(", ", totals.Items.OrderBy(x => x.Key).Select(x => $"{x.Key} {x.Value}"))}; " +
             $"{totals.ConfigurationModulesRefunded} configuration modules refunded for {totals.Credits} credits; {paid} owners paid or given designs.", true);
+        var withdrawn = space.RetireUnachievableContracts();
+        Log.Write(LogGroup.Migration, $"Migration #{version}: Withdrew and refunded {withdrawn} published contracts that asked for configuration modules.", true);
     }
 
     private static (string Name, int Count)[] CountSections(bool overflow)
@@ -124,9 +126,14 @@ internal static class StoredItemSweep
             shipChanged |= MigrateModules(converter, ship.Status?.ConfigurationModules);
             return shipChanged;
         });
-        // Outstanding collection objectives follow the items they asked for (LegacySpaceItemSweep.MigrateObjectives).
-        changed += pass.Process<QuestContract>(contract => MigrateContractItems(converter, contract.RewardItems, space) |
-            (space != null && LegacySpaceItemSweep.MigrateObjectives(contract.Objectives)));
+        // Outstanding collection objectives follow the items they asked for (LegacySpaceItemSweep.MigrateObjectives); a
+        // published contract that asks for a configuration module is noted and withdrawn after the pass.
+        changed += pass.Process<QuestContract>(contract =>
+        {
+            space?.NoteContract(contract);
+            return MigrateContractItems(converter, contract.RewardItems, space) |
+                (space != null && LegacySpaceItemSweep.MigrateObjectives(contract.Objectives));
+        });
         changed += pass.Process<QuestContractDelivery>(delivery => MigrateContractItems(converter, delivery.Items, space));
         // Overflow storage holds items earlier character upgrades could not keep, so retired ship deeds and modules can wait
         // there unclaimed. Only the space rule runs on it: the release's other item rules already ran on those items.

@@ -514,6 +514,66 @@ public class SpaceItemMigrationTests
     }
 
     [Test]
+    public void APublishedContractForAConfigurationModule_IsWithdrawnAndRefundedOnce()
+    {
+        QuestContract Contract(string id, QuestContractStatus status, params string[] resrefs) => new()
+        {
+            Id = id,
+            AuthorPlayerId = "author",
+            Title = "Wanted",
+            Status = status,
+            CompletionsRemaining = 1,
+            RewardCredits = 4000,
+            RewardItems = { new QuestContractItem { Name = "Reward", Resref = "ref_tilarium", Data = Item("ref_tilarium") } },
+            Objectives = resrefs.Select(x => new QuestContractObjective { ItemResref = x, Quantity = 1 }).ToList(),
+        };
+
+        var sweep = new LegacySpaceItemSweep();
+        sweep.NoteContract(Contract("config", QuestContractStatus.Published, "ref_tilarium", "config_fig3"));
+        sweep.NoteContract(Contract("beam", QuestContractStatus.Published, "beamcannon1"));
+        sweep.NoteContract(Contract("draft", QuestContractStatus.Draft, "config_fig3"));
+        sweep.NoteContract(Contract("closed", QuestContractStatus.Expired, "config_fig3"));
+        sweep.UnachievableContracts.Should().Equal(new[] { "config" }, "only a published contract for a configuration module can never be completed");
+
+        var contract = Contract("config", QuestContractStatus.Published, "config_fig3");
+        var reward = contract.RewardItems[0];
+        var fee = QuestContractBoard.CalculatePostingFee(contract.RewardCredits);
+        var now = new DateTime(2026, 11, 23);
+
+        var refund = QuestContractRetirement.Retire(contract, refundSaved: false, fee, LegacySpaceItemSweep.RetiredContractReason, now)!;
+
+        refund.Id.Should().Be(QuestContractRetirement.RefundDeliveryId("config"), "a fixed id lets a rerun see the refund was saved");
+        refund.PlayerId.Should().Be("author");
+        refund.Credits.Should().Be(4000 + fee, "the escrowed reward and the posting fee go back to the author");
+        refund.Items.Should().Equal(reward);
+        refund.HeldForCompletion.Should().BeFalse();
+        refund.IsRewardPayment.Should().BeFalse();
+        QuestContractBoard.IsClaimable(refund).Should().BeTrue();
+        contract.Status.Should().Be(QuestContractStatus.TakenDown);
+        contract.TakedownReason.Should().Be(LegacySpaceItemSweep.RetiredContractReason).And.Match(x => x.All(c => c < 128));
+        contract.DateClosed.Should().Be(now);
+        contract.RewardItems.Should().BeEmpty();
+
+        var retried = Contract("config", QuestContractStatus.Published, "config_fig3");
+        QuestContractRetirement.Retire(retried, refundSaved: true, fee, LegacySpaceItemSweep.RetiredContractReason, now)
+            .Should().BeNull("a rerun after the refund was saved refunds nothing again");
+        retried.Status.Should().Be(QuestContractStatus.TakenDown);
+
+        string Server(params string[] path) => File.ReadAllText(Path.Combine(new[] { RepositoryRoot(), "SWLOR.Game.Server" }.Concat(path).ToArray())).Replace("\r\n", "\n");
+        var migrate = Server("Feature", "MigrationDefinition", "StoredItemSweep.cs");
+        migrate.Should().Contain("space?.NoteContract(contract);");
+        migrate.IndexOf("space.RetireUnachievableContracts();", StringComparison.Ordinal)
+            .Should().BeGreaterThan(migrate.IndexOf("var paid = space.Apply(version);", StringComparison.Ordinal), "contracts are withdrawn after the pass saved them");
+        var board = Server("Service", "QuestContractBoard.cs");
+        var retire = board[board.IndexOf("public static void RetireContract(", StringComparison.Ordinal)..board.IndexOf("private static void VoidActiveContractQuests(", StringComparison.Ordinal)];
+        retire.Should().Contain("if (contract == null || contract.Status != QuestContractStatus.Published)\n                return;", "a withdrawn contract is skipped on a rerun");
+        var steps = new[] { "DB.Set(refund);", "DB.Set(contract);", "ReleaseSubmissions(contract.Id);",
+            "Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));", "VoidActiveContractQuests(contract, playerReason);" };
+        steps.Select(step => retire.IndexOf(step, StringComparison.Ordinal)).Should().BeInAscendingOrder().And.OnlyContain(i => i >= 0,
+            "the refund is saved first, then the contract closes as a takedown does: submissions back, quest unregistered, journals cleared");
+    }
+
+    [Test]
     public void TheSweep_PaysTheTillAndUnlocksDesigns()
     {
         var player = new Player();

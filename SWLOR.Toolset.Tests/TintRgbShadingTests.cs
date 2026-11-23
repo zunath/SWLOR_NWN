@@ -111,6 +111,10 @@ namespace SWLOR.Toolset.Tests
         [TestCase(TintMapLayerType.Hair, 90, 60, 30, new byte[] { 18, 9, 5, 249, 90, 60, 30, 228, 146, 116, 73, 214 })]
         [TestCase(TintMapLayerType.Cloth1, 20, 20, 24, new byte[] { 10, 9, 12, 255, 20, 20, 24, 255, 53, 53, 57, 255 })]
         [TestCase(TintMapLayerType.Cloth1, 200, 30, 30, new byte[] { 50, 2, 17, 255, 200, 30, 30, 255, 255, 199, 191, 255 })]
+        // Metal: reflection coverage fades toward the first row's instead of jumping between the
+        // shiny (row 52) and painted (row 135) swatches' coverage.
+        [TestCase(TintMapLayerType.Metal1, 40, 40, 40, new byte[] { 13, 13, 13, 198, 40, 40, 40, 126, 65, 65, 65, 49 })]
+        [TestCase(TintMapLayerType.Metal1, 48, 48, 48, new byte[] { 64, 28, 10, 209, 48, 48, 48, 126, 107, 106, 106, 49 })]
         public void MatchesTheShaderReference(TintMapLayerType layer, byte red, byte green, byte blue, byte[] expected)
         {
             var shades = Shade(layer, new TintMapColor(red, green, blue));

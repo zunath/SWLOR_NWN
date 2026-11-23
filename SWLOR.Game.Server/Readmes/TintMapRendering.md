@@ -167,8 +167,13 @@ that palette color, reflection included, on every layer, while a neutral color
 stays neutral on a colored swatch's row. A nearly neutral swatch has no
 reliable hue, so its ratio fades to plain scaling below about 8 levels of
 midtone chroma, and the rest of its row is added back only for colors within
-16 levels of it. `SWLOR_Haks/tools/TintRgbShading.py` is the reference the
-tests check every shader against.
+16 levels of it. Reflection coverage fades from the swatch row's to the
+layer's first palette row's over 8 levels from the swatch: the metal palette
+mixes shiny rows (coverage 0.5) and painted rows (0.8), and taking the nearest
+swatch's coverage outright made neighbouring dark metal colors flip between
+very dark and grey or silver as the nearest swatch changed (bug report
+2026-11-20 follow-up). `SWLOR_Haks/tools/TintRgbShading.py` is the reference
+the tests check every shader against.
 
 Do not offset the swatch row by the color's difference from its midtone, as
 the 2026-11-17 release did: a dark neutral color far from any neutral swatch

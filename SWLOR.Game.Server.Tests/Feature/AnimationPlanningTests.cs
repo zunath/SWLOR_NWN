@@ -5,6 +5,7 @@ using System.Text.Json;
 using FluentAssertions;
 using Microsoft.VisualBasic.FileIO;
 using NUnit.Framework;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -139,9 +140,11 @@ public class AnimationPlanningTests
         return perks.ToArray();
     }
 
+    // Astromech lines are left out: a chassis plays its own clips, so no humanoid animation is authored for them.
     internal static PerkDetail[] CurrentPerks() => AllPerks().Where(perk => perk.IsActive &&
         perk.GroupType == PerkGroupType.Player && typeof(PerkCategoryType).GetField(perk.Category.ToString())!
-            .GetCustomAttribute<PerkCategoryAttribute>()!.IsActive).ToArray();
+            .GetCustomAttribute<PerkCategoryAttribute>() is { IsActive: true } category &&
+        category.BodyFrameRestriction != BodyFrameRestriction.AstromechOnly).ToArray();
 
     [Test]
     public void BeastPerksAreExcludedWhilePlayerBeastMasteryRemains()

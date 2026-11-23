@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
@@ -427,6 +428,11 @@ namespace SWLOR.Game.Server.Entity
         public float HeadAppearanceScale { get; set; }
         // Null means no tint snapshot exists yet; an empty snapshot records cleared RGB overrides.
         public Dictionary<string, int> CreatureTintOverrides { get; set; }
+
+        /// <summary>
+        /// The kind of body the character has, set from its species at creation and checked on each login.
+        /// </summary>
+        public BodyFrame BodyFrame { get; set; }
     }
 
     public class MapPin

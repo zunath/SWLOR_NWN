@@ -50,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.PerformanceDanceXPBonus, 6)
                 .IncreasesStat(StatType.PerformanceDanceDebtClearPercent, 1)
                 .Price(2)
+                .RequirementSkill(SkillType.Performance, 0)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Dance2)
@@ -86,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Unlocks the Light Feet routine. Inspired from your dances also grants +10% movement speed while out of combat.")
                 .IncreasesStat(StatType.PerformanceLightFeetSpeedPercent, 10)
                 .Price(2)
+                .RequirementSkill(SkillType.Performance, 0)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LightFeet2Trait)
@@ -238,6 +240,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.PerformanceMusicXPBonus, 6)
                 .IncreasesStat(StatType.PerformanceMusicDebtClearPercent, 1)
                 .Price(2)
+                .RequirementSkill(SkillType.Performance, 0)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PlayInstrument2)
@@ -274,6 +277,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Unlocks the Steady Hands set. Inspired from your music also grants +2 Control and +2 Craftsmanship for all crafting skills.")
                 .IncreasesStat(StatType.PerformanceSteadyHandsBonus, 2)
                 .Price(2)
+                .RequirementSkill(SkillType.Performance, 0)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SteadyHands2Trait)

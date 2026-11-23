@@ -991,7 +991,48 @@ namespace SWLOR.Game.Server.Service.AbilityService
 
         [RecastGroup("Cloud Mind", "Cloud Mind", true)]
         CloudMind = 586,
-
+        [RecastGroup("Field Repair", "Field Repair", true)]
+        FieldRepair = 604,
+        [RecastGroup("System Purge", "System Purge", true)]
+        SystemPurge = 605,
+        [RecastGroup("Nanite Cloud", "Nanite Cloud", true)]
+        NaniteCloud = 606,
+        [RecastGroup("Jump Start", "Jump Start", true)]
+        JumpStart = 607,
+        [RecastGroup("Maintenance Routine", "Maintenance", true)]
+        MaintenanceRoutine = 608,
+        [RecastGroup("Emergency Override", "Emerg Override", true)]
+        EmergencyOverride = 609,
+        [RecastGroup("Power Transfer", "Power Transfer", true)]
+        PowerTransfer = 610,
+        [RecastGroup("Deflector Field", "Deflector Fld", true)]
+        DeflectorField = 611,
+        [RecastGroup("Damper Field", "Damper Field", true)]
+        DamperField = 612,
+        [RecastGroup("Filter Flush", "Filter Flush", true)]
+        FilterFlush = 613,
+        [RecastGroup("Targeting Uplink", "Target Uplink", true)]
+        TargetingUplink = 614,
+        [RecastGroup("Full Override", "Full Override", true)]
+        FullOverride = 615,
+        [RecastGroup("Shock Jab", "Shock Jab", true)]
+        ShockJab = 616,
+        [RecastGroup("Stun Prod", "Stun Prod", true)]
+        StunProd = 617,
+        [RecastGroup("Discharge Ring", "Discharge Ring", true)]
+        DischargeRing = 618,
+        [RecastGroup("Aggression Routine", "Aggression", true)]
+        AggressionRoutine = 619,
+        [RecastGroup("Overload Burst", "Overload Burst", true)]
+        OverloadBurst = 620,
+        [RecastGroup("Suppressive Burst", "Suppr. Burst", true)]
+        SuppressiveBurst = 621,
+        [RecastGroup("Hobbling Bolt", "Hobbling Bolt", true)]
+        HobblingBolt = 622,
+        [RecastGroup("Sweeping Fire", "Sweeping Fire", true)]
+        SweepingFire = 623,
+        [RecastGroup("Suppression Protocol", "Suppr Protocol", true)]
+        SuppressionProtocol = 624,
     }
 
     public class RecastGroupAttribute : Attribute

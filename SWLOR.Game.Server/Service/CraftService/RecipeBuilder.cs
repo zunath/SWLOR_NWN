@@ -163,6 +163,18 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
+        /// Requires another recipe to have been learned. Use it for a recipe that is a form of that one
+        /// (an astromech module of a learned armor piece), so one teaching book covers both.
+        /// </summary>
+        /// <param name="recipe">The recipe that must have been learned.</param>
+        public RecipeBuilder RequirementUnlocked(RecipeType recipe)
+        {
+            var requirement = new RecipeUnlockRequirement(recipe);
+            _activeRecipe.Requirements.Add(requirement);
+            return this;
+        }
+
+        /// <summary>
         /// Requires the recipe to be crafted at a player station's Shipyard that admits the crafter (Capital hulls).
         /// </summary>
         public RecipeBuilder RequirementShipyard()

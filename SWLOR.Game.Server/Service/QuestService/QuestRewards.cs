@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.KeyItemService;
 
@@ -19,6 +20,12 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// If the quest doesn't allow reward selection, this does nothing.
         /// </summary>
         string MenuName { get; }
+
+        /// <summary>
+        /// The name of the reward as this player sees it in the 'Select a Reward' menu.
+        /// A reward that differs by character (an item with an astromech form) names what this player would receive.
+        /// </summary>
+        string GetMenuName(uint player) => MenuName;
 
         /// <summary>
         /// The actions to take when this reward is given to a player.
@@ -93,9 +100,27 @@ namespace SWLOR.Game.Server.Service.QuestService
                 MenuName = itemName;
         }
 
+        /// <summary>
+        /// The item this player receives: an astromech gets the astromech form of a piece of humanoid equipment.
+        /// </summary>
+        public string GetResref(uint player)
+        {
+            return AstromechItemTwins.Resolve(_resref, player);
+        }
+
+        public string GetMenuName(uint player)
+        {
+            var resref = GetResref(player);
+            if (resref == _resref)
+                return MenuName;
+
+            var itemName = Cache.GetItemNameByResref(resref);
+            return _quantity > 1 ? _quantity + "x " + itemName : itemName;
+        }
+
         public void GiveReward(uint player)
         {
-            CreateItemOnObject(_resref, player, _quantity);
+            CreateItemOnObject(GetResref(player), player, _quantity);
         }
     }
 

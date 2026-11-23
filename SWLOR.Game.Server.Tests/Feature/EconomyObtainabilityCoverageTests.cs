@@ -152,6 +152,8 @@ public class EconomyObtainabilityCoverageTests
             "SlicingCacheSmitheryRecipes.cs", "SlicingCacheCookingRecipes.cs", "TraceFuseRecipes.cs",
             "SlicingTerminalFurnitureRecipes.cs", "ConcentratedVenomRecipes.cs", "ShipSalvageItems.cs",
             "RevampComponentCatalog.cs", "RevampRewardCatalog.cs", "SpaceSlicingItems.cs",
+            // The astromech form of an item is handed out wherever a quest rewards the item it copies.
+            "AstromechItemTwins.Generated.cs",
         };
         var serverDir = Path.Combine(root, "SWLOR.Game.Server");
         // Space revamp catalogs: each hull and module Tag is the output resref of a RevampStarshipRecipes recipe.
@@ -179,7 +181,7 @@ public class EconomyObtainabilityCoverageTests
         // Fixed resref constants that are granted directly. The livestock crate and the manure are created by the livestock code
         // from constants, not from a literal at a call site.
         foreach (var r in new[] { "beast_dna", "beast_egg", "blueprint", "survival_knife",
-                                  "fresh_bread", "dlarproto", "traveler_m", "traveler_f",
+                                  "fresh_bread", "dlarproto", "traveler_m", "traveler_f", "am_plat_start",
                                   "ls_custom", "ss_custom", "livestock_crate",
                                   "manure_t1", "manure_t2", "manure_t3", "manure_t4", "manure_t5" })
             Add(r);

@@ -271,6 +271,21 @@ namespace SWLOR.Game.Server.Service.QuestService
         }
 
         /// <summary>
+        /// Adds a skill prerequisite that the astromech mirror of the skill does not meet: the quest's work needs a
+        /// perk line only the skill itself has.
+        /// </summary>
+        /// <param name="skillType">The type of skill to require.</param>
+        /// <param name="requiredRank">The required skill rank.</param>
+        /// <returns>A QuestBuilder with the configured options.</returns>
+        public QuestBuilder PrerequisiteOwnSkill(SkillType skillType, int requiredRank)
+        {
+            var prereq = new RequiredSkillRankPrerequisite(skillType, requiredRank, false);
+            _activeQuest.Prerequisites.Add(prereq);
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds an action to run when a player accepts a quest.
         /// </summary>
         /// <param name="action">The action to run when a player accepts a quest.</param>

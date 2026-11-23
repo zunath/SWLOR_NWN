@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
@@ -1107,6 +1108,9 @@ namespace SWLOR.Game.Server.Service
             DeleteLocalBool(player, "SPACE_INSTANCE_LOCATION_SET");
         }
 
+        /// <summary>How long the stand-in of an astromech holds its plugged-in pose: longer than any flight.</summary>
+        private const float StandInPoseSeconds = 86400f;
+
         private static void ClonePlayerAndSit(uint player, Location pilotLocation)
         {
             var copy = CopyObject(player, pilotLocation, OBJECT_INVALID, "spaceship_copy");
@@ -1129,9 +1133,20 @@ namespace SWLOR.Game.Server.Service
             });
 
             // Entering space can run from the launch check (a scheduler task), where DelayCommand never runs.
+            // An astromech never sits: its stand-in stays plugged in at the controls.
+            var isAstromech = Astromech.IsAstromech(player);
             Scheduler.Schedule(() =>
             {
-                if (!GetIsObjectValid(copy) || !GetIsObjectValid(chair))
+                if (!GetIsObjectValid(copy))
+                    return;
+
+                if (isAstromech)
+                {
+                    AssignCommand(copy, () => ActionPlayAnimation(AstromechAnimations.Station, 1f, StandInPoseSeconds));
+                    return;
+                }
+
+                if (!GetIsObjectValid(chair))
                     return;
 
                 AssignCommand(copy, () =>
@@ -1541,7 +1556,12 @@ namespace SWLOR.Game.Server.Service
             var slotSeat = ShipCrewSeats.GetSeatForSlot(activatorShipStatus.Size, activatorShipStatus.SlotTags, slotNumber);
             if (isCrew)
             {
-                if (slotSeat != crewSeat)
+                // A droid works its own seat's slots; a player may also work the Pilot's socket modules from the
+                // astromech socket.
+                var worksSlot = isDroid
+                    ? slotSeat == crewSeat
+                    : ShipCrewSeats.SeatWorksSlot(crewSeat, slotSeat, _shipModules[shipModule.ItemTag].Type);
+                if (!worksSlot)
                 {
                     SendActivationMessage(user, $"That module belongs to the {ShipCrewSeats.GetSeatName(slotSeat)}.");
                     return;

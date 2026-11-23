@@ -196,6 +196,18 @@ namespace SWLOR.Game.Server.Service.PerkService
         }
 
         /// <summary>
+        /// Adds a skill requirement that only the named skill meets. Use it for a perk that needs the
+        /// humanoid body itself, so the skill another body frame trains in its place does not open it.
+        /// </summary>
+        public PerkBuilder RequirementHumanoidSkill(SkillType skill, int requiredRank)
+        {
+            var requirement = new PerkRequirementSkill(skill, requiredRank, false);
+            _activeLevel.Requirements.Add(requirement);
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a quest requirement to purchase and use the perk.
         /// </summary>
         /// <param name="questId">The quest Id to require.</param>

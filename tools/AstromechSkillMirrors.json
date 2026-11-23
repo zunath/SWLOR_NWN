@@ -1,0 +1,891 @@
+{
+ "mirrors": [
+  {
+   "skill": "UtilitySystems",
+   "skill_name": "Utility Systems",
+   "skill_description": "Ability of an astromech to repair, restore, and reinforce itself and its allies in the field.",
+   "source_skill": "FirstAid",
+   "source_skill_name": "First Aid",
+   "ids": {
+    "skill": 62,
+    "perk": 1103,
+    "recast": 604,
+    "feat": 3452,
+    "spell": 1841
+   },
+   "words": {
+    "Augments stim effects": "Stim effects from your Augments perks"
+   },
+   "lines": [
+    {
+     "source_category": "FirstAidTraumaMedic",
+     "source_name": "Trauma Medic",
+     "category": "UtilitySystemsRepair",
+     "category_id": 77,
+     "name": "Repair",
+     "perks": {
+      "MedKit": {
+       "id": "FieldRepair",
+       "icon": "fldrep",
+       "source_name": "Med Kit",
+       "name": "Field Repair"
+      },
+      "TreatmentKit": {
+       "id": "SystemPurge",
+       "icon": "syspurge",
+       "source_name": "Treatment Kit",
+       "name": "System Purge"
+      },
+      "MedicalInjectorRig": {
+       "id": "PrecisionTooling",
+       "icon": "prectool",
+       "source_name": "Medical Injector Rig",
+       "name": "Precision Tooling",
+       "short": "Prec. Tooling"
+      },
+      "EmergencySealant": {
+       "id": "SealantFoam",
+       "icon": "sealfoam",
+       "source_name": "Emergency Sealant",
+       "name": "Sealant Foam"
+      },
+      "KoltoMist": {
+       "id": "NaniteCloud",
+       "icon": "nanite",
+       "source_name": "Kolto Mist",
+       "name": "Nanite Cloud"
+      },
+      "Resuscitation": {
+       "id": "JumpStart",
+       "icon": "jumpstrt",
+       "source_name": "Resuscitation",
+       "name": "Jump Start"
+      },
+      "Infusion": {
+       "id": "MaintenanceRoutine",
+       "icon": "maint",
+       "source_name": "Infusion",
+       "name": "Maintenance Routine",
+       "short": "Maintenance"
+      },
+      "EmergencyTriage": {
+       "id": "EmergencyOverride",
+       "icon": "emrgovr",
+       "source_name": "Emergency Triage",
+       "name": "Emergency Override",
+       "short": "Emerg Override"
+      }
+     }
+    },
+    {
+     "source_category": "FirstAidCombatPharmacology",
+     "source_name": "Combat Pharmacology",
+     "category": "UtilitySystemsAugments",
+     "category_id": 78,
+     "name": "Augments",
+     "perks": {
+      "AdrenalStim": {
+       "id": "PowerTransfer",
+       "icon": "pwrxfer",
+       "source_name": "Adrenal Stim",
+       "name": "Power Transfer"
+      },
+      "Shielding": {
+       "id": "DeflectorField",
+       "icon": "deflfld",
+       "source_name": "Shielding",
+       "name": "Deflector Field",
+       "short": "Deflector Fld"
+      },
+      "Coagulant": {
+       "id": "HardenedBuffers",
+       "icon": "hardbuf",
+       "source_name": "Coagulant",
+       "name": "Hardened Buffers",
+       "short": "Hard. Buffers"
+      },
+      "PainSuppressant": {
+       "id": "DamperField",
+       "icon": "damper",
+       "source_name": "Pain Suppressant",
+       "name": "Damper Field"
+      },
+      "Antitoxin": {
+       "id": "FilterFlush",
+       "icon": "fltflush",
+       "source_name": "Antitoxin",
+       "name": "Filter Flush"
+      },
+      "FieldPharmacist": {
+       "id": "EfficientDispenser",
+       "icon": "effdisp",
+       "source_name": "Field Pharmacist",
+       "name": "Efficient Dispenser",
+       "short": "Eff. Dispenser"
+      },
+      "FocusStim": {
+       "id": "TargetingUplink",
+       "icon": "tgtuplnk",
+       "source_name": "Focus Stim",
+       "name": "Targeting Uplink",
+       "short": "Target Uplink"
+      },
+      "EmergencyCocktail": {
+       "id": "FullOverride",
+       "icon": "fullovr",
+       "source_name": "Emergency Cocktail",
+       "name": "Full Override"
+      }
+     }
+    }
+   ],
+   "animation": "LoopingConjure1"
+  },
+  {
+   "skill": "Armaments",
+   "skill_name": "Armaments",
+   "skill_description": "Ability of an astromech to fight with the tools built into its chassis: the shock prod and the blaster mount.",
+   "source_skill": "Staff",
+   "source_skill_name": "Staff",
+   "ids": {
+    "skill": 63,
+    "perk": 1119,
+    "recast": 616,
+    "feat": 3504,
+    "spell": 1867
+   },
+   "animation": "LoopingConjure1",
+   "cast_animation": false,
+   "words": {},
+   "lines": [
+    {
+     "source_skill": "Staff",
+     "source_skill_name": "Staff",
+     "source_file": "StaffPerkDefinition",
+     "source_coverage": "StaffPerkCoverage",
+     "source_category": "StaffCrusher",
+     "source_name": "Crusher",
+     "category": "ArmamentsShockProd",
+     "category_id": 79,
+     "name": "Shock Prod",
+     "perks": {
+      "Slam": {
+       "id": "ShockJab",
+       "icon": "shkjab",
+       "source_name": "Slam",
+       "name": "Shock Jab"
+      },
+      "CrushingMastery": {
+       "id": "OverchargedCapacitors",
+       "icon": "ovrcap",
+       "source_name": "Crushing Mastery",
+       "name": "Overcharged Capacitors",
+       "short": "Overcharged"
+      },
+      "ChargedBlows": {
+       "id": "ResidualCharge",
+       "icon": "reschrg",
+       "source_name": "Charged Blows",
+       "name": "Residual Charge",
+       "short": "Residual Chrg"
+      },
+      "RibBreaker": {
+       "id": "StunProd",
+       "icon": "stunprod",
+       "source_name": "Rib Breaker",
+       "name": "Stun Prod"
+      },
+      "HeavyHands": {
+       "id": "ArcConductors",
+       "icon": "arccond",
+       "source_name": "Heavy Hands",
+       "name": "Arc Conductors"
+      },
+      "GroundQuake": {
+       "id": "DischargeRing",
+       "icon": "dischrng",
+       "source_name": "Ground Quake",
+       "name": "Discharge Ring"
+      },
+      "CrusherStance": {
+       "id": "AggressionRoutine",
+       "icon": "aggro",
+       "source_name": "Crusher Stance",
+       "name": "Aggression Routine",
+       "short": "Aggression"
+      },
+      "BreakPosture": {
+       "id": "CircuitBreaker",
+       "icon": "circbrk",
+       "source_name": "Break Posture",
+       "name": "Circuit Breaker",
+       "short": "Circuit Break"
+      },
+      "SkullRattle": {
+       "id": "SensorScramble",
+       "icon": "sensscr",
+       "source_name": "Skull Rattle",
+       "name": "Sensor Scramble"
+      },
+      "Worldbreaker": {
+       "id": "OverloadBurst",
+       "icon": "ovrburst",
+       "source_name": "Worldbreaker",
+       "name": "Overload Burst"
+      }
+     },
+     "identity": "Staff"
+    },
+    {
+     "source_skill": "Rifle",
+     "source_skill_name": "Rifle",
+     "identity": "Rifle",
+     "source_file": "RiflePerkDefinition",
+     "source_coverage": "RiflePerkCoverage",
+     "source_category": "RiflePacification",
+     "source_name": "Pacification",
+     "category": "ArmamentsBlasterMount",
+     "category_id": 80,
+     "name": "Blaster Mount",
+     "perks": {
+      "SuppressingShot": {
+       "id": "SuppressiveBurst",
+       "icon": "supburst",
+       "source_name": "Suppressing Shot",
+       "name": "Suppressive Burst",
+       "short": "Suppr. Burst"
+      },
+      "PinningFire": {
+       "id": "TrackingServos",
+       "icon": "trkservo",
+       "source_name": "Pinning Fire",
+       "name": "Tracking Servos"
+      },
+      "SustainedFire": {
+       "id": "LockedBarrage",
+       "icon": "lockbarr",
+       "source_name": "Sustained Fire",
+       "name": "Locked Barrage"
+      },
+      "CripplingShot": {
+       "id": "HobblingBolt",
+       "icon": "hobbolt",
+       "source_name": "Crippling Shot",
+       "name": "Hobbling Bolt"
+      },
+      "SpottersRhythm": {
+       "id": "TargetAnalysis",
+       "icon": "tgtanal",
+       "source_name": "Spotter's Rhythm",
+       "name": "Target Analysis"
+      },
+      "SuppressiveLine": {
+       "id": "SweepingFire",
+       "icon": "swpfire",
+       "source_name": "Suppressive Line",
+       "name": "Sweeping Fire"
+      },
+      "SuppressionStance": {
+       "id": "SuppressionProtocol",
+       "icon": "supproto",
+       "source_name": "Suppression Stance",
+       "name": "Suppression Protocol",
+       "short": "Suppr Protocol"
+      },
+      "Overwatch": {
+       "id": "OverwatchSubroutine",
+       "icon": "ovwsub",
+       "source_name": "Overwatch",
+       "name": "Overwatch Subroutine",
+       "short": "Overwatch Sub"
+      },
+      "ContainmentNet": {
+       "id": "ContainmentPattern",
+       "icon": "contpat",
+       "source_name": "Containment Net",
+       "name": "Containment Pattern",
+       "short": "Containment"
+      },
+      "KillBox": {
+       "id": "DesignateTarget",
+       "icon": "desigtgt",
+       "source_name": "Kill Box",
+       "name": "Designate Target",
+       "short": "Designate Tgt"
+      }
+     }
+    }
+   ],
+   "hotbar": {
+    "feats": [
+     "ShockJab1",
+     "ShockJab2",
+     "ShockJab3",
+     "ShockJab4",
+     "StunProd1",
+     "StunProd2",
+     "StunProd3",
+     "SuppressiveBurst1",
+     "SuppressiveBurst2",
+     "SuppressiveBurst3",
+     "SuppressiveBurst4",
+     "HobblingBolt1",
+     "HobblingBolt2",
+     "HobblingBolt3",
+     "SweepingFire1",
+     "SweepingFire2",
+     "DesignateTarget1"
+    ],
+    "make_room": [
+     "SoulDevourerStance1",
+     "SniperStance1",
+     "SkirmisherStance1",
+     "SentinelStance1",
+     "PerceptiveStance1"
+    ]
+   }
+  }
+ ],
+ "statuses": [
+  {
+   "class": "AdrenalStimStatusEffect",
+   "name": "Power Transfer",
+   "label": "AstromechPowerTransfer",
+   "icon": "ief_am_pwrxfer",
+   "category": "Beneficial",
+   "rank": "",
+   "row": 526
+  },
+  {
+   "class": "Shielding1StatusEffect",
+   "name": "Deflector Field I",
+   "label": "AstromechDeflectorField1",
+   "icon": "ief_am_deflfld1",
+   "category": "Beneficial",
+   "rank": "1",
+   "row": 527
+  },
+  {
+   "class": "Shielding2StatusEffect",
+   "name": "Deflector Field II",
+   "label": "AstromechDeflectorField2",
+   "icon": "ief_am_deflfld2",
+   "category": "Beneficial",
+   "rank": "2",
+   "row": 528
+  },
+  {
+   "class": "Shielding3StatusEffect",
+   "name": "Deflector Field III",
+   "label": "AstromechDeflectorField3",
+   "icon": "ief_am_deflfld3",
+   "category": "Beneficial",
+   "rank": "3",
+   "row": 529
+  },
+  {
+   "class": "PainSuppressant1StatusEffect",
+   "name": "Damper Field I",
+   "label": "AstromechDamperField1",
+   "icon": "ief_am_damper1",
+   "category": "Beneficial",
+   "rank": "1",
+   "row": 530
+  },
+  {
+   "class": "PainSuppressant2StatusEffect",
+   "name": "Damper Field II",
+   "label": "AstromechDamperField2",
+   "icon": "ief_am_damper2",
+   "category": "Beneficial",
+   "rank": "2",
+   "row": 531
+  },
+  {
+   "class": "Antitoxin1StatusEffect",
+   "name": "Filter Flush",
+   "label": "AstromechFilterFlush",
+   "icon": "ief_am_fltflush",
+   "category": "Beneficial",
+   "rank": "",
+   "row": 532
+  },
+  {
+   "class": "FocusStim1StatusEffect",
+   "name": "Targeting Uplink I",
+   "label": "AstromechTargetingUplink1",
+   "icon": "ief_am_tgtuplnk1",
+   "category": "Beneficial",
+   "rank": "1",
+   "row": 533
+  },
+  {
+   "class": "FocusStim2StatusEffect",
+   "name": "Targeting Uplink II",
+   "label": "AstromechTargetingUplink2",
+   "icon": "ief_am_tgtuplnk2",
+   "category": "Beneficial",
+   "rank": "2",
+   "row": 534
+  },
+  {
+   "class": "EmergencyCocktailStatusEffect",
+   "name": "Full Override",
+   "label": "AstromechFullOverride",
+   "icon": "ief_am_fullovr",
+   "category": "Beneficial",
+   "rank": "",
+   "row": 535
+  },
+  {
+   "class": "KoltoMistHealingStatusEffect",
+   "name": "Nanite Cloud",
+   "label": "AstromechNaniteCloud",
+   "icon": "ief_am_nanite",
+   "category": "Beneficial",
+   "rank": "",
+   "row": 536
+  },
+  {
+   "class": "CrusherStanceStatusEffect",
+   "name": "Aggression Routine",
+   "label": "AstromechAggressionRoutine",
+   "icon": "ief_am_aggro",
+   "category": "Self",
+   "rank": "",
+   "row": 537
+  },
+  {
+   "class": "SuppressionStanceStatusEffect",
+   "name": "Suppression Protocol",
+   "label": "AstromechSuppressionProtocol",
+   "icon": "ief_am_supproto",
+   "category": "Self",
+   "rank": "",
+   "row": 538
+  },
+  {
+   "class": "KillBoxStatusEffect",
+   "name": "Designate Target",
+   "label": "AstromechDesignateTarget",
+   "icon": "ief_am_desigtgt",
+   "category": "Harmful",
+   "rank": "",
+   "row": 539
+  }
+ ],
+ "ledger": {
+  "UtilitySystems": {
+   "HardenedBuffersTrait": {
+    "feat": 3452,
+    "name": 193157,
+    "description": 193158
+   },
+   "EfficientDispenserTrait": {
+    "feat": 3453,
+    "name": 193159,
+    "description": 193160
+   },
+   "PrecisionToolingTrait": {
+    "feat": 3454,
+    "name": 193161,
+    "description": 193162
+   },
+   "SealantFoamTrait": {
+    "feat": 3455,
+    "name": 193163,
+    "description": 193164
+   },
+   "NaniteCloud1": {
+    "feat": 3456,
+    "name": 193165,
+    "description": 193166,
+    "spell": 1841
+   },
+   "JumpStart1": {
+    "feat": 3457,
+    "name": 193167,
+    "description": 193168,
+    "spell": 1842
+   },
+   "SystemPurge2": {
+    "feat": 3458,
+    "name": 193169,
+    "description": 193170,
+    "spell": 1843
+   },
+   "FieldRepair2": {
+    "feat": 3459,
+    "name": 193171,
+    "description": 193172,
+    "spell": 1844
+   },
+   "MaintenanceRoutine1": {
+    "feat": 3460,
+    "name": 193173,
+    "description": 193174,
+    "spell": 1845
+   },
+   "NaniteCloud2": {
+    "feat": 3461,
+    "name": 193175,
+    "description": 193176,
+    "spell": 1846
+   },
+   "JumpStart2": {
+    "feat": 3462,
+    "name": 193177,
+    "description": 193178,
+    "spell": 1847
+   },
+   "FieldRepair3": {
+    "feat": 3463,
+    "name": 193179,
+    "description": 193180,
+    "spell": 1848
+   },
+   "SystemPurge3": {
+    "feat": 3464,
+    "name": 193181,
+    "description": 193182,
+    "spell": 1849
+   },
+   "EmergencyOverride1": {
+    "feat": 3465,
+    "name": 193183,
+    "description": 193184,
+    "spell": 1850
+   },
+   "MaintenanceRoutine2": {
+    "feat": 3466,
+    "name": 193185,
+    "description": 193186,
+    "spell": 1851
+   },
+   "FieldRepair4": {
+    "feat": 3467,
+    "name": 193187,
+    "description": 193188,
+    "spell": 1852
+   },
+   "PowerTransfer1": {
+    "feat": 3468,
+    "name": 193189,
+    "description": 193190,
+    "spell": 1853
+   },
+   "DeflectorField1": {
+    "feat": 3469,
+    "name": 193191,
+    "description": 193192,
+    "spell": 1854
+   },
+   "PowerTransfer2": {
+    "feat": 3470,
+    "name": 193193,
+    "description": 193194,
+    "spell": 1855
+   },
+   "DamperField1": {
+    "feat": 3471,
+    "name": 193195,
+    "description": 193196,
+    "spell": 1856
+   },
+   "FilterFlush1": {
+    "feat": 3472,
+    "name": 193197,
+    "description": 193198,
+    "spell": 1857
+   },
+   "DeflectorField2": {
+    "feat": 3473,
+    "name": 193199,
+    "description": 193200,
+    "spell": 1858
+   },
+   "TargetingUplink1": {
+    "feat": 3474,
+    "name": 193201,
+    "description": 193202,
+    "spell": 1859
+   },
+   "PowerTransfer3": {
+    "feat": 3475,
+    "name": 193203,
+    "description": 193204,
+    "spell": 1860
+   },
+   "DamperField2": {
+    "feat": 3476,
+    "name": 193205,
+    "description": 193206,
+    "spell": 1861
+   },
+   "DeflectorField3": {
+    "feat": 3477,
+    "name": 193207,
+    "description": 193208,
+    "spell": 1862
+   },
+   "TargetingUplink2": {
+    "feat": 3478,
+    "name": 193209,
+    "description": 193210,
+    "spell": 1863
+   },
+   "FullOverride1": {
+    "feat": 3479,
+    "name": 193211,
+    "description": 193212,
+    "spell": 1864
+   },
+   "FieldRepair1": {
+    "feat": 3480,
+    "name": 193213,
+    "description": 193214,
+    "spell": 1865
+   },
+   "SystemPurge1": {
+    "feat": 3481,
+    "name": 193215,
+    "description": 193216,
+    "spell": 1866
+   },
+   "#skill": {
+    "name": 193217
+   }
+  },
+  "Armaments": {
+   "ContainmentPatternTrait": {
+    "feat": 3504,
+    "name": 193222,
+    "description": 193223
+   },
+   "OverwatchSubroutineTrait": {
+    "feat": 3505,
+    "name": 193224,
+    "description": 193225
+   },
+   "TrackingServosTrait": {
+    "feat": 3506,
+    "name": 193226,
+    "description": 193227
+   },
+   "CircuitBreakerTrait": {
+    "feat": 3507,
+    "name": 193228,
+    "description": 193229
+   },
+   "OverchargedCapacitorsTrait": {
+    "feat": 3508,
+    "name": 193230,
+    "description": 193231
+   },
+   "ArcConductorsTrait": {
+    "feat": 3509,
+    "name": 193232,
+    "description": 193233
+   },
+   "SensorScrambleTrait": {
+    "feat": 3510,
+    "name": 193234,
+    "description": 193235
+   },
+   "ResidualChargeTrait": {
+    "feat": 3511,
+    "name": 193236,
+    "description": 193237
+   },
+   "LockedBarrageTrait": {
+    "feat": 3512,
+    "name": 193238,
+    "description": 193239
+   },
+   "TargetAnalysisTrait": {
+    "feat": 3513,
+    "name": 193240,
+    "description": 193241
+   },
+   "AggressionRoutine1": {
+    "feat": 3514,
+    "name": 193242,
+    "description": 193243,
+    "spell": 1867
+   },
+   "DischargeRing1": {
+    "feat": 3515,
+    "name": 193244,
+    "description": 193245,
+    "spell": 1868
+   },
+   "DischargeRing2": {
+    "feat": 3516,
+    "name": 193246,
+    "description": 193247,
+    "spell": 1869
+   },
+   "StunProd1": {
+    "feat": 3517,
+    "name": 193248,
+    "description": 193249,
+    "spell": 1870
+   },
+   "StunProd2": {
+    "feat": 3518,
+    "name": 193250,
+    "description": 193251,
+    "spell": 1871
+   },
+   "StunProd3": {
+    "feat": 3519,
+    "name": 193252,
+    "description": 193253,
+    "spell": 1872
+   },
+   "SweepingFire1": {
+    "feat": 3520,
+    "name": 193254,
+    "description": 193255,
+    "spell": 1873
+   },
+   "OverloadBurst1": {
+    "feat": 3521,
+    "name": 193256,
+    "description": 193257,
+    "spell": 1874
+   },
+   "HobblingBolt1": {
+    "feat": 3522,
+    "name": 193258,
+    "description": 193259,
+    "spell": 1875
+   },
+   "HobblingBolt2": {
+    "feat": 3523,
+    "name": 193260,
+    "description": 193261,
+    "spell": 1876
+   },
+   "HobblingBolt3": {
+    "feat": 3524,
+    "name": 193262,
+    "description": 193263,
+    "spell": 1877
+   },
+   "ShockJab1": {
+    "feat": 3525,
+    "name": 193264,
+    "description": 193265,
+    "spell": 1878
+   },
+   "ShockJab2": {
+    "feat": 3526,
+    "name": 193266,
+    "description": 193267,
+    "spell": 1879
+   },
+   "ShockJab3": {
+    "feat": 3527,
+    "name": 193268,
+    "description": 193269,
+    "spell": 1880
+   },
+   "SuppressiveBurst1": {
+    "feat": 3528,
+    "name": 193270,
+    "description": 193271,
+    "spell": 1881
+   },
+   "SuppressiveBurst2": {
+    "feat": 3529,
+    "name": 193272,
+    "description": 193273,
+    "spell": 1882
+   },
+   "SuppressiveBurst3": {
+    "feat": 3530,
+    "name": 193274,
+    "description": 193275,
+    "spell": 1883
+   },
+   "SuppressiveBurst4": {
+    "feat": 3531,
+    "name": 193276,
+    "description": 193277,
+    "spell": 1884
+   },
+   "SweepingFire2": {
+    "feat": 3532,
+    "name": 193278,
+    "description": 193279,
+    "spell": 1885
+   },
+   "ShockJab4": {
+    "feat": 3533,
+    "name": 193280,
+    "description": 193281,
+    "spell": 1886
+   },
+   "SuppressionProtocol1": {
+    "feat": 3534,
+    "name": 193282,
+    "description": 193283,
+    "spell": 1887
+   },
+   "DesignateTarget1": {
+    "feat": 3535,
+    "name": 193284,
+    "description": 193285,
+    "spell": 1888
+   },
+   "#skill": {
+    "name": 193286
+   }
+  },
+  "#statuses": {
+   "AstromechPowerTransfer": {
+    "name": 193287
+   },
+   "AstromechDeflectorField1": {
+    "name": 193288
+   },
+   "AstromechDeflectorField2": {
+    "name": 193289
+   },
+   "AstromechDeflectorField3": {
+    "name": 193290
+   },
+   "AstromechDamperField1": {
+    "name": 193291
+   },
+   "AstromechDamperField2": {
+    "name": 193292
+   },
+   "AstromechFilterFlush": {
+    "name": 193293
+   },
+   "AstromechTargetingUplink1": {
+    "name": 193294
+   },
+   "AstromechTargetingUplink2": {
+    "name": 193295
+   },
+   "AstromechFullOverride": {
+    "name": 193296
+   },
+   "AstromechNaniteCloud": {
+    "name": 193297
+   },
+   "AstromechAggressionRoutine": {
+    "name": 193298
+   },
+   "AstromechSuppressionProtocol": {
+    "name": 193299
+   },
+   "AstromechDesignateTarget": {
+    "name": 193300
+   }
+  }
+ }
+}

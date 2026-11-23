@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             foreach (var reward in rewardItems)
             {
-                page.AddResponse(reward.MenuName, () =>
+                page.AddResponse(reward.GetMenuName(Player), () =>
                 {
                     HandleRewardSelection(reward);
                 });

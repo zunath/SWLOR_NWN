@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // Players shouldn't be able to see this pop-up but in case they get to it,
                     // prevent them from depositing XP into a skill they shouldn't have access to.
                     var skill = Skill.GetSkillDetails(_skillType);
-                    if (!skill.IsAvailableToCharacterType(dbPlayer.CharacterType))
+                    if (!skill.IsAvailableTo(dbPlayer.CharacterType, dbPlayer.BodyFrame))
                     {
                         return;
                     }

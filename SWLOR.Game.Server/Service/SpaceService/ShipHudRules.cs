@@ -87,12 +87,14 @@ namespace SWLOR.Game.Server.Service.SpaceService
             foreach (var active in status.ActiveModules.OrderBy(x => GetListOrder(x.Slot)))
             {
                 var slotSeat = ShipCrewSeats.GetSeatForSlot(status.Size, status.SlotTags, active.Slot);
-                if (seat.HasValue && slotSeat != seat.Value)
-                    continue;
-
                 var module = GetModule(status, active.Slot);
                 var detail = module == null ? null : getDetail(module.ItemTag);
                 if (detail == null)
+                    continue;
+
+                // A seat lists the modules it works: its own slots, or for the astromech socket the Pilot's repair
+                // and capacitor modules.
+                if (seat.HasValue && !ShipCrewSeats.SeatWorksSlot(seat.Value, slotSeat, detail.Type))
                     continue;
 
                 var mode = ShipToggleRules.GetTargetMode(detail.Type);

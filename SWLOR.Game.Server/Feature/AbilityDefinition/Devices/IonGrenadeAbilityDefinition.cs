@@ -146,10 +146,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static bool IsDroid(uint target)
         {
-            var racialType = GetRacialType(target);
-            return racialType == RacialType.Droid ||
-                   racialType == RacialType.Construct ||
-                   racialType == RacialType.Robot;
+            return Race.IsMechanical(GetRacialType(target));
         }
 
     }

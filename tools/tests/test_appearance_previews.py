@@ -276,6 +276,25 @@ class NamingParityTests(unittest.TestCase):
             for view in VIEWS:
                 preview_resref(key, view)  # raises when a key cannot fit a resref
 
+    def test_astromech_plating_is_pictured_as_the_first_body(self):
+        # Chassis Plating carries a torso number no body has a model for; the editor shows a chassis body for it.
+        torso = jobs.plating_torso()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            humanoid = {job.key for job in self.build_jobs(root)}
+            self.assertFalse([key for key in humanoid if "r0_" in key], "no body uses the astromech letter here")
+            table = root / "appearance.2da"
+            astromech = jobs.appearance_ids()["Astromech"]
+            table.write_text(table.read_text(encoding="latin-1").replace(f"{astromech} row{astromech} H",
+                                                                         f"{astromech} row{astromech} R"),
+                             encoding="latin-1")
+            built = {job.key: job for job in jobs.build(root, lambda name: True)}
+        for gender in "fm":
+            job = built[f"p{gender}r0_chest{torso:03d}"]
+            self.assertEqual(job.model, f"p{gender}r0_chest001")
+            self.assertEqual(job.weapon, "")
+            preview_resref(job.key, "a")
+
     def test_species_body_choices_override_inherited_defaults(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

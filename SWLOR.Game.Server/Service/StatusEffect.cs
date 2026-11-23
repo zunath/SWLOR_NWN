@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.FrameProfilerService;
 using SWLOR.Game.Server.Service.PvpCombatService;
@@ -834,7 +835,7 @@ namespace SWLOR.Game.Server.Service
                 string BuildApplicationMessage(uint receiver)
                 {
                     var name = PlayerName.GetDisplayName(receiver, creature);
-                    var effectName = statusEffect.Name;
+                    var effectName = AstromechStatusEffectNames.Resolve(statusEffect, source);
                     var applicationMessage = $"{name} receives the effect of {effectName}";
                     if (GetIsObjectValid(source) && source != creature)
                     {
@@ -1417,9 +1418,11 @@ namespace SWLOR.Game.Server.Service
                 statusEffect.Id);
             effect = TagEffect(effect, statusEffect.Id);
 
-            if (statusEffect.Icon != EffectIconType.Invalid)
+            // An effect applied by an astromech shows under the name and artwork of the astromech ability.
+            var icon = AstromechStatusEffectNames.ResolveIcon(statusEffect, statusEffect.Source);
+            if (icon != EffectIconType.Invalid)
             {
-                var iconEffect = TagEffect(EffectIcon(statusEffect.Icon), statusEffect.Id);
+                var iconEffect = TagEffect(EffectIcon(icon), statusEffect.Id);
                 effect = LinkEffect(effect, iconEffect);
             }
 
@@ -1923,6 +1926,20 @@ namespace SWLOR.Game.Server.Service
                 : statusEffectClass?.Name ?? "Unknown";
         }
 
+        /// <summary>
+        /// The name of a status effect as it shows on this creature: the name of the ability that applied it.
+        /// </summary>
+        public static string GetStatusEffectName(uint creature, Type statusEffectClass)
+        {
+            var active = GetCreatureStatusEffects(creature)
+                .GetAllEffects()
+                .FirstOrDefault(effect => effect.GetType() == statusEffectClass);
+
+            return active != null
+                ? AstromechStatusEffectNames.Resolve(active, active.Source)
+                : GetStatusEffectName(statusEffectClass);
+        }
+
         public static StatusEffectSourceType GetStatusEffectSourceType(Type statusEffectClass)
         {
             return statusEffectClass != null && _statusEffects.TryGetValue(statusEffectClass, out var statusEffect)
@@ -1979,7 +1996,7 @@ namespace SWLOR.Game.Server.Service
         public static List<Type> GetStatusEffectsFromIcon(EffectIconType effectIcon)
         {
             return _statusEffects
-                .Where(x => x.Value.Create().Icon == effectIcon)
+                .Where(x => AstromechStatusEffectNames.ShowsIcon(x.Value.Create(), effectIcon))
                 .Select(x => x.Key)
                 .ToList();
         }
@@ -1988,7 +2005,7 @@ namespace SWLOR.Game.Server.Service
         {
             var activeStatusTypes = GetCreatureStatusEffects(creature)
                 .GetAllEffects()
-                .Where(effect => effect.Icon == effectIcon)
+                .Where(effect => AstromechStatusEffectNames.ResolveIcon(effect, effect.Source) == effectIcon)
                 .Select(effect => effect.GetType())
                 .ToList();
 
@@ -2136,7 +2153,7 @@ namespace SWLOR.Game.Server.Service
                 statusEffect.SendsWornOffMessage &&
                 IsLastInstanceOfType(creatureEffects, statusEffect))
             {
-                var effectName = statusEffect.Name;
+                var effectName = AstromechStatusEffectNames.Resolve(statusEffect, statusEffect.Source);
                 string BuildWornOffMessage(uint receiver) =>
                     $"{PlayerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.";
                 if (ShouldAnnounceNearby(Stealth.IsConcealed(creature), false))

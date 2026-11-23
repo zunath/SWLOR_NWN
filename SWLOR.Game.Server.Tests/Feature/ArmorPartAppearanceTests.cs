@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -66,6 +67,19 @@ public class ArmorPartAppearanceTests
         // The neck has its own repair; unset slots (zero) always render the body part.
         Assert.That(parts, Is.EquivalentTo(new[] { AppearanceArmor.LeftThigh, AppearanceArmor.LeftShin }));
         Assert.That(ArmorPartAppearance.FindUnrenderableParts(string.Empty, _ => 30, _ => 0, _ => false), Is.Empty);
+    }
+
+    [Test]
+    public void ThePlatingTorsoNeedsNoModel()
+    {
+        // Astromech Chassis Plating carries a torso with no model on any body: it shows the wearer's own body,
+        // so it is never repaired away and the editor keeps offering it.
+        Assert.That(ArmorPartAppearance.IsRenderable("pmr0", AppearanceArmor.Torso, AstromechBody.PlatingTorso,
+            _ => 0, _ => false), Is.True);
+        Assert.That(ArmorPartAppearance.FindUnrenderableParts("pmr0",
+            part => part == AppearanceArmor.Torso ? AstromechBody.PlatingTorso : 0, _ => 0, _ => false), Is.Empty);
+        Assert.That(ArmorPartAppearance.IsRenderable("pmr0", AppearanceArmor.LeftThigh, AstromechBody.PlatingTorso,
+            _ => 0, _ => false), Is.False, "only the torso slot carries the plating number");
     }
 
     [Test]
@@ -151,6 +165,13 @@ public class ArmorPartAppearanceTests
         foreach (var part in BareSlots)
         {
             var styles = ArmorAppearanceCatalog.GetStyles(definition, part);
+            if (type == AppearanceType.Astromech && part == AppearanceArmor.Torso)
+            {
+                // Its one torso style is the plating number, which draws nothing and carries the plating's icon.
+                Assert.That(styles, Is.EqualTo(new[] { AstromechBody.PlatingTorso }));
+                continue;
+            }
+
             var offersNone = part == AppearanceArmor.Neck || styles.Contains(0);
             Assert.That(styles.Contains(1), Is.EqualTo(!offersNone), $"{type} {part}");
             Assert.That(styles, Does.Not.Contain(2), $"{type} {part}");

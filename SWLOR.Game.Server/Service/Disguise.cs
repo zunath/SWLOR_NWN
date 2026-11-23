@@ -274,7 +274,7 @@ namespace SWLOR.Game.Server.Service
                 return Reject($"Disguise biographies may be no longer than {MaxBiographyLength} characters.");
 
             portraitInternalId = Math.Clamp(portraitInternalId, 1, GetMaxPortraitCount());
-            soundSetId = ResolveSoundSetId(soundSetId);
+            soundSetId = ResolveSoundSetId(player, soundSetId);
 
             var previousPrivateName = disguise.PrivateName;
             var previousDescriptor = disguise.Descriptor;
@@ -802,7 +802,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            var soundSetId = ResolveSoundSetId(disguise.SoundSetId);
+            var soundSetId = ResolveSoundSetId(player, disguise.SoundSetId);
             if (soundSetId >= 0)
                 SetSoundset(player, soundSetId);
 
@@ -838,6 +838,17 @@ namespace SWLOR.Game.Server.Service
         private static int GetMaxPortraitCount()
         {
             return Math.Max(1, Cache.PortraitCount);
+        }
+
+        /// <summary>
+        /// The voice set a disguise gives this player. An astromech has no humanoid voice: whatever the disguise
+        /// asks for, it keeps the astromech voice set.
+        /// </summary>
+        public static int ResolveSoundSetId(uint player, int soundSetId)
+        {
+            return Astromech.IsAstromech(player)
+                ? Astromech.SoundSetId
+                : ResolveSoundSetId(soundSetId);
         }
 
         private static int ResolveSoundSetId(int soundSetId)

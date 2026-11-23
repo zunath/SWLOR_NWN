@@ -1,0 +1,150 @@
+{
+  "name": "Astromech: Shock Prod against the Staff Crusher it copies",
+  "description": "Stationary PvP calibration of the astromech melee line. Armaments - Shock Prod is a number-for-number copy of Staff - Crusher, and a shock prod is a stat copy of the quarterstaff of its tier, so the two sides are the same build under different names. The duel should be even over many seeds; a lasting lean to one side means a rule reads Staff where it should read the astromech's Armaments.",
+  "durationSeconds": 600,
+  "timeStepSeconds": 0.1,
+  "isPvp": true,
+  "teams": [
+    {
+      "name": "shock prod",
+      "members": [
+        {
+          "name": "astromech",
+          "maxHp": 805,
+          "hpRegenPer30Seconds": 26,
+          "might": 26,
+          "willpower": 20,
+          "social": 10,
+          "maxFp": 55,
+          "fpRegenPer30Seconds": 8,
+          "maxStm": 61,
+          "stmRegenPer30Seconds": 21,
+          "reactionSeconds": 0.5,
+          "perks": [
+            "ShockJab:4",
+            "OverchargedCapacitors",
+            "ResidualCharge:3",
+            "StunProd:3",
+            "ArcConductors",
+            "DischargeRing:2",
+            "AggressionRoutine",
+            "CircuitBreaker",
+            "SensorScramble",
+            "OverloadBurst"
+          ],
+          "weaponCombat": {
+            "weaponDamage": 24,
+            "weaponSkillRank": 50,
+            "weaponRequiredSkillRank": 50,
+            "weaponDelayUnits": 270,
+            "attack": 128,
+            "accuracy": 148,
+            "defense": 128,
+            "evasion": 128,
+            "might": 26,
+            "perception": 26,
+            "vitality": 26,
+            "stance": "AggressionRoutine",
+            "allowTechniqueAbilities": true,
+            "enableCriticals": true
+          },
+          "autoAttack": {
+            "attacksPerSecond": 1,
+            "damage": {
+              "min": 1,
+              "max": 1
+            }
+          },
+          "abilities": [
+            {
+              "feat": "OverloadBurst1",
+              "target": "Self"
+            },
+            {
+              "feat": "DischargeRing2",
+              "target": "Self"
+            },
+            {
+              "feat": "StunProd3"
+            },
+            {
+              "feat": "ShockJab4",
+              "minimumStaminaBeforeUse": 20
+            }
+          ],
+          "bodyFrame": "Astromech"
+        }
+      ]
+    },
+    {
+      "name": "staff",
+      "members": [
+        {
+          "name": "staff crusher",
+          "maxHp": 805,
+          "hpRegenPer30Seconds": 26,
+          "might": 26,
+          "willpower": 20,
+          "social": 10,
+          "maxFp": 55,
+          "fpRegenPer30Seconds": 8,
+          "maxStm": 61,
+          "stmRegenPer30Seconds": 21,
+          "reactionSeconds": 0.5,
+          "perks": [
+            "Slam:4",
+            "CrushingMastery",
+            "ChargedBlows:3",
+            "RibBreaker:3",
+            "HeavyHands",
+            "GroundQuake:2",
+            "CrusherStance",
+            "BreakPosture",
+            "SkullRattle",
+            "Worldbreaker"
+          ],
+          "weaponCombat": {
+            "weaponDamage": 24,
+            "weaponSkillRank": 50,
+            "weaponRequiredSkillRank": 50,
+            "weaponDelayUnits": 270,
+            "attack": 128,
+            "accuracy": 148,
+            "defense": 128,
+            "evasion": 128,
+            "might": 26,
+            "perception": 26,
+            "vitality": 26,
+            "stance": "Crusher",
+            "allowTechniqueAbilities": true,
+            "enableCriticals": true
+          },
+          "autoAttack": {
+            "attacksPerSecond": 1,
+            "damage": {
+              "min": 1,
+              "max": 1
+            }
+          },
+          "abilities": [
+            {
+              "feat": "Worldbreaker1",
+              "target": "Self"
+            },
+            {
+              "feat": "GroundQuake2",
+              "target": "Self"
+            },
+            {
+              "feat": "RibBreaker3"
+            },
+            {
+              "feat": "Slam4",
+              "minimumStaminaBeforeUse": 20
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -71,6 +71,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Bracer,
             BaseItem.Gloves,
             BaseItem.QuarterStaff,
+            BaseItem.ShockProd,
             BaseItem.Katar,
             BaseItem.PowerGlove,
             BaseItem.CreatureBludgeonWeapon,
@@ -82,6 +83,7 @@ namespace SWLOR.Game.Server.Service
         {
             BaseItem.Cannon,
             BaseItem.Rifle,
+            BaseItem.BlasterMount,
             BaseItem.Longbow,
             BaseItem.Pistol,
             BaseItem.LegacyPistol,
@@ -656,27 +658,47 @@ namespace SWLOR.Game.Server.Service
         public static string GetRacialEquipError(uint creature, uint item)
         {
             var race = GetRacialType(creature);
-
-            var needsDroidLimitation = race == RacialType.Droid && DroidBaseItemTypes.Contains(GetBaseItemType(item));
-            var itemHasDroidIP = false;
+            var limitations = new List<RacialType>();
 
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
-                if (GetItemPropertyType(ip) != ItemPropertyType.UseLimitationRacialType)
-                    continue;
-
-                var limitationRace = (RacialType)GetItemPropertySubType(ip);
-                if (limitationRace != RacialType.Droid)
-                    continue;
-
-                if (race != RacialType.Droid)
-                    return "This item may only be equipped by Droids.";
-
-                if (needsDroidLimitation)
-                    itemHasDroidIP = true;
+                if (GetItemPropertyType(ip) == ItemPropertyType.UseLimitationRacialType)
+                    limitations.Add((RacialType)GetItemPropertySubType(ip));
             }
 
-            if (needsDroidLimitation && !itemHasDroidIP)
+            return GetRacialEquipError(race, GetIsPC(creature), GetBaseItemType(item), limitations);
+        }
+
+        /// <summary>The base item of every fishing rod (baseitems.2da row 45, "fishingrod").</summary>
+        public const BaseItem FishingRodBaseItem = BaseItem.MagicStaff;
+
+        /// <summary>
+        /// The racial equip rules, apart from the engine: Droid gear is for Droids and Droids wear nothing else in
+        /// the armor slots; astromech modules are for astromechs, and an astromech player equips nothing else but a
+        /// fishing rod.
+        /// </summary>
+        public static string GetRacialEquipError(
+            RacialType race,
+            bool isPlayer,
+            BaseItem baseItem,
+            IReadOnlyCollection<RacialType> limitations)
+        {
+            var isDroidItem = limitations.Contains(RacialType.Droid);
+            var isAstromechItem = limitations.Contains(RacialType.Astromech);
+
+            if (isAstromechItem && race != RacialType.Astromech)
+                return "This item may only be equipped by Astromechs.";
+
+            // A fishing rod is a working tool of an open skill (Agriculture), so an astromech holds one too.
+            if (race == RacialType.Astromech)
+                return isAstromechItem || !isPlayer || baseItem == FishingRodBaseItem
+                    ? string.Empty
+                    : "Astromechs may only equip astromech modules.";
+
+            if (isDroidItem && race != RacialType.Droid)
+                return "This item may only be equipped by Droids.";
+
+            if (race == RacialType.Droid && DroidBaseItemTypes.Contains(baseItem) && !isDroidItem)
                 return "Droids may not equip that item.";
 
             return string.Empty;
@@ -819,6 +841,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Katar,
             BaseItem.PowerGlove,
             BaseItem.QuarterStaff,
+            BaseItem.ShockProd,
             BaseItem.LightMace,
             BaseItem.Pistol,
             BaseItem.LegacyPistol,
@@ -830,6 +853,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Cannon,
             BaseItem.Longbow,
             BaseItem.Rifle,
+            BaseItem.BlasterMount,
         };
 
         /// <summary>
@@ -991,7 +1015,9 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Club,
             BaseItem.MorningStar,
             BaseItem.LightFlail,
-            BaseItem.LightHammer
+            BaseItem.LightHammer,
+            // The astromech's shock prod follows every staff weapon rule; only its skill differs.
+            BaseItem.ShockProd
         };
 
         /// <summary>
@@ -1021,7 +1047,9 @@ namespace SWLOR.Game.Server.Service
         {
             BaseItem.Longbow,
             BaseItem.Rifle,
-            BaseItem.Cannon
+            BaseItem.Cannon,
+            // The astromech's blaster mount follows every rifle weapon rule; only its skill differs.
+            BaseItem.BlasterMount
         };
 
         /// <summary>
@@ -1065,6 +1093,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.TwoBladedSword,
             BaseItem.Saberstaff,
             BaseItem.QuarterStaff,
+            BaseItem.ShockProd,
             BaseItem.LightMace
         };
 

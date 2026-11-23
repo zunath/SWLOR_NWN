@@ -135,7 +135,8 @@ public sealed class EshanAuthoringReviewTests
     }
 
     [TestCase("hc_nema_shop", 4, "distilled_water,butter_1,sugar,bread")]
-    [TestCase("hc_vesa_shop", 0, "tran_tunic,tran_cap,tran_boots,tran_gloves")]
+    // Vesa's clothing panel also sells the astromech's own traveler set beside the humanoid one.
+    [TestCase("hc_vesa_shop", 0, "tran_tunic,tran_cap,tran_boots,tran_gloves,am_tran_tunic,am_tran_cap,am_tran_boots,am_tran_gloves")]
     [TestCase("hc_orel_shop", 1, "b_knife,b_longsword,b_spear")]
     public void HighcrestShops_KeepTheirAuthoredStockInTheCorrectPanels(string resref, int panel, string expected)
     {

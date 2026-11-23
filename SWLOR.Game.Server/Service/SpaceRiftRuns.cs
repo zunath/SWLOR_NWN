@@ -121,8 +121,11 @@ namespace SWLOR.Game.Server.Service
 
             if (!string.IsNullOrEmpty(refusal))
                 SendMessageToPC(user, ColorToken.Red($"{refusal} Your key is returned."));
+            // The returned key cannot be given twice: nothing saved marks it pending, so a failed save only leaves it
+            // to the next character save.
             CreateItemOnObject(resref, user);
-            CharacterCheckpoint.Save(user);
+            if (!CharacterCheckpoint.Save(user))
+                Log.Write(LogGroup.Space, $"RIFT KEY RETURNED - {PlayerName.GetAuditName(user)} - {resref} - character save failed, kept until the next save");
         }
 
         /// <summary>

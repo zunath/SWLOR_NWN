@@ -218,7 +218,8 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// A pilot logging out of a Wild Space fight (<see cref="SpaceDeathRules.LogoutForfeitsShip"/>) loses the ship as a
         /// player-caused death would: every module leaves it (each drops at 65%, the rest are destroyed), the cargo
-        /// spills, droid crew go home, and the ship is towed to its dock at 1 hull and no shield. The XP debt is applied
+        /// spills, droid crew go home, ships docked aboard detach at the wreck (<see cref="DetachDockedShips"/>), and the
+        /// ship is towed to its dock at 1 hull and no shield. The XP debt is applied
         /// at the next login (<see cref="ApplyPendingShipLoss"/>). Runs before the ship would be left in space as a clone.
         /// </summary>
         private static void ForfeitShipOnPvpLogout(uint player)
@@ -228,6 +229,11 @@ namespace SWLOR.Game.Server.Service
             var dbProperty = dbShip == null ? null : DB.Get<WorldProperty>(dbShip.PropertyId);
             if (dbProperty == null)
                 return;
+
+            // Ships docked aboard detach at the wreck, as on any destruction, while the pilot still marks where the
+            // fight was. Otherwise they and their cargo would stay aboard and undock at the host's home starport.
+            // Rift pockets are not Wild Space, so the collapse path (and its wrecked riders) cannot apply here.
+            DetachDockedShips(player, new List<uint>());
 
             var location = GetLocation(player);
             dbShip.Status.PendingRiders?.Clear();

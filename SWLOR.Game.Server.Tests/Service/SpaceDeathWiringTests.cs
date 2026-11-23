@@ -75,6 +75,29 @@ public class SpaceDeathWiringTests
     }
 
     [Test]
+    public void PvpLogout_DetachesDockedShipsAtTheWreckBeforeTowingTheHost()
+    {
+        var death = ReadServerSource("Service", "SpaceDeath.cs");
+        var start = death.IndexOf("private static void ForfeitShipOnPvpLogout(uint player)", StringComparison.Ordinal);
+        var end = death.IndexOf("public static void ApplyPendingShipLoss()", StringComparison.Ordinal);
+        start.Should().BeGreaterThan(0);
+        var body = death.Substring(start, end - start);
+
+        // The same visitor handling as a destruction, while the pilot still stands at the fight and before the
+        // host's position is cleared (which sends it, and anything still aboard, to its home dock).
+        var detach = body.IndexOf("DetachDockedShips(player,", StringComparison.Ordinal);
+        detach.Should().BeGreaterThan(0);
+        detach.Should().BeLessThan(body.IndexOf("dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition)", StringComparison.Ordinal));
+        detach.Should().BeLessThan(body.IndexOf("DB.Set(dbProperty)", StringComparison.Ordinal));
+
+        // The logout handler forfeits the ship while the pilot is still in space mode, which the detach requires.
+        var space = ReadServerSource("Service", "Space.cs");
+        space.IndexOf("ForfeitShipOnPvpLogout(player);", StringComparison.Ordinal)
+            .Should().BeGreaterThan(0)
+            .And.BeLessThan(space.IndexOf("_playersInSpace.Remove(player);", StringComparison.Ordinal));
+    }
+
+    [Test]
     public void PropertyInstancePlayers_AreAddedOnTheEnteringPlayer()
     {
         var property = ReadServerSource("Service", "Property.cs");

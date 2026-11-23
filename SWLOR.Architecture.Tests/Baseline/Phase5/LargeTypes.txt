@@ -19,10 +19,10 @@ SWLOR.Game.Server.Domain.Combat.CombatAbilityBonusService | 1061
 SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService | 1723
 SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService | 1719
 SWLOR.Game.Server.Domain.Combat.CombatRecorderService | 1691
-SWLOR.Game.Server.Domain.Combat.EnmityService | 1244
+SWLOR.Game.Server.Domain.Combat.EnmityService | 1243
 SWLOR.Game.Server.Domain.Companions.BeastMasteryService | 1240
 SWLOR.Game.Server.Domain.Companions.DroidService | 1194
-SWLOR.Game.Server.Domain.Creatures.AIService | 1878
+SWLOR.Game.Server.Domain.Creatures.AIService | 1854
 SWLOR.Game.Server.Domain.Creatures.CompanionControlService | 1090
 SWLOR.Game.Server.Domain.Items.ItemService | 1605
 SWLOR.Game.Server.Domain.Space.SpaceService | 2768

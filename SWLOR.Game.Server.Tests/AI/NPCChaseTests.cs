@@ -101,13 +101,19 @@ public class NPCChaseTests
                 }
                 {{aiMethods}}
             }
+            public static class CreatureAIRules
+            {
+                public static bool IsLeashEvading(uint creature) => Evading;
+                public static bool IsInAggroRange(uint creature, uint target) => InRange.Contains(target);
+                public static bool IsCreatureAIEnabled(uint creature) => Enabled;
+            }
             public static class Activity
             {
                 public static bool IsBusy(uint creature) => false;
             }
             public static class Enmity
             {
-                private static readonly AIStub _ai = new();
+                private static readonly AIStub _leash = new();
                 private static readonly ActivityStub _activity = new();
                 private static bool IsHiddenFrom(uint observer, uint target) => Stealth.IsHiddenFrom(observer, target);
                 private static bool IsRegisteredCompanion(uint creature) => false;

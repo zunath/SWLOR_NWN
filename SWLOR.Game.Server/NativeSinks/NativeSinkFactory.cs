@@ -24,6 +24,7 @@ public static class NativeSinkFactory
             new PlayerFileCheckpointSink(),
             new PlayerListNamePrivacySink(),
             new PlayerSlotAssignmentSink(),
+            new ProgFxCoatEffectHooksSink(),
             new QuickbarFeatLoadingSink(),
             new ResolveAttackRollSink(),
             new SavedPlayerInventorySink(),

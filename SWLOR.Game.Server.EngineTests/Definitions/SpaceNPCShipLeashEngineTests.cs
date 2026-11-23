@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             shipStatus.Shield = 0;
 
             await ctx.ExecuteInCreatureContextAsync(ship, () => Enmity.ModifyEnmity(target, ship, 100));
-            await ctx.WaitUntilAsync(() => AI.IsLeashEvading(ship), 10f, "the ship to start its combat leash");
+            await ctx.WaitUntilAsync(() => CreatureAIRules.IsLeashEvading(ship), 10f, "the ship to start its combat leash");
             await ctx.WaitUntilAsync(() => shipStatus.Hull == shipStatus.MaxHull && shipStatus.Shield == shipStatus.MaxShield, 3f,
                 $"the leashed ship to restore its shield and hull (shield {shipStatus.Shield}/{shipStatus.MaxShield}, hull {shipStatus.Hull}/{shipStatus.MaxHull})");
 
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var targetStatus = Space.GetShipStatus(target);
             var shieldBeforeSalvo = targetStatus.Shield;
             var hullBeforeSalvo = targetStatus.Hull;
-            ctx.Assert(AI.IsLeashEvading(ship), "ship is still returning home");
+            ctx.Assert(CreatureAIRules.IsLeashEvading(ship), "ship is still returning home");
             await ctx.ExecuteInCreatureContextAsync(ship, () =>
             {
                 Space.ApplyShipDamage(ship, target, 50);
@@ -59,7 +60,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var previousShield = targetStatus.Shield;
             var previousHull = targetStatus.Hull;
             var deadline = DateTime.UtcNow.AddSeconds(5f);
-            while (DateTime.UtcNow < deadline && AI.IsLeashEvading(ship))
+            while (DateTime.UtcNow < deadline && CreatureAIRules.IsLeashEvading(ship))
             {
                 await ctx.WaitFrameAsync();
                 ctx.Assert(targetStatus.Shield >= previousShield && targetStatus.Hull >= previousHull,

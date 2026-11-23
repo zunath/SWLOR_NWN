@@ -203,9 +203,10 @@ content and keep their names.
 static members. A static class converts in the first wave in which all its server callers can take it.
 
 **State.** Runtime state of a static content class moves to a service (P5-16, or the wave for anything P5-16 missed). A
-static field initializer that reads a service moves to first use, which is when the type initializer runs today. One
-exists, `SerializedItemWeaponDamageTypeMigration.WeaponDamageScales` (11 reads of `Item`): an instance initializer could not
-read the property, and the constructor would run it at container build, off the engine thread.
+static field initializer that reads a service moves to first use, which is when the type initializer runs today. None
+exists (the last one, `SerializedItemWeaponDamageTypeMigration.WeaponDamageScales`, went with that migration in master's
+#3486): an instance initializer could not read the property, and the constructor would run it at container build, off the
+engine thread.
 
 **Cycles.** The container cannot build two singletons that need each other, and target 4 forbids `Lazy<>`. Three groups,
 each with a hand step before the wave that converts it:

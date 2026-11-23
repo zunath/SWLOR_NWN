@@ -16,6 +16,9 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The incubation field notes that document how to produce a mutated beast (the static class <c>IncubationFieldNote</c> until it was removed).</summary>
         public static IIncubationFieldNoteService IncubationFieldNote => FacadeAccessor.Resolve<IIncubationFieldNoteService>();
 
+        /// <summary>The ProgFX coatings (stoneskin, barkskin, Shadow Shield) drawn on tint-map materials.</summary>
+        public static IProgFxCoatService ProgFxCoat => FacadeAccessor.Resolve<IProgFxCoatService>();
+
         /// <summary>The colours the tint map writes to the engine's material uniforms for a creature, its worn items and a dropped item.</summary>
         public static ITintMapApplyService TintMapApply => FacadeAccessor.Resolve<ITintMapApplyService>();
 

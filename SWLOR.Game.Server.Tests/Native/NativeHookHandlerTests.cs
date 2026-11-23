@@ -29,6 +29,7 @@ public class NativeHookHandlerTests
         (typeof(PlayerFileCheckpoint), nameof(PlayerFileCheckpoint.RegisterHooks), NativeHookId.PlayerFileCheckpoint),
         (typeof(PlayerListNamePrivacy), nameof(PlayerListNamePrivacy.RegisterHook), NativeHookId.PlayerListNamePrivacy),
         (typeof(PlayerSlotAssignment), nameof(PlayerSlotAssignment.RegisterHook), NativeHookId.PlayerSlotAssignment),
+        (typeof(ProgFxCoatEffectHooks), nameof(ProgFxCoatEffectHooks.RegisterHooks), NativeHookId.ProgFxCoatEffectHooks),
         (typeof(QuickbarFeatLoading), nameof(QuickbarFeatLoading.RegisterHook), NativeHookId.QuickbarFeatLoading),
         (typeof(ResolveAttackRoll), nameof(ResolveAttackRoll.RegisterHook), NativeHookId.ResolveAttackRoll),
         (typeof(ChatPortraitSpeakers).Assembly.GetType("SWLOR.Game.Server.Native.SavedPlayerInventory")!, "RegisterHook",

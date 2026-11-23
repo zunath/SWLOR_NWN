@@ -48,10 +48,11 @@ public class CharacterUpgradeCheckpointTests
             .Select(migration => (int)migration.GetType().GetProperty("Version")!.GetValue(migration)!)
             .ToArray();
 
-        migrations.Should().NotBeEmpty();
+        var oldest = (int)Upgrade.GetField("OldestUpgradableVersion", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+
         migrations.Should().BeInAscendingOrder();
         migrations.Should().OnlyHaveUniqueItems();
-        migrations.First().Should().Be(1, "legacy characters start at the first migration");
-        migrations.Last().Should().Be(LatestVersion);
+        migrations.Should().OnlyContain(version => version > oldest, "migrations at or below the oldest upgradable version are retired");
+        LatestVersion.Should().Be(migrations.Append(oldest).Max());
     }
 }

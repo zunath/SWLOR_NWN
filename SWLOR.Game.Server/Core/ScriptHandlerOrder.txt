@@ -71,6 +71,7 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
 mod_cache_aft  # run by EventRegistration.OnModulePreload through ExecuteScript, after every mod_cache_bef handler
   action      SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.CacheData
   action      SWLOR.Game.Server.Domain.Creatures.AIService.CacheAIData
+  action      SWLOR.Game.Server.Domain.Creatures.AIService.RegisterStealthAggroListener
   action      SWLOR.Game.Server.Domain.Foundation.ConversationService.CacheData
   action      SWLOR.Game.Server.Domain.Administration.DMBlueprintCatalogService.LoadCustomPalettes
   action      SWLOR.Game.Server.Domain.UI.GuiService.CacheData
@@ -114,6 +115,7 @@ mod_load  # run by the engine as the module OnModuleLoad event, which EventRegis
   action      SWLOR.Game.Server.Native.PlayerFileCheckpoint.RegisterHooks
   action      SWLOR.Game.Server.Native.PlayerListNamePrivacy.RegisterHook
   action      SWLOR.Game.Server.Native.PlayerSlotAssignment.RegisterHook
+  action      SWLOR.Game.Server.Native.ProgFxCoatEffectHooks.RegisterHooks
   action      SWLOR.Game.Server.Native.QuickbarFeatLoading.RegisterHook
   action      SWLOR.Game.Server.Native.ResolveAttackRoll.RegisterHook
   action      SWLOR.Game.Server.Native.SavedPlayerInventory.RegisterHook
@@ -134,6 +136,7 @@ mod_load  # run by the engine as the module OnModuleLoad event, which EventRegis
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.LoadAppearances
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.MarketBuyViewModel.LoadCategories
   action      SWLOR.Game.Server.Domain.World.CoxxionBaseDoorsService.LoadDoors
+  action      SWLOR.Game.Server.Domain.Companions.ProgFxCoatService.LoadCoatingVisualEffects
 
 == OTHER SCRIPTS (alphabetical; the registry never reads its script names in order) ==
 

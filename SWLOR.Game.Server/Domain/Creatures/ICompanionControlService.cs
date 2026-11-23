@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Creatures;
 
 namespace SWLOR.Game.Server.Domain.Creatures
@@ -7,10 +8,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
     /// <summary>
     /// Companion control for a player's droid or beast: mode, engagement and hostile ability authorization.
     /// </summary>
-    public interface ICompanionControlService
+    public interface ICompanionControlService : ICompanionTargetQuery
     {
-        bool IsRegisteredCompanion(uint creature);
-
         bool IsControlledCompanion(uint creature);
 
         void Initialize(uint companion, bool preserveActionQueue = false);
@@ -39,13 +38,9 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         bool TryProcessPendingDefensiveReaction(uint companion);
 
-        uint PeekAuthorizedTarget(uint companion);
-
         uint ResolveHostileAbilityTarget(uint companion, AbilityDetail ability, uint authorizedTarget, uint selectedTarget);
 
         bool IsHostileAbilityTargetAuthorized(uint companion, AbilityDetail ability, uint selectedTarget);
-
-        bool CanIssueAttackCommand(uint companion, uint target);
 
         void ResetOwnerCompanionToFollow(uint master);
 

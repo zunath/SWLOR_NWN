@@ -926,7 +926,7 @@ public class StealthServiceTests
     {
         public TestStealth()
             : base(FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.LazyFor<IStatusEffectApplicationService>(), FacadeForwarder.LazyFor<IEnmityService>(),
-                FacadeForwarder.For<IAIService>(), FacadeForwarder.LazyFor<IEspionageInfiltrationService>())
+                FacadeForwarder.LazyFor<IEspionageInfiltrationService>())
         {
         }
 

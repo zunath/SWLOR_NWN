@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -21,34 +20,34 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// </summary>
     public class EnmityService : IEnmityService
     {
-        private readonly IAIService _ai;
+        private readonly ICombatLeash _leash;
         private readonly IActivityService _activity;
         private readonly IPartyService _party;
         private readonly IHoloComService _holoCom;
         private readonly ICompanionLookup _companions;
         private readonly IStatService _stat;
         private readonly IStealthService _stealth;
-        private readonly ICompanionControlService _companionControl;
+        private readonly ICompanionTargetQuery _companionControl;
         private readonly IStatusEffectService _statusEffect;
         private readonly ICombatActivityService _combatActivity;
         private readonly ICombatAttackTimingService _attackTiming;
         private readonly ICombatQueriesService _queries;
 
         public EnmityService(
-            IAIService ai,
+            ICombatLeash leash,
             IActivityService activity,
             IPartyService party,
             IHoloComService holoCom,
             ICompanionLookup companions,
             IStatService stat,
             IStealthService stealth,
-            ICompanionControlService companionControl,
+            ICompanionTargetQuery companionControl,
             IStatusEffectService statusEffect,
             ICombatActivityService combatActivity,
             ICombatAttackTimingService attackTiming,
             ICombatQueriesService queries)
         {
-            _ai = ai;
+            _leash = leash;
             _activity = activity;
             _party = party;
             _holoCom = holoCom;
@@ -366,7 +365,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (_holoCom.IsHologram(creature) || _holoCom.IsHologram(enemy))
                 return;
 
-            if (_ai.IsLeashEvading(enemy))
+            if (CreatureAIRules.IsLeashEvading(enemy))
                 return;
 
             // Enmity shouldn't matter if you're dead.
@@ -388,7 +387,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             // Value is zero, no action necessary.
             if (amount == 0) return;
 
-            if (_ai.TryStartCombatLeashEvade(enemy, creature))
+            if (_leash.TryStartCombatLeashEvade(enemy, creature))
                 return;
 
             // Retrieve the creature's list of associated enemies.
@@ -445,8 +444,8 @@ namespace SWLOR.Game.Server.Domain.Combat
                 GetIsDead(creature) || GetIsDead(enemy) || GetIsPC(enemy) ||
                 GetIsObjectValid(GetMaster(enemy)) || _companions.IsPlayerBeast(enemy) || IsDroid(enemy) ||
                 GetArea(creature) != GetArea(enemy) || !GetIsReactionTypeHostile(enemy, creature) ||
-                !LineOfSightObject(creature, enemy) || _ai.IsLeashEvading(enemy) ||
-                _ai.TryStartCombatLeashEvade(enemy, creature))
+                !LineOfSightObject(creature, enemy) || CreatureAIRules.IsLeashEvading(enemy) ||
+                _leash.TryStartCombatLeashEvade(enemy, creature))
                 return false;
 
             var rival = GetEnmityTable(enemy)
@@ -845,7 +844,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             if (removedProximityEnmity && !GetIsObjectValid(target))
             {
-                _ai.StopCombatAfterProximityLoss(creature);
+                _leash.StopCombatAfterProximityLoss(creature);
                 return;
             }
 
@@ -859,7 +858,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         private void HoldForHiddenTargets(uint creature)
         {
-            if (_activity.IsBusy(creature) || _ai.IsLeashEvading(creature))
+            if (_activity.IsBusy(creature) || CreatureAIRules.IsLeashEvading(creature))
                 return;
 
             var currentAction = GetCurrentAction(creature);
@@ -881,7 +880,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 GetArea(creature) != GetArea(target))
                 return;
 
-            if (_ai.TryStartCombatLeashEvade(creature, target))
+            if (_leash.TryStartCombatLeashEvade(creature, target))
                 return;
 
             // Same target - no need to switch.
@@ -933,7 +932,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (!CanIssueAttackCommand(creature, target))
                 return;
 
-            if (_ai.TryStartCombatLeashEvade(creature, target))
+            if (_leash.TryStartCombatLeashEvade(creature, target))
                 return;
 
             _attackCommandTimes[creature] = Clock.UtcNow;
@@ -942,7 +941,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             {
                 if (!_attackCommandTargets.TryGetValue(creature, out var queuedTarget) || queuedTarget != target)
                     return;
-                if (_ai.TryStartCombatLeashEvade(creature, target))
+                if (_leash.TryStartCombatLeashEvade(creature, target))
                     return;
 
                 if (clearActions)
@@ -956,7 +955,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                     if (!_attackCommandTargets.TryGetValue(creature, out var pendingTarget) || pendingTarget != target ||
                         !GetIsObjectValid(target) || GetIsDead(target) || GetArea(creature) != GetArea(target))
                         return;
-                    if (_ai.TryStartCombatLeashEvade(creature, target))
+                    if (_leash.TryStartCombatLeashEvade(creature, target))
                         return;
 
                     // The target may have turned invisible or slipped into stealth during the approach.
@@ -1041,7 +1040,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private bool ShouldRemoveStaleProximityTarget(uint enemy, uint target)
         {
             return HasOnlyProximityEnmity(target, enemy) &&
-                   !_ai.IsInAggroRange(enemy, target);
+                   !CreatureAIRules.IsInAggroRange(enemy, target);
         }
 
         private bool HasOnlyProximityEnmity(uint creature, uint enemy)

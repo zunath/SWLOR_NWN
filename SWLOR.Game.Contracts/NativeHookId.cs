@@ -2,7 +2,7 @@ namespace SWLOR.Game.Contracts;
 
 /// <summary>
 /// The native hooks the game asks the process for, one per hook file of the game's <c>Native/</c> folder. Each id stands
-/// for every engine function its file hooks (36 functions in all); <see cref="IHookControl.Enable"/> installs them
+/// for every engine function its file hooks (41 functions in all); <see cref="IHookControl.Enable"/> installs them
 /// together, in the order and with the hook order values the file always used.
 /// </summary>
 public enum NativeHookId
@@ -10,7 +10,7 @@ public enum NativeHookId
     /// <summary>The nine <c>CNWSMessage::SendServerToPlayerChat_*</c> functions.</summary>
     ChatPortraitSpeakers,
 
-    /// <summary><c>CNWMessage::ReadJSON</c>.</summary>
+    /// <summary><c>CNWMessage::ReadJSON</c> and <c>CNWSMessage::HandlePlayerToServerNuiEvent</c>.</summary>
     ClientJsonUtf8Guard,
 
     /// <summary><c>CNWSEffectListHandler::OnApplyDamage</c> and <c>OnApplyHeal</c>, installed at the first combat recording.</summary>
@@ -39,6 +39,9 @@ public enum NativeHookId
 
     /// <summary><c>CNetLayerInternal::SetSlidingWindow</c>.</summary>
     PlayerSlotAssignment,
+
+    /// <summary><c>CNWSEffectListHandler::OnApplyVisualEffect</c>, <c>OnRemoveVisualEffect</c>, <c>OnApplyPetrify</c> and <c>OnRemovePetrify</c>.</summary>
+    ProgFxCoatEffectHooks,
 
     /// <summary><c>CNWSCreature::LoadQuickButtons</c>.</summary>
     QuickbarFeatLoading,

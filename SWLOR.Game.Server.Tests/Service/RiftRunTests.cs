@@ -173,8 +173,14 @@ public class RiftRunTests
             .Should().BeLessThan(open.IndexOf("OpenRiftRun(user, key, spentKey: true)", StringComparison.Ordinal),
                 "no ship enters, and no reward can be recorded, until the spent key is saved");
         open.Should().Contain("CreateItemOnObject(resref, user);", "a refused or failed opening hands the key back");
-        start.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]").And.Contain("CreateItemOnObject(resref, player);",
+        start.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]").And.Contain("var key = CreateItemOnObject(resref, player);",
             "a player who logged out before the save gets the key back");
+        var login = start[start.IndexOf("public static void ReturnPendingRiftKey(", StringComparison.Ordinal)..];
+        login.IndexOf("var key = CreateItemOnObject(resref, player);", StringComparison.Ordinal)
+            .Should().BeLessThan(login.IndexOf("if (!CharacterCheckpoint.Save(player))", StringComparison.Ordinal),
+                "the returned key and the cleared mark are saved together before the key can be banked");
+        login.Should().Contain("DestroyObject(key);").And.Contain("ObjectPlugin.SetString(player, PendingRiftKeyVariable, resref, true);",
+            "a failed save takes the key back and keeps the mark, so the key is never returned twice");
         runs.Should().Contain(": \"Your rift is already opening.\"", "a second key waits for the first save");
     }
 

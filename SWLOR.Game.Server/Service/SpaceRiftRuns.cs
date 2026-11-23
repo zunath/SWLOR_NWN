@@ -125,7 +125,11 @@ namespace SWLOR.Game.Server.Service
             CharacterCheckpoint.Save(user);
         }
 
-        /// <summary>A player who logged out while their Rift Key was being spent gets it back.</summary>
+        /// <summary>
+        /// A player who logged out while their Rift Key was being spent gets it back. The key and the cleared mark are saved
+        /// together before the key can be used; when that save fails, the key is taken back and the mark restored, so a key
+        /// banked before a crash can never be returned a second time at the next login.
+        /// </summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ReturnPendingRiftKey()
         {
@@ -138,7 +142,15 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             ObjectPlugin.DeleteString(player, PendingRiftKeyVariable);
-            CreateItemOnObject(resref, player);
+            var key = CreateItemOnObject(resref, player);
+            if (!CharacterCheckpoint.Save(player))
+            {
+                DestroyObject(key);
+                ObjectPlugin.SetString(player, PendingRiftKeyVariable, resref, true);
+                SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so your Rift Key is returned at your next login."));
+                return;
+            }
+
             SendMessageToPC(player, ColorToken.Cyan("You left before your rift opened, so your Rift Key is returned."));
         }
 

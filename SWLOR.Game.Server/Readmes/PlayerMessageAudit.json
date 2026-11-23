@@ -8695,56 +8695,63 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 142,
+    "Line": 150,
+    "Member": "ReturnPendingRiftKey",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so your Rift Key is returned at your next login.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
+    "Line": 154,
     "Member": "ReturnPendingRiftKey",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan(\"You left before your rift opened, so your Rift Key is returned.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 169,
+    "Line": 181,
     "Member": "OpenRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(spentKey ? \"The rift flickers and will not open. Your key is returned.\" : \"The rift flickers and will not open.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 176,
+    "Line": 188,
     "Member": "OpenRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, ColorToken.Red(refusal))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 202,
+    "Line": 214,
     "Member": "OpenRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan(\n                        $\"{(spentKey ? GetName(user) : \"A DM\")} opens a tier {key.TierLabel} rift pocket. Clear its three chambers within \" +\n                        $\"{RiftRunTuning.TimerSeconds / 60} minutes, or it collapses with you inside.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 235,
+    "Line": 247,
     "Member": "RefuseLeavingLastRiftRunShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, ColorToken.Red(\"You are the last ship in this Rift Run. Leaving the controls now would abandon the run, \" +\n                                                  \"and the collapsing pocket would wreck your ship.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 275,
+    "Line": 287,
     "Member": "RejoinRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, ColorToken.Cyan(\n                $\"You rejoin the Rift Run in chamber {run.Room + 1} of {RiftRunTuning.Rooms.Count}, the {RiftRunTuning.Rooms[run.Room].Name}: {left} left.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 449,
+    "Line": 461,
     "Member": "PayRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                        $\"The pocket is cleared with {RiftRunRules.FormatTimer(secondsLeft)} to spare. The rift returns you in {RiftRunTuning.ReturnDelaySeconds:0} seconds.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 677,
+    "Line": 689,
     "Member": "MessageRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"

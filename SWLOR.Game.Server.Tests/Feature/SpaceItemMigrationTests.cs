@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -340,6 +341,176 @@ public class SpaceItemMigrationTests
             .Should().Equal("sm_laser_00", "sd_republicstrik");
         record.UnlockedHullDesigns.Should().ContainKey("sd_republicstrik:10073", "a carried deed keeps its look as a design");
         ((List<string>)characterType.GetProperty("Notices")!.GetValue(character)!).Should().ContainSingle(x => x.Contains("200 credits"));
+    }
+
+    [Test]
+    public void AConvertedShip_GivesFittedModulesWithoutAnIdAStableOne()
+    {
+        PlayerShip Ship()
+        {
+            var ship = LegacyShip();
+            foreach (var module in ship.Status.HighPowerModules.Values.Concat(ship.Status.LowPowerModules.Values))
+                module.ItemInstanceId = null;
+            ship.Status.HighPowerModules[1].ItemInstanceId = "kept-id";
+            return ship;
+        }
+
+        var first = Ship();
+        PlayerShipConversion.Convert(first, 10);
+        var modules = first.Status.HighPowerModules.Values.Concat(first.Status.MidPowerModules.Values).Concat(first.Status.LowPowerModules.Values).ToList();
+        modules.Should().NotBeEmpty();
+        modules.Select(x => x.ItemInstanceId).Should().OnlyContain(id => !string.IsNullOrWhiteSpace(id), "uninstalling keys its records by the id")
+            .And.OnlyHaveUniqueItems();
+        modules.Select(x => x.ItemInstanceId).Should().Contain("kept-id", "a module that has an id keeps it");
+
+        var retried = Ship();
+        PlayerShipConversion.Convert(retried, 10);
+        retried.Status.LowPowerModules.Values.Select(x => x.ItemInstanceId)
+            .Should().Equal(first.Status.LowPowerModules.Values.Select(x => x.ItemInstanceId), "a retried conversion gives the same ids");
+        var ids = modules.Select(x => x.ItemInstanceId).ToList();
+        PlayerShipConversion.Convert(first, 10);
+        first.Status.HighPowerModules.Values.Concat(first.Status.MidPowerModules.Values).Concat(first.Status.LowPowerModules.Values)
+            .Select(x => x.ItemInstanceId).Should().Equal(ids, "a converted ship converted again keeps its ids");
+    }
+
+    [Test]
+    public void AModuleWithoutAnId_GetsOneOnce()
+    {
+        var module = new ShipStatus.ShipStatusModule { ItemTag = "sm_plate_30" };
+        ShipModuleInstanceIds.AssignMissing(module, () => "new-id").Should().BeTrue();
+        module.ItemInstanceId.Should().Be("new-id");
+        ShipModuleInstanceIds.AssignMissing(module, () => "other-id").Should().BeFalse();
+        module.ItemInstanceId.Should().Be("new-id");
+
+        var source = File.ReadAllText(Path.Combine(RepositoryRoot(), "SWLOR.Game.Server", "Service", "SpaceShipItemMoves.cs")).Replace("\r\n", "\n");
+        source.Should().Contain("if (ShipModuleInstanceIds.AssignMissing(module, () => Guid.NewGuid().ToString()))\n                DB.Set(ship);",
+            "the id is saved with the ship before the module is handed over");
+    }
+
+    [Test]
+    public void AConvertedShip_CountsItsPlatingsModuleBonus()
+    {
+        PlayerShip Ship(int moduleBonus)
+        {
+            var ship = LegacyShip();
+            ship.Status.HighPowerModules.Clear();
+            ship.Status.LowPowerModules.Clear();
+            ship.Status.ConfigurationModules.Clear();
+            ship.Status.LowPowerModules[1] = Module("hull_boost_4", moduleBonus);
+            return ship;
+        }
+
+        var plain = Ship(0);
+        var enhanced = Ship(5);
+        PlayerShipConversion.Convert(plain, 10);
+        PlayerShipConversion.Convert(enhanced, 10);
+
+        enhanced.Status.LowPowerModules[1].ModuleBonus.Should().Be(5, "the enhancement survives the conversion");
+        enhanced.Status.MaxHull.Should().BeGreaterThan(plain.Status.MaxHull, "the plating's +5 Module Bonus adds hull");
+        (enhanced.Status.MaxShield, enhanced.Status.MaxCapacitor).Should().Be((plain.Status.MaxShield, plain.Status.MaxCapacitor));
+    }
+
+    [Test]
+    public void AContractItem_CarriesTheCreditsAndDesignItsConversionOwesToWhoeverClaimsIt()
+    {
+        var bag = new QuestContractItem
+        {
+            Name = "Bag",
+            Resref = "bag_sm",
+            Data = Encode(ItemNode("bag_sm", new[]
+            {
+                List("ItemList",
+                    ItemNode("config_int1", new[] { Scalar(2, "Repos_PosX", 0), Scalar(2, "Repos_Posy", 0) }, type: 0),
+                    ItemNode("min_laser_4", new[] { Scalar(2, "Repos_PosX", 1), Scalar(2, "Repos_Posy", 0) }, type: 1)),
+            }), "UTI "),
+        };
+        var deed = new QuestContractItem { Name = "Hound", Resref = "sdeed_hound", Data = Item("sdeed_hound") };
+        var sweep = new LegacySpaceItemSweep();
+
+        sweep.MigrateContractItem(bag).Should().BeTrue();
+        sweep.MigrateContractItem(deed).Should().BeTrue();
+
+        bag.RetiredSpaceCredits.Should().Be(200, "the Configuration module taken out of the bag is paid to its recipient");
+        bag.HullDesigns.Should().BeNull();
+        deed.Resref.Should().Be("sd_republicstrik");
+        deed.Name.Should().Be(BlueprintName("sd_republicstrik"));
+        deed.HullDesigns.Should().Equal("sd_republicstrik:10073");
+        deed.RetiredSpaceCredits.Should().Be(0);
+
+        sweep.MigrateContractItem(bag).Should().BeFalse("a rerun finds nothing left to convert");
+        sweep.MigrateContractItem(deed).Should().BeFalse();
+        (bag.RetiredSpaceCredits, deed.HullDesigns!.Count).Should().Be((200, 1), "the recipient receives them once");
+
+        // The claim copies its delivery through JSON, which keeps what the items carry.
+        var delivery = new QuestContractDelivery { PlayerId = "recipient", Items = { bag, deed } };
+        var copy = JsonConvert.DeserializeObject<QuestContractDelivery>(JsonConvert.SerializeObject(delivery))!;
+        copy.Items[0].RetiredSpaceCredits.Should().Be(200);
+        copy.Items[1].HullDesigns.Should().Equal("sd_republicstrik:10073");
+        JsonConvert.DeserializeObject<QuestContractItem>("{}")!.HullDesigns.Should().BeNull("older items carry nothing");
+    }
+
+    [Test]
+    public void ContractItemsAndObjectives_AreConvertedThroughTheEntitlementPath()
+    {
+        string Server(params string[] path) => File.ReadAllText(Path.Combine(new[] { RepositoryRoot(), "SWLOR.Game.Server" }.Concat(path).ToArray())).Replace("\r\n", "\n");
+
+        var sweep = Server("Feature", "MigrationDefinition", "StoredItemSweep.cs");
+        sweep.Should().Contain("changed |= space?.MigrateContractItem(item) ?? false;", "contract rewards and deliveries carry their entitlements");
+        sweep.Should().Contain("(space != null && LegacySpaceItemSweep.MigrateObjectives(contract.Objectives))");
+
+        var board = Server("Service", "QuestContractBoard.cs");
+        var claim = board[board.IndexOf("public static void ClaimDeliveries(uint player)", StringComparison.Ordinal)..];
+        claim.IndexOf("GrantCarriedEntitlements(player, itemData);", StringComparison.Ordinal)
+            .Should().BeGreaterThan(claim.IndexOf("ObjectPlugin.AcquireItem(player, item)", StringComparison.Ordinal), "the claimant is granted them with the item");
+        var removal = board[board.IndexOf("public static string RemoveRewardItem(uint player, int index)", StringComparison.Ordinal)..];
+        removal.IndexOf("GrantCarriedEntitlements(player, rewardItem);", StringComparison.Ordinal)
+            .Should().BeInRange(removal.IndexOf("ObjectPlugin.AcquireItem(player, deserialized)", StringComparison.Ordinal),
+                removal.IndexOf("draft.RewardItems.RemoveAt(index);", StringComparison.Ordinal));
+        board.Should().Contain("GiveGoldToCreature(player, item.RetiredSpaceCredits);")
+            .And.Contain("unlocked |= dbPlayer.UnlockedHullDesigns.TryAdd(design, DateTime.UtcNow);");
+
+        var migration = Server("Feature", "MigrationDefinition", "ServerMigration", "_33_ConvertSpaceItems.cs");
+        migration.IndexOf("QuestContractBoard.RefreshRegisteredContracts();", StringComparison.Ordinal)
+            .Should().BeGreaterThan(migration.IndexOf("StoredItemSweep.Migrate(Version);", StringComparison.Ordinal),
+                "contracts registered as quests at boot pick up their converted objectives");
+    }
+
+    [Test]
+    public void AContractObjectiveForARetiredItem_AsksForTheItemItBecame()
+    {
+        var beam = LegacySpaceItemCatalog.Modules["beamcannon1"];
+        var objectives = new List<QuestContractObjective>
+        {
+            new() { ItemResref = "beamcannon1", ItemName = "Beam Cannon I", Quantity = 2 },
+            new() { ItemResref = "config_fig3", ItemName = "Fighter Configuration III", Quantity = 1 },
+            new() { ItemResref = "ref_tilarium", ItemName = "Tilarium", Quantity = 5 },
+        };
+
+        LegacySpaceItemSweep.MigrateObjectives(objectives).Should().BeTrue();
+
+        objectives.Select(x => (x.ItemResref, x.ItemName, x.Quantity)).Should().Equal(
+            (beam, BlueprintName(beam), 2),
+            ("config_fig3", "Fighter Configuration III", 1),
+            ("ref_tilarium", "Tilarium", 5));
+        LegacySpaceItemSweep.MigrateObjectives(objectives).Should().BeFalse("the conversion is idempotent");
+
+        var shared = LegacySpaceItemCatalog.Modules.GroupBy(x => x.Value).FirstOrDefault(x => x.Count() > 1);
+        if (shared != null)
+        {
+            var (a, b) = (shared.First().Key, shared.Skip(1).First().Key);
+            var merged = new List<QuestContractObjective> { new() { ItemResref = a, Quantity = 3 }, new() { ItemResref = b, Quantity = 4 } };
+            LegacySpaceItemSweep.MigrateObjectives(merged).Should().BeTrue();
+            merged.Select(x => (x.ItemResref, x.Quantity)).Should().Equal((shared.Key, 7));
+        }
+
+        // An accepted contract's remaining counts follow, so the converted item can be turned in.
+        var player = new Player { Name = "Pilot" };
+        player.Quests["qcontract_c1"] = new PlayerQuest { ItemProgresses = { ["beamcannon1"] = 2, ["ref_tilarium"] = 5 } };
+        player.Quests["some_quest"] = new PlayerQuest { ItemProgresses = { ["beamcannon1"] = 1 } };
+        var migration = Activator.CreateInstance(CharacterMigrations.Named("_28_ConvertSpaceItems"))!;
+        migration.GetType().GetMethod("MigratePlayerData")!.Invoke(migration, new object[] { player });
+        player.Quests["qcontract_c1"].ItemProgresses.Should().BeEquivalentTo(new Dictionary<string, int> { [beam] = 2, ["ref_tilarium"] = 5 });
+        player.Quests["some_quest"].ItemProgresses.Should().ContainKey("beamcannon1", "only player contracts are rebuilt from converted records");
     }
 
     [Test]

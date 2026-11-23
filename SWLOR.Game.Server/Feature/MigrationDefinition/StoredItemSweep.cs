@@ -124,7 +124,9 @@ internal static class StoredItemSweep
             shipChanged |= MigrateModules(converter, ship.Status?.ConfigurationModules);
             return shipChanged;
         });
-        changed += pass.Process<QuestContract>(contract => MigrateContractItems(converter, contract.RewardItems, space));
+        // Outstanding collection objectives follow the items they asked for (LegacySpaceItemSweep.MigrateObjectives).
+        changed += pass.Process<QuestContract>(contract => MigrateContractItems(converter, contract.RewardItems, space) |
+            (space != null && LegacySpaceItemSweep.MigrateObjectives(contract.Objectives)));
         changed += pass.Process<QuestContractDelivery>(delivery => MigrateContractItems(converter, delivery.Items, space));
         // Overflow storage holds items earlier character upgrades could not keep, so retired ship deeds and modules can wait
         // there unclaimed. Only the space rule runs on it: the release's other item rules already ran on those items.
@@ -169,8 +171,8 @@ internal static class StoredItemSweep
             {
                 changed |= MigrateItem(converter, item.Resref, item.Data, value => item.Data = value, item.IconResref, value => item.IconResref = value)
                     | RenameListing(item.Resref, item.Name, value => item.Name = value);
-                changed |= space?.Migrate(item.Data, value => item.Data = value, null, null,
-                    (blueprint, resref) => (item.Name, item.Resref, item.IconResref) = (blueprint.Name, resref, blueprint.IconResref)) ?? false;
+                // The item carries what its conversion owes to whoever claims it (LegacySpaceItemSweep.MigrateContractItem).
+                changed |= space?.MigrateContractItem(item) ?? false;
             }
         return changed;
     }

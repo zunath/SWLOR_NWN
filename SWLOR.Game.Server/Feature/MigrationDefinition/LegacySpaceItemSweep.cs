@@ -5,6 +5,7 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.QuestContractService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
@@ -35,6 +36,104 @@ public sealed class LegacySpaceItemSweep
     public bool Migrate(string data, Action<string> setData, string ownerId, string sourceKey = null, Action<LegacySpaceItemBlueprint, string> rootReplaced = null,
         Action<int> rootConfiguration = null)
     {
+        var changed = Convert(data, setData, rootReplaced, rootConfiguration, out var nestedCredits, out var designs);
+        if (!string.IsNullOrWhiteSpace(ownerId) && (nestedCredits > 0 || designs.Count > 0))
+            _pending.Add((ownerId, (sourceKey ?? ownerId) + "#nested", nestedCredits, designs.ToArray()));
+        return changed;
+    }
+
+    /// <summary>
+    /// Converts one contract reward or delivery item. Its recipient is known only when it is claimed (a held
+    /// submission goes to the contract's author when it wins), so what the conversion owes travels on the item in the
+    /// same record write: the credits for configuration modules taken out of it (<see cref="QuestContractItem.RetiredSpaceCredits"/>)
+    /// and the Hull Design its deed keeps (<see cref="QuestContractItem.HullDesigns"/>). Whoever claims the item is
+    /// granted them with it, once. A rerun finds nothing left to convert and adds nothing. A configuration module that
+    /// is the item itself stays, and the claim's live conversion pays for it.
+    /// </summary>
+    public bool MigrateContractItem(QuestContractItem item)
+    {
+        var changed = Convert(item.Data, value => item.Data = value,
+            (blueprint, resref) => (item.Name, item.Resref, item.IconResref) = (blueprint.Name, resref, blueprint.IconResref),
+            null, out var credits, out var designs);
+        if (credits > 0)
+        {
+            item.RetiredSpaceCredits += credits;
+            changed = true;
+        }
+        foreach (var design in designs)
+        {
+            item.HullDesigns ??= new List<string>();
+            if (item.HullDesigns.Contains(design))
+                continue;
+            item.HullDesigns.Add(design);
+            changed = true;
+        }
+        return changed;
+    }
+
+    /// <summary>
+    /// Points a contract's collection objectives for retired deeds and modules at the items they became, with the new
+    /// names, so the converted items satisfy them. Two retired items that became the same item make one objective for
+    /// their combined quantity, since a quest tracks each item once (<see cref="MigrateItemProgresses"/>). Objectives
+    /// for configuration modules stay: nothing replaces them.
+    /// </summary>
+    public static bool MigrateObjectives(List<QuestContractObjective> objectives)
+    {
+        if (objectives == null)
+            return false;
+        var changed = false;
+        foreach (var objective in objectives)
+        {
+            if (!LegacySpaceItemCatalog.TryGetReplacement(objective.ItemResref, out var replacement))
+                continue;
+            objective.ItemResref = replacement;
+            objective.ItemName = LegacySpaceItemBlueprints.Get(replacement).Name;
+            changed = true;
+        }
+        if (!changed)
+            return false;
+
+        var merged = new List<QuestContractObjective>();
+        foreach (var objective in objectives)
+        {
+            var same = merged.FirstOrDefault(x => string.Equals(x.ItemResref, objective.ItemResref, StringComparison.OrdinalIgnoreCase));
+            if (same == null)
+                merged.Add(objective);
+            else
+                same.Quantity += objective.Quantity;
+        }
+        objectives.Clear();
+        objectives.AddRange(merged);
+        return true;
+    }
+
+    /// <summary>
+    /// Moves a contract quest's remaining item counts from retired deeds and modules to the items they became, adding
+    /// up counts that now share an item, to match <see cref="MigrateObjectives"/>.
+    /// </summary>
+    public static bool MigrateItemProgresses(Dictionary<string, int> progresses)
+    {
+        if (progresses == null)
+            return false;
+        var changed = false;
+        foreach (var (resref, remaining) in progresses.ToList())
+        {
+            if (!LegacySpaceItemCatalog.TryGetReplacement(resref, out var replacement))
+                continue;
+            progresses.Remove(resref);
+            progresses[replacement] = progresses.GetValueOrDefault(replacement) + remaining;
+            changed = true;
+        }
+        return changed;
+    }
+
+    /// <summary>
+    /// Converts one item and reports what its owner is owed: the credits of the configuration modules taken out of it
+    /// (not counting the item itself when it is one) and the Hull Designs its deeds keep.
+    /// </summary>
+    private bool Convert(string data, Action<string> setData, Action<LegacySpaceItemBlueprint, string> rootReplaced,
+        Action<int> rootConfiguration, out int nestedCredits, out List<string> designs)
+    {
         var tally = new LegacySpaceItemTally();
         var changed = StoredObjectData.MigrateLegacySpaceItems(data, out var migrated, tally);
         if (changed)
@@ -42,15 +141,15 @@ public sealed class LegacySpaceItemSweep
         if (tally.RootReplacement != null)
             rootReplaced?.Invoke(tally.RootReplacement, tally.RootReplacementResref);
 
-        var nestedCredits = tally.Credits;
+        nestedCredits = tally.Credits;
         if (tally.RootIsConfigurationModule)
         {
             LegacySpaceItemCatalog.TryGetConfigurationModule(StoredObjectData.ReadItemIdentity(data).Resref, out var rootCredits);
             nestedCredits -= rootCredits;
             rootConfiguration?.Invoke(rootCredits);
         }
-        if (!string.IsNullOrWhiteSpace(ownerId) && (nestedCredits > 0 || tally.HullDesigns.Count > 0))
-            _pending.Add((ownerId, (sourceKey ?? ownerId) + "#nested", Math.Max(0, nestedCredits), tally.HullDesigns.ToArray()));
+        nestedCredits = Math.Max(0, nestedCredits);
+        designs = tally.HullDesigns.ToList();
         lock (_totalsLock)
             _totals.Add(tally);
         return changed;

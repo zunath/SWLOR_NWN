@@ -103,6 +103,48 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.QuestContract, $"Pruned {prunedCount} quest contract history record(s) and {orphanedCount} orphaned empty delivery record(s).", true);
         }
 
+        /// <summary>
+        /// Rebuilds the runtime quest of every registered published contract from its saved record. A server migration
+        /// that changes saved contracts after <see cref="RegisterContracts"/> ran at boot calls it, so the change applies
+        /// at once instead of after the next restart.
+        /// </summary>
+        public static void RefreshRegisteredContracts()
+        {
+            foreach (var contract in GetPublishedContracts())
+            {
+                if (Quest.GetQuestByIdOrDefault(QuestContractFactory.BuildQuestId(contract.Id)) != null)
+                    Quest.RegisterRuntimeQuest(QuestContractFactory.BuildQuest(contract));
+            }
+        }
+
+        /// <summary>
+        /// Grants what the space revamp's migration owes with a contract item the player just received: the credits for
+        /// the configuration modules taken out of it and the Hull Designs its deed keeps
+        /// (<see cref="QuestContractItem.RetiredSpaceCredits"/>, <see cref="QuestContractItem.HullDesigns"/>). The credits
+        /// go on the character with the item, so the claim's checkpoint covers both.
+        /// </summary>
+        private static void GrantCarriedEntitlements(uint player, QuestContractItem item)
+        {
+            if (item.RetiredSpaceCredits > 0)
+            {
+                GiveGoldToCreature(player, item.RetiredSpaceCredits);
+                SendMessageToPC(player, "Configuration modules were retired, since ship roles are now built into each hull. " +
+                    $"You received {item.RetiredSpaceCredits} credits for the ones in {item.Name}.");
+            }
+
+            if (item.HullDesigns is not { Count: > 0 })
+                return;
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer == null)
+                return;
+            dbPlayer.UnlockedHullDesigns ??= new Dictionary<string, DateTime>();
+            var unlocked = false;
+            foreach (var design in item.HullDesigns)
+                unlocked |= dbPlayer.UnlockedHullDesigns.TryAdd(design, DateTime.UtcNow);
+            if (unlocked)
+                DB.Set(dbPlayer);
+        }
+
         private static List<QuestContract> GetPublishedContracts()
         {
             var query = new DBQuery<QuestContract>()
@@ -242,6 +284,7 @@ namespace SWLOR.Game.Server.Service
                 return "The item could not be returned to your inventory. Make room and try again.";
             }
 
+            GrantCarriedEntitlements(player, rewardItem);
             draft.RewardItems.RemoveAt(index);
             DB.Set(draft);
 
@@ -556,7 +599,10 @@ namespace SWLOR.Game.Server.Service
                             if (!GetIsObjectValid(item))
                                 return false;
                             if (Item.FitsInInventory(player, item) && ObjectPlugin.AcquireItem(player, item))
+                            {
+                                GrantCarriedEntitlements(player, itemData);
                                 return true;
+                            }
                             inventoryFull = true;
                             DestroyObject(item);
                             return false;

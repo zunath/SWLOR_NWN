@@ -52,6 +52,9 @@ public class SpaceStaleMenuTests
         Index(modal, "fitted.SerializedItem != module.SerializedItem")
             .Should().BeLessThan(Index(modal, "Item.TryAcquireItem(Player, item)"), "a module already taken out is never handed out twice");
         Index(modal, "ObjectPlugin.Deserialize(fitted.SerializedItem)").Should().BeGreaterThan(reread);
+        Index(modal, "Space.EnsureModuleInstanceId(current, fitted);")
+            .Should().BeInRange(Index(modal, "fitted.SerializedItem != module.SerializedItem"), Index(modal, "Item.TryAcquireItem(Player, item)"),
+                "a module saved without an instance id gets one, saved with the ship, before it is handed over");
         Index(modal, removal).Should().BeLessThan(Index(modal, "DB.Set(current);"));
         modal[..Index(modal, "LoadShip();\n                });")].Should().NotContain("DB.Set(dbShip);", "the copy read when the slot was clicked is never saved");
     }

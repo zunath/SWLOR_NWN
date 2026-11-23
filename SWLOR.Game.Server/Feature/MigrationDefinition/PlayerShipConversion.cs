@@ -12,7 +12,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 /// Converts a registered ship (plan section 15): a retired hull becomes its new ship with the same interior (the
 /// property's layout is not touched) and keeps its old model as a Hull Design when it is one; retired modules become
 /// their revamp items and move to their new rows; configuration modules are removed and refunded; modules that no
-/// longer fit go back to the owner; and the ship's stats are rebuilt from the hull and modules. Pure: the caller saves
+/// longer fit go back to the owner; kept modules saved without an instance id get a stable one; and the ship's stats
+/// are rebuilt from the hull and modules, with their Module Bonus. Pure: the caller saves
 /// the ship and gives the owner the credits, designs and returned modules.
 /// </summary>
 public static class PlayerShipConversion
@@ -60,12 +61,19 @@ public static class PlayerShipConversion
         if (needsRefit)
             Refit(ship, hull, result);
 
+        // Removing a module keys its records by its instance id, so a kept module saved without one (an older fitting)
+        // gets one from its new place: unique on the ship, and the same on a retried conversion.
+        foreach (var row in SlotRows)
+            foreach (var (slot, module) in Row(status, row))
+                ShipModuleInstanceIds.AssignMissing(module, () => $"{ship.Id}-module-{row}-{slot}");
+
         var fitted = SlotRows.SelectMany(row => Row(status, row).Select(entry => new ShipFittedModule
         {
             Row = row,
             Slot = entry.Key,
             Step = _steps[entry.Value.ItemTag],
             Traits = entry.Value.Traits,
+            ModuleBonus = entry.Value.ModuleBonus,
         })).ToList();
         result.ModulesKept = fitted.Count;
         var stats = ShipStatCalculator.Calculate(hull, fitted, willpower, null, status.HullTraits, status.DeedBonuses);

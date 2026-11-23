@@ -17,5 +17,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>The module item's component traits. Null or empty when it has none.</summary>
         public IReadOnlyCollection<ShipComponentTraitType> Traits { get; set; }
+
+        /// <summary>The module item's crafted Module Bonus (<see cref="ShipStatus.ShipStatusModule.ModuleBonus"/>).</summary>
+        public int ModuleBonus { get; set; }
     }
 }

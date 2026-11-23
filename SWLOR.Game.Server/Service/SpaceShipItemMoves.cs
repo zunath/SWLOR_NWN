@@ -81,6 +81,17 @@ namespace SWLOR.Game.Server.Service
             FindFittedModule(ship, instanceId) != null || ship?.FittingAcknowledgements?.ContainsKey(instanceId) == true;
 
         /// <summary>
+        /// Gives a fitted module saved without an instance id (a ship fitted before modules kept one) a stable id and saves
+        /// the ship at once. Call before the module is handed over: its removal record and the mark on the item are keyed
+        /// by the id, so a module without one could leave the ship while the ship still holds it.
+        /// </summary>
+        public static void EnsureModuleInstanceId(PlayerShip ship, ShipStatus.ShipStatusModule module)
+        {
+            if (ShipModuleInstanceIds.AssignMissing(module, () => Guid.NewGuid().ToString()))
+                DB.Set(ship);
+        }
+
+        /// <summary>
         /// Saves the removal record of a module just taken into the remover's inventory and marks the item, before the ship
         /// saves the module as removed. The character is not saved yet: until <see cref="FinishModuleRemoval"/>, the record
         /// is what says the module left the ship. A stale record of the same module (a restart before its ship saved the

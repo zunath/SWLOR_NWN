@@ -2355,6 +2355,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
+                    // The removal is keyed by the module's instance id, saved before the module is handed over.
+                    Space.EnsureModuleInstanceId(current, fitted);
                     var item = ObjectPlugin.Deserialize(fitted.SerializedItem);
                     var moduleBonus = Space.GetModuleBonus(item);
                     if (!Item.TryAcquireItem(Player, item))
@@ -2472,6 +2474,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
+                    // The removal is keyed by the module's instance id, saved before the module is handed over.
+                    Space.EnsureModuleInstanceId(current, fitted);
                     var item = ObjectPlugin.Deserialize(fitted.SerializedItem);
                     var moduleBonus = Space.GetModuleBonus(item);
                     if (!Item.TryAcquireItem(Player, item))

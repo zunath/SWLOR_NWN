@@ -11,6 +11,14 @@ namespace SWLOR.Game.Server.Service.SpaceService
     {
         public const int CapacitorPerWillpower = 2;
 
+        /// <summary>
+        /// Hull, shield or capacitor each point of a module's crafted Module Bonus adds to a module that provides that
+        /// stat, before the hull-size multiplier, as on the retired Hull, Shield and Capacitor Boosters.
+        /// </summary>
+        public const int ModuleBonusPoints = 5;
+
+        private static int WithModuleBonus(int value, int bonusPoints) => value > 0 ? value + bonusPoints : value;
+
         /// <summary>Output multiplier of a module's hull, shield, capacitor and capacitor regen on this hull size.</summary>
         public static double ModuleSizeMultiplier(ShipSize size) => size == ShipSize.Small || size == ShipSize.Invalid ? 1.0 : 1.1;
 
@@ -89,7 +97,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// percent points. Modules in station slots add nothing until their seat is crewed: then
         /// <paramref name="stationEffectiveness"/> (hotbar slot to effectiveness, 0 for an empty seat) scales their
         /// hull, shield, capacitor and capacitor regen, as the balance model does. Their best-of Defense, Evasion
-        /// and Accuracy, speed, resistances and damage bonuses apply in full while the seat works them. With no
+        /// and Accuracy, speed, resistances and damage bonuses apply in full while the seat works them. A module's Module
+        /// Bonus adds <see cref="ModuleBonusPoints"/> a point to each of its hull, shield and capacitor. With no
         /// <paramref name="stationEffectiveness"/>, every station slot is empty (a solo pilot runs the Helm only).
         /// The deed's starship enhancements (<paramref name="deedBonuses"/>) count flat on the matching stat: hull, shield
         /// and capacitor as points before the hull's percent bonuses, Accuracy and Evasion as points, damage as percent
@@ -146,9 +155,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 speedPercent += ShipTraitRules.Sum(fitted.Traits, ShipTraitStat.Speed);
 
                 var outputMultiplier = moduleMultiplier * effectiveness;
-                hullPoints += Round(step.Hull * outputMultiplier);
-                shieldPoints += Round(step.Shield * outputMultiplier);
-                capacitor += Round(step.MaxCapacitor * outputMultiplier);
+                var bonusPoints = ShipTraitRules.ModuleBonus(fitted.ModuleBonus, fitted.Traits) * ModuleBonusPoints;
+                hullPoints += Round(WithModuleBonus(step.Hull, bonusPoints) * outputMultiplier);
+                shieldPoints += Round(WithModuleBonus(step.Shield, bonusPoints) * outputMultiplier);
+                capacitor += Round(WithModuleBonus(step.MaxCapacitor, bonusPoints) * outputMultiplier);
                 capacitorRegen += step.CapacitorRegen * outputMultiplier;
 
                 bestDefense = Math.Max(bestDefense, step.ModuleDefense);

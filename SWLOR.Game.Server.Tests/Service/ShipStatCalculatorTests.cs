@@ -551,4 +551,44 @@ public class ShipStatCalculatorTests
         status!.HullTraits.Should().Equal(ShipComponentTraitType.Reinforced);
         Newtonsoft.Json.JsonConvert.DeserializeObject<ShipStatus>("{}")!.HullTraits.Should().BeNull("older records load none");
     }
+
+    [Test]
+    public void ModuleBonus_AddsFivePointsAPointToTheModulesOwnHullShieldAndCapacitor()
+    {
+        ShipFittedModule Plating(int bonus)
+        {
+            var module = Fit(ShipModulePowerType.Low, 1, s => { s.Hull = 300; s.ModuleDefense = 20; });
+            module.ModuleBonus = bonus;
+            return module;
+        }
+
+        Calculate(Hull(), 0, Plating(0)).MaxHull.Should().Be(100 + 300);
+        var plus5 = Calculate(Hull(), 0, Plating(5));
+        plus5.MaxHull.Should().Be(100 + 300 + 5 * ShipStatCalculator.ModuleBonusPoints, "+5 Module Bonus adds 25 hull to a Small hull's plating");
+        plus5.MaxShield.Should().Be(80, "plating gives no shield, so its bonus adds none");
+        plus5.MaxCapacitor.Should().Be(60);
+        plus5.Defense.Should().Be(8 + 20, "the bonus does not change Defense");
+
+        // On a Medium hull the bonus scales with the module's output: (300 + 25) x 1.1 = 357.5, rounded to 358.
+        Calculate(Hull(ShipSize.Medium), 0, Plating(5)).MaxHull.Should().Be(100 + 358);
+
+        var battery = Fit(ShipModulePowerType.Low, 2, s => s.MaxCapacitor = 40);
+        battery.ModuleBonus = 2;
+        var booster = Fit(ShipModulePowerType.Mid, 1, s => s.Shield = 50);
+        booster.ModuleBonus = 3;
+        var stats = Calculate(Hull(), 0, battery, booster);
+        stats.MaxCapacitor.Should().Be(60 + 40 + 10);
+        stats.MaxShield.Should().Be(80 + 50 + 15);
+    }
+
+    [Test]
+    public void ModuleBonus_ReachesTheCalculatorFromEveryFittedModule()
+    {
+        string Read(params string[] path) => File.ReadAllText(Path.Combine(new[] { Feature.SpaceItemFixtures.RepositoryRoot(), "SWLOR.Game.Server" }.Concat(path).ToArray()));
+
+        Read("Service", "SpaceRevamp.cs").Should().Contain("Traits = module.Traits, ModuleBonus = module.ModuleBonus",
+            "a live stat rebuild counts the module's crafted bonus");
+        Read("Feature", "MigrationDefinition", "PlayerShipConversion.cs").Should().Contain("ModuleBonus = entry.Value.ModuleBonus,",
+            "a converted ship's rebuild counts it too");
+    }
 }

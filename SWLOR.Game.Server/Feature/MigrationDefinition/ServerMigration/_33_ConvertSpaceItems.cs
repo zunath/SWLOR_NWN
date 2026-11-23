@@ -15,8 +15,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 /// first, each in turn: the hull becomes its new ship with the same interior and its old model as a Hull Design,
 /// modules move to their new rows, configuration modules are refunded into the owner's market till, modules that no
 /// longer fit go to the owner's overflow storage, and the ship's stats are rebuilt. Then the stored-item sweep
-/// converts deeds and modules in banks, storage, the market, saved creatures and contracts. Characters' own items,
-/// perks and Rebuild Token follow in the character upgrade (<c>_28_ConvertSpaceItems</c>).
+/// converts deeds and modules in banks, storage, the market, saved creatures and contracts, and the contracts'
+/// collection objectives that ask for them. Characters' own items, perks, contract progress and Rebuild Token follow
+/// in the character upgrade (<c>_28_ConvertSpaceItems</c>).
 /// </summary>
 public sealed class _33_ConvertSpaceItems : IServerMigration
 {
@@ -28,6 +29,8 @@ public sealed class _33_ConvertSpaceItems : IServerMigration
         LegacySpaceItemBlueprints.Load();
         ConvertShips();
         StoredItemSweep.Migrate(Version);
+        // Published contracts were registered as quests before this ran: their converted objectives apply at once.
+        QuestContractBoard.RefreshRegisteredContracts();
     }
 
     /// <summary>

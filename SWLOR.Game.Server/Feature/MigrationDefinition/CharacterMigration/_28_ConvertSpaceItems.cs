@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.QuestContractService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
@@ -14,7 +15,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 /// The space revamp's character upgrade (plan section 15). Carried ship deeds and modules, including those in bags and
 /// droids, become their new items (<see cref="LegacySpaceItemCatalog"/>), and configuration modules are refunded in
 /// credits. The record refunds the retired Piloting perks as SP, keeps unlocked hull recipes, unlocks the Hull Design
-/// that keeps each carried deed's look, gains a Rebuild Token and gets the login notice. Piloting ranks keep their
+/// that keeps each carried deed's look, moves accepted contracts' remaining item counts to the converted items, gains a
+/// Rebuild Token and gets the login notice. Piloting ranks keep their
 /// meaning, so no rebuild is forced. Registered ships and stored items are converted by <c>_33_ConvertSpaceItems</c>.
 /// </summary>
 internal sealed class _28_ConvertSpaceItems : ICharacterMigration
@@ -122,5 +124,20 @@ internal sealed class _28_ConvertSpaceItems : ICharacterMigration
                     player.UnlockedRecipes.TryAdd(replacement, unlocked);
 
         RebuildTokenGrant.Grant(player);
+        ConvertContractProgress(player);
+    }
+
+    /// <summary>
+    /// Moves the remaining counts of accepted quest contracts from retired deeds and modules to the items they became,
+    /// as the server upgrade did to the contracts' objectives (<see cref="LegacySpaceItemSweep.MigrateObjectives"/>).
+    /// </summary>
+    internal static void ConvertContractProgress(Player player)
+    {
+        var contractPrefix = QuestContractFactory.BuildQuestId(string.Empty);
+        foreach (var (questId, quest) in player.Quests ?? new Dictionary<string, PlayerQuest>())
+        {
+            if (questId.StartsWith(contractPrefix, System.StringComparison.Ordinal))
+                LegacySpaceItemSweep.MigrateItemProgresses(quest?.ItemProgresses);
+        }
     }
 }

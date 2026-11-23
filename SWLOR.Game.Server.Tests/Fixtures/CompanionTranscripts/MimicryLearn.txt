@@ -1,0 +1,67 @@
+== step 1 a creature with no witnesses dies
+== step 2 a witnessed creature dies near both players: a roll for every technique each can learn
+Perk.GetPerkLevel(Attacker, PatternRecognition)
+Random.Next(1,101) = 67
+Random.Next(1,101) = 6
+DB.Set Player uuid-Attacker learned=[3001,3002]
+Engine.SendMessageToPC(Attacker, <cü>You learned the technique: Strike!</c>)
+Skill.GiveSkillXP(Attacker, Mimicry, 400, False, True, NpcTwo)
+Engine.SendMessageToPC(Attacker, <cü>You learned the technique: Burst!</c>)
+Skill.GiveSkillXP(Attacker, Mimicry, 400, False, True, NpcTwo)
+Engine.PlaySound(Attacker, gui_prompt, Invalid)
+Perk.GetPerkLevel(Defender, PatternRecognition)
+Random.Next(1,101) = 93
+PlayerFeedback.SendWarningToPlayer(Defender, MIMICRY_DECODE_3001, <cü|>Your combat analyzer failed to decode Strike. Analyze it again to retry.</c>, 60)
+Random.Next(1,101) = 97
+PlayerFeedback.SendWarningToPlayer(Defender, MIMICRY_DECODE_3002, <cü|>Your combat analyzer failed to decode Burst. Analyze it again to retry.</c>, 60)
+== step 3 the same again with the perception of both players high
+Perk.GetPerkLevel(Attacker, PatternRecognition)
+Random.Next(1,101) = 6
+Random.Next(1,101) = 15
+DB.Set Player uuid-Attacker learned=[3001,3002]
+Engine.SendMessageToPC(Attacker, <cü>You learned the technique: Strike!</c>)
+Skill.GiveSkillXP(Attacker, Mimicry, 400, False, True, NpcThree)
+Engine.SendMessageToPC(Attacker, <cü>You learned the technique: Burst!</c>)
+Skill.GiveSkillXP(Attacker, Mimicry, 400, False, True, NpcThree)
+Engine.PlaySound(Attacker, gui_prompt, Invalid)
+Perk.GetPerkLevel(Defender, PatternRecognition)
+Random.Next(1,101) = 53
+Random.Next(1,101) = 33
+DB.Set Player uuid-Defender learned=[3001,3002]
+Engine.SendMessageToPC(Defender, <cü>You learned the technique: Strike!</c>)
+Skill.GiveSkillXP(Defender, Mimicry, 400, False, True, NpcThree)
+Engine.SendMessageToPC(Defender, <cü>You learned the technique: Burst!</c>)
+Skill.GiveSkillXP(Defender, Mimicry, 400, False, True, NpcThree)
+Engine.PlaySound(Defender, gui_prompt, Invalid)
+== step 4 a creature dies after the rank of both players rose past the third technique
+Perk.GetPerkLevel(Attacker, PatternRecognition)
+Random.Next(1,101) = 65
+Random.Next(1,101) = 78
+PlayerFeedback.SendWarningToPlayer(Attacker, MIMICRY_DECODE_3002, <cü|>Your combat analyzer failed to decode Burst. Analyze it again to retry.</c>, 60)
+Random.Next(1,101) = 46
+DB.Set Player uuid-Attacker learned=[3001,3003]
+Engine.SendMessageToPC(Attacker, <cü>You learned the technique: Strike!</c>)
+Skill.GiveSkillXP(Attacker, Mimicry, 400, False, True, NpcFour)
+Engine.SendMessageToPC(Attacker, <cü>You learned the technique: Mastery!</c>)
+Skill.GiveSkillXP(Attacker, Mimicry, 400, False, True, NpcFour)
+Engine.PlaySound(Attacker, gui_prompt, Invalid)
+Perk.GetPerkLevel(Defender, PatternRecognition)
+Random.Next(1,101) = 97
+PlayerFeedback.SendWarningToPlayer(Defender, MIMICRY_DECODE_3001, <cü|>Your combat analyzer failed to decode Strike. Analyze it again to retry.</c>, 60)
+Random.Next(1,101) = 66
+Random.Next(1,101) = 88
+PlayerFeedback.SendWarningToPlayer(Defender, MIMICRY_DECODE_3003, <cü|>Your combat analyzer failed to decode Mastery. Analyze it again to retry.</c>, 60)
+DB.Set Player uuid-Defender learned=[3002]
+Engine.SendMessageToPC(Defender, <cü>You learned the technique: Burst!</c>)
+Skill.GiveSkillXP(Defender, Mimicry, 400, False, True, NpcFour)
+Engine.PlaySound(Defender, gui_prompt, Invalid)
+== step 5 each player already knows some of the techniques
+Perk.GetPerkLevel(Attacker, PatternRecognition)
+Random.Next(1,101) = 56
+DB.Set Player uuid-Attacker learned=[3001,3002]
+Engine.SendMessageToPC(Attacker, <cü>You learned the technique: Burst!</c>)
+Skill.GiveSkillXP(Attacker, Mimicry, 400, False, True, NpcFive)
+Engine.PlaySound(Attacker, gui_prompt, Invalid)
+Perk.GetPerkLevel(Defender, PatternRecognition)
+== step 6 a dead player and a player in another area learn nothing
+== step 7 the witness entry is cleared even when nobody is near

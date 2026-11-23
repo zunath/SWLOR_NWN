@@ -78,3 +78,6 @@ SWLOR.Game.Server/Docker/*.patch text eol=lf
 
 # The combat transcripts and the serializer goldens are compared byte for byte and are written with LF.
 /SWLOR.Game.Server.Tests/Fixtures/CombatTranscripts/*.txt -text
+
+# The Mimicry, Beast and Droid transcripts are compared byte for byte and are written with LF.
+/SWLOR.Game.Server.Tests/Fixtures/CompanionTranscripts/*.txt -text

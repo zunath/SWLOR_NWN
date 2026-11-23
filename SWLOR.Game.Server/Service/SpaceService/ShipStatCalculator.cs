@@ -12,12 +12,14 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public const int CapacitorPerWillpower = 2;
 
         /// <summary>
-        /// Hull, shield or capacitor each point of a module's crafted Module Bonus adds to a module that provides that
-        /// stat, before the hull-size multiplier, as on the retired Hull, Shield and Capacitor Boosters.
+        /// Percent of a module's own max hull, shield and capacitor each point of its Module Bonus adds, before the
+        /// hull-size multiplier (Design Bible "Ship Modules (Revamp)", scaling rules). A percent keeps one point worth the
+        /// same on every tier and stat: a top Module Bonus enhancement (+6) matches a crafted component trait (+6%).
         /// </summary>
-        public const int ModuleBonusPoints = 5;
+        public const int ModuleBonusPercentPerPoint = 1;
 
-        private static int WithModuleBonus(int value, int bonusPoints) => value > 0 ? value + bonusPoints : value;
+        private static double WithModuleBonus(int value, int bonusPoints) =>
+            value > 0 ? value * (1 + bonusPoints * ModuleBonusPercentPerPoint / 100.0) : value;
 
         /// <summary>Output multiplier of a module's hull, shield, capacitor and capacitor regen on this hull size.</summary>
         public static double ModuleSizeMultiplier(ShipSize size) => size == ShipSize.Small || size == ShipSize.Invalid ? 1.0 : 1.1;
@@ -98,7 +100,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <paramref name="stationEffectiveness"/> (hotbar slot to effectiveness, 0 for an empty seat) scales their
         /// hull, shield, capacitor and capacitor regen, as the balance model does. Their best-of Defense, Evasion
         /// and Accuracy, speed, resistances and damage bonuses apply in full while the seat works them. A module's Module
-        /// Bonus adds <see cref="ModuleBonusPoints"/> a point to each of its hull, shield and capacitor. With no
+        /// Bonus adds <see cref="ModuleBonusPercentPerPoint"/>% a point to each of its own hull, shield and capacitor. With no
         /// <paramref name="stationEffectiveness"/>, every station slot is empty (a solo pilot runs the Helm only).
         /// The deed's starship enhancements (<paramref name="deedBonuses"/>) count flat on the matching stat: hull, shield
         /// and capacitor as points before the hull's percent bonuses, Accuracy and Evasion as points, damage as percent
@@ -155,7 +157,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 speedPercent += ShipTraitRules.Sum(fitted.Traits, ShipTraitStat.Speed);
 
                 var outputMultiplier = moduleMultiplier * effectiveness;
-                var bonusPoints = ShipTraitRules.ModuleBonus(fitted.ModuleBonus, fitted.Traits) * ModuleBonusPoints;
+                var bonusPoints = ShipTraitRules.ModuleBonus(fitted.ModuleBonus, fitted.Traits);
                 hullPoints += Round(WithModuleBonus(step.Hull, bonusPoints) * outputMultiplier);
                 shieldPoints += Round(WithModuleBonus(step.Shield, bonusPoints) * outputMultiplier);
                 capacitor += Round(WithModuleBonus(step.MaxCapacitor, bonusPoints) * outputMultiplier);

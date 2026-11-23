@@ -6,15 +6,16 @@ namespace SWLOR.Game.Server.Service.QuestContractService
 {
     /// <summary>
     /// Withdraws a published contract nobody can complete any more (it asks for an item the game retired): the contract
-    /// is taken down and its author gets the escrowed reward and the posting fee back in a delivery of its own. The
-    /// delivery's fixed id makes a rerun refund nothing twice.
+    /// closes as Cancelled, not Taken Down (a moderation status that blocks Post Again), so its author can post it again
+    /// with the retired objective replaced, and gets the escrowed reward and the posting fee back in a delivery of its
+    /// own, since the author did nothing wrong. The delivery's fixed id makes a rerun refund nothing twice.
     /// </summary>
     public static class QuestContractRetirement
     {
         public static string RefundDeliveryId(string contractId) => contractId + "-retired";
 
         /// <summary>
-        /// Takes the contract down and returns the author's refund to save before it, or null when
+        /// Closes the contract and returns the author's refund to save before it, or null when
         /// <paramref name="refundSaved"/> says an earlier run already saved it.
         /// </summary>
         public static QuestContractDelivery Retire(QuestContract contract, bool refundSaved, int postingFee, string reason, DateTime now)
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Service.QuestContractService
             }
 
             contract.RewardItems = new List<QuestContractItem>();
-            contract.Status = QuestContractStatus.TakenDown;
+            contract.Status = QuestContractStatus.Cancelled;
             contract.TakedownReason = reason;
             contract.DateClosed = now;
             return refund;

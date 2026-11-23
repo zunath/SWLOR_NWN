@@ -51,7 +51,7 @@ public sealed class LegacySpaceItemSweep
 
     /// <summary>
     /// Main thread, after the pass has saved every contract: withdraws each contract <see cref="NoteContract"/> found, the
-    /// way a takedown does, refunding the escrowed reward and the posting fee to its author
+    /// way a cancellation does, refunding the escrowed reward and the posting fee to its author
     /// (<see cref="QuestContractBoard.RetireContract"/>). A withdrawn contract is no longer published, so a rerun skips it.
     /// Returns the number of contracts noted.
     /// </summary>

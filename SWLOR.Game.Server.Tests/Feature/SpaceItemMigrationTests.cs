@@ -549,7 +549,8 @@ public class SpaceItemMigrationTests
         refund.HeldForCompletion.Should().BeFalse();
         refund.IsRewardPayment.Should().BeFalse();
         QuestContractBoard.IsClaimable(refund).Should().BeTrue();
-        contract.Status.Should().Be(QuestContractStatus.TakenDown);
+        contract.Status.Should().Be(QuestContractStatus.Cancelled, "a withdrawal is not a moderation takedown");
+        QuestContractBoard.CanPostAgain(contract).Should().BeTrue("the author can repost it with the retired objective replaced");
         contract.TakedownReason.Should().Be(LegacySpaceItemSweep.RetiredContractReason).And.Match(x => x.All(c => c < 128));
         contract.DateClosed.Should().Be(now);
         contract.RewardItems.Should().BeEmpty();
@@ -557,7 +558,7 @@ public class SpaceItemMigrationTests
         var retried = Contract("config", QuestContractStatus.Published, "config_fig3");
         QuestContractRetirement.Retire(retried, refundSaved: true, fee, LegacySpaceItemSweep.RetiredContractReason, now)
             .Should().BeNull("a rerun after the refund was saved refunds nothing again");
-        retried.Status.Should().Be(QuestContractStatus.TakenDown);
+        retried.Status.Should().Be(QuestContractStatus.Cancelled);
 
         string Server(params string[] path) => File.ReadAllText(Path.Combine(new[] { RepositoryRoot(), "SWLOR.Game.Server" }.Concat(path).ToArray())).Replace("\r\n", "\n");
         var migrate = Server("Feature", "MigrationDefinition", "StoredItemSweep.cs");
@@ -570,7 +571,7 @@ public class SpaceItemMigrationTests
         var steps = new[] { "DB.Set(refund);", "DB.Set(contract);", "ReleaseSubmissions(contract.Id);",
             "Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));", "VoidActiveContractQuests(contract, playerReason);" };
         steps.Select(step => retire.IndexOf(step, StringComparison.Ordinal)).Should().BeInAscendingOrder().And.OnlyContain(i => i >= 0,
-            "the refund is saved first, then the contract closes as a takedown does: submissions back, quest unregistered, journals cleared");
+            "the refund is saved first, then the contract closes as a cancellation does: submissions back, quest unregistered, journals cleared");
     }
 
     [Test]

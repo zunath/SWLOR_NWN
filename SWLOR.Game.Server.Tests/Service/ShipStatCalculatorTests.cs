@@ -553,8 +553,9 @@ public class ShipStatCalculatorTests
     }
 
     [Test]
-    public void ModuleBonus_AddsFivePointsAPointToTheModulesOwnHullShieldAndCapacitor()
+    public void ModuleBonus_AddsOnePercentAPointToTheModulesOwnHullShieldAndCapacitor()
     {
+        ShipStatCalculator.ModuleBonusPercentPerPoint.Should().Be(1);
         ShipFittedModule Plating(int bonus)
         {
             var module = Fit(ShipModulePowerType.Low, 1, s => { s.Hull = 300; s.ModuleDefense = 20; });
@@ -564,21 +565,22 @@ public class ShipStatCalculatorTests
 
         Calculate(Hull(), 0, Plating(0)).MaxHull.Should().Be(100 + 300);
         var plus5 = Calculate(Hull(), 0, Plating(5));
-        plus5.MaxHull.Should().Be(100 + 300 + 5 * ShipStatCalculator.ModuleBonusPoints, "+5 Module Bonus adds 25 hull to a Small hull's plating");
+        plus5.MaxHull.Should().Be(100 + 315, "+5 Module Bonus adds 5% (15 hull) to a Small hull's 300-hull plating");
         plus5.MaxShield.Should().Be(80, "plating gives no shield, so its bonus adds none");
         plus5.MaxCapacitor.Should().Be(60);
         plus5.Defense.Should().Be(8 + 20, "the bonus does not change Defense");
 
-        // On a Medium hull the bonus scales with the module's output: (300 + 25) x 1.1 = 357.5, rounded to 358.
-        Calculate(Hull(ShipSize.Medium), 0, Plating(5)).MaxHull.Should().Be(100 + 358);
+        // On a Medium hull the bonus scales with the module's output: 300 x 1.05 x 1.1 = 346.5, rounded to 346 (banker's).
+        Calculate(Hull(ShipSize.Medium), 0, Plating(5)).MaxHull.Should().Be(100 + 346);
 
-        var battery = Fit(ShipModulePowerType.Low, 2, s => s.MaxCapacitor = 40);
-        battery.ModuleBonus = 2;
-        var booster = Fit(ShipModulePowerType.Mid, 1, s => s.Shield = 50);
-        booster.ModuleBonus = 3;
+        // One point is worth the same share on a small capacitor as on a large hull.
+        var battery = Fit(ShipModulePowerType.Low, 2, s => s.MaxCapacitor = 50);
+        battery.ModuleBonus = 6;
+        var booster = Fit(ShipModulePowerType.Mid, 1, s => s.Shield = 400);
+        booster.ModuleBonus = 6;
         var stats = Calculate(Hull(), 0, battery, booster);
-        stats.MaxCapacitor.Should().Be(60 + 40 + 10);
-        stats.MaxShield.Should().Be(80 + 50 + 15);
+        stats.MaxCapacitor.Should().Be(60 + 53, "50 x 1.06 = 53");
+        stats.MaxShield.Should().Be(80 + 424, "400 x 1.06 = 424");
     }
 
     [Test]

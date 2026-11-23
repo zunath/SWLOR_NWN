@@ -512,8 +512,8 @@ namespace SWLOR.Game.Server.Service
         public static bool IsRetiredObjectiveItem(string resref) => LegacySpaceItemCatalog.IsLegacySpaceItem(resref);
 
         /// <summary>
-        /// Withdraws a published contract that can no longer be completed, the way a takedown does: the escrowed reward
-        /// and the posting fee go back to the author in a delivery (<see cref="QuestContractRetirement"/>), held
+        /// Withdraws a published contract that can no longer be completed, the way a cancellation does, and leaves it free
+        /// to Post Again: the escrowed reward and the posting fee go back to the author in a delivery (<see cref="QuestContractRetirement"/>), held
         /// submissions return to their submitters, and the quest leaves accepted players' journals. Does nothing to a
         /// contract that is not published, so a rerun changes nothing.
         /// </summary>
@@ -535,7 +535,7 @@ namespace SWLOR.Game.Server.Service
                 if (author != null)
                 {
                     author.UpgradeNotices ??= new List<string>();
-                    author.UpgradeNotices.Add($"Your contract '{contract.Title}' {authorNotice} Its reward and posting fee are waiting for you at any Contract Board.");
+                    author.UpgradeNotices.Add($"Your contract '{contract.Title}' {authorNotice} Its reward and posting fee are waiting for you at any Contract Board, and you can use Post Again to repost it with a new objective.");
                     DB.Set(author);
                 }
             }

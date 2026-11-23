@@ -641,7 +641,7 @@ the character sheet). Files other running items own: P5-7 `CombatAbilityHitServi
 | P5-10g2 | MI-2 `MimicryWitnessService` (new boot handler, carried tables re-keyed, on `ISkillXPService`); `Lazy<ICombatPointService>` and one `Lazy<IStatService>` gone | 392 | `UsePerkFeat.cs`, `DMPlayerChatCommand.cs` | g1; e1 |
 | P5-10h1 | BM-2 `BeastSpawnService` (on `IPerkService`), BM-4 `BeastIncubationService`, `ApplyStats` public; `BeastMasteryService` 1,240 -> about 890, off `LargeTypes.txt` and `ServicesPerType.txt` (14 -> 10), `IncubationFieldNoteService` `Lazy<>` plain | 395 | 7 content files | b2 |
 | P5-10h2 | BM-3 `BeastEventService` | 243 | none | h1 |
-| P5-10i1 | DR-4 `DroidEventService` and DR-5 `DroidDespawnService`; `AcquireDroidItem`, `IsStoredItem`, `ReturnRejectedItems` public; `DroidService` 1,194 -> about 940, off `LargeTypes.txt`, 14 -> 11 services | 230 | none | b2; d |
+| P5-10i1 | DR-4 `DroidEventService` and DR-5 `DroidDespawnService`; `AcquireDroidItem`, `IsStoredItem`, `ReturnRejectedItems` public; `DroidService` 1,194 -> about 940, off `LargeTypes.txt`, 14 -> 11 services | 230 | none | b2; d; the other splits (owner decision 5) |
 | P5-10i2 | DR-6 `DroidRestoreService` and DR-2 `DroidSpawnService`, `SpawnDroid` cut; `CanGiveItemToDroid`, `GetDroidItemId` public; `DroidService` off `ServicesPerType.txt` (11 -> 1) and `LongMethods.txt`; `DroidEquipmentDiagnosticsService` `Lazy<>` plain | 305 | 1 content file | i1 |
 | P5-10i3 | DR-3 `DroidInventoryService` (the five helpers move; DR-4, DR-5, DR-6 and DR-2 change receiver); close-out: README, Status, this guide's Progress | 270 | 1 content file | i2; the other splits (owner decision 5) |
 

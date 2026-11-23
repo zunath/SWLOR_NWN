@@ -188,19 +188,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         void ExpectWeaponDamage(uint attacker, uint defender, int amount, SkillType weaponSkill);
 
         /// <summary>
-        /// Called by the native damage hook before the engine applies a damage effect. Lethal
-        /// damage runs the death scripts inside the engine call, so the source is known to them
-        /// and their death event waits for this damage event. Returns the application's index
-        /// for <see cref="RecordDamageApplied"/> and <see cref="EndDamageApplication"/>.
-        /// </summary>
-        int BeginDamageApplication(uint source, uint target, int amount, int hitPointsBefore);
-
-        /// <summary>
-        /// Releases a damage application, and writes the held events once the outermost one ends.
-        /// </summary>
-        void EndDamageApplication(int applicationIndex);
-
-        /// <summary>
         /// Called by the native damage hook after the engine applied a damage effect.
         /// Hit points exclude temporary HP, which is reported separately.
         /// </summary>
@@ -222,12 +209,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <paramref name="target"/>, so the heal is recorded with the cut instead of as overheal.
         /// </summary>
         void RecordPvpHealingReduced(uint target, int requested, int reduced);
-
-        /// <summary>Opens the frame for a heal the native hook is about to apply to <paramref name="target"/>.</summary>
-        void BeginHealApplication(uint target);
-
-        /// <summary>Closes the innermost frame for <paramref name="target"/> and returns its PvP reduction.</summary>
-        int EndHealApplication(uint target);
 
         /// <summary>
         /// Called by the native heal hook after the engine applied a heal effect.

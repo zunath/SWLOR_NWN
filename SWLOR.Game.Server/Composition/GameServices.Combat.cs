@@ -90,6 +90,9 @@ namespace SWLOR.Game.Server.Composition
         /// </summary>
         public static ICombatRecorderService CombatRecorder => FacadeAccessor.Resolve<ICombatRecorderService>();
 
+        /// <summary>The state and event queue of a combat recording, which the native damage and heal hooks open and close their scopes on.</summary>
+        public static ICombatRecordSession CombatRecordSession => FacadeAccessor.Resolve<ICombatRecordSession>();
+
         /// <summary>The resource bookkeeping of combat, a part of combat.</summary>
         public static ICombatResourcesService CombatResources => FacadeAccessor.Resolve<ICombatResourcesService>();
 

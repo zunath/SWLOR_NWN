@@ -34,6 +34,10 @@ namespace SWLOR.Game.Server.Service
         // alone does not tell a live pocket.
         private const string RiftPocketVariable = "SPACE_RIFT_POCKET";
 
+        // The resref of the key, set (not saved) on a key user whose cleared pending mark failed to save: their file still
+        // returns the key.
+        private const string RiftKeySpendUnsavedVariable = "SPACE_RIFT_KEY_SPEND_UNSAVED";
+
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ScheduleRiftRuns()
         {
@@ -125,16 +129,44 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrEmpty(refusal) && OpenRiftRun(user, key, spentKey: true))
             {
                 // The pocket is open, so the key is spent for good. Until a save holds the cleared mark, a server stop
-                // returns the key, but it also ends the run before the run can pay out.
+                // returns the key, so the run pays this user nothing until one does (IsRiftKeySpendSaved).
                 ObjectPlugin.DeleteString(user, PendingRiftKeyVariable);
                 if (!CharacterCheckpoint.Save(user))
-                    Log.Write(LogGroup.Space, $"RIFT KEY SPENT - {PlayerName.GetAuditName(user)} - {resref} - character save failed, the mark clears at the next save");
+                {
+                    SetLocalString(user, RiftKeySpendUnsavedVariable, resref);
+                    Log.Write(LogGroup.Space, $"RIFT KEY SPENT - {PlayerName.GetAuditName(user)} - {resref} - character save failed, spoils wait for a save");
+                }
                 return;
             }
 
             if (!string.IsNullOrEmpty(refusal))
                 SendMessageToPC(user, ColorToken.Red(refusal));
             ReturnRiftKey(user, resref);
+        }
+
+        /// <summary>
+        /// Whether a player's character file no longer returns a Rift Key they spent on this run. A player whose cleared
+        /// mark failed to save is saved again here; while that still fails the run records them no spoils, since a
+        /// restart would return the key and keep the spoils. A player who has left was saved without the mark at logout.
+        /// </summary>
+        private static bool IsRiftKeySpendSaved(uint player)
+        {
+            var resref = GetIsObjectValid(player) ? GetLocalString(player, RiftKeySpendUnsavedVariable) : string.Empty;
+            if (string.IsNullOrEmpty(resref))
+                return true;
+
+            if (CharacterCheckpoint.Save(player))
+            {
+                DeleteLocalString(player, RiftKeySpendUnsavedVariable);
+                return true;
+            }
+
+            // The key is refunded instead: the mark goes back, so every later save keeps it until the login returns the key.
+            DeleteLocalString(player, RiftKeySpendUnsavedVariable);
+            ObjectPlugin.SetString(player, PendingRiftKeyVariable, resref, true);
+            SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so your Rift Key is returned at your next login instead of these spoils."));
+            Log.Write(LogGroup.Space, $"RIFT RUN SPOILS WITHHELD - {PlayerName.GetAuditName(player)} - the spent key was never saved as spent");
+            return false;
         }
 
         /// <summary>A player whose Rift Key was spent but not settled before they left gets it back.</summary>
@@ -466,6 +498,11 @@ namespace SWLOR.Game.Server.Service
             var collecting = new Dictionary<string, uint>();
             foreach (var pilot in run.Pilots)
             {
+                // A key user whose spent key is not saved as spent yet still has the key's refund in their character
+                // file; their spoils would let a restart return the key beside them.
+                if (!IsRiftKeySpendSaved(pilot))
+                    continue;
+
                 var spoils = new IncursionPayout { RegionName = run.Key.Name };
                 for (var pull = 0; pull < pulls; pull++)
                     AddPull(spoils, table);
@@ -480,6 +517,7 @@ namespace SWLOR.Game.Server.Service
                     collecting[pilotId] = pilot;
 
                 var aboard = GetShipCrewPlayers(pilot);
+                aboard = aboard.Where(IsRiftKeySpendSaved).ToList();
                 foreach (var (playerId, share) in RiftRunRules.ShareCredits(credits, aboard.Select(GetObjectUUID).ToList()))
                 {
                     var player = aboard.First(x => GetObjectUUID(x) == playerId);

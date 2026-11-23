@@ -97,7 +97,9 @@ public class SpaceW11kGapTests
         var space = ReadSource("Service", "Space.cs");
         space.Should().Contain("var rejoinLocation = GetRiftRunRejoinLocation(dbShip.Id);");
         space.Should().Contain("RejoinRiftRun(player, launch.ShipId);");
-        runs.Replace("\r\n", "\n").Should().Contain("foreach (var pilot in run.Pilots)\n            {\n                var spoils = new IncursionPayout { RegionName = run.Key.Name };",
+        var pay = runs[runs.IndexOf("private static void PayRiftRun(", StringComparison.Ordinal)..];
+        pay.IndexOf("foreach (var pilot in run.Pilots)", StringComparison.Ordinal)
+            .Should().BeLessThan(pay.IndexOf("var spoils = new IncursionPayout { RegionName = run.Key.Name };", StringComparison.Ordinal),
             "the payout still goes to every pilot in the run, a rejoined one included");
     }
 

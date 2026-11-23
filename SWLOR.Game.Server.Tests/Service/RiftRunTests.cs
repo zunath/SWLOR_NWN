@@ -194,6 +194,19 @@ public class RiftRunTests
         refund.Should().Contain("DestroyObject(key);",
             "a failed save takes the key back and keeps the mark, so the key is never returned twice");
         runs.Should().Contain(": \"Your last Rift Key is still opening or being returned.\"", "a second key waits for the first to settle");
+
+        open.Should().Contain("SetLocalString(user, RiftKeySpendUnsavedVariable, resref);",
+            "a cleared mark that failed to save is remembered, since the saved file still refunds the key");
+        var pay = runs[runs.IndexOf("private static void PayRiftRun(", StringComparison.Ordinal)..];
+        pay = pay[..pay.IndexOf("SaveIncursions();", StringComparison.Ordinal)];
+        pay.IndexOf("if (!IsRiftKeySpendSaved(pilot))", StringComparison.Ordinal)
+            .Should().BeLessThan(pay.IndexOf("CapitalBattleRules.AddPending(", StringComparison.Ordinal),
+                "no spoils are recorded for a key user whose file still refunds the key");
+        pay.Should().Contain("aboard = aboard.Where(IsRiftKeySpendSaved).ToList();");
+        var settled = runs[runs.IndexOf("private static bool IsRiftKeySpendSaved(", StringComparison.Ordinal)..];
+        settled.IndexOf("if (CharacterCheckpoint.Save(player))", StringComparison.Ordinal)
+            .Should().BeLessThan(settled.IndexOf("ObjectPlugin.SetString(player, PendingRiftKeyVariable, resref, true);", StringComparison.Ordinal),
+                "the spend is saved again first, and only a second failure turns the spoils into the key's refund");
     }
 
     [Test]

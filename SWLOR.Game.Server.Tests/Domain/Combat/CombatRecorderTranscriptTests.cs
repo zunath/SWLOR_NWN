@@ -41,24 +41,57 @@ public class CombatRecorderTranscriptTests
 
     private static AbilityDetail Strike => new() { Name = "Strike", AbilityLevel = 3, ActivationType = AbilityActivationType.Casted };
 
-    private sealed class Probe : CombatRecorderService
+    private sealed class ProbeCore : CombatRecordSessionCore
     {
-        private readonly string _logDirectory;
         private readonly List<string> _lines;
 
-        public Probe(IDMPresenceService presence, IDBService db, string logDirectory, List<string> lines)
-            : base(presence, db, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IAbilityImpactState>(),
-                FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatQueriesService>())
-        {
-            _logDirectory = logDirectory;
-            _lines = lines;
-        }
+        public ProbeCore(List<string> lines) => _lines = lines;
 
         public ulong Frame { get; set; }
 
         public long Millis { get; set; } = 1_700_000_000_000;
 
         public DateTime Moment { get; set; } = new(2026, 11, 18, 12, 0, 0, DateTimeKind.Utc);
+
+        public override void WriteLog(LogGroup group, string details, bool printToConsole = false) => _lines.Add($"log {group}: {details}");
+        public override ulong CurrentFrame() => Frame;
+        public override long UnixTimeMilliseconds() => Millis;
+        public override DateTime UtcNow() => Moment;
+    }
+
+    private sealed class Probe : CombatRecorderService
+    {
+        private readonly string _logDirectory;
+        private readonly List<string> _lines;
+
+        private readonly ProbeCore _core;
+
+        public Probe(ProbeCore core, IDMPresenceService presence, IDBService db, string logDirectory, List<string> lines)
+            : base(core, presence, db, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IAbilityImpactState>(),
+                FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatQueriesService>())
+        {
+            _core = core;
+            _logDirectory = logDirectory;
+            _lines = lines;
+        }
+
+        public ulong Frame
+        {
+            get => _core.Frame;
+            set => _core.Frame = value;
+        }
+
+        public long Millis
+        {
+            get => _core.Millis;
+            set => _core.Millis = value;
+        }
+
+        public DateTime Moment
+        {
+            get => _core.Moment;
+            set => _core.Moment = value;
+        }
 
         public Action? Scheduled { get; private set; }
 
@@ -85,11 +118,6 @@ public class CombatRecorderTranscriptTests
             _lines.Add($"schedule every {schedule.TotalSeconds}s after {delay.TotalSeconds}s");
             return new Cancel(_lines);
         }
-
-        protected override void WriteLog(LogGroup group, string details, bool printToConsole = false) => _lines.Add($"log {group}: {details}");
-        protected override ulong CurrentFrame() => Frame;
-        protected override long UnixTimeMilliseconds() => Millis;
-        protected override DateTime UtcNow() => Moment;
 
         private sealed class Cancel : IDisposable
         {
@@ -118,11 +146,14 @@ public class CombatRecorderTranscriptTests
             presenceScript.On("IsControlledByDM", _ => false);
             using var bench = new CombatTranscriptBench(Array.Empty<Type>(), (services, host) =>
             {
-                probe = new Probe(presence, host.Db, directory + "/", host.Lines);
+                var core = new ProbeCore(host.Lines);
+                probe = new Probe(core, presence, host.Db, directory + "/", host.Lines);
+                services.Replace(ServiceDescriptor.Singleton<ICombatRecordSession>(core));
                 services.Replace(ServiceDescriptor.Singleton<ICombatRecorderService>(probe));
             });
             var recorder = bench.Get<ICombatRecorderService>();
             recorder.Should().BeSameAs(probe);
+            var session = bench.Get<ICombatRecordSession>();
             bench.NameCreature(AreaOne, "Cantina");
             bench.NameCreature(AreaTwo, "Street");
             bench.NameCreature(ItemId, "Item");
@@ -185,7 +216,7 @@ public class CombatRecorderTranscriptTests
                     probe.RecordTemporaryHitPointsGranted(Defender, Defender, "shield", 30, 12.5f);
                 using (probe.BeginAbilityAttribution(Attacker, Strike, FeatType.Alertness))
                 {
-                    var index = probe.BeginDamageApplication(Attacker, Defender, 40, 100);
+                    var index = session.BeginDamageApplication(Attacker, Defender, 40, 100);
                     probe.RecordDamageApplied(index, true, Attacker, Defender, physical, 100, 90, 200, shieldBefore, shieldAfter);
                 }
             });
@@ -211,12 +242,12 @@ public class CombatRecorderTranscriptTests
             });
             Fight("a heal with a pvp reduction and a nested heal", () =>
             {
-                probe!.BeginHealApplication(Defender);
+                session.BeginHealApplication(Defender);
                 probe.RecordPvpHealingReduced(Defender, 100, 40);
-                probe.BeginHealApplication(Defender);
+                session.BeginHealApplication(Defender);
                 probe.RecordPvpHealingReduced(Defender, 50, 25);
-                var inner = probe.EndHealApplication(Defender);
-                var outer = probe.EndHealApplication(Defender);
+                var inner = session.EndHealApplication(Defender);
+                var outer = session.EndHealApplication(Defender);
                 bench.Lines.Add($"inner reduction {inner}, outer reduction {outer}");
                 using (probe.BeginAbilityAttribution(Other, Strike, FeatType.Alertness))
                     probe.RecordHealingApplied(Other, Defender, 100, 20, 80, 200, outer);

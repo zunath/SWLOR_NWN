@@ -285,7 +285,7 @@ SWLOR.Game.Server.Tests/AI/AbilityAISettingsSnapshotTests.cs | 2
 SWLOR.Game.Server.Tests/AI/CompanionControlPolicyTests.cs | 2
 SWLOR.Game.Server.Tests/Composition/ConvertedServiceContainerTests.cs | 5
 SWLOR.Game.Server.Tests/Composition/FacadeCacheTests.cs | 3
-SWLOR.Game.Server.Tests/Composition/GameServicesAllocationTests.cs | 11
+SWLOR.Game.Server.Tests/Composition/GameServicesAllocationTests.cs | 15
 SWLOR.Game.Server.Tests/Core/HostedEntryDepthTests.cs | 2
 SWLOR.Game.Server.Tests/Domain/Abilities/AbilityActivationPathTests.cs | 19
 SWLOR.Game.Server.Tests/Domain/Abilities/AbilityActivationStateTests.cs | 23

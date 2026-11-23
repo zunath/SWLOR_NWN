@@ -122,6 +122,8 @@ public class ConvertedServiceContainerTests
             .Append("ICompanionLookup CompanionQuery")
             // The ability impact state store Combat owns: a store, not a service, reached by the content that reads an impact.
             .Append("IAbilityImpactState AbilityImpactState")
+            // The recording session Combat owns: the state and queue of a recording, not a service, reached by the native damage and heal hooks.
+            .Append("ICombatRecordSession CombatRecordSession")
             // The party roster reads Combat owns: an interface of the roster, reached by the ability target queries in Combat.
             .Append("IPartyRoster PartyRoster")
             // The weapon ability parts (Readmes/MaintainabilityRefactorWeaponAbilitySplit.md): content singletons the unconverted ability base and the status spread snapshot reach here until they are converted.
@@ -161,6 +163,8 @@ public class ConvertedServiceContainerTests
             .Concat(new[] { "IEspionageEnmityQuery", "IEspionageStealthQuery", "IRecastDelays", "IBeastCorpseInfo", "IAchievementNotification" })
             // The status effect split: the resistance reads the status effects own, which Combat answers.
             .Concat(new[] { "IStatusResistance" })
+            // The recorder split: the state and queue of a recording, a store with no services.
+            .Concat(new[] { "ICombatRecordSession" })
             .ToArray();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);

@@ -7,8 +7,8 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,100 | 13,041 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 19 | 28,804 lines | none over 1,000 lines |
+| 1. Static service lookup | `StaticLookups.txt` | 1,100 | 13,045 uses | none: GameServices and FacadeAccessor deleted |
+| 2. Large types | `LargeTypes.txt` | 19 | 28,530 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 8 | 2,419 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 15 | 236 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 33 | 43 parameters | none |
@@ -20,10 +20,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 ## 1. Static service lookup
 
-- 1,100 files, 13,041 uses: 833 using directives and 12,208 uses in code (7,494 in a static context).
+- 1,100 files, 13,045 uses: 833 using directives and 12,212 uses in code (7,494 in a static context).
 - SWLOR.Game.Server: 648 file(s), 5,451 use(s) (Feature/ 538, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 243 file(s), 5,389 use(s).
-- SWLOR.Game.Server.Tests: 180 file(s), 2,043 use(s).
+- SWLOR.Game.Server.Tests: 180 file(s), 2,047 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
 - SWLOR.CraftSim.Tests: 5 file(s), 15 use(s).
 - SWLOR.Game.Server.IntegrationTests: 4 file(s), 20 use(s).
@@ -58,7 +58,7 @@ Largest 15 of 1,100 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 19 types over 1,000 lines, 28,804 lines in all.
+- 19 types over 1,000 lines, 28,530 lines in all.
 - Exempt and over the limit: 191 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1, owner exception 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
@@ -71,11 +71,11 @@ Largest 15 of 19 (all in `LargeTypes.txt`):
 | `SWLOR.Game.Server.Domain.Creatures.AIService` | 1,878 | AIService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 1,720 | CombatAbilityImpactService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 1,719 | CombatHitEffectsService.cs |
-| `SWLOR.Game.Server.Domain.Combat.CombatRecorderService` | 1,691 | CombatRecorderService.cs |
 | `SWLOR.Game.Server.Feature.UsePerkFeat` | 1,687 | UsePerkFeat.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService` | 1,609 | CombatDamageTakenService.cs |
 | `SWLOR.Game.Server.Domain.Items.ItemService` | 1,605 | ItemService.cs |
 | `SWLOR.Game.Server.Domain.Character.PerkService` | 1,486 | PerkService.cs |
+| `SWLOR.Game.Server.Domain.Combat.CombatRecorderService` | 1,417 | CombatRecorderService.cs |
 | `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 1,307 | MimicryService.cs |
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 1,244 | EnmityService.cs |
 | `SWLOR.Game.Server.Domain.Companions.BeastMasteryService` | 1,240 | BeastMasteryService.cs |

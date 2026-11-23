@@ -56,6 +56,7 @@ public class PlayerMessageAuditTests
             "Feature/StatusEffectDefinition/GuardedStatusEffect.cs" }
             .Select(relative => Path.Combine(root, "SWLOR.Game.Server", relative)).ToList();
         files.AddRange(StatusEffectSource.Paths());
+        files.AddRange(MimicryBeastDroidSource.AllPaths().Where(path => !files.Select(Path.GetFullPath).Contains(path)));
         files.AddRange(AbilitySource.Paths());
         files.AddRange(Directory.EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server", "Feature", "ShipModuleDefinition"), "*.cs"));
 
@@ -215,8 +216,7 @@ public class PlayerMessageAuditTests
     [Test]
     public void MimicryFailures_RemainRateLimitedAndObservationsRemainVisible()
     {
-        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Domain", "Abilities", "MimicryService.cs");
-        var calls = ReadCalls(file).ToArray();
+        var calls = MimicryBeastDroidSource.Paths(MimicryBeastDroidSource.Mimicry).SelectMany(ReadCalls).ToArray();
         var failures = calls.Where(call => MethodName(call) == "SendWarningToPlayer").ToArray();
         failures.Should().HaveCount(2);
         failures.Should().Contain(call => call.ArgumentList.Arguments[1].ToString().Contains("MIMICRY_RANK_"));

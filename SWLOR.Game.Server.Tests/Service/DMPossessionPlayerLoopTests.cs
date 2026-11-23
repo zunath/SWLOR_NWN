@@ -98,8 +98,8 @@ public class DMPossessionPlayerLoopTests
                 {
                     public bool IsControlledByDM(uint player) => DMPresence.IsControlledByDM(player);
                 }
-                {{InstanceMethod("Domain/Abilities/MimicryService.cs", "OnCreatureAbilityUsed")}}
-                {{InstanceMethod("Domain/Abilities/MimicryService.cs", "GetNearbyPlayers")}}
+                {{MimicryBeastDroidSource.InstanceMethod(MimicryBeastDroidSource.Mimicry, "OnCreatureAbilityUsed")}}
+                {{MimicryBeastDroidSource.InstanceMethod(MimicryBeastDroidSource.Mimicry, "GetNearbyPlayers")}}
             }
 
             {{Type("Domain/Character/OOCMessageContext.cs", "OOCMessageContext")}}

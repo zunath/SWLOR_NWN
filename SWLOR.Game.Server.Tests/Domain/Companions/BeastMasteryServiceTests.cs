@@ -155,7 +155,7 @@ public class BeastMasteryServiceTests
         _scopes.Add(ItemPluginRuntime.Override(_itemPlugin));
         _scopes.Add(_container.Install());
 
-        _service.CacheData();
+        _service.Beasts.CacheData();
         _engine.ClearCalls();
     }
 
@@ -193,8 +193,8 @@ public class BeastMasteryServiceTests
     /// <summary>Makes <see cref="Beast"/> a spawned beast of a type that belongs to the player and stores its entity.</summary>
     private Beast ActiveBeast(int level = 1, int xp = 0, BeastType type = BeastType.Aradile)
     {
-        _service.SetBeastId(BeastObject, BeastId);
-        _service.SetBeastType(BeastObject, type);
+        _service.Beasts.SetBeastId(BeastObject, BeastId);
+        _service.Beasts.SetBeastType(BeastObject, type);
         _henchman = BeastObject;
         return StoredBeast(level, xp, type);
     }
@@ -252,80 +252,6 @@ public class BeastMasteryServiceTests
             ((Action)call.Arguments[1]!).Invoke();
         foreach (var call in _engine.CallsTo("DelayCommand"))
             ((Action)call.Arguments[1]!).Invoke();
-    }
-
-    /// <summary>The beast service with the calls into services that are not converted yet answered by the test.</summary>
-    private sealed class TestBeastMastery : BeastMasteryService
-    {
-        public TestBeastMastery(IDBService db, IIncubationFieldNoteService notes, IPropertyService property)
-            : base(db, notes, property, FacadeForwarder.For<IAIService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICompanionControlService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatusEffectApplicationService>(), FacadeForwarder.For<ICombatDamageCatalogService>())
-        {
-        }
-
-        public IEnumerable<Type>? Definitions { get; set; }
-        public Dictionary<(uint Creature, PerkType Perk), int> PerkLevels { get; } = new();
-        public Dictionary<(uint Creature, StatType Stat), int> StatAdjustments { get; } = new();
-        public Dictionary<uint, NPCStats> NpcStats { get; } = new();
-        public bool ConversationHandled { get; set; }
-        public List<string> Calls { get; } = new();
-
-        public IEnumerable<Type> DefaultDefinitions() => base.GetBeastListDefinitionTypes();
-
-        protected override IEnumerable<Type> GetBeastListDefinitionTypes() => Definitions ?? base.GetBeastListDefinitionTypes();
-
-        protected override int GetPerkLevel(uint creature, PerkType perkType) =>
-            PerkLevels.GetValueOrDefault((creature, perkType));
-
-        protected override int GetStatAdjustment(uint creature, StatType stat) =>
-            StatAdjustments.GetValueOrDefault((creature, stat));
-
-        protected override void PublishBeastGainXPRefresh(uint player) => Calls.Add($"Refresh {player}");
-
-        protected override void SyncGrantedFeats(uint creature, PerkType perkType, int perkLevel, bool addByLevel) =>
-            Calls.Add($"SyncGrantedFeats {creature} {perkType} {perkLevel} {addByLevel}");
-
-        protected override void SetNPCMaxHitPoints(uint creature, int desiredMaxHitPoints) =>
-            Calls.Add($"SetNPCMaxHitPoints {creature} {desiredMaxHitPoints}");
-
-        protected override NPCStats GetNPCStats(uint npc) => NpcStats.GetValueOrDefault(npc) ?? new NPCStats();
-
-        protected override void ClearCompanionControl(uint companion) => Calls.Add($"Clear {companion}");
-
-        protected override void InitializeCompanionControl(uint companion) => Calls.Add($"Initialize {companion}");
-
-        protected override void ProcessCompanionCombatRound(uint companion) => Calls.Add($"CombatRound {companion}");
-
-        protected override void ProcessCompanionHeartbeat(uint companion) => Calls.Add($"Heartbeat {companion}");
-
-        protected override bool HandleCompanionConversation(uint companion)
-        {
-            Calls.Add($"Conversation {companion}");
-            return ConversationHandled;
-        }
-
-        protected override void RegisterDefensiveThreat(uint companion, uint threat) =>
-            Calls.Add($"Threat {companion} {threat}");
-
-        protected override void RecordBeastDeath(uint master, string beastId, uint killer) =>
-            Calls.Add($"RecordDeath {master} {beastId} {killer}");
-
-        protected override void RestoreBeastStats() => Calls.Add("RestoreBeastStats");
-
-        protected override void LoadNPCStats() => Calls.Add("LoadNPCStats");
-
-        protected override void ApplyCreatureMovementRate(uint creature) => Calls.Add($"MovementRate {creature}");
-
-        protected override void ApplyRestStatusEffect(uint beast) => Calls.Add($"Rest {beast}");
-
-        protected override void ReturnItem(uint owner, uint item) => Calls.Add($"ReturnItem {owner} {item}");
-
-        protected override void TogglePlayerWindow(uint player, GuiWindowType windowType, GuiPayloadBase payload, uint tetherObject)
-        {
-            Calls.Add($"Window {player} {windowType} {tetherObject}");
-            Payload = payload;
-        }
-
-        public GuiPayloadBase? Payload { get; private set; }
     }
 
     /// <summary>Records the field notes the service grants.</summary>
@@ -442,31 +368,31 @@ public class BeastMasteryServiceTests
     [Test]
     public void CacheData_loads_the_catalog_the_roles_the_foods_and_the_incubation_percentages()
     {
-        _service.GetAllBeastTypes().Should().BeEquivalentTo(new[] { BeastType.Aradile, BeastType.Bearbug, BeastType.Wraid });
-        var aradile = _service.GetBeastDetail(BeastType.Aradile);
+        _service.Beasts.GetAllBeastTypes().Should().BeEquivalentTo(new[] { BeastType.Aradile, BeastType.Bearbug, BeastType.Wraid });
+        var aradile = _service.Beasts.GetBeastDetail(BeastType.Aradile);
         aradile.Name.Should().Be("Aradile");
         aradile.Levels.Should().HaveCount(50);
         aradile.PossibleMutations.Select(x => x.Type).Should().Equal(BeastType.Bearbug, BeastType.Wraid);
 
-        _service.GetBeastRoleDetail(BeastRoleType.Bruiser).Name.Should().Be("Bruiser");
-        _service.GetBeastRoleDetail(BeastRoleType.Invalid).IsActive.Should().BeFalse();
+        _service.Beasts.GetBeastRoleDetail(BeastRoleType.Bruiser).Name.Should().Be("Bruiser");
+        _service.Beasts.GetBeastRoleDetail(BeastRoleType.Invalid).IsActive.Should().BeFalse();
 
-        _service.GetIncubationPercentageById(1).Should().Be(5f);
-        _service.GetIncubationPercentageById(3).Should().Be(10f);
+        _service.Beasts.GetIncubationPercentageById(1).Should().Be(5f);
+        _service.Beasts.GetIncubationPercentageById(3).Should().Be(10f);
     }
 
     [Test]
     public void The_incubation_percentage_of_an_unknown_or_unparsable_row_is_zero()
     {
-        _service.GetIncubationPercentageById(2).Should().Be(0f, "the label of the row is not a number");
-        _service.GetIncubationPercentageById(99).Should().Be(0f);
+        _service.Beasts.GetIncubationPercentageById(2).Should().Be(0f, "the label of the row is not a number");
+        _service.Beasts.GetIncubationPercentageById(99).Should().Be(0f);
     }
 
     [Test]
     public void CacheData_reads_the_incubation_table_rows_from_the_first()
     {
         _engine.CountOf("Get2DARowCount").Should().Be(0, "the setup cleared the calls");
-        _service.CacheData();
+        _service.Beasts.CacheData();
 
         _engine.CallsTo("Get2DARowCount").Select(call => (string)call.Arguments[0]!).Should().Equal("iprp_incubonus");
         _engine.CallsTo("Get2DAString").Select(call => (int)call.Arguments[2]!).Should().Equal(1, 2, 3);
@@ -475,9 +401,9 @@ public class BeastMasteryServiceTests
     [Test]
     public void CacheData_can_run_again_without_duplicating_the_catalog()
     {
-        _service.CacheData();
+        _service.Beasts.CacheData();
 
-        _service.GetAllBeastTypes().Should().HaveCount(3);
+        _service.Beasts.GetAllBeastTypes().Should().HaveCount(3);
     }
 
     [Test]
@@ -485,7 +411,7 @@ public class BeastMasteryServiceTests
     {
         var fresh = new TestBeastMastery(_db, _fieldNotes, DispatchProxy.Create<IPropertyService, PropertyIdStub>());
 
-        fresh.GetAllBeastTypes().Should().BeEmpty();
+        fresh.Beasts.GetAllBeastTypes().Should().BeEmpty();
     }
 
     [Test]
@@ -508,10 +434,10 @@ public class BeastMasteryServiceTests
     {
         var service = new TestBeastMastery(_db, _fieldNotes, DispatchProxy.Create<IPropertyService, PropertyIdStub>());
 
-        service.CacheData();
+        service.Beasts.CacheData();
 
-        service.GetAllBeastTypes().Should().HaveCountGreaterThan(50);
-        service.GetAllBeastTypes().Should().OnlyHaveUniqueItems();
+        service.Beasts.GetAllBeastTypes().Should().HaveCountGreaterThan(50);
+        service.Beasts.GetAllBeastTypes().Should().OnlyHaveUniqueItems();
     }
 
     // ---- what is stored on a spawned beast
@@ -519,11 +445,11 @@ public class BeastMasteryServiceTests
     [Test]
     public void The_beast_id_and_type_are_stored_as_local_variables()
     {
-        _service.SetBeastId(BeastObject, BeastId);
-        _service.SetBeastType(BeastObject, BeastType.Wraid);
+        _service.Beasts.SetBeastId(BeastObject, BeastId);
+        _service.Beasts.SetBeastType(BeastObject, BeastType.Wraid);
 
-        _service.GetBeastId(BeastObject).Should().Be(BeastId);
-        _service.GetBeastType(BeastObject).Should().Be(BeastType.Wraid);
+        _service.Beasts.GetBeastId(BeastObject).Should().Be(BeastId);
+        _service.Beasts.GetBeastType(BeastObject).Should().Be(BeastType.Wraid);
         _locals.String(BeastObject, "BEAST_ID").Should().Be(BeastId);
         _locals.Int(BeastObject, "BEAST_TYPE").Should().Be((int)BeastType.Wraid);
     }
@@ -531,24 +457,24 @@ public class BeastMasteryServiceTests
     [Test]
     public void A_creature_without_a_beast_type_is_not_a_beast()
     {
-        _service.GetBeastType(BeastObject).Should().Be(BeastType.Invalid);
-        _service.IsPlayerBeast(BeastObject).Should().BeFalse();
+        _service.Beasts.GetBeastType(BeastObject).Should().Be(BeastType.Invalid);
+        _service.Beasts.IsPlayerBeast(BeastObject).Should().BeFalse();
     }
 
     [Test]
     public void A_beast_belongs_to_a_player_when_its_master_is_a_player()
     {
-        _service.SetBeastType(BeastObject, BeastType.Aradile);
+        _service.Beasts.SetBeastType(BeastObject, BeastType.Aradile);
 
-        _service.IsPlayerBeast(BeastObject).Should().BeTrue();
+        _service.Beasts.IsPlayerBeast(BeastObject).Should().BeTrue();
     }
 
     [Test]
     public void A_beast_without_a_valid_master_is_not_a_player_beast()
     {
-        _service.SetBeastType(Npc, BeastType.Aradile);
+        _service.Beasts.SetBeastType(Npc, BeastType.Aradile);
 
-        _service.IsPlayerBeast(Npc).Should().BeFalse("GetMaster answers the invalid object");
+        _service.Beasts.IsPlayerBeast(Npc).Should().BeFalse("GetMaster answers the invalid object");
     }
 
     [Test]
@@ -556,9 +482,9 @@ public class BeastMasteryServiceTests
     {
         _valid.Add(Killer);
         _engine.SetReturnHandler("GetMaster", _ => Killer);
-        _service.SetBeastType(BeastObject, BeastType.Aradile);
+        _service.Beasts.SetBeastType(BeastObject, BeastType.Aradile);
 
-        _service.IsPlayerBeast(BeastObject).Should().BeFalse();
+        _service.Beasts.IsPlayerBeast(BeastObject).Should().BeFalse();
     }
 
     // ---- XP
@@ -566,19 +492,19 @@ public class BeastMasteryServiceTests
     [Test]
     public void The_level_cap_is_ten_levels_per_tame_rank_up_to_the_maximum()
     {
-        _service.GetBeastLevelCap(0).Should().Be(0);
-        _service.GetBeastLevelCap(3).Should().Be(30);
-        _service.GetBeastLevelCap(5).Should().Be(50);
-        _service.GetBeastLevelCap(9).Should().Be(BeastMasteryService.MaxLevel);
+        _service.Beasts.GetBeastLevelCap(0).Should().Be(0);
+        _service.Beasts.GetBeastLevelCap(3).Should().Be(30);
+        _service.Beasts.GetBeastLevelCap(5).Should().Be(50);
+        _service.Beasts.GetBeastLevelCap(9).Should().Be(BeastMasteryService.MaxLevel);
     }
 
     [Test]
     public void The_required_xp_adds_the_penalty_percent_to_the_table_value()
     {
-        _service.GetRequiredXP(0, 0).Should().Be(1100);
-        _service.GetRequiredXP(10, 0).Should().Be(6160);
-        _service.GetRequiredXP(10, 50).Should().Be(6160 + (int)(6160 * (50 * 0.01f)));
-        _service.GetRequiredXP(100, 0).Should().Be(800000);
+        _service.Beasts.GetRequiredXP(0, 0).Should().Be(1100);
+        _service.Beasts.GetRequiredXP(10, 0).Should().Be(6160);
+        _service.Beasts.GetRequiredXP(10, 50).Should().Be(6160 + (int)(6160 * (50 * 0.01f)));
+        _service.Beasts.GetRequiredXP(100, 0).Should().Be(800000);
     }
 
     [Test]
@@ -586,17 +512,17 @@ public class BeastMasteryServiceTests
     {
         var beast = new Beast { Level = 5, XP = 300, XPPenaltyPercent = 25 };
 
-        var expected = Enumerable.Range(5, 5).Sum(level => _service.GetRequiredXP(level, 25)) - 300;
+        var expected = Enumerable.Range(5, 5).Sum(level => _service.Beasts.GetRequiredXP(level, 25)) - 300;
 
-        _service.GetMaxDistributableXP(beast, 10).Should().Be(expected);
+        _service.Beasts.GetMaxDistributableXP(beast, 10).Should().Be(expected);
     }
 
     [Test]
     public void The_distributable_xp_is_zero_at_or_above_the_cap_and_never_passes_the_maximum_level()
     {
-        _service.GetMaxDistributableXP(new Beast { Level = 30, XP = 100 }, 30).Should().Be(0);
-        _service.GetMaxDistributableXP(new Beast { Level = 35, XP = 100 }, 30).Should().Be(0);
-        _service.GetMaxDistributableXP(new Beast { Level = 49, XP = 0 }, 80).Should().Be(_service.GetRequiredXP(49, 0));
+        _service.Beasts.GetMaxDistributableXP(new Beast { Level = 30, XP = 100 }, 30).Should().Be(0);
+        _service.Beasts.GetMaxDistributableXP(new Beast { Level = 35, XP = 100 }, 30).Should().Be(0);
+        _service.Beasts.GetMaxDistributableXP(new Beast { Level = 49, XP = 0 }, 80).Should().Be(_service.Beasts.GetRequiredXP(49, 0));
     }
 
     [Test]
@@ -605,7 +531,7 @@ public class BeastMasteryServiceTests
         ActiveBeast(level: 1);
         _service.PerkLevels[(Player, PerkType.Tame)] = 1;
 
-        _service.GiveBeastXP(BeastObject, 1000, true);
+        _service.Beasts.GiveBeastXP(BeastObject, 1000, true);
 
         var saved = Saved();
         saved.XP.Should().Be(1000);
@@ -621,7 +547,7 @@ public class BeastMasteryServiceTests
         ActiveBeast(level: 1);
         _service.PerkLevels[(Player, PerkType.Tame)] = 1;
 
-        _service.GiveBeastXP(BeastObject, 2000, true);
+        _service.Beasts.GiveBeastXP(BeastObject, 2000, true);
 
         var saved = Saved();
         saved.Level.Should().Be(2);
@@ -636,7 +562,7 @@ public class BeastMasteryServiceTests
         ActiveBeast(level: 1);
         _service.PerkLevels[(Player, PerkType.Tame)] = 2;
 
-        _service.GiveBeastXP(BeastObject, 1650 + 2200 + 100, true);
+        _service.Beasts.GiveBeastXP(BeastObject, 1650 + 2200 + 100, true);
 
         var saved = Saved();
         saved.Level.Should().Be(3);
@@ -651,11 +577,11 @@ public class BeastMasteryServiceTests
         ActiveBeast(level: 10);
         _service.PerkLevels[(Player, PerkType.Tame)] = 1;
 
-        _service.GiveBeastXP(BeastObject, 10000, true);
+        _service.Beasts.GiveBeastXP(BeastObject, 10000, true);
 
         var saved = Saved();
         saved.Level.Should().Be(10);
-        saved.XP.Should().Be(_service.GetRequiredXP(10, 0) - 1);
+        saved.XP.Should().Be(_service.Beasts.GetRequiredXP(10, 0) - 1);
         saved.UnallocatedSP.Should().Be(0);
     }
 
@@ -668,7 +594,7 @@ public class BeastMasteryServiceTests
         _service.StatAdjustments[(BeastObject, StatType.ExperiencePercentAdjustment)] = 20;
         _engine.SetReturnHandler("GetAbilityScore", arguments => (AbilityType)arguments[1]! == AbilityType.Social ? 4 : 0);
 
-        _service.GiveBeastXP(BeastObject, 1000, false);
+        _service.Beasts.GiveBeastXP(BeastObject, 1000, false);
 
         var bonus = 0f;
         bonus += 20 * 0.01f;
@@ -677,7 +603,7 @@ public class BeastMasteryServiceTests
         Saved().XP.Should().Be(1000 + (int)(1000 * bonus));
 
         beast.XP = 0;
-        _service.GiveBeastXP(BeastObject, 1000, true);
+        _service.Beasts.GiveBeastXP(BeastObject, 1000, true);
         Saved().XP.Should().Be(1000, "ignoring the bonuses gives exactly the XP asked for");
     }
 
@@ -687,7 +613,7 @@ public class BeastMasteryServiceTests
         ActiveBeast(level: 1);
         _service.PerkLevels[(Player, PerkType.Tame)] = 1;
 
-        _service.GiveBeastXP(BeastObject, 1000, false);
+        _service.Beasts.GiveBeastXP(BeastObject, 1000, false);
 
         Saved().XP.Should().Be(1000);
     }
@@ -698,7 +624,7 @@ public class BeastMasteryServiceTests
         ActiveBeast(level: 50);
         _service.PerkLevels[(Player, PerkType.Tame)] = 5;
 
-        _service.GiveBeastXP(BeastObject, 5000, true);
+        _service.Beasts.GiveBeastXP(BeastObject, 5000, true);
 
         Saved().XP.Should().Be(0);
         Messages().Should().BeEmpty();
@@ -710,7 +636,7 @@ public class BeastMasteryServiceTests
         ActiveBeast(level: 49);
         _service.PerkLevels[(Player, PerkType.Tame)] = 5;
 
-        _service.GiveBeastXP(BeastObject, 40000, true);
+        _service.Beasts.GiveBeastXP(BeastObject, 40000, true);
 
         var saved = Saved();
         saved.Level.Should().Be(50);
@@ -725,7 +651,7 @@ public class BeastMasteryServiceTests
         ActiveBeast(level: 1);
         _service.PerkLevels[(Player, PerkType.Tame)] = 1;
 
-        _service.GiveBeastXP(BeastObject, 2000, true);
+        _service.Beasts.GiveBeastXP(BeastObject, 2000, true);
 
         Added(Skin).Should().Contain((ItemPropertyType.NPCLevel, -1, 2));
         Added(Skin).Should().Contain((ItemPropertyType.Stamina, -1, 6));
@@ -738,7 +664,7 @@ public class BeastMasteryServiceTests
     [Test]
     public void RP_xp_for_an_unknown_beast_is_refused()
     {
-        _service.GiveBeastRPXP(Player, "missing", 500).Should().Be(0);
+        _service.Beasts.GiveBeastRPXP(Player, "missing", 500).Should().Be(0);
 
         _db.Store.Saved.Should().BeEmpty();
     }
@@ -748,7 +674,7 @@ public class BeastMasteryServiceTests
     {
         StoredBeast().OwnerPlayerId = "someone-else";
 
-        _service.GiveBeastRPXP(Player, BeastId, 500).Should().Be(0);
+        _service.Beasts.GiveBeastRPXP(Player, BeastId, 500).Should().Be(0);
     }
 
     [Test]
@@ -756,9 +682,9 @@ public class BeastMasteryServiceTests
     {
         StoredBeast(level: 9, xp: 0);
         _service.PerkLevels[(Player, PerkType.Tame)] = 1;
-        var room = _service.GetRequiredXP(9, 0);
+        var room = _service.Beasts.GetRequiredXP(9, 0);
 
-        _service.GiveBeastRPXP(Player, BeastId, room + 5000).Should().Be(room);
+        _service.Beasts.GiveBeastRPXP(Player, BeastId, room + 5000).Should().Be(room);
     }
 
     [Test]
@@ -767,7 +693,7 @@ public class BeastMasteryServiceTests
         StoredBeast(level: 10);
         _service.PerkLevels[(Player, PerkType.Tame)] = 1;
 
-        _service.GiveBeastRPXP(Player, BeastId, 500).Should().Be(0);
+        _service.Beasts.GiveBeastRPXP(Player, BeastId, 500).Should().Be(0);
         _db.Store.Saved.Should().BeEmpty();
     }
 
@@ -778,7 +704,7 @@ public class BeastMasteryServiceTests
         _service.PerkLevels[(Player, PerkType.Tame)] = 1;
         _service.StatAdjustments[(BeastObject, StatType.ExperiencePercentAdjustment)] = 50;
 
-        _service.GiveBeastRPXP(Player, BeastId, 1000).Should().Be(1000);
+        _service.Beasts.GiveBeastRPXP(Player, BeastId, 1000).Should().Be(1000);
 
         Saved().XP.Should().Be(1000);
         _service.Calls.Should().Equal($"Refresh {Player}");
@@ -790,10 +716,10 @@ public class BeastMasteryServiceTests
     {
         ActiveBeast(level: 1);
         _service.PerkLevels[(Player, PerkType.Tame)] = 1;
-        _service.SetBeastType(BeastObject, BeastType.Aradile);
+        _service.Beasts.SetBeastType(BeastObject, BeastType.Aradile);
         _service.StatAdjustments[(BeastObject, StatType.ExperiencePercentAdjustment)] = 50;
 
-        _service.GiveBeastRPXP(Player, BeastId, 2000).Should().Be(2000);
+        _service.Beasts.GiveBeastRPXP(Player, BeastId, 2000).Should().Be(2000);
 
         Saved().Level.Should().Be(2);
         Saved().XP.Should().Be(350, "the XP bonuses do not apply to RP XP");
@@ -807,7 +733,7 @@ public class BeastMasteryServiceTests
         StoredBeast(level: 1, id: "beast-2");
         _service.PerkLevels[(Player, PerkType.Tame)] = 1;
 
-        _service.GiveBeastRPXP(Player, "beast-2", 100).Should().Be(100);
+        _service.Beasts.GiveBeastRPXP(Player, "beast-2", 100).Should().Be(100);
 
         _db.Store.Saved.OfType<Beast>().Single().Id.Should().Be("beast-2");
         _engine.CallsTo("ItemPropertyCustom").Should().BeEmpty();
@@ -823,7 +749,7 @@ public class BeastMasteryServiceTests
         _engine.SetLocalInt(Area, "AREA_XP_BONUS_PERCENTAGE", areaBonusPercent);
         _engine.SetReturn("OBJECT_SELF", Player);
 
-        _service.CombatPointXPDistributed();
+        _service.Beasts.CombatPointXPDistributed();
     }
 
     [TestCase(5, 5, 600)]
@@ -863,7 +789,7 @@ public class BeastMasteryServiceTests
         _service.NpcStats[Npc] = new NPCStats { Level = 5 };
         _service.StatAdjustments[(BeastObject, StatType.ExperiencePercentAdjustment)] = 10;
 
-        _service.CombatPointXPDistributed();
+        _service.Beasts.CombatPointXPDistributed();
 
         Saved().XP.Should().Be(600 + (int)(600 * (10 * 0.01f)));
     }
@@ -874,7 +800,7 @@ public class BeastMasteryServiceTests
         ActiveBeast();
         _henchman = 0;
 
-        _service.CombatPointXPDistributed();
+        _service.Beasts.CombatPointXPDistributed();
 
         _db.Store.Saved.Should().BeEmpty();
     }
@@ -884,7 +810,7 @@ public class BeastMasteryServiceTests
     [Test]
     public void A_player_without_a_companion_may_spawn_one()
     {
-        _service.GetCompanionSlotValidationError(Player).Should().BeEmpty();
+        _service.Spawn.GetCompanionSlotValidationError(Player).Should().BeEmpty();
     }
 
     [Test]
@@ -892,7 +818,7 @@ public class BeastMasteryServiceTests
     {
         _henchman = BeastObject;
 
-        _service.GetCompanionSlotValidationError(Player).Should().Be("Only one companion may be active at a time.");
+        _service.Spawn.GetCompanionSlotValidationError(Player).Should().Be("Only one companion may be active at a time.");
     }
 
     // ---- spawning
@@ -902,7 +828,7 @@ public class BeastMasteryServiceTests
     {
         _henchman = BeastObject;
 
-        _service.SpawnBeast(Player, BeastId, 100);
+        _service.Spawn.SpawnBeast(Player, BeastId, 100);
 
         Messages().Should().Equal("Only one companion may be active at a time.");
         _engine.CallsTo("CreateObject").Should().BeEmpty();
@@ -911,7 +837,7 @@ public class BeastMasteryServiceTests
     [Test]
     public void Spawning_a_beast_that_is_not_in_the_database_tells_the_player()
     {
-        _service.SpawnBeast(Player, "missing", 100);
+        _service.Spawn.SpawnBeast(Player, "missing", 100);
 
         Messages().Should().Equal("Unable to locate beast in DB. Notify an admin.");
         _engine.CallsTo("CreateObject").Should().BeEmpty();
@@ -923,7 +849,7 @@ public class BeastMasteryServiceTests
         StoredBeast(level: 2);
         _engine.SetReturnHandler("GetEventScript", _ => "beast_spawn");
 
-        _service.SpawnBeast(Player, BeastId, 100);
+        _service.Spawn.SpawnBeast(Player, BeastId, 100);
 
         var spawn = _engine.CallsTo("CreateObject").Single();
         spawn.Arguments[0].Should().Be(ObjectType.Creature);
@@ -941,7 +867,7 @@ public class BeastMasteryServiceTests
     public void A_beast_uses_the_portrait_and_sound_set_of_its_species_unless_its_owner_picked_others()
     {
         StoredBeast(level: 1);
-        _service.SpawnBeast(Player, BeastId, 100);
+        _service.Spawn.SpawnBeast(Player, BeastId, 100);
         _engine.CallsTo("SetPortraitId").Single().Arguments[1].Should().Be(4279);
         _engine.CallsTo("SetSoundset").Single().Arguments[1].Should().Be(442);
 
@@ -950,7 +876,7 @@ public class BeastMasteryServiceTests
         var custom = StoredBeast(level: 1);
         custom.PortraitId = 12;
         custom.SoundSetId = 13;
-        _service.SpawnBeast(Player, BeastId, 100);
+        _service.Spawn.SpawnBeast(Player, BeastId, 100);
 
         _engine.CallsTo("SetPortraitId").Single().Arguments[1].Should().Be(12);
         _engine.CallsTo("SetSoundset").Single().Arguments[1].Should().Be(13);
@@ -963,7 +889,7 @@ public class BeastMasteryServiceTests
         stored.Perks[PerkType.Tame] = 3;
         stored.Perks[PerkType.DNAManipulation] = 1;
 
-        _service.SpawnBeast(Player, BeastId, 100);
+        _service.Spawn.SpawnBeast(Player, BeastId, 100);
 
         var beast = FirstCreatedObject;
         Added(Skin).Should().Contain((ItemPropertyType.NPCLevel, -1, 2));
@@ -979,7 +905,7 @@ public class BeastMasteryServiceTests
         StoredBeast(level: 1);
         _engine.SetReturnHandler("GetEventScript", _ => "beast_spawn_script");
 
-        _service.SpawnBeast(Player, BeastId, 100);
+        _service.Spawn.SpawnBeast(Player, BeastId, 100);
 
         var beast = FirstCreatedObject;
         var scripts = _engine.CallsTo("SetEventScript").Select(call => (EventScript)call.Arguments[1]!).ToList();
@@ -1005,7 +931,7 @@ public class BeastMasteryServiceTests
         StoredBeast(level: 1);
         _engine.SetReturn("GetMaxHitPoints", 150);
 
-        _service.SpawnBeast(Player, BeastId, 100);
+        _service.Spawn.SpawnBeast(Player, BeastId, 100);
 
         var beast = FirstCreatedObject;
         var calls = _engine.Calls.Select(call => call.Member).ToList();
@@ -1023,7 +949,7 @@ public class BeastMasteryServiceTests
         StoredBeast(level: 1);
         _engine.SetReturn("GetMaxHitPoints", 150);
 
-        _service.SpawnBeast(Player, BeastId, 50);
+        _service.Spawn.SpawnBeast(Player, BeastId, 50);
 
         _engine.CallsTo("SetCurrentHitPoints").Should().BeEmpty("only a full-health spawn is restored at once");
         RunScheduledCommands();
@@ -1041,7 +967,7 @@ public class BeastMasteryServiceTests
         StoredBeast(level: 1);
         _engine.SetReturn("GetMaxHitPoints", 150);
 
-        _service.SpawnBeast(Player, BeastId, 0);
+        _service.Spawn.SpawnBeast(Player, BeastId, 0);
         RunScheduledCommands();
 
         _engine.CallsTo("SetCurrentHitPoints").Single().Arguments.Should().Equal(FirstCreatedObject, 1);
@@ -1060,7 +986,7 @@ public class BeastMasteryServiceTests
         stored.EvasionPurity = 10;
         _service.PerkLevels[(Player, PerkType.Tame)] = 1;
 
-        _service.GiveBeastXP(BeastObject, 1, true);
+        _service.Beasts.GiveBeastXP(BeastObject, 1, true);
 
         var skin = Added(Skin);
         skin.Should().Contain((ItemPropertyType.NPCLevel, -1, 3));
@@ -1078,7 +1004,7 @@ public class BeastMasteryServiceTests
         ActiveBeast(level: 3);
         _service.PerkLevels[(Player, PerkType.Tame)] = 1;
 
-        _service.GiveBeastXP(BeastObject, 1, true);
+        _service.Beasts.GiveBeastXP(BeastObject, 1, true);
 
         var claw = Added(Claw);
         claw.Should().Contain((ItemPropertyType.DMG, -1, 3));
@@ -1094,7 +1020,7 @@ public class BeastMasteryServiceTests
         ActiveBeast(level: 3);
         _service.PerkLevels[(Player, PerkType.Tame)] = 1;
 
-        _service.GiveBeastXP(BeastObject, 1, true);
+        _service.Beasts.GiveBeastXP(BeastObject, 1, true);
 
         Added(Skin).Should().Contain(property => property.Type == ItemPropertyType.Accuracy);
         Added(Skin).Should().NotContain(property => property.Type == ItemPropertyType.AccuracyBonus);
@@ -1107,7 +1033,7 @@ public class BeastMasteryServiceTests
         ActiveBeast(level: 3);
         _service.PerkLevels[(Player, PerkType.Tame)] = 1;
 
-        _service.GiveBeastXP(BeastObject, 1, true);
+        _service.Beasts.GiveBeastXP(BeastObject, 1, true);
 
         var scores = _creature.CallsTo("SetRawAbilityScore")
             .ToDictionary(call => (AbilityType)call.Arguments[1]!, call => (int)call.Arguments[2]!);
@@ -1128,7 +1054,7 @@ public class BeastMasteryServiceTests
         ActiveBeast(level: 3);
         _service.PerkLevels[(Player, PerkType.Tame)] = 1;
 
-        _service.GiveBeastXP(BeastObject, 1, true);
+        _service.Beasts.GiveBeastXP(BeastObject, 1, true);
 
         var skin = Added(Skin);
         skin.Where(property => property.Type == ItemPropertyType.Defense).Select(property => property.SubType)
@@ -1157,7 +1083,7 @@ public class BeastMasteryServiceTests
         left.Remove(liked);
         var hated = left[replay.Next(left.Count)];
 
-        var (likedFood, hatedFood) = _service.GetLikedAndHatedFood();
+        var (likedFood, hatedFood) = _service.Beasts.GetLikedAndHatedFood();
 
         likedFood.Should().Be(liked);
         hatedFood.Should().Be(hated);
@@ -1173,7 +1099,7 @@ public class BeastMasteryServiceTests
         _henchman = BeastObject;
         _engine.SetReturn("OBJECT_SELF", Player);
 
-        _service.RemoveAssociate();
+        _service.Events.RemoveAssociate();
 
         _service.Calls.Should().Equal($"Clear {BeastObject}");
         _engine.CallsTo("DestroyObject").Single().Arguments[0].Should().Be(BeastObject);
@@ -1194,7 +1120,7 @@ public class BeastMasteryServiceTests
         {
             _engine.SetReturn("GetBaseItemType", type);
 
-            _service.OnAcquireItem();
+            _service.Events.OnAcquireItem();
         }
 
         Messages().Should().BeEmpty();
@@ -1209,7 +1135,7 @@ public class BeastMasteryServiceTests
         _engine.SetReturn("GetModuleItemAcquired", ItemObject);
         _engine.SetReturn("GetBaseItemType", BaseItem.Longsword);
 
-        _service.OnAcquireItem();
+        _service.Events.OnAcquireItem();
 
         Messages().Should().Equal("Beasts cannot hold items.");
         _service.Calls.Should().Equal($"ReturnItem {Player} {ItemObject}");
@@ -1225,7 +1151,7 @@ public class BeastMasteryServiceTests
         _engine.SetReturn("GetModuleItemAcquired", ItemObject);
         _engine.SetReturn("GetBaseItemType", BaseItem.Longsword);
 
-        _service.OnAcquireItem();
+        _service.Events.OnAcquireItem();
 
         Messages().Should().BeEmpty();
         _service.Calls.Should().BeEmpty();
@@ -1236,7 +1162,7 @@ public class BeastMasteryServiceTests
     {
         _engine.SetReturn("OBJECT_SELF", BeastObject);
 
-        _service.BeastOnBlocked();
+        _service.Events.BeastOnBlocked();
 
         _engine.CallsTo("ExecuteScript").Single().Arguments.Should().Equal("x0_ch_hen_block", BeastObject);
     }
@@ -1246,8 +1172,8 @@ public class BeastMasteryServiceTests
     {
         _engine.SetReturn("OBJECT_SELF", BeastObject);
 
-        _service.BeastOnDisturbed();
-        _service.BeastOnUserDefined();
+        _service.Events.BeastOnDisturbed();
+        _service.Events.BeastOnUserDefined();
 
         _engine.CallsTo("ExecuteScript").Select(call => (string)call.Arguments[0]!)
             .Should().Equal("x0_ch_hen_distrb", "x0_ch_hen_usrdef");
@@ -1258,7 +1184,7 @@ public class BeastMasteryServiceTests
     {
         _engine.SetReturn("OBJECT_SELF", BeastObject);
 
-        _service.BeastOnEndCombatRound();
+        _service.Events.BeastOnEndCombatRound();
 
         _service.Calls.Should().Equal($"CombatRound {BeastObject}");
     }
@@ -1269,11 +1195,11 @@ public class BeastMasteryServiceTests
         _engine.SetReturn("OBJECT_SELF", BeastObject);
 
         _service.ConversationHandled = true;
-        _service.BeastOnConversation();
+        _service.Events.BeastOnConversation();
         _engine.CallsTo("ExecuteScript").Should().BeEmpty();
 
         _service.ConversationHandled = false;
-        _service.BeastOnConversation();
+        _service.Events.BeastOnConversation();
         _engine.CallsTo("ExecuteScript").Single().Arguments.Should().Equal("x0_ch_hen_conv", BeastObject);
         _service.Calls.Should().Equal($"Conversation {BeastObject}", $"Conversation {BeastObject}");
     }
@@ -1285,8 +1211,8 @@ public class BeastMasteryServiceTests
         _engine.SetReturnHandler("GetLastDamager", _ => Damager);
         _engine.SetReturnHandler("GetLastAttacker", _ => Killer);
 
-        _service.BeastOnDamaged();
-        _service.BeastOnPhysicalAttacked();
+        _service.Events.BeastOnDamaged();
+        _service.Events.BeastOnPhysicalAttacked();
 
         _service.Calls.Should().Equal($"Threat {BeastObject} {Damager}", $"Threat {BeastObject} {Killer}");
     }
@@ -1298,11 +1224,11 @@ public class BeastMasteryServiceTests
         _engine.SetReturn("GetLastSpellCaster", Damager);
 
         _engine.SetReturn("GetLastSpellHarmful", false);
-        _service.BeastOnSpellCastAt();
+        _service.Events.BeastOnSpellCastAt();
         _service.Calls.Should().BeEmpty();
 
         _engine.SetReturn("GetLastSpellHarmful", true);
-        _service.BeastOnSpellCastAt();
+        _service.Events.BeastOnSpellCastAt();
         _service.Calls.Should().Equal($"Threat {BeastObject} {Damager}");
     }
 
@@ -1311,7 +1237,7 @@ public class BeastMasteryServiceTests
     {
         _engine.SetReturn("OBJECT_SELF", BeastObject);
 
-        _service.BeastOnHeartbeat();
+        _service.Events.BeastOnHeartbeat();
 
         _service.Calls.Should().Equal("RestoreBeastStats", $"Heartbeat {BeastObject}");
     }
@@ -1321,7 +1247,7 @@ public class BeastMasteryServiceTests
     {
         _engine.SetReturn("OBJECT_SELF", BeastObject);
 
-        _service.BeastOnRested();
+        _service.Events.BeastOnRested();
 
         _engine.CallsTo("ExecuteScript").Single().Arguments.Should().Equal("x0_ch_hen_rest", BeastObject);
         _service.Calls.Should().Equal($"Rest {BeastObject}");
@@ -1333,7 +1259,7 @@ public class BeastMasteryServiceTests
     {
         _engine.SetReturn("OBJECT_SELF", BeastObject);
 
-        _service.BeastOnSpawn();
+        _service.Events.BeastOnSpawn();
         RunScheduledCommands();
 
         _service.Calls.Should().Equal("LoadNPCStats", $"MovementRate {BeastObject}", $"Initialize {BeastObject}");
@@ -1347,7 +1273,7 @@ public class BeastMasteryServiceTests
         _engine.SetReturn("OBJECT_SELF", BeastObject);
         _engine.SetReturn("GetLastKiller", Killer);
 
-        _service.BeastOnDeath();
+        _service.Events.BeastOnDeath();
 
         _service.Calls.Should().Equal($"RecordDeath {Player} {BeastId} {Killer}", $"Clear {BeastObject}");
         _engine.CallsTo("ExecuteScript").Single().Arguments.Should().Equal("x2_hen_death", BeastObject);
@@ -1363,7 +1289,7 @@ public class BeastMasteryServiceTests
         _engine.SetReturn("GetLastKiller", ObjectInvalid);
         _engine.SetReturnHandler("GetLastHostileActor", _ => Damager);
 
-        _service.BeastOnDeath();
+        _service.Events.BeastOnDeath();
 
         _service.Calls[0].Should().Be($"RecordDeath {Player} {BeastId} {Damager}");
     }
@@ -1371,10 +1297,10 @@ public class BeastMasteryServiceTests
     [Test]
     public void A_dying_beast_with_no_entity_leaves_the_database_alone()
     {
-        _service.SetBeastId(BeastObject, "missing");
+        _service.Beasts.SetBeastId(BeastObject, "missing");
         _engine.SetReturn("OBJECT_SELF", BeastObject);
 
-        _service.BeastOnDeath();
+        _service.Events.BeastOnDeath();
 
         _service.Calls.Should().Contain($"Clear {BeastObject}");
         _db.Store.Saved.Should().BeEmpty();
@@ -1388,7 +1314,7 @@ public class BeastMasteryServiceTests
         _engine.SetReturn("GetLastUsedBy", Player);
         _engine.SetReturn("OBJECT_SELF", ItemObject);
 
-        _service.OpenStablesMenu();
+        _service.Events.OpenStablesMenu();
 
         _service.Calls.Should().Equal($"Window {Player} {GuiWindowType.Stables} {ItemObject}");
         _service.Payload.Should().BeNull();
@@ -1400,7 +1326,7 @@ public class BeastMasteryServiceTests
     {
         _engine.SetReturn("GetLastUsedBy", Npc);
 
-        _service.OpenStablesMenu();
+        _service.Events.OpenStablesMenu();
 
         Messages().Should().ContainSingle().Which.Should().Contain("Only players may use this terminal.");
         _service.Calls.Should().BeEmpty();
@@ -1411,11 +1337,11 @@ public class BeastMasteryServiceTests
     {
         _engine.SetReturn("GetLastUsedBy", Player);
         _isDM = true;
-        _service.OpenStablesMenu();
+        _service.Events.OpenStablesMenu();
 
         _isDM = false;
         _isPossessed = true;
-        _service.OpenStablesMenu();
+        _service.Events.OpenStablesMenu();
 
         Messages().Should().HaveCount(2);
         _service.Calls.Should().BeEmpty();
@@ -1426,7 +1352,7 @@ public class BeastMasteryServiceTests
     {
         _engine.SetReturn("GetLastUsedBy", Player);
 
-        _service.UseExtractDNAObject();
+        _service.Incubation.UseExtractDNAObject();
 
         Messages().Should().ContainSingle().Which.Should().Contain("Use a DNA Extractor on this corpse to retrieve its DNA.");
     }
@@ -1440,7 +1366,7 @@ public class BeastMasteryServiceTests
         _service.PerkLevels[(Player, PerkType.DNAManipulation)] = dnaLevel;
         _propertyIds.Ids[Incubator] = propertyId;
 
-        _service.UseIncubator();
+        _service.Incubation.UseIncubator();
     }
 
     [Test]
@@ -1519,7 +1445,7 @@ public class BeastMasteryServiceTests
     {
         _db.With(Job());
 
-        _service.OnRemoveProperty();
+        _service.Incubation.OnRemoveProperty();
 
         _db.Store.Deleted.Should().Equal("job-1");
         _db.Store.Queries.OfType<DBQuery<IncubationJob>>().Single().BuildQuery().QueryString.Should().Contain("ParentPropertyId");
@@ -1528,7 +1454,7 @@ public class BeastMasteryServiceTests
     [Test]
     public void Removing_a_property_with_no_jobs_deletes_nothing()
     {
-        _service.OnRemoveProperty();
+        _service.Incubation.OnRemoveProperty();
 
         _db.Store.Deleted.Should().BeEmpty();
     }
@@ -1538,7 +1464,7 @@ public class BeastMasteryServiceTests
     [Test]
     public void A_beast_egg_holds_the_dna_type_and_is_named_for_the_beast()
     {
-        var egg = _service.CreateBeastEgg(BeastType.Wraid, Player);
+        var egg = _service.Incubation.CreateBeastEgg(BeastType.Wraid, Player);
 
         egg.Should().Be(FirstCreatedObject);
         var created = _engine.CallsTo("CreateItemOnObject").Single();
@@ -1561,7 +1487,7 @@ public class BeastMasteryServiceTests
         var replay = new System.Random(seed);
         replay.Next(1000);
 
-        _service.CreateBeastEgg(job, Player);
+        _service.Incubation.CreateBeastEgg(job, Player);
 
         _engine.CallsTo("SetName").Single().Arguments[1].Should().Be("Beast Egg: Aradile");
         _fieldNotes.Granted.Should().BeEmpty("no mutation, no field note");
@@ -1577,7 +1503,7 @@ public class BeastMasteryServiceTests
         job.ResistancePurities[Resistance.GetAllResistanceTypes()[0]] = 88;
         Random.SetSeed(SeedForNoMutation(100));
 
-        _service.CreateBeastEgg(job, Player);
+        _service.Incubation.CreateBeastEgg(job, Player);
 
         var egg = FirstCreatedObject;
         var incubation = Added(egg).Where(property => property.Type == ItemPropertyType.Incubation).ToList();
@@ -1601,7 +1527,7 @@ public class BeastMasteryServiceTests
         job.ResistancePurities = null!;
         Random.SetSeed(SeedForNoMutation(100));
 
-        _service.CreateBeastEgg(job, Player);
+        _service.Incubation.CreateBeastEgg(job, Player);
 
         BeastResistanceCalculator.TryGetResistancePurityIncubationStatType(Resistance.GetAllResistanceTypes()[0], out var stat)
             .Should().BeTrue();
@@ -1619,7 +1545,7 @@ public class BeastMasteryServiceTests
         var quality = purities.Average() / 1000f;
         var expected = Math.Max(180, (int)Math.Round(180 + (1170 * quality * (1f - (job.XPPenalty / 1000f)))));
 
-        _service.CreateBeastEgg(job, Player);
+        _service.Incubation.CreateBeastEgg(job, Player);
 
         _itemPlugin.CallsTo("SetAddGoldPieceValue").Single().Arguments.Should().Equal(FirstCreatedObject, expected);
     }
@@ -1630,7 +1556,7 @@ public class BeastMasteryServiceTests
         var job = new IncubationJob { Id = "job-1", BeastDNAType = BeastType.Aradile, XPPenalty = 1000 };
         Random.SetSeed(SeedForNoMutation(0));
 
-        _service.CreateBeastEgg(job, Player);
+        _service.Incubation.CreateBeastEgg(job, Player);
 
         _itemPlugin.CallsTo("SetAddGoldPieceValue").Single().Arguments[1].Should().Be(180);
     }
@@ -1648,7 +1574,7 @@ public class BeastMasteryServiceTests
         replay.Next(1000);
         replay.NextDouble();
 
-        _service.CreateBeastEgg(job, Player);
+        _service.Incubation.CreateBeastEgg(job, Player);
 
         _engine.CallsTo("SetName").Single().Arguments[1].Should().Be("Beast Egg: Bearbug");
         _fieldNotes.Granted.Should().Equal((Player, BeastType.Bearbug));
@@ -1668,7 +1594,7 @@ public class BeastMasteryServiceTests
         });
         Random.SetSeed(wraidSeed);
 
-        _service.CreateBeastEgg(job, Player);
+        _service.Incubation.CreateBeastEgg(job, Player);
 
         _engine.CallsTo("SetName").Single().Arguments[1].Should().Be("Beast Egg: Wraid");
         _fieldNotes.Granted.Should().Equal((Player, BeastType.Wraid));
@@ -1686,7 +1612,7 @@ public class BeastMasteryServiceTests
         });
         Random.SetSeed(bearbugSeed);
 
-        _service.CreateBeastEgg(job, Player);
+        _service.Incubation.CreateBeastEgg(job, Player);
 
         _engine.CallsTo("SetName").Single().Arguments[1].Should().Be("Beast Egg: Bearbug");
     }
@@ -1699,7 +1625,7 @@ public class BeastMasteryServiceTests
         var roll = new System.Random(7).Next(1000);
         var job = Job(mutationChance: roll + 1);
 
-        _service.CreateBeastEgg(job, Player);
+        _service.Incubation.CreateBeastEgg(job, Player);
 
         _engine.CallsTo("SetName").Single().Arguments[1].Should().Be("Beast Egg: Bearbug");
     }
@@ -1711,7 +1637,7 @@ public class BeastMasteryServiceTests
         var roll = new System.Random(7).Next(1000);
         var job = Job(mutationChance: roll);
 
-        _service.CreateBeastEgg(job, Player);
+        _service.Incubation.CreateBeastEgg(job, Player);
 
         _engine.CallsTo("SetName").Single().Arguments[1].Should().Be("Beast Egg: Aradile");
     }
@@ -1723,7 +1649,7 @@ public class BeastMasteryServiceTests
         var job = Job(mutationChance: 1000);
         job.IsMutationSuppressed = true;
 
-        _service.CreateBeastEgg(job, Player);
+        _service.Incubation.CreateBeastEgg(job, Player);
 
         _engine.CallsTo("SetName").Single().Arguments[1].Should().Be("Beast Egg: Aradile");
     }
@@ -1737,7 +1663,7 @@ public class BeastMasteryServiceTests
         var replay = new System.Random(seed);
         replay.Next(1000);
 
-        _service.CreateBeastEgg(job, Player);
+        _service.Incubation.CreateBeastEgg(job, Player);
 
         _engine.CallsTo("SetName").Single().Arguments[1].Should().Be("Beast Egg: Aradile");
         Random.Next().Should().Be(replay.Next());
@@ -1752,7 +1678,7 @@ public class BeastMasteryServiceTests
         var replay = new System.Random(seed);
         replay.Next(1000);
 
-        _service.CreateBeastEgg(job, Player);
+        _service.Incubation.CreateBeastEgg(job, Player);
 
         _engine.CallsTo("SetName").Single().Arguments[1].Should().Be("Beast Egg: Bearbug");
         _fieldNotes.Granted.Should().BeEmpty();
@@ -1772,10 +1698,10 @@ public class BeastMasteryServiceTests
             _ => "other"
         });
 
-        _service.IsIncubationCraftingItem(1).Should().BeTrue();
-        _service.IsIncubationCraftingItem(2).Should().BeTrue();
-        _service.IsIncubationCraftingItem(3).Should().BeFalse();
-        _service.IsIncubationCraftingItem(4).Should().BeFalse();
+        _service.Beasts.IsIncubationCraftingItem(1).Should().BeTrue();
+        _service.Beasts.IsIncubationCraftingItem(2).Should().BeTrue();
+        _service.Beasts.IsIncubationCraftingItem(3).Should().BeFalse();
+        _service.Beasts.IsIncubationCraftingItem(4).Should().BeFalse();
     }
 
     [Test]
@@ -1783,8 +1709,8 @@ public class BeastMasteryServiceTests
     {
         _engine.SetReturnHandler("GetResRef", arguments => (uint)arguments[0]! == 3 ? "beast_egg" : "beast_dna");
 
-        _service.IsBeastEgg(3).Should().BeTrue();
-        _service.IsBeastEgg(2).Should().BeFalse();
+        _service.Beasts.IsBeastEgg(3).Should().BeTrue();
+        _service.Beasts.IsBeastEgg(2).Should().BeFalse();
     }
 
     // ---- the constants the facade repeats

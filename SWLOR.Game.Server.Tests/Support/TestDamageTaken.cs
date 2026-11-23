@@ -22,7 +22,7 @@ using System.Reflection;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
-internal sealed partial class TestDamageTaken : CombatDamageTakenService
+public sealed partial class TestDamageTaken : CombatDamageTakenService
 {
     private readonly List<string> _log;
     private readonly Func<int> _calculated;
@@ -34,24 +34,20 @@ internal sealed partial class TestDamageTaken : CombatDamageTakenService
         ICombatQueriesService queries,
         ICombatResourcesService resources,
         ICombatAttackTimingService attackTiming,
-        ICombatActivityService combatActivity,
         ICombatDamageModifiersService damageModifiers,
         ICombatAbilityHitService abilityHit,
         ICombatHitEffectsService hitEffects,
         IStatService stat,
         ICombatRatingService combatRating,
         IStatusEffectService statusEffect,
-        IStatusEffectApplicationService statusApplication,
         IStatusEffectCombatEventService statusCombat,
         ITemporaryStatModifierService temporaryStatModifier,
         ICombatRecorderService combatRecorder,
         IPvpCombatService pvpCombat,
         IEnmityService enmity,
-        IMessagingService messaging,
-        IPlayerNameService playerName,
         ICombatDefenseMemoryService defenseMemory)
-        : base(feedback, queries, resources, attackTiming, combatActivity, damageModifiers, abilityHit, hitEffects, stat, combatRating,
-            statusEffect, statusApplication, statusCombat, temporaryStatModifier, combatRecorder, pvpCombat, enmity, messaging, playerName,
+        : base(feedback, queries, resources, attackTiming, damageModifiers, abilityHit, hitEffects, stat, combatRating,
+            statusEffect, statusCombat, temporaryStatModifier, combatRecorder, pvpCombat, enmity,
             FacadeForwarder.For<ICombatDamageRollService>(), defenseMemory)
     {
         _log = log;

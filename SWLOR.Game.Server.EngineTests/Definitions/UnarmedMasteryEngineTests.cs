@@ -110,7 +110,7 @@ public static class UnarmedMasteryEngineTests
             context.AssertEqual(12, MeleeTechnique.GetPendingRetaliationPower(owner.Creature, target),
                 "The counter survives switching back to Power Gloves before the free heavy strike.");
             // Exercise the native avoided-attack callback with the owned perk's real stat source.
-            await context.ExecuteInCreatureContextAsync(owner.Creature, () => GameServices.CombatDamageTaken.TrackAvoidedAttack(owner.Creature, target));
+            await context.ExecuteInCreatureContextAsync(owner.Creature, () => GameServices.CombatDamageTakenEffects.TrackAvoidedAttack(owner.Creature, target));
             context.AssertEqual(-4, GameServices.CombatAbilityBonus.GetNextSkillAbilityStaminaCostAdjustment(owner.Creature, SkillType.Unarmed, true), "Opportunist's Flow applies its global discount while Power Gloves are equipped.");
             await context.DelaySecondsAsync(1.05f);
             var freeStamina = Stat.GetCurrentStamina(owner.Creature);

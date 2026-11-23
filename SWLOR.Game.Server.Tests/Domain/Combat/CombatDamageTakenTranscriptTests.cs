@@ -24,6 +24,8 @@ public class CombatDamageTakenTranscriptTests
     {
         using var bench = new CombatTranscriptBench();
         var taken = bench.Get<ICombatDamageTakenService>();
+        var effects = bench.Get<ICombatDamageTakenEffectsService>();
+        var reflection = bench.Get<ICombatDamageReflectionService>();
         var memory = bench.Get<ICombatDefenseMemoryService>();
 
         foreach (var stat in new[] { 0, 5 })
@@ -49,35 +51,35 @@ public class CombatDamageTakenTranscriptTests
             bench.Step("guarded hit that did not land" + tag, () =>
                 taken.ApplyGuardedHitModifiers(Defender, Attacker, 60, CombatDamageType.Force, false));
             bench.Step("track a guarded hit" + tag, () => taken.TrackGuardedHit(Defender));
-            bench.Step("track a deflection" + tag, () => taken.TrackDeflection(Defender, DeflectionSource.Melee));
-            bench.Step("track an avoided attack" + tag, () => taken.TrackAvoidedAttack(Defender, Attacker));
+            bench.Step("track a deflection" + tag, () => effects.TrackDeflection(Defender, DeflectionSource.Melee));
+            bench.Step("track an avoided attack" + tag, () => effects.TrackAvoidedAttack(Defender, Attacker));
             bench.Step("the after-damage handler" + tag, () =>
             {
                 bench.Engine.SetReturn("OBJECT_SELF", Defender);
                 bench.Engine.SetReturn("GetLastDamager", Attacker);
                 bench.Engine.SetReturn("GetTotalDamageDealt", 45);
-                taken.ApplyDamageTakenEffects();
+                effects.ApplyDamageTakenEffects();
             });
             bench.Step("after-damage effects of a dead defender" + tag, () =>
             {
                 bench.Engine.SetReturnHandler("GetIsDead", args => (uint)args[0]! == Defender);
                 try
                 {
-                    taken.ApplyDamageTakenEffects(Defender, Attacker, 45);
+                    effects.ApplyDamageTakenEffects(Defender, Attacker, 45);
                 }
                 finally
                 {
                     bench.Engine.SetReturnHandler("GetIsDead", args => false);
                 }
             });
-            bench.Step("after-damage effects of a hit that dealt nothing" + tag, () => taken.ApplyDamageTakenEffects(Defender, Attacker, 0));
-            bench.Step("melee damage taken" + tag, () => taken.ApplyMeleeDamageTakenEffects(Defender, Attacker));
-            bench.Step("damage reflection" + tag, () => taken.ApplyDamageReflectionEffects(Attacker, Defender, 40, CombatDamageType.Physical));
-            bench.Step("ranged deflection reflection" + tag, () => taken.ApplyRangedDeflectionReflection(Defender, Attacker, SkillType.Rifle));
+            bench.Step("after-damage effects of a hit that dealt nothing" + tag, () => effects.ApplyDamageTakenEffects(Defender, Attacker, 0));
+            bench.Step("melee damage taken" + tag, () => effects.ApplyMeleeDamageTakenEffects(Defender, Attacker));
+            bench.Step("damage reflection" + tag, () => reflection.ApplyDamageReflectionEffects(Attacker, Defender, 40, CombatDamageType.Physical));
+            bench.Step("ranged deflection reflection" + tag, () => reflection.ApplyRangedDeflectionReflection(Defender, Attacker, SkillType.Rifle));
             bench.Step("incoming physical converted to force" + tag, () =>
             {
                 var physical = 60;
-                taken.ApplyIncomingPhysicalToForceConversion(Attacker, Defender, CombatDamageType.Physical, ref physical, 0, null);
+                reflection.ApplyIncomingPhysicalToForceConversion(Attacker, Defender, CombatDamageType.Physical, ref physical, 0, null);
             });
             bench.Step("forget the defender" + tag, () => memory.ForgetDefenseMemory(Defender));
         }

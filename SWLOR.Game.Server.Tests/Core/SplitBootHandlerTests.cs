@@ -37,6 +37,8 @@ public class SplitBootHandlerTests
         "SWLOR.Game.Server.Service.Stat.CacheData",
         // Status effect split: the melee, impact and capstone listeners register out of StatusEffect.CacheData.
         "SWLOR.Game.Server.Service.StatusEffect.CacheData",
+        // Creatures split: the stealth aggro listener's registration splits out of AI.CacheAIData.
+        "SWLOR.Game.Server.Service.AI.CacheAIData",
     };
 
     private static IReadOnlyList<string[]> Splits()

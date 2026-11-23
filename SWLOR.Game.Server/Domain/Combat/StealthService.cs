@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
@@ -45,12 +44,16 @@ namespace SWLOR.Game.Server.Domain.Combat
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly HashSet<uint> _timedExitCreatures = new();
 
+        // The listeners told when a detection reveals a stealthed player. They are service instances, so a reload rebuilds the list
+        // through the boot handler that registers each one.
+        [ReloadState(ReloadStateKind.Runtime)]
+        private readonly List<IStealthAggroListener> _aggroListeners = new();
+
         private readonly Lazy<IPerkService> _perk;
         private readonly Lazy<IStatService> _stat;
         private readonly Lazy<IStatusEffectService> _statusEffect;
         private readonly Lazy<IStatusEffectApplicationService> _statusEffectApplication;
         private readonly Lazy<IEnmityService> _enmity;
-        private readonly IAIService _ai;
         private readonly Lazy<IEspionageInfiltrationService> _espionageInfiltration;
 
         public StealthService(
@@ -59,7 +62,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             Lazy<IStatusEffectService> statusEffect,
             Lazy<IStatusEffectApplicationService> statusEffectApplication,
             Lazy<IEnmityService> enmity,
-            IAIService ai,
             Lazy<IEspionageInfiltrationService> espionageInfiltration)
         {
             _perk = perk;
@@ -67,8 +69,13 @@ namespace SWLOR.Game.Server.Domain.Combat
             _statusEffect = statusEffect;
             _statusEffectApplication = statusEffectApplication;
             _enmity = enmity;
-            _ai = ai;
             _espionageInfiltration = espionageInfiltration;
+        }
+
+        public void RegisterAggroListener(IStealthAggroListener listener)
+        {
+            if (!_aggroListeners.Contains(listener))
+                _aggroListeners.Add(listener);
         }
 
         /// <summary>
@@ -833,8 +840,12 @@ namespace SWLOR.Game.Server.Domain.Combat
         protected virtual void ReevaluateEnemyAttackTargets(uint creature) =>
             _enmity.Value.ReevaluateEnemyAttackTargets(creature);
 
-        protected virtual void AcquireAggroFromNearbyEnemies(uint target) =>
-            _ai.AcquireAggroFromNearbyEnemies(target);
+        protected virtual void AcquireAggroFromNearbyEnemies(uint target)
+        {
+            RequireAggroListeners();
+            foreach (var listener in _aggroListeners)
+                listener.AcquireAggroFromNearbyEnemies(target);
+        }
 
         protected virtual int GetEnmityTableCount(uint enemy) =>
             _enmity.Value.GetEnmityTable(enemy).Count;
@@ -851,8 +862,18 @@ namespace SWLOR.Game.Server.Domain.Combat
         protected virtual void RecordInfiltrationDetection(uint observer, uint target, bool detected) =>
             _espionageInfiltration.Value.RecordDetection(observer, target, detected);
 
-        protected virtual void TryAcquireAggroAfterDetection(uint observer, uint target) =>
-            _ai.TryAcquireAggroAfterDetection(observer, target);
+        protected virtual void TryAcquireAggroAfterDetection(uint observer, uint target)
+        {
+            RequireAggroListeners();
+            foreach (var listener in _aggroListeners)
+                listener.TryAcquireAggroAfterDetection(observer, target);
+        }
+
+        private void RequireAggroListeners()
+        {
+            if (_aggroListeners.Count == 0)
+                throw new InvalidOperationException("No stealth aggro listener is registered with the stealth service.");
+        }
 
         protected virtual bool MayHaveScriptType(uint creature, EffectTypeScript effectType, EffectTypeScript otherEffectType) =>
             AppliedEffects.MayHaveScriptType(creature, effectType, otherEffectType);

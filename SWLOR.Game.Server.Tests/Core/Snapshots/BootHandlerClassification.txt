@@ -69,9 +69,10 @@ mod_cache_bef (49)
   Rerun       SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadShoulderCatalog
   Rerun       SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadMaterials
 
-mod_cache_aft (16)
+mod_cache_aft (17)
   Rerun       SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Creatures.AIService.CacheAIData
+  Rerun       SWLOR.Game.Server.Domain.Creatures.AIService.RegisterStealthAggroListener
   Rerun       SWLOR.Game.Server.Domain.Foundation.ConversationService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Administration.DMBlueprintCatalogService.LoadCustomPalettes
   Rerun       SWLOR.Game.Server.Domain.UI.GuiService.CacheData
@@ -145,5 +146,5 @@ app_shutdown (2)
 == TOTALS ==
 BootOnly    19
 NativeHook  16
-Rerun       86
+Rerun       87
 Retire      2

@@ -35,7 +35,6 @@ public class EspionageInfiltrationServiceTests
     private FakeNWScript _engine = null!;
     private FakeCreaturePlugin _creature = null!;
     private InMemoryDBService _db = null!;
-    private ScriptedProxy _aiScript = null!;
     private BenchEspionage _service = null!;
     private readonly List<IDisposable> _scopes = new();
     private readonly Dictionary<nint, (uint Area, float X)> _locations = new();
@@ -75,6 +74,9 @@ public class EspionageInfiltrationServiceTests
         _engine.SetReturnHandler("GetActionMode", _ => _stealthed);
         _engine.SetReturnHandler("GetLocalInt", _ => _combatEntryWindow);
         _engine.SetReturnHandler("GetIsEnemy", _ => true);
+        _engine.SetReturnHandler("GetDistanceBetween", _ => _inAggroRange ? 1f : CreatureAIRules.AggroRadius + 1f);
+        _engine.SetReturnHandler("LineOfSightObject", _ => true);
+        _engine.SetReturnHandler("GetAILevel", _ => _aiEnabled ? AILevel.Medium : AILevel.VeryLow);
         _engine.SetReturnHandler("GetMaster", _ => _master);
         _engine.SetReturnHandler("GetObjectUUID", arguments => "id-" + arguments[0]);
         _engine.SetReturnHandler("GetArea", arguments => (uint)arguments[0]! == Player ? _playerArea : AreaOne);
@@ -93,16 +95,11 @@ public class EspionageInfiltrationServiceTests
         _creature.SetReturnHandler("GetFaction", _ => EspionageInfiltrationService.HostileFactionId);
         _scopes.Add(CreaturePluginRuntime.Override(_creature));
 
-        var ai = ScriptedProxy.Create<IAIService>(out _aiScript);
-        _aiScript
-            .On("IsInAggroRange", _ => _inAggroRange)
-            .On("IsCreatureAIEnabled", _ => _aiEnabled);
-
         _db = new InMemoryDBService();
         var dbPlayer = new DbPlayer("id-" + Player);
         dbPlayer.Skills[SkillType.Espionage] = new PlayerSkill { Rank = 20 };
         _db.With(dbPlayer);
-        _service = new BenchEspionage(_db, ai);
+        _service = new BenchEspionage(_db);
     }
 
     [TearDown]
@@ -115,8 +112,8 @@ public class EspionageInfiltrationServiceTests
 
     private sealed class BenchEspionage : EspionageInfiltrationService
     {
-        public BenchEspionage(IDBService db, IAIService ai)
-            : base(db, ai, FacadeForwarder.For<IStealthService>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ISkillService>())
+        public BenchEspionage(IDBService db)
+            : base(db, FacadeForwarder.For<IStealthService>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ISkillService>())
         {
         }
 

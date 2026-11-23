@@ -165,5 +165,12 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// instead of on its next combat round. Deferred out of the status application.
         /// </summary>
         void ReevaluateHiddenTargetsForObserver(uint observer);
+
+        /// <summary>
+        /// Registers who is told when a detection reveals a stealthed player to a creature, and when a player becomes visible
+        /// beside enemies. Registering the same listener twice keeps one entry; the list holds service instances, so a reload
+        /// rebuilds it through the boot handler that registers the listener.
+        /// </summary>
+        void RegisterAggroListener(IStealthAggroListener listener);
     }
 }

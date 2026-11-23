@@ -24383,11 +24383,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 149
+                "value": 25
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 3
+                "value": 165
               },
               "Cost": {
                 "type": "dword",
@@ -24419,7 +24419,7 @@
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 27
+                "value": 119
               },
               "LocalizedName": {
                 "type": "cexolocstring",
@@ -24429,7 +24429,7 @@
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 36
+                "value": 5
               },
               "Metal2Color": {
                 "type": "byte",

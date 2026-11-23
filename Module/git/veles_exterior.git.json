@@ -24307,7 +24307,7 @@
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 126
+                "value": 1
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
@@ -24315,7 +24315,7 @@
               },
               "ArmorPart_LHand": {
                 "type": "byte",
-                "value": 109
+                "value": 1
               },
               "ArmorPart_LShin": {
                 "type": "byte",
@@ -24343,7 +24343,7 @@
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 126
+                "value": 1
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
@@ -24351,7 +24351,7 @@
               },
               "ArmorPart_RHand": {
                 "type": "byte",
-                "value": 109
+                "value": 1
               },
               "ArmorPart_Robe": {
                 "type": "byte",
@@ -24489,7 +24489,7 @@
               },
               "xArmorPart_LFArm": {
                 "type": "word",
-                "value": 126
+                "value": 1
               },
               "xArmorPart_LFoot": {
                 "type": "word",
@@ -24497,7 +24497,7 @@
               },
               "xArmorPart_LHand": {
                 "type": "word",
-                "value": 109
+                "value": 1
               },
               "xArmorPart_LShin": {
                 "type": "word",
@@ -24525,7 +24525,7 @@
               },
               "xArmorPart_RFArm": {
                 "type": "word",
-                "value": 126
+                "value": 1
               },
               "xArmorPart_RFoot": {
                 "type": "word",
@@ -24533,7 +24533,7 @@
               },
               "xArmorPart_RHand": {
                 "type": "word",
-                "value": 109
+                "value": 1
               },
               "xArmorPart_Robe": {
                 "type": "word",

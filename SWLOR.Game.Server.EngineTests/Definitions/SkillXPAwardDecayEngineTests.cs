@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
@@ -18,8 +19,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 /// returned, its feat removed), and a decayed Mimicry rank unequips the technique it no longer supports. Each case asserts that the
 /// event was signaled once, for the decayed skill, on the player.
 /// </summary>
-public static class SkillXPAwardDecayEngineTests
+public sealed class SkillXPAwardDecayEngineTests
 {
+    public SkillXPAwardDecayEngineTests(ISkillService skill, IPerkService perk, IAbilityCatalogService abilityCatalog, IDBService db)
+    {
+        Skill = skill;
+        Perk = perk;
+        AbilityCatalog = abilityCatalog;
+        DB = db;
+    }
+
+    private ISkillService Skill { get; }
+    private IPerkService Perk { get; }
+    private IAbilityCatalogService AbilityCatalog { get; }
+    private IDBService DB { get; }
+
     private const string Category = "SkillXPAwardDecay";
     private const SkillType GainedSkill = SkillType.Piloting;
     private const PerkType GatedPerk = PerkType.Provoke;
@@ -35,7 +49,7 @@ public static class SkillXPAwardDecayEngineTests
     }
 
     [EngineTest("A decayed skill that gates a purchased perk refunds the perk level", Category = Category, TimeoutSeconds = 60f)]
-    public static async Task DecayRefundsThePerkItGates(EngineTestContext ctx)
+    public async Task DecayRefundsThePerkItGates(EngineTestContext ctx)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         var player = fixture.Creature;
@@ -68,7 +82,7 @@ public static class SkillXPAwardDecayEngineTests
     }
 
     [EngineTest("A decayed Mimicry rank unequips the technique it no longer supports", Category = Category, TimeoutSeconds = 60f)]
-    public static async Task MimicryDecayUnequipsTheTechnique(EngineTestContext ctx)
+    public async Task MimicryDecayUnequipsTheTechnique(EngineTestContext ctx)
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         var player = fixture.Creature;
@@ -100,7 +114,7 @@ public static class SkillXPAwardDecayEngineTests
         AssertOneDecay(ctx, player, SkillType.Mimicry);
     }
 
-    private static int GetPerkSkillRequirement(EngineTestContext ctx, PerkType perk, int level, out SkillType skill)
+    private int GetPerkSkillRequirement(EngineTestContext ctx, PerkType perk, int level, out SkillType skill)
     {
         var requirements = Perk.GetPerkDetails(perk).PerkLevels[level].Requirements.OfType<PerkRequirementSkill>().ToArray();
         ctx.AssertEqual(1, requirements.Length, $"{perk} level {level} has one skill requirement");
@@ -113,7 +127,7 @@ public static class SkillXPAwardDecayEngineTests
     /// candidate holds the only unlocked rank, every other skill that counts toward the cap is locked at the ranks that bring the total to
     /// the cap, and the gained skill starts at rank 0. Skill and ability points are used up so the rank earns none.
     /// </summary>
-    private static void AtTheCap(Player record, SkillType gained, SkillType candidate, int candidateRank)
+    private void AtTheCap(Player record, SkillType gained, SkillType candidate, int candidateRank)
     {
         foreach (var skill in Enum.GetValues<SkillType>())
             record.Skills[skill] = new PlayerSkill();

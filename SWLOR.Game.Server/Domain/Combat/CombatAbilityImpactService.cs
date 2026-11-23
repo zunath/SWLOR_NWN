@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatActivityService _combatActivity;
         private readonly ICombatHitEffectsService _hitEffects;
         private readonly ICombatDamageTakenService _damageTaken;
+        private readonly ICombatDamageTakenEffectsService _damageTakenEffects;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly IStatusEffectApplicationService _statusEffectApplication;
@@ -58,6 +59,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatActivityService combatActivity,
             ICombatHitEffectsService hitEffects,
             ICombatDamageTakenService damageTaken,
+            ICombatDamageTakenEffectsService damageTakenEffects,
             IStatService stat,
             IStatusEffectService statusEffect,
             IStatusEffectApplicationService statusEffectApplication,
@@ -75,6 +77,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _combatActivity = combatActivity;
             _hitEffects = hitEffects;
             _damageTaken = damageTaken;
+            _damageTakenEffects = damageTakenEffects;
             _stat = stat;
             _statusEffect = statusEffect;
             _statusEffectApplication = statusEffectApplication;
@@ -1634,7 +1637,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                     deflection,
                     duration,
                     StatType.AreaAbilityAttackDeflection);
-                _damageTaken.ApplyAbilityGrantedAttackDeflectionEffects(activator, source);
+                _damageTakenEffects.ApplyAbilityGrantedAttackDeflectionEffects(activator, source);
             }
         }
 

@@ -57,6 +57,12 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The damage taken part of combat, a part of combat.</summary>
         public static ICombatDamageTakenService CombatDamageTaken => FacadeAccessor.Resolve<ICombatDamageTakenService>();
 
+        /// <summary>The damage taken handler, low HP, melee damage taken, avoided attack and deflection effects, a part of combat.</summary>
+        public static ICombatDamageTakenEffectsService CombatDamageTakenEffects => FacadeAccessor.Resolve<ICombatDamageTakenEffectsService>();
+
+        /// <summary>Damage reflection, the physical-to-Force conversion and Deflecting Return, a part of combat.</summary>
+        public static ICombatDamageReflectionService CombatDamageReflection => FacadeAccessor.Resolve<ICombatDamageReflectionService>();
+
         /// <summary>The random damage roll, a part of combat.</summary>
         public static ICombatDamageRollService CombatDamageRoll => FacadeAccessor.Resolve<ICombatDamageRollService>();
 

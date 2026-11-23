@@ -393,20 +393,38 @@ namespace SWLOR.Game.Server.Service
 
             var entrance = GetPositionFromLocation(GetDerelictEntrance(interior));
             var used = new List<Vector3>();
+            var template = plan.TemplateResref;
+            // A thing with no spot that keeps the arrival clear and its spacing from the others is left out rather than
+            // placed on the arriving crew or another spawn.
             foreach (var resref in plan.Dressing)
-                CreateObject(ObjectType.Placeable, resref, Location(interior, PickDerelictSpot(interior, entrance, anchors, 2f, used), Random.Next(360)));
+            {
+                if (PickDerelictSpot(interior, template, entrance, anchors, 2f, used) is { } spot)
+                    CreateObject(ObjectType.Placeable, resref, Location(interior, spot, Random.Next(360)));
+            }
 
             foreach (var resref in plan.Enemies)
-                SpawnDerelictEnemy(boarding, interior, resref, PickDerelictSpot(interior, entrance, anchors, DerelictTuning.EntranceClearMeters, used));
+            {
+                if (PickDerelictSpot(interior, template, entrance, anchors, DerelictTuning.EntranceClearMeters, used) is { } spot)
+                    SpawnDerelictEnemy(boarding, interior, resref, spot);
+            }
 
             foreach (var resref in plan.Terminals)
-                CreateObject(ObjectType.Placeable, resref,
-                    Location(interior, PickDerelictSpot(interior, entrance, anchors, DerelictTuning.EntranceClearMeters, used), Random.Next(360)));
+            {
+                if (PickDerelictSpot(interior, template, entrance, anchors, DerelictTuning.EntranceClearMeters, used) is { } spot)
+                    CreateObject(ObjectType.Placeable, resref, Location(interior, spot, Random.Next(360)));
+            }
 
+            // The strongbox is the boarding's goal, so it always stands: the farthest clear spot, else any walkable spot
+            // clear of the others, else the entrance.
             var strongboxSpot = Enumerable.Range(0, DerelictPlacementTries)
-                .Select(_ => PickDerelictSpot(interior, entrance, anchors, DerelictTuning.EntranceClearMeters, used, false))
+                .Select(_ => PickDerelictSpot(interior, template, entrance, anchors, DerelictTuning.EntranceClearMeters, used, false))
+                .Where(x => x.HasValue)
+                .Select(x => x.Value)
                 .OrderByDescending(x => System.Numerics.Vector3.Distance(x, entrance))
-                .First();
+                .Cast<Vector3?>()
+                .FirstOrDefault()
+                ?? PickDerelictSpot(interior, template, entrance, anchors, 0f, used, false)
+                ?? entrance;
             used.Add(strongboxSpot);
             var strongbox = CreateObject(ObjectType.Placeable, plan.StrongboxResref, Location(interior, strongboxSpot, Random.Next(360)),
                 false, DerelictStrongboxTag);
@@ -424,15 +442,16 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// A random walkable spot of the interior at least <paramref name="clearance"/> from the entrance and clear of the
         /// spots already <paramref name="used"/>; with no baked walkmesh point (the dense ship templates bake none), a
-        /// walkable point 2-4 m beside one of the template's placeables, never on it.
+        /// walkable point 2-4 m beside one of the template's placeables, never on it. The walkmesh is looked up by the
+        /// <paramref name="template"/>'s resref, since the instance's own resref was never baked. Null when no try finds a
+        /// spot that passes both checks.
         /// </summary>
-        private static Vector3 PickDerelictSpot(uint interior, Vector3 entrance, IReadOnlyList<Vector3> anchors, float clearance,
-            List<Vector3> used, bool reserve = true)
+        private static Vector3? PickDerelictSpot(uint interior, string template, Vector3 entrance, IReadOnlyList<Vector3> anchors,
+            float clearance, List<Vector3> used, bool reserve = true)
         {
-            var fallback = entrance;
             for (var attempt = 0; attempt < DerelictPlacementTries; attempt++)
             {
-                var position = GetPositionFromLocation(Walkmesh.GetRandomLocation(interior));
+                var position = GetPositionFromLocation(Walkmesh.GetRandomLocation(interior, template));
                 if (position.X == 0f && position.Y == 0f)
                 {
                     if (anchors.Count == 0)
@@ -445,7 +464,6 @@ namespace SWLOR.Game.Server.Service
                         continue;
                 }
 
-                fallback = position;
                 if (System.Numerics.Vector3.Distance(position, entrance) < clearance ||
                     used.Any(x => System.Numerics.Vector3.Distance(x, position) < DerelictSpotSpacing))
                     continue;
@@ -455,9 +473,7 @@ namespace SWLOR.Game.Server.Service
                 return position;
             }
 
-            if (reserve)
-                used.Add(fallback);
-            return fallback;
+            return null;
         }
 
         private static bool IsWalkable(uint area, Vector3 position)

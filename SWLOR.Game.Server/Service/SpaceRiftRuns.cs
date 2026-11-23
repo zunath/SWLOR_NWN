@@ -25,9 +25,14 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<string, RiftRun> _riftRuns = new();
 
-        // The resref of a Rift Key spent but not yet saved as spent. It rides in the character file, so a player who logs
-        // out before the save gets the key back at login.
+        // The resref of a Rift Key spent but not yet settled: its pocket has not opened, or the key handed back has not been
+        // saved. It rides in the character file, which never holds both it and the returned key, so a player who logs out
+        // or a server that stops before the key is settled gives it back at the next login.
         private const string PendingRiftKeyVariable = "SPACE_RIFT_KEY_PENDING";
+
+        // Set on each pocket instance when it is created. An instance takes a generated resref, so the template name
+        // alone does not tell a live pocket.
+        private const string RiftPocketVariable = "SPACE_RIFT_POCKET";
 
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ScheduleRiftRuns()
@@ -46,7 +51,7 @@ namespace SWLOR.Game.Server.Service
         public static string GetRiftKeyRefusal(uint user, uint item) =>
             string.IsNullOrEmpty(ObjectPlugin.GetString(user, PendingRiftKeyVariable))
                 ? GetRiftOpenRefusal(user, RiftRunRules.FindKey(GetResRef(item)))
-                : "Your rift is already opening.";
+                : "Your last Rift Key is still opening or being returned.";
 
         /// <summary>Why a pocket of this key's tier cannot open for this user now, or empty.</summary>
         private static string GetRiftOpenRefusal(uint user, RiftKeyDetail key)
@@ -80,7 +85,8 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>Whether an area is a Rift Run pocket.</summary>
-        public static bool IsRiftPocket(uint area) => GetIsObjectValid(area) && RiftRunRules.IsPocketTemplate(GetResRef(area));
+        public static bool IsRiftPocket(uint area) =>
+            GetIsObjectValid(area) && (GetLocalBool(area, RiftPocketVariable) || RiftRunRules.IsPocketTemplate(GetResRef(area)));
 
         /// <summary>
         /// Spends the key, saves the character without it, then opens a pocket for the key user and the party ships nearby.
@@ -103,36 +109,35 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Saves the spent key and opens the pocket. A refused or failed opening hands the key back; a player who logged out
-        /// first keeps the pending mark in their logout save and gets the key back at login.
+        /// Saves the spent key, with its pending mark, and opens the pocket. The saved file then holds the mark and not the
+        /// key, so a refused or failed opening, or a server stop before the pocket opens, always gives the key back. Once
+        /// the pocket is open the mark is cleared; a player who logged out first keeps the mark in their logout save and
+        /// gets the key back at login.
         /// </summary>
         private static void OpenSpentRiftKey(uint user, RiftKeyDetail key, string resref)
         {
             if (!GetIsObjectValid(user))
                 return;
 
-            // The mark goes before the save, so a saved file holds either the key or neither the key nor the mark.
-            ObjectPlugin.DeleteString(user, PendingRiftKeyVariable);
             var refusal = GetRiftOpenRefusal(user, key);
             if (string.IsNullOrEmpty(refusal) && !CharacterCheckpoint.Save(user))
                 refusal = "Your character could not be saved, so the rift stays closed. Try again in a moment.";
             if (string.IsNullOrEmpty(refusal) && OpenRiftRun(user, key, spentKey: true))
+            {
+                // The pocket is open, so the key is spent for good. Until a save holds the cleared mark, a server stop
+                // returns the key, but it also ends the run before the run can pay out.
+                ObjectPlugin.DeleteString(user, PendingRiftKeyVariable);
+                if (!CharacterCheckpoint.Save(user))
+                    Log.Write(LogGroup.Space, $"RIFT KEY SPENT - {PlayerName.GetAuditName(user)} - {resref} - character save failed, the mark clears at the next save");
                 return;
+            }
 
             if (!string.IsNullOrEmpty(refusal))
-                SendMessageToPC(user, ColorToken.Red($"{refusal} Your key is returned."));
-            // The returned key cannot be given twice: nothing saved marks it pending, so a failed save only leaves it
-            // to the next character save.
-            CreateItemOnObject(resref, user);
-            if (!CharacterCheckpoint.Save(user))
-                Log.Write(LogGroup.Space, $"RIFT KEY RETURNED - {PlayerName.GetAuditName(user)} - {resref} - character save failed, kept until the next save");
+                SendMessageToPC(user, ColorToken.Red(refusal));
+            ReturnRiftKey(user, resref);
         }
 
-        /// <summary>
-        /// A player who logged out while their Rift Key was being spent gets it back. The key and the cleared mark are saved
-        /// together before the key can be used; when that save fails, the key is taken back and the mark restored, so a key
-        /// banked before a crash can never be returned a second time at the next login.
-        /// </summary>
+        /// <summary>A player whose Rift Key was spent but not settled before they left gets it back.</summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ReturnPendingRiftKey()
         {
@@ -141,11 +146,28 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var resref = ObjectPlugin.GetString(player, PendingRiftKeyVariable);
-            if (string.IsNullOrEmpty(resref))
+            if (!string.IsNullOrEmpty(resref))
+                ReturnRiftKey(player, resref);
+        }
+
+        /// <summary>
+        /// Hands a pending Rift Key back. The mark stays until the key is in the character's own inventory and saved with
+        /// the mark cleared: a key that lands outside the inventory (a full one) is removed, and a failed save takes the
+        /// key back and restores the mark, so the key is never lost and never given twice.
+        /// </summary>
+        private static void ReturnRiftKey(uint player, string resref)
+        {
+            ObjectPlugin.SetString(player, PendingRiftKeyVariable, resref, true);
+            var key = CreateItemOnObject(resref, player);
+            if (!GetIsObjectValid(key) || GetItemPossessor(key) != player)
+            {
+                if (GetIsObjectValid(key))
+                    DestroyObject(key);
+                SendMessageToPC(player, ColorToken.Red("Your inventory has no room for your Rift Key, so it is returned at your next login."));
                 return;
+            }
 
             ObjectPlugin.DeleteString(player, PendingRiftKeyVariable);
-            var key = CreateItemOnObject(resref, player);
             if (!CharacterCheckpoint.Save(player))
             {
                 DestroyObject(key);
@@ -154,7 +176,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            SendMessageToPC(player, ColorToken.Cyan("You left before your rift opened, so your Rift Key is returned."));
+            SendMessageToPC(player, ColorToken.Cyan("Your rift did not open, so your Rift Key is returned."));
         }
 
         /// <summary>
@@ -179,9 +201,11 @@ namespace SWLOR.Game.Server.Service
 
             var (pilots, leftOut) = RiftRunRules.PickParty(user, nearby, GetRiftEntryRefusal);
             var area = Area.CreateInstance(key.Template, $"rift_pocket_{Guid.NewGuid():N}", $"Rift Pocket (Tier {key.TierLabel})");
+            if (GetIsObjectValid(area))
+                SetLocalBool(area, RiftPocketVariable, true);
             if (!GetIsObjectValid(area))
             {
-                SendMessageToPC(user, ColorToken.Red(spentKey ? "The rift flickers and will not open. Your key is returned." : "The rift flickers and will not open."));
+                SendMessageToPC(user, ColorToken.Red("The rift flickers and will not open."));
                 Log.Write(LogGroup.Error, $"Rift Run: could not create an instance of {key.Template}.");
                 return false;
             }

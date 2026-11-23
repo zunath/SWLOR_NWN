@@ -29,6 +29,20 @@ public class DerelictBoardingTests
         return Path.Combine(new[] { directory!.FullName }.Concat(parts).ToArray());
     }
 
+    [Test]
+    public void InteriorSpawns_UseTheTemplatesWalkmesh_AndNeverStandInTheArrivalClearance()
+    {
+        var derelicts = File.ReadAllText(RepositoryFile("SWLOR.Game.Server", "Service", "SpaceDerelicts.cs")).Replace("\r\n", "\n");
+        var pick = derelicts[derelicts.IndexOf("private static Vector3? PickDerelictSpot(", StringComparison.Ordinal)..];
+        pick = pick[..pick.IndexOf("private static bool IsWalkable(", StringComparison.Ordinal)];
+
+        pick.Should().Contain("Walkmesh.GetRandomLocation(interior, template)", "the instance's generated resref was never baked")
+            .And.NotContain("Walkmesh.GetRandomLocation(interior)");
+        pick.Should().Contain("return null;").And.NotContain("fallback", "a spot that fails the clearance checks is never returned");
+        derelicts.Should().Contain("if (PickDerelictSpot(interior, template, entrance, anchors, DerelictTuning.EntranceClearMeters, used) is { } spot)\n                    SpawnDerelictEnemy(",
+            "an enemy with no clear spot is left out rather than placed on the arriving crew");
+    }
+
     private static DerelictRequest Request(ShipSize size = ShipSize.Small, float distance = 10f, DerelictMode underway = DerelictMode.None,
         bool sameParty = false, int docked = 0, int droids = 1, bool teamOut = false) => new()
     {

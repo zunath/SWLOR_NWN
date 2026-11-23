@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.ItemDefinition;
@@ -167,21 +168,32 @@ public class RiftRunTests
         start.IndexOf("ObjectPlugin.SetString(user, PendingRiftKeyVariable, resref, true);", StringComparison.Ordinal)
             .Should().BeLessThan(start.IndexOf("Item.ReduceItemStack(item, 1);", StringComparison.Ordinal), "the pending mark rides in a logout save");
         var open = start[start.IndexOf("private static void OpenSpentRiftKey(", StringComparison.Ordinal)..];
-        open.IndexOf("ObjectPlugin.DeleteString(user, PendingRiftKeyVariable);", StringComparison.Ordinal)
-            .Should().BeLessThan(open.IndexOf("CharacterCheckpoint.Save(user)", StringComparison.Ordinal), "the saved file holds no mark once the key is gone");
-        open.IndexOf("CharacterCheckpoint.Save(user)", StringComparison.Ordinal)
-            .Should().BeLessThan(open.IndexOf("OpenRiftRun(user, key, spentKey: true)", StringComparison.Ordinal),
-                "no ship enters, and no reward can be recorded, until the spent key is saved");
-        open.Should().Contain("CreateItemOnObject(resref, user);", "a refused or failed opening hands the key back");
-        start.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]").And.Contain("var key = CreateItemOnObject(resref, player);",
-            "a player who logged out before the save gets the key back");
-        var login = start[start.IndexOf("public static void ReturnPendingRiftKey(", StringComparison.Ordinal)..];
-        login.IndexOf("var key = CreateItemOnObject(resref, player);", StringComparison.Ordinal)
-            .Should().BeLessThan(login.IndexOf("if (!CharacterCheckpoint.Save(player))", StringComparison.Ordinal),
+        open = open[..open.IndexOf("public static void ReturnPendingRiftKey(", StringComparison.Ordinal)];
+        var firstSave = open.IndexOf("CharacterCheckpoint.Save(user)", StringComparison.Ordinal);
+        firstSave.Should().BeLessThan(open.IndexOf("OpenRiftRun(user, key, spentKey: true)", StringComparison.Ordinal),
+            "no ship enters, and no reward can be recorded, until the spent key is saved");
+        firstSave.Should().BeLessThan(open.IndexOf("ObjectPlugin.DeleteString(user, PendingRiftKeyVariable);", StringComparison.Ordinal),
+            "the spent key is saved with its pending mark, so a failed opening or a server stop after it still returns the key");
+        open.IndexOf("OpenRiftRun(user, key, spentKey: true)", StringComparison.Ordinal)
+            .Should().BeLessThan(open.IndexOf("ObjectPlugin.DeleteString(user, PendingRiftKeyVariable);", StringComparison.Ordinal),
+                "the mark clears only once the pocket is open");
+        open.Should().Contain("ReturnRiftKey(user, resref);", "a refused or failed opening hands the key back");
+        Regex.Matches(open, @"^[ \t]*CharacterCheckpoint\.Save\(", RegexOptions.Multiline).Should().BeEmpty("no checkpoint result is ignored");
+
+        start.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]").And.Contain("ReturnRiftKey(player, resref);",
+            "a player who left before the key was settled gets it back at login");
+        var refund = start[start.IndexOf("private static void ReturnRiftKey(", StringComparison.Ordinal)..];
+        refund.IndexOf("ObjectPlugin.SetString(player, PendingRiftKeyVariable, resref, true);", StringComparison.Ordinal)
+            .Should().BeLessThan(refund.IndexOf("var key = CreateItemOnObject(resref, player);", StringComparison.Ordinal),
+                "the mark stays until the key is delivered and saved");
+        refund.Should().Contain("if (!GetIsObjectValid(key) || GetItemPossessor(key) != player)",
+            "a key that does not reach the inventory keeps the refund pending");
+        refund.IndexOf("ObjectPlugin.DeleteString(player, PendingRiftKeyVariable);", StringComparison.Ordinal)
+            .Should().BeLessThan(refund.IndexOf("if (!CharacterCheckpoint.Save(player))", StringComparison.Ordinal),
                 "the returned key and the cleared mark are saved together before the key can be banked");
-        login.Should().Contain("DestroyObject(key);").And.Contain("ObjectPlugin.SetString(player, PendingRiftKeyVariable, resref, true);",
+        refund.Should().Contain("DestroyObject(key);",
             "a failed save takes the key back and keeps the mark, so the key is never returned twice");
-        runs.Should().Contain(": \"Your rift is already opening.\"", "a second key waits for the first save");
+        runs.Should().Contain(": \"Your last Rift Key is still opening or being returned.\"", "a second key waits for the first to settle");
     }
 
     [Test]
@@ -242,6 +254,8 @@ public class RiftRunTests
         RiftRunRules.IsPocketTemplate(RiftRunTuning.TemplateResref).Should().BeTrue();
         RiftRunRules.IsPocketTemplate("space_wsblkhole").Should().BeFalse();
         ReadSource("Service", "SpaceRiftRuns.cs").Should().Contain("RiftRunRules.IsPocketTemplate(GetResRef(area))")
+            .And.Contain("GetLocalBool(area, RiftPocketVariable)", "a live pocket instance has a generated resref, so it is marked at creation")
+            .And.Contain("SetLocalBool(area, RiftPocketVariable, true);")
             .And.Contain("RiftRunRules.RoomPoint(run.Key.Template, room)");
         ReadSource("Service", "SpaceDmTools.cs").Should().Contain("OpenRiftRun", "the DM pocket tools open pockets through the shared opener");
     }

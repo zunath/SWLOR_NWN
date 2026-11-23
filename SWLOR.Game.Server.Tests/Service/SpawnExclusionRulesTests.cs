@@ -34,6 +34,18 @@ public class SpawnExclusionRulesTests
         spawn.Substring(excluded, failure - excluded).Should().Contain("SpawnExclusionRules.GetExcludedRetryTime(now, detail.RespawnDelayMinutes)");
     }
 
+    [Test]
+    public void ARandomPlaceable_DrawsFromThePointsThatLeaveRoomToWalkAroundIt()
+    {
+        var spawn = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "Spawn.cs"));
+        var start = spawn.IndexOf("private static bool TryGetSpawnPosition(", System.StringComparison.Ordinal);
+        var end = spawn.IndexOf("private static bool HasActiveRareSpawn(", System.StringComparison.Ordinal);
+        start.Should().BeGreaterThan(0);
+
+        spawn.Substring(start, end - start).Should().Contain("? Walkmesh.GetRandomPlaceableLocation(detail.Area)",
+            "a resource node or terminal placed at random, in a player city or not, must not seal a narrow passage");
+    }
+
     private static Func<Vector3> Sequence(params Vector3[] candidates)
     {
         var queue = new Queue<Vector3>(candidates);

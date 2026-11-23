@@ -237,7 +237,8 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
             .EnumerateFiles(Path.Combine(root.FullName, "SWLOR.Game.Server"), "*.cs", SearchOption.AllDirectories)
             .Where(path => !CombatSource.IsCombatFile(path))
             .Where(path => File.ReadAllText(path) is var text && (text.Contains("GameServices.CombatDamageReflection.ApplyDamageReflectionEffects(", StringComparison.Ordinal) ||
-                                                                  text.Contains("_damageTaken.ApplyDamageReflectionEffects(", StringComparison.Ordinal)))
+                                                                  text.Contains("_damageTaken.ApplyDamageReflectionEffects(", StringComparison.Ordinal) ||
+                                                                  text.Contains("_damageReflection.ApplyDamageReflectionEffects(", StringComparison.Ordinal)))
             // The part files of AbilityService count as the one ability source they were split from.
             .Select(path => AbilitySource.IsAbilityFile(path) ? "AbilityService" : Path.GetRelativePath(root.FullName, path).Replace('\\', '/'))
             .Distinct()

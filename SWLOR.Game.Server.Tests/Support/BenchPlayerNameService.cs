@@ -16,13 +16,14 @@ public sealed partial class BenchPlayerNameService : PlayerNameService
     public BenchPlayerNameService(IDBService db, IPlayerListService list, IChatPortraitTellsService portraits)
         : base(db, list, portraits, FacadeForwarder.LazyFor<IDisguiseService>(), FacadeForwarder.LazyFor<IPlayerDescriptorService>())
     {
+        KnownNames = new PlayerKnownNameService(db, this, list);
     }
 
     /// <summary>The known name and descriptor caches, the display names and the audit names (the stay-part).</summary>
     public BenchPlayerNameService Names => this;
 
-    /// <summary>The <c>/name</c> validation and writes.</summary>
-    public BenchPlayerNameService KnownNames => this;
+    /// <summary>The <c>/name</c> validation and writes: the real part, over this instance.</summary>
+    public PlayerKnownNameService KnownNames { get; }
 
     /// <summary>The name overrides, AFK and the tell handler.</summary>
     public BenchPlayerNameService Overrides => this;

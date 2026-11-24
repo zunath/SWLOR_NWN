@@ -8,14 +8,14 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
 | 1. Static service lookup | `StaticLookups.txt` | 1,074 | 12,794 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 16 | 24,084 lines | none over 1,000 lines |
+| 2. Large types | `LargeTypes.txt` | 15 | 22,596 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 8 | 2,419 lines | none over 150 lines (400 for layout) |
-| 4. Services per type | `ServicesPerType.txt` | 16 | 238 services | none over 10 services |
-| 5. Deferred resolution | `DeferredResolution.txt` | 30 | 36 parameters | none |
+| 4. Services per type | `ServicesPerType.txt` | 16 | 234 services | none over 10 services |
+| 5. Deferred resolution | `DeferredResolution.txt` | 29 | 35 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 111 | 229 types | none |
-| 7. Domain cycles | `DomainCycles.txt` | 26 | 90 edges | none |
+| 7. Domain cycles | `DomainCycles.txt` | 25 | 86 edges | none |
 | 8. Static entry points and static state | `StaticState.txt` | 122 | 220 members | each kept with an approved reason, or removed |
-| 9. References up the domain order | `UpwardEdges.txt` | 114 | 236 members | none: every reference follows the domain order |
+| 9. References up the domain order | `UpwardEdges.txt` | 112 | 230 members | none: every reference follows the domain order |
 | 10. Sink work | `SinkWork.txt` | 16 | 2,194 lines | none: a sink only forwards |
 
 ## 1. Static service lookup
@@ -58,22 +58,22 @@ Largest 15 of 1,074 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 16 types over 1,000 lines, 24,084 lines in all.
+- 15 types over 1,000 lines, 22,596 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 2, fluent builder 1, owner exception 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
-Largest 15 of 16 (all in `LargeTypes.txt`):
+Largest 15 of 15 (all in `LargeTypes.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 2,768 | SpaceService.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel` | 2,081 | ShipManagementViewModel.cs |
-| `SWLOR.Game.Server.Domain.Creatures.AIService` | 1,857 | AIService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 1,726 | CombatAbilityImpactService.cs |
 | `SWLOR.Game.Server.Feature.UsePerkFeat` | 1,687 | UsePerkFeat.cs |
 | `SWLOR.Game.Server.Domain.Items.ItemService` | 1,605 | ItemService.cs |
 | `SWLOR.Game.Server.Domain.Character.PerkService` | 1,486 | PerkService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatRecorderService` | 1,417 | CombatRecorderService.cs |
+| `SWLOR.Game.Server.Domain.Creatures.AIService` | 1,408 | AIService.cs |
 | `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 1,307 | MimicryService.cs |
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 1,243 | EnmityService.cs |
 | `SWLOR.Game.Server.Domain.Companions.BeastMasteryService` | 1,240 | BeastMasteryService.cs |
@@ -113,7 +113,6 @@ Largest 15 of 16 (all in `ServicesPerType.txt`):
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 18 | constructor 18, lookup 0 |
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 18 | constructor 18, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 17 | constructor 17, lookup 0 |
-| `SWLOR.Game.Server.Domain.Creatures.AIService` | 16 | constructor 16, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Companions.BeastMasteryService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Companions.DroidService` | 14 | constructor 14, lookup 0 |
@@ -121,18 +120,19 @@ Largest 15 of 16 (all in `ServicesPerType.txt`):
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityHitService` | 13 | constructor 13, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatService` | 13 | constructor 13, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 12 | constructor 12, lookup 0 |
+| `SWLOR.Game.Server.Domain.Creatures.AIService` | 12 | constructor 12, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.AbilityDamageStageService` | 11 | constructor 11, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 11 | constructor 11, lookup 0 |
 | `SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade.HeavyVibrobladeActiveAbilityDefinitionBase` | 11 | constructor 0, lookup 11 |
 
 ## 5. Deferred resolution
 
-- 36 deferred constructor parameters in 21 files (Lazy 36, Func 0), taken by 21 types, deferring 23 distinct services.
-- By direction in the domain order: up 2, down 20, inside one domain 14.
+- 35 deferred constructor parameters in 21 files (Lazy 35, Func 0), taken by 21 types, deferring 23 distinct services.
+- By direction in the domain order: up 2, down 19, inside one domain 14.
 - Up: Character -> Combat 1, Items -> Combat 1.
 - IServiceProvider outside Composition/: 0 uses.
 
-Largest 15 of 30 (all in `DeferredResolution.txt`):
+Largest 15 of 29 (all in `DeferredResolution.txt`):
 
 | Entry | Parameters | Detail |
 |---|---:|---|
@@ -180,11 +180,11 @@ Largest 15 of 111 (all in `LogicToContent.txt`):
 
 ## 7. Domain cycles
 
-- 26 pairs of domains depend on each other: 22 between logic (7 of them with Foundation or Platform), 4 between content.
-- Foundation's logic is in a pair with 3 domains, Platform with 5.
-- Members both ways: 4,113.
+- 25 pairs of domains depend on each other: 21 between logic (6 of them with Foundation or Platform), 4 between content.
+- Foundation's logic is in a pair with 2 domains, Platform with 5.
+- Members both ways: 3,514.
 
-Largest 15 of 26 (all in `DomainCycles.txt`):
+Largest 15 of 25 (all in `DomainCycles.txt`):
 
 | Entry | Edges | Detail |
 |---|---:|---|
@@ -195,14 +195,14 @@ Largest 15 of 26 (all in `DomainCycles.txt`):
 | `Combat <-> Platform` | 6 | Combat -> Platform: 5 edge(s), 241 member(s); Platform -> Combat: 1 edge(s), 52 member(s) |
 | `Foundation content <-> Gameplay content` | 5 | Foundation content -> Gameplay content: 2 edge(s), 4 member(s); Gameplay content -> Foundation content: 3 edge(s), 3 member(s) |
 | `Abilities content <-> Gameplay content` | 4 | Abilities content -> Gameplay content: 2 edge(s), 5 member(s); Gameplay content -> Abilities content: 2 edge(s), 2 member(s) |
-| `Character <-> Foundation` | 4 | Character -> Foundation: 3 edge(s), 589 member(s); Foundation -> Character: 1 edge(s), 6 member(s) |
 | `Foundation <-> UI` | 4 | Foundation -> UI: 1 edge(s), 6 member(s); UI -> Foundation: 3 edge(s), 127 member(s) |
 | `Items <-> Platform` | 4 | Items -> Platform: 3 edge(s), 46 member(s); Platform -> Items: 1 edge(s), 6 member(s) |
 | `Abilities content <-> Character content` | 3 | Abilities content -> Character content: 1 edge(s), 444 member(s); Character content -> Abilities content: 2 edge(s), 10 member(s) |
 | `Abilities <-> Character` | 2 | Abilities -> Character: 1 edge(s), 331 member(s); Character -> Abilities: 1 edge(s), 4 member(s) |
 | `Abilities <-> Combat` | 2 | Abilities -> Combat: 1 edge(s), 280 member(s); Combat -> Abilities: 1 edge(s), 10 member(s) |
-| `Character <-> Combat` | 2 | Character -> Combat: 1 edge(s), 7 member(s); Combat -> Character: 1 edge(s), 1039 member(s) |
+| `Character <-> Combat` | 2 | Character -> Combat: 1 edge(s), 7 member(s); Combat -> Character: 1 edge(s), 1037 member(s) |
 | `Character <-> Companions` | 2 | Character -> Companions: 1 edge(s), 2 member(s); Companions -> Character: 1 edge(s), 165 member(s) |
+| `Character <-> Items` | 2 | Character -> Items: 1 edge(s), 1 member(s); Items -> Character: 1 edge(s), 28 member(s) |
 
 ## 8. Static entry points and static state
 
@@ -233,12 +233,12 @@ Largest 15 of 122 (all in `StaticState.txt`):
 
 ## 9. References up the domain order
 
-- 236 members in 77 files reference a domain above their own: 31 directions, 46 unit edges.
-- Logic: 193 members in 22 directions; content: 43 members in 9 directions.
+- 230 members in 76 files reference a domain above their own: 30 directions, 45 unit edges.
+- Logic: 187 members in 21 directions; content: 43 members in 9 directions.
 - From the hook logic in Platform/Native (P5-16b): 122 members in 51 lines.
-- By direction: Platform -> Combat 52, Platform -> Foundation 36, Platform -> Character 27, Character content -> Abilities content 10, Combat -> Abilities 10, Items -> Combat 9, UI content -> Gameplay content 9, Character -> Combat 7, Combat -> Social 6, Foundation -> Character 6, Foundation -> UI 6, Platform -> Items 6, Foundation content -> UI content 5, Character -> Abilities 4, Character -> Social 4, Foundation content -> Character content 4, Foundation content -> Gameplay content 4, Quests -> Economy 4, UI content -> Abilities content 4, Combat -> World 3, Items -> Crafting 3, Items content -> Abilities content 3, Character -> Companions 2, Character -> Quests 2, Gameplay content -> Abilities content 2, Gameplay content -> Quests content 2, Platform -> Abilities 2, Character -> Items 1, Items -> Companions 1, Items -> World 1, World -> Space 1.
+- By direction: Platform -> Combat 52, Platform -> Foundation 36, Platform -> Character 27, Character content -> Abilities content 10, Combat -> Abilities 10, Items -> Combat 9, UI content -> Gameplay content 9, Character -> Combat 7, Combat -> Social 6, Foundation -> UI 6, Platform -> Items 6, Foundation content -> UI content 5, Character -> Abilities 4, Character -> Social 4, Foundation content -> Character content 4, Foundation content -> Gameplay content 4, Quests -> Economy 4, UI content -> Abilities content 4, Combat -> World 3, Items -> Crafting 3, Items content -> Abilities content 3, Character -> Companions 2, Character -> Quests 2, Gameplay content -> Abilities content 2, Gameplay content -> Quests content 2, Platform -> Abilities 2, Character -> Items 1, Items -> Companions 1, Items -> World 1, World -> Space 1.
 
-Largest 15 of 114 (all in `UpwardEdges.txt`):
+Largest 15 of 112 (all in `UpwardEdges.txt`):
 
 | Entry | Members | Detail |
 |---|---:|---|

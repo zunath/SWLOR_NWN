@@ -18,9 +18,9 @@ namespace SWLOR.Game.Server.Domain.Foundation
     {
         private readonly IDBService _db;
         private readonly IMessagingService _messaging;
-        private readonly IPlayerNameService _playerName;
+        private readonly IDisplayNameLookup _playerName;
 
-        public PlayerFeedbackService(IDBService db, IMessagingService messaging, IPlayerNameService playerName)
+        public PlayerFeedbackService(IDBService db, IMessagingService messaging, IDisplayNameLookup playerName)
         {
             _db = db;
             _messaging = messaging;

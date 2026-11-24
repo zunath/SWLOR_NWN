@@ -38,8 +38,12 @@ public static class CharacterCompanionsSource
     /// <summary>The player name service: <c>PlayerNameService</c> and each part the split moves out.</summary>
     public static readonly ServiceSource PlayerName = new(
         "PlayerNameService",
-        new[] { "SWLOR.Game.Server/Domain/Character/PlayerNameService.cs" },
-        new HashSet<string>(StringComparer.Ordinal) { "IPlayerNameService" });
+        new[]
+        {
+            "SWLOR.Game.Server/Domain/Character/PlayerNameService.cs",
+            "SWLOR.Game.Server/Domain/Character/PlayerKnownNameService.cs"
+        },
+        new HashSet<string>(StringComparer.Ordinal) { "IPlayerNameService", "IPlayerKnownNameService" });
 
     /// <summary>The services this reader covers, in the order the map lists them.</summary>
     public static IReadOnlyList<ServiceSource> Services => new[] { Perk, Skill, PlayerName };

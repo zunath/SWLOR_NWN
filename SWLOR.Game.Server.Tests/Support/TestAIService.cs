@@ -16,18 +16,21 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// The AI instance with the calls into services that are not converted yet under the test's control. The enmity
 /// tables are a model kept here (<see cref="Tables"/>, <see cref="Proximity"/>); every other call is written into the
 /// bench's call list as a note, in order with the engine calls, and answered with the delegate or set the test
-/// configured. The seams are in partial files by the part whose code calls them (<c>TestAIService.Service.cs</c>, <c>.Events</c>,
-/// <c>.Aggro</c>, <c>.Decision</c> and <c>.Action</c>; <c>.Shared</c> holds the seams several parts call), so a part that leaves
-/// <see cref="AIService"/> takes its file with it.
+/// configured. The seams are in partial files by the part whose code calls them (<c>TestAIService.Service.cs</c>,
+/// <c>.Decision</c> and <c>.Action</c>; <c>.Shared</c> holds the seams several parts call). A part that left <see cref="AIService"/>
+/// has a double of its own (<see cref="TestAICreatureEventService"/>, <see cref="TestAIAggroService"/>) that answers its seams
+/// from this model.
 /// </summary>
 public sealed partial class TestAIService : AIService
 {
     private readonly AIBench _bench;
 
     public TestAIService(AIBench bench, IPartyRoster party, ICompanionLookup beastMastery, IDMPresenceService dmPresence)
-        : base(party, beastMastery, dmPresence, FacadeForwarder.For<IAbilityActivationService>(), FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICompanionControlStoreService>(), FacadeForwarder.For<ICompanionTargetAuthorityService>(), FacadeForwarder.For<IConversationMenuService>(), FacadeForwarder.For<IConversationService>(), FacadeForwarder.LazyFor<IEnmityService>(), FacadeForwarder.LazyFor<IEspionageInfiltrationService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStealthService>())
+        : base(party, beastMastery, dmPresence, FacadeForwarder.For<IAbilityActivationService>(), FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICompanionControlStoreService>(), FacadeForwarder.For<ICompanionTargetAuthorityService>(), FacadeForwarder.LazyFor<IEnmityService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatusEffectService>())
     {
         _bench = bench;
+        Events = new TestAICreatureEventService(bench, this);
+        Aggro = new TestAIAggroService(bench, this);
     }
 
     /// <summary>The enmity tables: enemy, then each creature on its table with the amount.</summary>
@@ -91,11 +94,11 @@ public sealed partial class TestAIService : AIService
     /// <summary>The core: profiles, flags, the ally cache and the leash (part AI-1).</summary>
     public TestAIService Service => this;
 
-    /// <summary>The creature event handlers (part AI-2).</summary>
-    public TestAIService Events => this;
+    /// <summary>The creature event handlers (part AI-2); it reaches the core and the enmity model through this instance.</summary>
+    public TestAICreatureEventService Events { get; }
 
-    /// <summary>The aggro-aura handlers and proximity enmity (part AI-3).</summary>
-    public TestAIService Aggro => this;
+    /// <summary>The aggro-aura handlers and proximity enmity (part AI-3); it reaches the core and the enmity model through this instance.</summary>
+    public TestAIAggroService Aggro { get; }
 
     /// <summary>The trigger throttle, phase and boss timer (part AI-4).</summary>
     public TestAIService Decision => this;

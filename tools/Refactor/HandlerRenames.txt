@@ -16,23 +16,23 @@ SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerAttack
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerDamaged SWLOR.Game.Server.Domain.Creatures.CompanionControlService.OnOwnerDamaged
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerCombatRound SWLOR.Game.Server.Domain.Creatures.CompanionControlService.OnOwnerCombatRound
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnHostileSpellCastAtOwner SWLOR.Game.Server.Domain.Creatures.CompanionControlService.OnHostileSpellCastAtOwner
-SWLOR.Game.Server.Service.AI.CacheAIData SWLOR.Game.Server.Domain.Creatures.AIService.CacheAIData SWLOR.Game.Server.Domain.Creatures.AIService.RegisterStealthAggroListener
-SWLOR.Game.Server.Service.AI.CreatureAggroEnter SWLOR.Game.Server.Domain.Creatures.AIService.CreatureAggroEnter
-SWLOR.Game.Server.Service.AI.CreatureAggroExit SWLOR.Game.Server.Domain.Creatures.AIService.CreatureAggroExit
-SWLOR.Game.Server.Service.AI.CreatureBlocked SWLOR.Game.Server.Domain.Creatures.AIService.CreatureBlocked
-SWLOR.Game.Server.Service.AI.CreatureCombatRoundEnd SWLOR.Game.Server.Domain.Creatures.AIService.CreatureCombatRoundEnd
-SWLOR.Game.Server.Service.AI.CreatureConversation SWLOR.Game.Server.Domain.Creatures.AIService.CreatureConversation
-SWLOR.Game.Server.Service.AI.CreatureDamaged SWLOR.Game.Server.Domain.Creatures.AIService.CreatureDamaged
-SWLOR.Game.Server.Service.AI.CreatureDeath SWLOR.Game.Server.Domain.Creatures.AIService.CreatureDeath
-SWLOR.Game.Server.Service.AI.CreatureDisturbed SWLOR.Game.Server.Domain.Creatures.AIService.CreatureDisturbed
-SWLOR.Game.Server.Service.AI.CreatureHeartbeat SWLOR.Game.Server.Domain.Creatures.AIService.CreatureHeartbeat
+SWLOR.Game.Server.Service.AI.CacheAIData SWLOR.Game.Server.Domain.Creatures.AIService.CacheAIData SWLOR.Game.Server.Domain.Creatures.AIAggroService.RegisterStealthAggroListener
+SWLOR.Game.Server.Service.AI.CreatureAggroEnter SWLOR.Game.Server.Domain.Creatures.AIAggroService.CreatureAggroEnter
+SWLOR.Game.Server.Service.AI.CreatureAggroExit SWLOR.Game.Server.Domain.Creatures.AIAggroService.CreatureAggroExit
+SWLOR.Game.Server.Service.AI.CreatureBlocked SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureBlocked
+SWLOR.Game.Server.Service.AI.CreatureCombatRoundEnd SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureCombatRoundEnd
+SWLOR.Game.Server.Service.AI.CreatureConversation SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureConversation
+SWLOR.Game.Server.Service.AI.CreatureDamaged SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureDamaged
+SWLOR.Game.Server.Service.AI.CreatureDeath SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureDeath
+SWLOR.Game.Server.Service.AI.CreatureDisturbed SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureDisturbed
+SWLOR.Game.Server.Service.AI.CreatureHeartbeat SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureHeartbeat
 SWLOR.Game.Server.Service.AI.CreaturePerception SWLOR.Game.Server.Domain.Creatures.AIService.CreaturePerception
-SWLOR.Game.Server.Service.AI.CreaturePhysicalAttacked SWLOR.Game.Server.Domain.Creatures.AIService.CreaturePhysicalAttacked
-SWLOR.Game.Server.Service.AI.CreatureRested SWLOR.Game.Server.Domain.Creatures.AIService.CreatureRested
-SWLOR.Game.Server.Service.AI.CreatureSpawn SWLOR.Game.Server.Domain.Creatures.AIService.CreatureSpawn
-SWLOR.Game.Server.Service.AI.CreatureSpellCastAt SWLOR.Game.Server.Domain.Creatures.AIService.CreatureSpellCastAt
-SWLOR.Game.Server.Service.AI.CreatureUserDefined SWLOR.Game.Server.Domain.Creatures.AIService.CreatureUserDefined
-SWLOR.Game.Server.Service.AI.DMToggleAIAfter SWLOR.Game.Server.Domain.Creatures.AIService.DMToggleAIAfter
+SWLOR.Game.Server.Service.AI.CreaturePhysicalAttacked SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreaturePhysicalAttacked
+SWLOR.Game.Server.Service.AI.CreatureRested SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureRested
+SWLOR.Game.Server.Service.AI.CreatureSpawn SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureSpawn
+SWLOR.Game.Server.Service.AI.CreatureSpellCastAt SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureSpellCastAt
+SWLOR.Game.Server.Service.AI.CreatureUserDefined SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureUserDefined
+SWLOR.Game.Server.Service.AI.DMToggleAIAfter SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.DMToggleAIAfter
 SWLOR.Game.Server.Service.AI.RemoveFromAlliesCache SWLOR.Game.Server.Domain.Creatures.AIService.RemoveFromAlliesCache
 SWLOR.Game.Server.Service.NPCGroup.CacheData SWLOR.Game.Server.Domain.Creatures.NPCGroupService.CacheData
 SWLOR.Game.Server.Service.Spawn.CacheData SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService.LoadSpawnTables SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService.StoreSpawns

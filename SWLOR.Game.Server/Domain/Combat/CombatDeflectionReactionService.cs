@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private readonly ICharacterRecording _combatRecorder;
         private readonly IRecastService _recast;
-        private readonly ICombatDamageTakenService _damageTaken;
+        private readonly ICombatDamageTakenEffectsService _damageTakenEffects;
         private readonly ICombatAttackTimingService _attackTiming;
         private readonly ICombatResourcesService _resources;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         public CombatDeflectionReactionService(
             ICharacterRecording combatRecorder,
             IRecastService recast,
-            ICombatDamageTakenService damageTaken,
+            ICombatDamageTakenEffectsService damageTakenEffects,
             ICombatAttackTimingService attackTiming,
             ICombatResourcesService resources,
             ITemporaryStatModifierService temporaryStatModifier,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             _combatRecorder = combatRecorder;
             _recast = recast;
-            _damageTaken = damageTaken;
+            _damageTakenEffects = damageTakenEffects;
             _attackTiming = attackTiming;
             _resources = resources;
             _temporaryStatModifier = temporaryStatModifier;
@@ -320,7 +320,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         protected virtual void ReplaceTemporaryStatModifier(uint creature, StatType statType, int amount, float durationSeconds, StatType groupStatType) =>
             _temporaryStatModifier.Replace(creature, statType, amount, durationSeconds, groupStatType);
 
-        protected virtual void TrackDeflection(uint creature, DeflectionSource source) => _damageTaken.TrackDeflection(creature, source);
+        protected virtual void TrackDeflection(uint creature, DeflectionSource source) => _damageTakenEffects.TrackDeflection(creature, source);
 
         protected virtual bool TryUseStatTrigger(uint creature, StatType statType, int cooldownSeconds) =>
             _resources.TryUseStatTrigger(creature, statType, cooldownSeconds);

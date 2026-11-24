@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatResourcesService _resources;
         private readonly ICombatAttackTimingService _attackTiming;
         private readonly ICombatActivityService _combatActivity;
-        private readonly ICombatDamageTakenService _damageTaken;
+        private readonly ICombatDamageTakenEffectsService _damageTakenEffects;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly IStatusEffectApplicationService _statusEffectApplication;
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatResourcesService resources,
             ICombatAttackTimingService attackTiming,
             ICombatActivityService combatActivity,
-            ICombatDamageTakenService damageTaken,
+            ICombatDamageTakenEffectsService damageTakenEffects,
             IStatService stat,
             IStatusEffectService statusEffect,
             IStatusEffectApplicationService statusEffectApplication,
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _resources = resources;
             _attackTiming = attackTiming;
             _combatActivity = combatActivity;
-            _damageTaken = damageTaken;
+            _damageTakenEffects = damageTakenEffects;
             _stat = stat;
             _statusEffect = statusEffect;
             _statusEffectApplication = statusEffectApplication;
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 grantedDeflection = true;
             }
             if (grantedDeflection)
-                _damageTaken.ApplyAbilityGrantedAttackDeflectionEffects(activator,
+                _damageTakenEffects.ApplyAbilityGrantedAttackDeflectionEffects(activator,
                     _stat.GetStatTypeDeflectionSource(StatType.AreaAbilityUsedAttackDeflection));
 
             var restore = _stat.GetStatAdjustment(activator, StatType.AreaAbilityUsedFPRestore);
@@ -1033,7 +1033,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                     duration))
             {
                 var source = _stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection);
-                _damageTaken.ApplyAbilityGrantedAttackDeflectionEffects(activator, source);
+                _damageTakenEffects.ApplyAbilityGrantedAttackDeflectionEffects(activator, source);
             }
         }
 
@@ -1052,7 +1052,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (!SkillTypeMatches(abilitySkillType, triggerSkillType))
                 return;
 
-            _damageTaken.ApplyAbilityUsedAttackDeflection(
+            _damageTakenEffects.ApplyAbilityUsedAttackDeflection(
                 activator,
                 StatType.SingleTargetAbilityAttackDeflection,
                 StatType.SingleTargetAbilityAttackDeflectionDurationSeconds);
@@ -1070,7 +1070,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (!SkillTypeMatches(abilitySkillType, triggerSkillType))
                 return;
 
-            _damageTaken.ApplyAbilityUsedAttackDeflection(
+            _damageTakenEffects.ApplyAbilityUsedAttackDeflection(
                 activator,
                 StatType.AbilityUsedAttackDeflection,
                 StatType.AbilityUsedAttackDeflectionDurationSeconds,
@@ -1087,7 +1087,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return;
             }
 
-            _damageTaken.ApplyAbilityUsedAttackDeflection(
+            _damageTakenEffects.ApplyAbilityUsedAttackDeflection(
                 activator,
                 StatType.AbilityUsedPerkCategoryAttackDeflection,
                 StatType.AbilityUsedPerkCategoryAttackDeflectionDurationSeconds,

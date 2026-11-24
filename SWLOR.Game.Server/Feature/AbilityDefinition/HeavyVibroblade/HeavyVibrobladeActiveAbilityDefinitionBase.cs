@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
             if (CombatRecorder.IsRecording)
                 CombatRecorder.ExpectHitPointCost(activator, payment);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(payment), activator);
-            GameServices.CombatDamageTaken.ApplyLowHPDamageTakenEffects(activator, payment);
+            GameServices.CombatDamageTakenEffects.ApplyLowHPDamageTakenEffects(activator, payment);
             GameServices.CombatAbilityActivation.ApplyHitPointSpendAbilityEffects(activator, hitPointsSpent, cost);
         }
 

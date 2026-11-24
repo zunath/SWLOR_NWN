@@ -15,9 +15,9 @@ namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// The damage taken part of <c>Combat</c>: the modifiers of an incoming hit (immunity, PvP, the Leadership and generic
-    /// reductions, the redirect and share to a status source, fatal damage prevention), the effects of damage taken and of
-    /// low HP, Guard and its riders, avoided attacks, deflection and Deflecting Return, and the incoming physical-to-Force
-    /// conversion. The recent guarded hits and deflections are remembered by the defense memory part.
+    /// reductions, the redirect and share to a status source, fatal damage prevention), Guard and its riders, and the
+    /// physical-to-Force defense conversion. The recent guarded hits and deflections are remembered by the defense memory
+    /// part; the after-damage effects and the reflections are parts of their own.
     /// </summary>
     public class CombatDamageTakenService : ICombatDamageTakenService
     {
@@ -28,21 +28,17 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatQueriesService _queries;
         private readonly ICombatResourcesService _resources;
         private readonly ICombatAttackTimingService _attackTiming;
-        private readonly ICombatActivityService _combatActivity;
         private readonly ICombatDamageModifiersService _damageModifiers;
         private readonly ICombatAbilityHitService _abilityHit;
         private readonly ICombatHitEffectsService _hitEffects;
         private readonly IStatService _stat;
         private readonly ICombatRatingService _combatRating;
         private readonly IStatusEffectService _statusEffect;
-        private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly IStatusEffectCombatEventService _statusEffectCombatEvents;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly IPvpCombatService _pvpCombat;
         private readonly IEnmityService _enmity;
-        private readonly IMessagingService _messaging;
-        private readonly IPlayerNameService _playerName;
         private readonly ICombatDamageRollService _damageRoll;
         private readonly ICombatDefenseMemoryService _defenseMemory;
 
@@ -51,21 +47,17 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatQueriesService queries,
             ICombatResourcesService resources,
             ICombatAttackTimingService attackTiming,
-            ICombatActivityService combatActivity,
             ICombatDamageModifiersService damageModifiers,
             ICombatAbilityHitService abilityHit,
             ICombatHitEffectsService hitEffects,
             IStatService stat,
             ICombatRatingService combatRating,
             IStatusEffectService statusEffect,
-            IStatusEffectApplicationService statusEffectApplication,
             IStatusEffectCombatEventService statusEffectCombatEvents,
             ITemporaryStatModifierService temporaryStatModifier,
             ICombatRecorderService combatRecorder,
             IPvpCombatService pvpCombat,
             IEnmityService enmity,
-            IMessagingService messaging,
-            IPlayerNameService playerName,
             ICombatDamageRollService damageRoll,
             ICombatDefenseMemoryService defenseMemory)
         {
@@ -73,21 +65,17 @@ namespace SWLOR.Game.Server.Domain.Combat
             _queries = queries;
             _resources = resources;
             _attackTiming = attackTiming;
-            _combatActivity = combatActivity;
             _damageModifiers = damageModifiers;
             _abilityHit = abilityHit;
             _hitEffects = hitEffects;
             _stat = stat;
             _combatRating = combatRating;
             _statusEffect = statusEffect;
-            _statusEffectApplication = statusEffectApplication;
             _statusEffectCombatEvents = statusEffectCombatEvents;
             _temporaryStatModifier = temporaryStatModifier;
             _combatRecorder = combatRecorder;
             _pvpCombat = pvpCombat;
             _enmity = enmity;
-            _messaging = messaging;
-            _playerName = playerName;
             _damageRoll = damageRoll;
             _defenseMemory = defenseMemory;
         }
@@ -377,58 +365,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             return damage - sharedDamage;
         }
 
-        public void ApplyDamageReflectionEffects(
-            uint attacker,
-            uint defender,
-            int damage,
-            CombatDamageType damageType)
-        {
-            if (damage <= 0 ||
-                attacker == defender ||
-                !GetIsObjectValid(attacker) ||
-                !GetIsObjectValid(defender) ||
-                GetObjectType(attacker) != SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature ||
-                GetObjectType(defender) != SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature)
-            {
-                return;
-            }
-
-            var adjustment = 0;
-            if (damageType == CombatDamageType.Force)
-            {
-                ApplyForceDamageTakenEffects(defender);
-                adjustment += _stat.GetStatAdjustment(defender, StatType.ForceDamageReflectionPercentAdjustment);
-            }
-
-            if (damageType == CombatDamageType.Physical)
-                adjustment += _stat.GetStatAdjustment(defender, StatType.PhysicalDamageReflectionPercentAdjustment);
-
-            if (damageType.IsElementalDamageType())
-                adjustment += _stat.GetStatAdjustment(defender, StatType.ElementalDamageReflectionPercentAdjustment);
-
-            if (adjustment <= 0)
-                return;
-
-            var reflectedDamage = GameMath.PercentOf(damage, adjustment);
-            using var recorderAttribution = _combatRecorder.BeginStatTriggerAttribution(defender, GetDamageReflectionStat(damageType));
-            _hitEffects.ApplyTriggeredDamage(defender, attacker, reflectedDamage, damageType);
-        }
-
-        private void ApplyForceDamageTakenEffects(uint defender)
-        {
-            var forceDefense = _stat.GetStatAdjustment(defender, StatType.ForceDamageTakenForceDefense);
-            var durationSeconds = _stat.GetStatAdjustment(defender, StatType.ForceDamageTakenForceDefenseDurationSeconds);
-            if (forceDefense <= 0 || durationSeconds <= 0)
-                return;
-
-            _statusEffectApplication.ApplyStatusEffect(
-                defender,
-                defender,
-                new ForceWardingStatusEffect(forceDefense),
-                durationSeconds,
-                CombatDamageType.Force);
-        }
-
         public int ApplyDamageOverTimeTakenModifiers(uint defender, int damage, CombatDamageType damageType) =>
             ApplyDamageOverTimeTakenModifiers(defender, damage, damageType, out _);
 
@@ -517,206 +453,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             return true;
         }
 
-        [NWNEventHandler(ScriptName.OnCreatureDamagedAfter)]
-        public void ApplyDamageTakenEffects()
-        {
-            var defender = OBJECT_SELF;
-            var attacker = GetLastDamager(defender);
-            var damage = GetTotalDamageDealt();
-
-            ApplyDamageTakenEffects(defender, attacker, damage);
-        }
-
-        public void ApplyDamageTakenEffects(uint defender, uint attacker, int damage)
-        {
-            if (!GetIsObjectValid(defender) || damage <= 0)
-                return;
-
-            // A lethal hit interrupts too: subdual can stand the caster back up before the cast would finish.
-            Feature.UsePerkFeat.InterruptActivationOnDamage(defender, attacker);
-            if (GetIsDead(defender))
-                return;
-
-            var attackPercent = _stat.GetStatAdjustment(defender, StatType.DamageTakenAttackPercentAdjustment);
-            var attackDuration = _stat.GetStatAdjustment(defender, StatType.DamageTakenAttackDurationSeconds);
-            if (attackPercent != 0 && attackDuration > 0)
-            {
-                _temporaryStatModifier.Replace(
-                    defender,
-                    StatType.AttackPercentAdjustment,
-                    attackPercent,
-                    attackDuration,
-                    StatType.DamageTakenAttackPercentAdjustment);
-            }
-
-            ApplyLowHPDamageTakenEffects(defender, damage);
-            ApplyDamageTakenNextSkillAbilityDamage(defender);
-            ApplyReversalCutReady(defender);
-            _combatActivity.TrackRecentDamageTaken(defender);
-            ApplyRecentDamageTargetHitEffects(defender, attacker);
-
-            if (GetIsObjectValid(attacker) && GetIsReactionTypeHostile(attacker, defender))
-            {
-                _combatActivity.TrackHostileDefensiveCombatEntryActivity(defender, attacker);
-                EmbattledStatusEffect.Refresh(defender, attacker);
-            }
-        }
-
-        private void ApplyDamageTakenNextSkillAbilityDamage(uint defender)
-        {
-            var skillType = GetSkillTypeFromStat(_stat.GetStatAdjustment(
-                defender,
-                StatType.DamageTakenNextSkillAbilitySkillType));
-            var damageBonus = _stat.GetStatAdjustment(defender, StatType.DamageTakenNextSkillAbilityDamageBonus);
-            var window = _stat.GetStatAdjustment(defender, StatType.DamageTakenNextSkillAbilityWindowSeconds);
-            if (damageBonus <= 0 || window <= 0)
-                return;
-
-            var requiredCategory = GetStatusEffectCategoryFromStat(_stat.GetStatAdjustment(
-                defender,
-                StatType.DamageTakenNextSkillAbilityRequiredCategory));
-            var wasArmed = _temporaryStatModifier.GetStatAdjustment(
-                defender,
-                StatType.NextSkillAbilityDamageBonus,
-                StatType.NextSkillAbilitySkillType) == damageBonus;
-            _attackTiming.GrantNextSkillAbilityBonuses(defender, skillType, damageBonus, 0, window, requiredCategory: requiredCategory);
-            _attackTiming.ShowReadyCue(defender, wasArmed, damageBonus, ReadyCue.Damage("Breaker Reversal", damageBonus));
-        }
-
-        public void ApplyLowHPDamageTakenEffects(uint defender, int damage)
-        {
-            if (!GetIsObjectValid(defender) || GetIsDead(defender) || damage <= 0)
-                return;
-
-            ApplyLowHPPhysicalDefenseEffect(defender, damage);
-            ApplyLowHPEvasionEffect(defender, damage);
-            ApplyLowHPNextAbilityNoStaminaCostEffect(defender, damage);
-            ApplyLowHPTemporaryHPEffect(defender, damage);
-            ApplyLowHPNoSaveTemporaryHPEffect(defender, damage);
-            ApplyLowHPGuardEffect(defender, damage);
-        }
-
-        private void ApplyReversalCutReady(uint defender)
-        {
-            if (_stat.GetStatAdjustment(defender, StatType.TwinBladeDuelistReversalCut) <= 0)
-                return;
-
-            var window = _stat.GetStatAdjustment(defender, StatType.TwinBladeDuelistReversalCutWindowSeconds);
-            if (window <= 0)
-                return;
-
-            var damageBonus = _stat.GetStatAdjustmentExcludingTemporaryModifiers(
-                defender,
-                StatType.TwinBladeDuelistReversalCutDamageBonus);
-            if (damageBonus > 0)
-            {
-                _temporaryStatModifier.Replace(
-                    defender,
-                    StatType.TwinBladeDuelistReversalCutDamageBonus,
-                    damageBonus,
-                    window,
-                    StatType.TwinBladeDuelistReversalCut);
-            }
-
-            var dazedDuration = _stat.GetStatAdjustmentExcludingTemporaryModifiers(
-                defender,
-                StatType.TwinBladeDuelistReversalCutDazedDurationSeconds);
-            if (dazedDuration > 0)
-            {
-                _temporaryStatModifier.Replace(
-                    defender,
-                    StatType.TwinBladeDuelistReversalCutDazedDurationSeconds,
-                    dazedDuration,
-                    window,
-                    StatType.TwinBladeDuelistReversalCut);
-            }
-        }
-
-        private void ApplyLowHPPhysicalDefenseEffect(uint defender, int damage)
-        {
-            var threshold = _stat.GetStatAdjustment(defender, StatType.LowHPPhysicalDefenseThresholdPercent);
-            var defensePercent = _stat.GetStatAdjustment(defender, StatType.LowHPPhysicalDefensePercentAdjustment);
-            var duration = _stat.GetStatAdjustment(defender, StatType.LowHPPhysicalDefenseDurationSeconds);
-            var cooldown = _stat.GetStatAdjustment(defender, StatType.LowHPPhysicalDefenseCooldownSeconds);
-
-            if (threshold <= 0 ||
-                defensePercent == 0 ||
-                duration <= 0 ||
-                !_resources.DidCrossHPThreshold(defender, damage, threshold) ||
-                !_resources.TryUseStatTrigger(defender, StatType.LowHPPhysicalDefensePercentAdjustment, cooldown))
-                return;
-
-            // A visible status effect carries the defense bonus so the player can track the trigger.
-            _statusEffectApplication.ApplyStatusEffect(
-                defender,
-                defender,
-                new UnbreakableStatusEffect(defensePercent),
-                duration);
-        }
-
-        private void ApplyLowHPEvasionEffect(uint defender, int damage)
-        {
-            var threshold = _stat.GetStatAdjustment(defender, StatType.LowHPEvasionThresholdPercent);
-            var evasionPercent = _stat.GetStatAdjustment(defender, StatType.LowHPEvasionPercentAdjustment);
-            var duration = _stat.GetStatAdjustment(defender, StatType.LowHPEvasionDurationSeconds);
-            var cooldown = _stat.GetStatAdjustment(defender, StatType.LowHPEvasionCooldownSeconds);
-
-            if (threshold <= 0 ||
-                evasionPercent == 0 ||
-                duration <= 0 ||
-                !_resources.DidCrossHPThreshold(defender, damage, threshold) ||
-                !_resources.TryUseStatTrigger(defender, StatType.LowHPEvasionPercentAdjustment, cooldown))
-                return;
-
-            _temporaryStatModifier.Replace(
-                defender,
-                StatType.EvasionPercentAdjustment,
-                evasionPercent,
-                duration,
-                StatType.LowHPEvasionPercentAdjustment);
-        }
-
-        private void ApplyLowHPNextAbilityNoStaminaCostEffect(uint defender, int damage)
-        {
-            var threshold = _stat.GetStatAdjustment(defender, StatType.LowHPNextAbilityNoStaminaCostThresholdPercent);
-            var skillType = GetSkillTypeFromStat(_stat.GetStatAdjustment(defender, StatType.LowHPNextAbilityNoStaminaCostSkillType));
-            var duration = _stat.GetStatAdjustment(defender, StatType.LowHPNextAbilityNoStaminaCostDurationSeconds);
-            var cooldown = _stat.GetStatAdjustment(defender, StatType.LowHPNextAbilityNoStaminaCostCooldownSeconds);
-
-            if (threshold <= 0 ||
-                skillType == SkillType.Invalid ||
-                duration <= 0 ||
-                !_resources.DidCrossHPThreshold(defender, damage, threshold) ||
-                !_resources.TryUseStatTrigger(defender, StatType.LowHPNextAbilityNoStaminaCostSkillType, cooldown))
-                return;
-
-            _temporaryStatModifier.Replace(
-                defender,
-                StatType.NextAbilityNoStaminaCostSkillType,
-                (int)skillType,
-                duration,
-                StatType.NextAbilityNoStaminaCostSkillType);
-        }
-
-        private void ApplyLowHPTemporaryHPEffect(uint defender, int damage)
-        {
-            var threshold = _stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPThresholdPercent);
-            var temporaryHPPercent = _stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPPercent);
-            var duration = _stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPDurationSeconds);
-            var cooldown = _stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPCooldownSeconds);
-
-            if (threshold <= 0 ||
-                temporaryHPPercent <= 0 ||
-                duration <= 0 ||
-                !_resources.DidCrossHPThreshold(defender, damage, threshold) ||
-                !_resources.TryUseStatTrigger(defender, StatType.LowHPTemporaryHPPercent, cooldown))
-                return;
-
-            var temporaryHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
-            using var recorderAttribution = _combatRecorder.BeginStatTriggerAttribution(defender, StatType.LowHPTemporaryHPPercent);
-            TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD", temporaryHP, duration);
-        }
-
         private void ApplyLowHPTemporaryHPBeforeFatalDamage(uint defender, int damage)
         {
             if (!GetIsObjectValid(defender) || GetIsDead(defender) || damage <= 0)
@@ -747,64 +483,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD", temporaryHP, duration);
         }
 
-        private void ApplyLowHPNoSaveTemporaryHPEffect(uint defender, int damage)
-        {
-            var threshold = _stat.GetStatAdjustment(defender, StatType.LowHPNoSaveTemporaryHPThresholdPercent);
-            var temporaryHPPercent = _stat.GetStatAdjustment(defender, StatType.LowHPNoSaveTemporaryHPPercent);
-            var duration = _stat.GetStatAdjustment(defender, StatType.LowHPNoSaveTemporaryHPDurationSeconds);
-            var cooldown = _stat.GetStatAdjustment(defender, StatType.LowHPNoSaveTemporaryHPCooldownSeconds);
-
-            if (threshold <= 0 ||
-                temporaryHPPercent <= 0 ||
-                duration <= 0 ||
-                !_resources.DidCrossHPThreshold(defender, damage, threshold) ||
-                !_resources.TryUseStatTrigger(defender, StatType.LowHPNoSaveTemporaryHPPercent, cooldown))
-                return;
-
-            var temporaryHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
-            using var recorderAttribution = _combatRecorder.BeginStatTriggerAttribution(defender, StatType.LowHPNoSaveTemporaryHPPercent);
-            TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD_NO_SAVE", temporaryHP, duration);
-        }
-
-        private void ApplyLowHPGuardEffect(uint defender, int damage)
-        {
-            ApplyLowHPGuardEffect(defender, damage, defender);
-        }
-
-        public void ApplyLowHPGuardEffectFromProtectedTarget(uint guardRecipient, uint protectedTarget, int damage)
-        {
-            ApplyLowHPGuardEffect(protectedTarget, damage, guardRecipient);
-        }
-
-        private void ApplyLowHPGuardEffect(uint thresholdCreature, int damage, uint guardRecipient)
-        {
-            if (!GetIsObjectValid(thresholdCreature) || !GetIsObjectValid(guardRecipient))
-                return;
-
-            var threshold = _stat.GetStatAdjustment(guardRecipient, StatType.LowHPGuardThresholdPercent);
-            var guardChance = _stat.GetStatAdjustment(guardRecipient, StatType.LowHPGuard);
-            var duration = _stat.GetStatAdjustment(guardRecipient, StatType.LowHPGuardDurationSeconds);
-            var cooldown = _stat.GetStatAdjustment(guardRecipient, StatType.LowHPGuardCooldownSeconds);
-
-            if (threshold <= 0 ||
-                guardChance <= 0 ||
-                duration <= 0 ||
-                !_resources.DidCrossHPThreshold(thresholdCreature, damage, threshold) ||
-                !_resources.TryUseStatTrigger(guardRecipient, StatType.LowHPGuard, cooldown))
-                return;
-
-            _statusEffectApplication.ApplyStatusEffect(
-                guardRecipient,
-                guardRecipient,
-                new GuardianReflexesStatusEffect(guardChance),
-                duration);
-
-            if (GetIsPC(guardRecipient))
-                FloatingTextStringOnCreature(ColorToken.Combat("Guardian Reflexes"), guardRecipient, false);
-
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), guardRecipient);
-        }
-
         public void TrackGuardedHit(uint creature)
         {
             if (!GetIsObjectValid(creature))
@@ -814,170 +492,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             _abilityHit.ApplyGuardedHitNextAttackEffects(creature);
             ApplyGuardedHitNextSkillAbilityEffects(creature);
             ApplyGuardedHitNextSkillAbilityStatusEffects(creature);
-        }
-
-        public void TrackAvoidedAttack(uint creature, uint attacker)
-        {
-            if (!GetIsObjectValid(creature))
-                return;
-
-            _combatActivity.TrackHostileDefensiveCombatEntryActivity(creature, attacker);
-
-            foreach (var source in _stat.GetStatSources(creature, StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment))
-            {
-                _attackTiming.GrantCuedNextSkillAbilityStaminaCostAdjustment(
-                    creature,
-                    GetSkillTypeFromStat(source[StatType.AvoidedAttackNextSkillAbilitySkillType]),
-                    source[StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment],
-                    source[StatType.AvoidedAttackNextSkillAbilityWindowSeconds],
-                    source.GetModifierGroup(StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment),
-                    rangedOnly: source[StatType.AvoidedAttackNextSkillAbilityRangedOnly] > 0,
-                    hostileOnly: true);
-            }
-
-            foreach (var source in _stat.GetStatSources(creature, StatType.AvoidedAttackNextSkillAbilityDamageBonus))
-            {
-                _attackTiming.GrantNextSkillAbilityBonuses(creature,
-                    GetSkillTypeFromStat(source[StatType.AvoidedAttackNextSkillAbilitySkillType]),
-                    source[StatType.AvoidedAttackNextSkillAbilityDamageBonus], 0,
-                    source[StatType.AvoidedAttackNextSkillAbilityWindowSeconds]);
-            }
-
-            var chance = _stat.GetStatAdjustment(creature, StatType.AvoidedAttackStaminaRestoreChance);
-            var staminaRestore = _stat.GetStatAdjustment(creature, StatType.AvoidedAttackStaminaRestore);
-            var staminaRestoreCooldown = _stat.GetStatAdjustment(creature, StatType.AvoidedAttackStaminaRestoreCooldownSeconds);
-            if (chance > 0 &&
-                staminaRestore > 0 &&
-                Random.D100(1) <= chance &&
-                _resources.TryUseStatTrigger(creature, StatType.AvoidedAttackStaminaRestore, staminaRestoreCooldown))
-            {
-                _resources.RestoreStaminaFromStat(creature, StatType.AvoidedAttackStaminaRestore, staminaRestore);
-            }
-
-            var singleChance = _stat.GetStatAdjustment(creature, StatType.AvoidedAttackSingleStaminaRestoreChance);
-            var singleStaminaRestore = _stat.GetStatAdjustment(creature, StatType.AvoidedAttackSingleStaminaRestore);
-            if (singleChance > 0 && singleStaminaRestore > 0 && Random.D100(1) <= singleChance)
-            {
-                _statusEffect.ConsumeStatusEffectStat(creature, StatType.AvoidedAttackSingleStaminaRestore);
-                _resources.RestoreStaminaFromStat(creature, StatType.AvoidedAttackSingleStaminaRestore, singleStaminaRestore);
-            }
-
-            ApplyAvoidedAttackAbilityUsedRangedDeflectionRefresh(creature);
-            ApplyAvoidedAttackNextAutoAttackNoDelay(creature);
-            ApplyAvoidedAttackAccuracy(creature);
-        }
-
-        private void ApplyAvoidedAttackAccuracy(uint creature)
-        {
-            var accuracy = _stat.GetStatAdjustment(creature, StatType.AvoidedAttackAccuracyPercentAdjustment);
-            var duration = _stat.GetStatAdjustment(creature, StatType.AvoidedAttackAccuracyDurationSeconds);
-            if (accuracy == 0 || duration <= 0)
-                return;
-
-            _temporaryStatModifier.Replace(
-                creature,
-                StatType.AccuracyPercentAdjustment,
-                accuracy,
-                duration,
-                StatType.AvoidedAttackAccuracyPercentAdjustment);
-        }
-
-        private void ApplyAvoidedAttackAbilityUsedRangedDeflectionRefresh(uint creature)
-        {
-            var duration = _stat.GetStatAdjustment(
-                creature,
-                StatType.AvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds);
-            if (duration <= 0)
-                return;
-
-            var deflection = _stat.GetStatAdjustment(
-                creature,
-                StatType.AbilityUsedRangedDeflection);
-            var statusEffectIcon = GetEffectIconTypeFromStat(_stat.GetStatAdjustment(
-                creature,
-                StatType.AbilityUsedRangedDeflectionStatusEffectIcon));
-            if (deflection <= 0 || statusEffectIcon == EffectIconType.Invalid)
-                return;
-
-            if (_statusEffectApplication.ApplyStatusEffect(
-                    creature,
-                    creature,
-                    new RangedDeflectionStatusEffect(deflection, statusEffectIcon),
-                    duration))
-            {
-                var source = _stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection);
-                ApplyAbilityGrantedAttackDeflectionEffects(creature, source);
-            }
-        }
-
-        private void ApplyAvoidedAttackNextAutoAttackNoDelay(uint creature)
-        {
-            var skillType = GetSkillTypeFromStat(_stat.GetStatAdjustment(
-                creature,
-                StatType.AvoidedAttackNextAutoAttackNoDelaySkillType));
-            var duration = _stat.GetStatAdjustment(
-                creature,
-                StatType.AvoidedAttackNextAutoAttackNoDelayDurationSeconds);
-
-            if (skillType == SkillType.Invalid)
-                _attackTiming.GrantNextAutoAttackNoDelay(creature, duration);
-            else
-                _attackTiming.GrantNextAutoAttackNoDelay(creature, skillType, duration);
-        }
-
-        public void ApplyMeleeDamageTakenEffects(uint defender, uint attacker)
-        {
-            if (!GetIsObjectValid(defender) || !GetIsObjectValid(attacker))
-                return;
-
-            ApplyMeleeDamageTakenPoisonDamage(defender, attacker);
-
-            var chance = _stat.GetStatAdjustment(defender, StatType.MeleeDamageTakenStaminaRestoreChance);
-            if (chance <= 0 || Random.D100(1) > chance)
-                return;
-
-            var staminaRestore = _stat.GetStatAdjustment(defender, StatType.MeleeDamageTakenStaminaRestore);
-            if (staminaRestore > 0)
-            {
-                _resources.RestoreStaminaFromStat(defender, StatType.MeleeDamageTakenStaminaRestore, staminaRestore);
-            }
-
-            var evasion = _stat.GetStatAdjustment(defender, StatType.MeleeDamageTakenEvasionPercentAdjustment);
-            var duration = _stat.GetStatAdjustment(defender, StatType.MeleeDamageTakenEvasionDurationSeconds);
-            if (evasion != 0 && duration > 0)
-            {
-                _temporaryStatModifier.Replace(
-                    defender,
-                    StatType.EvasionPercentAdjustment,
-                    evasion,
-                    duration,
-                    StatType.MeleeDamageTakenEvasionPercentAdjustment);
-            }
-        }
-
-        private void ApplyMeleeDamageTakenPoisonDamage(uint defender, uint attacker)
-        {
-            var chance = _stat.GetStatAdjustment(defender, StatType.MeleeDamageTakenPoisonDamageChance);
-            var damage = _stat.GetStatAdjustment(defender, StatType.MeleeDamageTakenPoisonDamage);
-            if (chance <= 0 || damage <= 0 || Random.D100(1) > chance)
-                return;
-
-            var scalingAbility = GetAbilityTypeFromStatPlusOne(
-                _stat.GetStatAdjustment(defender, StatType.MeleeDamageTakenPoisonDamageScalingAbility));
-            if (scalingAbility != AbilityType.Invalid)
-            {
-                damage = AbilityEffectScaling.ScaleDirectEffect(
-                    damage,
-                    GetAbilityScore(defender, scalingAbility),
-                    source: defender);
-            }
-
-            using var recorderAttribution = _combatRecorder.BeginStatTriggerAttribution(defender, StatType.MeleeDamageTakenPoisonDamage);
-            var appliedDamage = _hitEffects.ApplyTriggeredDamage(defender, attacker, damage, CombatDamageType.Poison);
-            if (appliedDamage <= 0)
-                return;
-
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Poison_S), attacker);
         }
 
         public int ApplyGuardedHitModifiers(
@@ -1200,40 +714,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             _enmity.ModifyEnmity(defender, attacker, enmity);
         }
 
-        public void TrackDeflection(uint creature, DeflectionSource source)
-        {
-            if (!GetIsObjectValid(creature) || source == DeflectionSource.None)
-                return;
-
-            _defenseMemory.NoteDeflection(creature, source);
-            ApplyDeflectionNearbyAllyGuard(creature, source);
-        }
-
-        private void ApplyDeflectionNearbyAllyGuard(uint creature, DeflectionSource source)
-        {
-            if (_stat.GetStatTypeDeflectionSource(StatType.DeflectionNearbyAllyGuard) != source)
-                return;
-
-            var guard = _stat.GetStatAdjustment(creature, StatType.DeflectionNearbyAllyGuard);
-            var duration = _stat.GetStatAdjustment(creature, StatType.DeflectionNearbyAllyGuardDurationSeconds);
-            if (guard <= 0 || duration <= 0)
-                return;
-
-            var ally = AbilityTargeting.GetFriendlyTargetsNearLocation(creature, GetLocation(creature), 5f, false)
-                .Where(target => target != creature)
-                .OrderBy(target => GetDistanceBetween(creature, target))
-                .FirstOrDefault();
-            if (!GetIsObjectValid(ally))
-                return;
-
-            _temporaryStatModifier.Replace(
-                ally,
-                StatType.Guard,
-                guard,
-                duration,
-                StatType.DeflectionNearbyAllyGuard);
-        }
-
         private void ApplyGuardedHitNextSkillAbilityEffects(uint creature)
         {
             var primary = GetGuardedHitNextSkillAbilityBonuses(
@@ -1371,25 +851,6 @@ namespace SWLOR.Game.Server.Domain.Combat
                 StatType.GuardedHitNextSkillAbilityExposedDurationSeconds);
         }
 
-        private void ApplyRecentDamageTargetHitEffects(uint defender, uint attacker)
-        {
-            if (!GetIsObjectValid(attacker) || !GetIsObjectValid(defender) || attacker == defender)
-                return;
-
-            var chance = _stat.GetStatAdjustment(defender, StatType.DamageTakenRecentTargetNextAbilityNoDelayChance);
-            var window = _stat.GetStatAdjustment(defender, StatType.DamageTakenRecentTargetWindowSeconds);
-            var skillType = GetSkillTypeFromStat(_stat.GetStatAdjustment(defender, StatType.DamageTakenRecentTargetNextAbilityNoDelaySkillType));
-            if (chance <= 0 || window <= 0 || skillType == SkillType.Invalid)
-                return;
-
-            if (!_combatActivity.RecentDamageTargets.TryGetValue((defender, attacker), out var lastDamaged) ||
-                (Clock.UtcNow - lastDamaged).TotalSeconds > window ||
-                Random.D100(1) > chance)
-                return;
-
-            _attackTiming.GrantNextAbilityNoDelay(defender, skillType, window);
-        }
-
         /// <summary>
         /// First half of Saber Ward / Aegis Eternal conversion: give the converted share its Force Defense
         /// mitigation. The physical hit's damage roll uses a defense value blended between the defender's
@@ -1398,7 +859,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// twice per hit; blending the defense is how the Force-Defense mitigation is applied without a second
         /// roll. The re-typing itself — removing the converted share from the physical hit and dealing it as a
         /// real Force instance (Force resistance, combat-log visibility) — is done afterward by
-        /// <see cref="ApplyIncomingPhysicalToForceConversion"/>. The percentage is read from
+        /// <see cref="ICombatDamageReflectionService.ApplyIncomingPhysicalToForceConversion"/>. The percentage is read from
         /// <see cref="StatType.IncomingPhysicalToForceConversionPercent"/> on the defender, and only
         /// physical-category damage is affected. The Force Defense value is resolved lazily because the
         /// auto-attack and ability damage paths look it up through different (native vs managed) helpers.
@@ -1419,191 +880,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             conversionPercent = Math.Clamp(conversionPercent, 0, 100);
             var forceDefense = forceDefenseProvider();
             return (physicalDefense * (100 - conversionPercent) + forceDefense * conversionPercent) / 100;
-        }
-
-        /// <summary>
-        /// Saber Ward (and Aegis Eternal) re-type a percentage of an incoming physical hit into a real
-        /// Force damage instance. The converted share's Force Defense mitigation is already reflected in
-        /// <paramref name="physicalDamage"/> because <see cref="ApplyIncomingPhysicalToForceDefenseConversion"/>
-        /// blends the defense used for the damage roll toward Force Defense by the same percent. This removes
-        /// the converted share from <paramref name="physicalDamage"/> (so it is not also dealt as physical) and
-        /// deals it as Force damage, so it is reduced by the defender's Force resistance and shown as Force in
-        /// the combat log. Runs before the physical-resistance stage; the Force portion is routed through
-        /// <see cref="ApplyTriggeredDamage"/>, which applies Force resistance, the Force-specific Leadership
-        /// channel, and the remaining damage-taken pipeline.
-        /// Returns the pre-resistance Force amount split off (0 when nothing converts).
-        /// </summary>
-        public int ApplyIncomingPhysicalToForceConversion(
-            uint attacker,
-            uint defender,
-            CombatDamageType damageType,
-            ref int physicalDamage,
-            int targetStatusDamagePercentAdjustment = 0,
-            Action<Action> convertedDamageScheduler = null)
-        {
-            if (physicalDamage <= 0 || !damageType.IsPhysicalDamageType())
-                return 0;
-
-            var conversionPercent = _stat.GetStatAdjustment(defender, StatType.IncomingPhysicalToForceConversionPercent);
-            var forcePortion = GetIncomingPhysicalToForceConversionPortion(physicalDamage, conversionPercent);
-            if (forcePortion <= 0)
-                return 0;
-
-            physicalDamage -= forcePortion;
-
-            // This method runs inside the native GetDamageRoll hook and the ability damage paths, i.e. while
-            // the current attack's own damage has not yet resolved. Applying a fully dispatched damage event
-            // (ApplyTriggeredDamage) synchronously here re-enters the engine's OnCreatureDamaged / AI / enmity
-            // chain mid-attack and clobbers shared combat state (GetLastDamager / OBJECT_SELF), which caused
-            // runaway reflect cascades and mis-targeted reflects with effects such as Blazing Spikes. Defer the
-            // Force portion to the next frame so it lands as a clean, separate damage instance off the attack's
-            // stack; the physical carve above stays synchronous so the physical hit is correctly reduced.
-            var recorderAttribution = _combatRecorder.CaptureAttackAttribution(attacker);
-            void ApplyConvertedDamage()
-            {
-                using var recorderScope = _combatRecorder.BeginAttribution(recorderAttribution);
-                if (GetIsObjectValid(attacker) && GetIsObjectValid(defender))
-                    _hitEffects.ApplyTriggeredDamage(
-                        attacker,
-                        defender,
-                        forcePortion,
-                        CombatDamageType.Force,
-                        typedLeadershipReductionAlreadyApplied: false,
-                        targetStatusDamagePercentAdjustment: targetStatusDamagePercentAdjustment,
-                        outgoingModifiersAlreadyApplied: true);
-            }
-            // Projectile callers retain the entire converted hit, including its reactions and
-            // attribution, until arrival. Native swings and ability impacts keep next-frame dispatch.
-            // Native swings resolve in a script context with no object, where a bare DelayCommand has no
-            // OBJECT_SELF to own it and is silently dropped; module ownership keeps the Force hit queued.
-            if (convertedDamageScheduler != null) convertedDamageScheduler(ApplyConvertedDamage);
-            else AssignCommand(GetModule(), () => DelayCommand(0.0f, ApplyConvertedDamage));
-            return forcePortion;
-        }
-
-        /// <summary>
-        /// Deflecting Return: when the defender deflects a directly targeted ranged attack, reflect a capped
-        /// share of weapon damage back to the attacker as Force damage. Fires at most once every
-        /// <see cref="DeflectingReturnCooldownSeconds"/> seconds. Reflection amount is driven by the
-        /// <see cref="StatType.RangedDeflectionReflectionPercent"/> / <see cref="StatType.RangedDeflectionReflectionCapPercent"/>
-        /// stats the Deflecting Return perk grants. Embattled high-stack bonuses and finite capstone
-        /// overrides are also stat-driven.
-        /// </summary>
-        public int ApplyRangedDeflectionReflection(uint defender, uint attacker, SkillType attackerWeaponSkill)
-        {
-            if (!GetIsObjectValid(attacker) || !GetIsObjectValid(defender))
-                return 0;
-
-            var (reflectPercent, capPercent) = GetRangedDeflectionReflectionRates(
-                _stat.GetStatAdjustment(defender, StatType.RangedDeflectionReflectionPercent),
-                _stat.GetStatAdjustment(defender, StatType.RangedDeflectionReflectionCapPercent),
-                EmbattledStatusEffect.GetStackCount(defender),
-                _stat.GetStatAdjustment(defender, StatType.EmbattledHighStackThreshold),
-                _stat.GetStatAdjustment(defender, StatType.EmbattledHighStackDeflectionReflectionBonusPercent),
-                _stat.GetStatAdjustment(defender, StatType.RangedDeflectionReflectionOverridePercent),
-                _stat.GetStatAdjustment(defender, StatType.RangedDeflectionReflectionCapOverridePercent));
-            if (reflectPercent <= 0)
-                return 0;
-
-            var reflected = GetRangedDeflectionReflectionAmount(
-                _queries.GetCombatImpactWeaponDamage(attacker, attackerWeaponSkill, requireMatchingSkill: true),
-                reflectPercent,
-                _queries.GetCombatImpactWeaponDamage(defender, _queries.GetEquippedWeaponSkillType(defender)),
-                capPercent);
-            if (reflected <= 0)
-                return 0;
-
-            // Consume the shared cooldown only when a hit will actually be reflected.
-            if (!_resources.TryUseStatTrigger(defender, StatType.RangedDeflectionReflectionPercent, DeflectingReturnCooldownSeconds))
-                return 0;
-
-            using var recorderAttribution = _combatRecorder.BeginStatTriggerAttribution(defender, StatType.RangedDeflectionReflectionPercent);
-            var appliedDamage = _hitEffects.ApplyTriggeredDamage(defender, attacker, reflected, CombatDamageType.Force);
-            if (appliedDamage <= 0)
-                return 0;
-
-            _messaging.SendMessageNearbyToPlayers(
-                defender,
-                observer => BuildDeflectingReturnCombatLogMessage(observer, defender, attacker, appliedDamage),
-                60f);
-            return appliedDamage;
-        }
-
-        public string BuildDeflectingReturnCombatLogMessage(
-            uint observer,
-            uint defender,
-            uint attacker,
-            int damage)
-        {
-            var defenderName = _playerName.GetColoredDisplayName(observer, defender);
-            var attackerName = _playerName.GetColoredDisplayName(observer, attacker);
-            return ColorToken.Combat($"{defenderName}'s Deflecting Return reflects {damage} Force damage to {attackerName}.");
-        }
-
-        public void ApplyAbilityUsedAttackDeflection(
-            uint activator,
-            StatType attackDeflectionStatType,
-            StatType durationStatType,
-            StatType deflectionFPRestoreStatType = StatType.Invalid)
-        {
-            var attackDeflection = _stat.GetStatAdjustment(activator, attackDeflectionStatType);
-            var duration = _stat.GetStatAdjustment(activator, durationStatType);
-            if (attackDeflection == 0 || duration <= 0)
-                return;
-
-            var source = _stat.GetStatTypeDeflectionSource(attackDeflectionStatType);
-            var targetStatType = _stat.GetGrantedDeflectionStatType(attackDeflectionStatType);
-            if (targetStatType == StatType.Invalid)
-                return;
-
-            _temporaryStatModifier.Replace(
-                activator,
-                targetStatType,
-                attackDeflection,
-                duration,
-                attackDeflectionStatType);
-            if (deflectionFPRestoreStatType != StatType.Invalid)
-            {
-                var fpRestore = _stat.GetStatAdjustment(activator, deflectionFPRestoreStatType);
-                var fpRestoreSource = _stat.GetStatTypeDeflectionSource(deflectionFPRestoreStatType);
-                if (fpRestore > 0 && fpRestoreSource == source)
-                {
-                    var fpRestoreTargetStatType = fpRestoreSource switch
-                    {
-                        DeflectionSource.Melee => StatType.MeleeDeflectionFPRestore,
-                        DeflectionSource.Ranged => StatType.DeflectionFPRestore,
-                        _ => StatType.Invalid
-                    };
-                    if (fpRestoreTargetStatType != StatType.Invalid)
-                    {
-                        _temporaryStatModifier.Replace(
-                            activator,
-                            fpRestoreTargetStatType,
-                            fpRestore,
-                            duration,
-                            deflectionFPRestoreStatType);
-                    }
-                }
-            }
-
-            if (source == DeflectionSource.Ranged)
-                ApplyAbilityGrantedAttackDeflectionEffects(activator, source);
-        }
-
-        public void ApplyAbilityGrantedAttackDeflectionEffects(uint activator, DeflectionSource source)
-        {
-            if (_stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestore) != source)
-                return;
-
-            var fpRestore = _stat.GetStatAdjustment(activator, StatType.AbilityGrantedAttackDeflectionFPRestore);
-            var cooldown = _stat.GetStatAdjustment(activator, StatType.AbilityGrantedAttackDeflectionFPRestoreCooldownSeconds);
-            if (fpRestore <= 0 || !_resources.TryUseStatTrigger(activator, StatType.AbilityGrantedAttackDeflectionFPRestore, cooldown))
-                return;
-
-            using var recorderAttribution = _combatRecorder.BeginStatTriggerAttribution(
-                activator, StatType.AbilityGrantedAttackDeflectionFPRestore);
-            if (_stat.RestoreFP(activator, fpRestore) > 0)
-                _resources.ApplyAbilityRestoredFPEffects(activator);
         }
     }
 }

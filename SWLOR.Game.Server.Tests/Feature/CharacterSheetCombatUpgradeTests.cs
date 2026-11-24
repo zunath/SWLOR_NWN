@@ -326,7 +326,7 @@ public class CharacterSheetCombatUpgradeTests
             "Feature",
             "PlayerStatusWindow.cs"));
         var method = ExtractMethod(source, "public static void PlayerDamaged()");
-        var sharedDamageEffects = "GameServices.CombatDamageTaken.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());";
+        var sharedDamageEffects = "GameServices.CombatDamageTakenEffects.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());";
         var sheetRefresh = "Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));";
 
         method.Should().Contain(sharedDamageEffects);

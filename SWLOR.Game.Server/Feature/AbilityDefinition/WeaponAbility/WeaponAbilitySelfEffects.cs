@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
     {
         private IAbilityImmunityService AbilityImmunity { get; }
         private ICombatAbilityActivationService CombatAbilityActivation { get; }
-        private ICombatDamageTakenService CombatDamageTaken { get; }
+        private ICombatDamageTakenEffectsService CombatDamageTakenEffects { get; }
         private ICombatRecorderService CombatRecorder { get; }
         private ICombatResourcesService CombatResources { get; }
         private IEnmityService Enmity { get; }
@@ -30,11 +30,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
         private ITemporaryStatModifierService TemporaryStatModifier { get; }
         private WeaponAbilityTemporaryModifiers WeaponAbilityTemporaryModifiers { get; }
 
-        public WeaponAbilitySelfEffects(IAbilityImmunityService abilityImmunity, ICombatAbilityActivationService combatAbilityActivation, ICombatDamageTakenService combatDamageTaken, ICombatRecorderService combatRecorder, ICombatResourcesService combatResources, IEnmityService enmity, StatusAbilityEffects statusAbilityEffects, IStatusEffectApplicationService statusEffectApplication, ITemporaryStatModifierService temporaryStatModifier, WeaponAbilityTemporaryModifiers weaponAbilityTemporaryModifiers)
+        public WeaponAbilitySelfEffects(IAbilityImmunityService abilityImmunity, ICombatAbilityActivationService combatAbilityActivation, ICombatDamageTakenEffectsService combatDamageTakenEffects, ICombatRecorderService combatRecorder, ICombatResourcesService combatResources, IEnmityService enmity, StatusAbilityEffects statusAbilityEffects, IStatusEffectApplicationService statusEffectApplication, ITemporaryStatModifierService temporaryStatModifier, WeaponAbilityTemporaryModifiers weaponAbilityTemporaryModifiers)
         {
             AbilityImmunity = abilityImmunity;
             CombatAbilityActivation = combatAbilityActivation;
-            CombatDamageTaken = combatDamageTaken;
+            CombatDamageTakenEffects = combatDamageTakenEffects;
             CombatRecorder = combatRecorder;
             CombatResources = combatResources;
             Enmity = enmity;
@@ -152,10 +152,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
             WeaponAbilityTemporaryModifiers.ReplaceTemporary(activator, StatType.ForceDefensePercentAdjustment, profile.SelfForceDefensePercent, duration);
             WeaponAbilityTemporaryModifiers.ReplaceTemporary(activator, StatType.MeleeDeflection, profile.SelfMeleeDeflection, duration);
             if (profile.SelfMeleeDeflection != 0)
-                CombatDamageTaken.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee);
+                CombatDamageTakenEffects.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee);
             WeaponAbilityTemporaryModifiers.ReplaceTemporary(activator, StatType.RangedDeflection, profile.SelfRangedDeflection, duration);
             if (profile.SelfRangedDeflection != 0)
-                CombatDamageTaken.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged);
+                CombatDamageTakenEffects.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged);
             WeaponAbilityTemporaryModifiers.ReplaceTemporary(activator, StatType.CriticalRatePercentAdjustment, profile.SelfCriticalRatePercent, duration);
         }
 

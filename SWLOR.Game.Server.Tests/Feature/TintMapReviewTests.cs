@@ -979,7 +979,7 @@ public class TintMapReviewTests
     public void EquippedDroidTintChangesUpdateSerializedItemSnapshot()
     {
         var tintSource = ReadTintMapSource();
-        var droidSource = ReadSource("SWLOR.Game.Server", "Domain", "Companions", "DroidService.cs");
+        var droidSource = Support.MimicryBeastDroidSource.Read(Support.MimicryBeastDroidSource.Droid);
         var saveOverrideMethod = FindMethod(tintSource, "SaveDroidOverride");
         var updateSnapshotMethod = FindMethod(droidSource, "UpdateEquippedItemSnapshot");
         var equipmentChangedMethod = FindMethod(droidSource, "OnEquipmentChanged");

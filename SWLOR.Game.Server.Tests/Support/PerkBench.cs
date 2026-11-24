@@ -118,6 +118,30 @@ public sealed class PerkBench : IDisposable
 
     public TestPerkService Service { get; }
 
+    // The part accessors: each names the service whose code a test reaches. The perk split moves the code into parts and a part's
+    // pull request changes only the type and the body of its accessor, so no test names a part's class.
+
+    /// <summary>The catalog: the cache build, the table reads, the level reads and the unlock (the stay-part).</summary>
+    public TestPerkService Catalog => Service;
+
+    /// <summary>The stat bonus reads and their cache.</summary>
+    public TestPerkService StatBonus => Service;
+
+    /// <summary>The force affinity reads and the magnitude and hit chance rules.</summary>
+    public TestPerkService Affinity => Service;
+
+    /// <summary>The granted feat lookups, the restore and the sync.</summary>
+    public TestPerkService Feats => Service;
+
+    /// <summary>The refund cleanup and the skill decay handler.</summary>
+    public TestPerkService Refund => Service;
+
+    /// <summary>
+    /// Runs the perk boot handlers in <c>ScriptHandlerOrder.txt</c> order, as the cache event does. A part that adds a boot handler adds
+    /// its call here.
+    /// </summary>
+    public void CacheData() => Catalog.CacheData();
+
     /// <summary>What the engine and the seams did, in order (the engine's notes, as strings).</summary>
     public IReadOnlyList<string> Timeline =>
         Engine.Calls.Where(call => call.Member == TimelineNWScript.NoteMember).Select(call => (string)call.Arguments[0]!).ToList();
@@ -145,6 +169,9 @@ public sealed class PerkBench : IDisposable
     public Dictionary<(uint, StatType), int> StatAdjustments { get; } = new();
 
     public uint Self { get; set; } = Player;
+
+    /// <summary>True to build the cache from every perk list of the server, as the running server does, in place of <see cref="Definitions"/>.</summary>
+    public bool UseServerPerkLists { get; set; }
 
     public SkillType DecayedSkill { get; set; } = SkillType.Mimicry;
 
@@ -187,51 +214,6 @@ public sealed class TimelineCreaturePlugin : FakeCreaturePlugin, ICreaturePlugin
         AddFeatByLevel(creature, feat, level);
         _timeline.Note($"Creature.AddFeatByLevel:{creature}:{(int)feat}:{level}");
     }
-}
-
-/// <summary>The instance with its calls into unconverted code answered by the bench.</summary>
-public sealed class TestPerkService : PerkService
-{
-    private readonly PerkBench _bench;
-
-    public TestPerkService(
-        PerkBench bench,
-        IDBService db,
-        IQuickCastService quickCast,
-        ICompanionLookup beastMastery,
-        IStatusEffectService statusEffect)
-        : base(db, quickCast, beastMastery, statusEffect, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatService>())
-    {
-        _bench = bench;
-    }
-
-    protected override IEnumerable<Type> GetPerkListDefinitionTypes() => new[] { typeof(BenchPerkList) };
-
-    protected override IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _bench.Abilities;
-
-    protected override int GetCreatureStatAdjustment(uint creature, StatType stat) =>
-        _bench.StatAdjustments.GetValueOrDefault((creature, stat));
-
-    protected override int AggregateStatAdjustment(StatType stat, int current, int adjustment) => current + adjustment;
-
-    protected override bool IsDroid(uint creature) => _bench.Droids.Contains(creature);
-
-    protected override int GetDroidPerkLevel(uint droid, PerkType perkType) => _bench.DroidPerks.GetValueOrDefault(perkType);
-
-    protected override void RefreshStatDrivenTrackerEffects(uint creature) =>
-        _bench.Engine.Note($"GameServices.Combat.RefreshStatDrivenTrackerEffects:{creature}:saved={_bench.Db.Saved.Count}");
-
-    /// <summary>The seams' default bodies, for the test that proves each one is the original call.</summary>
-    public IEnumerable<Type> DefaultPerkListDefinitionTypes() => base.GetPerkListDefinitionTypes();
-
-    public IReadOnlyDictionary<FeatType, AbilityDetail> DefaultAllAbilityDetails() => base.GetAllAbilityDetails();
-
-    public int DefaultAggregateStatAdjustment(StatType stat, int current, int adjustment) =>
-        base.AggregateStatAdjustment(stat, current, adjustment);
-
-    public bool DefaultIsDroid(uint creature) => base.IsDroid(creature);
-
-    public int DefaultDroidPerkLevel(uint droid, PerkType perkType) => base.GetDroidPerkLevel(droid, perkType);
 }
 
 /// <summary>A requirement that answers a scripted message.</summary>

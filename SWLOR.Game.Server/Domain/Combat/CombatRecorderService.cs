@@ -31,38 +31,21 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private readonly CombatRecordAttribution[] _attributions = new CombatRecordAttribution[MaximumAttributionDepth];
         private int _attributionDepth;
-        private readonly Dictionary<uint, int> _participantIds = new();
-        private readonly List<uint> _participants = new();
-        private readonly List<CombatRecordPendingDamage> _pendingDamage = new();
         private readonly Dictionary<(uint Target, string Key), (int SourceId, CombatRecordAttribution Attribution)> _temporaryHitPointGrants = new();
-        private readonly Dictionary<uint, uint> _lastDamageSources = new();
-        // One frame per heal the native hook is applying, innermost last, so a heal nested inside
-        // another on the same target keeps its own PvP reduction.
-        private readonly List<(uint Target, int PvpReduced)> _healApplications = new();
-        private readonly List<CombatRecordDamageApplication> _damageApplications = new();
-        private readonly List<CombatRecordEvent> _heldEvents = new();
         private readonly List<CombatRecordWriter> _unfinishedWriters = new();
         private readonly Dictionary<uint, ulong> _deathFrames = new();
         private uint _toggleDeactivatedBy = OBJECT_INVALID;
-        private readonly List<CombatRecordEvent> _awaitingHeal = new();
-        private uint _awaitingHealTarget = OBJECT_INVALID;
-        private ulong _awaitingHealFrame;
-        private bool _isInHealingReaction;
         private ulong _toggleDeactivatedFrame;
-        private int _heldInsertIndex = -1;
-        private long _heldTimestampMs;
         private Dictionary<AbilityDetail, FeatType> _abilityFeats;
 
-        private CombatRecordWriter _writer;
         private IDisposable _snapshotSchedule;
-        private uint _area;
         private string _label;
         private DateTime _startedUtc;
-        private int _eventsEnqueued;
         private string _hookWarning;
         // Numbers each recording so a captured attribution can tell which one it came from.
         private int _recording;
 
+        private readonly ICombatRecordSession _session;
         private readonly IDMPresenceService _dmPresence;
         private readonly IDBService _db;
         private readonly IAbilityCatalog _catalog;
@@ -70,8 +53,9 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly Lazy<IStatService> _stat;
         private readonly Lazy<ICombatQueriesService> _queries;
 
-        public CombatRecorderService(IDMPresenceService dmPresence, IDBService db, IAbilityCatalog catalog, IAbilityImpactState impactState, Lazy<IStatService> stat, Lazy<ICombatQueriesService> queries)
+        public CombatRecorderService(ICombatRecordSession session, IDMPresenceService dmPresence, IDBService db, IAbilityCatalog catalog, IAbilityImpactState impactState, Lazy<IStatService> stat, Lazy<ICombatQueriesService> queries)
         {
+            _session = session;
             _dmPresence = dmPresence;
             _db = db;
             _catalog = catalog;
@@ -83,15 +67,15 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// True while a recording runs. Hooks check this before doing any work.
         /// </summary>
-        public bool IsRecording { get; private set; }
+        public bool IsRecording => _session.IsRecording;
 
         /// <summary>
         /// The writer of the current or most recent recording. Its Completion task finishes once
         /// the summary has been written.
         /// </summary>
-        public CombatRecordWriter LastWriter { get; private set; }
+        public CombatRecordWriter LastWriter => _session.LastWriter;
 
-        public uint RecordedArea => IsRecording ? _area : OBJECT_INVALID;
+        public uint RecordedArea => IsRecording ? _session.Area : OBJECT_INVALID;
 
         /// <summary>
         /// Starts recording every creature in an area.
@@ -103,7 +87,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             if (IsRecording)
             {
-                message = $"A combat recording is already running in {GetName(_area)} ('{_label}'). Stop it first.";
+                message = $"A combat recording is already running in {GetName(_session.Area)} ('{_label}'). Stop it first.";
                 return false;
             }
 
@@ -121,49 +105,40 @@ namespace SWLOR.Game.Server.Domain.Combat
             catch (Exception ex)
             {
                 _hookWarning = $"Damage and healing capture is unavailable: {ex.Message}";
-                WriteLog(LogGroup.Error, $"Combat recorder could not hook damage/healing: {ex}", true);
+                _session.WriteLog(LogGroup.Error, $"Combat recorder could not hook damage/healing: {ex}", true);
             }
 
             _abilityFeats ??= CombatRecordAbilityFeatIndex.Build(GetAllAbilityDetails());
             _label = string.IsNullOrWhiteSpace(label) ? GetResRef(area) : label.Trim();
-            _area = area;
-            _startedUtc = UtcNow();
-            _eventsEnqueued = 0;
+            _session.Area = area;
+            _startedUtc = _session.UtcNow();
+            _session.EventsEnqueued = 0;
             _recording++;
             _attributionDepth = 0;
-            _participantIds.Clear();
-            _participants.Clear();
-            _pendingDamage.Clear();
+            _session.Reset();
             _temporaryHitPointGrants.Clear();
-            _lastDamageSources.Clear();
-            _damageApplications.Clear();
-            _heldEvents.Clear();
-            _heldInsertIndex = -1;
             _deathFrames.Clear();
-            _awaitingHeal.Clear();
-            _healApplications.Clear();
-            _isInHealingReaction = false;
 
             var directory = CombatRecordFileNames.GetDirectory(GetLogDirectory());
             var baseName = CombatRecordFileNames.BuildBaseName(_startedUtc, _label);
-            _writer = new CombatRecordWriter(
+            _session.Writer = new CombatRecordWriter(
                 directory + baseName + CombatRecordFileNames.EventsExtension,
                 directory + baseName + CombatRecordFileNames.SummaryExtension);
-            LastWriter = _writer;
+            _session.LastWriter = _session.Writer;
             _unfinishedWriters.RemoveAll(writer => writer.Completion.IsCompleted);
-            _unfinishedWriters.Add(_writer);
-            _writer.Start();
+            _unfinishedWriters.Add(_session.Writer);
+            _session.Writer.Start();
 
-            IsRecording = true;
-            Enqueue(CombatRecordEvent.RecordingStarted(_label, GetName(area), GetResRef(area)));
+            _session.IsRecording = true;
+            _session.Enqueue(CombatRecordEvent.RecordingStarted(_label, GetName(area), GetResRef(area)));
             TakeSnapshots();
             _snapshotSchedule = ScheduleRepeating(
                 TakeSnapshots,
                 TimeSpan.FromMilliseconds(SnapshotIntervalMs),
                 TimeSpan.FromMilliseconds(SnapshotIntervalMs));
 
-            WriteLog(LogGroup.DM, $"Combat recording '{_label}' started in {GetName(area)} ({GetResRef(area)}): {_writer.EventsPath}");
-            message = $"Combat recording '{_label}' started in {GetName(area)}. File: {_writer.EventsPath}";
+            _session.WriteLog(LogGroup.DM, $"Combat recording '{_label}' started in {GetName(area)} ({GetResRef(area)}): {_session.Writer.EventsPath}");
+            message = $"Combat recording '{_label}' started in {GetName(area)}. File: {_session.Writer.EventsPath}";
             if (_hookWarning != null)
                 message += $" WARNING: {_hookWarning}";
             return true;
@@ -180,28 +155,21 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return false;
             }
 
-            _damageApplications.Clear();
-            _isInHealingReaction = false;
-            ReleaseAwaitingHeal();
-            WriteHeldEvents();
-            Enqueue(CombatRecordEvent.RecordingStopped(reason, _eventsEnqueued + 1));
-            IsRecording = false;
+            _session.Flush();
+            _session.Enqueue(CombatRecordEvent.RecordingStopped(reason, _session.EventsEnqueued + 1));
+            _session.IsRecording = false;
             _snapshotSchedule?.Dispose();
             _snapshotSchedule = null;
-            _writer.Complete();
+            _session.Writer.Complete();
 
-            var duration = UtcNow() - _startedUtc;
-            WriteLog(LogGroup.DM, $"Combat recording '{_label}' stopped ({reason}) after {duration.TotalSeconds:0}s, {_eventsEnqueued} events.");
-            message = $"Combat recording '{_label}' stopped after {duration.TotalSeconds:0}s with {_eventsEnqueued} events and {_participants.Count} participants. " +
-                      $"Files: {_writer.EventsPath} and {_writer.SummaryPath}";
+            var duration = _session.UtcNow() - _startedUtc;
+            _session.WriteLog(LogGroup.DM, $"Combat recording '{_label}' stopped ({reason}) after {duration.TotalSeconds:0}s, {_session.EventsEnqueued} events.");
+            message = $"Combat recording '{_label}' stopped after {duration.TotalSeconds:0}s with {_session.EventsEnqueued} events and {_session.Participants.Count} participants. " +
+                      $"Files: {_session.Writer.EventsPath} and {_session.Writer.SummaryPath}";
 
             _attributionDepth = 0;
-            _participantIds.Clear();
-            _participants.Clear();
-            _pendingDamage.Clear();
+            _session.Reset();
             _temporaryHitPointGrants.Clear();
-            _lastDamageSources.Clear();
-            _damageApplications.Clear();
             _deathFrames.Clear();
             return true;
         }
@@ -220,12 +188,12 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return $"No combat recording is running. Last recording ({state}): {last.EventsPath}";
             }
 
-            var elapsed = UtcNow() - _startedUtc;
-            var status = $"Recording '{_label}' in {GetName(_area)} for {elapsed.TotalSeconds:0}s: " +
-                         $"{_participants.Count} participants, {_eventsEnqueued} events ({_writer.EventsWritten} written). " +
-                         $"File: {_writer.EventsPath}";
-            if (_writer.Error != null)
-                status += $" WRITER ERROR: {_writer.Error}";
+            var elapsed = _session.UtcNow() - _startedUtc;
+            var status = $"Recording '{_label}' in {GetName(_session.Area)} for {elapsed.TotalSeconds:0}s: " +
+                         $"{_session.Participants.Count} participants, {_session.EventsEnqueued} events ({_session.Writer.EventsWritten} written). " +
+                         $"File: {_session.Writer.EventsPath}";
+            if (_session.Writer.Error != null)
+                status += $" WRITER ERROR: {_session.Writer.Error}";
             if (_hookWarning != null)
                 status += $" WARNING: {_hookWarning}";
             return status;
@@ -239,12 +207,64 @@ namespace SWLOR.Game.Server.Domain.Combat
                 Stop("server shutdown", out _);
 
             // Recordings stopped earlier, not only the latest, may still be writing their files.
-            var deadline = UtcNow().AddSeconds(10);
+            var deadline = _session.UtcNow().AddSeconds(10);
             foreach (var writer in _unfinishedWriters)
             {
-                var remaining = deadline - UtcNow();
+                var remaining = deadline - _session.UtcNow();
                 if (!writer.Completion.IsCompleted && remaining > TimeSpan.Zero)
                     writer.WaitForExit(remaining);
+            }
+        }
+
+        private void RegisterPlayersInArea()
+        {
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (GetArea(player) != _session.Area || _dmPresence.IsControlledByDM(player))
+                    continue;
+
+                _session.GetParticipantId(player);
+            }
+        }
+
+        private void TakeSnapshots()
+        {
+            if (!IsRecording)
+                return;
+
+            if (!GetIsObjectValid(_session.Area))
+            {
+                Stop("recorded area no longer exists", out _);
+                return;
+            }
+
+            RegisterPlayersInArea();
+            for (var index = 0; index < _session.Participants.Count; index++)
+            {
+                var creature = _session.Participants[index];
+                if (!_session.IsInRecordedArea(creature))
+                    continue;
+
+                Player dbPlayer = null;
+                if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
+                {
+                    dbPlayer = _db.Get<Player>(GetObjectUUID(creature));
+                    if (dbPlayer == null)
+                        continue;
+                }
+
+                var temporaryHitPoints = GetTemporaryHitPoints(creature);
+                _session.Enqueue(CombatRecordEvent.Snapshot(
+                    _session.ParticipantIds[creature],
+                    GetCurrentHitPoints(creature) - temporaryHitPoints,
+                    GetMaxHitPoints(creature),
+                    temporaryHitPoints,
+                    GetCurrentFP(creature, dbPlayer),
+                    GetMaxFP(creature, dbPlayer),
+                    GetCurrentStamina(creature, dbPlayer),
+                    GetMaxStamina(creature, dbPlayer),
+                    GetIsInCombat(creature),
+                    GetIsDead(creature)));
             }
         }
 
@@ -342,31 +362,16 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private CombatRecordHealingReactionScope StartHealingReaction(uint creature)
         {
-            ReleaseAwaitingHeal();
-            _awaitingHealTarget = creature;
-            _awaitingHealFrame = CurrentFrame();
-            _isInHealingReaction = true;
+            _session.ReleaseAwaitingHeal();
+            _session.AwaitingHealTarget = creature;
+            _session.AwaitingHealFrame = _session.CurrentFrame();
+            _session.IsInHealingReaction = true;
             return new CombatRecordHealingReactionScope(true);
         }
 
         public void EndHealingReaction()
         {
-            _isInHealingReaction = false;
-        }
-
-        /// <summary>
-        /// Writes reaction events still waiting for their heal, in case it was never applied.
-        /// </summary>
-        private void ReleaseAwaitingHeal()
-        {
-            if (_awaitingHeal.Count == 0)
-                return;
-
-            var awaiting = _awaitingHeal.ToArray();
-            _awaitingHeal.Clear();
-            _healApplications.Clear();
-            foreach (var recordEvent in awaiting)
-                Enqueue(recordEvent);
+            _session.IsInHealingReaction = false;
         }
 
         /// <summary>
@@ -527,178 +532,25 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         #endregion
 
-        #region Participants
-
-        /// <summary>
-        /// Events raised inside an engine damage call (reactions, death scripts) are held until
-        /// that call's damage event is in place ahead of them.
-        /// </summary>
-        private void Enqueue(CombatRecordEvent recordEvent)
-        {
-            if (_isInHealingReaction)
-            {
-                recordEvent.Frame = CurrentFrame();
-                recordEvent.TimestampMs = UnixTimeMilliseconds();
-                _awaitingHeal.Add(recordEvent);
-                return;
-            }
-
-            // A heal that never came: its reactions are written once that frame has passed.
-            if (_awaitingHeal.Count > 0 && _awaitingHealFrame != CurrentFrame())
-                ReleaseAwaitingHeal();
-
-            recordEvent.Frame = CurrentFrame();
-            if (_heldInsertIndex >= 0)
-            {
-                recordEvent.TimestampMs = _heldTimestampMs;
-                _heldEvents.Insert(_heldInsertIndex++, recordEvent);
-                return;
-            }
-
-            recordEvent.TimestampMs = UnixTimeMilliseconds();
-            if (_damageApplications.Count > 0)
-                _heldEvents.Add(recordEvent);
-            else
-                Write(recordEvent);
-        }
-
-        private void Write(in CombatRecordEvent recordEvent)
-        {
-            _eventsEnqueued++;
-            _writer.Enqueue(recordEvent);
-        }
-
-        private void WriteHeldEvents()
-        {
-            _heldInsertIndex = -1;
-            if (IsRecording)
-            {
-                foreach (var recordEvent in _heldEvents)
-                    Write(recordEvent);
-            }
-
-            _heldEvents.Clear();
-        }
-
-        private bool IsInRecordedArea(uint creature)
-        {
-            return creature != OBJECT_INVALID && GetIsObjectValid(creature) && GetArea(creature) == _area;
-        }
-
-        /// <summary>
-        /// Events are kept when either side is in the recorded area.
-        /// </summary>
-        private bool IsRecorded(uint subject, uint other = OBJECT_INVALID)
-        {
-            return IsInRecordedArea(subject) || IsInRecordedArea(other);
-        }
-
-        /// <summary>
-        /// Returns the creature's stable id for this recording, registering it on first sight.
-        /// Returns 0 for anything that is not a creature.
-        /// </summary>
-        private int GetParticipantId(uint creature)
-        {
-            if (creature == OBJECT_INVALID || creature == 0)
-                return 0;
-
-            if (_participantIds.TryGetValue(creature, out var participantId))
-                return participantId;
-
-            if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
-                return 0;
-
-            participantId = _participantIds.Count + 1;
-            _participantIds[creature] = participantId;
-            _participants.Add(creature);
-
-            // Character names only; never account names, CD keys or IP addresses. A declaration is
-            // written at once, never held, so it precedes every event that refers to it.
-            var isPlayer = GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
-            var declaration = CombatRecordEvent.Participant(
-                participantId,
-                GetName(creature),
-                isPlayer,
-                isPlayer ? null : GetResRef(creature));
-            declaration.TimestampMs = UnixTimeMilliseconds();
-            declaration.Frame = CurrentFrame();
-            Write(declaration);
-            return participantId;
-        }
-
-        private void RegisterPlayersInArea()
-        {
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
-            {
-                if (GetArea(player) != _area || _dmPresence.IsControlledByDM(player))
-                    continue;
-
-                GetParticipantId(player);
-            }
-        }
-
-        private void TakeSnapshots()
-        {
-            if (!IsRecording)
-                return;
-
-            if (!GetIsObjectValid(_area))
-            {
-                Stop("recorded area no longer exists", out _);
-                return;
-            }
-
-            RegisterPlayersInArea();
-            for (var index = 0; index < _participants.Count; index++)
-            {
-                var creature = _participants[index];
-                if (!IsInRecordedArea(creature))
-                    continue;
-
-                Player dbPlayer = null;
-                if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
-                {
-                    dbPlayer = _db.Get<Player>(GetObjectUUID(creature));
-                    if (dbPlayer == null)
-                        continue;
-                }
-
-                var temporaryHitPoints = GetTemporaryHitPoints(creature);
-                Enqueue(CombatRecordEvent.Snapshot(
-                    _participantIds[creature],
-                    GetCurrentHitPoints(creature) - temporaryHitPoints,
-                    GetMaxHitPoints(creature),
-                    temporaryHitPoints,
-                    GetCurrentFP(creature, dbPlayer),
-                    GetMaxFP(creature, dbPlayer),
-                    GetCurrentStamina(creature, dbPlayer),
-                    GetMaxStamina(creature, dbPlayer),
-                    GetIsInCombat(creature),
-                    GetIsDead(creature)));
-            }
-        }
-
-        #endregion
-
         #region Abilities
 
         public void RecordAbilityCast(
             uint activator, uint target, Location targetLocation, AbilityDetail ability, FeatType feat, float activationDelay,
             bool isToggleOff = false)
         {
-            if (ability == null || !IsRecorded(activator, target))
+            if (ability == null || !_session.IsRecorded(activator, target))
                 return;
 
             var recordEvent = CombatRecordEvent.AbilityCast(
-                GetParticipantId(activator),
-                GetParticipantId(target),
+                _session.GetParticipantId(activator),
+                _session.GetParticipantId(target),
                 ability.Name,
                 (int)feat,
                 ability.AbilityLevel,
                 (int)ability.ActivationType,
                 (int)Math.Round(activationDelay * 1000f),
                 isToggleOff);
-            Enqueue(WithTargetLocation(recordEvent, target, targetLocation));
+            _session.Enqueue(_session.WithTargetLocation(recordEvent, target, targetLocation));
         }
 
         /// <summary>
@@ -708,12 +560,12 @@ namespace SWLOR.Game.Server.Domain.Combat
         public void RecordAbilityDenied(
             uint activator, uint target, AbilityDetail ability, FeatType feat, string reason, bool atCompletion)
         {
-            if (ability == null || !IsRecorded(activator, target))
+            if (ability == null || !_session.IsRecorded(activator, target))
                 return;
 
-            Enqueue(CombatRecordEvent.AbilityDenied(
-                GetParticipantId(activator),
-                GetParticipantId(target),
+            _session.Enqueue(CombatRecordEvent.AbilityDenied(
+                _session.GetParticipantId(activator),
+                _session.GetParticipantId(target),
                 ability.Name,
                 (int)feat,
                 ability.AbilityLevel,
@@ -729,7 +581,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         public void RecordAbilityInterrupted(
             uint activator, AbilityDetail ability, CombatRecordInterruptCause cause, uint damagedBy = OBJECT_INVALID)
         {
-            if (ability == null || !IsInRecordedArea(activator))
+            if (ability == null || !_session.IsInRecordedArea(activator))
                 return;
 
             var interrupter = default(CombatRecordAttribution);
@@ -746,13 +598,13 @@ namespace SWLOR.Game.Server.Domain.Combat
                 cause = CombatRecordInterruptCause.CrowdControl;
             }
 
-            Enqueue(CombatRecordEvent.AbilityInterrupted(
-                GetParticipantId(activator),
+            _session.Enqueue(CombatRecordEvent.AbilityInterrupted(
+                _session.GetParticipantId(activator),
                 ability.Name,
                 GetFeatCode(ability, FeatType.Invalid),
                 ability.AbilityLevel,
                 cause,
-                GetParticipantId(interrupter.Actor),
+                _session.GetParticipantId(interrupter.Actor),
                 interrupter.Kind,
                 interrupter.Name,
                 interrupter.Code));
@@ -760,12 +612,12 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         public void RecordAbilityQueued(uint activator, uint target, AbilityDetail ability, FeatType feat)
         {
-            if (ability == null || !IsRecorded(activator, target))
+            if (ability == null || !_session.IsRecorded(activator, target))
                 return;
 
-            Enqueue(CombatRecordEvent.AbilityQueued(
-                GetParticipantId(activator),
-                GetParticipantId(target),
+            _session.Enqueue(CombatRecordEvent.AbilityQueued(
+                _session.GetParticipantId(activator),
+                _session.GetParticipantId(target),
                 ability.Name,
                 (int)feat,
                 ability.AbilityLevel));
@@ -774,19 +626,19 @@ namespace SWLOR.Game.Server.Domain.Combat
         public void RecordAbilityImpact(
             uint activator, uint target, Location targetLocation, AbilityDetail ability, FeatType feat, AbilityImpactSummary summary)
         {
-            if (ability == null || (!IsRecorded(activator, target) && !AnyInRecordedArea(summary?.ImpactedTargets)))
+            if (ability == null || (!_session.IsRecorded(activator, target) && !_session.AnyInRecordedArea(summary?.ImpactedTargets)))
                 return;
 
             var recordEvent = CombatRecordEvent.AbilityImpact(
-                GetParticipantId(activator),
-                GetParticipantId(target),
+                _session.GetParticipantId(activator),
+                _session.GetParticipantId(target),
                 ability.Name,
                 (int)feat,
                 ability.AbilityLevel,
                 summary?.ImpactedTargetCount ?? 0,
                 summary?.CriticalHitCount ?? 0,
                 summary?.AttributedDamage ?? 0);
-            Enqueue(WithTargetLocation(recordEvent, target, targetLocation));
+            _session.Enqueue(_session.WithTargetLocation(recordEvent, target, targetLocation));
         }
 
         /// <summary>
@@ -796,7 +648,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         public void NoteToggleDeactivated(uint activator)
         {
             _toggleDeactivatedBy = activator;
-            _toggleDeactivatedFrame = CurrentFrame();
+            _toggleDeactivatedFrame = _session.CurrentFrame();
         }
 
         /// <summary>
@@ -804,7 +656,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         public bool TakeToggleDeactivation(uint activator)
         {
-            var deactivated = _toggleDeactivatedBy == activator && _toggleDeactivatedFrame == CurrentFrame();
+            var deactivated = _toggleDeactivatedBy == activator && _toggleDeactivatedFrame == _session.CurrentFrame();
             _toggleDeactivatedBy = OBJECT_INVALID;
             return deactivated;
         }
@@ -815,11 +667,11 @@ namespace SWLOR.Game.Server.Domain.Combat
         public void RecordRecurringAbilityImpact(uint activator, AbilityDetail ability, AbilityImpactSummary summary)
         {
             // A fixed-location pulse keeps landing in the area after its caster leaves.
-            if (ability == null || (!IsInRecordedArea(activator) && !AnyInRecordedArea(summary?.ImpactedTargets)))
+            if (ability == null || (!_session.IsInRecordedArea(activator) && !_session.AnyInRecordedArea(summary?.ImpactedTargets)))
                 return;
 
-            Enqueue(CombatRecordEvent.AbilityImpact(
-                GetParticipantId(activator),
+            _session.Enqueue(CombatRecordEvent.AbilityImpact(
+                _session.GetParticipantId(activator),
                 0,
                 ability.Name,
                 GetFeatCode(ability, FeatType.Invalid),
@@ -830,29 +682,6 @@ namespace SWLOR.Game.Server.Domain.Combat
                 isRecurring: true));
         }
 
-        private bool AnyInRecordedArea(IReadOnlyCollection<uint> creatures)
-        {
-            if (creatures == null)
-                return false;
-
-            foreach (var creature in creatures)
-            {
-                if (IsInRecordedArea(creature))
-                    return true;
-            }
-
-            return false;
-        }
-
-        private CombatRecordEvent WithTargetLocation(CombatRecordEvent recordEvent, uint target, Location targetLocation)
-        {
-            if (GetIsObjectValid(target) || !GetIsObjectValid(GetAreaFromLocation(targetLocation)))
-                return recordEvent;
-
-            var position = GetPositionFromLocation(targetLocation);
-            return recordEvent.WithLocation(position.X, position.Y, position.Z);
-        }
-
         /// <summary>
         /// Wraps an ability's activation requirements: measures the FP and STM they take and
         /// attributes resource changes inside the scope (including consumed items) to the
@@ -861,7 +690,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         public CombatRecordAbilityCostScope BeginAbilityCost(uint activator, AbilityDetail ability, FeatType feat = FeatType.Invalid)
         {
-            if (!IsRecording || ability == null || !IsInRecordedArea(activator))
+            if (!IsRecording || ability == null || !_session.IsInRecordedArea(activator))
                 return default;
 
             var attribution = BeginAttribution(activator, CombatRecordSourceKind.AbilityCost, ability.Name, (int)feat, ability.AbilityLevel);
@@ -880,8 +709,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (!IsRecording || !GetIsObjectValid(cost.Activator))
                 return;
 
-            Enqueue(CombatRecordEvent.AbilityCost(
-                GetParticipantId(cost.Activator),
+            _session.Enqueue(CombatRecordEvent.AbilityCost(
+                _session.GetParticipantId(cost.Activator),
                 cost.Ability.Name,
                 cost.Feat,
                 cost.Ability.AbilityLevel,
@@ -892,12 +721,12 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <param name="attackResult">The native attack result: 1/7 hit, 2 deflect, 3 critical, 4 miss.</param>
         public void RecordAttack(uint attacker, uint defender, int attackResult, int hitChance, string abilityName)
         {
-            if (!IsRecorded(defender, attacker))
+            if (!_session.IsRecorded(defender, attacker))
                 return;
 
-            Enqueue(CombatRecordEvent.Attack(
-                GetParticipantId(attacker),
-                GetParticipantId(defender),
+            _session.Enqueue(CombatRecordEvent.Attack(
+                _session.GetParticipantId(attacker),
+                _session.GetParticipantId(defender),
                 ToAttackResult(attackResult),
                 hitChance,
                 abilityName));
@@ -932,7 +761,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (!GetIsObjectValid(source))
                 source = target;
 
-            if (amount <= 0 || !IsRecorded(target, source))
+            if (amount <= 0 || !_session.IsRecorded(target, source))
                 return;
 
             // Direct damage is registered only where it is dispatched later: a status effect's tick
@@ -967,7 +796,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 attribution.Kind = CombatRecordSourceKind.DamageShare;
             }
 
-            AddPendingDamage(source, target, amount, false, attribution);
+            _session.AddPendingDamage(source, target, amount, false, attribution);
         }
 
         /// <summary>
@@ -976,7 +805,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         public bool HasPendingDamage(uint source, uint target)
         {
-            return _pendingDamage.Exists(pending => pending.Source == source && pending.Target == target);
+            return _session.PendingDamage.Exists(pending => pending.Source == source && pending.Target == target);
         }
 
         /// <summary>
@@ -984,12 +813,12 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         public void ExpectHitPointCost(uint activator, int amount)
         {
-            if (amount <= 0 || !IsInRecordedArea(activator))
+            if (amount <= 0 || !_session.IsInRecordedArea(activator))
                 return;
 
             var attribution = ResolveAttribution(activator);
             attribution.Kind = CombatRecordSourceKind.AbilityCost;
-            AddPendingDamage(activator, activator, amount, false, attribution);
+            _session.AddPendingDamage(activator, activator, amount, false, attribution);
         }
 
         /// <summary>
@@ -997,25 +826,11 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         public void ExpectWeaponDamage(uint attacker, uint defender, int amount, SkillType weaponSkill)
         {
-            if (amount <= 0 || !IsRecorded(defender, attacker))
+            if (amount <= 0 || !_session.IsRecorded(defender, attacker))
                 return;
 
             var attribution = new CombatRecordAttribution(attacker, CombatRecordSourceKind.Autoattack, null, (int)weaponSkill, 0);
-            AddPendingDamage(attacker, defender, amount, true, attribution);
-        }
-
-        private void AddPendingDamage(uint source, uint target, int amount, bool isWeaponHit, CombatRecordAttribution attribution)
-        {
-            _pendingDamage.Add(new CombatRecordPendingDamage
-            {
-                Source = source,
-                Target = target,
-                Amount = amount,
-                IsWeaponHit = isWeaponHit,
-                Frame = CurrentFrame(),
-                TimestampMs = UnixTimeMilliseconds(),
-                Attribution = attribution
-            });
+            _session.AddPendingDamage(attacker, defender, amount, true, attribution);
         }
 
         /// <summary>
@@ -1033,62 +848,23 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
 
             var match = CombatRecordPendingDamageMatcher.FindMatch(
-                _pendingDamage,
+                _session.PendingDamage,
                 source,
                 target,
                 amount,
                 isEngineApplied,
-                CurrentFrame(),
-                UnixTimeMilliseconds(),
+                _session.CurrentFrame(),
+                _session.UnixTimeMilliseconds(),
                 DeferredDamageFrameWindow,
                 WeaponDamageWindowMs);
             if (match >= 0)
             {
-                var attribution = _pendingDamage[match].Attribution;
-                _pendingDamage.RemoveAt(match);
+                var attribution = _session.PendingDamage[match].Attribution;
+                _session.PendingDamage.RemoveAt(match);
                 return attribution;
             }
 
             return ResolveActiveAbilityAttribution(source);
-        }
-
-        /// <summary>
-        /// Called by the native damage hook before the engine applies a damage effect. Lethal
-        /// damage runs the death scripts inside the engine call, so the source is known to them
-        /// and their death event waits for this damage event. Returns the application's index
-        /// for <see cref="RecordDamageApplied"/> and <see cref="EndDamageApplication"/>.
-        /// </summary>
-        public int BeginDamageApplication(uint source, uint target, int amount, int hitPointsBefore)
-        {
-            // Only damage the recording keeps (it deals damage and involves the area) can name a
-            // death's last damage source.
-            if (amount > 0 && source != target && source != 0 && source != OBJECT_INVALID && IsRecorded(target, source))
-                _lastDamageSources[target] = source;
-
-            // A reaction hitting the same creature again ends what the outer hit left.
-            var outer = FindDamageApplication(target);
-            if (outer >= 0 && !_damageApplications[outer].HasHitPointsLeftByHit)
-                KeepHitPointsLeftByHit(outer, hitPointsBefore);
-
-            _damageApplications.Add(new CombatRecordDamageApplication
-            {
-                Target = target,
-                HeldEventStart = _heldEvents.Count,
-                StartedMs = UnixTimeMilliseconds()
-            });
-            return _damageApplications.Count - 1;
-        }
-
-        /// <summary>
-        /// Releases a damage application, and writes the held events once the outermost one ends.
-        /// </summary>
-        public void EndDamageApplication(int applicationIndex)
-        {
-            if (applicationIndex >= 0 && applicationIndex < _damageApplications.Count)
-                _damageApplications.RemoveRange(applicationIndex, _damageApplications.Count - applicationIndex);
-
-            if (_damageApplications.Count == 0 && _heldEvents.Count > 0)
-                WriteHeldEvents();
         }
 
         /// <summary>
@@ -1110,20 +886,20 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             try
             {
-                if (applicationIndex < 0 || applicationIndex >= _damageApplications.Count || !IsRecording)
+                if (applicationIndex < 0 || applicationIndex >= _session.DamageApplications.Count || !IsRecording)
                     return;
 
                 // A subdued player is resurrected inside the lethal damage call; report the HP the
                 // hit left, captured when the death scripts ran.
-                var application = _damageApplications[applicationIndex];
+                var application = _session.DamageApplications[applicationIndex];
                 if (application.HasHitPointsLeftByHit)
                     hitPointsAfter = application.HitPointsLeftByHit;
 
-                if (IsRecorded(target, source))
+                if (_session.IsRecorded(target, source))
                 {
                     // The damage event goes ahead of everything the hit triggered.
-                    _heldInsertIndex = application.HeldEventStart;
-                    _heldTimestampMs = application.StartedMs;
+                    _session.HeldInsertIndex = application.HeldEventStart;
+                    _session.HeldTimestampMs = application.StartedMs;
                     var poolsLeftByHit = CombatRecordTemporaryHitPointPools.MergeKeepingFirst(poolsAfter, application.PoolsAtRemoval);
                     RecordDamageEvents(isEngineApplied, source, target, damage, hitPointsBefore, hitPointsAfter, maxHitPoints,
                         poolsBefore, poolsAfter, poolsLeftByHit);
@@ -1131,8 +907,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
             finally
             {
-                _heldInsertIndex = -1;
-                EndDamageApplication(applicationIndex);
+                _session.HeldInsertIndex = -1;
+                _session.EndDamageApplication(applicationIndex);
             }
         }
 
@@ -1155,12 +931,12 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return;
 
             var attribution = ResolveDamageAttribution(source, target, damage.Total, isEngineApplied);
-            var sourceId = GetParticipantId(source);
-            var targetId = GetParticipantId(target);
+            var sourceId = _session.GetParticipantId(source);
+            var targetId = _session.GetParticipantId(target);
             var temporaryBefore = CombatRecordTemporaryHitPointPools.Sum(poolsBefore);
             var temporaryAfter = CombatRecordTemporaryHitPointPools.Sum(poolsAfter);
 
-            Enqueue(CombatRecordEvent.DamageApplied(
+            _session.Enqueue(CombatRecordEvent.DamageApplied(
                 sourceId,
                 targetId,
                 attribution.Kind,
@@ -1184,7 +960,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                         continue;
 
                     var hasGrant = _temporaryHitPointGrants.TryGetValue((target, pool.EffectKey), out var grant);
-                    Enqueue(CombatRecordEvent.TemporaryHitPointsAbsorbed(
+                    _session.Enqueue(CombatRecordEvent.TemporaryHitPointsAbsorbed(
                         sourceId,
                         targetId,
                         pool.EffectKey,
@@ -1207,36 +983,14 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         public void RecordPvpHealingReduced(uint target, int requested, int reduced)
         {
-            for (var index = _healApplications.Count - 1; index >= 0; index--)
+            for (var index = _session.HealApplications.Count - 1; index >= 0; index--)
             {
-                if (_healApplications[index].Target != target)
+                if (_session.HealApplications[index].Target != target)
                     continue;
 
-                _healApplications[index] = (target, Math.Max(0, requested - reduced));
+                _session.HealApplications[index] = (target, Math.Max(0, requested - reduced));
                 return;
             }
-        }
-
-        /// <summary>Opens the frame for a heal the native hook is about to apply to <paramref name="target"/>.</summary>
-        public void BeginHealApplication(uint target)
-        {
-            _healApplications.Add((target, 0));
-        }
-
-        /// <summary>Closes the innermost frame for <paramref name="target"/> and returns its PvP reduction.</summary>
-        public int EndHealApplication(uint target)
-        {
-            for (var index = _healApplications.Count - 1; index >= 0; index--)
-            {
-                if (_healApplications[index].Target != target)
-                    continue;
-
-                var pvpReduced = _healApplications[index].PvpReduced;
-                _healApplications.RemoveAt(index);
-                return pvpReduced;
-            }
-
-            return 0;
         }
 
         /// <summary>
@@ -1245,11 +999,11 @@ namespace SWLOR.Game.Server.Domain.Combat
         public void RecordHealingApplied(uint creator, uint target, int requested, int hitPointsBefore, int hitPointsAfter, int maxHitPoints, int pvpReduced = 0)
         {
             // A heal reacting to a hit still in progress ends what that hit left.
-            var application = FindDamageApplication(target);
-            if (application >= 0 && !_damageApplications[application].HasHitPointsLeftByHit)
-                KeepHitPointsLeftByHit(application, hitPointsBefore);
+            var application = _session.FindDamageApplication(target);
+            if (application >= 0 && !_session.DamageApplications[application].HasHitPointsLeftByHit)
+                _session.KeepHitPointsLeftByHit(application, hitPointsBefore);
 
-            if (!IsRecorded(target, creator))
+            if (!_session.IsRecorded(target, creator))
             {
                 ReleaseAwaitingHealFor(target);
                 return;
@@ -1260,9 +1014,9 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return;
 
             // The cut is not overheal: the heal only ever asked for what was left of it.
-            Enqueue(CombatRecordEvent.Healing(
-                GetParticipantId(attribution.Actor),
-                GetParticipantId(target),
+            _session.Enqueue(CombatRecordEvent.Healing(
+                _session.GetParticipantId(attribution.Actor),
+                _session.GetParticipantId(target),
                 attribution.Kind,
                 attribution.Name,
                 attribution.Code,
@@ -1277,8 +1031,8 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private void ReleaseAwaitingHealFor(uint target)
         {
-            if (_awaitingHeal.Count > 0 && _awaitingHealTarget == target)
-                ReleaseAwaitingHeal();
+            if (_session.AwaitingHealCount > 0 && _session.AwaitingHealTarget == target)
+                _session.ReleaseAwaitingHeal();
         }
 
         /// <summary>
@@ -1288,15 +1042,15 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         public void RecordTemporaryHitPointPoolRemoving(uint creature)
         {
-            var index = FindDamageApplication(creature);
+            var index = _session.FindDamageApplication(creature);
             if (index < 0)
                 return;
 
-            var application = _damageApplications[index];
+            var application = _session.DamageApplications[index];
             application.PoolsAtRemoval = CombatRecordTemporaryHitPointPools.MergeKeepingFirst(
                 application.PoolsAtRemoval,
                 CaptureTemporaryHitPointPools(creature));
-            _damageApplications[index] = application;
+            _session.DamageApplications[index] = application;
         }
 
         /// <summary>
@@ -1304,12 +1058,12 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         public void RecordTemporaryHitPointsTrimmed(uint target, string effectKey, int trimmed, int remaining)
         {
-            if (trimmed <= 0 || !IsInRecordedArea(target))
+            if (trimmed <= 0 || !_session.IsInRecordedArea(target))
                 return;
 
             var hasGrant = _temporaryHitPointGrants.TryGetValue((target, effectKey), out var grant);
-            Enqueue(CombatRecordEvent.TemporaryHitPointsTrimmed(
-                GetParticipantId(target),
+            _session.Enqueue(CombatRecordEvent.TemporaryHitPointsTrimmed(
+                _session.GetParticipantId(target),
                 effectKey,
                 trimmed,
                 remaining,
@@ -1321,7 +1075,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         public void RecordTemporaryHitPointsGranted(uint source, uint target, string effectKey, int amount, float durationSeconds)
         {
-            if (!IsRecorded(target, source))
+            if (!_session.IsRecorded(target, source))
             {
                 // The new pool replaced any recorded pool with this key; its absorbs are not that granter's.
                 _temporaryHitPointGrants.Remove((target, effectKey));
@@ -1332,11 +1086,11 @@ namespace SWLOR.Game.Server.Domain.Combat
             // attacker's ability during a defender's reactive shield.
             var attribution = GetIsObjectValid(source) ? ResolveOwnAttribution(source) : ResolveAttribution(target);
 
-            var sourceId = GetParticipantId(attribution.Actor);
+            var sourceId = _session.GetParticipantId(attribution.Actor);
             _temporaryHitPointGrants[(target, effectKey)] = (sourceId, attribution);
-            Enqueue(CombatRecordEvent.TemporaryHitPointsGranted(
+            _session.Enqueue(CombatRecordEvent.TemporaryHitPointsGranted(
                 sourceId,
-                GetParticipantId(target),
+                _session.GetParticipantId(target),
                 attribution.Kind,
                 attribution.Name,
                 attribution.Code,
@@ -1354,12 +1108,12 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         public void RecordResourceChange(uint creature, CombatRecordResource resource, int delta, int valueAfter)
         {
-            if (delta == 0 || !IsInRecordedArea(creature))
+            if (delta == 0 || !_session.IsInRecordedArea(creature))
                 return;
 
             var attribution = ResolveAttribution(creature);
-            Enqueue(CombatRecordEvent.ResourceChanged(
-                GetParticipantId(creature), resource, delta, valueAfter,
+            _session.Enqueue(CombatRecordEvent.ResourceChanged(
+                _session.GetParticipantId(creature), resource, delta, valueAfter,
                 attribution.Kind, attribution.Name, attribution.Code));
         }
 
@@ -1389,7 +1143,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         public void RecordItemChargeUsed(uint user, uint item)
         {
-            if (!IsInRecordedArea(user))
+            if (!_session.IsInRecordedArea(user))
                 return;
 
             using var attribution = PushItemAttribution(user, item);
@@ -1398,12 +1152,12 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         public void RecordItemConsumed(uint creature, string itemResref, int quantity)
         {
-            if (quantity <= 0 || !IsInRecordedArea(creature))
+            if (quantity <= 0 || !_session.IsInRecordedArea(creature))
                 return;
 
             var attribution = ResolveAttribution(creature);
-            Enqueue(CombatRecordEvent.ResourceChanged(
-                GetParticipantId(creature), CombatRecordResource.Item, -quantity, -1,
+            _session.Enqueue(CombatRecordEvent.ResourceChanged(
+                _session.GetParticipantId(creature), CombatRecordResource.Item, -quantity, -1,
                 attribution.Kind, attribution.Name, attribution.Code, itemResref));
         }
 
@@ -1413,12 +1167,12 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         public void RecordStatusApplied(uint source, uint creature, IStatusEffect statusEffect, float durationSeconds, bool isPermanent, bool isRefresh)
         {
-            if (statusEffect == null || !IsRecorded(creature, source))
+            if (statusEffect == null || !_session.IsRecorded(creature, source))
                 return;
 
-            Enqueue(CombatRecordEvent.StatusApplied(
-                GetParticipantId(source),
-                GetParticipantId(creature),
+            _session.Enqueue(CombatRecordEvent.StatusApplied(
+                _session.GetParticipantId(source),
+                _session.GetParticipantId(creature),
                 statusEffect.Name,
                 statusEffect.GetType().Name,
                 statusEffect.OriginatingAbility?.Name ?? FindAbilityScopeName(source),
@@ -1444,7 +1198,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         public void RecordStatusRemoved(uint creature, IStatusEffect statusEffect, bool isReplacement)
         {
-            if (statusEffect == null || !IsRecorded(creature, statusEffect.Source))
+            if (statusEffect == null || !_session.IsRecorded(creature, statusEffect.Source))
                 return;
 
             var reason = isReplacement
@@ -1452,9 +1206,9 @@ namespace SWLOR.Game.Server.Domain.Combat
                 : statusEffect.WasNaturallyExpired
                     ? CombatRecordStatusRemoval.Expired
                     : CombatRecordStatusRemoval.Removed;
-            Enqueue(CombatRecordEvent.StatusRemoved(
-                GetParticipantId(statusEffect.Source),
-                GetParticipantId(creature),
+            _session.Enqueue(CombatRecordEvent.StatusRemoved(
+                _session.GetParticipantId(statusEffect.Source),
+                _session.GetParticipantId(creature),
                 statusEffect.Name,
                 statusEffect.GetType().Name,
                 reason));
@@ -1489,20 +1243,20 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         public void RecordRespawn(uint player)
         {
-            if (!IsInRecordedArea(player))
+            if (!_session.IsInRecordedArea(player))
                 return;
 
             _deathFrames.Remove(player);
-            Enqueue(CombatRecordEvent.Resurrection(
-                GetParticipantId(player), 0, CombatRecordSourceKind.Respawn, null, 0));
+            _session.Enqueue(CombatRecordEvent.Resurrection(
+                _session.GetParticipantId(player), 0, CombatRecordSourceKind.Respawn, null, 0));
         }
 
         private void RecordDeath(uint creature, uint killer)
         {
-            if (!IsInRecordedArea(creature))
+            if (!_session.IsInRecordedArea(creature))
             {
                 // A death outside the area still ends the life its last damage source belongs to.
-                _lastDamageSources.Remove(creature);
+                _session.LastDamageSources.Remove(creature);
                 return;
             }
 
@@ -1512,18 +1266,18 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             // Dying inside an engine damage call: keep the HP the hit left for its damage event.
             // The death event itself is held behind that damage event.
-            var index = FindDamageApplication(creature);
+            var index = _session.FindDamageApplication(creature);
             if (index >= 0)
             {
-                var application = _damageApplications[index];
+                var application = _session.DamageApplications[index];
                 application.DeathRecorded = true;
-                _damageApplications[index] = application;
+                _session.DamageApplications[index] = application;
                 if (!application.HasHitPointsLeftByHit)
                     KeepHitPointsLeftByHit(index, creature);
             }
             else
             {
-                _deathFrames[creature] = CurrentFrame();
+                _deathFrames[creature] = _session.CurrentFrame();
             }
 
             EnqueueDeath(creature, killer);
@@ -1535,11 +1289,11 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         private bool IsDeathRecorded(uint creature)
         {
-            var index = FindDamageApplication(creature);
+            var index = _session.FindDamageApplication(creature);
             if (index >= 0)
-                return _damageApplications[index].DeathRecorded;
+                return _session.DamageApplications[index].DeathRecorded;
 
-            return _deathFrames.TryGetValue(creature, out var deathFrame) && deathFrame == CurrentFrame();
+            return _deathFrames.TryGetValue(creature, out var deathFrame) && deathFrame == _session.CurrentFrame();
         }
 
         /// <summary>
@@ -1548,43 +1302,24 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         public void KeepLethalHitPoints(uint creature)
         {
-            var index = FindDamageApplication(creature);
-            if (index >= 0 && !_damageApplications[index].HasHitPointsLeftByHit)
+            var index = _session.FindDamageApplication(creature);
+            if (index >= 0 && !_session.DamageApplications[index].HasHitPointsLeftByHit)
                 KeepHitPointsLeftByHit(index, creature);
         }
 
         private void KeepHitPointsLeftByHit(int applicationIndex, uint creature)
         {
-            KeepHitPointsLeftByHit(applicationIndex, GetHitPointsExcludingTemporary(creature));
-        }
-
-        private void KeepHitPointsLeftByHit(int applicationIndex, int hitPoints)
-        {
-            var application = _damageApplications[applicationIndex];
-            application.HasHitPointsLeftByHit = true;
-            application.HitPointsLeftByHit = hitPoints;
-            _damageApplications[applicationIndex] = application;
-        }
-
-        private int FindDamageApplication(uint target)
-        {
-            for (var index = _damageApplications.Count - 1; index >= 0; index--)
-            {
-                if (_damageApplications[index].Target == target)
-                    return index;
-            }
-
-            return -1;
+            _session.KeepHitPointsLeftByHit(applicationIndex, GetHitPointsExcludingTemporary(creature));
         }
 
         private void EnqueueDeath(uint creature, uint killer)
         {
             // A resurrected creature starts a new life with no damage source.
-            _lastDamageSources.Remove(creature, out var lastDamageSource);
-            Enqueue(CombatRecordEvent.Death(
-                GetParticipantId(creature),
-                GetParticipantId(killer),
-                GetParticipantId(lastDamageSource)));
+            _session.LastDamageSources.Remove(creature, out var lastDamageSource);
+            _session.Enqueue(CombatRecordEvent.Death(
+                _session.GetParticipantId(creature),
+                _session.GetParticipantId(killer),
+                _session.GetParticipantId(lastDamageSource)));
         }
 
         /// <summary>
@@ -1593,7 +1328,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         public void RecordResurrection(uint target, CombatRecordSourceKind kindWithoutScope = CombatRecordSourceKind.Unattributed)
         {
-            if (!IsInRecordedArea(target))
+            if (!_session.IsInRecordedArea(target))
                 return;
 
             // A new life: a later death in this frame is a real one.
@@ -1601,9 +1336,9 @@ namespace SWLOR.Game.Server.Domain.Combat
             var attribution = _attributionDepth > 0
                 ? _attributions[_attributionDepth - 1]
                 : new CombatRecordAttribution(OBJECT_INVALID, kindWithoutScope, null, 0, 0);
-            Enqueue(CombatRecordEvent.Resurrection(
-                GetParticipantId(target),
-                GetParticipantId(attribution.Actor),
+            _session.Enqueue(CombatRecordEvent.Resurrection(
+                _session.GetParticipantId(target),
+                _session.GetParticipantId(attribution.Actor),
                 attribution.Kind,
                 attribution.Name,
                 attribution.Code));
@@ -1616,14 +1351,14 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         public void RecordSubdual(uint subdued, uint subduedBy)
         {
-            if (!IsInRecordedArea(subdued))
+            if (!_session.IsInRecordedArea(subdued))
                 return;
 
             // The death handlers run in no fixed order, so the death is recorded first either way.
             if (!IsDeathRecorded(subdued))
                 RecordDeath(subdued, GetLastHostileActor(subdued));
 
-            var index = FindDamageApplication(subdued);
+            var index = _session.FindDamageApplication(subdued);
             if (index >= 0)
                 KeepHitPointsLeftByHit(index, subdued);
 
@@ -1632,9 +1367,9 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private void EnqueueSubdual(uint subdued, uint subduedBy)
         {
-            var subduedId = GetParticipantId(subdued);
-            Enqueue(CombatRecordEvent.Subdual(subduedId, GetParticipantId(subduedBy)));
-            Enqueue(CombatRecordEvent.Resurrection(subduedId, 0, CombatRecordSourceKind.Subdual, null, 0));
+            var subduedId = _session.GetParticipantId(subdued);
+            _session.Enqueue(CombatRecordEvent.Subdual(subduedId, _session.GetParticipantId(subduedBy)));
+            _session.Enqueue(CombatRecordEvent.Resurrection(subduedId, 0, CombatRecordSourceKind.Subdual, null, 0));
         }
 
         #endregion
@@ -1676,15 +1411,6 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         protected virtual IDisposable ScheduleRepeating(Action task, TimeSpan schedule, TimeSpan delay) =>
             Scheduler.ScheduleRepeating(task, schedule, delay);
-
-        protected virtual void WriteLog(LogGroup group, string details, bool printToConsole = false) =>
-            Log.Write(group, details, printToConsole);
-
-        protected virtual ulong CurrentFrame() => ServerFrame.Current;
-
-        protected virtual long UnixTimeMilliseconds() => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
-        protected virtual DateTime UtcNow() => DateTime.UtcNow;
 
         #endregion
     }

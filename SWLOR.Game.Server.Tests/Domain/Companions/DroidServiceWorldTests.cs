@@ -27,33 +27,20 @@ public class DroidServiceWorldTests
     private const uint Invalid = DroidWorld.ObjectInvalid;
 
     private DroidWorld _world = null!;
-    private AmmunitionDroidService _service = null!;
-
-    private sealed class AmmunitionDroidService : DroidService
-    {
-        public AmmunitionDroidService(DroidWorld world)
-            : base(world.Ai, world.Recorder, world.Companion, world.Diagnostics, world.Gui, world.Item, world.Perk, world.Glove,
-                world.Race, world.Recast, world.Resistance, world.Stat, world.StatusEffect, world.Twin)
-        {
-        }
-
-        public (bool Arrows, bool Bullets, bool Bolts)? Flags { get; set; }
-
-        protected override (bool Arrows, bool Bullets, bool Bolts)? ReadGeneratedAmmunitionFlags(uint droid) => Flags;
-    }
+    private TestDroid _service = null!;
 
     [SetUp]
     public void SetUp()
     {
         _world = new DroidWorld();
-        _service = new AmmunitionDroidService(_world);
-        _service.CacheData();
+        _service = new TestDroid(_world);
+        _service.Droids.CacheData();
     }
 
     [TearDown]
     public void TearDown() => _world.Dispose();
 
-    private ConstructedDroid Saved() => _service.LoadConstructedDroid(DroidWorld.Controller);
+    private ConstructedDroid Saved() => _service.Droids.LoadConstructedDroid(DroidWorld.Controller);
 
     private void Self(uint obj) => _world.Engine.SetReturn("OBJECT_SELF", obj);
 
@@ -72,7 +59,7 @@ public class DroidServiceWorldTests
         _world.AddStat(DroidWorld.Controller, DroidStatSubType.Armor, 2);
         _world.AddStat(DroidWorld.Controller, DroidStatSubType.Rifle, 4);
         _world.AddProperty(DroidWorld.Controller, ItemPropertyType.DroidPersonality, (int)DroidPersonalityType.Sarcastic, 0);
-        _service.SaveConstructedDroid(DroidWorld.Controller, new ConstructedDroid { Name = "Beepy" });
+        _service.Droids.SaveConstructedDroid(DroidWorld.Controller, new ConstructedDroid { Name = "Beepy" });
     }
 
     // ---- property details
@@ -84,7 +71,7 @@ public class DroidServiceWorldTests
         _world.AddStat(DroidWorld.Controller, DroidStatSubType.HP, 10);
         _world.AddStat(DroidWorld.Controller, DroidStatSubType.AISlots, 2);
 
-        var details = _service.LoadDroidItemPropertyDetails(DroidWorld.Controller);
+        var details = _service.Droids.LoadDroidItemPropertyDetails(DroidWorld.Controller);
 
         details.Tier.Should().Be(3);
         details.Level.Should().Be(25);
@@ -138,7 +125,7 @@ public class DroidServiceWorldTests
         _world.AddStat(DroidWorld.Controller, DroidStatSubType.Lightsaber, 9);
         _world.AddStat(DroidWorld.Controller, DroidStatSubType.Saberstaff, 9);
 
-        var details = _service.LoadDroidItemPropertyDetails(DroidWorld.Controller);
+        var details = _service.Droids.LoadDroidItemPropertyDetails(DroidWorld.Controller);
 
         details.Resistances.Should().HaveCount(resistances.Count);
         foreach (var (_, resistance) in resistances)
@@ -168,7 +155,7 @@ public class DroidServiceWorldTests
             _world.AddStat(part, subType, 1);
         }
 
-        var details = _service.LoadDroidPartItemPropertyDetails(part);
+        var details = _service.Droids.LoadDroidPartItemPropertyDetails(part);
 
         (details.AISlots, details.STM, details.MGT, details.PER, details.VIT, details.WIL, details.AGI, details.SOC, details.Armor)
             .Should().Be((3, 3, 3, 3, 3, 3, 3, 3, 3));
@@ -194,7 +181,7 @@ public class DroidServiceWorldTests
         ConfigureController();
         _world.OpenWindows = true;
 
-        _service.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
+        _service.Spawn.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
         var droid = _world.Droid;
 
         _world.GuiCalls.Calls.Select(call => call.Member).Should().Contain("CloseWindow");
@@ -215,8 +202,8 @@ public class DroidServiceWorldTests
         _world.Locals.Object(DroidWorld.Player, "ACTIVE_DROID_ITEM").Should().Be(DroidWorld.Controller);
         _world.Locals.Object(droid, "ACTIVE_DROID_ITEM").Should().Be(DroidWorld.Controller);
         _world.Locals.Has(droid, "DROID_IS_SPAWNING").Should().BeFalse("the spawning flag is cleared when the restore is done");
-        _service.GetDroid(DroidWorld.Player).Should().Be(droid);
-        _service.GetControllerItem(droid).Should().Be(DroidWorld.Controller);
+        _service.Droids.GetDroid(DroidWorld.Player).Should().Be(droid);
+        _service.Droids.GetControllerItem(droid).Should().Be(DroidWorld.Controller);
         _world.Calls("ExecuteScript").Should().ContainSingle(call => (uint)call.Arguments[1]! == droid);
         _world.GloveCalls.Calls.Should().ContainSingle().Which.Arguments.Should().Equal(droid);
         _world.TwinCalls.Calls.Should().ContainSingle().Which.Arguments.Should().Equal(droid);
@@ -228,7 +215,7 @@ public class DroidServiceWorldTests
     {
         ConfigureController();
 
-        _service.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
+        _service.Spawn.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
 
         // Level, hit points and stamina, one resistance, and the two weapon/armor skills.
         _world.Calls("AddItemProperty").Should().HaveCount(6);
@@ -248,7 +235,7 @@ public class DroidServiceWorldTests
     {
         ConfigureController();
 
-        _service.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
+        _service.Spawn.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
 
         _world.Calls("ApplyEffectToObject").Should().BeEmpty("the heal waits for its delay");
 
@@ -269,9 +256,9 @@ public class DroidServiceWorldTests
         saved.AppearanceParts[CreaturePart.LeftFoot] = 66;
         saved.TintOverrides["TINT_A"] = 9;
         saved.TintOverrides["TINT_B"] = 0;
-        _service.SaveConstructedDroid(DroidWorld.Controller, saved);
+        _service.Droids.SaveConstructedDroid(DroidWorld.Controller, saved);
 
-        _service.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
+        _service.Spawn.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
 
         var parts = _world.Calls("SetCreatureBodyPart").ToDictionary(call => (CreaturePart)call.Arguments[0]!, call => (int)call.Arguments[1]!);
         parts.Should().HaveCount(16);
@@ -290,7 +277,7 @@ public class DroidServiceWorldTests
     {
         ConfigureController();
 
-        _service.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
+        _service.Spawn.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
 
         _world.Calls("SetPortraitId").Should().BeEmpty();
         _world.Calls("SetSoundset").Should().BeEmpty();
@@ -300,10 +287,10 @@ public class DroidServiceWorldTests
         var saved = Saved();
         saved.PortraitId = 5;
         saved.SoundSetId = 6;
-        _service.SaveConstructedDroid(DroidWorld.Controller, saved);
+        _service.Droids.SaveConstructedDroid(DroidWorld.Controller, saved);
         _world.Locals.ClearCalls();
 
-        _service.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
+        _service.Spawn.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
 
         _world.Calls("SetPortraitId").Single().Arguments[1].Should().Be(5);
         _world.Calls("SetSoundset").Single().Arguments[1].Should().Be(6);
@@ -314,7 +301,7 @@ public class DroidServiceWorldTests
     {
         _world.AddStat(DroidWorld.Controller, DroidStatSubType.Tier, 1);
 
-        _service.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
+        _service.Spawn.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
 
         _world.Calls("SetName").Single().Arguments[1].Should().Be("Droid");
     }
@@ -334,9 +321,9 @@ public class DroidServiceWorldTests
         ConfigureController();
         var saved = Saved();
         SaveLoadout(saved);
-        _service.SaveConstructedDroid(DroidWorld.Controller, saved);
+        _service.Droids.SaveConstructedDroid(DroidWorld.Controller, saved);
 
-        _service.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
+        _service.Spawn.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
 
         var droid = _world.Droid;
         var rifle = _world.InSlot(droid, InventorySlot.RightHand);
@@ -357,9 +344,9 @@ public class DroidServiceWorldTests
         saved.Inventory["bag"] = _world.Blob("bag", BaseItem.MiscSmall, container: true);
         saved.Inventory["DROID_RETURN_ITEM:abc"] = _world.Blob("ration", BaseItem.MiscSmall);
         saved.Inventory["unreadable"] = "not an item";
-        _service.SaveConstructedDroid(DroidWorld.Controller, saved);
+        _service.Droids.SaveConstructedDroid(DroidWorld.Controller, saved);
 
-        _service.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
+        _service.Spawn.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
 
         _world.Inventory(DroidWorld.Player).Select(_world.ResRefOf).Should().BeEquivalentTo("bag", "ration");
         _world.Inventory(_world.Droid).Should().BeEmpty();
@@ -374,9 +361,9 @@ public class DroidServiceWorldTests
         _world.MoveToFails = true;
         var saved = Saved();
         saved.Inventory["bag"] = _world.Blob("bag", BaseItem.MiscSmall, container: true);
-        _service.SaveConstructedDroid(DroidWorld.Controller, saved);
+        _service.Droids.SaveConstructedDroid(DroidWorld.Controller, saved);
 
-        _service.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
+        _service.Spawn.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
 
         Saved().Inventory.Keys.Should().ContainSingle().Which.Should().StartWith("DROID_RETURN_ITEM:");
         _world.Messages().Should().Contain("Make room in your inventory and summon your droid again to recover its returned items.");
@@ -389,11 +376,11 @@ public class DroidServiceWorldTests
         ConfigureController();
         var saved = Saved();
         var (rifle, medpac) = SaveLoadout(saved);
-        _service.SaveConstructedDroid(DroidWorld.Controller, saved);
+        _service.Droids.SaveConstructedDroid(DroidWorld.Controller, saved);
         _world.RefusedBlobs.Add(rifle);
         _world.RefusedBlobs.Add(medpac);
 
-        _service.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
+        _service.Spawn.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
 
         _world.Messages().Should().Contain("Some droid items could not be restored. They remain saved and will be retried on the next summon.");
         _world.InSlot(_world.Droid, InventorySlot.RightHand).Should().Be(Invalid);
@@ -404,7 +391,7 @@ public class DroidServiceWorldTests
 
         _world.RefusedBlobs.Clear();
         _world.Locals.ClearCalls();
-        _service.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
+        _service.Spawn.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
 
         _world.ResRefOf(_world.InSlot(_world.Droid, InventorySlot.RightHand)).Should().Be("oph_rifle");
         _world.Inventory(_world.Droid).Select(_world.ResRefOf).Should().Equal("medpac");
@@ -416,7 +403,7 @@ public class DroidServiceWorldTests
     private uint SpawnConfigured()
     {
         ConfigureController();
-        _service.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
+        _service.Spawn.SpawnDroid(DroidWorld.Player, DroidWorld.Controller);
         _world.Locals.ClearCalls();
         _world.GuiCalls.Calls.ToList();
         return _world.Droid;
@@ -430,7 +417,7 @@ public class DroidServiceWorldTests
         _world.OpenWindows = true;
         _world.Engine.SetReturn("GetExitingObject", DroidWorld.Player);
 
-        _service.OnPlayerExit();
+        _service.Despawn.OnPlayerExit();
 
         _world.CompanionCalls.Calls.Should().ContainSingle(call => call.Member == "Clear").Which.Arguments.Should().Equal(droid);
         _world.PossessorOf(bag).Should().Be(DroidWorld.Player, "a container the droid cannot keep goes back to the player");
@@ -451,7 +438,7 @@ public class DroidServiceWorldTests
         var droid = SpawnConfigured();
         Self(DroidWorld.Player);
 
-        _service.RemoveAssociate();
+        _service.Despawn.RemoveAssociate();
 
         _world.Calls("DestroyObject").Should().Contain(call => (uint)call.Arguments[0]! == droid);
         _world.RecastCalls.Calls.Should().ContainSingle();
@@ -462,7 +449,7 @@ public class DroidServiceWorldTests
     {
         Self(DroidWorld.Player);
 
-        _service.RemoveAssociate();
+        _service.Despawn.RemoveAssociate();
 
         _world.Calls("DestroyObject").Should().BeEmpty();
         _world.RecastCalls.Calls.Should().BeEmpty();
@@ -476,7 +463,7 @@ public class DroidServiceWorldTests
         _world.MoveToFails = true;
         Self(DroidWorld.Player);
 
-        _service.RemoveAssociate();
+        _service.Despawn.RemoveAssociate();
 
         Saved().Inventory.Keys.Should().ContainSingle().Which.Should().StartWith("DROID_RETURN_ITEM:");
     }
@@ -489,7 +476,7 @@ public class DroidServiceWorldTests
         var droid = SpawnConfigured();
         Self(droid);
 
-        _service.DroidOnDeath();
+        _service.Despawn.DroidOnDeath();
 
         _world.CompanionCalls.Calls.Should().ContainSingle(call => call.Member == "Clear");
         _world.Calls("ExecuteScript").Should().ContainSingle().Which.Arguments.Should().Equal("x2_hen_death", droid);
@@ -504,7 +491,7 @@ public class DroidServiceWorldTests
     {
         _world.Engine.SetReturn("GetModuleItemAcquiredBy", droid);
         _world.Engine.SetReturn("GetModuleItemAcquired", item);
-        _service.OnAcquireItem();
+        _service.Inventory.OnAcquireItem();
     }
 
     [Test]
@@ -595,11 +582,11 @@ public class DroidServiceWorldTests
         var droid = SpawnConfigured();
         var kept = _world.GiveItem(droid, "medpac", BaseItem.Potions);
         var lost = _world.Create("ration", BaseItem.MiscSmall);
-        _service.SaveItemSnapshot(droid);
+        _service.Inventory.SaveItemSnapshot(droid);
         _world.Engine.SetReturn("GetModuleItemLostBy", droid);
         _world.Engine.SetReturn("GetModuleItemLost", lost);
 
-        _service.OnLostItem();
+        _service.Inventory.OnLostItem();
 
         _world.Calls("SetDroppableFlag").Single().Arguments.Should().Equal(lost, true);
         Saved().Inventory.Should().HaveCount(1);
@@ -612,12 +599,12 @@ public class DroidServiceWorldTests
         var droid = SpawnConfigured();
         var generated = _world.Create("claw", BaseItem.CreatureItem);
         _world.Engine.SetReturn("GetModuleItemLostBy", _world.Create("goblin"));
-        _service.OnLostItem();
+        _service.Inventory.OnLostItem();
         _world.Calls("SetDroppableFlag").Should().BeEmpty();
 
         _world.Engine.SetReturn("GetModuleItemLostBy", droid);
         _world.Engine.SetReturn("GetModuleItemLost", generated);
-        _service.OnLostItem();
+        _service.Inventory.OnLostItem();
         _world.Calls("SetDroppableFlag").Should().BeEmpty();
     }
 
@@ -630,13 +617,13 @@ public class DroidServiceWorldTests
         Self(droid);
 
         _world.EventItem = helmet;
-        _service.OnEquipItem();
+        _service.Inventory.OnEquipItem();
         _world.EventItem = rifle;
-        _service.OnEquipItem();
+        _service.Inventory.OnEquipItem();
         _world.EventItem = helmet;
-        _service.OnUnequipItem();
+        _service.Inventory.OnUnequipItem();
         _world.EventItem = rifle;
-        _service.OnUnequipItem();
+        _service.Inventory.OnUnequipItem();
 
         _world.Calls("SetHiddenWhenEquipped").Select(call => (call.Arguments[0], call.Arguments[1]))
             .Should().Equal((helmet, true), (helmet, false));
@@ -650,8 +637,8 @@ public class DroidServiceWorldTests
         Self(other);
         _world.EventItem = helmet;
 
-        _service.OnEquipItem();
-        _service.OnUnequipItem();
+        _service.Inventory.OnEquipItem();
+        _service.Inventory.OnUnequipItem();
 
         _world.Calls("SetHiddenWhenEquipped").Should().BeEmpty();
     }
@@ -663,7 +650,7 @@ public class DroidServiceWorldTests
         _world.GiveItem(droid, "oph_rifle", BaseItem.Rifle, InventorySlot.RightHand);
         Self(droid);
 
-        _service.OnEquipmentChanged();
+        _service.Inventory.OnEquipmentChanged();
 
         Saved().EquippedItems.Keys.Should().Equal(InventorySlot.RightHand);
     }
@@ -673,10 +660,10 @@ public class DroidServiceWorldTests
     {
         var droid = SpawnConfigured();
         var rifle = _world.GiveItem(droid, "oph_rifle", BaseItem.Rifle, InventorySlot.RightHand);
-        _service.SaveItemSnapshot(droid);
+        _service.Inventory.SaveItemSnapshot(droid);
         var before = Saved().EquippedItems[InventorySlot.RightHand];
 
-        _service.UpdateEquippedItemSnapshot(droid, rifle);
+        _service.Droids.UpdateEquippedItemSnapshot(droid, rifle);
 
         Saved().EquippedItems[InventorySlot.RightHand].Should().NotBe(before, "the item was serialized again");
         Saved().EquippedItems[InventorySlot.RightHand].Should().StartWith("blob:oph_rifle:");
@@ -691,11 +678,11 @@ public class DroidServiceWorldTests
         var noController = _world.CreateDroid(linkController: false);
         var stray = _world.GiveItem(noController, "x", BaseItem.Rifle, InventorySlot.RightHand);
 
-        _service.UpdateEquippedItemSnapshot(droid, rifle);
-        _service.UpdateEquippedItemSnapshot(droid, carried);
-        _service.UpdateEquippedItemSnapshot(droid, Invalid);
-        _service.UpdateEquippedItemSnapshot(noController, stray);
-        _service.UpdateEquippedItemSnapshot(_world.Create("goblin"), rifle);
+        _service.Droids.UpdateEquippedItemSnapshot(droid, rifle);
+        _service.Droids.UpdateEquippedItemSnapshot(droid, carried);
+        _service.Droids.UpdateEquippedItemSnapshot(droid, Invalid);
+        _service.Droids.UpdateEquippedItemSnapshot(noController, stray);
+        _service.Droids.UpdateEquippedItemSnapshot(_world.Create("goblin"), rifle);
 
         Saved().EquippedItems.Should().BeEmpty();
     }
@@ -710,7 +697,7 @@ public class DroidServiceWorldTests
         saved.Inventory["DROID_RETURN_ITEM:r"] = "returned";
         saved.Inventory["DROID_RESTORE_ITEM:2:x"] = "restore";
         saved.Inventory["stale"] = "gone";
-        _service.SaveConstructedDroid(DroidWorld.Controller, saved);
+        _service.Droids.SaveConstructedDroid(DroidWorld.Controller, saved);
         var rifle = _world.GiveItem(droid, "oph_rifle", BaseItem.Rifle, InventorySlot.RightHand);
         var medpac = _world.GiveItem(droid, "medpac", BaseItem.Potions);
         _world.GiveItem(droid, "claw", BaseItem.CreatureSlashWeapon);
@@ -718,7 +705,7 @@ public class DroidServiceWorldTests
         _world.GiveItem(droid, "glove", BaseItem.CompanionPowerGlove, InventorySlot.LeftHand);
         _world.Engine.SetLocalString(medpac, "DROID_ITEM_ID", "keep-me");
 
-        _service.SaveItemSnapshot(droid);
+        _service.Inventory.SaveItemSnapshot(droid);
 
         var result = Saved();
         result.EquippedItems.Keys.Should().Equal(InventorySlot.RightHand);
@@ -736,7 +723,7 @@ public class DroidServiceWorldTests
         _world.Engine.SetLocalString(first, "DROID_ITEM_ID", "same");
         _world.Engine.SetLocalString(second, "DROID_ITEM_ID", "same");
 
-        _service.SaveItemSnapshot(droid);
+        _service.Inventory.SaveItemSnapshot(droid);
 
         Saved().Inventory.Keys.Should().HaveCount(2).And.Contain("same");
         _world.Locals.String(second, "DROID_ITEM_ID").Should().NotBe("same");
@@ -751,7 +738,7 @@ public class DroidServiceWorldTests
         _world.GiveItem(droid, "bullets", BaseItem.MiscSmall, InventorySlot.Bullets);
         _service.Flags = (true, false, true);
 
-        _service.SaveItemSnapshot(droid);
+        _service.Inventory.SaveItemSnapshot(droid);
 
         Saved().EquippedItems.Keys.Should().Equal(InventorySlot.Bullets);
         arrows.Should().NotBe(Invalid);
@@ -764,10 +751,10 @@ public class DroidServiceWorldTests
         _world.GiveItem(droid, "medpac", BaseItem.Potions);
         var noController = _world.CreateDroid(linkController: false);
 
-        _service.SaveItemSnapshot(_world.Create("goblin"));
-        _service.SaveItemSnapshot(noController);
+        _service.Inventory.SaveItemSnapshot(_world.Create("goblin"));
+        _service.Inventory.SaveItemSnapshot(noController);
         _world.Engine.SetLocalBool(droid, "DROID_IS_SPAWNING", true);
-        _service.SaveItemSnapshot(droid);
+        _service.Inventory.SaveItemSnapshot(droid);
 
         Saved().Inventory.Should().BeEmpty();
     }
@@ -780,7 +767,7 @@ public class DroidServiceWorldTests
         var droid = SpawnConfigured();
         Self(droid);
 
-        _service.EditDroidAppearance();
+        _service.Events.EditDroidAppearance();
 
         var parts = Saved().AppearanceParts;
         parts.Should().HaveCount(15).And.NotContainKey(CreaturePart.Neck);
@@ -794,7 +781,7 @@ public class DroidServiceWorldTests
         SpawnConfigured();
         Self(_world.Create("goblin"));
 
-        _service.EditDroidAppearance();
+        _service.Events.EditDroidAppearance();
 
         Saved().AppearanceParts.Should().BeEmpty();
     }
@@ -808,7 +795,7 @@ public class DroidServiceWorldTests
         droid.ActivePerks.Add(new DroidPerk(SWLOR.Game.Server.Domain.Foundation.PerkType.Invalid, 2));
         droid.ActivePerks.Add(new DroidPerk(SWLOR.Game.Server.Domain.Foundation.PerkType.Invalid, 3));
 
-        _service.SaveInstructions(DroidWorld.Controller, droid);
+        _service.Droids.SaveInstructions(DroidWorld.Controller, droid);
 
         _world.Calls("RemoveItemProperty").Should().ContainSingle();
         _world.Calls("AddItemProperty").Should().HaveCount(2);
@@ -823,7 +810,7 @@ public class DroidServiceWorldTests
     {
         Self(_world.Create("pc_droid"));
 
-        _service.DroidOnBlocked();
+        _service.Events.DroidOnBlocked();
 
         _world.Calls("ExecuteScript").Single().Arguments[0].Should().Be("x0_ch_hen_block");
     }
@@ -835,11 +822,11 @@ public class DroidServiceWorldTests
         Self(droid);
 
         _world.HandlesConversation = true;
-        _service.DroidOnConversation();
+        _service.Events.DroidOnConversation();
         _world.Calls("ExecuteScript").Should().BeEmpty();
 
         _world.HandlesConversation = false;
-        _service.DroidOnConversation();
+        _service.Events.DroidOnConversation();
         _world.Calls("ExecuteScript").Single().Arguments[0].Should().Be("x0_ch_hen_conv");
     }
 
@@ -853,14 +840,14 @@ public class DroidServiceWorldTests
         _world.Engine.SetReturn("GetLastAttacker", attacker);
         _world.Engine.SetReturn("GetLastSpellCaster", attacker);
 
-        _service.DroidOnDamaged();
-        _service.DroidOnPhysicalAttacked();
+        _service.Events.DroidOnDamaged();
+        _service.Events.DroidOnPhysicalAttacked();
         _world.Engine.SetReturn("GetLastSpellHarmful", false);
-        _service.DroidOnSpellCastAt();
+        _service.Events.DroidOnSpellCastAt();
         _world.Engine.SetReturn("GetLastSpellHarmful", true);
-        _service.DroidOnSpellCastAt();
-        _service.DroidOnEndCombatRound();
-        _service.DroidOnHeartbeat();
+        _service.Events.DroidOnSpellCastAt();
+        _service.Events.DroidOnEndCombatRound();
+        _service.Events.DroidOnHeartbeat();
 
         var calls = _world.CompanionCalls.Calls;
         calls.Where(call => call.Member == "RegisterDefensiveThreat").Select(call => call.Arguments[1])
@@ -880,18 +867,18 @@ public class DroidServiceWorldTests
         _world.Engine.SetReturn("GetInventoryDisturbItem", item);
 
         _world.Engine.SetReturn("GetInventoryDisturbType", DisturbType.Added);
-        _service.DroidOnDisturbed();
+        _service.Events.DroidOnDisturbed();
         Saved().Inventory.Should().HaveCount(1);
 
         _world.Locals.ClearCalls();
         _world.Engine.SetReturn("GetInventoryDisturbType", DisturbType.Removed);
-        _service.DroidOnDisturbed();
+        _service.Events.DroidOnDisturbed();
         _world.Calls("SetDroppableFlag").Single().Arguments.Should().Equal(item, true);
         _world.CompanionCalls.Calls.Should().NotContain(call => call.Member == "RegisterDefensiveThreat");
 
         _world.Engine.SetReturn("GetLastDisturbed", thief);
         _world.Engine.SetReturn("GetInventoryDisturbType", DisturbType.Stolen);
-        _service.DroidOnDisturbed();
+        _service.Events.DroidOnDisturbed();
         _world.CompanionCalls.Calls.Should().ContainSingle(call => call.Member == "RegisterDefensiveThreat")
             .Which.Arguments.Should().Equal(droid, thief);
     }
@@ -902,7 +889,7 @@ public class DroidServiceWorldTests
         var droid = _world.CreateDroid();
         Self(droid);
 
-        _service.DroidOnRested();
+        _service.Events.DroidOnRested();
         _world.RunDeferred();
 
         _world.Calls("ExecuteScript").Single().Arguments.Should().Equal("x0_ch_hen_rest", droid);
@@ -918,7 +905,7 @@ public class DroidServiceWorldTests
         var droid = _world.CreateDroid();
         Self(droid);
 
-        _service.DroidOnSpawn();
+        _service.Events.DroidOnSpawn();
         _world.RunDeferred();
 
         _world.Calls("SetIsDestroyable").Single().Arguments.Take(3).Should().Equal(true, false, false);
@@ -932,7 +919,7 @@ public class DroidServiceWorldTests
         var droid = _world.CreateDroid();
         Self(droid);
 
-        _service.DroidOnUserDefined();
+        _service.Events.DroidOnUserDefined();
 
         _world.Calls("ExecuteScript").Single().Arguments.Should().Equal("x0_ch_hen_usrdef", droid);
     }

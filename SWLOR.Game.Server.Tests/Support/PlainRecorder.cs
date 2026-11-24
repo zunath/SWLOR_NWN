@@ -12,14 +12,22 @@ namespace SWLOR.Game.Server.Tests.Support;
 
 internal sealed partial class PlainRecorder : CombatRecorderService
 {
+    private readonly CombatRecordSessionCore _core;
+
     public PlainRecorder(IDMPresenceService presence, IDBService db)
-        : base(presence, db, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatQueriesService>())
+        : this(new CombatRecordSessionCore(), presence, db)
     {
     }
 
-    public ulong CallFrame() => CurrentFrame();
-    public long CallMillis() => UnixTimeMilliseconds();
-    public DateTime CallUtcNow() => UtcNow();
-    public void CallWrite() => WriteLog(LogGroup.DM, "default seam");
+    private PlainRecorder(CombatRecordSessionCore core, IDMPresenceService presence, IDBService db)
+        : base(core, presence, db, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatQueriesService>())
+    {
+        _core = core;
+    }
+
+    public ulong CallFrame() => _core.CurrentFrame();
+    public long CallMillis() => _core.UnixTimeMilliseconds();
+    public DateTime CallUtcNow() => _core.UtcNow();
+    public void CallWrite() => _core.WriteLog(LogGroup.DM, "default seam");
     public string CallLogDirectory() => GetLogDirectory();
 }

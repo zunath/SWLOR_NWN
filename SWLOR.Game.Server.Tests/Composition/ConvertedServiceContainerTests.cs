@@ -122,6 +122,8 @@ public class ConvertedServiceContainerTests
             .Append("ICompanionLookup CompanionQuery")
             // The ability impact state store Combat owns: a store, not a service, reached by the content that reads an impact.
             .Append("IAbilityImpactState AbilityImpactState")
+            // The recording session Combat owns: the state and queue of a recording, not a service, reached by the native damage and heal hooks.
+            .Append("ICombatRecordSession CombatRecordSession")
             // The party roster reads Combat owns: an interface of the roster, reached by the ability target queries in Combat.
             .Append("IPartyRoster PartyRoster")
             // The weapon ability parts (Readmes/MaintainabilityRefactorWeaponAbilitySplit.md): content singletons the unconverted ability base and the status spread snapshot reach here until they are converted.
@@ -163,6 +165,8 @@ public class ConvertedServiceContainerTests
             .Concat(new[] { "ICombatLeash", "ICompanionTargetQuery" })
             // The status effect split: the resistance reads the status effects own, which Combat answers.
             .Concat(new[] { "IStatusResistance" })
+            // The recorder split: the state and queue of a recording, a store with no services.
+            .Concat(new[] { "ICombatRecordSession" })
             .ToArray();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);
@@ -189,12 +193,12 @@ public class ConvertedServiceContainerTests
     }
 
     [Test]
-    public void Combat_lists_its_twenty_two_parts_and_each_part_has_a_GameServices_property()
+    public void Combat_lists_its_twenty_four_parts_and_each_part_has_a_GameServices_property()
     {
         // The cases above would pass vacuously if the list lost its parts. The ability split added the impact
-        // geometry and the ability magnitude; the combat split added the damage roll, the defense memory, the rate modifiers, the repeated-target stacks, the damage taken effects and the damage reflection.
+        // geometry and the ability magnitude; the combat split added the damage roll, the defense memory, the rate modifiers, the repeated-target stacks, the damage taken effects, the damage reflection, and the ability activation cost and defense effects.
         var combat = ConvertedServiceFixtures.Load().Single(service => service.Name == "Combat");
-        combat.Parts.Should().HaveCount(22);
+        combat.Parts.Should().HaveCount(24);
         Rules(combat).Should().NotBeNull();
         combat.Parts.Should().OnlyContain(part => typeof(GameServices).GetProperty(part.Name.Substring(1, part.Name.Length - 1 - "Service".Length), BindingFlags.Public | BindingFlags.Static) != null);
     }

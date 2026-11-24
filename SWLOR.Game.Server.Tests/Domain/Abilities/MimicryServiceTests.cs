@@ -270,18 +270,18 @@ public class MimicryServiceTests
         _twoDa[("DESCRIPTION", (int)Fire1)] = "7";
         _twoDa[("ICON", (int)Trait1)] = "ife_trait";
 
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
 
-        _mimicry.TechniqueCount.Should().Be(2);
-        _mimicry.IsTechnique(Fire1).Should().BeTrue();
-        _mimicry.IsTechnique(Plain).Should().BeFalse();
-        _mimicry.GetTechniqueDetail(Fire1).Should().BeSameAs(_mimicry.Abilities[Fire1]);
-        _mimicry.GetTechniqueDetail(Plain).Should().BeNull();
-        _mimicry.GetTechniqueIcon(Fire1).Should().Be("ife_fire");
-        _mimicry.GetTechniqueIcon(Plain).Should().BeEmpty();
-        _mimicry.GetTechniqueDescription(Fire1).Should().Be("text-7");
-        _mimicry.GetTechniqueDescription(Trait1).Should().BeEmpty("a technique without a description string reference has no text");
-        _mimicry.GetTechniqueDescription(Plain).Should().BeEmpty();
+        _mimicry.Techniques.TechniqueCount.Should().Be(2);
+        _mimicry.Techniques.IsTechnique(Fire1).Should().BeTrue();
+        _mimicry.Techniques.IsTechnique(Plain).Should().BeFalse();
+        _mimicry.Techniques.GetTechniqueDetail(Fire1).Should().BeSameAs(_mimicry.Abilities[Fire1]);
+        _mimicry.Techniques.GetTechniqueDetail(Plain).Should().BeNull();
+        _mimicry.Techniques.GetTechniqueIcon(Fire1).Should().Be("ife_fire");
+        _mimicry.Techniques.GetTechniqueIcon(Plain).Should().BeEmpty();
+        _mimicry.Techniques.GetTechniqueDescription(Fire1).Should().Be("text-7");
+        _mimicry.Techniques.GetTechniqueDescription(Trait1).Should().BeEmpty("a technique without a description string reference has no text");
+        _mimicry.Techniques.GetTechniqueDescription(Plain).Should().BeEmpty();
     }
 
     [Test]
@@ -291,34 +291,34 @@ public class MimicryServiceTests
         _engine.SetReturn("GetModule", 1u);
         Technique(Fire1);
         _twoDa[("DESCRIPTION", (int)Fire1)] = "7";
-        _mimicry.CacheData();
-        _mimicry.CarryTechniqueDescriptions();
+        _mimicry.Techniques.CacheData();
+        _mimicry.Techniques.CarryTechniqueDescriptions();
 
         // The TLK overrides of the boot add hotbar headers, so the rerun reads changed text.
         _engine.SetReturnHandler("GetStringByStrRef", args => $"header + text-{(int)args[0]!}");
         Technique(Ice1);
         _twoDa[("DESCRIPTION", (int)Ice1)] = "8";
-        _mimicry.CacheData();
-        _mimicry.AdoptTechniqueDescriptions();
+        _mimicry.Techniques.CacheData();
+        _mimicry.Techniques.AdoptTechniqueDescriptions();
 
-        _mimicry.GetTechniqueDescription(Fire1).Should().Be("text-7");
-        _mimicry.GetTechniqueDescription(Ice1).Should().Be("header + text-8", "a technique new in the build keeps what it read");
-        _mimicry.AdoptTechniqueDescriptions();
-        _mimicry.GetTechniqueDescription(Fire1).Should().Be("text-7", "the carry is taken once and nothing else changes");
+        _mimicry.Techniques.GetTechniqueDescription(Fire1).Should().Be("text-7");
+        _mimicry.Techniques.GetTechniqueDescription(Ice1).Should().Be("header + text-8", "a technique new in the build keeps what it read");
+        _mimicry.Techniques.AdoptTechniqueDescriptions();
+        _mimicry.Techniques.GetTechniqueDescription(Fire1).Should().Be("text-7", "the carry is taken once and nothing else changes");
     }
 
     [Test]
     public void CacheData_RebuildsTheCacheAndSchedulesTheWitnessSweepOnce()
     {
         Technique(Fire1);
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
         _mimicry.Abilities.Clear();
         Technique(Ice1);
 
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
 
-        _mimicry.IsTechnique(Fire1).Should().BeFalse();
-        _mimicry.IsTechnique(Ice1).Should().BeTrue();
+        _mimicry.Techniques.IsTechnique(Fire1).Should().BeFalse();
+        _mimicry.Techniques.IsTechnique(Ice1).Should().BeTrue();
         _mimicry.Scheduled.Should().ContainSingle().Which.Interval.Should().Be(TimeSpan.FromMinutes(5));
     }
 
@@ -329,11 +329,11 @@ public class MimicryServiceTests
         _twoDa[("ICON", (int)Fire1)] = "ife_fire";
         _engine.SetReturnHandler("Get2DAString", _ => throw new InvalidOperationException("no engine"));
 
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
 
-        _mimicry.IsTechnique(Fire1).Should().BeTrue();
-        _mimicry.GetTechniqueIcon(Fire1).Should().BeEmpty();
-        _mimicry.GetTechniqueDescription(Fire1).Should().BeEmpty();
+        _mimicry.Techniques.IsTechnique(Fire1).Should().BeTrue();
+        _mimicry.Techniques.GetTechniqueIcon(Fire1).Should().BeEmpty();
+        _mimicry.Techniques.GetTechniqueDescription(Fire1).Should().BeEmpty();
     }
 
     // ---- Trait bonuses --------------------------------------------------------------------------------------------
@@ -341,7 +341,7 @@ public class MimicryServiceTests
     private void EquipForBonuses(params FeatType[] feats)
     {
         Record.EquippedTechniques = feats.ToList();
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
         _traitStats.CacheData();
     }
 
@@ -449,9 +449,9 @@ public class MimicryServiceTests
         Trait(Trait2, resistances: new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 4, [ResistanceType.Ice] = 6 });
         EquipForBonuses(Trait1, Trait2);
 
-        _mimicry.GetResistanceBonus(Player, ResistanceType.Fire).Should().Be(14);
+        _mimicry.Techniques.GetResistanceBonus(Player, ResistanceType.Fire).Should().Be(14);
         _mimicry.StatAdjustments[StatType.MimicryTraitPotencyPercent] = 50;
-        _mimicry.GetResistanceBonus(Player, ResistanceType.Fire).Should().Be(15 + 6);
+        _mimicry.Techniques.GetResistanceBonus(Player, ResistanceType.Fire).Should().Be(15 + 6);
     }
 
     [Test]
@@ -460,10 +460,10 @@ public class MimicryServiceTests
         Trait(Trait1, resistances: new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 10 });
         EquipForBonuses(Trait1);
 
-        _mimicry.GetResistanceBonus(Player, ResistanceType.Ice).Should().Be(0);
-        _mimicry.GetResistanceBonus(Npc, ResistanceType.Fire).Should().Be(0);
+        _mimicry.Techniques.GetResistanceBonus(Player, ResistanceType.Ice).Should().Be(0);
+        _mimicry.Techniques.GetResistanceBonus(Npc, ResistanceType.Fire).Should().Be(0);
         _engine.SetReturnHandler("GetObjectUUID", _ => "nobody");
-        _mimicry.GetResistanceBonus(Player, ResistanceType.Fire).Should().Be(0);
+        _mimicry.Techniques.GetResistanceBonus(Player, ResistanceType.Fire).Should().Be(0);
     }
 
     // ---- Witnessing and learning ----------------------------------------------------------------------------------
@@ -472,7 +472,7 @@ public class MimicryServiceTests
     {
         Technique(Fire1, rank: rankRequired, source: NpcFire1);
         _db.With(NewPlayer(rank, analyzer: 1));
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
         _mimicry.PerkLevels[PerkType.CombatAnalyzer] = 1;
         _nearby.Add(Player);
     }
@@ -482,8 +482,8 @@ public class MimicryServiceTests
     {
         WitnessSetup();
 
-        _mimicry.OnCreatureAbilityUsed(Npc, NpcFire1);
-        _mimicry.OnCreatureAbilityUsed(Npc, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, NpcFire1);
 
         Messages().Should().ContainSingle().Which.Should().Contain("records Technique 3001");
     }
@@ -493,7 +493,7 @@ public class MimicryServiceTests
     {
         WitnessSetup(rank: 2, rankRequired: 5);
 
-        _mimicry.OnCreatureAbilityUsed(Npc, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, NpcFire1);
 
         Messages().Should().BeEmpty();
         _warnings.Should().Equal($"MIMICRY_RANK_{(int)Fire1}");
@@ -504,11 +504,11 @@ public class MimicryServiceTests
     {
         WitnessSetup();
 
-        _mimicry.OnCreatureAbilityUsed(ObjectInvalid, NpcFire1);
-        _mimicry.OnCreatureAbilityUsed(Player, NpcFire1);
-        _mimicry.OnCreatureAbilityUsed(Npc, Plain);
+        _mimicry.Witness.OnCreatureAbilityUsed(ObjectInvalid, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Player, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, Plain);
         _invalid.Add(Npc);
-        _mimicry.OnCreatureAbilityUsed(Npc, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, NpcFire1);
 
         Messages().Should().BeEmpty();
     }
@@ -519,13 +519,13 @@ public class MimicryServiceTests
         WitnessSetup();
         _controlledByDm.Add(Player);
 
-        _mimicry.OnCreatureAbilityUsed(Npc, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, NpcFire1);
 
         Messages().Should().BeEmpty();
         _mimicry.Abilities.Remove(Fire1);
         _controlledByDm.Clear();
-        _mimicry.CacheData();
-        _mimicry.OnCreatureAbilityUsed(Npc, NpcFire1);
+        _mimicry.Techniques.CacheData();
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, NpcFire1);
         Messages().Should().BeEmpty();
     }
 
@@ -534,19 +534,19 @@ public class MimicryServiceTests
     {
         WitnessSetup();
         _engine.SetReturn("GetDistanceBetween", 20f);
-        _mimicry.OnCreatureAbilityUsed(Npc, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, NpcFire1);
         _engine.SetReturn("GetDistanceBetween", 5f);
 
         _playerArea = Area + 1;
-        _mimicry.OnCreatureAbilityUsed(Npc, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, NpcFire1);
         _playerArea = Area;
 
         _mimicry.PerkLevels[PerkType.CombatAnalyzer] = 0;
-        _mimicry.OnCreatureAbilityUsed(Npc, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, NpcFire1);
         _mimicry.PerkLevels[PerkType.CombatAnalyzer] = 1;
 
         Record.LearnedTechniques[Fire1] = DateTime.UtcNow;
-        _mimicry.OnCreatureAbilityUsed(Npc, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, NpcFire1);
 
         Messages().Should().BeEmpty();
     }
@@ -555,12 +555,12 @@ public class MimicryServiceTests
     public void OnCreatureDeath_LetsAWitnessLearnTheTechniqueAndPaysTheLearningXp()
     {
         WitnessSetup();
-        _mimicry.OnCreatureAbilityUsed(Npc, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, NpcFire1);
         _engine.ClearCalls();
         _self = Npc;
         SeedLearnRoll(succeeds: true, chance: 20 + 2 * 20);
 
-        _mimicry.OnCreatureDeath();
+        _mimicry.Witness.OnCreatureDeath();
 
         Record.LearnedTechniques.Should().ContainKey(Fire1);
         _db.Saved.Should().Contain(Record);
@@ -573,18 +573,18 @@ public class MimicryServiceTests
     public void OnCreatureDeath_WarnsWhenTheDecodeRollFailsAndForgetsTheWitnesses()
     {
         WitnessSetup();
-        _mimicry.OnCreatureAbilityUsed(Npc, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, NpcFire1);
         _self = Npc;
         SeedLearnRoll(succeeds: false, chance: 60);
 
-        _mimicry.OnCreatureDeath();
+        _mimicry.Witness.OnCreatureDeath();
 
         Record.LearnedTechniques.Should().BeEmpty();
         _warnings.Should().Contain($"MIMICRY_DECODE_{(int)Fire1}");
         _mimicry.XpGrants.Should().BeEmpty();
 
         _warnings.Clear();
-        _mimicry.OnCreatureDeath();
+        _mimicry.Witness.OnCreatureDeath();
         _warnings.Should().BeEmpty("the witness entry is cleared on death");
     }
 
@@ -592,12 +592,12 @@ public class MimicryServiceTests
     public void OnCreatureDeath_SkipsWitnessesWhoCannotLearnRightNow()
     {
         WitnessSetup();
-        _mimicry.OnCreatureAbilityUsed(Npc, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, NpcFire1);
         _self = Npc;
         SeedLearnRoll(succeeds: true, chance: 60);
 
         _playerDead = true;
-        _mimicry.OnCreatureDeath();
+        _mimicry.Witness.OnCreatureDeath();
         Record.LearnedTechniques.Should().BeEmpty();
     }
 
@@ -610,7 +610,7 @@ public class MimicryServiceTests
     public void TryLearn_IsSkippedWhen(string reason)
     {
         WitnessSetup();
-        _mimicry.OnCreatureAbilityUsed(Npc, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, NpcFire1);
         _self = Npc;
         SeedLearnRoll(succeeds: true, chance: 60);
         switch (reason)
@@ -624,7 +624,7 @@ public class MimicryServiceTests
         }
         var before = Record.LearnedTechniques.Count;
 
-        _mimicry.OnCreatureDeath();
+        _mimicry.Witness.OnCreatureDeath();
 
         Record.LearnedTechniques.Count.Should().Be(before);
         _mimicry.XpGrants.Should().BeEmpty();
@@ -636,7 +636,7 @@ public class MimicryServiceTests
         WitnessSetup();
         _self = Npc;
 
-        _mimicry.OnCreatureDeath();
+        _mimicry.Witness.OnCreatureDeath();
 
         _engine.CountOf("GetFirstPC").Should().Be(0);
     }
@@ -648,13 +648,13 @@ public class MimicryServiceTests
     public void CalculateLearnChance_ScalesWithRankPerkAndPerceptionAndIsCapped(
         int rank, int required, int patternRecognition, int perception, int expected)
     {
-        _mimicry.CalculateLearnChance(rank, required, patternRecognition, perception).Should().Be(expected);
+        _mimicry.Witness.CalculateLearnChance(rank, required, patternRecognition, perception).Should().Be(expected);
     }
 
     [Test]
     public void CalculateLearnChance_IgnoresPerceptionBelowTheBaseline()
     {
-        _mimicry.CalculateLearnChance(5, 5, 0, 3).Should().Be(20);
+        _mimicry.Witness.CalculateLearnChance(5, 5, 0, 3).Should().Be(20);
     }
 
     // ---- Observation XP -------------------------------------------------------------------------------------------
@@ -662,18 +662,18 @@ public class MimicryServiceTests
     [Test]
     public void CalculateAnalysisXP_IsFivePercentOfTheRankRelativeXpCappedAtThirty()
     {
-        _mimicry.CalculateAnalysisXP(20, 10).Should().Be(Math.Min(30, 1000 * 5 / 100));
-        _mimicry.CalculateAnalysisXP(15, 10).Should().Be(500 * 5 / 100);
-        _mimicry.CalculateAnalysisXP(20, 10).Should().BeLessThanOrEqualTo(30);
+        _mimicry.Witness.CalculateAnalysisXP(20, 10).Should().Be(Math.Min(30, 1000 * 5 / 100));
+        _mimicry.Witness.CalculateAnalysisXP(15, 10).Should().Be(500 * 5 / 100);
+        _mimicry.Witness.CalculateAnalysisXP(20, 10).Should().BeLessThanOrEqualTo(30);
         var maxRank = SkillType.Mimicry.GetAttribute<SkillType, SkillAttribute>().MaxRank;
-        _mimicry.CalculateAnalysisXP(60, maxRank).Should().Be(0, "mastered Mimicry earns no observation XP");
+        _mimicry.Witness.CalculateAnalysisXP(60, maxRank).Should().Be(0, "mastered Mimicry earns no observation XP");
     }
 
     private void Observe()
     {
         WitnessSetup();
         _mimicry.CombatPoints = true;
-        _mimicry.OnCreatureAbilityUsed(Npc, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, NpcFire1);
     }
 
     [Test]
@@ -683,10 +683,10 @@ public class MimicryServiceTests
         _self = Player;
         _mimicry.NpcLevel = 30;
 
-        _mimicry.CombatPointXPDistributed();
-        _mimicry.CombatPointXPDistributed();
+        _mimicry.Witness.CombatPointXPDistributed();
+        _mimicry.Witness.CombatPointXPDistributed();
 
-        var expected = _mimicry.CalculateAnalysisXP(30, 20);
+        var expected = _mimicry.Witness.CalculateAnalysisXP(30, 20);
         expected.Should().BeGreaterThan(0);
         _mimicry.XpGrants.Should().ContainSingle().Which.Should().Be((Player, SkillType.Mimicry, expected, true, Npc));
     }
@@ -698,7 +698,7 @@ public class MimicryServiceTests
         _self = Bystander;
         _db.With(new Player { Id = "uuid-1002" });
 
-        _mimicry.CombatPointXPDistributed();
+        _mimicry.Witness.CombatPointXPDistributed();
 
         _mimicry.XpGrants.Should().BeEmpty();
     }
@@ -709,13 +709,13 @@ public class MimicryServiceTests
         Observe();
         _self = Player;
         _mimicry.PerkLevels[PerkType.CombatAnalyzer] = 0;
-        _mimicry.CombatPointXPDistributed();
+        _mimicry.Witness.CombatPointXPDistributed();
         _mimicry.XpGrants.Should().BeEmpty();
 
         Observe();
         _mimicry.PerkLevels[PerkType.CombatAnalyzer] = 1;
         Record.Skills[SkillType.Mimicry].Rank = SkillType.Mimicry.GetAttribute<SkillType, SkillAttribute>().MaxRank;
-        _mimicry.CombatPointXPDistributed();
+        _mimicry.Witness.CombatPointXPDistributed();
         _mimicry.XpGrants.Should().BeEmpty();
     }
 
@@ -724,9 +724,9 @@ public class MimicryServiceTests
     {
         WitnessSetup();
         _mimicry.CombatPoints = false;
-        _mimicry.OnCreatureAbilityUsed(Npc, NpcFire1);
+        _mimicry.Witness.OnCreatureAbilityUsed(Npc, NpcFire1);
         _self = Player;
-        _mimicry.CombatPointXPDistributed();
+        _mimicry.Witness.CombatPointXPDistributed();
 
         _mimicry.XpGrants.Should().BeEmpty();
     }
@@ -737,9 +737,9 @@ public class MimicryServiceTests
         Observe();
         _exiting = Player;
 
-        _mimicry.ClearAnalysisOnPlayerExit();
+        _mimicry.Witness.ClearAnalysisOnPlayerExit();
         _self = Player;
-        _mimicry.CombatPointXPDistributed();
+        _mimicry.Witness.CombatPointXPDistributed();
 
         _mimicry.XpGrants.Should().BeEmpty();
     }
@@ -749,14 +749,14 @@ public class MimicryServiceTests
     {
         Observe();
         _exiting = Npc;
-        _mimicry.ClearAnalysisOnPlayerExit();
+        _mimicry.Witness.ClearAnalysisOnPlayerExit();
         _exiting = Player;
         _isDm = true;
-        _mimicry.ClearAnalysisOnPlayerExit();
+        _mimicry.Witness.ClearAnalysisOnPlayerExit();
         _isDm = false;
         _mimicry.NpcLevel = 30;
 
-        _mimicry.CombatPointXPDistributed();
+        _mimicry.Witness.CombatPointXPDistributed();
 
         _mimicry.XpGrants.Should().ContainSingle("the credit was never dropped");
     }
@@ -765,13 +765,13 @@ public class MimicryServiceTests
     public void TheScheduledSweep_ForgetsWitnessesAndObserversOfCreaturesThatAreGone()
     {
         Observe();
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
         _invalid.Add(Npc);
 
         _mimicry.Scheduled[0].Task();
         _invalid.Clear();
         _self = Npc;
-        _mimicry.OnCreatureDeath();
+        _mimicry.Witness.OnCreatureDeath();
 
         _engine.CountOf("GetFirstPC").Should().Be(1, "only the initial witness lookup ran; the death found no entry");
     }
@@ -780,13 +780,13 @@ public class MimicryServiceTests
     public void TheScheduledSweep_ForgetsObserversOfDeadCreaturesAndKeepsLivingOnes()
     {
         Observe();
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
         _engine.SetReturnHandler("GetIsDead", args => (uint)args[0]! == Npc);
         _mimicry.Scheduled[0].Task();
         _self = Player;
         _mimicry.NpcLevel = 30;
 
-        _mimicry.CombatPointXPDistributed();
+        _mimicry.Witness.CombatPointXPDistributed();
 
         _mimicry.XpGrants.Should().BeEmpty();
     }
@@ -799,13 +799,13 @@ public class MimicryServiceTests
         Technique(Fire1);
         Technique(Ice1);
         Record.LearnedTechniques[Fire1] = DateTime.UtcNow;
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
 
-        _mimicry.GrantAllTechniques(Player).Should().Be(1);
+        _mimicry.Witness.GrantAllTechniques(Player).Should().Be(1);
         Record.LearnedTechniques.Keys.Should().BeEquivalentTo(new[] { Fire1, Ice1 });
         _db.Saved.Should().ContainSingle();
 
-        _mimicry.GrantAllTechniques(Player).Should().Be(0);
+        _mimicry.Witness.GrantAllTechniques(Player).Should().Be(0);
         _db.Saved.Should().ContainSingle("nothing changed the second time");
     }
 
@@ -813,11 +813,11 @@ public class MimicryServiceTests
     public void GrantAllTechniques_RefusesCreaturesAndDms()
     {
         Technique(Fire1);
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
 
-        _mimicry.GrantAllTechniques(Npc).Should().Be(0);
+        _mimicry.Witness.GrantAllTechniques(Npc).Should().Be(0);
         _isDm = true;
-        _mimicry.GrantAllTechniques(Player).Should().Be(0);
+        _mimicry.Witness.GrantAllTechniques(Player).Should().Be(0);
     }
 
     [TestCase(0, 0, false, 0)]
@@ -828,15 +828,15 @@ public class MimicryServiceTests
     {
         var player = NewPlayer(rank: 10, analyzer, memory, overclocked);
 
-        _mimicry.GetMaxSlots(player).Should().Be(expected);
+        _mimicry.Loadout.GetMaxSlots(player).Should().Be(expected);
     }
 
     [Test]
     public void GetMaxSlots_IsZeroWithoutARecordOrForAnObjectThatIsNotAPlayer()
     {
-        _mimicry.GetMaxSlots((Player)null!).Should().Be(0);
-        _mimicry.GetMaxSlots(Npc).Should().Be(0);
-        _mimicry.GetMaxSlots(Player).Should().Be(2);
+        _mimicry.Loadout.GetMaxSlots((Player)null!).Should().Be(0);
+        _mimicry.Loadout.GetMaxSlots(Npc).Should().Be(0);
+        _mimicry.Loadout.GetMaxSlots(Player).Should().Be(2);
     }
 
     [Test]
@@ -871,12 +871,12 @@ public class MimicryServiceTests
     {
         Technique(Fire1, slots: 2);
         Technique(Ice1, slots: 3);
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
         Record.EquippedTechniques = new List<FeatType> { Fire1, Ice1, Plain };
 
-        _mimicry.GetUsedSlots(Player).Should().Be(5);
-        _mimicry.GetUsedSlots(Record).Should().Be(5);
-        _mimicry.GetUsedSlots((Player)null!).Should().Be(0);
+        _mimicry.Loadout.GetUsedSlots(Player).Should().Be(5);
+        _mimicry.Loadout.GetUsedSlots(Record).Should().Be(5);
+        _mimicry.Loadout.GetUsedSlots((Player)null!).Should().Be(0);
     }
 
     private void EquipSetup()
@@ -884,7 +884,7 @@ public class MimicryServiceTests
         Technique(Fire1, rank: 5, slots: 1);
         Technique(Ice1, rank: 5, slots: 2);
         Trait(Trait1);
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
         Record.LearnedTechniques[Fire1] = DateTime.UtcNow;
         Record.LearnedTechniques[Ice1] = DateTime.UtcNow;
         Record.LearnedTechniques[Trait1] = DateTime.UtcNow;
@@ -895,7 +895,7 @@ public class MimicryServiceTests
     {
         EquipSetup();
 
-        _mimicry.CanEquip(Player, Fire1, out var error).Should().BeTrue();
+        _mimicry.Loadout.CanEquip(Player, Fire1, out var error).Should().BeTrue();
         error.Should().BeEmpty();
     }
 
@@ -904,43 +904,43 @@ public class MimicryServiceTests
     {
         EquipSetup();
 
-        _mimicry.CanEquip(Npc, Record, Fire1, out var error).Should().BeFalse();
+        _mimicry.Loadout.CanEquip(Npc, Record, Fire1, out var error).Should().BeFalse();
         error.Should().Be("Only players may equip techniques.");
-        _mimicry.CanEquip(Player, null!, Fire1, out error).Should().BeFalse();
+        _mimicry.Loadout.CanEquip(Player, null!, Fire1, out error).Should().BeFalse();
         error.Should().Be("Only players may equip techniques.");
         _isDm = true;
-        _mimicry.CanEquip(Player, Record, Fire1, out error).Should().BeFalse();
+        _mimicry.Loadout.CanEquip(Player, Record, Fire1, out error).Should().BeFalse();
         error.Should().Be("Only players may equip techniques.");
         _isDm = false;
 
-        _mimicry.CanEquip(Player, Record, Plain, out error).Should().BeFalse();
+        _mimicry.Loadout.CanEquip(Player, Record, Plain, out error).Should().BeFalse();
         error.Should().Be("That is not a valid technique.");
 
         Record.LearnedTechniques.Remove(Fire1);
-        _mimicry.CanEquip(Player, Record, Fire1, out error).Should().BeFalse();
+        _mimicry.Loadout.CanEquip(Player, Record, Fire1, out error).Should().BeFalse();
         error.Should().Be("You have not learned that technique.");
         Record.LearnedTechniques[Fire1] = DateTime.UtcNow;
 
         Record.Skills.Remove(SkillType.Mimicry);
-        _mimicry.CanEquip(Player, Record, Fire1, out error).Should().BeFalse();
+        _mimicry.Loadout.CanEquip(Player, Record, Fire1, out error).Should().BeFalse();
         error.Should().Be("You need Mimicry skill rank 5 to equip that technique.");
         Record.Skills[SkillType.Mimicry] = new PlayerSkill { Rank = 20 };
 
         Record.EquippedTechniques.Add(Fire1);
-        _mimicry.CanEquip(Player, Record, Fire1, out error).Should().BeFalse();
+        _mimicry.Loadout.CanEquip(Player, Record, Fire1, out error).Should().BeFalse();
         error.Should().Be("That technique is already equipped.");
         Record.EquippedTechniques.Clear();
 
         _inCombat = true;
-        _mimicry.CanEquip(Player, Record, Fire1, out error).Should().BeFalse();
+        _mimicry.Loadout.CanEquip(Player, Record, Fire1, out error).Should().BeFalse();
         error.Should().Be("You cannot manage techniques while in combat.");
         _inCombat = false;
 
         Record.EquippedTechniques.Add(Ice1);
-        _mimicry.CanEquip(Player, Record, Fire1, out error).Should().BeFalse();
+        _mimicry.Loadout.CanEquip(Player, Record, Fire1, out error).Should().BeFalse();
         error.Should().Be("You do not have enough technique slots available.");
         Record.Perks[PerkType.AnalyzerMemory] = 1;
-        _mimicry.CanEquip(Player, Record, Fire1, out error).Should().BeTrue("the analyzer memory perk adds slots");
+        _mimicry.Loadout.CanEquip(Player, Record, Fire1, out error).Should().BeTrue("the analyzer memory perk adds slots");
     }
 
     [Test]
@@ -949,7 +949,7 @@ public class MimicryServiceTests
         EquipSetup();
         _bar[0] = new QuickBarSlot { ObjectType = QuickBarSlotType.Item };
 
-        _mimicry.EquipTechnique(Player, Fire1).Should().BeTrue();
+        _mimicry.Loadout.EquipTechnique(Player, Fire1).Should().BeTrue();
 
         Record.EquippedTechniques.Should().Equal(Fire1);
         _db.Saved.Should().Contain(Record);
@@ -967,7 +967,7 @@ public class MimicryServiceTests
         _knownFeats.Add(Fire1);
         _bar[3] = new QuickBarSlot { ObjectType = QuickBarSlotType.Feat, INTParam1 = (int)Fire1 };
 
-        _mimicry.EquipTechnique(Player, Fire1).Should().BeTrue();
+        _mimicry.Loadout.EquipTechnique(Player, Fire1).Should().BeTrue();
 
         _creature.CountOf("AddFeat").Should().Be(0);
         _playerPlugin.CountOf("SetQuickBarSlot").Should().Be(0);
@@ -980,17 +980,17 @@ public class MimicryServiceTests
         Record.Perks[PerkType.AnalyzerMemory] = 1;
         for (var slot = 0; slot < 12; slot++)
             _bar[slot] = new QuickBarSlot { ObjectType = QuickBarSlotType.Item };
-        _mimicry.EquipTechnique(Player, Fire1).Should().BeTrue();
+        _mimicry.Loadout.EquipTechnique(Player, Fire1).Should().BeTrue();
         _playerPlugin.CountOf("SetQuickBarSlot").Should().Be(0);
 
         _bar.Clear();
         _mimicry.Abilities[Ice1].ImpactAction = null;
-        _mimicry.EquipTechnique(Player, Ice1).Should().BeTrue();
+        _mimicry.Loadout.EquipTechnique(Player, Ice1).Should().BeTrue();
         _playerPlugin.CountOf("SetQuickBarSlot").Should().Be(0);
 
         _mimicry.Registered.Remove(Ice1);
         Record.EquippedTechniques.Remove(Ice1);
-        _mimicry.EquipTechnique(Player, Ice1).Should().BeTrue();
+        _mimicry.Loadout.EquipTechnique(Player, Ice1).Should().BeTrue();
         _playerPlugin.CountOf("SetQuickBarSlot").Should().Be(0);
     }
 
@@ -1000,7 +1000,7 @@ public class MimicryServiceTests
         EquipSetup();
         _inCombat = true;
 
-        _mimicry.EquipTechnique(Player, Fire1).Should().BeFalse();
+        _mimicry.Loadout.EquipTechnique(Player, Fire1).Should().BeFalse();
 
         Messages().Should().ContainSingle().Which.Should().Contain("You cannot manage techniques while in combat.");
         Record.EquippedTechniques.Should().BeEmpty();
@@ -1013,7 +1013,7 @@ public class MimicryServiceTests
         _knownFeats.Add(Trait1);
         _bar[2] = new QuickBarSlot { ObjectType = QuickBarSlotType.Feat, INTParam1 = (int)Trait1 };
 
-        _mimicry.EquipTechnique(Player, Trait1).Should().BeTrue();
+        _mimicry.Loadout.EquipTechnique(Player, Trait1).Should().BeTrue();
 
         _creature.CountOf("AddFeat").Should().Be(0);
         _quickCastCalls.Should().Contain($"RemoveFeat:{Trait1}", "a stale feat is stripped");
@@ -1031,7 +1031,7 @@ public class MimicryServiceTests
         Record.EquippedTechniques.Add(Fire1);
         _bar[4] = new QuickBarSlot { ObjectType = QuickBarSlotType.Feat, INTParam1 = (int)Fire1 };
 
-        _mimicry.UnequipTechnique(Player, Fire1).Should().BeTrue();
+        _mimicry.Loadout.UnequipTechnique(Player, Fire1).Should().BeTrue();
 
         Record.EquippedTechniques.Should().BeEmpty();
         _mimicry.RemovedEffects.Should().Equal((Player, typeof(string), false));
@@ -1046,11 +1046,11 @@ public class MimicryServiceTests
     {
         EquipSetup();
 
-        _mimicry.UnequipTechnique(Npc, Fire1).Should().BeFalse();
-        _mimicry.UnequipTechnique(Player, Fire1).Should().BeFalse("it is not equipped");
+        _mimicry.Loadout.UnequipTechnique(Npc, Fire1).Should().BeFalse();
+        _mimicry.Loadout.UnequipTechnique(Player, Fire1).Should().BeFalse("it is not equipped");
         Record.EquippedTechniques.Add(Fire1);
         _inCombat = true;
-        _mimicry.UnequipTechnique(Player, Fire1).Should().BeFalse();
+        _mimicry.Loadout.UnequipTechnique(Player, Fire1).Should().BeFalse();
 
         Messages().Should().ContainSingle().Which.Should().Contain("cannot manage techniques while in combat");
         Record.EquippedTechniques.Should().Equal(Fire1);
@@ -1062,7 +1062,7 @@ public class MimicryServiceTests
         EquipSetup();
         Record.EquippedTechniques.AddRange(new[] { Fire1, Ice1 });
 
-        _mimicry.UnequipAllTechniques(Player);
+        _mimicry.Loadout.UnequipAllTechniques(Player);
 
         Record.EquippedTechniques.Should().BeEmpty();
         _quickCastCalls.Where(c => c.StartsWith("RemoveFeat")).Should().HaveCount(2);
@@ -1074,8 +1074,8 @@ public class MimicryServiceTests
     {
         EquipSetup();
 
-        _mimicry.UnequipAllTechniques(Npc);
-        _mimicry.UnequipAllTechniques(Player);
+        _mimicry.Loadout.UnequipAllTechniques(Npc);
+        _mimicry.Loadout.UnequipAllTechniques(Player);
 
         _db.Saved.Should().BeEmpty();
         _techniqueChanges.Should().Be(0);
@@ -1090,11 +1090,11 @@ public class MimicryServiceTests
         Technique(Fire2, rank: 30, slots: 1);
         Technique(Ice1, rank: 0, slots: 2);
         Technique((FeatType)3010, rank: 0, slots: 2);
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
         Record.Perks[PerkType.AnalyzerMemory] = 1;
         Record.EquippedTechniques = new List<FeatType> { Fire1, Ice1, Fire2, (FeatType)3010 };
 
-        _mimicry.EnforceSlotBudget(Player);
+        _mimicry.Loadout.EnforceSlotBudget(Player);
 
         Record.EquippedTechniques.Should().Equal(Fire1, Ice1).And.HaveCount(2, "Fire2 is above the rank and the newest is over budget");
         _db.Saved.Should().ContainSingle();
@@ -1106,10 +1106,10 @@ public class MimicryServiceTests
     public void EnforceSlotBudget_ChangesNothingWhenTheLoadoutIsValid()
     {
         Technique(Fire1, slots: 1);
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
         Record.EquippedTechniques = new List<FeatType> { Fire1 };
 
-        _mimicry.EnforceSlotBudget(Player);
+        _mimicry.Loadout.EnforceSlotBudget(Player);
 
         _db.Saved.Should().BeEmpty();
         _techniqueChanges.Should().Be(0);
@@ -1118,9 +1118,9 @@ public class MimicryServiceTests
     [Test]
     public void EnforceSlotBudget_IgnoresCreaturesAndMissingRecords()
     {
-        _mimicry.EnforceSlotBudget(Npc);
-        _mimicry.EnforceSlotBudget(Player, null!);
-        _mimicry.EnforceSlotBudget(Npc, Record);
+        _mimicry.Loadout.EnforceSlotBudget(Npc);
+        _mimicry.Loadout.EnforceSlotBudget(Player, null!);
+        _mimicry.Loadout.EnforceSlotBudget(Npc, Record);
 
         _db.Saved.Should().BeEmpty();
     }
@@ -1129,11 +1129,11 @@ public class MimicryServiceTests
     public void EnforceSlotBudget_TreatsAMissingSkillAsRankZero()
     {
         Technique(Fire1, rank: 3);
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
         Record.Skills.Remove(SkillType.Mimicry);
         Record.EquippedTechniques = new List<FeatType> { Fire1 };
 
-        _mimicry.EnforceSlotBudget(Player, Record);
+        _mimicry.Loadout.EnforceSlotBudget(Player, Record);
 
         Record.EquippedTechniques.Should().BeEmpty();
     }
@@ -1142,14 +1142,14 @@ public class MimicryServiceTests
     public void OnMimicrySkillDecay_EnforcesTheBudgetOnlyForTheMimicrySkill()
     {
         Technique(Fire1, rank: 30);
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
         Record.EquippedTechniques = new List<FeatType> { Fire1 };
         _events.SetReturnHandler("GetEventData", _ => ((int)SkillType.Armor).ToString());
-        _mimicry.OnMimicrySkillDecay();
+        _mimicry.Loadout.OnMimicrySkillDecay();
         Record.EquippedTechniques.Should().Equal(Fire1);
 
         _events.SetReturnHandler("GetEventData", _ => ((int)SkillType.Mimicry).ToString());
-        _mimicry.OnMimicrySkillDecay();
+        _mimicry.Loadout.OnMimicrySkillDecay();
         Record.EquippedTechniques.Should().BeEmpty();
     }
 
@@ -1158,11 +1158,11 @@ public class MimicryServiceTests
     {
         Technique(Fire1);
         Trait(Trait1);
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
         _mimicry.PerkLevels[PerkType.CombatAnalyzer] = 1;
         Record.EquippedTechniques = new List<FeatType> { Fire1, Trait1 };
 
-        _mimicry.OnPlayerLogin();
+        _mimicry.Loadout.OnPlayerLogin();
         _creature.CountOf("AddFeat").Should().Be(0, "restoration waits for the delayed command");
         ((Action)_engine.CallsTo("DelayCommand").Single().Arguments[1]!)();
 
@@ -1174,10 +1174,10 @@ public class MimicryServiceTests
     public void OnPlayerLogin_IgnoresDmsAndCreatures()
     {
         _entering = Npc;
-        _mimicry.OnPlayerLogin();
+        _mimicry.Loadout.OnPlayerLogin();
         _entering = Player;
         _isDm = true;
-        _mimicry.OnPlayerLogin();
+        _mimicry.Loadout.OnPlayerLogin();
 
         _engine.CountOf("DelayCommand").Should().Be(0);
     }
@@ -1188,10 +1188,10 @@ public class MimicryServiceTests
     public void TheDelayedRestore_DoesNothingWhen(string reason)
     {
         Technique(Fire1);
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
         _mimicry.PerkLevels[PerkType.CombatAnalyzer] = reason == "noanalyzer" ? 0 : 1;
         Record.EquippedTechniques = new List<FeatType> { Fire1 };
-        _mimicry.OnPlayerLogin();
+        _mimicry.Loadout.OnPlayerLogin();
         if (reason == "invalid")
             _invalid.Add(Player);
         if (reason == "norecord")
@@ -1210,31 +1210,31 @@ public class MimicryServiceTests
         Technique(Fire1, rank: 5, slots: 1);
         Technique(Ice1, rank: 40, slots: 1);
         Technique(Fire2, rank: 0, slots: 3);
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
         foreach (var feat in new[] { Fire1, Ice1, Fire2 })
             Record.LearnedTechniques[feat] = DateTime.UtcNow;
 
-        _mimicry.ValidateLoadout(Record, new[] { Fire1 }, out var error).Should().BeTrue();
+        _mimicry.Loadout.ValidateLoadout(Record, new[] { Fire1 }, out var error).Should().BeTrue();
         error.Should().BeEmpty();
 
-        _mimicry.ValidateLoadout(Record, new[] { Fire1, Fire1 }, out error).Should().BeFalse();
+        _mimicry.Loadout.ValidateLoadout(Record, new[] { Fire1, Fire1 }, out error).Should().BeFalse();
         error.Should().Contain("duplicate");
-        _mimicry.ValidateLoadout(Record, new[] { Plain }, out error).Should().BeFalse();
+        _mimicry.Loadout.ValidateLoadout(Record, new[] { Plain }, out error).Should().BeFalse();
         error.Should().Contain("unavailable technique");
 
         Record.LearnedTechniques.Remove(Fire1);
-        _mimicry.ValidateLoadout(Record, new[] { Fire1 }, out error).Should().BeFalse();
+        _mimicry.Loadout.ValidateLoadout(Record, new[] { Fire1 }, out error).Should().BeFalse();
         error.Should().Be("You have not learned Technique 3001.");
         Record.LearnedTechniques[Fire1] = DateTime.UtcNow;
 
-        _mimicry.ValidateLoadout(Record, new[] { Ice1 }, out error).Should().BeFalse();
+        _mimicry.Loadout.ValidateLoadout(Record, new[] { Ice1 }, out error).Should().BeFalse();
         error.Should().Be("Technique 3003 requires Mimicry rank 40.");
 
-        _mimicry.ValidateLoadout(Record, new[] { Fire1, Fire2 }, out error).Should().BeFalse();
+        _mimicry.Loadout.ValidateLoadout(Record, new[] { Fire1, Fire2 }, out error).Should().BeFalse();
         error.Should().Be("This build needs 4 technique slots; you have 2.");
 
         Record.Skills.Remove(SkillType.Mimicry);
-        _mimicry.ValidateLoadout(Record, new[] { Fire1 }, out error).Should().BeFalse("a missing skill is rank zero");
+        _mimicry.Loadout.ValidateLoadout(Record, new[] { Fire1 }, out error).Should().BeFalse("a missing skill is rank zero");
     }
 
     [Test]
@@ -1247,7 +1247,7 @@ public class MimicryServiceTests
         _bar[8] = new QuickBarSlot { ObjectType = QuickBarSlotType.Feat, INTParam1 = (int)Plain };
         _bar[9] = new QuickBarSlot { ObjectType = QuickBarSlotType.Item, INTParam1 = (int)Fire1 };
 
-        _mimicry.CaptureLoadoutHotbar(Player, loadout);
+        _mimicry.Loadout.CaptureLoadoutHotbar(Player, loadout);
 
         loadout.HotbarSlots.Should().BeEquivalentTo(new Dictionary<int, FeatType> { [2] = Fire1, [7] = Ice1 });
     }
@@ -1257,7 +1257,7 @@ public class MimicryServiceTests
         Technique(Fire1, slots: 1);
         Technique(Ice1, slots: 1);
         Trait(Trait1);
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
         foreach (var feat in new[] { Fire1, Ice1, Trait1 })
             Record.LearnedTechniques[feat] = DateTime.UtcNow;
         var outgoing = new MimicryLoadout { Name = "Old", Techniques = new List<FeatType> { Fire1 } };
@@ -1275,7 +1275,7 @@ public class MimicryServiceTests
         Record.Perks[PerkType.AnalyzerMemory] = 1;
         _bar[0] = new QuickBarSlot { ObjectType = QuickBarSlotType.Feat, INTParam1 = (int)Fire1 };
 
-        _mimicry.ApplyLoadout(Player, incoming.Id, incoming.Techniques, out var error).Should().BeTrue();
+        _mimicry.Loadout.ApplyLoadout(Player, incoming.Id, incoming.Techniques, out var error).Should().BeTrue();
 
         error.Should().BeEmpty();
         Record.EquippedTechniques.Should().Equal(Ice1, Trait1);
@@ -1299,7 +1299,7 @@ public class MimicryServiceTests
         _bar[6] = new QuickBarSlot { ObjectType = QuickBarSlotType.Item };
         _bar[7] = new QuickBarSlot { ObjectType = QuickBarSlotType.Feat, INTParam1 = (int)Fire1 };
 
-        _mimicry.ApplyLoadout(Player, incoming.Id, incoming.Techniques, out _).Should().BeTrue();
+        _mimicry.Loadout.ApplyLoadout(Player, incoming.Id, incoming.Techniques, out _).Should().BeTrue();
 
         var written = _playerPlugin.CallsTo("SetQuickBarSlot").Select(c => (int)c.Arguments[1]!).ToList();
         written.Should().Contain(5, "an empty cell takes the saved technique");
@@ -1313,18 +1313,18 @@ public class MimicryServiceTests
     {
         SetUpBuilds(out var incoming);
 
-        _mimicry.ApplyLoadout(Npc, incoming.Id, incoming.Techniques, out var error).Should().BeFalse();
+        _mimicry.Loadout.ApplyLoadout(Npc, incoming.Id, incoming.Techniques, out var error).Should().BeFalse();
         error.Should().Be("Only players may apply technique builds.");
         _isDm = true;
-        _mimicry.ApplyLoadout(Player, incoming.Id, incoming.Techniques, out error).Should().BeFalse();
+        _mimicry.Loadout.ApplyLoadout(Player, incoming.Id, incoming.Techniques, out error).Should().BeFalse();
         _isDm = false;
         _inCombat = true;
-        _mimicry.ApplyLoadout(Player, incoming.Id, incoming.Techniques, out error).Should().BeFalse();
+        _mimicry.Loadout.ApplyLoadout(Player, incoming.Id, incoming.Techniques, out error).Should().BeFalse();
         error.Should().Be("You cannot apply a technique build while in combat.");
         _inCombat = false;
-        _mimicry.ApplyLoadout(Player, "missing", incoming.Techniques, out error).Should().BeFalse();
+        _mimicry.Loadout.ApplyLoadout(Player, "missing", incoming.Techniques, out error).Should().BeFalse();
         error.Should().Be("That loadout no longer exists.");
-        _mimicry.ApplyLoadout(Player, incoming.Id, new[] { Plain }, out error).Should().BeFalse();
+        _mimicry.Loadout.ApplyLoadout(Player, incoming.Id, new[] { Plain }, out error).Should().BeFalse();
         error.Should().Contain("unavailable technique");
 
         Record.EquippedTechniques.Should().Equal(Fire1);
@@ -1338,17 +1338,17 @@ public class MimicryServiceTests
     {
         Technique(Fire1);
         Technique(Ice1);
-        _mimicry.CacheData();
+        _mimicry.Techniques.CacheData();
         Record.LearnedTechniques[Fire1] = DateTime.UtcNow;
         Record.LearnedTechniques[Plain] = DateTime.UtcNow;
         Record.EquippedTechniques = new List<FeatType> { Ice1, Plain };
 
-        _mimicry.GetLearnedTechniques(Player).Should().ContainSingle().Which.Feat.Should().Be(Fire1);
-        _mimicry.GetLearnedTechniques(Record).Should().ContainSingle().Which.Detail.Should().BeSameAs(_mimicry.Abilities[Fire1]);
-        _mimicry.GetLearnedTechniques((Player)null!).Should().BeEmpty();
-        _mimicry.GetEquippedTechniques(Player).Should().ContainSingle().Which.Feat.Should().Be(Ice1);
-        _mimicry.GetEquippedTechniques(Record).Should().ContainSingle();
-        _mimicry.GetEquippedTechniques((Player)null!).Should().BeEmpty();
+        _mimicry.Loadout.GetLearnedTechniques(Player).Should().ContainSingle().Which.Feat.Should().Be(Fire1);
+        _mimicry.Loadout.GetLearnedTechniques(Record).Should().ContainSingle().Which.Detail.Should().BeSameAs(_mimicry.Abilities[Fire1]);
+        _mimicry.Loadout.GetLearnedTechniques((Player)null!).Should().BeEmpty();
+        _mimicry.Loadout.GetEquippedTechniques(Player).Should().ContainSingle().Which.Feat.Should().Be(Ice1);
+        _mimicry.Loadout.GetEquippedTechniques(Record).Should().ContainSingle();
+        _mimicry.Loadout.GetEquippedTechniques((Player)null!).Should().BeEmpty();
     }
 
     [Test]
@@ -1356,65 +1356,12 @@ public class MimicryServiceTests
     {
         Record.EquippedTechniques = new List<FeatType> { Fire1 };
 
-        _mimicry.IsTechniqueEquipped(Player, Fire1).Should().BeTrue();
-        _mimicry.IsTechniqueEquipped(Player, Ice1).Should().BeFalse();
-        _mimicry.IsTechniqueEquipped(Record, Fire1).Should().BeTrue();
-        _mimicry.IsTechniqueEquipped((Player)null!, Fire1).Should().BeFalse();
-        _mimicry.IsTechniqueEquipped(Npc, Fire1).Should().BeFalse();
+        _mimicry.Loadout.IsTechniqueEquipped(Player, Fire1).Should().BeTrue();
+        _mimicry.Loadout.IsTechniqueEquipped(Player, Ice1).Should().BeFalse();
+        _mimicry.Loadout.IsTechniqueEquipped(Record, Fire1).Should().BeTrue();
+        _mimicry.Loadout.IsTechniqueEquipped((Player)null!, Fire1).Should().BeFalse();
+        _mimicry.Loadout.IsTechniqueEquipped(Npc, Fire1).Should().BeFalse();
         _isDm = true;
-        _mimicry.IsTechniqueEquipped(Player, Fire1).Should().BeFalse();
-    }
-
-    private sealed class TestMimicry : MimicryService
-    {
-        public TestMimicry(IDBService db, IQuickCastService quickCast, IDMPresenceService presence, IPlayerFeedbackService feedback, IGuiService gui)
-            : base(db, quickCast, presence, feedback, gui, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.LazyFor<IStatService>(),
-                FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatPointService>())
-        {
-        }
-
-        public Dictionary<FeatType, AbilityDetail> Abilities { get; } = new();
-        public HashSet<FeatType> Registered { get; } = new();
-        public Dictionary<PerkType, int> PerkLevels { get; } = new();
-        public Dictionary<StatType, int> StatAdjustments { get; } = new();
-        public int NpcLevel { get; set; } = 30;
-        public bool CombatPoints { get; set; } = true;
-        public List<(uint Player, SkillType Skill, int Xp, bool IgnoreBonuses, uint Source)> XpGrants { get; } = new();
-        public List<(uint Creature, Type Type, bool Message)> RemovedEffects { get; } = new();
-        public List<(uint Source, Type Type, bool Message, AbilityDetail Ability)> RemovedSourceEffects { get; } = new();
-        public List<(Action Task, TimeSpan Interval)> Scheduled { get; } = new();
-
-        protected override IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => Abilities;
-
-        protected override bool IsFeatRegistered(FeatType feat) => Registered.Contains(feat);
-
-        protected override AbilityDetail GetAbilityDetail(FeatType feat) => Abilities[feat];
-
-        protected override int GetPerkLevel(uint creature, PerkType perkType) => PerkLevels.GetValueOrDefault(perkType);
-
-        protected override int GetStatAdjustment(uint creature, StatType stat) => StatAdjustments.GetValueOrDefault(stat);
-
-        protected override int GetNpcLevel(uint npc) => NpcLevel;
-
-        protected override int GiveSkillXP(uint player, SkillType skill, int xp, bool ignoreBonuses = false,
-            bool applyHenchmanPenalty = true, uint xpMessageSource = 0x7F000000)
-        {
-            XpGrants.Add((player, skill, xp, ignoreBonuses, xpMessageSource));
-            return xp;
-        }
-
-        protected override int GetDeltaXP(int delta) => delta * 100;
-
-        protected override void RemoveStatusEffect(uint creature, Type statusEffectType, bool sendsWornOffMessage) =>
-            RemovedEffects.Add((creature, statusEffectType, sendsWornOffMessage));
-
-        protected override void RemoveStatusEffectsFromAllTargetsBySource(uint source, Type statusEffectType,
-            bool sendsWornOffMessage, AbilityDetail originatingAbility) =>
-            RemovedSourceEffects.Add((source, statusEffectType, sendsWornOffMessage, originatingAbility));
-
-        protected override bool HasCombatPoints(uint player, uint creature) => CombatPoints;
-
-
-        protected override void ScheduleRepeating(Action task, TimeSpan interval) => Scheduled.Add((task, interval));
+        _mimicry.Loadout.IsTechniqueEquipped(Player, Fire1).Should().BeFalse();
     }
 }

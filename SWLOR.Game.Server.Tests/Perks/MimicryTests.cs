@@ -622,7 +622,7 @@ public class MimicryTests
         var root = FindRepositoryRoot();
         var statSource = StatSource.Read();
         var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "ResistanceService.cs"));
-        var mimicrySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "MimicryService.cs"));
+        var mimicrySource = MimicryBeastDroidSource.Read(MimicryBeastDroidSource.Mimicry);
 
         statSource.Should().Contain("_mimicryTraitStats.GetStatBonus(creature, stat, this)",
             "equipped trait stats reach the player only through the stat pipeline");
@@ -1108,16 +1108,7 @@ public class MimicryTests
                 "ongoing benefits must still occupy their technique slots, including benefits granted to allies");
         }
 
-        var root = FindRepositoryRoot();
-        var mimicrySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "MimicryService.cs"));
-        var revokeStart = mimicrySource.IndexOf("private void RevokeTechniqueFeat", StringComparison.Ordinal);
-        var revokeEnd = mimicrySource.IndexOf("private bool IsFeatOnHotBar", revokeStart, StringComparison.Ordinal);
-        var revokeBody = mimicrySource[revokeStart..revokeEnd];
+        var revokeBody = MimicryBeastDroidSource.Member(MimicryBeastDroidSource.Mimicry, "RevokeTechniqueFeat");
 
         revokeBody.Should().Contain("detail.StatusEffectTypesRemovedOnPerkRefund");
         revokeBody.Should().Contain("RemoveStatusEffect(player, statusEffectType, false);");

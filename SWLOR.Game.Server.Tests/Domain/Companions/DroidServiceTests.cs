@@ -42,7 +42,7 @@ public class DroidServiceTests
     private List<(ItemPropertyType Type, int SubType, int Value)> _properties = null!;
     private int _cursor;
     private ScriptedProxy _gui = null!;
-    private DroidService _service = null!;
+    private TestDroid _service = null!;
 
     [SetUp]
     public void SetUp()
@@ -65,21 +65,7 @@ public class DroidServiceTests
         _scope = NWScriptRuntime.Override(_engine);
 
         var gui = ScriptedProxy.Create<IGuiService>(out _gui);
-        _service = new DroidService(
-            FacadeForwarder.For<IAIService>(),
-            FacadeForwarder.For<ICombatRecorderService>(),
-            FacadeForwarder.For<ICompanionControlService>(),
-            FacadeForwarder.For<IDroidEquipmentDiagnosticsService>(),
-            gui,
-            FacadeForwarder.For<IItemService>(),
-            FacadeForwarder.For<IPerkService>(),
-            FacadeForwarder.For<IPowerGloveEquipmentService>(),
-            FacadeForwarder.For<IRaceService>(),
-            FacadeForwarder.For<IRecastService>(),
-            FacadeForwarder.For<IResistanceService>(),
-            FacadeForwarder.For<ICreatureStatService>(),
-            FacadeForwarder.For<IStatusEffectApplicationService>(),
-            FacadeForwarder.For<ITwinPistolEquipmentService>());
+        _service = new TestDroid(gui);
     }
 
     [TearDown]
@@ -92,8 +78,8 @@ public class DroidServiceTests
     {
         _resRefs[Creature] = "nw_goblin";
 
-        _service.IsDroid(Droid).Should().BeTrue();
-        _service.IsDroid(Creature).Should().BeFalse();
+        _service.Droids.IsDroid(Droid).Should().BeTrue();
+        _service.Droids.IsDroid(Creature).Should().BeFalse();
     }
 
     [TestCase(RacialType.Droid, false, true)]
@@ -107,7 +93,7 @@ public class DroidServiceTests
         _engine.SetReturn("GetRacialType", racialType);
         _resRefs[Creature] = "nw_creature";
 
-        _service.IsBloodlessMachine(Creature).Should().Be(expected);
+        _service.Droids.IsBloodlessMachine(Creature).Should().Be(expected);
     }
 
     [Test]
@@ -116,32 +102,32 @@ public class DroidServiceTests
         _engine.SetReturn("GetIsPC", false);
         _engine.SetReturn("GetRacialType", RacialType.Droid);
 
-        _service.IsBloodlessMachine(Droid).Should().BeFalse();
+        _service.Droids.IsBloodlessMachine(Droid).Should().BeFalse();
     }
 
     [Test]
     public void IsSpawning_FollowsTheSpawningFlagOnTheDroid()
     {
-        _service.IsSpawning(Droid).Should().BeFalse();
+        _service.Droids.IsSpawning(Droid).Should().BeFalse();
 
         _engine.SetLocalBool(Droid, "DROID_IS_SPAWNING", true);
-        _service.IsSpawning(Droid).Should().BeTrue();
+        _service.Droids.IsSpawning(Droid).Should().BeTrue();
 
         _engine.DeleteLocalBool(Droid, "DROID_IS_SPAWNING");
-        _service.IsSpawning(Droid).Should().BeFalse();
+        _service.Droids.IsSpawning(Droid).Should().BeFalse();
     }
 
     [Test]
     public void GetControllerItem_AndGetDroid_ReadTheLinksSetWhenTheDroidWasSummoned()
     {
-        _service.GetControllerItem(Droid).Should().Be(ObjectInvalid);
-        _service.GetDroid(Player).Should().Be(ObjectInvalid);
+        _service.Droids.GetControllerItem(Droid).Should().Be(ObjectInvalid);
+        _service.Droids.GetDroid(Player).Should().Be(ObjectInvalid);
 
         _engine.SetLocalObject(Droid, "ACTIVE_DROID_ITEM", Controller);
         _engine.SetLocalObject(Player, "ACTIVE_DROID", Droid);
 
-        _service.GetControllerItem(Droid).Should().Be(Controller);
-        _service.GetDroid(Player).Should().Be(Droid);
+        _service.Droids.GetControllerItem(Droid).Should().Be(Controller);
+        _service.Droids.GetDroid(Player).Should().Be(Droid);
     }
 
     [Test]
@@ -150,30 +136,30 @@ public class DroidServiceTests
         _engine.SetReturn("GetItemPossessor", Player);
         _resRefs[Disc] = "droid_disc";
 
-        _service.GetInstructionDiscValidationError(Player, ObjectInvalid)
+        _service.Droids.GetInstructionDiscValidationError(Player, ObjectInvalid)
             .Should().Be("Select an instruction disc from your inventory.");
 
         _engine.SetReturn("GetItemPossessor", Creature);
-        _service.GetInstructionDiscValidationError(Player, Disc)
+        _service.Droids.GetInstructionDiscValidationError(Player, Disc)
             .Should().Be("Select an instruction disc from your inventory.");
 
         _engine.SetReturn("GetItemPossessor", Player);
         _resRefs[Disc] = DroidService.DroidControlItemResref;
-        _service.GetInstructionDiscValidationError(Player, Disc)
+        _service.Droids.GetInstructionDiscValidationError(Player, Disc)
             .Should().Be("A droid controller cannot be used as an instruction disc.");
 
         _resRefs[Disc] = "droid_disc";
-        _service.GetInstructionDiscValidationError(Player, Disc)
+        _service.Droids.GetInstructionDiscValidationError(Player, Disc)
             .Should().Be("That item is not a droid instruction disc.");
 
         _properties.Add((ItemPropertyType.DroidInstruction, 0, 0));
-        _service.GetInstructionDiscValidationError(Player, Disc).Should().BeEmpty();
+        _service.Droids.GetInstructionDiscValidationError(Player, Disc).Should().BeEmpty();
     }
 
     [Test]
     public void GetPendingItemRestoreKey_PutsTheSlotAndTheItemIdAfterTheRestorePrefix()
     {
-        _service.GetPendingItemRestoreKey(InventorySlot.RightHand, "abc")
+        _service.Droids.GetPendingItemRestoreKey(InventorySlot.RightHand, "abc")
             .Should().Be("DROID_RESTORE_ITEM:" + (int)InventorySlot.RightHand + ":abc");
     }
 
@@ -187,16 +173,16 @@ public class DroidServiceTests
         _engine.SetReturn("GetLastUsedBy", Player);
 
         _engine.SetReturn("GetIsPC", false);
-        _service.UseDroidAssemblyTerminal();
+        _service.Events.UseDroidAssemblyTerminal();
         _gui.Calls.Should().BeEmpty();
 
         _engine.SetReturn("GetIsPC", true);
         _engine.SetReturn("GetIsDM", true);
-        _service.UseDroidAssemblyTerminal();
+        _service.Events.UseDroidAssemblyTerminal();
         _gui.Calls.Should().BeEmpty();
 
         _engine.SetReturn("GetIsDM", false);
-        _service.UseDroidAssemblyTerminal();
+        _service.Events.UseDroidAssemblyTerminal();
         _gui.Calls.Should().ContainSingle().Which.Member.Should().Be("TogglePlayerWindow");
         _gui.Calls[0].Arguments[0].Should().Be(Player);
         _gui.Calls[0].Arguments[1].Should().Be(GuiWindowType.DroidAssembly);
@@ -208,7 +194,7 @@ public class DroidServiceTests
     [Test]
     public void LoadConstructedDroid_WithNothingSaved_GivesTheDefaults()
     {
-        var loaded = _service.LoadConstructedDroid(Controller);
+        var loaded = _service.Droids.LoadConstructedDroid(Controller);
 
         loaded.Name.Should().BeEmpty();
         loaded.PortraitId.Should().Be(-1);
@@ -233,8 +219,8 @@ public class DroidServiceTests
             TintOverrides = { ["Head"] = 7 }
         };
 
-        _service.SaveConstructedDroid(Controller, droid);
-        var loaded = _service.LoadConstructedDroid(Controller);
+        _service.Droids.SaveConstructedDroid(Controller, droid);
+        var loaded = _service.Droids.LoadConstructedDroid(Controller);
 
         loaded.Name.Should().Be("R2-X");
         loaded.PortraitId.Should().Be(4);
@@ -250,7 +236,7 @@ public class DroidServiceTests
     {
         _engine.SetLocalString(Controller, "CONSTRUCTED_DROID", "{\"Name\":\"Old\",\"Inventory\":null,\"ActivePerks\":null,\"TintOverrides\":null}");
 
-        var loaded = _service.LoadConstructedDroid(Controller);
+        var loaded = _service.Droids.LoadConstructedDroid(Controller);
 
         loaded.Name.Should().Be("Old");
         loaded.Inventory.Should().NotBeNull().And.BeEmpty();
@@ -264,7 +250,7 @@ public class DroidServiceTests
     [Test]
     public void LoadDroidPartItemPropertyDetails_AddsTheStatsAndClampsTheTier()
     {
-        _service.CacheData();
+        _service.Droids.CacheData();
         _properties.Add((ItemPropertyType.DroidStat, (int)DroidStatSubType.Tier, 9));
         _properties.Add((ItemPropertyType.DroidStat, (int)DroidStatSubType.HP, 20));
         _properties.Add((ItemPropertyType.DroidStat, (int)DroidStatSubType.HP, 5));
@@ -273,7 +259,7 @@ public class DroidServiceTests
         _properties.Add((ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceFire, 4));
         _properties.Add((ItemPropertyType.DroidPart, (int)DroidPartItemPropertySubType.Head, 0));
 
-        var details = _service.LoadDroidPartItemPropertyDetails(Disc);
+        var details = _service.Droids.LoadDroidPartItemPropertyDetails(Disc);
 
         details.Tier.Should().Be(5, "a tier above the highest is clamped");
         details.Level.Should().Be(45);
@@ -290,21 +276,21 @@ public class DroidServiceTests
     [TestCase(5, 45)]
     public void CacheData_GivesEachTierItsLevel(int tier, int level)
     {
-        _service.CacheData();
+        _service.Droids.CacheData();
         _properties.Add((ItemPropertyType.DroidStat, (int)DroidStatSubType.Tier, tier));
 
-        _service.LoadDroidPartItemPropertyDetails(Disc).Level.Should().Be(level);
+        _service.Droids.LoadDroidPartItemPropertyDetails(Disc).Level.Should().Be(level);
     }
 
     [Test]
     public void LoadDroidPartItemPropertyDetails_IgnoresTheSaberSkillsDroidsCannotUse()
     {
-        _service.CacheData();
+        _service.Droids.CacheData();
         _properties.Add((ItemPropertyType.DroidStat, (int)DroidStatSubType.Lightsaber, 4));
         _properties.Add((ItemPropertyType.DroidStat, (int)DroidStatSubType.Saberstaff, 4));
         _properties.Add((ItemPropertyType.DroidStat, (int)DroidStatSubType.Rifle, 2));
 
-        var details = _service.LoadDroidPartItemPropertyDetails(Disc);
+        var details = _service.Droids.LoadDroidPartItemPropertyDetails(Disc);
 
         details.Rifle.Should().Be(2);
     }
@@ -314,7 +300,7 @@ public class DroidServiceTests
     {
         _properties.Add((ItemPropertyType.DroidStat, 9999, 1));
 
-        var load = () => _service.LoadDroidPartItemPropertyDetails(Disc);
+        var load = () => _service.Droids.LoadDroidPartItemPropertyDetails(Disc);
 
         load.Should().Throw<ArgumentOutOfRangeException>();
     }

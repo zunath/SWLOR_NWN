@@ -1,0 +1,23 @@
+== step 1 the player lacks the DNA Manipulation perk
+Perk.GetPerkLevel(Attacker, DNAManipulation)
+Engine.SendMessageToPC(Attacker, Perk 'DNA Manipulation I' is required to use incubators.)
+== step 2 the incubator has no property
+Perk.GetPerkLevel(Attacker, DNAManipulation)
+Property.GetPropertyId(Incubator)
+Engine.SendMessageToPC(Attacker, This incubator cannot be used.)
+== step 3 no job runs: the window opens for an empty incubator
+Perk.GetPerkLevel(Attacker, DNAManipulation)
+Property.GetPropertyId(Incubator)
+Gui.TogglePlayerWindow(Attacker, Incubator, IncubatorPayload{IncubationJobId=,PropertyId=property-1}, Attacker, Invalid)
+== step 4 another player's job is still running
+Perk.GetPerkLevel(Attacker, DNAManipulation)
+Property.GetPropertyId(Incubator)
+Engine.SendMessageToPC(Attacker, Another player's incubation job is active. This job will complete in: 3 days, 12 hours, 30 minutes, <seconds> seconds.)
+== step 5 another player's job has finished
+Perk.GetPerkLevel(Attacker, DNAManipulation)
+Property.GetPropertyId(Incubator)
+Engine.SendMessageToPC(Attacker, Another player's incubation job is active. This job has completed.)
+== step 6 the player's own job: the window opens with the job
+Perk.GetPerkLevel(Attacker, DNAManipulation)
+Property.GetPropertyId(Incubator)
+Gui.TogglePlayerWindow(Attacker, Incubator, IncubatorPayload{IncubationJobId=job-1,PropertyId=property-1}, Attacker, Invalid)

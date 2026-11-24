@@ -25,6 +25,7 @@ public sealed class WeaponAbilityTraceBench : IDisposable
     {
         typeof(IAbilityService), typeof(IAbilityDamageInputService), typeof(IAbilityImmunityService), typeof(IAbilityImpactState),
         typeof(IAbilityStatusApplicationService), typeof(ICombatAbilityActivationService), typeof(ICombatAbilityBonusService), typeof(ICombatAbilityCostEffectsService), typeof(ICombatAbilityDefenseEffectsService),
+        typeof(ICombatAbilityOffenseEffectsService), typeof(ICombatAbilityWeaponActivationService),
         typeof(ICombatAbilityHitService), typeof(ICombatActivityService), typeof(ICombatDamageTakenService),
         typeof(ICombatDamageTakenEffectsService), typeof(ICombatDamageReflectionService), typeof(ICombatDefenseMemoryService), typeof(ICombatQueriesService), typeof(ICombatRecorderService),
         typeof(ICombatResourcesService), typeof(ICombatSuppressionService), typeof(IEnmityService), typeof(IPartyService),

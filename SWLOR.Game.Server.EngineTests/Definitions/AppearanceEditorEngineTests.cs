@@ -678,6 +678,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(editor.IsCustomTintEditable, "The drag fixture must expose the global armor RGB channel");
                 var stateName = TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Leather1);
                 var original = GetLocalInt(item, stateName);
+                var swatchesBefore = EquipmentSwatchValues(editor);
                 using var publications = new BindingPublications(editor);
                 for (byte i = 0; i < 120; i++)
                     ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(i, 170, 43), flushPicker: false);
@@ -688,7 +689,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(final.ToStoredValue(), GetLocalInt(item, stateName), "Release applies the last sample");
                 AssertTintInput(ctx, editor, final, "Released drag");
                 ctx.Assert(!publications.Contains(nameof(editor.SelectedTintColor)), "A deferred batch must not echo into the client picker");
-                ctx.Assert(publications.Count <= 6, "One global color edit must not republish all 120 swatches");
+                var publishedNames = publications.SnapshotWithoutGeometry().Keys.ToArray();
+                var pairedNames = publishedNames.Where(swatchesBefore.ContainsKey).ToArray();
+                var swatchesAfter = EquipmentSwatchValues(editor);
+                var changedNames = swatchesBefore.Keys.Where(name => !JToken.DeepEquals(swatchesBefore[name], swatchesAfter[name])).ToArray();
+                ctx.Assert(pairedNames.OrderBy(name => name, StringComparer.Ordinal).SequenceEqual(
+                        changedNames.OrderBy(name => name, StringComparer.Ordinal)),
+                    "Publish exactly the changed paired-list values: " + string.Join(", ", pairedNames));
+                ctx.Assert(pairedNames.Length <= 8 && pairedNames.All(name =>
+                        (name.StartsWith("ItemSwatchLeft", StringComparison.Ordinal) || name.StartsWith("PartSwatchLeft", StringComparison.Ordinal)) &&
+                        new[] { "Tint", "Custom", "Region", "Tooltip" }.Any(suffix => name.EndsWith(suffix, StringComparison.Ordinal))),
+                    "A Leather1 edit must not republish unchanged columns, labels, textures or selections");
+                ctx.Assert(publications.Count <= 6 + pairedNames.Length,
+                    "Paired-list guard passed (" + string.Join(", ", pairedNames) + "); remaining bindings exceed the original six-name budget: " +
+                    string.Join(", ", publishedNames.Except(pairedNames)));
                 publications.Clear();
                 InvokePrivate(editor, "FlushPendingPickerColor");
                 ctx.AssertEqual(0, publications.Count, "An older scheduled flush cannot replay the released color");
@@ -723,7 +737,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     civilian, replacement, TintMapLayerType.Leather2),
                     "A late picker callback cannot revert the replacement tint");
             });
-            ctx.SetResultDetail("120 samples coalesced into one exact RGB commit, at most six bindings, and no picker echo. Release/late flush, newer text input and target switches cannot replay stale colors. Incoming client events and timer advancement are synthesized.");
+            ctx.SetResultDetail("120 samples coalesced into one exact RGB commit, no picker echo, exactly the changed left-column list bindings, and at most six other bindings. Release/late flush, newer text input and target switches cannot replay stale colors. Incoming client events and timer advancement are synthesized.");
         }
 
         [EngineTest("Appearance editor persists exact RGB through native material transport and reopening", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
@@ -1358,6 +1372,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         private sealed record BindingPublication(int Sequence, JToken Value);
+
+        private static Dictionary<string, JToken> EquipmentSwatchValues(AppearanceEditorViewModel editor)
+        {
+            var converter = new GuiPropertyConverter();
+            return editor.GetType().GetProperties().Where(property =>
+                    property.Name.StartsWith("ItemSwatch", StringComparison.Ordinal) ||
+                    property.Name.StartsWith("PartSwatch", StringComparison.Ordinal))
+                .ToDictionary(property => property.Name,
+                    property => JToken.Parse(JsonDump(converter.ToJson(property.GetValue(editor)))));
+        }
 
         private sealed class BindingPublications : IDisposable
         {

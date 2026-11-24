@@ -119,9 +119,6 @@ Domain/Combat -> Feature.UsePerkFeat | 3
 # Combat -> Items (1 edge)
 Domain/Combat -> Domain/Items | 31
 
-# Combat -> Quests (1 edge)
-Domain/Combat -> Domain/Quests | 3
-
 # Combat -> Social (1 edge)
 Domain/Combat -> Domain/Social | 9
 

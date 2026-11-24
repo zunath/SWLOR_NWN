@@ -14,9 +14,9 @@ SWLOR.Game.Server.Domain.Abilities.MimicryService | 1307
 SWLOR.Game.Server.Domain.Character.PerkService | 1486
 SWLOR.Game.Server.Domain.Character.SkillService | 1182
 SWLOR.Game.Server.Domain.Combat.CombatAbilityBonusService | 1061
-SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService | 1723
-SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService | 1719
-SWLOR.Game.Server.Domain.Combat.CombatRecorderService | 1417
+SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService | 1726
+SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService | 1191
+SWLOR.Game.Server.Domain.Combat.CombatRecorderService | 1267
 SWLOR.Game.Server.Domain.Combat.EnmityService | 1243
 SWLOR.Game.Server.Domain.Companions.BeastMasteryService | 1240
 SWLOR.Game.Server.Domain.Companions.DroidService | 1194

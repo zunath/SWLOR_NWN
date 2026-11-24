@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatAttackTimingService _attackTiming;
         private readonly ICombatActivityService _combatActivity;
         private readonly ICombatHitEffectsService _hitEffects;
+        private readonly ICombatTriggeredDamageService _triggeredDamage;
         private readonly ICombatGuardedHitEffectsService _guardedHitEffects;
         private readonly ICombatDamageTakenEffectsService _damageTakenEffects;
         private readonly IStatService _stat;
@@ -58,6 +59,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatAttackTimingService attackTiming,
             ICombatActivityService combatActivity,
             ICombatHitEffectsService hitEffects,
+            ICombatTriggeredDamageService triggeredDamage,
             ICombatGuardedHitEffectsService guardedHitEffects,
             ICombatDamageTakenEffectsService damageTakenEffects,
             IStatService stat,
@@ -76,6 +78,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _attackTiming = attackTiming;
             _combatActivity = combatActivity;
             _hitEffects = hitEffects;
+            _triggeredDamage = triggeredDamage;
             _guardedHitEffects = guardedHitEffects;
             _damageTakenEffects = damageTakenEffects;
             _stat = stat;
@@ -507,7 +510,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 case SkillType.Katar when ability.IsSingleTargetAbility &&
                     _stat.GetStatAdjustment(activator, StatType.KatarVenomCurrentSecondStrikeDamageBonus) > 0:
                     var bonus = _stat.GetStatAdjustment(activator, StatType.KatarVenomCurrentSecondStrikeDamageBonus);
-                    _hitEffects.ApplyTriggeredDamage(activator, target, bonus, damageType);
+                    _triggeredDamage.ApplyTriggeredDamage(activator, target, bonus, damageType);
 
                     if (_statusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect)))
                     {
@@ -600,7 +603,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                     continue;
                 foreach (var nearby in AbilityTargeting.GetHostileTargetsNearLocation(
                              activator, location, radius, 0, target))
-                    _hitEffects.ApplyTriggeredDamage(activator, nearby, damage, CombatDamageType.Physical);
+                    _triggeredDamage.ApplyTriggeredDamage(activator, nearby, damage, CombatDamageType.Physical);
             }
         }
 
@@ -671,7 +674,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 if (nearby == target)
                     continue;
 
-                _hitEffects.ApplyTriggeredDamage(activator, nearby, bonus, damageType);
+                _triggeredDamage.ApplyTriggeredDamage(activator, nearby, bonus, damageType);
             }
         }
 
@@ -691,7 +694,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                          AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(target), 5f, 0, target),
                          target, maximumTargets))
             {
-                _hitEffects.ApplyTriggeredDamage(activator, nearby, bonus, damageType);
+                _triggeredDamage.ApplyTriggeredDamage(activator, nearby, bonus, damageType);
             }
         }
 
@@ -713,7 +716,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                              AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(target),
                                  source[StatType.BleedingTargetAbilitySplashRadiusMeters], 0, target),
                              target, source[StatType.BleedingTargetAbilitySplashMaximumTargets]))
-                    _hitEffects.ApplyTriggeredDamage(activator, nearby, source[StatType.BleedingTargetAbilitySplashDamage], damageType, skillType);
+                    _triggeredDamage.ApplyTriggeredDamage(activator, nearby, source[StatType.BleedingTargetAbilitySplashDamage], damageType, skillType);
             }
         }
 

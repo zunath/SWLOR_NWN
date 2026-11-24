@@ -176,6 +176,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatAbilityHitService, CombatAbilityHitService>();
             services.AddSingleton<ICombatAbilityImpactService, CombatAbilityImpactService>();
             services.AddSingleton<ICombatAbilityMagnitudeService, CombatAbilityMagnitudeService>();
+            services.AddSingleton<ICombatAbilityOffenseEffectsService, CombatAbilityOffenseEffectsService>();
+            services.AddSingleton<ICombatAbilityWeaponActivationService, CombatAbilityWeaponActivationService>();
             services.AddSingleton<ICombatActivityService, CombatActivityService>();
             services.AddSingleton<ICombatAttackTimingService, CombatAttackTimingService>();
             services.AddSingleton<ICombatDamageCatalogService, CombatDamageCatalogService>();
@@ -192,11 +194,14 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatDamageRollService, CombatDamageRollService>();
             services.AddSingleton<ICombatDefenseMemoryService, CombatDefenseMemoryService>();
             services.AddSingleton<ICombatFeedbackService, CombatFeedbackService>();
+            services.AddSingleton<ICombatDealtEffectsService, CombatDealtEffectsService>();
+            services.AddSingleton<ICombatTriggeredDamageService, CombatTriggeredDamageService>();
             services.AddSingleton<ICombatHitEffectsService, CombatHitEffectsService>();
             services.AddSingleton<ICombatImpactGeometryService, CombatImpactGeometryService>();
             services.AddSingleton<ICombatPointService, CombatPointService>();
             services.AddSingleton<ICombatQueriesService, CombatQueriesService>();
             services.AddSingleton<ICombatRatingService, CombatRatingService>();
+            services.AddSingleton<ICombatRecordAbilityService, CombatRecordAbilityService>();
             services.AddSingleton<ICombatRecordSession, CombatRecordSessionCore>();
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
             // The same instance, seen through the interfaces the lower domains and the platform own.
@@ -325,6 +330,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICapstoneProofService, CapstoneProofService>();
             // The same instance, seen through the interface Abilities owns for what a hostile ability does to a target.
             services.AddSingleton<IAbilityImpactObserver>(provider => provider.GetRequiredService<ICapstoneProofService>());
+            // The same instance, seen through the interface Combat owns for the record of a beast's hit.
+            services.AddSingleton<IBeastDamageRecording>(provider => provider.GetRequiredService<ICapstoneProofService>());
             services.AddSingleton<IFactionService, FactionService>();
             services.AddSingleton<IQuestService, QuestService>();
             // The same instance, seen through the quest advance the twin pistol trials own.

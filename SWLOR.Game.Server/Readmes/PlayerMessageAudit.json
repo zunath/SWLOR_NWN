@@ -295,7 +295,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs",
-    "Line": 1460,
+    "Line": 1463,
     "Member": "ApplyStatusAppliedTargetStaminaDrain",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                ColorToken.Combat($\"-{staminaDrained} STM\"),\n                target,\n                false)"
@@ -463,14 +463,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs",
-    "Line": 899,
+    "Line": 511,
     "Member": "ApplyCriticalHitEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Weak Points\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs",
-    "Line": 1104,
+    "Line": 716,
     "Member": "ApplyNonCriticalAbilityEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Next ranged ability +{currentTotal}% Critical Rate\"),\n                    activator,\n                    false)"
@@ -2759,7 +2759,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/StatusAbilityEffects.cs",
-    "Line": 44,
+    "Line": 46,
     "Member": "ToggleSelfStatus",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{StatusEffectCatalog.GetStatusEffectName(type)} deactivated.\")"

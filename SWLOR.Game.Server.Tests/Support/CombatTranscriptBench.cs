@@ -56,7 +56,7 @@ public sealed class CombatTranscriptBench : IDisposable
         typeof(ICombatResourcesService), typeof(ICombatRecorderService), typeof(ICombatRecording), typeof(ICharacterRecording),
         typeof(ICombatRecordingState), typeof(IEnmityService), typeof(ICombatActivityService), typeof(ICombatAttackTimingService),
         typeof(ICombatSuppressionService), typeof(IPairedRangedTraitsService), typeof(ICapstoneProofService),
-        typeof(IResistanceService), typeof(IPartyService), typeof(ICombatRatingService)
+        typeof(IResistanceService), typeof(IPartyService), typeof(IPartyRoster), typeof(ICombatRatingService)
     };
 
     private readonly List<IDisposable> _scopes = new();
@@ -297,6 +297,9 @@ public sealed class CombatTranscriptBench : IDisposable
         var leaf = (TranscriptLeaf)proxy;
         var name = contract.Name;
         leaf.Label = (name.StartsWith('I') ? name[1..] : name).Replace("Service", string.Empty).Replace("Combat", string.Empty);
+        // The party roster is the party service's reads as Combat takes them, so it keeps the party label of the transcripts.
+        if (contract == typeof(IPartyRoster))
+            leaf.Label = "Party";
         leaf.Lines = Lines;
         leaf.Format = Format;
         _leaves[contract] = leaf;

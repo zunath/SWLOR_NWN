@@ -19,10 +19,10 @@ using SWLOR.NWN.API.Testing;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// The shared bench of the ability activation parts of <c>Combat</c> (the stay-part, the cost effects part and the defense
-/// effects part): stats come from tables; every other part and service is scripted and writes what it was asked into one log
+/// The shared bench of the ability activation parts of <c>Combat</c> (the stay-part and the cost, defense, offense and weapon
+/// effects parts): stats come from tables; every other part and service is scripted and writes what it was asked into one log
 /// (so a test sees the order), while the questions the riders ask (skill type matches, perk categories, the stamina an ability
-/// paid) are answered from tables and recorded apart. The clock is held still. The two effects parts are real, built from the
+/// paid) are answered from tables and recorded apart. The clock is held still. The four effects parts are real, built from the
 /// same scripted leaves, and the stay-part calls them.
 /// </summary>
 public abstract class CombatAbilityActivationTestBase
@@ -41,6 +41,8 @@ public abstract class CombatAbilityActivationTestBase
     protected CombatAbilityActivationService _service = null!;
     protected CombatAbilityCostEffectsService _costEffects = null!;
     protected CombatAbilityDefenseEffectsService _defenseEffects = null!;
+    protected CombatAbilityOffenseEffectsService _offenseEffects = null!;
+    protected CombatAbilityWeaponActivationService _weaponActivation = null!;
     protected DateTime _now;
     protected Dictionary<(uint, StatType), int> _stats = null!;
     protected Dictionary<(uint, StatType), IReadOnlyList<StatAdjustmentSource>> _sources = null!;
@@ -269,8 +271,10 @@ public abstract class CombatAbilityActivationTestBase
 
         _costEffects = new CombatAbilityCostEffectsService(queries, resources, timing, stat, statusApplication, temporary, recast, recorder);
         _defenseEffects = new CombatAbilityDefenseEffectsService(queries, resources, damageTaken, stat, statusApplication, temporary, perk);
-        return new CombatAbilityActivationService(queries, resources, timing, activity, damageTaken, stat, statusEffect, statusApplication, temporary,
-            ability, enmity, recorder, _costEffects, _defenseEffects);
+        _offenseEffects = new CombatAbilityOffenseEffectsService(queries, resources, damageTaken, stat, statusEffect, statusApplication, temporary);
+        _weaponActivation = new CombatAbilityWeaponActivationService(queries, resources, timing, stat, statusApplication, temporary, enmity, recorder,
+            _offenseEffects);
+        return new CombatAbilityActivationService(queries, activity, ability, _costEffects, _defenseEffects, _offenseEffects, _weaponActivation);
     }
 
     [TearDown]
@@ -307,12 +311,12 @@ public abstract class CombatAbilityActivationTestBase
     }
 
     protected static object? Private(object target, string name, params object[] arguments) =>
-        target.GetType().GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance, null,
+        target.GetType().GetMethod(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null,
             arguments.Select(argument => argument.GetType()).ToArray(), null)!.Invoke(target, arguments);
 
     protected System.Collections.IDictionary Sequences() =>
-        (System.Collections.IDictionary)typeof(CombatAbilityActivationService)
-            .GetField("_hostileAbilitySequenceStates", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(_service)!;
+        (System.Collections.IDictionary)typeof(CombatAbilityOffenseEffectsService)
+            .GetField("_hostileAbilitySequenceStates", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(_offenseEffects)!;
 
     protected static AbilityDetail Hostile(string name = "Strike", int fp = 0)
     {

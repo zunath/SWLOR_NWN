@@ -129,6 +129,17 @@ public class CombatRecorderTranscriptTests
         }
     }
 
+    private sealed class ProbeAbility : CombatRecordAbilityService
+    {
+        public ProbeAbility(ProbeCore core, Probe recorder)
+            : base(core, recorder, FacadeForwarder.For<IStatService>())
+        {
+        }
+
+        protected override int GetCurrentFP(uint creature, Player dbPlayer = null!) => 11;
+        protected override int GetCurrentStamina(uint creature, Player dbPlayer = null!) => 33;
+    }
+
     private static IStatusEffect Status(StatusEffectBase effect, uint source)
     {
         effect.ReassignSource(source);
@@ -150,8 +161,10 @@ public class CombatRecorderTranscriptTests
                 probe = new Probe(core, presence, host.Db, directory + "/", host.Lines);
                 services.Replace(ServiceDescriptor.Singleton<ICombatRecordSession>(core));
                 services.Replace(ServiceDescriptor.Singleton<ICombatRecorderService>(probe));
+                services.Replace(ServiceDescriptor.Singleton<ICombatRecordAbilityService>(new ProbeAbility(core, probe)));
             });
             var recorder = bench.Get<ICombatRecorderService>();
+            var ability = bench.Get<ICombatRecordAbilityService>();
             recorder.Should().BeSameAs(probe);
             var session = bench.Get<ICombatRecordSession>();
             bench.NameCreature(AreaOne, "Cantina");
@@ -202,8 +215,8 @@ public class CombatRecorderTranscriptTests
             {
                 using (probe!.BeginAbilityAttribution(Attacker, Strike, FeatType.Alertness))
                 {
-                    probe.RecordAbilityCast(Attacker, Defender, location, Strike, FeatType.Alertness, 1.5f);
-                    var cost = probe.BeginAbilityCost(Attacker, Strike, FeatType.Alertness);
+                    ability.RecordAbilityCast(Attacker, Defender, location, Strike, FeatType.Alertness, 1.5f);
+                    var cost = ability.BeginAbilityCost(Attacker, Strike, FeatType.Alertness);
                     cost.Dispose();
                     probe.RecordAttack(Attacker, Defender, 2, 88, "Strike");
                     probe.ExpectDeferredDamage(Attacker, Defender, 40, CombatDamageDeliveryType.Direct);
@@ -228,17 +241,17 @@ public class CombatRecorderTranscriptTests
                     Ability = Strike, ImpactedTargetCount = 2, CriticalHitCount = 1, AttributedDamage = 40,
                     ImpactedTargets = new[] { Defender, Other }
                 };
-                probe!.RecordAbilityImpact(Attacker, Defender, location, Strike, FeatType.Alertness, summary);
+                ability.RecordAbilityImpact(Attacker, Defender, location, Strike, FeatType.Alertness, summary);
                 probe.RecordRecurringAbilityImpact(Attacker, Strike, summary);
             });
             Fight("denied, queued and interrupted abilities", () =>
             {
-                probe!.RecordAbilityDenied(Attacker, Defender, Strike, FeatType.Alertness, "Not enough FP", true);
-                probe.RecordAbilityQueued(Attacker, Defender, Strike, FeatType.Alertness);
-                probe.RecordAbilityInterrupted(Attacker, Strike, CombatRecordInterruptCause.Moved);
-                probe.RecordAbilityInterrupted(Attacker, Strike, CombatRecordInterruptCause.Damage, Defender);
-                probe.NoteToggleDeactivated(Attacker);
-                bench.Lines.Add("TakeToggleDeactivation " + probe.TakeToggleDeactivation(Attacker));
+                ability.RecordAbilityDenied(Attacker, Defender, Strike, FeatType.Alertness, "Not enough FP", true);
+                ability.RecordAbilityQueued(Attacker, Defender, Strike, FeatType.Alertness);
+                ability.RecordAbilityInterrupted(Attacker, Strike, CombatRecordInterruptCause.Moved);
+                ability.RecordAbilityInterrupted(Attacker, Strike, CombatRecordInterruptCause.Damage, Defender);
+                ability.NoteToggleDeactivated(Attacker);
+                bench.Lines.Add("TakeToggleDeactivation " + ability.TakeToggleDeactivation(Attacker));
             });
             Fight("a heal with a pvp reduction and a nested heal", () =>
             {
@@ -280,7 +293,7 @@ public class CombatRecorderTranscriptTests
             Fight("something outside the recorded area is ignored", () =>
             {
                 probe!.RecordResourceChange(Outsider, CombatRecordResource.FP, -5, 15);
-                probe.RecordAbilityCast(Outsider, Outsider, location, Strike, FeatType.Alertness, 1f);
+                ability.RecordAbilityCast(Outsider, Outsider, location, Strike, FeatType.Alertness, 1f);
             });
             Fight("a snapshot tick", () => probe!.Scheduled?.Invoke());
             Fight("a creature dies", () =>

@@ -354,14 +354,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var editor = BindWithoutClient(civilian);
                 var panel = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorMainPartial);
                 var panelJson = JObject.Parse(JsonDump(panel.ToJson()));
-                foreach (var (name, texture) in new[]
+                foreach (var side in new[] { "Left", "Right" })
                 {
-                    ("Skin", "gui_pal_skin"), ("Hair", "gui_pal_hair01"), ("Tattoo1", "gui_pal_tattoo"), ("Tattoo2", "gui_pal_tattoo")
-                })
-                {
-                    AssertSwatchJson(ctx, panelJson.Descendants().OfType<JObject>()
-                        .Single(node => node["id"]?.Value<string>() == "ae_body_swatch_" + name), "Body" + name, texture,
-                        "Appearance body swatches");
+                    var name = "HeadSwatch" + side;
+                    var swatch = panelJson.Descendants().OfType<JObject>()
+                        .Single(node => node["id"]?.Value<string>() == "ae_body_swatch_" + side.ToLowerInvariant());
+                    var drawings = swatch["draw_list"].Children<JObject>().ToArray();
+                    ctx.AssertEqual(4, drawings.Length, $"{name}: label, palette crop, RGB fill and outline");
+                    ctx.AssertEqual(name + "Visible", swatch["visible"]?["bind"]?.Value<string>(), $"{name}: per-column row visibility");
+                    ctx.AssertEqual(name + "Selected", swatch["encouraged"]?["bind"]?.Value<string>(), $"{name}: selected binding");
+                    ctx.AssertEqual(name + "Label", drawings[0]["text"]?["bind"]?.Value<string>(), $"{name}: label binding");
+                    ctx.AssertEqual(name + "Texture", drawings[1]["image"]?["bind"]?.Value<string>(), $"{name}: palette sheet binding");
+                    ctx.AssertEqual(name + "Region", drawings[1]["image_region"]?["bind"]?.Value<string>(), $"{name}: crop binding");
+                    ctx.AssertEqual(name + "Tint", drawings[2]["color"]?["bind"]?.Value<string>(), $"{name}: RGB binding");
+                    ctx.AssertEqual(name + "Custom", drawings[2]["enabled"]?["bind"]?.Value<string>(), $"{name}: RGB visibility");
+                    ctx.AssertEqual(name + "Selected", drawings[3]["enabled"]?["bind"]?.Value<string>(), $"{name}: outline binding");
                 }
                 var palette = WidgetTree(panel).Single(widget => widget.Id == "ae_color_palette");
                 var buttons = WidgetTree(palette).OfType<GuiButton<AppearanceEditorViewModel>>().ToArray();
@@ -391,20 +398,41 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     (ColorChannel.Tattoo2, TintMapLayerType.Tattoo2, "gui_pal_tattoo")
                 })
                 {
-                    // Dispatch the body swatch action captured by the real definition; this
-                    // token-zero fixture does not synthesize the client's mouse event.
+                    // Dispatch the captured paired-head handler with its native row index.
+                    // The fixture does not simulate client mouse transport.
                     var name = channel.ToString();
-                    var swatch = WidgetTree(panel).Single(widget => widget.Id == "ae_body_swatch_" + name);
+                    var index = (int)channel;
+                    var column = index % 2;
+                    var swatch = WidgetTree(panel).Single(widget => widget.Id == "ae_body_swatch_" + (column == 0 ? "left" : "right"));
                     ctx.Assert(swatch.Events.TryGetValue("click", out var select), $"{channel}: body swatch handles click.");
-                    ctx.AssertEqual(nameof(AppearanceEditorViewModel.OnClickBodySwatch), select.Method.Name,
-                        $"{channel}: body swatch routes to the body colour action");
-                    ctx.AssertEqual((int)channel, (int)select.Arguments.Single().Value, $"{channel}: body swatch captures its colour index");
-                    ((Action)select.Method.Invoke(editor, select.Arguments.Select(argument => argument.Value).ToArray()))();
+                    ctx.AssertEqual(nameof(AppearanceEditorViewModel.OnClickHeadColorSwatch), select.Method.Name,
+                        $"{channel}: paired swatch routes to the head colour action");
+                    ctx.AssertEqual(column, (int)select.Arguments.Single().Value, $"{channel}: swatch captures its column");
+                    var nativeEvent = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetModule().m_cCurrentNuiEvent;
+                    var previous = (nativeEvent.m_player, nativeEvent.m_token, nativeEvent.m_event, nativeEvent.m_element, nativeEvent.m_array_index);
+                    try
+                    {
+                        nativeEvent.m_player = civilian;
+                        nativeEvent.m_token = 0;
+                        nativeEvent.m_event = "click";
+                        nativeEvent.m_element = swatch.Id;
+                        nativeEvent.m_array_index = index / 2;
+                        ctx.AssertEqual(index / 2, NuiGetEventArrayIndex(), $"{channel}: native row index");
+                        ((Action)select.Method.Invoke(editor, select.Arguments.Select(argument => argument.Value).ToArray()))();
+                    }
+                    finally
+                    {
+                        (nativeEvent.m_player, nativeEvent.m_token, nativeEvent.m_event, nativeEvent.m_element, nativeEvent.m_array_index) = previous;
+                    }
                     ctx.AssertEqual((int)channel, editor.SelectedColorCategoryIndex, $"{channel}: selected colour category");
                     ctx.AssertEqual(texture, editor.ColorSheetResref, $"{channel}: dynamic palette texture");
                     foreach (var other in new[] { "Skin", "Hair", "Tattoo1", "Tattoo2" })
                         ctx.AssertEqual(other == name, (bool)editor.GetType().GetProperty($"Body{other}Selected").GetValue(editor),
                             $"{channel}: only the selected body swatch is highlighted ({other})");
+                    ctx.Assert((column == 0 ? editor.HeadSwatchLeftSelected : editor.HeadSwatchRightSelected)[index / 2],
+                        $"{channel}: the paired-list selection is highlighted");
+                    ctx.AssertEqual(1, editor.HeadSwatchLeftSelected.Count(value => value) + editor.HeadSwatchRightSelected.Count(value => value),
+                        $"{channel}: exactly one paired head swatch is selected");
                     foreach (var paletteId in new[] { 0, 87, 175 })
                     {
                         var before = Enum.GetValues<ColorChannel>().ToDictionary(value => value, value => GetColor(civilian, value));
@@ -437,7 +465,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     AssertArmorUnchanged(ctx, unchangedArmor, civilian, $"Invalid preset {invalid} retains equipment state");
                 }
             });
-            ctx.SetResultDetail("All176 native button IDs, 9x7 atlas crops, letter/number headers, the bound selection outline and captured shared-action indices validated. The four body swatch buttons selected skin, hair and both tattoos with their palette sheets, highlights and codes; twelve palette actions at presets0,87,175 set exact native IDs, synchronized RGB and made no other-channel/equipment edits; invalid -1/176 were no-ops. Headless coverage excludes client mouse delivery and rendering; fixture has no helmet or cloak.");
+            ctx.SetResultDetail("All176 palette button IDs, 9x7 atlas crops, headers and captured indices validated. Two paired head button templates selected skin, hair and both tattoos through synthesized native row contexts, with list visibility, palette sheets and single-selection highlights. Twelve palette actions at presets0,87,175 set exact native IDs and RGB without other-channel/equipment edits; invalid -1/176 were no-ops. Headless coverage excludes client mouse delivery and rendering; fixture has no helmet or cloak.");
         }
 
         private static IEnumerable<IGuiWidget> WidgetTree(IGuiWidget widget)

@@ -118,7 +118,10 @@ public class CombatRecorderServiceTests
         _recorder = new RecorderProbe(presence, db, _directory + "/");
 
         _facades = new FacadeContainer(services =>
-            services.Replace(ServiceDescriptor.Singleton<ICombatRecorderService>(_recorder)));
+        {
+            services.Replace(ServiceDescriptor.Singleton<ICombatRecordSession>(_recorder.Core));
+            services.Replace(ServiceDescriptor.Singleton<ICombatRecorderService>(_recorder));
+        });
         _scopes.Add(_facades.Install());
     }
 
@@ -713,7 +716,7 @@ public class CombatRecorderServiceTests
     private void ApplyDamage(uint source, uint target, int amount, int before = 100, int after = 90, bool engine = true,
         CombatRecordTemporaryHitPointPool[]? poolsBefore = null, CombatRecordTemporaryHitPointPool[]? poolsAfter = null)
     {
-        var index = _recorder.BeginDamageApplication(source, target, amount, before);
+        var index = _recorder.Core.BeginDamageApplication(source, target, amount, before);
         _recorder.RecordDamageApplied(index, engine, source, target, Damage(physical: amount), before, after, 100,
             poolsBefore!, poolsAfter!);
     }
@@ -863,10 +866,10 @@ public class CombatRecorderServiceTests
 
         _recorder.RecordDamageApplied(-1, true, Alpha, Beta, Damage(1), 10, 9, 100, null!, null!);
         _recorder.RecordDamageApplied(5, true, Alpha, Beta, Damage(1), 10, 9, 100, null!, null!);
-        var index = _recorder.BeginDamageApplication(Alpha, Beta, 1, 10);
+        var index = _recorder.Core.BeginDamageApplication(Alpha, Beta, 1, 10);
         _recorder.Stop("x", out _);
         _recorder.RecordDamageApplied(index, true, Alpha, Beta, Damage(1), 10, 9, 100, null!, null!);
-        _recorder.EndDamageApplication(99);
+        _recorder.Core.EndDamageApplication(99);
 
         Of(StopAndRead(), "damage").Should().BeEmpty();
     }
@@ -875,7 +878,7 @@ public class CombatRecorderServiceTests
     public void EventsRaisedInsideAHit_AreHeldBehindTheDamageEvent()
     {
         Start();
-        var index = _recorder.BeginDamageApplication(Alpha, Beta, 10, 100);
+        var index = _recorder.Core.BeginDamageApplication(Alpha, Beta, 10, 100);
         _recorder.RecordResourceChange(Beta, CombatRecordResource.Stamina, 5, 20);
         _recorder.RecordDamageApplied(index, true, Alpha, Beta, Damage(physical: 10), 100, 90, 100, null!, null!);
 
@@ -923,7 +926,7 @@ public class CombatRecorderServiceTests
         Start();
         _recorder.Pools[Beta] = new[] { new CombatRecordTemporaryHitPointPool { EffectKey = "shield", Amount = 25 } };
         var before = new[] { new CombatRecordTemporaryHitPointPool { EffectKey = "shield", Amount = 30 } };
-        var index = _recorder.BeginDamageApplication(Alpha, Beta, 5, 100);
+        var index = _recorder.Core.BeginDamageApplication(Alpha, Beta, 5, 100);
         _recorder.RecordTemporaryHitPointPoolRemoving(Beta);
         _recorder.RecordTemporaryHitPointPoolRemoving(Gamma);
         _recorder.RecordDamageApplied(index, true, Alpha, Beta, Damage(physical: 5), 100, 100, 100,
@@ -957,10 +960,10 @@ public class CombatRecorderServiceTests
     public void Healing_IsRecordedWithItsSourceAndPvpReduction()
     {
         Start();
-        _recorder.BeginHealApplication(Beta);
+        _recorder.Core.BeginHealApplication(Beta);
         _recorder.RecordPvpHealingReduced(Beta, 100, 40);
         _recorder.RecordPvpHealingReduced(Gamma, 100, 40);
-        var reduced = _recorder.EndHealApplication(Beta);
+        var reduced = _recorder.Core.EndHealApplication(Beta);
         using (_recorder.BeginAbilityAttribution(Alpha, Strike))
             _recorder.RecordHealingApplied(Alpha, Beta, 100, 20, 80, 100, reduced);
         _recorder.RecordHealingApplied(Outsider, Outsider, 100, 20, 80, 100);
@@ -1139,7 +1142,7 @@ public class CombatRecorderServiceTests
     public void ALethalHit_HoldsTheDeathBehindTheDamageAndKeepsTheHitPointsTheHitLeft()
     {
         Start();
-        var index = _recorder.BeginDamageApplication(Alpha, Beta, 100, 100);
+        var index = _recorder.Core.BeginDamageApplication(Alpha, Beta, 100, 100);
         _recorder.HitPoints[Beta] = 0;
         _self = Beta;
         _killer = Alpha;
@@ -1162,8 +1165,8 @@ public class CombatRecorderServiceTests
     {
         Start();
         _recorder.HitPoints[Beta] = 70;
-        var outer = _recorder.BeginDamageApplication(Alpha, Beta, 10, 100);
-        var inner = _recorder.BeginDamageApplication(Gamma, Beta, 5, 90);
+        var outer = _recorder.Core.BeginDamageApplication(Alpha, Beta, 10, 100);
+        var inner = _recorder.Core.BeginDamageApplication(Gamma, Beta, 5, 90);
         _recorder.RecordHealingApplied(Alpha, Beta, 5, 90, 95, 100);
         _recorder.RecordDamageApplied(inner, true, Gamma, Beta, Damage(5), 90, 85, 100, null!, null!);
         _recorder.RecordDamageApplied(outer, true, Alpha, Beta, Damage(10), 100, 90, 100, null!, null!);
@@ -1206,7 +1209,7 @@ public class CombatRecorderServiceTests
     public void ASubdualInsideALethalHit_KeepsTheHitPointsTheHitLeft()
     {
         Start();
-        var index = _recorder.BeginDamageApplication(Alpha, Beta, 100, 100);
+        var index = _recorder.Core.BeginDamageApplication(Alpha, Beta, 100, 100);
         _recorder.HitPoints[Beta] = 0;
 
         _recorder.RecordSubdual(Beta, Alpha);
@@ -1239,7 +1242,7 @@ public class CombatRecorderServiceTests
         using (_recorder.BeginAttribution(Alpha, CombatRecordSourceKind.Item))
         {
             _recorder.ExpectDeferredDamage(Alpha, Beta, 5, CombatDamageDeliveryType.Transferred);
-            _recorder.BeginDamageApplication(Alpha, Beta, 1, 10);
+            _recorder.Core.BeginDamageApplication(Alpha, Beta, 1, 10);
             _recorder.Stop("one", out _);
             Start();
         }

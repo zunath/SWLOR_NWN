@@ -418,7 +418,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             _rifleUnequips.Clear();
             try
             {
-                ctx.Assert(CompanionControl.IsControlledCompanion(droid), "The droid belongs to a real player fixture");
+                ctx.Assert(CompanionControlStore.IsControlledCompanion(droid), "The droid belongs to a real player fixture");
                 var rifle = await CreateEquipment(ctx, owner, "oph_rifle");
                 if (unlimitedAmmo)
                     await ctx.ExecuteInCreatureContextAsync(owner, () =>

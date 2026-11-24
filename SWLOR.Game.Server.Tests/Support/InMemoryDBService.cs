@@ -89,12 +89,16 @@ public sealed class InMemoryDBService : IDBService
         OnSet?.Invoke(entity);
     }
 
+    /// <summary>Called with the entity type and id of each <see cref="Delete{T}"/>, after the entity is removed and <see cref="Deleted"/> holds the id.</summary>
+    public Action<Type, string>? OnDelete { get; set; }
+
     public void Delete<T>(string id)
         where T : EntityBase
     {
         _entities.Remove(id);
         Deleted.Add(id);
         _writeVersions[typeof(T)] = GetWriteVersion<T>() + 1;
+        OnDelete?.Invoke(typeof(T), id);
     }
 
     public bool Exists<T>(string id)

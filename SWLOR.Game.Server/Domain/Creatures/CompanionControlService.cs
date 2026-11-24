@@ -1,14 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
@@ -18,126 +14,64 @@ using AssociateCommand = SWLOR.NWN.API.NWScript.Enum.Associate.Command;
 namespace SWLOR.Game.Server.Domain.Creatures
 {
     /// <summary>
-    /// Companion control: the follow, guard, stand-ground and attack-nearest modes of a player's droid or beast, the
-    /// authorized target it may engage and its hostile abilities. Moved here unchanged from the static
-    /// <c>Service.CompanionControl</c>; the event handlers run on the container's instance and static callers reach it
-    /// through <c>GameServices.CompanionControl</c>.
+    /// Companion control: the orders a player gives a droid or beast (follow, guard, stand ground, attack nearest, heal,
+    /// toggle abilities), the owner events that make it defend, and the combat round that moves it. The registered
+    /// companions are in <see cref="ICompanionControlStoreService"/>, the mode position in
+    /// <see cref="ICompanionPositioningService"/> and the target it may engage in <see cref="ICompanionTargetAuthorityService"/>.
+    /// The event handlers run on the container's instance and static callers reach it through <c>GameServices.CompanionControl</c>.
     /// </summary>
     public class CompanionControlService : ICompanionControlService
     {
-        private const float FollowDistanceMeters = 2f;
-        private const float GuardFollowDistanceMeters = 3f;
-        private const float AttackRangeToleranceMeters = 0.25f;
         private const int MaximumNearestCreatureChecks = 64;
         // The native associate radial combines its Toggle label with base TLK 8127 ("casting").
         public const int AssociateAbilitiesLabelStrRef = 8127;
 
-        private sealed class CompanionControlState
-        {
-            public CompanionMode Mode { get; set; } = CompanionMode.Follow;
-            public bool AbilitiesEnabled { get; set; } = true;
-            public uint AttackNearestTarget { get; set; } = OBJECT_INVALID;
-            public uint OwnerAssistTarget { get; set; } = OBJECT_INVALID;
-            public Dictionary<uint, DateTime> DefensiveThreats { get; } = new();
-            public uint TrackedTarget { get; set; } = OBJECT_INVALID;
-            public float LastDistanceToTarget { get; set; } = float.MaxValue;
-            public DateTime LastProgressAt { get; set; }
-            public DateTime LastOffensiveActivityAt { get; set; }
-            public uint LastMasterArea { get; set; } = OBJECT_INVALID;
-            public DateTime ExplicitOrderUntil { get; set; }
-            public bool DefensiveReactionPending { get; set; }
-            public int HostileAbilityFeatCount { get; set; } = -1;
-            public int HostileAbilityFeatChecksum { get; set; }
-            public List<(FeatType Feat, AbilityDetail Ability)> HostileAbilities { get; } = new();
-        }
-
-        private readonly Dictionary<uint, CompanionControlState> _states = new();
-
         private readonly IAIService _ai;
-        private readonly ICompanionLookup _companions;
-        private readonly IAbilityActivationService _activation;
-        private readonly IAbilityCatalog _catalog;
         private readonly IActivityService _activity;
-        private readonly IPerkService _perk;
         private readonly IPlayerNameService _playerName;
         private readonly IStatusEffectService _statusEffect;
-        private readonly ICombatActivityService _combatActivity;
-        private readonly ICombatQueriesService _queries;
+        private readonly ICompanionControlStoreService _store;
+        private readonly ICompanionPositioningService _positioning;
+        private readonly ICompanionTargetAuthorityService _authority;
 
         public CompanionControlService(
             IAIService ai,
-            ICompanionLookup companions,
-            IAbilityActivationService activation,
-            IAbilityCatalog catalog,
             IActivityService activity,
-            IPerkService perk,
             IPlayerNameService playerName,
             IStatusEffectService statusEffect,
-            ICombatActivityService combatActivity,
-            ICombatQueriesService queries)
+            ICompanionControlStoreService store,
+            ICompanionPositioningService positioning,
+            ICompanionTargetAuthorityService authority)
         {
             _ai = ai;
-            _companions = companions;
-            _activation = activation;
-            _catalog = catalog;
             _activity = activity;
-            _perk = perk;
             _playerName = playerName;
             _statusEffect = statusEffect;
-            _combatActivity = combatActivity;
-            _queries = queries;
-        }
-
-        public bool IsRegisteredCompanion(uint creature)
-        {
-            return _states.ContainsKey(creature);
-        }
-
-        public bool IsControlledCompanion(uint creature)
-        {
-            if (!GetIsObjectValid(creature))
-                return false;
-
-            var master = GetMaster(creature);
-            return GetIsObjectValid(master) &&
-                   GetIsPC(master) &&
-                   (IsDroid(creature) || _companions.IsPlayerBeast(creature));
+            _store = store;
+            _positioning = positioning;
+            _authority = authority;
         }
 
         public void Initialize(uint companion, bool preserveActionQueue = false)
         {
-            if (!IsControlledCompanion(companion))
+            if (!_store.IsControlledCompanion(companion))
                 return;
 
-            var master = GetMaster(companion);
-            _states[companion] = new CompanionControlState
-            {
-                LastMasterArea = GetArea(master)
-            };
+            _store.Register(companion);
 
             SetAssociateListenPatterns(companion);
-            IssueFollowAction(companion, !preserveActionQueue);
+            _positioning.IssueFollowAction(companion, !preserveActionQueue);
         }
 
         public void Clear(uint companion)
         {
-            _states.Remove(companion);
+            _store.Remove(companion);
             _ai.ClearAIState(companion);
-        }
-
-        public CompanionMode GetMode(uint companion)
-        {
-            return GetState(companion).Mode;
-        }
-
-        public bool AreAbilitiesEnabled(uint companion)
-        {
-            return !IsRegisteredCompanion(companion) || GetState(companion).AbilitiesEnabled;
         }
 
         public bool HandleConversation(uint companion)
         {
-            if (!IsControlledCompanion(companion))
+            if (!_store.IsControlledCompanion(companion))
                 return false;
 
             // A command left to the stock henchman AI can swap a ranged weapon for bare hands near an enemy,
@@ -191,14 +125,14 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         public void RegisterDefensiveThreat(uint companion, uint threat)
         {
-            if (!IsControlledCompanion(companion) || !IsValidHostileTarget(companion, threat))
+            if (!_store.IsControlledCompanion(companion) || !_authority.IsValidHostileTarget(companion, threat))
                 return;
 
-            var state = GetState(companion);
+            var state = _store.GetState(companion);
             if (state.TrackedTarget == threat &&
                 CompanionControlPolicy.HasPathingTimedOut(state.LastProgressAt, UtcNow()))
             {
-                ResetProgress(state);
+                _positioning.ResetProgress(state);
             }
 
             state.DefensiveThreats[threat] = UtcNow();
@@ -213,14 +147,14 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         public void RegisterOwnerAttack(uint companion, uint target)
         {
-            if (!IsControlledCompanion(companion) ||
-                GetIsObjectValid(GetState(companion).AttackNearestTarget) ||
-                !IsValidHostileTarget(companion, target))
+            if (!_store.IsControlledCompanion(companion) ||
+                GetIsObjectValid(_store.GetState(companion).AttackNearestTarget) ||
+                !_authority.IsValidHostileTarget(companion, target))
             {
                 return;
             }
 
-            var state = GetState(companion);
+            var state = _store.GetState(companion);
             state.OwnerAssistTarget = target;
             state.ExplicitOrderUntil = default;
             ProcessCombatRound(companion);
@@ -228,31 +162,31 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         public void BeginExplicitOrder(uint companion, float durationSeconds = 30f)
         {
-            if (!IsControlledCompanion(companion))
+            if (!_store.IsControlledCompanion(companion))
                 return;
 
             InterruptAbilityActivation(companion);
-            var state = GetState(companion);
+            var state = _store.GetState(companion);
             state.ExplicitOrderUntil = UtcNow().AddSeconds(Math.Max(1f, durationSeconds));
         }
 
         public void CancelExplicitOrder(uint companion)
         {
-            if (_states.TryGetValue(companion, out var state))
+            if (_store.TryGetState(companion, out var state))
                 state.ExplicitOrderUntil = default;
         }
 
         public void ProcessCombatRound(uint companion, bool bypassDecisionThrottle = false)
         {
-            if (!IsControlledCompanion(companion))
+            if (!_store.IsControlledCompanion(companion))
                 return;
 
             ResumeFromRestIfMasterIsActive(companion, GetMaster(companion));
             if (IsBusy(companion))
                 return;
 
-            var state = GetState(companion);
-            if (IsExplicitOrderInProgress(companion))
+            var state = _store.GetState(companion);
+            if (_positioning.IsExplicitOrderInProgress(companion))
                 return;
 
             if (state.DefensiveReactionPending)
@@ -261,9 +195,9 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 bypassDecisionThrottle = true;
             }
 
-            var target = AdvanceAuthorizedTarget(companion);
+            var target = _authority.AdvanceAuthorizedTarget(companion);
             if (!GetIsObjectValid(target))
-                MaintainModePosition(companion);
+                _positioning.MaintainModePosition(companion);
 
             var actionIssued = _ai.ProcessTrigger(
                 companion,
@@ -274,19 +208,19 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 GetIsObjectValid(target) &&
                 state.TrackedTarget != target)
             {
-                StartTracking(state, companion, target);
+                _authority.StartTracking(state, companion, target);
             }
         }
 
         public void ProcessHeartbeat(uint companion)
         {
-            if (!IsControlledCompanion(companion))
+            if (!_store.IsControlledCompanion(companion))
             {
                 Clear(companion);
                 return;
             }
 
-            var state = GetState(companion);
+            var state = _store.GetState(companion);
             var master = GetMaster(companion);
             var masterArea = GetArea(master);
             if (state.LastMasterArea != OBJECT_INVALID && state.LastMasterArea != masterArea)
@@ -314,13 +248,13 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         public void ResumeModePosition(uint companion)
         {
-            if (IsControlledCompanion(companion))
-                MaintainModePosition(companion);
+            if (_store.IsControlledCompanion(companion))
+                _positioning.MaintainModePosition(companion);
         }
 
         public bool TryProcessPendingDefensiveReaction(uint companion)
         {
-            if (!_states.TryGetValue(companion, out var state) ||
+            if (!_store.TryGetState(companion, out var state) ||
                 !state.DefensiveReactionPending)
             {
                 return false;
@@ -330,174 +264,13 @@ namespace SWLOR.Game.Server.Domain.Creatures
             return true;
         }
 
-        private uint AdvanceAuthorizedTarget(uint companion)
-        {
-            if (!IsControlledCompanion(companion))
-                return OBJECT_INVALID;
-
-            var state = GetState(companion);
-
-            if (GetIsObjectValid(state.AttackNearestTarget))
-            {
-                if (ValidateAuthorizedTarget(
-                        companion,
-                        state.AttackNearestTarget,
-                        CompanionEngagementType.AttackNearest) &&
-                    TrackProgress(
-                        companion,
-                        state.AttackNearestTarget,
-                        CompanionEngagementType.AttackNearest))
-                {
-                    return state.AttackNearestTarget;
-                }
-
-                CompleteAttackNearest(companion);
-                return AdvanceAuthorizedTarget(companion);
-            }
-
-            var defensiveTarget = GetDefensiveTarget(companion, state);
-            if (GetIsObjectValid(defensiveTarget))
-                return defensiveTarget;
-
-            if (GetIsObjectValid(state.OwnerAssistTarget))
-            {
-                if (ValidateAuthorizedTarget(
-                        companion,
-                        state.OwnerAssistTarget,
-                        CompanionEngagementType.OwnerAssist) &&
-                    TrackProgress(
-                        companion,
-                        state.OwnerAssistTarget,
-                        CompanionEngagementType.OwnerAssist))
-                {
-                    return state.OwnerAssistTarget;
-                }
-
-                state.OwnerAssistTarget = OBJECT_INVALID;
-                ResetProgress(state);
-            }
-
-            return OBJECT_INVALID;
-        }
-
-        public uint PeekAuthorizedTarget(uint companion)
-        {
-            if (!IsControlledCompanion(companion))
-                return OBJECT_INVALID;
-
-            var state = GetState(companion);
-            if (GetIsObjectValid(state.AttackNearestTarget) &&
-                ValidateAuthorizedTarget(
-                    companion,
-                    state.AttackNearestTarget,
-                    CompanionEngagementType.AttackNearest))
-            {
-                return state.AttackNearestTarget;
-            }
-
-            var defensiveTarget = SelectDefensiveTarget(companion, state, false);
-            if (GetIsObjectValid(defensiveTarget))
-                return defensiveTarget;
-
-            return GetIsObjectValid(state.OwnerAssistTarget) &&
-                   ValidateAuthorizedTarget(
-                       companion,
-                       state.OwnerAssistTarget,
-                       CompanionEngagementType.OwnerAssist)
-                ? state.OwnerAssistTarget
-                : OBJECT_INVALID;
-        }
-
-        public uint ResolveHostileAbilityTarget(
-            uint companion,
-            AbilityDetail ability,
-            uint authorizedTarget,
-            uint selectedTarget)
-        {
-            if (!GetIsObjectValid(authorizedTarget))
-                return OBJECT_INVALID;
-
-            if (ability.IsAreaAbility &&
-                ability.Targeting != null &&
-                ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
-            {
-                if (GetArea(companion) != GetArea(authorizedTarget))
-                    return OBJECT_INVALID;
-
-                var distance = GetDistanceBetween(companion, authorizedTarget);
-                var sizeX = ability.Targeting.ResolveSizeX(companion, true);
-                if (!CompanionControlPolicy.IsWithinSelfOriginAreaReach(
-                        ability.Targeting.Shape,
-                        true,
-                        distance,
-                        sizeX))
-                {
-                    return OBJECT_INVALID;
-                }
-            }
-
-            if (ability.IsAreaAbility && selectedTarget == companion)
-            {
-                if (GetArea(companion) != GetArea(authorizedTarget))
-                    return OBJECT_INVALID;
-
-                var distance = GetDistanceBetween(companion, authorizedTarget);
-                if (ability.Targeting == null)
-                {
-                    return CompanionControlPolicy.IsWithinAreaReach(distance, ability.MaxRange)
-                        ? companion
-                        : OBJECT_INVALID;
-                }
-
-                if (ability.Targeting.Shape is not AbilityTargetingShapeType.Sphere and
-                    not AbilityTargetingShapeType.HSphere)
-                {
-                    return OBJECT_INVALID;
-                }
-
-                return ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf)
-                    ? companion
-                    : OBJECT_INVALID;
-            }
-
-            return selectedTarget == authorizedTarget
-                ? selectedTarget
-                : OBJECT_INVALID;
-        }
-
-        public bool IsHostileAbilityTargetAuthorized(
-            uint companion,
-            AbilityDetail ability,
-            uint selectedTarget)
-        {
-            var authorizedTarget = PeekAuthorizedTarget(companion);
-            return GetIsObjectValid(ResolveHostileAbilityTarget(
-                companion,
-                ability,
-                authorizedTarget,
-                selectedTarget));
-        }
-
-        public bool CanIssueAttackCommand(uint companion, uint target)
-        {
-            if (!IsRegisteredCompanion(companion))
-                return true;
-
-            var authorizedTarget = PeekAuthorizedTarget(companion);
-            if (authorizedTarget != target)
-                return false;
-
-            var state = GetState(companion);
-            return state.Mode != CompanionMode.StandGround || IsWithinWeaponRange(companion, target);
-        }
-
         public void ResetOwnerCompanionToFollow(uint master)
         {
             if (!GetIsObjectValid(master))
                 return;
 
             var companion = GetAssociate(AssociateType.Henchman, master);
-            if (IsControlledCompanion(companion))
+            if (_store.IsControlledCompanion(companion))
                 ResetToFollow(companion, false, true);
         }
         [PlayerSession(PlayerReload.LoginOnly,
@@ -540,32 +313,18 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 ResetOwnerCompanionToFollow(exitingObject);
         }
 
-        private CompanionControlState GetState(uint companion)
-        {
-            if (!_states.TryGetValue(companion, out var state))
-            {
-                state = new CompanionControlState
-                {
-                    LastMasterArea = GetArea(GetMaster(companion))
-                };
-                _states[companion] = state;
-            }
-
-            return state;
-        }
-
         private void SetMode(uint companion, CompanionMode mode, string response)
         {
             InterruptAndClear(companion);
-            var state = GetState(companion);
+            var state = _store.GetState(companion);
             state.Mode = mode;
-            ClearEngagements(state);
+            _positioning.ClearEngagements(state);
 
             if (mode != CompanionMode.StandGround)
-                IssueFollowAction(companion);
+                _positioning.IssueFollowAction(companion);
 
             Log.Write(LogGroup.AI, $"{GetName(companion)} entered companion mode {mode}.");
-            SendResponse(companion, response);
+            _positioning.SendResponse(companion, response);
         }
 
         private void AttackNearest(uint companion)
@@ -574,17 +333,17 @@ namespace SWLOR.Game.Server.Domain.Creatures
             if (!GetIsObjectValid(target))
             {
                 ResetToFollow(companion, false, true);
-                SendResponse(companion, $"No visible enemy is within {CompanionControlPolicy.AttackNearestRangeMeters:0} meters.");
+                _positioning.SendResponse(companion, $"No visible enemy is within {CompanionControlPolicy.AttackNearestRangeMeters:0} meters.");
                 return;
             }
 
             InterruptAndClear(companion);
-            var state = GetState(companion);
+            var state = _store.GetState(companion);
             state.Mode = CompanionMode.Follow;
-            ClearEngagements(state);
+            _positioning.ClearEngagements(state);
             state.AttackNearestTarget = target;
             var master = GetMaster(companion);
-            SendResponse(companion, $"Attacking {GetDisplayName(master, target)}, then returning to Follow.");
+            _positioning.SendResponse(companion, $"Attacking {GetDisplayName(master, target)}, then returning to Follow.");
             ProcessCombatRound(companion, true);
         }
 
@@ -596,37 +355,37 @@ namespace SWLOR.Game.Server.Domain.Creatures
             var master = GetMaster(companion);
             if (GetCurrentHitPoints(master) >= GetMaxHitPoints(master))
             {
-                SendResponse(companion, "You do not need healing.");
-                IssueFollowAction(companion);
+                _positioning.SendResponse(companion, "You do not need healing.");
+                _positioning.IssueFollowAction(companion);
                 return;
             }
 
-            if (!AreAbilitiesEnabled(companion))
+            if (!_store.AreAbilitiesEnabled(companion))
             {
-                SendResponse(companion, "Unable to heal: abilities are disabled.");
-                IssueFollowAction(companion);
+                _positioning.SendResponse(companion, "Unable to heal: abilities are disabled.");
+                _positioning.IssueFollowAction(companion);
                 return;
             }
 
             if (_ai.TryUseBestTargetedSupportAbility(companion, master, out var abilityName))
             {
-                SendResponse(companion, $"Using {abilityName} on you, then returning to Follow.");
+                _positioning.SendResponse(companion, $"Using {abilityName} on you, then returning to Follow.");
                 return;
             }
 
-            SendResponse(companion, "Unable to heal you: no compatible healing ability is ready.");
-            IssueFollowAction(companion);
+            _positioning.SendResponse(companion, "Unable to heal you: no compatible healing ability is ready.");
+            _positioning.IssueFollowAction(companion);
         }
 
         private void ToggleAbilities(uint companion)
         {
             InterruptAndClear(companion);
-            var state = GetState(companion);
+            var state = _store.GetState(companion);
             state.AbilitiesEnabled = !state.AbilitiesEnabled;
             if (!state.AbilitiesEnabled)
                 DequeueWeaponAbility(companion);
 
-            SendResponse(companion, state.AbilitiesEnabled
+            _positioning.SendResponse(companion, state.AbilitiesEnabled
                 ? "Abilities enabled."
                 : "Abilities disabled; basic attacks only.");
             ProcessCombatRound(companion);
@@ -636,274 +395,6 @@ namespace SWLOR.Game.Server.Domain.Creatures
         {
             var companion = GetAssociate(AssociateType.Henchman, master);
             RegisterDefensiveThreat(companion, threat);
-        }
-
-        private uint GetDefensiveTarget(uint companion, CompanionControlState state)
-        {
-            var selected = SelectDefensiveTarget(companion, state, true);
-
-            if (GetIsObjectValid(selected) &&
-                !TrackProgress(companion, selected, CompanionEngagementType.Defensive))
-            {
-                RemoveDefensiveThreat(state, selected);
-                MaintainModePosition(companion);
-                return OBJECT_INVALID;
-            }
-
-            return selected;
-        }
-
-        private uint SelectDefensiveTarget(
-            uint companion,
-            CompanionControlState state,
-            bool updateState)
-        {
-            var master = GetMaster(companion);
-            var now = UtcNow();
-            var candidates = new List<uint>();
-
-            foreach (var (threat, _) in state.DefensiveThreats.ToList())
-            {
-                var attackTarget = GetIsObjectValid(threat)
-                    ? GetAttackTarget(threat)
-                    : OBJECT_INVALID;
-                var activelyThreatening = attackTarget == master || attackTarget == companion;
-                if (updateState && activelyThreatening)
-                    state.DefensiveThreats[threat] = now;
-
-                var recentlyThreatened = (now - state.DefensiveThreats[threat]).TotalSeconds <
-                                         CompanionControlPolicy.PathingTimeoutSeconds;
-                var isAuthorized = (activelyThreatening || recentlyThreatened) &&
-                                   ValidateAuthorizedTarget(
-                                       companion,
-                                       threat,
-                                       CompanionEngagementType.Defensive);
-                if (!isAuthorized)
-                {
-                    if (updateState)
-                        RemoveDefensiveThreat(state, threat);
-
-                    continue;
-                }
-
-                candidates.Add(threat);
-            }
-
-            return candidates
-                .OrderByDescending(x => GetAttackTarget(x) == master)
-                .ThenBy(x => GetDistanceBetween(companion, x))
-                .FirstOrDefault(OBJECT_INVALID);
-        }
-
-        private void RemoveDefensiveThreat(CompanionControlState state, uint threat)
-        {
-            state.DefensiveThreats.Remove(threat);
-            if (state.TrackedTarget == threat)
-                ResetProgress(state);
-        }
-
-        private bool ValidateAuthorizedTarget(
-            uint companion,
-            uint target,
-            CompanionEngagementType engagementType)
-        {
-            if (!IsValidHostileTarget(companion, target))
-                return false;
-
-            var master = GetMaster(companion);
-            var state = GetState(companion);
-            if (state.Mode == CompanionMode.StandGround &&
-                engagementType != CompanionEngagementType.AttackNearest)
-            {
-                return CanEngageWithoutMoving(companion, target);
-            }
-
-            var tether = CompanionControlPolicy.GetTetherMeters(state.Mode, engagementType);
-            if (GetArea(master) != GetArea(target) || GetDistanceBetween(master, target) > tether)
-                return false;
-
-            return true;
-        }
-
-        private bool TrackProgress(
-            uint companion,
-            uint target,
-            CompanionEngagementType engagementType)
-        {
-            var state = GetState(companion);
-            if (state.TrackedTarget != target)
-                return true;
-
-            var distance = GetDistanceBetween(companion, target);
-            var offensiveActivityAt = GetLastOffensiveActivityAt(companion);
-            var hasNewOffensiveActivity = offensiveActivityAt > state.LastOffensiveActivityAt;
-
-            if (CompanionControlPolicy.HasCombatProgress(
-                    hasNewOffensiveActivity,
-                    state.LastDistanceToTarget,
-                    distance))
-            {
-                state.LastProgressAt = UtcNow();
-                state.LastDistanceToTarget = distance;
-                state.LastOffensiveActivityAt = offensiveActivityAt;
-                return true;
-            }
-
-            if (!CompanionControlPolicy.HasPathingTimedOut(state.LastProgressAt, UtcNow()))
-                return true;
-
-            var returnsToFollow = CompanionControlPolicy.ReturnsToFollowWhenComplete(engagementType);
-            Log.Write(
-                LogGroup.AI,
-                returnsToFollow
-                    ? $"{GetName(companion)} timed out pathing to {GetName(target)} and returned to Follow."
-                    : $"{GetName(companion)} timed out pathing to {GetName(target)} and retained {state.Mode} mode.");
-            SendResponse(
-                companion,
-                returnsToFollow
-                    ? "Unable to reach the target; returning to Follow."
-                    : $"Unable to reach the target; remaining in {state.Mode}.");
-            return false;
-        }
-
-        private void CompleteAttackNearest(uint companion)
-        {
-            var state = GetState(companion);
-            state.Mode = CompanionMode.Follow;
-            state.AttackNearestTarget = OBJECT_INVALID;
-            state.OwnerAssistTarget = OBJECT_INVALID;
-            ResetProgress(state);
-            Log.Write(LogGroup.AI, $"{GetName(companion)} completed Attack Nearest and returned to Follow.");
-            MaintainModePosition(companion);
-        }
-
-        private void StartTracking(CompanionControlState state, uint companion, uint target)
-        {
-            state.TrackedTarget = target;
-            state.LastDistanceToTarget = GetDistanceBetween(companion, target);
-            state.LastProgressAt = UtcNow();
-            state.LastOffensiveActivityAt = GetLastOffensiveActivityAt(companion);
-        }
-
-        private bool CanEngageWithoutMoving(uint companion, uint target)
-        {
-            return IsWithinWeaponRange(companion, target) ||
-                   CanUseHostileAbilityWithoutMoving(companion, target);
-        }
-
-        private bool CanUseHostileAbilityWithoutMoving(uint companion, uint target)
-        {
-            if (!AreAbilitiesEnabled(companion))
-                return false;
-
-            foreach (var (feat, ability) in GetCachedHostileAbilities(companion))
-            {
-                if (ability.ActivationType == AbilityActivationType.Weapon)
-                    continue;
-
-                if (ability.IsAreaAbility && ability.Targeting == null)
-                    continue;
-
-                var isSelfCenteredArea = ability.IsAreaAbility &&
-                                         ability.Targeting?.Shape == AbilityTargetingShapeType.Sphere &&
-                                         ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf);
-                var isSelfOriginArea = ability.IsAreaAbility &&
-                                       ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf);
-                var targetDistance = GetDistanceBetween(companion, target);
-                if (ability.IsAreaAbility &&
-                    !isSelfOriginArea &&
-                    !CompanionControlPolicy.IsWithinDeclaredPlacementRange(
-                        ability.HasExplicitMaxRange,
-                        targetDistance,
-                        ability.MaxRange))
-                {
-                    continue;
-                }
-
-                if (isSelfOriginArea &&
-                    !CompanionControlPolicy.IsWithinSelfOriginAreaReach(
-                        ability.Targeting.Shape,
-                        true,
-                        targetDistance,
-                        ability.Targeting.ResolveSizeX(companion, true)))
-                {
-                    continue;
-                }
-
-                var abilityTarget = ResolveHostileAbilityTarget(
-                    companion,
-                    ability,
-                    target,
-                    isSelfCenteredArea ? companion : target);
-                var targetLocation = GetLocation(
-                    isSelfCenteredArea
-                        ? companion
-                        : target);
-                var effectiveLevel = ability.EffectiveLevelPerkType == PerkType.Invalid
-                    ? 1
-                    : GetPerkLevel(companion, ability.EffectiveLevelPerkType);
-
-                if (CanUseAbility(companion, abilityTarget, feat, effectiveLevel, targetLocation))
-                    return true;
-            }
-
-            return false;
-        }
-
-        private IReadOnlyList<(FeatType Feat, AbilityDetail Ability)> GetCachedHostileAbilities(uint companion)
-        {
-            var state = GetState(companion);
-            var featCount = CreaturePlugin.GetFeatCount(companion);
-            var featChecksum = 17;
-            var knownFeats = new List<FeatType>(featCount);
-
-            unchecked
-            {
-                for (var index = 0; index < featCount; index++)
-                {
-                    var feat = CreaturePlugin.GetFeatByIndex(companion, index);
-                    knownFeats.Add(feat);
-                    featChecksum = featChecksum * 31 + (int)feat;
-                }
-            }
-
-            if (state.HostileAbilityFeatCount == featCount &&
-                state.HostileAbilityFeatChecksum == featChecksum)
-            {
-                return state.HostileAbilities;
-            }
-
-            state.HostileAbilityFeatCount = featCount;
-            state.HostileAbilityFeatChecksum = featChecksum;
-            state.HostileAbilities.Clear();
-
-            foreach (var feat in knownFeats)
-            {
-                if (!IsFeatRegistered(feat))
-                    continue;
-
-                var ability = GetAbilityDetail(feat);
-                if (ability.IsHostileAbility)
-                    state.HostileAbilities.Add((feat, ability));
-            }
-
-            return state.HostileAbilities;
-        }
-
-        private bool IsWithinWeaponRange(uint companion, uint target)
-        {
-            var skill = GetEquippedWeaponSkillType(companion);
-            return GetDistanceBetween(companion, target) <=
-                   GetWeaponEngagementRange(skill) + AttackRangeToleranceMeters;
-        }
-
-        private bool IsValidHostileTarget(uint companion, uint target)
-        {
-            return GetIsObjectValid(target) &&
-                   target != companion &&
-                   GetCurrentHitPoints(target) > 0 &&
-                   GetArea(companion) == GetArea(target) &&
-                   GetIsReactionTypeHostile(target, companion);
         }
 
         private uint FindNearestVisibleEnemy(uint companion)
@@ -925,7 +416,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
                     break;
 
                 if (GetDistanceBetween(master, target) <= CompanionControlPolicy.AttackNearestRangeMeters &&
-                    IsValidHostileTarget(companion, target) &&
+                    _authority.IsValidHostileTarget(companion, target) &&
                     GetObjectSeen(target, companion))
                 {
                     return target;
@@ -940,31 +431,14 @@ namespace SWLOR.Game.Server.Domain.Creatures
             if (interrupt)
                 InterruptAndClear(companion);
 
-            var state = GetState(companion);
+            var state = _store.GetState(companion);
             state.Mode = CompanionMode.Follow;
-            ClearEngagements(state);
+            _positioning.ClearEngagements(state);
 
             if (sendResponse)
-                SendResponse(companion, "Returning to Follow.");
+                _positioning.SendResponse(companion, "Returning to Follow.");
 
-            MaintainModePosition(companion);
-        }
-
-        private void ClearEngagements(CompanionControlState state)
-        {
-            state.AttackNearestTarget = OBJECT_INVALID;
-            state.OwnerAssistTarget = OBJECT_INVALID;
-            state.DefensiveThreats.Clear();
-            state.DefensiveReactionPending = false;
-            ResetProgress(state);
-        }
-
-        private void ResetProgress(CompanionControlState state)
-        {
-            state.TrackedTarget = OBJECT_INVALID;
-            state.LastDistanceToTarget = float.MaxValue;
-            state.LastProgressAt = default;
-            state.LastOffensiveActivityAt = default;
+            _positioning.MaintainModePosition(companion);
         }
 
         private void InterruptAndClear(uint companion)
@@ -974,73 +448,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
             AssignCommand(companion, () => ClearAllActions(true));
         }
 
-        private bool IsExplicitOrderInProgress(uint companion)
-        {
-            var state = GetState(companion);
-            var currentAction = GetCurrentAction(companion);
-            if (!CompanionControlPolicy.ShouldPreserveExplicitOrder(
-                    state.ExplicitOrderUntil,
-                    UtcNow(),
-                    currentAction))
-            {
-                state.ExplicitOrderUntil = default;
-                return false;
-            }
-
-            return true;
-        }
-
-        private void MaintainModePosition(uint companion)
-        {
-            if (IsBusy(companion) || IsExplicitOrderInProgress(companion))
-                return;
-
-            var state = GetState(companion);
-            if (state.Mode == CompanionMode.StandGround)
-            {
-                var currentAction = GetCurrentAction(companion);
-                if (CompanionControlPolicy.ShouldStopActionInStandGround(currentAction))
-                    AssignCommand(companion, () => ClearAllActions(true));
-
-                return;
-            }
-
-            if (GetCurrentAction(companion) != ActionType.Follow)
-                IssueFollowAction(companion);
-        }
-
-        private void IssueFollowAction(uint companion, bool clearActions = true)
-        {
-            var master = GetMaster(companion);
-            if (!GetIsObjectValid(master))
-                return;
-
-            var followDistance = GetState(companion).Mode == CompanionMode.Guard
-                ? GuardFollowDistanceMeters
-                : FollowDistanceMeters;
-            AssignCommand(companion, () =>
-            {
-                if (clearActions)
-                    ClearAllActions(true);
-
-                ActionForceFollowObject(master, followDistance);
-            });
-        }
-
-        private void SendResponse(uint companion, string response)
-        {
-            var master = GetMaster(companion);
-            if (GetIsObjectValid(master))
-                SendMessageToPC(master, $"{GetName(companion)}: {response}");
-        }
-    
-
         // Each protected virtual method below has the original call as its body, so the server behaves as it did.
         // They name the static services that are not converted yet (and the clock), so a test can answer them.
 
         protected virtual DateTime UtcNow() => DateTime.UtcNow;
-
-        protected virtual bool IsDroid(uint creature) => _companions.IsDroid(creature);
 
         protected virtual bool IsBusy(uint target) => _activity.IsBusy(target);
 
@@ -1062,29 +473,5 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         protected virtual string GetDisplayName(uint observer, uint target) =>
             _playerName.GetDisplayName(observer, target);
-
-        protected virtual DateTime GetLastOffensiveActivityAt(uint creature) =>
-            _combatActivity.GetLastOffensiveActivityAt(creature);
-
-        protected virtual SkillType GetEquippedWeaponSkillType(uint creature) =>
-            _queries.GetEquippedWeaponSkillType(creature);
-
-        protected virtual float GetWeaponEngagementRange(SkillType skill) =>
-            CombatRules.GetWeaponEngagementRange(skill);
-
-        protected virtual int GetPerkLevel(uint creature, PerkType perkType) =>
-            _perk.GetPerkLevel(creature, perkType);
-
-        protected virtual bool IsFeatRegistered(FeatType feat) => _catalog.IsFeatRegistered(feat);
-
-        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _catalog.GetAbilityDetail(feat);
-
-        protected virtual bool CanUseAbility(
-            uint activator,
-            uint target,
-            FeatType feat,
-            int effectiveLevel,
-            Location targetLocation) =>
-            _activation.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);
     }
 }

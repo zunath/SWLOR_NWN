@@ -57,10 +57,17 @@ public class DMPossessionPlayerLoopTests
                     public bool IsControlledByDM(uint player) => DMPresence.IsControlledByDM(player);
                 }
                 public static readonly List<uint> Registered = new();
-                private static int GetParticipantId(uint creature)
+                // The recorder instance's injected session, as this harness models it.
+                private static readonly Session _session = new();
+                private sealed class Session
                 {
-                    Registered.Add(creature);
-                    return Registered.Count;
+                    public uint Area => _area;
+
+                    public int GetParticipantId(uint creature)
+                    {
+                        Registered.Add(creature);
+                        return Registered.Count;
+                    }
                 }
                 {{InstanceMethod("Domain/Combat/CombatRecorderService.cs", "RegisterPlayersInArea")}}
             }
@@ -98,8 +105,8 @@ public class DMPossessionPlayerLoopTests
                 {
                     public bool IsControlledByDM(uint player) => DMPresence.IsControlledByDM(player);
                 }
-                {{InstanceMethod("Domain/Abilities/MimicryService.cs", "OnCreatureAbilityUsed")}}
-                {{InstanceMethod("Domain/Abilities/MimicryService.cs", "GetNearbyPlayers")}}
+                {{MimicryBeastDroidSource.InstanceMethod(MimicryBeastDroidSource.Mimicry, "OnCreatureAbilityUsed")}}
+                {{MimicryBeastDroidSource.InstanceMethod(MimicryBeastDroidSource.Mimicry, "GetNearbyPlayers")}}
             }
 
             {{Type("Domain/Character/OOCMessageContext.cs", "OOCMessageContext")}}

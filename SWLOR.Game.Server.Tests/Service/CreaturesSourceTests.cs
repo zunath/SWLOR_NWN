@@ -15,7 +15,7 @@ public class CreaturesSourceTests
     public void AMemberIsFoundInTheFileThatDeclaresIt()
     {
         CreaturesSource.RelativePath("CreatureBlocked").Should().Be("Domain/Creatures/AIService.cs");
-        CreaturesSource.RelativePath("PeekAuthorizedTarget").Should().Be("Domain/Creatures/CompanionControlService.cs");
+        CreaturesSource.RelativePath("PeekAuthorizedTarget").Should().Be("Domain/Creatures/CompanionTargetAuthorityService.cs");
         CreaturesSource.RelativePath("ProcessSpawnSystem").Should().Be("Domain/Creatures/SpawnService.cs");
     }
 

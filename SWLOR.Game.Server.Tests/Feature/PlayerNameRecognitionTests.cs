@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -51,13 +52,8 @@ public class PlayerNameRecognitionTests
     public void PlayerNameOverrides_ObfuscateCommunityNameWhenEnabled()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PlayerNameService.cs"));
-        var method = ExtractMethod(source, "private void ApplyNameOverridesForPlayer(uint player)");
+        var source = CharacterCompanionsSource.PlayerName.Read();
+        var method = CharacterCompanionsSource.PlayerName.Member("ApplyNameOverridesForPlayer");
 
         method.Should().Contain("var shouldScrambleAccountName = ShouldScrambleAccountName(player);");
         method.Should().Contain("if (!shouldScrambleAccountName)");
@@ -70,13 +66,8 @@ public class PlayerNameRecognitionTests
     public void PlayerNameOverrides_ApplyImmediatelyOnEnterBeforeDelayedRetry()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PlayerNameService.cs"));
-        var method = ExtractMethod(source, "public void ApplyNameOverridesOnEnter()");
+        var source = CharacterCompanionsSource.PlayerName.Read();
+        var method = CharacterCompanionsSource.PlayerName.Member("ApplyNameOverridesOnEnter");
 
         var immediateCallIndex = method.IndexOf("ApplyNameOverridesForPlayer(player);", StringComparison.Ordinal);
         var delayedRetryIndex = method.IndexOf("DelayCommand(1.0f, () => ApplyNameOverridesForPlayer(player));", StringComparison.Ordinal);
@@ -90,16 +81,11 @@ public class PlayerNameRecognitionTests
     public void PlayerNameOverrides_PreserveTrueNamesForDMObservers()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PlayerNameService.cs"));
-        var enterMethod = ExtractMethod(source, "public void ApplyNameOverridesOnEnter()");
-        var playerMethod = ExtractMethod(source, "private void ApplyNameOverridesForPlayer(uint player)");
-        var dmObserverMethod = ExtractMethod(source, "private void ApplyNameOverridesForDMObserver(uint dm)");
-        var trueNameMethod = ExtractMethod(source, "private void ApplyTrueNameOverride(uint observer, uint target)");
+        var source = CharacterCompanionsSource.PlayerName.Read();
+        var enterMethod = CharacterCompanionsSource.PlayerName.Member("ApplyNameOverridesOnEnter");
+        var playerMethod = CharacterCompanionsSource.PlayerName.Member("ApplyNameOverridesForPlayer");
+        var dmObserverMethod = CharacterCompanionsSource.PlayerName.Member("ApplyNameOverridesForDMObserver");
+        var trueNameMethod = CharacterCompanionsSource.PlayerName.Member("ApplyTrueNameOverride");
 
         // NWNX ignores staff overrides unless DM participation is enabled at startup.
         var environment = File.ReadAllLines(Path.Combine(root.FullName, "SWLOR.Game.Server", "Docker", "swlor.env"));
@@ -123,19 +109,14 @@ public class PlayerNameRecognitionTests
     public void PlayerNameOverrides_ShowDisguiseMarkerOnlyToDMObservers()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PlayerNameService.cs"));
-        var staffSuffixMethod = ExtractMethod(source, "private string GetStaffNameOverrideSuffix(uint player)");
-        var suffixMethod = ExtractMethod(source, "private string GetNameOverrideSuffix(uint player, bool isUnknown = false)");
-        var trueNameMethod = ExtractMethod(source, "private void ApplyTrueNameOverride(uint observer, uint target)");
-        var chatMethod = ExtractMethod(source, "private void ApplyChatNameOverride(uint observer, uint target)");
-        var playerObserverMethod = ExtractMethod(source, "private void ApplyNameOverride(uint observer, uint target)");
-        var playerMethod = ExtractMethod(source, "private void ApplyNameOverridesForPlayer(uint player)");
-        var restoreMethod = ExtractMethod(source, "private void RestoreNameOverride(uint observer, uint target)");
+        var source = CharacterCompanionsSource.PlayerName.Read();
+        var staffSuffixMethod = CharacterCompanionsSource.PlayerName.Member("GetStaffNameOverrideSuffix");
+        var suffixMethod = CharacterCompanionsSource.PlayerName.Member("GetNameOverrideSuffix");
+        var trueNameMethod = CharacterCompanionsSource.PlayerName.Member("ApplyTrueNameOverride");
+        var chatMethod = CharacterCompanionsSource.PlayerName.Member("ApplyChatNameOverride");
+        var playerObserverMethod = CharacterCompanionsSource.PlayerName.Member("ApplyNameOverride");
+        var playerMethod = CharacterCompanionsSource.PlayerName.Member("ApplyNameOverridesForPlayer");
+        var restoreMethod = CharacterCompanionsSource.PlayerName.Member("RestoreNameOverride");
 
         staffSuffixMethod.Should().Contain("GetNameOverrideSuffix(player)");
         staffSuffixMethod.Should().Contain("GetActiveDisguise(player) != null ? StaffDisguiseMarker : string.Empty");
@@ -157,13 +138,8 @@ public class PlayerNameRecognitionTests
     public void PlayerNameOverrides_SkipRedundantSelfIteration()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PlayerNameService.cs"));
-        var playerMethod = ExtractMethod(source, "private void ApplyNameOverridesForPlayer(uint player)");
+        var source = CharacterCompanionsSource.PlayerName.Read();
+        var playerMethod = CharacterCompanionsSource.PlayerName.Member("ApplyNameOverridesForPlayer");
 
         playerMethod.Should().MatchRegex(@"if\s*\(\s*otherPlayer\s*==\s*player\s*\)\s*continue;");
     }
@@ -172,19 +148,14 @@ public class PlayerNameRecognitionTests
     public void KnownNameStorage_UsesIndexedObserverFieldAndGeneratedEntityId()
     {
         var root = FindRepositoryRoot();
-        var serviceSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PlayerNameService.cs"));
+        var serviceSource = CharacterCompanionsSource.PlayerName.Read();
         var entitySource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
             "Entity",
             "PlayerKnownName.cs"));
         var constructor = ExtractMethod(entitySource, "public PlayerKnownName(string observerPlayerId)");
-        var findMethod = ExtractMethod(serviceSource, "private PlayerKnownName FindKnownNames(string observerId)");
+        var findMethod = CharacterCompanionsSource.PlayerName.Member("FindKnownNames");
 
         entitySource.Should().Contain("[Indexed]");
         entitySource.Should().Contain("public string ObserverPlayerId");
@@ -201,12 +172,7 @@ public class PlayerNameRecognitionTests
     public void KnownNameStorage_DoesNotRunLegacyKeyMigration()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PlayerNameService.cs"));
+        var source = CharacterCompanionsSource.PlayerName.Read();
 
         source.Should().NotContain("MigrateLegacyKnownNames");
         source.Should().NotContain("LegacyKnownNameIdPrefix");
@@ -218,16 +184,11 @@ public class PlayerNameRecognitionTests
     public void KnownNameStorage_CachesObserverRecordsUntilKnownNamesChange()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PlayerNameService.cs"));
-        var findMethod = ExtractMethod(source, "private PlayerKnownName FindKnownNames(string observerId)");
-        var getMethod = ExtractMethod(source, "private PlayerKnownName GetKnownNames(uint observer, bool createIfMissing)");
+        var source = CharacterCompanionsSource.PlayerName.Read();
+        var findMethod = CharacterCompanionsSource.PlayerName.Member("FindKnownNames");
+        var getMethod = CharacterCompanionsSource.PlayerName.Member("GetKnownNames");
 
-        var exitHandler = ExtractMethod(source, "public void ReleaseKnownNamesOnExit()");
+        var exitHandler = CharacterCompanionsSource.PlayerName.Member("ReleaseKnownNamesOnExit");
 
         source.Should().Contain("private readonly Dictionary<string, PlayerKnownName> KnownNamesByObserverId");
         findMethod.Should().Contain("_db.GetWriteVersion<PlayerKnownName>()");
@@ -243,15 +204,10 @@ public class PlayerNameRecognitionTests
     public void KnownNameStorage_ValidatesTargetsBeforePersisting()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PlayerNameService.cs"));
-        var setMethod = ExtractMethod(source, "public void SetKnownName(uint observer, uint target, string name)");
-        var assignmentValidationMethod = ExtractMethod(source, "public string ValidateKnownNameAssignment(uint observer, uint target, string name)");
-        var validationMethod = ExtractMethod(source, "private string ValidateKnownNameTarget(uint observer, uint target)");
+        var source = CharacterCompanionsSource.PlayerName.Read();
+        var setMethod = CharacterCompanionsSource.PlayerName.Member("SetKnownName");
+        var assignmentValidationMethod = CharacterCompanionsSource.PlayerName.Member("ValidateKnownNameAssignment");
+        var validationMethod = CharacterCompanionsSource.PlayerName.Member("ValidateKnownNameTarget");
 
         var validationIndex = setMethod.IndexOf("ValidateKnownNameAssignment(observer, target, name);", StringComparison.Ordinal);
         var targetIdIndex = setMethod.IndexOf("var targetId = GetIdentityKey(target);", StringComparison.Ordinal);
@@ -270,21 +226,16 @@ public class PlayerNameRecognitionTests
     public void KnownNameStorage_RejectsColorTokensBeforeSanitizing()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PlayerNameService.cs"));
+        var source = CharacterCompanionsSource.PlayerName.Read();
         var descriptorSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
             "Domain",
             "Character",
             "PlayerDescriptorService.cs"));
-        var inputValidationMethod = ExtractMethod(source, "public string ValidateKnownNameInput(string name)");
-        var assignmentValidationMethod = ExtractMethod(source, "public string ValidateKnownNameAssignment(uint observer, uint target, string name)");
-        var setMethod = ExtractMethod(source, "public void SetKnownName(uint observer, uint target, string name)");
+        var inputValidationMethod = CharacterCompanionsSource.PlayerName.Member("ValidateKnownNameInput");
+        var assignmentValidationMethod = CharacterCompanionsSource.PlayerName.Member("ValidateKnownNameAssignment");
+        var setMethod = CharacterCompanionsSource.PlayerName.Member("SetKnownName");
         var unknownDisplayMethod = ExtractMethod(descriptorSource, "public void SetUnknownDisplayName(uint player, string name)");
 
         source.Should().Contain("public const int MaxKnownNameLength = 64;");
@@ -310,15 +261,10 @@ public class PlayerNameRecognitionTests
     public void KnownNameStorage_RejectsAliasesUsedByAnotherOnlineCharacter()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PlayerNameService.cs"));
-        var setMethod = ExtractMethod(source, "public void SetKnownName(uint observer, uint target, string name)");
-        var assignmentValidationMethod = ExtractMethod(source, "public string ValidateKnownNameAssignment(uint observer, uint target, string name)");
-        var uniquenessMethod = ExtractMethod(source, "private string ValidateKnownNameIsUnique(");
+        var source = CharacterCompanionsSource.PlayerName.Read();
+        var setMethod = CharacterCompanionsSource.PlayerName.Member("SetKnownName");
+        var assignmentValidationMethod = CharacterCompanionsSource.PlayerName.Member("ValidateKnownNameAssignment");
+        var uniquenessMethod = CharacterCompanionsSource.PlayerName.Member("ValidateKnownNameIsUnique");
 
         setMethod.Should().Contain("ValidateKnownNameAssignment(observer, target, name);");
         assignmentValidationMethod.Should().Contain("return ValidateKnownNameIsUnique(observer, target, sanitizedName);");
@@ -338,14 +284,9 @@ public class PlayerNameRecognitionTests
     public void PlayerTells_BlockAmbiguousDisplayNames()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PlayerNameService.cs"));
-        var tellMethod = ExtractMethod(source, "public void PreventAmbiguousTellTargets()");
-        var countMethod = ExtractMethod(source, "private int CountDisplayNameMatches(uint observer, string displayName)");
+        var source = CharacterCompanionsSource.PlayerName.Read();
+        var tellMethod = CharacterCompanionsSource.PlayerName.Member("PreventAmbiguousTellTargets");
+        var countMethod = CharacterCompanionsSource.PlayerName.Member("CountDisplayNameMatches");
 
         tellMethod.Should().Contain("ChatChannel.PlayerTell");
         tellMethod.Should().Contain("CountDisplayNameMatches(sender, displayName) <= 1");
@@ -365,12 +306,7 @@ public class PlayerNameRecognitionTests
     public void UnknownNames_UseGrayColorTokens()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PlayerNameService.cs"));
+        var source = CharacterCompanionsSource.PlayerName.Read();
         var descriptorSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -383,9 +319,9 @@ public class PlayerNameRecognitionTests
             "Entity",
             "Player.cs"));
 
-        var coloredDisplayMethod = ExtractMethod(source, "public string GetColoredDisplayName(uint observer, uint target)");
-        var coloredChatDisplayMethod = ExtractMethod(source, "public string GetColoredChatDisplayName(uint observer, uint target)");
-        var playerIdDisplayMethod = ExtractMethod(source, "public string GetDisplayNameByPlayerId(uint observer, string targetPlayerId, string fallbackName)");
+        var coloredDisplayMethod = CharacterCompanionsSource.PlayerName.Member("GetColoredDisplayName");
+        var coloredChatDisplayMethod = CharacterCompanionsSource.PlayerName.Member("GetColoredChatDisplayName");
+        var playerIdDisplayMethod = CharacterCompanionsSource.PlayerName.Member("GetDisplayNameByPlayerId");
         coloredDisplayMethod.Should().Contain("ColorToken.Gray(displayName)");
         coloredDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
         coloredDisplayMethod.Should().Contain("BuildColoredDisplayNameWithDescriptor(knownName, GetDisplayDescriptor(target))");
@@ -407,8 +343,8 @@ public class PlayerNameRecognitionTests
         descriptorSource.Should().Contain("public void SetUnknownDisplayName(uint player, string name)");
         source.Should().Contain("GetDisplayDescriptor(target)");
         source.Should().Contain("public void SendChatMessageWithChatNameOverride(uint observer, uint target, Action sendMessage)");
-        source.Should().Contain("private string BuildDisplayNameWithDescriptor(string primaryName, string descriptor)");
-        source.Should().Contain("private string BuildColoredDisplayNameWithDescriptor(string primaryName, string descriptor)");
+        source.Should().Contain("string BuildDisplayNameWithDescriptor(string primaryName, string descriptor)");
+        source.Should().Contain("string BuildColoredDisplayNameWithDescriptor(string primaryName, string descriptor)");
         source.Should().Contain("private string ResolveChatDisplayName(uint observer, uint target, out bool isUnknown)");
         source.Should().Contain("public bool ShouldShowDescriptorForNamedPlayers(uint observer)");
         source.Should().Contain("ShowDescriptorsForNamedPlayersByObserverId");
@@ -418,23 +354,23 @@ public class PlayerNameRecognitionTests
         ExtractMethod(descriptorSource, "public void SetUnknownDisplayName(uint player, string name)")
             .Should().Contain("dbPlayer.UnknownDisplayName = sanitizedName;");
 
-        var nameOverrideMethod = ExtractMethod(source, "private void ApplyNameOverride(uint observer, uint target)");
+        var nameOverrideMethod = CharacterCompanionsSource.PlayerName.Member("ApplyNameOverride");
         nameOverrideMethod.Should().Contain("UnknownNamePrefix");
         nameOverrideMethod.Should().Contain("GetNameOverrideSuffix(target, isUnknown)");
         nameOverrideMethod.Should().Contain("RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);");
         nameOverrideMethod.Should().NotContain("SetCreatureNameOverride");
 
-        var applyPlayerMethod = ExtractMethod(source, "private void ApplyNameOverridesForPlayer(uint player)");
+        var applyPlayerMethod = CharacterCompanionsSource.PlayerName.Member("ApplyNameOverridesForPlayer");
         applyPlayerMethod.Should().Contain("var ownDisplayName = ShouldShowOwnDescriptor(player)");
         applyPlayerMethod.Should().Contain("BuildDisplayNameWithDescriptor(GetName(player), unknownDisplayName)");
         applyPlayerMethod.Should().Contain("RenamePlugin.SetPCNameOverride(player, ownDisplayName, string.Empty, GetNameOverrideSuffix(player), PlayerNameOverrideType.Default, player);");
 
-        var resolveDisplayMethod = ExtractMethod(source, "private string ResolveDisplayName(uint observer, uint target, out bool isUnknown)");
+        var resolveDisplayMethod = CharacterCompanionsSource.PlayerName.Member("ResolveDisplayName");
         resolveDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
         resolveDisplayMethod.Should().Contain("BuildDisplayNameWithDescriptor(knownName, GetDisplayDescriptor(target))");
         resolveDisplayMethod.Should().Contain(": knownName");
 
-        var resolveChatDisplayMethod = ExtractMethod(source, "private string ResolveChatDisplayName(uint observer, uint target, out bool isUnknown)");
+        var resolveChatDisplayMethod = CharacterCompanionsSource.PlayerName.Member("ResolveChatDisplayName");
         resolveChatDisplayMethod.Should().Contain("GetIsDM(observer)");
         resolveChatDisplayMethod.Should().Contain("return BuildStaffDisplayName(target);");
         resolveChatDisplayMethod.Should().Contain("TryGetKnownName(observer, target, out var knownName)");
@@ -443,17 +379,17 @@ public class PlayerNameRecognitionTests
         resolveChatDisplayMethod.Should().NotContain("BuildDisplayNameWithDescriptor");
         resolveChatDisplayMethod.Should().NotContain("ShouldShowDescriptorForNamedPlayers(observer)");
 
-        var staffDisplayMethod = ExtractMethod(source, "private string BuildStaffDisplayName(uint target)");
+        var staffDisplayMethod = CharacterCompanionsSource.PlayerName.Member("BuildStaffDisplayName");
         staffDisplayMethod.Should().Contain("GetName(target)");
         staffDisplayMethod.Should().Contain("GetDisplayDescriptor(target)");
         staffDisplayMethod.Should().Contain("return $\"{trueName} [{ColorToken.Gray(unknownDisplayName)}]\";");
         staffDisplayMethod.Should().Contain("ColorToken.Gray(unknownDisplayName)");
 
-        var displayWithDescriptorMethod = ExtractMethod(source, "private string BuildDisplayNameWithDescriptor(string primaryName, string descriptor)");
+        var displayWithDescriptorMethod = CharacterCompanionsSource.PlayerName.Member("BuildDisplayNameWithDescriptor");
         displayWithDescriptorMethod.Should().Contain("return $\"{primaryName} [{ColorToken.Gray(descriptor)}]\";");
         displayWithDescriptorMethod.Should().NotContain("\\n");
 
-        var coloredDisplayWithDescriptorMethod = ExtractMethod(source, "private string BuildColoredDisplayNameWithDescriptor(string primaryName, string descriptor)");
+        var coloredDisplayWithDescriptorMethod = CharacterCompanionsSource.PlayerName.Member("BuildColoredDisplayNameWithDescriptor");
         coloredDisplayWithDescriptorMethod.Should().Contain("return $\"{ColorToken.GetPCColor(primaryName)} [{ColorToken.Gray(descriptor)}]\";");
         coloredDisplayWithDescriptorMethod.Should().NotContain("\\n");
     }
@@ -462,12 +398,7 @@ public class PlayerNameRecognitionTests
     public void UnknownNames_GenerateStableDescriptorsFromAppearanceAndBaseStats()
     {
         var root = FindRepositoryRoot();
-        var playerNameSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PlayerNameService.cs"));
+        var playerNameSource = CharacterCompanionsSource.PlayerName.Read();
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -514,12 +445,7 @@ public class PlayerNameRecognitionTests
             "SWLOR.Game.Server",
             "Feature",
             "PlayerInitialization.cs"));
-        var playerNameSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PlayerNameService.cs"));
+        var playerNameSource = CharacterCompanionsSource.PlayerName.Read();
         var appearanceSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
@@ -565,12 +491,7 @@ public class PlayerNameRecognitionTests
             "GuiDefinition",
             "ViewModel",
             "SettingsViewModel.cs"));
-        var playerNameSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PlayerNameService.cs"));
+        var playerNameSource = CharacterCompanionsSource.PlayerName.Read();
 
         definitionSource.Should().Contain("Identity");
         definitionSource.Should().NotContain("Nameplates");

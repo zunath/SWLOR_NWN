@@ -1634,26 +1634,29 @@ namespace SWLOR.Game.Server.Service
                 // Auto-attack riders run inside GetDamageRoll. Dispatching another damage event
                 // here would re-enter the native attack and overwrite its shared combat context.
                 // That hook has no OBJECT_SELF, so a bare DelayCommand is dropped; the module owns it.
-                void Dispatch() => AssignCommand(GetModule(), () => DelayCommand(0.0f, () =>
+                void Dispatch()
                 {
-                    if (!GetIsObjectValid(attacker))
-                        return;
-
                     // Measure from where the primary target stands when the hit lands.
                     var origin = GetIsObjectValid(defender) ? GetLocation(defender) : rolledOrigin;
-                    var targets = SelectAutoAttackSplashSecondaryTargets(
-                        AbilityTargeting.GetHostileTargetsNearLocation(attacker, origin, radius, maxTargets: 0),
-                        defender, maximumTargets);
-                    using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(attacker, StatType.AutoAttackSplashDamage);
-                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Smoke_Puff), origin);
-                    if (GetIsObjectValid(defender) && !GetIsDead(defender))
-                        ApplyTriggeredDamage(attacker, defender, damage, CombatDamageType.Physical, skillType);
-                    foreach (var target in targets)
+                    AssignCommand(GetModule(), () => DelayCommand(0.0f, () =>
                     {
-                        if (GetIsObjectValid(target) && !GetIsDead(target))
-                            ApplyTriggeredDamage(attacker, target, damage, CombatDamageType.Physical, skillType);
-                    }
-                }));
+                        if (!GetIsObjectValid(attacker))
+                            return;
+
+                        var targets = SelectAutoAttackSplashSecondaryTargets(
+                            AbilityTargeting.GetHostileTargetsNearLocation(attacker, origin, radius, maxTargets: 0),
+                            defender, maximumTargets);
+                        using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(attacker, StatType.AutoAttackSplashDamage);
+                        ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Smoke_Puff), origin);
+                        if (GetIsObjectValid(defender) && !GetIsDead(defender))
+                            ApplyTriggeredDamage(attacker, defender, damage, CombatDamageType.Physical, skillType);
+                        foreach (var target in targets)
+                        {
+                            if (GetIsObjectValid(target) && !GetIsDead(target))
+                                ApplyTriggeredDamage(attacker, target, damage, CombatDamageType.Physical, skillType);
+                        }
+                    }));
+                }
 
                 // A native swing or shot rolls when it starts and lands later, when the engine
                 // applies its damage; the splash lands with that hit.

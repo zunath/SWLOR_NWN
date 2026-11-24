@@ -37,12 +37,23 @@ public class ConvertedServicesTests
 
         var combat = List.Services.Should().ContainSingle(service => service.Name == "Combat").Subject;
         combat.Domain.Should().Be("Combat");
-        // The ability split added the ability magnitude and the impact geometry; the combat split added the damage roll, the defense memory, the rate modifiers, the repeated-target stacks, the damage taken effects, the damage reflection, and the ability activation cost, defense, offense and weapon parts.
+        // The ability split added the ability magnitude and the impact geometry; the combat split added the damage roll, the defense memory, the rate modifiers, the repeated-target stacks, the damage taken effects, the damage reflection, the ability activation cost, defense, offense and weapon parts, the dealt effects, the triggered damage, the guarded hit, its effects and the guard retaliation.
         combat.Extras.Select(extra => extra.Name).Should().Equal(
             "CombatAbilityActivation", "CombatAbilityBonus", "CombatAbilityCostEffects", "CombatAbilityDefenseEffects", "CombatAbilityHit", "CombatAbilityImpact", "CombatAbilityMagnitude", "CombatAbilityOffenseEffects", "CombatAbilityWeaponActivation",
             "CombatActivity", "CombatAttackTiming", "CombatDamageCatalog", "CombatDamageModifiers", "CombatDamageReflection", "CombatDamageRoll", "CombatDamageTaken", "CombatDamageTakenEffects",
-            "CombatDefenseMemory", "CombatFeedback", "CombatHitEffects", "CombatImpactGeometry", "CombatQueries", "CombatRateModifiers", "CombatRepeatedTarget",
-            "CombatResources", "CombatSuppression");
+            "CombatDealtEffects", "CombatDefenseMemory", "CombatFeedback", "CombatGuardRetaliation", "CombatGuardedHit", "CombatGuardedHitEffects", "CombatHitEffects", "CombatImpactGeometry", "CombatQueries", "CombatRateModifiers", "CombatRepeatedTarget",
+            "CombatResources", "CombatSuppression", "CombatTriggeredDamage");
+    }
+
+    [Test]
+    public void The_ability_records_of_the_recorder_are_their_own_converted_service_beside_the_recorder()
+    {
+        // The recorder split: the session core is a store behind ICombatRecordSession, not a service. The ability records are a
+        // service of their own (the domain map would count a part named Combat... under Combat), reached as GameServices.CombatRecordAbility.
+        List.Services.Should().ContainSingle(service => service.Name == "CombatRecorder").Which.Domain.Should().Be("Combat");
+        var ability = List.Services.Should().ContainSingle(service => service.Name == "CombatRecordAbility").Subject;
+        ability.Domain.Should().Be("Combat");
+        ability.Extras.Should().BeEmpty();
     }
 
     [Test]

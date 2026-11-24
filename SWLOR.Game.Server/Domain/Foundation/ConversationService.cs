@@ -30,13 +30,13 @@ namespace SWLOR.Game.Server.Domain.Foundation
     public class ConversationService : IConversationService
     {
         private readonly IGuiService _gui;
-        private readonly IPlayerNameService _playerName;
+        private readonly IDisplayNameLookup _playerName;
         private const string NuiConversationHandledLocal = "SWLOR_NUI_CONVO";
         private readonly Dictionary<string, ConversationGraph> _graphs = new();
 
         public ConversationRuntime Runtime { get; } = new();
 
-        public ConversationService(IGuiService gui, IPlayerNameService playerName)
+        public ConversationService(IGuiService gui, IDisplayNameLookup playerName)
         {
             _gui = gui;
             _playerName = playerName;

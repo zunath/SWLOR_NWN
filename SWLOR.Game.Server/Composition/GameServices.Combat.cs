@@ -75,6 +75,15 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>Damage reflection, the physical-to-Force conversion and Deflecting Return, a part of combat.</summary>
         public static ICombatDamageReflectionService CombatDamageReflection => FacadeAccessor.Resolve<ICombatDamageReflectionService>();
 
+        /// <summary>A guarded hit: the reduction, the stamina recovery, the retaliation and the guard enmity, a part of combat.</summary>
+        public static ICombatGuardedHitService CombatGuardedHit => FacadeAccessor.Resolve<ICombatGuardedHitService>();
+
+        /// <summary>The effects a guarded hit grants the guard, a part of combat.</summary>
+        public static ICombatGuardedHitEffectsService CombatGuardedHitEffects => FacadeAccessor.Resolve<ICombatGuardedHitEffectsService>();
+
+        /// <summary>The damage a guard returns on a guarded hit, a part of combat.</summary>
+        public static ICombatGuardRetaliationService CombatGuardRetaliation => FacadeAccessor.Resolve<ICombatGuardRetaliationService>();
+
         /// <summary>The random damage roll, a part of combat.</summary>
         public static ICombatDamageRollService CombatDamageRoll => FacadeAccessor.Resolve<ICombatDamageRollService>();
 
@@ -83,6 +92,12 @@ namespace SWLOR.Game.Server.Composition
 
         /// <summary>The combat log lines, a part of combat.</summary>
         public static ICombatFeedbackService CombatFeedback => FacadeAccessor.Resolve<ICombatFeedbackService>();
+
+        /// <summary>The steps a landed direct hit grants the attacker, a part of combat.</summary>
+        public static ICombatDealtEffectsService CombatDealtEffects => FacadeAccessor.Resolve<ICombatDealtEffectsService>();
+
+        /// <summary>Damage a trigger deals (a reflection, a proc, a splash or a retaliation), a part of combat.</summary>
+        public static ICombatTriggeredDamageService CombatTriggeredDamage => FacadeAccessor.Resolve<ICombatTriggeredDamageService>();
 
         /// <summary>The hit effects of combat, a part of combat.</summary>
         public static ICombatHitEffectsService CombatHitEffects => FacadeAccessor.Resolve<ICombatHitEffectsService>();
@@ -107,6 +122,9 @@ namespace SWLOR.Game.Server.Composition
         /// <c>CombatRecorder.IsRecording</c> first, through this property, which reads the same per-service slot the facade read.
         /// </summary>
         public static ICombatRecorderService CombatRecorder => FacadeAccessor.Resolve<ICombatRecorderService>();
+
+        /// <summary>The ability records of the combat recorder: casts, refusals, interruptions, impacts, costs and toggle notes, a part of the recorder.</summary>
+        public static ICombatRecordAbilityService CombatRecordAbility => FacadeAccessor.Resolve<ICombatRecordAbilityService>();
 
         /// <summary>The state and event queue of a combat recording, which the native damage and heal hooks open and close their scopes on.</summary>
         public static ICombatRecordSession CombatRecordSession => FacadeAccessor.Resolve<ICombatRecordSession>();

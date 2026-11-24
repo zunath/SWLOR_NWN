@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatResourcesService _resources;
         private readonly ICombatAttackTimingService _attackTiming;
         private readonly ICombatActivityService _combatActivity;
-        private readonly ICombatHitEffectsService _hitEffects;
+        private readonly ICombatTriggeredDamageService _triggeredDamage;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly IStatusEffectApplicationService _statusEffectApplication;
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatResourcesService resources,
             ICombatAttackTimingService attackTiming,
             ICombatActivityService combatActivity,
-            ICombatHitEffectsService hitEffects,
+            ICombatTriggeredDamageService triggeredDamage,
             IStatService stat,
             IStatusEffectService statusEffect,
             IStatusEffectApplicationService statusEffectApplication,
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _resources = resources;
             _attackTiming = attackTiming;
             _combatActivity = combatActivity;
-            _hitEffects = hitEffects;
+            _triggeredDamage = triggeredDamage;
             _stat = stat;
             _statusEffect = statusEffect;
             _statusEffectApplication = statusEffectApplication;
@@ -470,7 +470,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
 
             using var recorderAttribution = _combatRecorder.BeginStatTriggerAttribution(defender, StatType.MeleeDamageTakenPoisonDamage);
-            var appliedDamage = _hitEffects.ApplyTriggeredDamage(defender, attacker, damage, CombatDamageType.Poison);
+            var appliedDamage = _triggeredDamage.ApplyTriggeredDamage(defender, attacker, damage, CombatDamageType.Poison);
             if (appliedDamage <= 0)
                 return;
 

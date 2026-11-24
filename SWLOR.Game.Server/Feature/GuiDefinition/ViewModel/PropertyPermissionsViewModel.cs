@@ -416,7 +416,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return new List<Player>();
 
             var playersById = new Dictionary<string, Player>();
-            var knownPlayerIds = GameServices.PlayerName.SearchKnownPlayerIdsByName(Player, SearchText, int.MaxValue);
+            var knownPlayerIds = GameServices.PlayerKnownName.SearchKnownPlayerIdsByName(Player, SearchText, int.MaxValue);
             foreach (var player in SearchPlayersByIds(knownPlayerIds))
             {
                 playersById[player.Id] = player;

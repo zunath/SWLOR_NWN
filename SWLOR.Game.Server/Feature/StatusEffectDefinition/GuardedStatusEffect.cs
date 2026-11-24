@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (!IsProtectionActive(defender))
                 return;
 
-            GameServices.CombatDamageTaken.TrackGuardedHit(Source);
+            GameServices.CombatGuardedHitEffects.TrackGuardedHit(Source);
         }
 
         private void RefreshGuardBenefit(uint creature)

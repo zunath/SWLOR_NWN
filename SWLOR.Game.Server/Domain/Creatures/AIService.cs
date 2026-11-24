@@ -18,19 +18,19 @@ using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 namespace SWLOR.Game.Server.Domain.Creatures
 {
     /// <summary>
-    /// Creature AI: the creature event logic, the combat leash, the aggro aura, the ally cache and the profile decision
-    /// engine (profiles, per-creature state and action selection) that used to be static in <c>Service.AI</c> and
-    /// <c>SWLOR.Game.Server.Domain.Creatures.NPCAI</c>, moved here unchanged. The event handlers run on the container's
-    /// instance; static callers reach it through <c>GameServices.AI</c>.
+    /// Creature AI: the profile tables, the per-creature state and flags, the ally cache, the combat leash and the profile
+    /// decision engine (profiles, per-creature state and action selection) that used to be static in <c>Service.AI</c> and
+    /// <c>SWLOR.Game.Server.Domain.Creatures.NPCAI</c>, moved here unchanged. The creature event handlers are on
+    /// <see cref="AICreatureEventService"/> and the aggro aura on <see cref="AIAggroService"/>; static callers reach this
+    /// instance through <c>GameServices.AI</c>.
     /// </summary>
-    public class AIService : IAIService, IStealthAggroListener
+    public class AIService : IAIService
     {
         public const string ProfileLocalVariable = "AI_PROFILE";
         public const string ProfileIdLocalVariable = "AI_PROFILE_ID";
 
         private const float CombatLeashRadius = 45f;
         private const float LeashEvadeMovementRateFactor = 3.0f;
-        private const int ProximityEnmityAmount = 1;
         private const string LeashEvadeRestorePlotFlagVariable = "AI_LEASH_EVADE_RESTORE_PLOT_FLAG";
         private const string LeashEvadeRestoreMovementRateVariable = "AI_LEASH_EVADE_RESTORE_MOVEMENT_RATE";
         private const string LeashEvadeReturnQueuedVariable = "AI_LEASH_EVADE_RETURN_QUEUED";
@@ -43,14 +43,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly IActivityService _activity;
         private readonly ICompanionControlStoreService _companionControlStore;
         private readonly ICompanionTargetAuthorityService _companionTargetAuthority;
-        private readonly IConversationMenuService _conversationMenu;
-        private readonly IConversationService _conversation;
         private readonly Lazy<IEnmityService> _enmity;
-        private readonly Lazy<IEspionageInfiltrationService> _espionageInfiltration;
         private readonly IPerkService _perk;
         private readonly ICreatureStatService _stat;
         private readonly IStatusEffectService _statusEffect;
-        private readonly IStealthService _stealth;
 
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
@@ -68,14 +64,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
             IActivityService activity,
             ICompanionControlStoreService companionControlStore,
             ICompanionTargetAuthorityService companionTargetAuthority,
-            IConversationMenuService conversationMenu,
-            IConversationService conversation,
             Lazy<IEnmityService> enmity,
-            Lazy<IEspionageInfiltrationService> espionageInfiltration,
             IPerkService perk,
             ICreatureStatService stat,
-            IStatusEffectService statusEffect,
-            IStealthService stealth)
+            IStatusEffectService statusEffect)
         {
             _party = party;
             _companions = companions;
@@ -85,14 +77,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
             _activity = activity;
             _companionControlStore = companionControlStore;
             _companionTargetAuthority = companionTargetAuthority;
-            _conversationMenu = conversationMenu;
-            _conversation = conversation;
             _enmity = enmity;
-            _espionageInfiltration = espionageInfiltration;
             _perk = perk;
             _stat = stat;
             _statusEffect = statusEffect;
-            _stealth = stealth;
         }
 
         [BootPhase(BootReload.Rerun)]
@@ -101,47 +89,6 @@ namespace SWLOR.Game.Server.Domain.Creatures
         {
             CacheProfiles();
             ValidateProfiles();
-        }
-
-        /// <summary>
-        /// Gives stealth this service as the listener of its detection notices. A reload runs boot handlers that rerun before it
-        /// adopts the carried state, so the list is full when the first detection runs.
-        /// </summary>
-        [BootPhase(BootReload.Rerun)]
-        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
-        public void RegisterStealthAggroListener()
-        {
-            _stealth.RegisterAggroListener(this);
-        }
-
-        [NWNEventHandler(ScriptName.OnDMToggleAIAfter)]
-        public void DMToggleAIAfter()
-        {
-            var creature = StringToObject(EventsPlugin.GetEventData("OBJECT"));
-            if (!GetIsObjectValid(creature) ||
-                GetObjectType(creature) != ObjectType.Creature)
-            {
-                return;
-            }
-
-            if (!CreatureAIRules.IsCreatureAIEnabled(creature))
-            {
-                ClearAIState(creature);
-            }
-        }
-
-        /// <summary>
-        /// Entry point for creature heartbeat logic.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureHeartbeatAfter)]
-        public void CreatureHeartbeat()
-        {
-            if (!CreatureAIRules.IsCreatureAIEnabled(OBJECT_SELF))
-                return;
-
-            RestoreNPCStats(true);
-            ProcessFlags();
-            AttackHighestEnmityTarget(OBJECT_SELF);
         }
 
         /// <summary>
@@ -156,241 +103,6 @@ namespace SWLOR.Game.Server.Domain.Creatures
             // This is a stripped-down version of the default NWN perception event.
             // We handle most of our perception logic with the aggro aura effect.
             ProcessCreatureAllies();
-        }
-
-        /// <summary>
-        /// Entry point for creature combat round end logic.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureRoundEndAfter)]
-        public void CreatureCombatRoundEnd()
-        {
-            var creature = OBJECT_SELF;
-            if (!CreatureAIRules.IsCreatureAIEnabled(creature))
-                return;
-
-            var handled = false;
-            if (!_activity.IsBusy(creature))
-            {
-                if (TryStartLeashEvade(creature, GetHighestEnmityTarget(creature)))
-                    return;
-
-                handled = ProcessTrigger(creature, AITriggerType.CombatRound);
-            }
-
-            if (!handled)
-                AttackHighestEnmityTarget(creature);
-        }
-
-        /// <summary>
-        /// Entry point for creature conversation logic.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureConversationAfter)]
-        public void CreatureConversation()
-        {
-            var owner = OBJECT_SELF;
-            var conversation = GetLocalString(owner, "CONVERSATION");
-            if (!string.IsNullOrWhiteSpace(conversation))
-            {
-                var talker = GetLastSpeaker();
-                if (_conversation.TryGetGraph(conversation, out _))
-                    _conversation.Start(talker, owner, conversation);
-                else if (!_conversationMenu.TryStart(talker, owner, conversation))
-                    AssignCommand(talker, () => ActionStartConversation(owner, conversation, true, false));
-            }
-        }
-
-        /// <summary>
-        /// Entry point for creature physical attacked logic
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureAttackAfter)]
-        public void CreaturePhysicalAttacked()
-        {
-            var creature = OBJECT_SELF;
-            if (!CreatureAIRules.IsCreatureAIEnabled(creature))
-                return;
-
-            if (CreatureAIRules.IsLeashEvading(creature))
-                return;
-
-            if (TryStartLeashEvade(creature, GetHighestOrEventTarget(creature, GetLastAttacker(creature))))
-                return;
-
-            if (!ProcessTrigger(creature, AITriggerType.Attacked, GetLastAttacker(creature)))
-                AttackHighestEnmityTarget(creature);
-        }
-
-        /// <summary>
-        /// Entry point for creature damaged logic
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureDamagedAfter)]
-        public void CreatureDamaged()
-        {
-            var creature = OBJECT_SELF;
-            if (!CreatureAIRules.IsCreatureAIEnabled(creature))
-                return;
-
-            if (CreatureAIRules.IsLeashEvading(creature))
-                return;
-
-            if (TryStartLeashEvade(creature, GetHighestOrEventTarget(creature, GetLastDamager(creature))))
-                return;
-
-            if (!ProcessTrigger(creature, AITriggerType.Damaged, GetLastDamager(creature)))
-                AttackHighestEnmityTarget(creature);
-        }
-
-        /// <summary>
-        /// Entry point for creature death logic
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
-        public void CreatureDeath()
-        {
-            ProcessTrigger(OBJECT_SELF, AITriggerType.Death);
-            RemoveFromAlliesCache();
-        }
-
-        /// <summary>
-        /// Entry point for creature disturbed logic
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureDisturbedAfter)]
-        public void CreatureDisturbed()
-        {
-            var creature = OBJECT_SELF;
-            if (!CreatureAIRules.IsCreatureAIEnabled(creature))
-                return;
-
-            if (!ProcessTrigger(creature, AITriggerType.Disturbed))
-                AttackHighestEnmityTarget(creature);
-        }
-
-        /// <summary>
-        /// Entry point for creature spawn logic
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureSpawnAfter)]
-        public void CreatureSpawn()
-        {
-            var creature = OBJECT_SELF;
-
-            SetLocalString(creature, "X2_SPECIAL_COMBAT_AI_SCRIPT", "xxx");
-            LoadNPCStats();
-            ApplyCreatureMovementRate(creature);
-            LoadAggroEffect();
-            DoVFX();
-            SetLocalLocation(creature, "HOME_LOCATION", GetLocation(creature));
-            ProcessTrigger(creature, AITriggerType.Spawn);
-        }
-
-        /// <summary>
-        /// Entry point for creature rested logic
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureRestedAfter)]
-        public void CreatureRested()
-        {
-        }
-
-        /// <summary>
-        /// Entry point for creature spell cast at logic
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureSpellCastAfter)]
-        public void CreatureSpellCastAt()
-        {
-        }
-
-        /// <summary>
-        /// Entry point for creature user defined logic
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureUserDefinedAfter)]
-        public void CreatureUserDefined()
-        {
-        }
-
-        /// <summary>
-        /// Entry point for creature blocked logic
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureBlockedAfter)]
-        public void CreatureBlocked()
-        {
-            var creature = OBJECT_SELF;
-            var blocker = GetBlockingDoor();
-            if (!CreatureAIRules.IsCreatureAIEnabled(creature) ||
-                CreatureAIRules.IsLeashEvading(creature) ||
-                GetObjectType(blocker) != ObjectType.Creature)
-            {
-                return;
-            }
-
-            ResumeAttackAfterActionsCleared(creature);
-        }
-
-        /// <summary>
-        /// When a creature enters the aggro aura of another creature, increase their enmity and start the aggro process.
-        /// Invisible creatures do not trigger this.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureAggroEnter)]
-        public void CreatureAggroEnter()
-        {
-            var entering = GetEnteringObject();
-            var self = GetAreaOfEffectCreator(OBJECT_SELF);
-            if (!CreatureAIRules.IsCreatureAIEnabled(self))
-                return;
-
-            if (CreatureAIRules.IsLeashEvading(self))
-                return;
-
-            // Target is invisible
-            if (GetHasEffect(entering, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility))
-            {
-                return;
-            }
-
-            if (!CreatureAIRules.IsInAggroRange(self, entering))
-                return;
-
-            if (!GetIsEnemy(entering, self))
-            {
-                var attackTarget = GetHighestEnmityTarget(entering);
-                // Non-enemy entered aggro range. If they're the same faction and fighting someone, help them out!
-                if (GetFactionEqual(entering, self) &&
-                    GetIsEnemy(attackTarget, self) &&
-                    CreatureAIRules.IsInAggroRange(self, attackTarget))
-                {
-                    TryAddProximityEnmity(attackTarget, self);
-                }
-
-                return;
-            }
-
-            TryBeginInfiltration(entering, self);
-            if (!CanAcquireAggro(self, entering))
-                return;
-
-            TryAcquireAggro(self, entering);
-        }
-
-        /// <summary>
-        /// When a creature exits the aggro aura of another creature,
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureAggroExit)]
-        public void CreatureAggroExit()
-        {
-            var exiting = GetExitingObject();
-            var self = GetAreaOfEffectCreator(OBJECT_SELF);
-            if (!CreatureAIRules.IsCreatureAIEnabled(self) || !GetIsObjectValid(exiting))
-                return;
-
-            CompleteInfiltration(exiting, self);
-            RemoveProximityEnmity(exiting, self);
-
-            if (!_creatureAllies.TryGetValue(self, out var allies))
-                return;
-
-            foreach (var ally in allies)
-            {
-                if (!CreatureAIRules.IsCreatureAIEnabled(ally) || CreatureAIRules.IsInAggroRange(ally, exiting))
-                    continue;
-
-                RemoveProximityEnmity(exiting, ally);
-            }
         }
 
         public bool ProcessTrigger(
@@ -426,62 +138,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
         }
 
         /// <summary>
-        /// Returns whether a creature has an effect.
-        /// </summary>
-        /// <param name="effectType">The type of effect to look for.</param>
-        /// <param name="creature">The creature to check</param>
-        /// <returns>true if creature has the effect, false otherwise</returns>
-        private bool GetHasEffect(uint creature, EffectTypeScript effectType, params EffectTypeScript[] otherEffectTypes)
-        {
-            var effect = GetFirstEffect(creature);
-            while (GetIsEffectValid(effect))
-            {
-                var type = GetEffectType(effect);
-
-                if (type == effectType || otherEffectTypes.Contains(type))
-                {
-                    return true;
-                }
-                effect = GetNextEffect(creature);
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// When the creature spawns, add an AOE effect to the creature which will be used to process aggro ranges.
-        /// </summary>
-        private void LoadAggroEffect()
-        {
-            var effect = SupernaturalEffect(EffectAreaOfEffect(AreaOfEffect.CustomAoe, "crea_aggro_enter", string.Empty, "crea_aggro_exit"));
-            effect = TagEffect(effect, "AGGRO_AOE");
-            ApplyEffectToObject(DurationType.Permanent, effect, OBJECT_SELF);
-        }
-
-        private void DoVFX()
-        {
-            // Allow builders to put permanent effects on creatures - e.g. to make them statues, or make them glow.
-            // Index of standard VFX effects here: https://nwnlexicon.com/index.php?title=Vfx_dur
-            var vfx = GetLocalInt(OBJECT_SELF, "PERMANENT_VFX_ID");
-            if (vfx > 0)
-                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect((VisualEffect)vfx), OBJECT_SELF);
-
-            // Cutscene paralysis - for statues.
-            var paralyze = GetLocalInt(OBJECT_SELF, "PARALYZE");
-            if (paralyze > 0)
-                ApplyEffectToObject(DurationType.Permanent, SupernaturalEffect(EffectCutsceneParalyze()), OBJECT_SELF);
-
-            // Daze - for creatures that should not be able to attack.
-            var daze = GetLocalInt(OBJECT_SELF, "DAZE");
-            if (daze > 0)
-                ApplyEffectToObject(DurationType.Permanent, SupernaturalEffect(EffectDazed()), OBJECT_SELF);
-        }
-
-        /// <summary>
         /// When a creature's heartbeat fires, if they have the RandomWalk or ReturnHome AI flag,
         /// and they are not currently preoccupied (combat, talking, etc.) force them to randomly walk or return home if they are too far away.
         /// </summary>
-        private void ProcessFlags()
+        public void ProcessFlags()
         {
             var self = OBJECT_SELF;
             var aiFlags = GetAIFlag(self);
@@ -603,6 +263,14 @@ namespace SWLOR.Game.Server.Domain.Creatures
             }
 
             _creatureAllies.Remove(self);
+        }
+
+        /// <summary>
+        /// The creatures a creature has seen of its own faction, for the aggro handlers that call allies in.
+        /// </summary>
+        public bool TryGetAllies(uint creature, out HashSet<uint> allies)
+        {
+            return _creatureAllies.TryGetValue(creature, out allies);
         }
 
         /// <summary>
@@ -810,7 +478,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             return TryStartLeashEvade(creature, target);
         }
 
-        private bool TryStartLeashEvade(uint creature, uint target)
+        public bool TryStartLeashEvade(uint creature, uint target)
         {
             // Removing control effects can request another attack before evade cleanup finishes.
             // Report it as handled so callers neither restart cleanup nor resume combat.
@@ -872,14 +540,6 @@ namespace SWLOR.Game.Server.Domain.Creatures
             return true;
         }
 
-        private uint GetHighestOrEventTarget(uint creature, uint eventTarget)
-        {
-            var highestEnmityTarget = GetHighestEnmityTarget(creature);
-            return GetIsObjectValid(highestEnmityTarget)
-                ? highestEnmityTarget
-                : eventTarget;
-        }
-
         private void ApplyLeashEvadeMovementRate(uint creature)
         {
             if (!GetIsObjectValid(creature))
@@ -913,97 +573,6 @@ namespace SWLOR.Game.Server.Domain.Creatures
             {
                 _statusEffect.RemoveStatusEffect(creature, effect.GetType(), effect.Source, false);
             }
-        }
-
-        /// <summary>
-        /// Re-enters the normal proximity-aggro path when a later native Spot check reveals a
-        /// stealthed player who is still inside the observer's aggro aura. Non-AI observers and
-        /// targets that no longer satisfy the ordinary aggro guards are ignored.
-        /// </summary>
-        public void TryAcquireAggroAfterDetection(uint observer, uint target)
-        {
-            if (!CreatureAIRules.IsCreatureAIEnabled(observer))
-                return;
-
-            if (!TryAcquireAggro(observer, target))
-                return;
-
-            Log.WriteStructured(
-                LogGroup.AI,
-                "Stealth detection acquired normal proximity aggro: Observer={Observer} Target={Target}",
-                observer,
-                target);
-        }
-
-        public void AcquireAggroFromNearbyEnemies(uint target)
-        {
-            foreach (var enemy in ObjectSnapshot.InShape(Shape.Sphere, CreatureAIRules.AggroRadius, GetLocation(target), false, ObjectType.Creature))
-            {
-                if (!GetIsPC(enemy) && CreatureAIRules.IsCreatureAIEnabled(enemy))
-                    TryAcquireAggro(enemy, target);
-            }
-        }
-
-        private bool TryAcquireAggro(uint self, uint target)
-        {
-            if (self == target ||
-                !GetIsObjectValid(target) ||
-                GetIsDead(target) ||
-                GetHasEffect(target, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility) ||
-                !CreatureAIRules.IsInAggroRange(self, target) ||
-                !GetIsEnemy(target, self) ||
-                TryStartLeashEvade(self, target) ||
-                !TryAddProximityEnmity(target, self))
-            {
-                return false;
-            }
-
-            ProcessTrigger(self, AITriggerType.Aggro, target);
-            AddNearbyAllyProximityEnmity(self, target);
-            return true;
-        }
-
-        private void AddNearbyAllyProximityEnmity(uint self, uint target)
-        {
-            if (!_creatureAllies.TryGetValue(self, out var allies))
-                return;
-
-            foreach (var ally in allies)
-            {
-                if (!CreatureAIRules.IsCreatureAIEnabled(ally)) continue;
-                if (!GetIsEnemy(target, ally)) continue;
-                if (GetDistanceBetween(self, ally) > 5f) continue;
-                if (!LineOfSightObject(target, ally)) continue;
-
-                TryAddProximityEnmity(target, ally);
-            }
-        }
-
-        private bool TryAddProximityEnmity(uint target, uint enemy)
-        {
-            if (HasProximityEnmity(target, enemy))
-                return false;
-
-            ModifyProximityEnmity(target, enemy, ProximityEnmityAmount);
-            return true;
-        }
-
-        private void RemoveProximityEnmity(uint target, uint enemy)
-        {
-            if (TryStartLeashEvade(enemy, target))
-                return;
-
-            if (!RemoveTrackedProximityEnmity(target, enemy))
-                return;
-
-            var nextTarget = GetHighestEnmityTarget(enemy);
-            if (GetIsObjectValid(nextTarget))
-            {
-                AttackHighestEnmityTarget(enemy);
-                return;
-            }
-
-            StopCombatAfterProximityLoss(enemy);
         }
 
         /// <summary>
@@ -1802,8 +1371,6 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         protected virtual void AttackHighestEnmityTarget(uint creature) => _enmity.Value.AttackHighestEnmityTarget(creature);
 
-        protected virtual void ResumeAttackAfterActionsCleared(uint creature) => _enmity.Value.ResumeAttackAfterActionsCleared(creature);
-
         protected virtual void IssueAttackCommand(uint creature, uint target) => _enmity.Value.IssueAttackCommand(creature, target);
 
         protected virtual void ClearEnmityTable(uint enemy) => _enmity.Value.ClearEnmityTable(enemy);
@@ -1812,23 +1379,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         protected virtual void ModifyEnmity(uint creature, uint enemy, int amount) => _enmity.Value.ModifyEnmity(creature, enemy, amount);
 
-        protected virtual bool HasProximityEnmity(uint creature, uint enemy) => _enmity.Value.HasProximityEnmity(creature, enemy);
-
-        protected virtual void ModifyProximityEnmity(uint creature, uint enemy, int amount) => _enmity.Value.ModifyProximityEnmity(creature, enemy, amount);
-
-        protected virtual bool RemoveTrackedProximityEnmity(uint creature, uint enemy) => _enmity.Value.RemoveProximityEnmity(creature, enemy);
-
-        protected virtual void RestoreNPCStats(bool outOfCombatRegen) => _stat.RestoreNPCStats(outOfCombatRegen, _enmity.Value);
-
-        protected virtual void LoadNPCStats() => _stat.LoadNPCStats();
-
         protected virtual void ApplyCreatureMovementRate(uint creature) => _stat.ApplyCreatureMovementRate(creature);
-
-        protected virtual bool TryBeginInfiltration(uint player, uint npc) => _espionageInfiltration.Value.TryBegin(player, npc);
-
-        protected virtual void CompleteInfiltration(uint player, uint npc) => _espionageInfiltration.Value.Complete(player, npc);
-
-        protected virtual bool CanAcquireAggro(uint observer, uint target) => _stealth.CanAcquireAggro(observer, target);
 
         protected virtual bool IsControlledCompanion(uint creature) => _companionControlStore.IsControlledCompanion(creature);
 

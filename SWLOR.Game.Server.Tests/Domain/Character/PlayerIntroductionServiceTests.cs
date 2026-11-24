@@ -78,25 +78,27 @@ public class PlayerIntroductionServiceTests
 
         var names = ScriptedProxy.Create<IPlayerNameService>(out _nameScript);
         _nameScript
-            .On("ValidateKnownNameInput", _ => _inputError)
             .On("SanitizeKnownName", arguments => ((string?)arguments[0])?.Trim() ?? string.Empty)
             .On("GetDisplayName", arguments => "Someone" + arguments[1])
             .On("GetColoredDisplayName", arguments => "[" + arguments[1] + "]")
             .On("GetAuditName", arguments => "Audit" + arguments[0])
-            .On("ValidateKnownNameAssignment", _ => _assignmentError)
-            .On("SetKnownName", arguments =>
-            {
-                _knownNameWrites.Add(((uint)arguments[0]!, (uint)arguments[1]!, (string)arguments[2]!));
-                _knownNames[arguments[0] + ":" + arguments[1]] = (string)arguments[2]!;
-                return null;
-            })
             .On("TryGetKnownName", arguments =>
             {
                 var found = _knownNames.TryGetValue(arguments[0] + ":" + arguments[1], out var name);
                 arguments[2] = name ?? string.Empty;
                 return found;
             });
-        _service = new BenchIntroductionService(names);
+        var knownNames = ScriptedProxy.Create<IPlayerKnownNameService>(out var knownNameScript);
+        knownNameScript
+            .On("ValidateKnownNameInput", _ => _inputError)
+            .On("ValidateKnownNameAssignment", _ => _assignmentError)
+            .On("SetKnownName", arguments =>
+            {
+                _knownNameWrites.Add(((uint)arguments[0]!, (uint)arguments[1]!, (string)arguments[2]!));
+                _knownNames[arguments[0] + ":" + arguments[1]] = (string)arguments[2]!;
+                return null;
+            });
+        _service = new BenchIntroductionService(names, knownNames);
     }
 
     [TearDown]
@@ -109,8 +111,8 @@ public class PlayerIntroductionServiceTests
 
     private sealed class BenchIntroductionService : PlayerIntroductionService
     {
-        public BenchIntroductionService(IPlayerNameService names)
-            : base(names, FacadeForwarder.For<IDisguiseService>(), FacadeForwarder.For<IRecastService>())
+        public BenchIntroductionService(IPlayerNameService names, IPlayerKnownNameService knownNames)
+            : base(names, knownNames, FacadeForwarder.For<IDisguiseService>(), FacadeForwarder.For<IRecastService>())
         {
         }
 
@@ -381,7 +383,7 @@ public class PlayerIntroductionServiceTests
     private sealed class TestableDefaultSeams : PlayerIntroductionService
     {
         public TestableDefaultSeams()
-            : base(null!, FacadeForwarder.For<IDisguiseService>(), FacadeForwarder.For<IRecastService>())
+            : base(null!, null!, FacadeForwarder.For<IDisguiseService>(), FacadeForwarder.For<IRecastService>())
         {
         }
 

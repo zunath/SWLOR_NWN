@@ -239,17 +239,18 @@ public class CombatAbilityImpactServiceTests
         var hitEffects = ScriptedProxy.Create<ICombatHitEffectsService>(out var hitEffectCalls);
         hitEffectCalls
             .On(nameof(ICombatHitEffectsService.ApplySourceStatusStackEffects), args => Log($"SourceStack {args[0]} {args[1]}"))
-            .On(nameof(ICombatHitEffectsService.ApplyTriggeredDamage), args =>
-            {
-                _log.Add($"Triggered {string.Join(" ", args.Select(arg => arg ?? "null"))}");
-                return (int)args[2]!;
-            })
             .On(nameof(ICombatHitEffectsService.SpreadPoisonFromTarget), args => Log($"SpreadPoison {args[0]} {args[1]}"));
-        var damageTaken = ScriptedProxy.Create<ICombatDamageTakenService>(out var damageTakenCalls);
+        var triggeredDamage = ScriptedProxy.Create<ICombatTriggeredDamageService>(out var triggeredDamageCalls);
+        triggeredDamageCalls.On(nameof(ICombatTriggeredDamageService.ApplyTriggeredDamage), args =>
+        {
+            _log.Add($"Triggered {string.Join(" ", args.Select(arg => arg ?? "null"))}");
+            return (int)args[2]!;
+        });
+        var guardedHitEffects = ScriptedProxy.Create<ICombatGuardedHitEffectsService>(out var guardedHitEffectsCalls);
         var damageTakenEffects = ScriptedProxy.Create<ICombatDamageTakenEffectsService>(out var damageTakenEffectsCalls);
         damageTakenEffectsCalls.On(nameof(ICombatDamageTakenEffectsService.ApplyAbilityGrantedAttackDeflectionEffects), args => Log($"GrantedDeflection {args[0]} {args[1]}"));
-        damageTakenCalls
-            .On(nameof(ICombatDamageTakenService.ConsumeGuardedHitNextSkillAbilityExposedDamageBonus), args =>
+        guardedHitEffectsCalls
+            .On(nameof(ICombatGuardedHitEffectsService.ConsumeGuardedHitNextSkillAbilityExposedDamageBonus), args =>
             {
                 _log.Add($"GuardedBonus {args[0]} {args[1]}");
                 return _guardedBonus;
@@ -361,7 +362,7 @@ public class CombatAbilityImpactServiceTests
             return default(CombatRecordAttributionScope);
         });
 
-        return new CombatAbilityImpactService(queries, resources, timing, activity, hitEffects, damageTaken, damageTakenEffects, stat, statusEffect,
+        return new CombatAbilityImpactService(queries, resources, timing, activity, hitEffects, triggeredDamage, guardedHitEffects, damageTakenEffects, stat, statusEffect,
             statusApplication, statusDuration, temporary, ability, enmity, _partyProxy, recorder, pairedRangedTraits);
     }
 

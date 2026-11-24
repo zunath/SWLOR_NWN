@@ -49,6 +49,9 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>Player names, known names and the AFK flag (the static facade <c>PlayerName</c> until it was removed).</summary>
         public static IPlayerNameService PlayerName => FacadeAccessor.Resolve<IPlayerNameService>();
 
+        /// <summary>The names a player gives other characters: validation, setting, forgetting and searching them.</summary>
+        public static IPlayerKnownNameService PlayerKnownName => FacadeAccessor.Resolve<IPlayerKnownNameService>();
+
         /// <summary>Racial appearances and race rules (the static facade <c>Race</c> until it was removed).</summary>
         public static IRaceService Race => FacadeAccessor.Resolve<IRaceService>();
 

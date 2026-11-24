@@ -27,12 +27,14 @@ namespace SWLOR.Game.Server.Domain.Character
 
         private readonly IDBService _db;
         private readonly IPlayerNameService _playerName;
+        private readonly IPlayerKnownNameService _playerKnownName;
         private readonly Lazy<IDisguiseService> _disguise;
 
-        public PlayerDescriptorService(IDBService db, IPlayerNameService playerName, Lazy<IDisguiseService> disguise)
+        public PlayerDescriptorService(IDBService db, IPlayerNameService playerName, IPlayerKnownNameService playerKnownName, Lazy<IDisguiseService> disguise)
         {
             _db = db;
             _playerName = playerName;
+            _playerKnownName = playerKnownName;
             _disguise = disguise;
         }
 
@@ -98,7 +100,7 @@ namespace SWLOR.Game.Server.Domain.Character
             if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 throw new ArgumentException("Unknown display names may only be set for player characters.");
 
-            var validationError = _playerName.ValidateKnownNameInput(name);
+            var validationError = _playerKnownName.ValidateKnownNameInput(name);
             if (!string.IsNullOrWhiteSpace(validationError))
                 throw new ArgumentException(validationError);
 

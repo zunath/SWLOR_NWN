@@ -22,8 +22,8 @@ public abstract class AIServiceTestBase
     // One accessor per part of the AI split; each is the one instance until its part moves, and a test calls the accessor of
     // the part that owns the member (Readmes/MaintainabilityRefactorCreaturesSplit.md).
     protected TestAIService Service => Bench.Service;
-    protected TestAIService Events => Bench.Events;
-    protected TestAIService Aggro => Bench.Aggro;
+    protected TestAICreatureEventService Events => Bench.Events;
+    protected TestAIAggroService Aggro => Bench.Aggro;
     protected TestAIService Decision => Bench.Decision;
     protected TestAIService Action => Bench.Action;
 

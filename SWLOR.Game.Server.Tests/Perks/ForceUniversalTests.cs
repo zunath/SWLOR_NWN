@@ -78,7 +78,7 @@ public class ForceUniversalTests
         source.Should().Contain("SkillType.Force,\n                ForcePush3BaseDamage,");
         source.Split("useUnscaledDamage: true", StringSplitOptions.None)
             .Should().HaveCount(4, "all three Force Push ranks must bypass stat and critical scaling");
-        source.Should().NotContain("GameServices.CombatHitEffects.ApplyTriggeredDamage(",
+        source.Should().NotContain("GameServices.CombatTriggeredDamage.ApplyTriggeredDamage(",
             "Force Push damage should retain the primary ability-damage pipeline");
     }
 

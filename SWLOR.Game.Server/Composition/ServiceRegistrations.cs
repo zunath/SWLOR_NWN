@@ -137,6 +137,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPlayerDescriptorService, PlayerDescriptorService>();
             services.AddSingleton<IPlayerIntroductionService, PlayerIntroductionService>();
             services.AddSingleton<IPlayerNameService, PlayerNameService>();
+            services.AddSingleton<IDisplayNameLookup>(provider => provider.GetRequiredService<IPlayerNameService>());
+            services.AddSingleton<IPlayerKnownNameService, PlayerKnownNameService>();
             services.AddSingleton<IRaceService, RaceService>();
             services.AddSingleton<IRoleplayXPDetectionService, RoleplayXPDetectionService>();
             services.AddSingleton<ISkillService, SkillService>();
@@ -186,14 +188,20 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatDamageTakenService, CombatDamageTakenService>();
             services.AddSingleton<ICombatDamageTakenEffectsService, CombatDamageTakenEffectsService>();
             services.AddSingleton<ICombatDamageReflectionService, CombatDamageReflectionService>();
+            services.AddSingleton<ICombatGuardedHitService, CombatGuardedHitService>();
+            services.AddSingleton<ICombatGuardedHitEffectsService, CombatGuardedHitEffectsService>();
+            services.AddSingleton<ICombatGuardRetaliationService, CombatGuardRetaliationService>();
             services.AddSingleton<ICombatDamageRollService, CombatDamageRollService>();
             services.AddSingleton<ICombatDefenseMemoryService, CombatDefenseMemoryService>();
             services.AddSingleton<ICombatFeedbackService, CombatFeedbackService>();
+            services.AddSingleton<ICombatDealtEffectsService, CombatDealtEffectsService>();
+            services.AddSingleton<ICombatTriggeredDamageService, CombatTriggeredDamageService>();
             services.AddSingleton<ICombatHitEffectsService, CombatHitEffectsService>();
             services.AddSingleton<ICombatImpactGeometryService, CombatImpactGeometryService>();
             services.AddSingleton<ICombatPointService, CombatPointService>();
             services.AddSingleton<ICombatQueriesService, CombatQueriesService>();
             services.AddSingleton<ICombatRatingService, CombatRatingService>();
+            services.AddSingleton<ICombatRecordAbilityService, CombatRecordAbilityService>();
             services.AddSingleton<ICombatRecordSession, CombatRecordSessionCore>();
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
             // The same instance, seen through the interfaces the lower domains and the platform own.
@@ -275,6 +283,8 @@ namespace SWLOR.Game.Server.Composition
 
             // Creatures
             services.AddSingleton<IAIService, AIService>();
+            services.AddSingleton<IAICreatureEventService, AICreatureEventService>();
+            services.AddSingleton<IAIAggroService, AIAggroService>();
             services.AddSingleton<IAIProfileDescription>(provider => provider.GetRequiredService<IAIService>());
             services.AddSingleton<ICombatLeash>(provider => provider.GetRequiredService<IAIService>());
             services.AddSingleton<ICompanionControlStoreService, CompanionControlStoreService>();
@@ -318,6 +328,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICapstoneProofService, CapstoneProofService>();
             // The same instance, seen through the interface Abilities owns for what a hostile ability does to a target.
             services.AddSingleton<IAbilityImpactObserver>(provider => provider.GetRequiredService<ICapstoneProofService>());
+            // The same instance, seen through the interface Combat owns for the record of a beast's hit.
+            services.AddSingleton<IBeastDamageRecording>(provider => provider.GetRequiredService<ICapstoneProofService>());
             services.AddSingleton<IFactionService, FactionService>();
             services.AddSingleton<IQuestService, QuestService>();
             // The same instance, seen through the quest advance the twin pistol trials own.

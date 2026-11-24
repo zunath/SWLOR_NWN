@@ -354,7 +354,7 @@ public class CombatSourceTests
     [TestCase("_autoAttackCycleCounts", typeof(CombatHitEffectsService))]
     [TestCase("_sourceStatusAutoAttackCycleCounts", typeof(CombatHitEffectsService))]
     [TestCase("_meleeAutoAttackCycleCounts", typeof(CombatHitEffectsService))]
-    [TestCase("MimicryTraitProcs", typeof(CombatHitEffectsService))]
+    [TestCase("MimicryTraitProcs", typeof(CombatDealtEffectsService))]
     [TestCase("_abilityHitResolutionOverride", typeof(CombatAbilityHitService))]
     [TestCase("_autoAttackHitResolutionOverride", typeof(CombatAbilityHitService))]
     public void ReflectionReachesTheHitTablesAndOverridesOfTheInstalledContainer(string name, Type owner)
@@ -371,7 +371,9 @@ public class CombatSourceTests
         field.DeclaringType.Should().Be(owner);
         object instance = owner == typeof(CombatHitEffectsService)
             ? facades.Get<ICombatHitEffectsService>()
-            : facades.Get<ICombatAbilityHitService>();
+            : owner == typeof(CombatDealtEffectsService)
+                ? facades.Get<ICombatDealtEffectsService>()
+                : facades.Get<ICombatAbilityHitService>();
         if (field.FieldType.IsValueType)
             CombatMembers.FieldValue<object>(name).Should().Be(field.GetValue(instance));
         else

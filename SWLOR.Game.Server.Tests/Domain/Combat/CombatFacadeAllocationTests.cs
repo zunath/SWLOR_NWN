@@ -756,13 +756,14 @@ public class CombatFacadeAllocationTests
         try
         {
             var (hit, effects) = InstallHitParts(scopes);
+            var guardedEffects = FacadeContainer.Current.Get<ICombatGuardedHitEffectsService>();
             var sink = 0;
             bool? forced = null;
             var reads = new (string Name, Action Part, Action Forwarder)[]
             {
                 // Ability hit roll.
                 ("ApplyRangedAbilityTargetDefenseReduction", () => hit.ApplyRangedAbilityTargetDefenseReduction(Attacker, Defender, SkillType.Rifle), () => GameServices.CombatAbilityHit.ApplyRangedAbilityTargetDefenseReduction(Attacker, Defender, SkillType.Rifle)),
-                ("ApplyGuardedHitNextAttackEffects", () => hit.ApplyGuardedHitNextAttackEffects(Attacker), () => GameServices.CombatAbilityHit.ApplyGuardedHitNextAttackEffects(Attacker)),
+                ("ApplyGuardedHitNextAttackEffects", () => guardedEffects.ApplyGuardedHitNextAttackEffects(Attacker), () => GameServices.CombatGuardedHitEffects.ApplyGuardedHitNextAttackEffects(Attacker)),
                 ("SetAbilityHitResolutionOverride", () => hit.SetAbilityHitResolutionOverride(null), () => GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null)),
                 ("SetAutoAttackHitResolutionOverride", () => hit.SetAutoAttackHitResolutionOverride(null), () => GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null)),
                 ("GetAutoAttackHitResolutionOverride", () => forced = hit.GetAutoAttackHitResolutionOverride(), () => forced = GameServices.CombatAbilityHit.GetAutoAttackHitResolutionOverride()),
@@ -801,12 +802,13 @@ public class CombatFacadeAllocationTests
         try
         {
             var (_, effects) = InstallHitParts(scopes);
+            var triggered = FacadeContainer.Current.Get<ICombatTriggeredDamageService>();
             var sink = 0;
             var reads = new (string Name, long Bytes, Action Part, Action Forwarder)[]
             {
                 ("ApplyAutoAttackDamageModifiers", 168, () => sink += effects.ApplyAutoAttackDamageModifiers(Attacker, Defender, 10, SkillType.Rifle), () => sink += GameServices.CombatHitEffects.ApplyAutoAttackDamageModifiers(Attacker, Defender, 10, SkillType.Rifle)),
                 ("ConsumeSuppressedAutoAttackDamageBonuses", 168, () => effects.ConsumeSuppressedAutoAttackDamageBonuses(Attacker, SkillType.Rifle), () => GameServices.CombatHitEffects.ConsumeSuppressedAutoAttackDamageBonuses(Attacker, SkillType.Rifle)),
-                ("ApplyTriggeredDamage(0)", 32, () => sink += effects.ApplyTriggeredDamage(Attacker, Defender, 0, CombatDamageType.Physical), () => sink += GameServices.CombatHitEffects.ApplyTriggeredDamage(Attacker, Defender, 0, CombatDamageType.Physical)),
+                ("ApplyTriggeredDamage(0)", 32, () => sink += triggered.ApplyTriggeredDamage(Attacker, Defender, 0, CombatDamageType.Physical), () => sink += GameServices.CombatTriggeredDamage.ApplyTriggeredDamage(Attacker, Defender, 0, CombatDamageType.Physical)),
                 ("ForgetHitEffectState", 192, () => effects.ForgetHitEffectState(Attacker), () => GameServices.CombatHitEffects.ForgetHitEffectState(Attacker)),
             };
 
@@ -839,6 +841,7 @@ public class CombatFacadeAllocationTests
         try
         {
             var (hit, effects) = InstallHitParts(scopes);
+            var triggered = FacadeContainer.Current.Get<ICombatTriggeredDamageService>();
             var sink = 0;
             var reads = new (string Name, Action Part, Action Forwarder)[]
             {
@@ -853,7 +856,7 @@ public class CombatFacadeAllocationTests
                 ("ApplyDamageDealtEffects(ability)", () => effects.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle, CombatDamageType.Physical, CombatDamageDeliveryType.Direct, true), () => GameServices.CombatHitEffects.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle, CombatDamageType.Physical, CombatDamageDeliveryType.Direct, true)),
                 ("ApplyCriticalHitEffects", () => effects.ApplyCriticalHitEffects(Attacker, Defender, 10, 2, true, SkillType.Rifle), () => GameServices.CombatHitEffects.ApplyCriticalHitEffects(Attacker, Defender, 10, 2, true, SkillType.Rifle)),
                 ("ApplyDefeatedEnemyEffects", () => effects.ApplyDefeatedEnemyEffects(Attacker, Defender), () => GameServices.CombatHitEffects.ApplyDefeatedEnemyEffects(Attacker, Defender)),
-                ("ApplyTriggeredDamage", () => sink += effects.ApplyTriggeredDamage(Attacker, Defender, 10, CombatDamageType.Physical, SkillType.Rifle), () => sink += GameServices.CombatHitEffects.ApplyTriggeredDamage(Attacker, Defender, 10, CombatDamageType.Physical, SkillType.Rifle)),
+                ("ApplyTriggeredDamage", () => sink += triggered.ApplyTriggeredDamage(Attacker, Defender, 10, CombatDamageType.Physical, SkillType.Rifle), () => sink += GameServices.CombatTriggeredDamage.ApplyTriggeredDamage(Attacker, Defender, 10, CombatDamageType.Physical, SkillType.Rifle)),
             };
 
             foreach (var (name, part, forwarder) in reads)
@@ -896,6 +899,8 @@ public class CombatFacadeAllocationTests
             var taken = InstallDamageTakenPart(scopes);
             var effects = FacadeContainer.Current.Get<ICombatDamageTakenEffectsService>();
             var reflection = FacadeContainer.Current.Get<ICombatDamageReflectionService>();
+            var guardedHit = FacadeContainer.Current.Get<ICombatGuardedHitService>();
+            var guardedEffects = FacadeContainer.Current.Get<ICombatGuardedHitEffectsService>();
             var memory = FacadeContainer.Current.Get<ICombatDefenseMemoryService>();
             var sink = 0;
             var reads = new (string Name, long Bytes, Action Part, Action Forwarder)[]
@@ -906,7 +911,7 @@ public class CombatFacadeAllocationTests
                 ("ApplyDamageTakenModifiers(typed)", 56, () => sink += taken.ApplyDamageTakenModifiers(Defender, 10, Attacker, CombatDamageType.Physical, CombatDamageDeliveryType.Direct, -10, true, true), () => sink += GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(Defender, 10, Attacker, CombatDamageType.Physical, CombatDamageDeliveryType.Direct, -10, true, true)),
                 ("ApplyDamageTakenModifiers(transferred)", 32, () => sink += taken.ApplyDamageTakenModifiers(Defender, 10, Attacker, CombatDamageType.Physical, CombatDamageDeliveryType.Transferred), () => sink += GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(Defender, 10, Attacker, CombatDamageType.Physical, CombatDamageDeliveryType.Transferred)),
                 ("TrackDeflection", 24, () => effects.TrackDeflection(Defender, DeflectionSource.Melee), () => GameServices.CombatDamageTakenEffects.TrackDeflection(Defender, DeflectionSource.Melee)),
-                ("ConsumeGuardedHitNextSkillAbilityExposedDamageBonus", 56, () => sink += taken.ConsumeGuardedHitNextSkillAbilityExposedDamageBonus(Defender, SkillType.Rifle), () => sink += GameServices.CombatDamageTaken.ConsumeGuardedHitNextSkillAbilityExposedDamageBonus(Defender, SkillType.Rifle)),
+                ("ConsumeGuardedHitNextSkillAbilityExposedDamageBonus", 56, () => sink += guardedEffects.ConsumeGuardedHitNextSkillAbilityExposedDamageBonus(Defender, SkillType.Rifle), () => sink += GameServices.CombatGuardedHitEffects.ConsumeGuardedHitNextSkillAbilityExposedDamageBonus(Defender, SkillType.Rifle)),
                 ("ApplyIncomingPhysicalToForceConversion", 72, () => { var damage = 10; sink += reflection.ApplyIncomingPhysicalToForceConversion(Attacker, Defender, CombatDamageType.Physical, ref damage); }, () => { var damage = 10; sink += GameServices.CombatDamageReflection.ApplyIncomingPhysicalToForceConversion(Attacker, Defender, CombatDamageType.Physical, ref damage); }),
                 ("ForgetDefenseMemory", 184, () => memory.ForgetDefenseMemory(Defender), () => GameServices.CombatDefenseMemory.ForgetDefenseMemory(Defender)),
                 ("BuildDeflectingReturnCombatLogMessage", 968, () => sink += reflection.BuildDeflectingReturnCombatLogMessage(Attacker, Defender, Attacker, 5).Length, () => sink += GameServices.CombatDamageReflection.BuildDeflectingReturnCombatLogMessage(Attacker, Defender, Attacker, 5).Length),
@@ -973,6 +978,8 @@ public class CombatFacadeAllocationTests
             var taken = InstallDamageTakenPart(scopes);
             var effects = FacadeContainer.Current.Get<ICombatDamageTakenEffectsService>();
             var reflection = FacadeContainer.Current.Get<ICombatDamageReflectionService>();
+            var guardedHit = FacadeContainer.Current.Get<ICombatGuardedHitService>();
+            var guardedEffects = FacadeContainer.Current.Get<ICombatGuardedHitEffectsService>();
             var memory = FacadeContainer.Current.Get<ICombatDefenseMemoryService>();
             var sink = 0;
             Func<int> forceDefense = () => 80;
@@ -992,10 +999,10 @@ public class CombatFacadeAllocationTests
                 ("ApplyDamageTakenEffects()", () => effects.ApplyDamageTakenEffects(), () => GameServices.CombatDamageTakenEffects.ApplyDamageTakenEffects()),
                 ("ApplyLowHPDamageTakenEffects", () => effects.ApplyLowHPDamageTakenEffects(Defender, 10), () => GameServices.CombatDamageTakenEffects.ApplyLowHPDamageTakenEffects(Defender, 10)),
                 ("ApplyLowHPGuardEffectFromProtectedTarget", () => effects.ApplyLowHPGuardEffectFromProtectedTarget(Attacker, Defender, 10), () => GameServices.CombatDamageTakenEffects.ApplyLowHPGuardEffectFromProtectedTarget(Attacker, Defender, 10)),
-                ("TrackGuardedHit", () => taken.TrackGuardedHit(Defender), () => GameServices.CombatDamageTaken.TrackGuardedHit(Defender)),
+                ("TrackGuardedHit", () => guardedEffects.TrackGuardedHit(Defender), () => GameServices.CombatGuardedHitEffects.TrackGuardedHit(Defender)),
                 ("TrackAvoidedAttack", () => effects.TrackAvoidedAttack(Defender, Attacker), () => GameServices.CombatDamageTakenEffects.TrackAvoidedAttack(Defender, Attacker)),
                 ("ApplyMeleeDamageTakenEffects", () => effects.ApplyMeleeDamageTakenEffects(Defender, Attacker), () => GameServices.CombatDamageTakenEffects.ApplyMeleeDamageTakenEffects(Defender, Attacker)),
-                ("ApplyGuardedHitModifiers", () => sink += taken.ApplyGuardedHitModifiers(Defender, Attacker, 10, CombatDamageType.Physical, true), () => sink += GameServices.CombatDamageTaken.ApplyGuardedHitModifiers(Defender, Attacker, 10, CombatDamageType.Physical, true)),
+                ("ApplyGuardedHitModifiers", () => sink += guardedHit.ApplyGuardedHitModifiers(Defender, Attacker, 10, CombatDamageType.Physical, true), () => sink += GameServices.CombatGuardedHit.ApplyGuardedHitModifiers(Defender, Attacker, 10, CombatDamageType.Physical, true)),
                 ("IsHostileAttackSource", () => sink += taken.IsHostileAttackSource(Defender, Attacker) ? 1 : 0, () => sink += GameServices.CombatDamageTaken.IsHostileAttackSource(Defender, Attacker) ? 1 : 0),
                 ("GetGuardDamageReductionPercent", () => sink += taken.GetGuardDamageReductionPercent(Defender), () => sink += GameServices.CombatDamageTaken.GetGuardDamageReductionPercent(Defender)),
                 ("HasRecentGuardedHit", () => sink += memory.HasRecentGuardedHit(Defender, 6f) ? 1 : 0, () => sink += GameServices.CombatDefenseMemory.HasRecentGuardedHit(Defender, 6f) ? 1 : 0),

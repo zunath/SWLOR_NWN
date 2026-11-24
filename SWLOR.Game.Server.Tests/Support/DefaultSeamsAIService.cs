@@ -17,14 +17,14 @@ namespace SWLOR.Game.Server.Tests.Support;
 public sealed partial class DefaultSeamsAIService : AIService
 {
     public DefaultSeamsAIService(IPartyRoster party, ICompanionLookup beastMastery, IDMPresenceService dmPresence)
-        : base(party, beastMastery, dmPresence, FacadeForwarder.For<IAbilityActivationService>(), FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICompanionControlStoreService>(), FacadeForwarder.For<ICompanionTargetAuthorityService>(), FacadeForwarder.For<IConversationMenuService>(), FacadeForwarder.For<IConversationService>(), FacadeForwarder.LazyFor<IEnmityService>(), FacadeForwarder.LazyFor<IEspionageInfiltrationService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStealthService>())
+        : base(party, beastMastery, dmPresence, FacadeForwarder.For<IAbilityActivationService>(), FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICompanionControlStoreService>(), FacadeForwarder.For<ICompanionTargetAuthorityService>(), FacadeForwarder.LazyFor<IEnmityService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatusEffectService>())
     {
+        Aggro = new DefaultSeamsAIAggroService(this);
     }
 
     // One accessor per part of the AI split; each is this instance until its part moves (see TestAIService).
     public DefaultSeamsAIService Service => this;
-    public DefaultSeamsAIService Events => this;
-    public DefaultSeamsAIService Aggro => this;
+    public DefaultSeamsAIAggroService Aggro { get; }
     public DefaultSeamsAIService Decision => this;
     public DefaultSeamsAIService Action => this;
 }

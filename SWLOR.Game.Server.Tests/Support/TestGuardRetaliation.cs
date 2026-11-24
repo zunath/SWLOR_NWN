@@ -22,33 +22,24 @@ using System.Reflection;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
-public sealed partial class TestDamageTaken : CombatDamageTakenService
+public sealed partial class TestGuardRetaliation : CombatGuardRetaliationService
 {
     private readonly List<string> _log;
     private readonly Func<int> _calculated;
 
-    public TestDamageTaken(
+    public TestGuardRetaliation(
         List<string> log,
         Func<int> calculated,
-        ICombatFeedbackService feedback,
         ICombatQueriesService queries,
-        ICombatResourcesService resources,
-        ICombatAttackTimingService attackTiming,
         ICombatDamageModifiersService damageModifiers,
-        ICombatAbilityHitService abilityHit,
-        ICombatHitEffectsService hitEffects,
+        ICombatTriggeredDamageService triggeredDamage,
         IStatService stat,
         ICombatRatingService combatRating,
-        IStatusEffectService statusEffect,
-        IStatusEffectCombatEventService statusCombat,
-        ITemporaryStatModifierService temporaryStatModifier,
         ICombatRecorderService combatRecorder,
-        IPvpCombatService pvpCombat,
         IEnmityService enmity,
-        ICombatDefenseMemoryService defenseMemory)
-        : base(feedback, queries, resources, attackTiming, damageModifiers, abilityHit, hitEffects, stat, combatRating,
-            statusEffect, statusCombat, temporaryStatModifier, combatRecorder, pvpCombat, enmity,
-            FacadeForwarder.For<ICombatDamageRollService>(), defenseMemory)
+        ICombatDamageTakenService damageTaken)
+        : base(queries, damageModifiers, triggeredDamage, stat, combatRating, combatRecorder, enmity,
+            FacadeForwarder.For<ICombatDamageRollService>(), damageTaken)
     {
         _log = log;
         _calculated = calculated;

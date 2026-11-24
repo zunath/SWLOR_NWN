@@ -8,25 +8,22 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class BeastSoundsetTests
 {
     private const int Bear = 7;
+    private const uint NoText = uint.MaxValue;
 
-    // soundset.2da rows whose lines are spoken words rather than creature sounds.
-    // 23 Curst: SWLOR_Haks replaces the c_vampire_* wavs it plays with voice lines.
-    // 25 Demon and 255 Devil: English battle cries ("I will rend your soul!").
+    // soundset.2da rows that talk: spoken words, or humanoid speech with chat text.
     // Rows whose RESREF starts with "vs_" are NPC voice sets and are added from the 2DA.
-    private static readonly Dictionary<int, string> SpokenSoundsets = new()
+    private static readonly Dictionary<int, string> SpeakingSoundsets = new()
     {
-        [23] = "Curst",
-        [25] = "Demon",
+        [12] = "Bugbear", // gibberish battle cries with chat text
+        [13] = "BugbrChf",
+        [14] = "BugbrWiz",
+        [23] = "Curst", // SWLOR_Haks replaces its c_vampire_* wavs with voice lines
+        [25] = "Demon", // English battle cries ("I will rend your soul!")
+        [60] = "LizMale",
+        [83] = "SlaadPow",
+        [84] = "SlaadWek",
         [255] = "Devil",
-    };
-
-    // Creature beasts that already use a spoken soundset and wait on an owner decision.
-    // Remove an entry once its beast gets a creature soundset.
-    private static readonly HashSet<BeastType> PendingSoundsetReview = new()
-    {
-        BeastType.DeepstoneGraxal,
-        BeastType.VoidmireEcho,
-        BeastType.BloodtuskRavor,
+        [902] = "Aqualish",
     };
 
     [Test]
@@ -39,20 +36,25 @@ public class BeastSoundsetTests
     }
 
     [Test]
-    public void CreatureBeasts_DoNotUseSpokenSoundsets()
+    public void CreatureBeasts_DoNotUseSpeakingSoundsets()
     {
         var soundsets = ReadHak2DA("soundset.2da");
         var appearances = ReadHak2DA("appearance.2da");
 
-        foreach (var (row, label) in SpokenSoundsets)
+        foreach (var (row, label) in SpeakingSoundsets)
             soundsets.GetValue(row, "LABEL").Should().Be(label, $"soundset.2da row {row} is listed as {label}");
 
-        var spoken = GetSpokenSoundsets(soundsets);
+        var speaking = SpeakingSoundsets.Keys.ToHashSet();
+        for (var row = 0; row < soundsets.RowCount; row++)
+        {
+            if (soundsets.GetValue(row, "RESREF")?.StartsWith("vs_", StringComparison.OrdinalIgnoreCase) == true)
+                speaking.Add(row);
+        }
+
         var failures = BeastDefinitionCatalog.All
-            .Where(beast => !PendingSoundsetReview.Contains(beast.Key))
             .Where(beast => !string.Equals(appearances.GetValue((int)beast.Value.Appearance, "MODELTYPE"), "P",
                 StringComparison.OrdinalIgnoreCase))
-            .Where(beast => spoken.Contains(beast.Value.SoundSetId))
+            .Where(beast => speaking.Contains(beast.Value.SoundSetId))
             .Select(beast => $"{beast.Key}: soundset {beast.Value.SoundSetId} " +
                              $"({soundsets.GetValue(beast.Value.SoundSetId, "LABEL")}) on appearance {beast.Value.Appearance}")
             .ToList();
@@ -60,34 +62,63 @@ public class BeastSoundsetTests
         failures.Should().BeEmpty();
     }
 
+    // A soundset entry's string shows as chat text when the sound plays. The c_treant set once
+    // pointed its battle cries at class names in the custom TLK ("Charismatic Heroes").
     [Test]
-    public void PendingSoundsetReview_ListsOnlyBeastsThatStillUseSpokenSoundsets()
+    public void BeastSoundsetsFromTheHaks_ShowNoChatText()
     {
-        var spoken = GetSpokenSoundsets(ReadHak2DA("soundset.2da"));
+        var soundsets = ReadHak2DA("soundset.2da");
+        var soundFolder = Path.Combine(HaksRoot(), "sw_sound");
+        var failures = new List<string>();
 
-        foreach (var beast in PendingSoundsetReview)
-            spoken.Should().Contain(BeastDefinitionCatalog.All[beast].SoundSetId, $"{beast} no longer needs an exception");
-    }
-
-    private static HashSet<int> GetSpokenSoundsets(TwoDAFile soundsets)
-    {
-        var spoken = SpokenSoundsets.Keys.ToHashSet();
-        for (var row = 0; row < soundsets.RowCount; row++)
+        foreach (var soundsetId in BeastDefinitionCatalog.All.Values.Select(beast => beast.SoundSetId).Distinct())
         {
-            if (soundsets.GetValue(row, "RESREF")?.StartsWith("vs_", StringComparison.OrdinalIgnoreCase) == true)
-                spoken.Add(row);
+            var resref = soundsets.GetValue(soundsetId, "RESREF");
+            if (string.IsNullOrWhiteSpace(resref) || resref == "****")
+                continue;
+
+            var path = Directory.EnumerateFiles(soundFolder, "*.ssf")
+                .FirstOrDefault(file => string.Equals(Path.GetFileNameWithoutExtension(file), resref,
+                    StringComparison.OrdinalIgnoreCase));
+            if (path == null)
+                continue;
+
+            foreach (var (index, sound, strRef) in ReadSsf(path))
+            {
+                if (strRef != NoText)
+                    failures.Add($"{Path.GetFileName(path)} entry {index} ({sound}): string {strRef}");
+            }
         }
 
-        return spoken;
+        failures.Should().BeEmpty();
+    }
+
+    private static IEnumerable<(int Index, string Sound, uint StrRef)> ReadSsf(string path)
+    {
+        var bytes = File.ReadAllBytes(path);
+        System.Text.Encoding.ASCII.GetString(bytes, 0, 4).Should().Be("SSF ", path);
+        var count = BitConverter.ToInt32(bytes, 8);
+        var table = BitConverter.ToInt32(bytes, 12);
+
+        for (var index = 0; index < count; index++)
+        {
+            var entry = BitConverter.ToInt32(bytes, table + index * 4);
+            var sound = System.Text.Encoding.ASCII.GetString(bytes, entry, 16).TrimEnd('\0');
+            yield return (index, sound, BitConverter.ToUInt32(bytes, entry + 16));
+        }
     }
 
     private static TwoDAFile ReadHak2DA(string fileName)
     {
+        return TwoDAReader.Read(Path.Combine(HaksRoot(), "sw_2da", fileName));
+    }
+
+    private static string HaksRoot()
+    {
         var configuredHaks = Environment.GetEnvironmentVariable("SWLOR_HAKS_CORPUS");
-        var haks = string.IsNullOrWhiteSpace(configuredHaks)
+        return string.IsNullOrWhiteSpace(configuredHaks)
             ? Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks")
             : Path.GetFullPath(configuredHaks);
-        return TwoDAReader.Read(Path.Combine(haks, "sw_2da", fileName));
     }
 
     private static DirectoryInfo FindRepositoryRoot()

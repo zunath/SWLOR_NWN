@@ -8,9 +8,9 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
 | 1. Static service lookup | `StaticLookups.txt` | 1,075 | 12,797 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 13 | 20,197 lines | none over 1,000 lines |
+| 2. Large types | `LargeTypes.txt` | 12 | 18,789 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 8 | 2,419 lines | none over 150 lines (400 for layout) |
-| 4. Services per type | `ServicesPerType.txt` | 16 | 229 services | none over 10 services |
+| 4. Services per type | `ServicesPerType.txt` | 15 | 217 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 29 | 35 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 115 | 231 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 25 | 86 edges | none |
@@ -58,11 +58,11 @@ Largest 15 of 1,075 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 13 types over 1,000 lines, 20,197 lines in all.
+- 12 types over 1,000 lines, 18,789 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 2, fluent builder 1, owner exception 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
-Largest 13 of 13 (all in `LargeTypes.txt`):
+Largest 12 of 12 (all in `LargeTypes.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
@@ -72,7 +72,6 @@ Largest 13 of 13 (all in `LargeTypes.txt`):
 | `SWLOR.Game.Server.Feature.UsePerkFeat` | 1,687 | UsePerkFeat.cs |
 | `SWLOR.Game.Server.Domain.Items.ItemService` | 1,605 | ItemService.cs |
 | `SWLOR.Game.Server.Domain.Character.PerkService` | 1,486 | PerkService.cs |
-| `SWLOR.Game.Server.Domain.Creatures.AIService` | 1,408 | AIService.cs |
 | `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 1,307 | MimicryService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatRecorderService` | 1,267 | CombatRecorderService.cs |
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 1,243 | EnmityService.cs |
@@ -100,10 +99,10 @@ Largest 8 of 8 (all in `LongMethods.txt`):
 
 ## 4. Services per type
 
-- 16 types use more than 10 services: 11 through the constructor only, 5 through the lookup only, 0 through both.
+- 15 types use more than 10 services: 10 through the constructor only, 5 through the lookup only, 0 through both.
 - Exempt and over the limit: 0 (none).
 
-Largest 15 of 16 (all in `ServicesPerType.txt`):
+Largest 15 of 15 (all in `ServicesPerType.txt`):
 
 | Entry | Services | Detail |
 |---|---:|---|
@@ -115,13 +114,13 @@ Largest 15 of 16 (all in `ServicesPerType.txt`):
 | `SWLOR.Game.Server.Domain.Companions.DroidService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.AbilityDamageInputService` | 13 | constructor 13, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 12 | constructor 12, lookup 0 |
-| `SWLOR.Game.Server.Domain.Creatures.AIService` | 12 | constructor 12, lookup 0 |
 | `SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade.HeavyVibrobladeActiveAbilityDefinitionBase` | 12 | constructor 0, lookup 12 |
 | `SWLOR.Game.Server.Native.DamageRollCreature` | 12 | constructor 0, lookup 12 |
 | `SWLOR.Game.Server.Domain.Abilities.AbilityDamageStageService` | 11 | constructor 11, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.AbilityImpactLifecycleService` | 11 | constructor 11, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 11 | constructor 11, lookup 0 |
 | `SWLOR.Game.Server.Native.AttackRollCritical` | 11 | constructor 0, lookup 11 |
+| `SWLOR.Game.Server.Native.ResolveAttackRoll` | 11 | constructor 0, lookup 11 |
 
 ## 5. Deferred resolution
 

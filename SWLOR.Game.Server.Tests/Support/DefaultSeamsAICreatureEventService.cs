@@ -12,8 +12,8 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// </summary>
 public sealed class DefaultSeamsAICreatureEventService : AICreatureEventService
 {
-    public DefaultSeamsAICreatureEventService(IAIService ai)
-        : base(FacadeForwarder.For<IActivityService>(), ai, FacadeForwarder.For<IConversationMenuService>(), FacadeForwarder.For<IConversationService>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<ICreatureStatService>())
+    public DefaultSeamsAICreatureEventService(IAIService ai, IAIDecisionService decision)
+        : base(FacadeForwarder.For<IActivityService>(), ai, decision, FacadeForwarder.For<IConversationMenuService>(), FacadeForwarder.For<IConversationService>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<ICreatureStatService>())
     {
     }
 

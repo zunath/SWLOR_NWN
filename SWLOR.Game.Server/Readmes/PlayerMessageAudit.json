@@ -931,8 +931,8 @@
     "Call": "SendMessageToPC(session.Player, destroyed\n                    ? \"The intrusion overloads the target. Its contents are destroyed.\"\n                    : $\"The attempt fails. The next failed attempt has a {nextChance}% destruction risk.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Creatures/AIService.cs",
-    "Line": 1130,
+    "File": "SWLOR.Game.Server/Domain/Creatures/AIActionService.cs",
+    "Line": 283,
     "Member": "ExecuteAction",
     "Delivery": "Retained",
     "Call": "SpeakString(action.Text)"

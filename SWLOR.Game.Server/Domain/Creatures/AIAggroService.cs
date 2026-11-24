@@ -17,17 +17,20 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private const int ProximityEnmityAmount = 1;
 
         private readonly IAIService _ai;
+        private readonly IAIDecisionService _decision;
         private readonly IEnmityService _enmity;
         private readonly IEspionageInfiltrationService _espionageInfiltration;
         private readonly IStealthService _stealth;
 
         public AIAggroService(
             IAIService ai,
+            IAIDecisionService decision,
             IEnmityService enmity,
             IEspionageInfiltrationService espionageInfiltration,
             IStealthService stealth)
         {
             _ai = ai;
+            _decision = decision;
             _enmity = enmity;
             _espionageInfiltration = espionageInfiltration;
             _stealth = stealth;
@@ -181,7 +184,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 return false;
             }
 
-            _ai.ProcessTrigger(self, AITriggerType.Aggro, target);
+            _decision.ProcessTrigger(self, AITriggerType.Aggro, target);
             AddNearbyAllyProximityEnmity(self, target);
             return true;
         }

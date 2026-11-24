@@ -54,7 +54,7 @@ public class CombatCleanupOrderTests
         var tables = new object[]
         {
             bench.Get<ICombatResourcesService>(), bench.Get<ICombatActivityService>(), bench.Get<ICombatDefenseMemoryService>(),
-            bench.Get<ICombatSuppressionService>(), bench.Get<ICombatAbilityActivationService>(), bench.Get<ICombatHitEffectsService>(),
+            bench.Get<ICombatSuppressionService>(), bench.Get<ICombatAbilityActivationService>(), bench.Get<ICombatHitEffectsService>(), bench.Get<ICombatCriticalHitEffectsService>(),
             bench.Get<ICombatAbilityImpactService>(), bench.Get<ICombatAttackTimingService>(), bench.Get<ICombatRateModifiersService>(), bench.Get<ICombatRepeatedTargetService>(),
             bench.Get<ITemporaryStatModifierService>()
         }.Select(ForwardingRecorder.Unwrap).ToArray();

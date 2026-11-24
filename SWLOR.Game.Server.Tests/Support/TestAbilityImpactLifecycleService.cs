@@ -23,7 +23,7 @@ public sealed class TestAbilityImpactLifecycleService : AbilityImpactLifecycleSe
         IStatusEffectCombatEventService statusEffectCombatEvents)
         : base(impactState, meleeTechnique, combatRecorder, damageDelivery, statusEffectCombatEvents, FacadeForwarder.For<ICombatQueriesService>(),
             FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(),
-            FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatHitEffectsService>())
+            FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatCriticalHitEffectsService>())
     {
         _bench = bench;
     }

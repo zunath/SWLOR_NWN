@@ -18,7 +18,7 @@ public sealed class TestAbilityDamageStageService : AbilityDamageStageService
     public TestAbilityDamageStageService(AbilityBench bench, IAbilityDamageInputService damageInput, IAbilityImpactState impactState, ICombatAbilityMagnitudeService magnitude, IResistanceService resistance)
         : base(damageInput, impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ICombatAbilityHitService>(),
             FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatDamageReflectionService>(), FacadeForwarder.For<ICombatFeedbackService>(),
-            FacadeForwarder.For<ICombatHitEffectsService>(), magnitude, resistance)
+            FacadeForwarder.For<ICombatCriticalHitEffectsService>(), magnitude, resistance)
     {
         _bench = bench;
     }

@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatRateModifiersService _rateModifiers;
         private readonly ICombatRepeatedTargetService _repeatedTarget;
         private readonly ICombatHitEffectsService _hitEffects;
+        private readonly ICombatDefeatedEnemyEffectsService _defeatedEnemyEffects;
         private readonly ICombatDefenseMemoryService _defenseMemory;
         private readonly ICombatAbilityActivationService _abilityActivation;
         private readonly ICombatAbilityImpactService _abilityImpact;
@@ -32,6 +33,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatRateModifiersService rateModifiers,
             ICombatRepeatedTargetService repeatedTarget,
             ICombatHitEffectsService hitEffects,
+            ICombatDefeatedEnemyEffectsService defeatedEnemyEffects,
             ICombatDefenseMemoryService defenseMemory,
             ICombatAbilityActivationService abilityActivation,
             ICombatAbilityImpactService abilityImpact,
@@ -46,6 +48,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _rateModifiers = rateModifiers;
             _repeatedTarget = repeatedTarget;
             _hitEffects = hitEffects;
+            _defeatedEnemyEffects = defeatedEnemyEffects;
             _defenseMemory = defenseMemory;
             _abilityActivation = abilityActivation;
             _abilityImpact = abilityImpact;
@@ -62,10 +65,10 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             if (GetIsObjectValid(killer) && killer != defeated)
             {
-                _hitEffects.ApplyDefeatedEnemyEffects(killer, defeated);
+                _defeatedEnemyEffects.ApplyDefeatedEnemyEffects(killer, defeated);
             }
 
-            _hitEffects.ApplyRecentDamagerDefeatedEnemyEffects(defeated);
+            _defeatedEnemyEffects.ApplyRecentDamagerDefeatedEnemyEffects(defeated);
             RemoveStatTriggerCooldowns(defeated);
         }
 

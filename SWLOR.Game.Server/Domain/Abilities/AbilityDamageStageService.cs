@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly ICombatDamageTakenService _damageTaken;
         private readonly ICombatDamageReflectionService _damageReflection;
         private readonly ICombatFeedbackService _feedback;
-        private readonly ICombatHitEffectsService _hitEffects;
+        private readonly ICombatCriticalHitEffectsService _criticalHitEffects;
         private readonly ICombatAbilityMagnitudeService _magnitude;
         private readonly IResistanceService _resistance;
 
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             ICombatDamageTakenService damageTaken,
             ICombatDamageReflectionService damageReflection,
             ICombatFeedbackService feedback,
-            ICombatHitEffectsService hitEffects,
+            ICombatCriticalHitEffectsService criticalHitEffects,
             ICombatAbilityMagnitudeService magnitude,
             IResistanceService resistance)
         {
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _damageTaken = damageTaken;
             _damageReflection = damageReflection;
             _feedback = feedback;
-            _hitEffects = hitEffects;
+            _criticalHitEffects = criticalHitEffects;
             _magnitude = magnitude;
             _resistance = resistance;
         }
@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         protected virtual int ApplyForceAffinityMagnitude(uint creature, PerkType perkType, int amount) => _perk.ApplyForceAffinityMagnitude(creature, perkType, amount);
 
         protected virtual void ApplyCriticalHitEffects(uint attacker, uint defender, int damage, int criticalRating, bool isSingleTargetImpact, SkillType skillType) =>
-            _hitEffects.ApplyCriticalHitEffects(attacker, defender, damage, criticalRating, isSingleTargetImpact, skillType);
+            _criticalHitEffects.ApplyCriticalHitEffects(attacker, defender, damage, criticalRating, isSingleTargetImpact, skillType);
 
         protected virtual int ApplyDamageDealtModifiers(uint attacker, uint defender, int damage, SkillType skillType, CombatDamageType damageType, bool isAbilityDamage, bool canApplyRandomFlatBonuses, bool isLandedAttack, AbilityDetail ability, out int targetStatusDamagePercentAdjustment, int abilityDamagePercentAdjustment, int lowHPAbilityDamagePercentAdjustment) =>
             _damageModifiers.ApplyDamageDealtModifiers(attacker, defender, damage, skillType, damageType, isAbilityDamage, canApplyRandomFlatBonuses, isLandedAttack, ability, out targetStatusDamagePercentAdjustment, abilityDamagePercentAdjustment, lowHPAbilityDamagePercentAdjustment);

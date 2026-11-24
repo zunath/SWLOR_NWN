@@ -350,7 +350,7 @@ public class CombatSourceTests
         CombatMembers.FieldValue<object>(name).Should().BeSameAs(field.GetValue(owner == typeof(CombatRateModifiersService) ? facades.Get<ICombatRateModifiersService>() : facades.Get<ICombatRepeatedTargetService>()));
     }
 
-    [TestCase("_criticalHitSequenceStates", typeof(CombatHitEffectsService))]
+    [TestCase("_criticalHitSequenceStates", typeof(CombatCriticalHitEffectsService))]
     [TestCase("_autoAttackCycleCounts", typeof(CombatHitEffectsService))]
     [TestCase("_sourceStatusAutoAttackCycleCounts", typeof(CombatHitEffectsService))]
     [TestCase("_meleeAutoAttackCycleCounts", typeof(CombatHitEffectsService))]
@@ -371,6 +371,8 @@ public class CombatSourceTests
         field.DeclaringType.Should().Be(owner);
         object instance = owner == typeof(CombatHitEffectsService)
             ? facades.Get<ICombatHitEffectsService>()
+            : owner == typeof(CombatCriticalHitEffectsService)
+                ? facades.Get<ICombatCriticalHitEffectsService>()
             : owner == typeof(CombatDealtEffectsService)
                 ? facades.Get<ICombatDealtEffectsService>()
                 : facades.Get<ICombatAbilityHitService>();

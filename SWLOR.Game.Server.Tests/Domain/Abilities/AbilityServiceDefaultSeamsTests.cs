@@ -87,7 +87,7 @@ public class AbilityServiceDefaultSeamsTests
     private static AbilityDamageStageService DamageStagePart() =>
         new(FacadeForwarder.For<IAbilityDamageInputService>(), FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<IPerkService>(),
             FacadeForwarder.For<ICombatAbilityHitService>(), FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatDamageReflectionService>(),
-            FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatAbilityMagnitudeService>(),
+            FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatCriticalHitEffectsService>(), FacadeForwarder.For<ICombatAbilityMagnitudeService>(),
             FacadeForwarder.For<IResistanceService>());
 
     // The lifecycle and per-target parts of the ability split with every service forwarded to the installed container.
@@ -95,7 +95,7 @@ public class AbilityServiceDefaultSeamsTests
         new(FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<IMeleeTechniqueService>(), FacadeForwarder.For<ICombatRecorderService>(),
             FacadeForwarder.For<IAbilityDamageDeliveryService>(), FacadeForwarder.For<IStatusEffectCombatEventService>(), FacadeForwarder.For<ICombatQueriesService>(),
             FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatResourcesService>(),
-            FacadeForwarder.For<ICombatHitEffectsService>());
+            FacadeForwarder.For<ICombatCriticalHitEffectsService>());
 
     private static AbilityHitRollService HitRollPart() =>
         new(Array.Empty<IAbilityImpactObserver>(), FacadeForwarder.For<IMeleeTechniqueService>(), FacadeForwarder.For<IAbilityDamageInputService>(),

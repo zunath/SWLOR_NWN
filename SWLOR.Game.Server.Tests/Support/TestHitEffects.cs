@@ -23,24 +23,15 @@ public sealed partial class TestHitEffects : CombatHitEffectsService
 {
     public TestHitEffects(
         ICombatQueriesService queries,
-        ICombatResourcesService resources,
-        ICombatAttackTimingService attackTiming,
         ICombatSuppressionService suppression,
         ICombatActivityService combatActivity,
         ICombatRepeatedTargetService repeatedTarget,
-        ICombatAbilityHitService abilityHit,
         IStatService stat,
-        IStatusEffectService statusEffect,
-        IStatusEffectApplicationService statusApplication,
-        IStatusEffectDurationService statusDuration,
-        ITemporaryStatModifierService temporaryStatModifier,
-        IAbilityImpactState ability,
         ICombatRecorderService combatRecorder,
-        IPartyRoster party,
         ICombatDealtEffectsService dealtEffects,
-        ICombatTriggeredDamageService triggeredDamage)
-        : base(queries, resources, attackTiming, suppression, combatActivity, repeatedTarget, abilityHit, stat, statusEffect, statusApplication,
-            statusDuration, temporaryStatModifier, ability, combatRecorder, party, dealtEffects, triggeredDamage)
+        ICombatTriggeredDamageService triggeredDamage,
+        ICombatCriticalHitEffectsService criticalHitEffects)
+        : base(queries, suppression, combatActivity, repeatedTarget, stat, combatRecorder, dealtEffects, triggeredDamage, criticalHitEffects)
     {
     }
 }

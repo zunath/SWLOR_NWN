@@ -93,6 +93,15 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>Damage a trigger deals (a reflection, a proc, a splash or a retaliation), a part of combat.</summary>
         public static ICombatTriggeredDamageService CombatTriggeredDamage => FacadeAccessor.Resolve<ICombatTriggeredDamageService>();
 
+        /// <summary>What an auto-attack adds (damage modifiers, restores, hamstring, status stacks), a part of combat.</summary>
+        public static ICombatAutoAttackEffectsService CombatAutoAttackEffects => FacadeAccessor.Resolve<ICombatAutoAttackEffectsService>();
+
+        /// <summary>What a critical hit sets off, and the riders of a non-critical ability, a part of combat.</summary>
+        public static ICombatCriticalHitEffectsService CombatCriticalHitEffects => FacadeAccessor.Resolve<ICombatCriticalHitEffectsService>();
+
+        /// <summary>What a kill sets off (spreads, restores, ally defense, cruel momentum), a part of combat.</summary>
+        public static ICombatDefeatedEnemyEffectsService CombatDefeatedEnemyEffects => FacadeAccessor.Resolve<ICombatDefeatedEnemyEffectsService>();
+
         /// <summary>The hit effects of combat, a part of combat.</summary>
         public static ICombatHitEffectsService CombatHitEffects => FacadeAccessor.Resolve<ICombatHitEffectsService>();
 

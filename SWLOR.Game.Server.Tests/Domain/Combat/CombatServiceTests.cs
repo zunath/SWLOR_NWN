@@ -90,8 +90,9 @@ public class CombatServiceTests
             Logged<ICombatRateModifiersService>("RateModifiers", out _, nameof(ICombatRateModifiersService.ClearAutoAttackCycleCriticalRateTracker)),
             Logged<ICombatRepeatedTargetService>("RepeatedTarget", out _, nameof(ICombatRepeatedTargetService.ForgetDamageModifierState),
                 nameof(ICombatRepeatedTargetService.ClearRangedRepeatedTargetDamageTracker)),
-            Logged<ICombatHitEffectsService>("HitEffects", out _, nameof(ICombatHitEffectsService.ForgetHitEffectState),
-                nameof(ICombatHitEffectsService.ApplyDefeatedEnemyEffects), nameof(ICombatHitEffectsService.ApplyRecentDamagerDefeatedEnemyEffects)),
+            Logged<ICombatHitEffectsService>("HitEffects", out _, nameof(ICombatHitEffectsService.ForgetHitEffectState)),
+            Logged<ICombatDefeatedEnemyEffectsService>("DefeatedEnemyEffects", out _, nameof(ICombatDefeatedEnemyEffectsService.ApplyDefeatedEnemyEffects),
+                nameof(ICombatDefeatedEnemyEffectsService.ApplyRecentDamagerDefeatedEnemyEffects)),
             Logged<ICombatDefenseMemoryService>("DefenseMemory", out _, nameof(ICombatDefenseMemoryService.ForgetDefenseMemory)),
             Logged<ICombatAbilityActivationService>("Activation", out _, nameof(ICombatAbilityActivationService.ForgetActivationState)),
             Logged<ICombatAbilityImpactService>("Impact", out _, nameof(ICombatAbilityImpactService.ForgetImpactState)),
@@ -139,8 +140,8 @@ public class CombatServiceTests
 
         _log.Should().Equal(new[]
         {
-            $"HitEffects.ApplyDefeatedEnemyEffects {Killer} {Defeated}",
-            $"HitEffects.ApplyRecentDamagerDefeatedEnemyEffects {Defeated}",
+            $"DefeatedEnemyEffects.ApplyDefeatedEnemyEffects {Killer} {Defeated}",
+            $"DefeatedEnemyEffects.ApplyRecentDamagerDefeatedEnemyEffects {Defeated}",
         }.Concat(ForgetSequence(Defeated)));
     }
 
@@ -153,7 +154,7 @@ public class CombatServiceTests
 
         _service.ApplyDefeatedEnemyEffects();
 
-        _log.Should().Equal(new[] { $"HitEffects.ApplyRecentDamagerDefeatedEnemyEffects {Defeated}" }.Concat(ForgetSequence(Defeated)));
+        _log.Should().Equal(new[] { $"DefeatedEnemyEffects.ApplyRecentDamagerDefeatedEnemyEffects {Defeated}" }.Concat(ForgetSequence(Defeated)));
     }
 
     [Test]

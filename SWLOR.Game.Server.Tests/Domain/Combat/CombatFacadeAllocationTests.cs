@@ -756,6 +756,9 @@ public class CombatFacadeAllocationTests
         try
         {
             var (hit, effects) = InstallHitParts(scopes);
+            var autoAttack = FacadeContainer.Current.Get<ICombatAutoAttackEffectsService>();
+            var critical = FacadeContainer.Current.Get<ICombatCriticalHitEffectsService>();
+            var defeated = FacadeContainer.Current.Get<ICombatDefeatedEnemyEffectsService>();
             var guardedEffects = FacadeContainer.Current.Get<ICombatGuardedHitEffectsService>();
             var sink = 0;
             bool? forced = null;
@@ -768,13 +771,13 @@ public class CombatFacadeAllocationTests
                 ("SetAutoAttackHitResolutionOverride", () => hit.SetAutoAttackHitResolutionOverride(null), () => GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null)),
                 ("GetAutoAttackHitResolutionOverride", () => forced = hit.GetAutoAttackHitResolutionOverride(), () => forced = GameServices.CombatAbilityHit.GetAutoAttackHitResolutionOverride()),
                 // Hit effects.
-                ("ApplyAutoAttackDamageModifiers(0)", () => sink += effects.ApplyAutoAttackDamageModifiers(Attacker, Defender, 0), () => sink += GameServices.CombatHitEffects.ApplyAutoAttackDamageModifiers(Attacker, Defender, 0)),
+                ("ApplyAutoAttackDamageModifiers(0)", () => sink += autoAttack.ApplyAutoAttackDamageModifiers(Attacker, Defender, 0), () => sink += GameServices.CombatAutoAttackEffects.ApplyAutoAttackDamageModifiers(Attacker, Defender, 0)),
                 ("ApplyDamageDealtEffects(triggered)", () => effects.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle, CombatDamageType.Fire, CombatDamageDeliveryType.Triggered), () => GameServices.CombatHitEffects.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle, CombatDamageType.Fire, CombatDamageDeliveryType.Triggered)),
                 ("ApplyDamageDealtEffects(0)", () => effects.ApplyDamageDealtEffects(Attacker, Defender, 0), () => GameServices.CombatHitEffects.ApplyDamageDealtEffects(Attacker, Defender, 0)),
-                ("ApplyCriticalHitEffects(0)", () => effects.ApplyCriticalHitEffects(Attacker, Defender, 10, 0), () => GameServices.CombatHitEffects.ApplyCriticalHitEffects(Attacker, Defender, 10, 0)),
-                ("ApplyNonCriticalAbilityEffects", () => effects.ApplyNonCriticalAbilityEffects(Attacker, Defender, SkillType.Rifle), () => GameServices.CombatHitEffects.ApplyNonCriticalAbilityEffects(Attacker, Defender, SkillType.Rifle)),
-                ("ApplySourceStatusStackEffects", () => effects.ApplySourceStatusStackEffects(Attacker, Defender), () => GameServices.CombatHitEffects.ApplySourceStatusStackEffects(Attacker, Defender)),
-                ("SpreadPoisonFromTarget", () => effects.SpreadPoisonFromTarget(Attacker, Defender), () => GameServices.CombatHitEffects.SpreadPoisonFromTarget(Attacker, Defender)),
+                ("ApplyCriticalHitEffects(0)", () => critical.ApplyCriticalHitEffects(Attacker, Defender, 10, 0), () => GameServices.CombatCriticalHitEffects.ApplyCriticalHitEffects(Attacker, Defender, 10, 0)),
+                ("ApplyNonCriticalAbilityEffects", () => critical.ApplyNonCriticalAbilityEffects(Attacker, Defender, SkillType.Rifle), () => GameServices.CombatCriticalHitEffects.ApplyNonCriticalAbilityEffects(Attacker, Defender, SkillType.Rifle)),
+                ("ApplySourceStatusStackEffects", () => autoAttack.ApplySourceStatusStackEffects(Attacker, Defender), () => GameServices.CombatAutoAttackEffects.ApplySourceStatusStackEffects(Attacker, Defender)),
+                ("SpreadPoisonFromTarget", () => defeated.SpreadPoisonFromTarget(Attacker, Defender), () => GameServices.CombatDefeatedEnemyEffects.SpreadPoisonFromTarget(Attacker, Defender)),
             };
 
             foreach (var (name, part, forwarder) in reads)
@@ -802,12 +805,15 @@ public class CombatFacadeAllocationTests
         try
         {
             var (_, effects) = InstallHitParts(scopes);
+            var autoAttack = FacadeContainer.Current.Get<ICombatAutoAttackEffectsService>();
+            var critical = FacadeContainer.Current.Get<ICombatCriticalHitEffectsService>();
+            var defeated = FacadeContainer.Current.Get<ICombatDefeatedEnemyEffectsService>();
             var triggered = FacadeContainer.Current.Get<ICombatTriggeredDamageService>();
             var sink = 0;
             var reads = new (string Name, long Bytes, Action Part, Action Forwarder)[]
             {
-                ("ApplyAutoAttackDamageModifiers", 168, () => sink += effects.ApplyAutoAttackDamageModifiers(Attacker, Defender, 10, SkillType.Rifle), () => sink += GameServices.CombatHitEffects.ApplyAutoAttackDamageModifiers(Attacker, Defender, 10, SkillType.Rifle)),
-                ("ConsumeSuppressedAutoAttackDamageBonuses", 168, () => effects.ConsumeSuppressedAutoAttackDamageBonuses(Attacker, SkillType.Rifle), () => GameServices.CombatHitEffects.ConsumeSuppressedAutoAttackDamageBonuses(Attacker, SkillType.Rifle)),
+                ("ApplyAutoAttackDamageModifiers", 168, () => sink += autoAttack.ApplyAutoAttackDamageModifiers(Attacker, Defender, 10, SkillType.Rifle), () => sink += GameServices.CombatAutoAttackEffects.ApplyAutoAttackDamageModifiers(Attacker, Defender, 10, SkillType.Rifle)),
+                ("ConsumeSuppressedAutoAttackDamageBonuses", 168, () => autoAttack.ConsumeSuppressedAutoAttackDamageBonuses(Attacker, SkillType.Rifle), () => GameServices.CombatAutoAttackEffects.ConsumeSuppressedAutoAttackDamageBonuses(Attacker, SkillType.Rifle)),
                 ("ApplyTriggeredDamage(0)", 32, () => sink += triggered.ApplyTriggeredDamage(Attacker, Defender, 0, CombatDamageType.Physical), () => sink += GameServices.CombatTriggeredDamage.ApplyTriggeredDamage(Attacker, Defender, 0, CombatDamageType.Physical)),
                 ("ForgetHitEffectState", 192, () => effects.ForgetHitEffectState(Attacker), () => GameServices.CombatHitEffects.ForgetHitEffectState(Attacker)),
             };
@@ -841,11 +847,14 @@ public class CombatFacadeAllocationTests
         try
         {
             var (hit, effects) = InstallHitParts(scopes);
+            var autoAttack = FacadeContainer.Current.Get<ICombatAutoAttackEffectsService>();
+            var critical = FacadeContainer.Current.Get<ICombatCriticalHitEffectsService>();
+            var defeated = FacadeContainer.Current.Get<ICombatDefeatedEnemyEffectsService>();
             var triggered = FacadeContainer.Current.Get<ICombatTriggeredDamageService>();
             var sink = 0;
             var reads = new (string Name, Action Part, Action Forwarder)[]
             {
-                ("ApplyRecentDamagerDefeatedEnemyEffects", () => effects.ApplyRecentDamagerDefeatedEnemyEffects(Defender), () => GameServices.CombatHitEffects.ApplyRecentDamagerDefeatedEnemyEffects(Defender)),
+                ("ApplyRecentDamagerDefeatedEnemyEffects", () => defeated.ApplyRecentDamagerDefeatedEnemyEffects(Defender), () => GameServices.CombatDefeatedEnemyEffects.ApplyRecentDamagerDefeatedEnemyEffects(Defender)),
                 ("GetAbilityCriticalRate", () => sink += hit.GetAbilityCriticalRate(Attacker, SkillType.Rifle, false, 0, Defender), () => sink += GameServices.CombatAbilityHit.GetAbilityCriticalRate(Attacker, SkillType.Rifle, false, 0, Defender)),
                 ("CalculateAbilityCriticalRating", () => sink += hit.CalculateAbilityCriticalRating(Attacker, SkillType.Rifle, false, 0, Defender), () => sink += GameServices.CombatAbilityHit.CalculateAbilityCriticalRating(Attacker, SkillType.Rifle, false, 0, Defender)),
                 ("TryResolveAbilityHit", () => sink += hit.TryResolveAbilityHit(Attacker, Defender, SkillType.Rifle, PerkType.DoubleShot, out _) ? 1 : 0, () => sink += GameServices.CombatAbilityHit.TryResolveAbilityHit(Attacker, Defender, SkillType.Rifle, PerkType.DoubleShot, out _) ? 1 : 0),
@@ -854,8 +863,8 @@ public class CombatFacadeAllocationTests
                 ("ConsumeAutoAttackCycleDamageBonus", () => sink += effects.ConsumeAutoAttackCycleDamageBonus(Attacker, SkillType.Rifle), () => sink += GameServices.CombatHitEffects.ConsumeAutoAttackCycleDamageBonus(Attacker, SkillType.Rifle)),
                 ("ApplyDamageDealtEffects(auto)", () => effects.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle), () => GameServices.CombatHitEffects.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle)),
                 ("ApplyDamageDealtEffects(ability)", () => effects.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle, CombatDamageType.Physical, CombatDamageDeliveryType.Direct, true), () => GameServices.CombatHitEffects.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle, CombatDamageType.Physical, CombatDamageDeliveryType.Direct, true)),
-                ("ApplyCriticalHitEffects", () => effects.ApplyCriticalHitEffects(Attacker, Defender, 10, 2, true, SkillType.Rifle), () => GameServices.CombatHitEffects.ApplyCriticalHitEffects(Attacker, Defender, 10, 2, true, SkillType.Rifle)),
-                ("ApplyDefeatedEnemyEffects", () => effects.ApplyDefeatedEnemyEffects(Attacker, Defender), () => GameServices.CombatHitEffects.ApplyDefeatedEnemyEffects(Attacker, Defender)),
+                ("ApplyCriticalHitEffects", () => critical.ApplyCriticalHitEffects(Attacker, Defender, 10, 2, true, SkillType.Rifle), () => GameServices.CombatCriticalHitEffects.ApplyCriticalHitEffects(Attacker, Defender, 10, 2, true, SkillType.Rifle)),
+                ("ApplyDefeatedEnemyEffects", () => defeated.ApplyDefeatedEnemyEffects(Attacker, Defender), () => GameServices.CombatDefeatedEnemyEffects.ApplyDefeatedEnemyEffects(Attacker, Defender)),
                 ("ApplyTriggeredDamage", () => sink += triggered.ApplyTriggeredDamage(Attacker, Defender, 10, CombatDamageType.Physical, SkillType.Rifle), () => sink += GameServices.CombatTriggeredDamage.ApplyTriggeredDamage(Attacker, Defender, 10, CombatDamageType.Physical, SkillType.Rifle)),
             };
 

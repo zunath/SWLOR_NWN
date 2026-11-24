@@ -93,6 +93,7 @@
     { "name": "PlayerName", "domain": "Character" },
     { "name": "Poisons", "domain": "Combat" },
     { "name": "PowerGloveEquipment", "domain": "Combat" },
+    { "name": "ProgFxCoat", "domain": "Companions" },
     { "name": "Property", "domain": "World", "extras": [ { "part": "PropertyAccess" }, { "part": "PropertyCatalog" }, { "part": "PropertyCityGovernance" }, { "part": "PropertyLoadRegistry" }, { "part": "PropertyLoadReload" }, { "part": "PropertyLoader" }, { "part": "PropertyMaintenance" }, { "part": "PropertySpawn" }, { "part": "PropertyStructurePlacement" }, { "part": "PropertyTerminal" } ] },
     { "name": "Prospecting", "domain": "Crafting", "extras": [ { "class": "ProspectingSessions" } ] },
     { "name": "PvpCombat", "domain": "Combat" },

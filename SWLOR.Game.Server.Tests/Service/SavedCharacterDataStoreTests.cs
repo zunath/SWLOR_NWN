@@ -33,11 +33,6 @@ public class SavedCharacterDataStoreTests
         {
             () => store.GetInventorySize(BaseItem.Ring),
             () => store.GetPropertyDefinition(ItemPropertyType.Accuracy),
-            () => store.GetBlueprint("blueprint"),
-            () => store.TryGetDamageCost(1, out _),
-            () => store.GetClassHitDie((ClassType)1),
-            () => store.TryGetClassPackage((ClassType)1, out _),
-            () => store.WeaponHasInventoryIcon(BaseItem.Longsword, 1),
         };
 
         foreach (var read in reads)
@@ -50,18 +45,15 @@ public class SavedCharacterDataStoreTests
         var store = new SavedCharacterDataStore();
         store.Load(
             new Dictionary<int, (int Width, int Height)> { [(int)BaseItem.Ring] = (1, 1) },
-            new Dictionary<int, (int CostTable, int Param1Table)> { [(int)ItemPropertyType.Accuracy] = (3, 255) },
-            new Dictionary<string, string> { ["blueprint"] = "UTI" });
+            new Dictionary<int, (int CostTable, int Param1Table)> { [(int)ItemPropertyType.Accuracy] = (3, 255) });
 
         store.IsLoaded.Should().BeTrue();
         store.GetInventorySize(BaseItem.Ring).Should().Be((1, 1));
         store.GetPropertyDefinition(ItemPropertyType.Accuracy).Should().Be((3, 255));
-        store.GetBlueprint("blueprint").Should().Be("UTI");
         var missing = new Action[]
         {
             () => store.GetInventorySize(BaseItem.Longsword),
             () => store.GetPropertyDefinition(ItemPropertyType.DMG),
-            () => store.GetBlueprint("other"),
         };
         foreach (var read in missing)
             read.Should().Throw<InvalidOperationException>();

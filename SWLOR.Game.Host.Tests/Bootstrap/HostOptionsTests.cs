@@ -37,7 +37,7 @@ public class HostOptionsTests
 
         options.Extensions.Should().AllBeOfType<NativeHookExtension>();
         options.Extensions.Cast<NativeHookExtension>().Select(extension => extension.Hook)
-            .Should().Equal(Enum.GetValues<NativeHookId>(), "the 17 hook files of the game, each resolved when the host starts");
+            .Should().Equal(Enum.GetValues<NativeHookId>(), "the 18 hook files of the game, each resolved when the host starts");
     }
 
     [Test]

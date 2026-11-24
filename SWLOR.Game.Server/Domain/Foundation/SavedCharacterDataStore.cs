@@ -21,28 +21,12 @@ public sealed class SavedCharacterDataStore
 {
     private IReadOnlyDictionary<int, (int Width, int Height)> _inventorySizes;
     private IReadOnlyDictionary<int, (int CostTable, int Param1Table)> _propertyDefinitions;
-    private IReadOnlyDictionary<string, string> _blueprints;
-    private IReadOnlyDictionary<(int BaseItem, int Model), bool> _weaponIcons;
-    private IReadOnlyDictionary<int, int> _classPackages;
-    private IReadOnlyDictionary<int, int> _classHitDice;
-    private IReadOnlyDictionary<int, (int Dice, int Die)> _damageCosts;
-    private IReadOnlyDictionary<int, string> _droidBoostBlueprintNames;
 
     /// <summary>Inventory grid of a container item, in item cells.</summary>
     public int ContainerWidth { get; private set; } = 7;
     public int ContainerHeight { get; private set; } = 5;
 
-    public bool IsLoaded => _inventorySizes != null && _propertyDefinitions != null && _blueprints != null;
-
-    /// <summary>
-    /// The blueprint name of every replacement droid boost recipe (by recipe ID), read once on the main thread by
-    /// <c>SavedDroidBoostItemMigration.Load</c>; null until then.
-    /// </summary>
-    public IReadOnlyDictionary<int, string> DroidBoostBlueprintNames
-    {
-        get => _droidBoostBlueprintNames;
-        set => _droidBoostBlueprintNames = value;
-    }
+    public bool IsLoaded => _inventorySizes != null && _propertyDefinitions != null;
 
     /// <summary>Main thread only: reads baseitems.2da inventory sizes and itempropdef.2da tables.</summary>
     public void Load()
@@ -63,28 +47,6 @@ public sealed class SavedCharacterDataStore
         // These caches fill on first use; fill them before worker threads read them.
         Feature.MigrationDefinition.CharacterMigration.SavedCharacterGameRules.FillCaches();
 
-        var packages = new Dictionary<int, int>();
-        var hitDice = new Dictionary<int, int>();
-        for (var row = 0; row < Get2DARowCount("classes"); row++)
-        {
-            if (int.TryParse(Get2DAString("classes", "Package", row), out var package) && package >= 0 && package < (int)Package.Invalid)
-                packages[row] = package;
-            if (int.TryParse(Get2DAString("classes", "HitDie", row), out var hitDie))
-                hitDice[row] = hitDie;
-        }
-        _classPackages = packages;
-        _classHitDice = hitDice;
-
-        var damageCosts = new Dictionary<int, (int, int)>();
-        for (var row = 0; row < Get2DARowCount("iprp_damagecost"); row++)
-        {
-            if (int.TryParse(Get2DAString("iprp_damagecost", "NumDice", row), out var dice) &&
-                int.TryParse(Get2DAString("iprp_damagecost", "Die", row), out var die))
-                damageCosts[row] = (dice, die);
-        }
-        _damageCosts = damageCosts;
-
-        var blueprints = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         var storage = GetObjectByTag("TEMP_ITEM_STORAGE");
         // Container items all share one inventory grid; measure it from a bag.
         var bag = CreateItemOnObject("bag_b", storage);
@@ -93,81 +55,15 @@ public sealed class SavedCharacterDataStore
         ContainerWidth = repository.m_nWidth;
         ContainerHeight = repository.m_nHeight;
         DestroyObject(bag);
-        foreach (var resref in ReplacementBlueprints())
-        {
-            if (blueprints.ContainsKey(resref))
-                continue;
-            var item = CreateItemOnObject(resref, storage);
-            if (!GetIsObjectValid(item))
-                throw new InvalidOperationException($"Replacement blueprint '{resref}' could not be created.");
-            blueprints[resref] = ObjectPlugin.Serialize(item);
-            DestroyObject(item);
-        }
-        Load(sizes, definitions, blueprints);
-        _weaponIcons = Feature.MigrationDefinition.CharacterMigration.SavedCharacterGameRules.LoadWeaponIcons(sizes.Keys);
-        Feature.MigrationDefinition.CharacterMigration.SavedItemResistanceMigration.Load();
-        Feature.MigrationDefinition.CharacterMigration.SavedDroidBoostItemMigration.Load();
+        Load(sizes, definitions);
     }
-
-    /// <summary>The dice an iprp_damagecost row rolls, for rows with both columns set.</summary>
-    public bool TryGetDamageCost(int row, out (int Dice, int Die) cost)
-    {
-        if (_damageCosts == null)
-            throw new InvalidOperationException("Saved character data is not loaded.");
-        return _damageCosts.TryGetValue(row, out cost);
-    }
-
-    /// <summary>The classes.2da hit die a native level of the class adds to the base HP.</summary>
-    public int GetClassHitDie(ClassType @class)
-    {
-        if (_classHitDice == null)
-            throw new InvalidOperationException("Saved character data is not loaded.");
-        return _classHitDice.TryGetValue((int)@class, out var hitDie)
-            ? hitDie
-            : throw new InvalidOperationException($"No hit die is known for class {@class}.");
-    }
-
-    /// <summary>The classes.2da leveling package of a class, as <c>PlayerInitialization.EnsureNativeLevels</c> reads it.</summary>
-    public bool TryGetClassPackage(ClassType @class, out int package)
-    {
-        if (_classPackages == null)
-            throw new InvalidOperationException("Saved character data is not loaded.");
-        return _classPackages.TryGetValue((int)@class, out package);
-    }
-
-    /// <summary>Saved-data <c>Item.HasInventoryIcon</c> for an attack weapon.</summary>
-    public bool WeaponHasInventoryIcon(BaseItem baseItem, int simpleModel)
-    {
-        if (_weaponIcons == null)
-            throw new InvalidOperationException("Saved character data is not loaded.");
-        return _weaponIcons.TryGetValue(((int)baseItem, -1), out var hasIcon) ||
-               _weaponIcons.TryGetValue(((int)baseItem, simpleModel), out hasIcon)
-            ? hasIcon
-            : throw new InvalidOperationException($"No icon is known for weapon {baseItem} with model {simpleModel}.");
-    }
-
-    /// <summary>Every blueprint a character migration creates a replacement item from.</summary>
-    private static IEnumerable<string> ReplacementBlueprints() =>
-        DungeonSaberMigration.Replacements.Values.Concat(ObsoleteItemMigration.ConversionResRefs);
 
     /// <summary>Supplies the data directly, for tests and for callers that read it elsewhere.</summary>
     public void Load(IReadOnlyDictionary<int, (int Width, int Height)> inventorySizes,
-        IReadOnlyDictionary<int, (int CostTable, int Param1Table)> propertyDefinitions,
-        IReadOnlyDictionary<string, string> blueprints)
+        IReadOnlyDictionary<int, (int CostTable, int Param1Table)> propertyDefinitions)
     {
         _inventorySizes = inventorySizes;
         _propertyDefinitions = propertyDefinitions;
-        _blueprints = blueprints;
-    }
-
-    /// <summary>A new item from a module blueprint, as <c>CreateItemOnObject</c> makes it, serialized (UTI, base64).</summary>
-    public string GetBlueprint(string resref)
-    {
-        if (_blueprints == null)
-            throw new InvalidOperationException("Saved character data is not loaded.");
-        return _blueprints.TryGetValue(resref, out var data)
-            ? data
-            : throw new InvalidOperationException($"No replacement blueprint is loaded for '{resref}'.");
     }
 
     // An empty 2DA cell ("****") saves as 255, as the engine stores a property without that table.

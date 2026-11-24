@@ -141,7 +141,7 @@ their view models), `FishingService`, `PropertyCatalogService` (all under `Domai
   `NwTask.MainThreadSynchronizationContext`, `MainLoopProcessor` events (subscribers: `DBService.Load`, `PlayerNameService`),
   `CompositionRoot`, `FacadeCache`, `GameServices`, `ApplicationSettings`, `FrameProfiler` (strings and numbers), `Random`, `Log`'s
   loggers, every service's instance state, the `Native/` statics.
-- **Point from outside into the generation today:** the four NWNX callbacks and 36 hook pointers (native code); `NWNCore.Init`
+- **Point from outside into the generation today:** the four NWNX callbacks and 41 hook pointers (native code); `NWNCore.Init`
   stores the `ClosureManager` in an `NWN.Core` static (NWN.Core is always shared); `ScriptExecutionProvider.SetProvider` stores a
   game type in a `SWLOR.NWN.API` static; `AppDomain.CurrentDomain.UnhandledException` (`Core/ServerBootstrapper.cs` line 120) and
   `ProcessExit` (`Feature/EventRegistration.cs` line 591) are never removed; `NReJSONSerializer.SerializerProxy` (set in the

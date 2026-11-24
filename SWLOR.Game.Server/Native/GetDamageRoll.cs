@@ -215,8 +215,8 @@ namespace SWLOR.Game.Server.Native
                     var damageableTarget = defender.m_bPlotObject == 0;
                     var rolledType = damageProfile.DamageType;
                     var nativeDamageApplication = weaponImpactScheduler == null;
-                    // A native roll resolves when the swing or shot starts; the engine applies its damage
-                    // later, in SignalMeleeDamage or SignalRangedDamage. Managed shots already run these
+                    // A native roll resolves when the swing or shot starts; the damage effect its signal
+                    // schedules lands later (NativeWeaponImpactSignal). Managed shots already run these
                     // effects at their impact.
                     var nativeImpactScheduler = nativeDamageApplication
                         ? NativeWeaponImpactQueue.CreateScheduler(attackerId, pCombatRound.m_nCurrentAttack, defenderId)

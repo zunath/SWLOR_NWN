@@ -296,14 +296,21 @@ public class DamageOverTimeStatusEffectTests
         dispatches.Should().ContainSingle("a native roll's splash waits for the engine to apply that roll's damage");
         dispatches[0].ArgumentList.Arguments.Single().ToString().Should().Be("Dispatch");
 
-        // GetDamageRoll resolves a native roll when the swing starts; SignalMeleeDamage and
-        // SignalRangedDamage apply it later. Only that native path gets the impact queue.
+        // GetDamageRoll resolves a native roll when the swing starts; the damage effect that
+        // SignalMeleeDamage or SignalRangedDamage schedules lands later. Only that native path
+        // gets the impact queue.
         var damageRoll = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
         damageRoll.Should().Contain("NativeWeaponImpactQueue.CreateScheduler(attackerId, pCombatRound.m_nCurrentAttack, defenderId)");
         damageRoll.Should().Contain("weaponImpactScheduler: weaponImpactScheduler");
         var signal = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "NativeWeaponImpactSignal.cs"));
         signal.Should().Contain("_ZN12CNWSCreature17SignalMeleeDamageEP10CNWSObjecti")
-            .And.Contain("_ZN12CNWSCreature18SignalRangedDamageEP10CNWSObjecti");
+            .And.Contain("_ZN12CNWSCreature18SignalRangedDamageEP10CNWSObjecti")
+            .And.Contain("_ZN21CNWSEffectListHandler13OnApplyDamageEP10CNWSObjectP11CGameEffecti");
+        // Every engine roll, hit or miss, clears its slot so an interrupted swing's splash cannot ride a later roll.
+        var attackRoll = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs")))
+            .GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.Text == "OnResolveAttackRoll");
+        attackRoll.Body!.Statements.First().ToString().Should().Be("NativeWeaponImpactSignal.BeginRoll(thisPtr);");
         var symbols = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "Symbols", "8193.37.15.txt"));
         symbols.Should().Contain("_ZN12CNWSCreature17SignalMeleeDamageEP10CNWSObjecti")
             .And.Contain("_ZN12CNWSCreature18SignalRangedDamageEP10CNWSObjecti");

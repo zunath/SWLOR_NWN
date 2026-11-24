@@ -608,8 +608,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 PermissionGrantingStates = grantPermissionStates;
             }
 
-            var dbProperty = DB.Get<WorldProperty>(PropertyId);
-            IsPublic = dbProperty.IsPubliclyAccessible;
+            IsPublic = !_isCategory && DB.Get<WorldProperty>(PropertyId)?.IsPubliclyAccessible == true;
         };
     }
 }

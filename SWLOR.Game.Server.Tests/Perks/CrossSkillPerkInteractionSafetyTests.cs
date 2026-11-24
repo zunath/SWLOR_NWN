@@ -637,7 +637,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         retaliationPulse.Should().Contain("target != originalAttacker",
             "the triggering attacker must not be struck twice when inside the pulse radius");
 
-        var guardedHitRetaliation = ExtractMethod(combat, "private static void ApplyGuardedHitRetaliation(");
+        var guardedHitRetaliation = ExtractMethod(combat, "public static void ApplyGuardedHitRetaliation(");
         guardedHitRetaliation.Should().Contain("StatType.GuardedHitPulseDMG");
         guardedHitRetaliation.Should().NotContain("SkillTypeMatches(",
             "Iron Elbows is cross-skill and must work with any equipped weapon or unarmed");

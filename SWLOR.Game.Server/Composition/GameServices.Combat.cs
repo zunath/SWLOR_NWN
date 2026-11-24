@@ -69,6 +69,15 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>Damage reflection, the physical-to-Force conversion and Deflecting Return, a part of combat.</summary>
         public static ICombatDamageReflectionService CombatDamageReflection => FacadeAccessor.Resolve<ICombatDamageReflectionService>();
 
+        /// <summary>A guarded hit: the reduction, the stamina recovery, the retaliation and the guard enmity, a part of combat.</summary>
+        public static ICombatGuardedHitService CombatGuardedHit => FacadeAccessor.Resolve<ICombatGuardedHitService>();
+
+        /// <summary>The effects a guarded hit grants the guard, a part of combat.</summary>
+        public static ICombatGuardedHitEffectsService CombatGuardedHitEffects => FacadeAccessor.Resolve<ICombatGuardedHitEffectsService>();
+
+        /// <summary>The damage a guard returns on a guarded hit, a part of combat.</summary>
+        public static ICombatGuardRetaliationService CombatGuardRetaliation => FacadeAccessor.Resolve<ICombatGuardRetaliationService>();
+
         /// <summary>The random damage roll, a part of combat.</summary>
         public static ICombatDamageRollService CombatDamageRoll => FacadeAccessor.Resolve<ICombatDamageRollService>();
 

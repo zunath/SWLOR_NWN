@@ -159,6 +159,7 @@ public class CombatAbilityTranscriptTests
         var rate = bench.Get<ICombatRateModifiersService>();
         var repeated = bench.Get<ICombatRepeatedTargetService>();
         var hit = bench.Get<ICombatAbilityHitService>();
+        var guardedEffects = bench.Get<ICombatGuardedHitEffectsService>();
         var bonus = bench.Get<ICombatAbilityBonusService>();
 
         foreach (var stat in new[] { 0, 5 })
@@ -240,7 +241,7 @@ public class CombatAbilityTranscriptTests
                 hit.GetHitChanceAgainstSunderedTargetAdjustment(Attacker, Defender);
                 hit.GetCriticalRateAgainstSunderedTargetAdjustment(Attacker, Defender);
                 hit.ApplyRangedAbilityTargetDefenseReduction(Attacker, Defender, SkillType.Rifle);
-                hit.ApplyGuardedHitNextAttackEffects(Attacker);
+                guardedEffects.ApplyGuardedHitNextAttackEffects(Attacker);
             });
             bench.Step("ability bonus reads" + tag, () =>
             {

@@ -79,65 +79,6 @@ namespace SWLOR.Game.Server.Domain.Combat
                 : 0;
         }
 
-        public void ApplyGuardedHitNextAttackEffects(uint creature)
-        {
-            var primaryDMGBonus = _stat.GetStatAdjustment(
-                creature,
-                StatType.GuardedHitNextAttackDMGBonus);
-            var criticalRate = _stat.GetStatAdjustment(
-                creature,
-                StatType.GuardedHitNextAttackCriticalRatePercentAdjustment);
-            var primaryWindow = _stat.GetStatAdjustment(
-                creature,
-                StatType.GuardedHitNextAttackWindowSeconds);
-            var secondaryDMGBonus = _stat.GetStatAdjustment(
-                creature,
-                StatType.GuardedHitSecondaryNextAttackDMGBonus);
-            var enmityBonus = _stat.GetStatAdjustment(
-                creature,
-                StatType.GuardedHitSecondaryNextAttackEnmityBonus);
-            var secondaryWindow = _stat.GetStatAdjustment(
-                creature,
-                StatType.GuardedHitSecondaryNextAttackWindowSeconds);
-            var dmgBonus = primaryDMGBonus + secondaryDMGBonus;
-            var window = Math.Max(primaryWindow, secondaryWindow);
-            if (window <= 0 || dmgBonus == 0 && criticalRate == 0 && enmityBonus == 0)
-                return;
-
-            _temporaryStatModifier.Replace(
-                creature,
-                StatType.NextAttackGuardedHitDMGBonus,
-                dmgBonus,
-                window,
-                StatType.NextAttackGuardedHitDMGBonus);
-            _temporaryStatModifier.Replace(
-                creature,
-                StatType.NextAttackGuardedHitCriticalRatePercentAdjustment,
-                criticalRate,
-                window,
-                StatType.NextAttackGuardedHitDMGBonus);
-            _temporaryStatModifier.Replace(
-                creature,
-                StatType.NextAttackGuardedHitEnmityBonus,
-                enmityBonus,
-                window,
-                StatType.NextAttackGuardedHitDMGBonus);
-
-            if (GetIsPC(creature))
-            {
-                var criticalText = criticalRate != 0
-                    ? $", +{criticalRate}% Crit"
-                    : string.Empty;
-                var enmityText = enmityBonus != 0
-                    ? $", +{enmityBonus} Enmity"
-                    : string.Empty;
-                FloatingTextStringOnCreature(
-                    ColorToken.Combat($"Counter Ready: +{dmgBonus} DMG{criticalText}{enmityText}"),
-                    creature,
-                    false);
-            }
-        }
-
         public int GetAbilityCriticalRate(
             uint attacker,
             SkillType skillType,

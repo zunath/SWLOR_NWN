@@ -15,81 +15,41 @@ namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// The damage taken part of <c>Combat</c>: the modifiers of an incoming hit (immunity, PvP, the Leadership and generic
-    /// reductions, the redirect and share to a status source, fatal damage prevention), Guard and its riders, and the
-    /// physical-to-Force defense conversion. The recent guarded hits and deflections are remembered by the defense memory
-    /// part; the after-damage effects and the reflections are parts of their own.
+    /// reductions, the redirect and share to a status source, fatal damage prevention), the Guard damage reduction read and
+    /// the physical-to-Force defense conversion. The recent guarded hits and deflections are remembered by the defense memory
+    /// part; the after-damage effects, the reflections, the guarded hit and its effects and the guard retaliation are parts
+    /// of their own.
     /// </summary>
     public class CombatDamageTakenService : ICombatDamageTakenService
     {
         public const int BaseGuardDamageReductionPercent = 20;
         public const int MaximumGuardDamageReductionPercent = 55;
 
-        private readonly ICombatFeedbackService _feedback;
         private readonly ICombatQueriesService _queries;
         private readonly ICombatResourcesService _resources;
-        private readonly ICombatAttackTimingService _attackTiming;
-        private readonly ICombatDamageModifiersService _damageModifiers;
-        private readonly ICombatAbilityHitService _abilityHit;
-        private readonly ICombatHitEffectsService _hitEffects;
         private readonly IStatService _stat;
-        private readonly ICombatRatingService _combatRating;
         private readonly IStatusEffectService _statusEffect;
-        private readonly IStatusEffectCombatEventService _statusEffectCombatEvents;
-        private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly IPvpCombatService _pvpCombat;
         private readonly IEnmityService _enmity;
-        private readonly ICombatDamageRollService _damageRoll;
-        private readonly ICombatDefenseMemoryService _defenseMemory;
 
         public CombatDamageTakenService(
-            ICombatFeedbackService feedback,
             ICombatQueriesService queries,
             ICombatResourcesService resources,
-            ICombatAttackTimingService attackTiming,
-            ICombatDamageModifiersService damageModifiers,
-            ICombatAbilityHitService abilityHit,
-            ICombatHitEffectsService hitEffects,
             IStatService stat,
-            ICombatRatingService combatRating,
             IStatusEffectService statusEffect,
-            IStatusEffectCombatEventService statusEffectCombatEvents,
-            ITemporaryStatModifierService temporaryStatModifier,
             ICombatRecorderService combatRecorder,
             IPvpCombatService pvpCombat,
-            IEnmityService enmity,
-            ICombatDamageRollService damageRoll,
-            ICombatDefenseMemoryService defenseMemory)
+            IEnmityService enmity)
         {
-            _feedback = feedback;
             _queries = queries;
             _resources = resources;
-            _attackTiming = attackTiming;
-            _damageModifiers = damageModifiers;
-            _abilityHit = abilityHit;
-            _hitEffects = hitEffects;
             _stat = stat;
-            _combatRating = combatRating;
             _statusEffect = statusEffect;
-            _statusEffectCombatEvents = statusEffectCombatEvents;
-            _temporaryStatModifier = temporaryStatModifier;
             _combatRecorder = combatRecorder;
             _pvpCombat = pvpCombat;
             _enmity = enmity;
-            _damageRoll = damageRoll;
-            _defenseMemory = defenseMemory;
         }
-
-        // CalculateDamage lives on the damage roll part because it rolls the shared Random; guard retaliation damage reaches it there.
-        protected virtual int CalculateDamage(
-            int attackerAttack,
-            int attackerDMG,
-            int attackerStat,
-            int defenderDefense,
-            int defenderStat,
-            int critical,
-            int deltaCap = 0) =>
-            _damageRoll.CalculateDamage(attackerAttack, attackerDMG, attackerStat, defenderDefense, defenderStat, critical, deltaCap);
 
         public int ApplyDamageTakenModifiers(
             uint defender,
@@ -483,51 +443,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD", temporaryHP, duration);
         }
 
-        public void TrackGuardedHit(uint creature)
-        {
-            if (!GetIsObjectValid(creature))
-                return;
-
-            _defenseMemory.NoteGuardedHit(creature);
-            _abilityHit.ApplyGuardedHitNextAttackEffects(creature);
-            ApplyGuardedHitNextSkillAbilityEffects(creature);
-            ApplyGuardedHitNextSkillAbilityStatusEffects(creature);
-        }
-
-        public int ApplyGuardedHitModifiers(
-            uint defender,
-            uint attacker,
-            int damage,
-            CombatDamageType damageType,
-            bool isLandedAttack)
-        {
-            if (!isLandedAttack ||
-                !GetIsObjectValid(defender) ||
-                !GetIsObjectValid(attacker) ||
-                defender == attacker ||
-                damage <= 0 ||
-                !damageType.IsPhysicalDamageType() ||
-                !IsHostileAttackSource(defender, attacker))
-                return damage;
-
-            var guardChance = _combatRating.GetGuardChance(defender);
-            if (guardChance <= 0 || Random.D100(1) > guardChance)
-                return damage;
-
-            var reductionPercent = GetGuardDamageReductionPercent(defender);
-            var preventedDamage = Math.Min(damage, GameMath.PercentOf(damage, reductionPercent));
-            var adjustedDamage = Math.Max(0, damage - preventedDamage);
-
-            TrackGuardedHit(defender);
-            _statusEffectCombatEvents.OnGuardedHit(defender, attacker, preventedDamage);
-            ApplyGuardedHitRecovery(defender);
-            ApplyGuardedHitRetaliation(attacker, defender, damage);
-            ApplyGuardedHitEnmity(attacker, defender, damage);
-            _feedback.SendGuardedHitFeedback(defender, attacker, preventedDamage);
-
-            return adjustedDamage;
-        }
-
         public bool IsHostileAttackSource(uint defender, uint attacker)
         {
             // Preserve PvP and DM-driven testing while rejecting clearly non-hostile NPC swings.
@@ -553,302 +468,6 @@ namespace SWLOR.Game.Server.Domain.Combat
                 BaseGuardDamageReductionPercent + adjustment,
                 0,
                 MaximumGuardDamageReductionPercent);
-        }
-
-        private void ApplyGuardedHitRecovery(uint defender)
-        {
-            var staminaRestore = _stat.GetStatAdjustment(defender, StatType.GuardStaminaRestore);
-            var cooldown = _stat.GetStatAdjustment(defender, StatType.GuardStaminaRestoreCooldownSeconds);
-            if (staminaRestore > 0 &&
-                _resources.TryUseStatTrigger(defender, StatType.GuardStaminaRestore, cooldown))
-            {
-                _resources.RestoreStaminaFromStat(defender, StatType.GuardStaminaRestore, staminaRestore);
-            }
-        }
-
-        private void ApplyGuardedHitRetaliation(uint attacker, uint defender, int incomingDamage)
-        {
-            var skillType = _queries.GetEquippedWeaponSkillType(defender);
-            var retaliationDMG = _stat.GetStatAdjustment(defender, StatType.GuardRetaliationDMG);
-            var pulseDMG = _stat.GetStatAdjustment(defender, StatType.GuardedHitPulseDMG);
-
-            // DMG is an input to the attack-versus-defense damage range, not already-resolved HP damage.
-            // Resolve each retaliation before using the non-recursive triggered-damage delivery path.
-            if (retaliationDMG > 0)
-            {
-                var retaliationDamage = ResolveGuardRetaliationDamage(
-                    defender,
-                    attacker,
-                    retaliationDMG,
-                    skillType);
-                using var retaliationAttribution = _combatRecorder.BeginStatTriggerAttribution(defender, StatType.GuardRetaliationDMG);
-                _hitEffects.ApplyTriggeredDamage(defender, attacker, retaliationDamage, CombatDamageType.Physical, skillType);
-            }
-
-            if (pulseDMG <= 0)
-                return;
-
-            using var pulseAttribution = _combatRecorder.BeginStatTriggerAttribution(defender, StatType.GuardedHitPulseDMG);
-
-            var radius = _stat.GetStatAdjustment(defender, StatType.GuardedHitPulseRadiusMeters);
-            if (radius <= 0)
-            {
-                var pulseDamage = ResolveGuardRetaliationDamage(defender, attacker, pulseDMG, skillType);
-                _hitEffects.ApplyTriggeredDamage(defender, attacker, pulseDamage, CombatDamageType.Physical, skillType);
-                return;
-            }
-
-            ApplyGuardedHitRetaliationPulse(defender, attacker, incomingDamage, pulseDMG, radius, skillType);
-        }
-
-        private void ApplyGuardedHitRetaliationPulse(
-            uint defender,
-            uint originalAttacker,
-            int incomingDamage,
-            int dmg,
-            float radius,
-            SkillType skillType)
-        {
-            var enmityPercent = _stat.GetStatAdjustment(
-                defender,
-                StatType.GuardedHitPulseEnmityPercentOfIncomingDamage);
-            var additionalTargetEnmity = enmityPercent > 0
-                ? Math.Max(1, GameMath.PercentOf(incomingDamage, enmityPercent))
-                : 0;
-            var location = GetLocation(defender);
-            var applied = false;
-
-            // The creature whose hit was guarded is always affected, even when attacking from
-            // beyond the nearby-enemy radius. Normal Guard handling supplies this target's _enmity.
-            if (GetIsObjectValid(originalAttacker) &&
-                !GetIsDead(originalAttacker) &&
-                GetCurrentHitPoints(originalAttacker) > 0 &&
-                GetIsReactionTypeHostile(originalAttacker, defender))
-            {
-                var damage = ResolveGuardRetaliationDamage(defender, originalAttacker, dmg, skillType);
-                _hitEffects.ApplyTriggeredDamage(defender, originalAttacker, damage, CombatDamageType.Physical, skillType);
-                applied = true;
-            }
-
-            foreach (var target in ObjectSnapshot.InShape(Shape.Sphere, radius, location, true, SWLOR.NWN.API.NWScript.Enum.ObjectType.Creature))
-            {
-                if (!GetIsObjectValid(target))
-                    continue;
-
-                if (target != originalAttacker &&
-                    !GetIsDead(target) &&
-                    GetCurrentHitPoints(target) > 0 &&
-                    GetIsReactionTypeHostile(target, defender))
-                {
-                    var damage = ResolveGuardRetaliationDamage(defender, target, dmg, skillType);
-                    _hitEffects.ApplyTriggeredDamage(defender, target, damage, CombatDamageType.Physical, skillType);
-                    if (additionalTargetEnmity > 0)
-                        _enmity.ModifyEnmity(defender, target, additionalTargetEnmity);
-
-                    applied = true;
-                }
-
-            }
-
-            if (applied && GetIsPC(defender))
-                FloatingTextStringOnCreature(ColorToken.Combat("Retaliation Pulse"), defender, false);
-        }
-
-        private int ResolveGuardRetaliationDamage(
-            uint source,
-            uint target,
-            int dmg,
-            SkillType skillType)
-        {
-            if (!GetIsObjectValid(source) || !GetIsObjectValid(target) || dmg <= 0)
-                return 0;
-
-            const CombatDamageType damageType = CombatDamageType.Physical;
-            var damageAbility = GetGuardRetaliationDamageAbility(source, skillType);
-            var attack = _combatRating.GetAttack(source, damageAbility, skillType);
-            attack = _damageModifiers.ApplyTargetStatusAttackModifiers(source, target, attack, skillType);
-            var attackStat = GetAbilityScore(source, damageAbility);
-            var defenseAbility = damageType.GetDefenseAbilityType();
-            var defense = _combatRating.GetDefense(target, damageType, defenseAbility);
-            defense = _damageModifiers.ApplyStatusSourceDefenseModifiers(source, target, defense);
-            defense = ApplyIncomingPhysicalToForceDefenseConversion(
-                target,
-                damageType,
-                defense,
-                () => _damageModifiers.ApplyStatusSourceDefenseModifiers(
-                    source,
-                    target,
-                    _combatRating.GetDefense(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
-            var defenderStat = GetAbilityScore(target, defenseAbility);
-
-            return CalculateDamage(
-                attack,
-                dmg,
-                attackStat,
-                defense,
-                defenderStat,
-                0);
-        }
-
-        private AbilityType GetGuardRetaliationDamageAbility(uint defender, SkillType skillType)
-        {
-            var weapon = _queries.GetRelevantSkillWeapon(defender, skillType);
-            if (!GetIsObjectValid(weapon))
-                return AbilityType.Might;
-
-            var ability = _queries.GetWeaponDamageAbilityType(defender, GetBaseItemType(weapon));
-            return ability == AbilityType.Invalid
-                ? AbilityType.Might
-                : ability;
-        }
-
-        private void ApplyGuardedHitEnmity(uint attacker, uint defender, int damage)
-        {
-            var enmity = Math.Max(1, damage);
-            var percentAdjustment = _stat.GetStatAdjustment(defender, StatType.GuardEnmityPercentAdjustment);
-            if (percentAdjustment != 0)
-            {
-                enmity = Math.Max(1, (int)Math.Ceiling(enmity * ((100 + percentAdjustment) / 100f)));
-            }
-
-            _enmity.ModifyEnmity(defender, attacker, enmity);
-        }
-
-        private void ApplyGuardedHitNextSkillAbilityEffects(uint creature)
-        {
-            var primary = GetGuardedHitNextSkillAbilityBonuses(
-                creature,
-                StatType.GuardedHitNextSkillAbilitySkillType,
-                StatType.GuardedHitNextSkillAbilityDamageBonus,
-                StatType.GuardedHitNextSkillAbilityCriticalRatePercentAdjustment,
-                StatType.GuardedHitNextSkillAbilityWindowSeconds);
-            var secondary = GetGuardedHitNextSkillAbilityBonuses(
-                creature,
-                StatType.GuardedHitSecondaryNextSkillAbilitySkillType,
-                StatType.GuardedHitSecondaryNextSkillAbilityDamageBonus,
-                StatType.GuardedHitSecondaryNextSkillAbilityCriticalRatePercentAdjustment,
-                StatType.GuardedHitSecondaryNextSkillAbilityWindowSeconds);
-
-            var selected = primary;
-            if (primary.SkillType == SkillType.Invalid)
-            {
-                selected = secondary;
-            }
-            // Guarded-hit bonuses sharing a skill are one window and intentionally stack their payloads.
-            // Keeping their selector/window providers independent prevents integer selector values and
-            // durations from being accidentally added by _stat.GetStatAdjustment.
-            else if (secondary.SkillType == SkillType.Invalid || secondary.SkillType == primary.SkillType)
-            {
-                selected = (
-                    primary.SkillType,
-                    primary.DamageBonus + secondary.DamageBonus,
-                    primary.CriticalRate + secondary.CriticalRate,
-                    Math.Max(primary.Window, secondary.Window));
-            }
-            else
-            {
-                // Different weapon selectors cannot both be consumed by one "next skill ability" slot.
-                // Prefer the currently equipped weapon's channel; otherwise preserve the primary channel.
-                var equippedSkillType = _queries.GetEquippedWeaponSkillType(creature);
-                if (secondary.SkillType == equippedSkillType)
-                    selected = secondary;
-            }
-
-            _attackTiming.GrantNextSkillAbilityBonuses(
-                creature,
-                selected.SkillType,
-                selected.DamageBonus,
-                selected.CriticalRate,
-                selected.Window);
-
-            if (selected.SkillType != SkillType.Invalid &&
-                selected.Window > 0 &&
-                (selected.DamageBonus != 0 || selected.CriticalRate != 0) &&
-                GetIsPC(creature))
-            {
-                var criticalText = selected.CriticalRate != 0
-                    ? $", +{selected.CriticalRate}% Crit"
-                    : string.Empty;
-                FloatingTextStringOnCreature(
-                    ColorToken.Combat($"Counter Ready: +{selected.DamageBonus} DMG{criticalText}"),
-                    creature,
-                    false);
-            }
-        }
-
-        private (SkillType SkillType, int DamageBonus, int CriticalRate, int Window)
-            GetGuardedHitNextSkillAbilityBonuses(
-            uint creature,
-            StatType skillTypeStat,
-            StatType damageBonusStat,
-            StatType criticalRateStat,
-            StatType windowStat)
-        {
-            var skillType = GetSkillTypeFromStat(_stat.GetStatAdjustment(creature, skillTypeStat));
-            var criticalRate = _stat.GetStatAdjustment(creature, criticalRateStat);
-            var damageBonus = _stat.GetStatAdjustment(creature, damageBonusStat);
-            var window = _stat.GetStatAdjustment(creature, windowStat);
-            return (skillType, damageBonus, criticalRate, window);
-        }
-
-        private void ApplyGuardedHitNextSkillAbilityStatusEffects(uint creature)
-        {
-            var skillType = GetSkillTypeFromStat(_stat.GetStatAdjustment(
-                creature,
-                StatType.GuardedHitNextSkillAbilityStatusSkillType));
-            var duration = _stat.GetStatAdjustment(creature, StatType.GuardedHitNextSkillAbilityExposedDurationSeconds);
-            var damageBonus = _stat.GetStatAdjustment(creature, StatType.GuardedHitNextSkillAbilityExposedDamageBonus);
-            if (skillType == SkillType.Invalid || duration <= 0 && damageBonus <= 0)
-                return;
-
-            var wasArmed = _temporaryStatModifier.GetStatAdjustment(
-                creature,
-                StatType.GuardedHitNextSkillAbilityExposedDamageBonus,
-                StatType.GuardedHitNextSkillAbilityExposedDurationSeconds) != 0;
-            _attackTiming.ShowReadyCue(creature, wasArmed, damageBonus, ReadyCue.Damage("Guard Reversal", damageBonus));
-
-            var window = Math.Max(1, duration);
-            _temporaryStatModifier.Replace(
-                creature,
-                StatType.GuardedHitNextSkillAbilityStatusSkillType,
-                (int)skillType,
-                window,
-                StatType.GuardedHitNextSkillAbilityExposedDurationSeconds);
-
-            if (duration > 0)
-            {
-                _temporaryStatModifier.Replace(
-                    creature,
-                    StatType.GuardedHitNextSkillAbilityExposedDurationSeconds,
-                    duration,
-                    window,
-                    StatType.GuardedHitNextSkillAbilityExposedDurationSeconds);
-            }
-
-            if (damageBonus > 0)
-            {
-                _temporaryStatModifier.Replace(
-                    creature,
-                    StatType.GuardedHitNextSkillAbilityExposedDamageBonus,
-                    damageBonus,
-                    window,
-                    StatType.GuardedHitNextSkillAbilityExposedDurationSeconds);
-            }
-        }
-
-        public int ConsumeGuardedHitNextSkillAbilityExposedDamageBonus(uint creature, SkillType skillType)
-        {
-            var storedSkillType = GetSkillTypeFromStat(_temporaryStatModifier.GetStatAdjustment(
-                creature,
-                StatType.GuardedHitNextSkillAbilityStatusSkillType,
-                StatType.GuardedHitNextSkillAbilityExposedDurationSeconds));
-            if (!SkillTypeMatches(skillType, storedSkillType))
-                return 0;
-
-            return _temporaryStatModifier.Consume(
-                creature,
-                StatType.GuardedHitNextSkillAbilityExposedDamageBonus,
-                StatType.GuardedHitNextSkillAbilityExposedDurationSeconds);
         }
 
         /// <summary>

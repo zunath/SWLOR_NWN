@@ -10,8 +10,8 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | 1. Static service lookup | `StaticLookups.txt` | 1,074 | 12,794 uses | none: GameServices and FacadeAccessor deleted |
 | 2. Large types | `LargeTypes.txt` | 16 | 24,609 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 8 | 2,419 lines | none over 150 lines (400 for layout) |
-| 4. Services per type | `ServicesPerType.txt` | 17 | 258 services | none over 10 services |
-| 5. Deferred resolution | `DeferredResolution.txt` | 31 | 37 parameters | none |
+| 4. Services per type | `ServicesPerType.txt` | 16 | 241 services | none over 10 services |
+| 5. Deferred resolution | `DeferredResolution.txt` | 30 | 36 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 110 | 224 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 27 | 92 edges | none |
 | 8. Static entry points and static state | `StaticState.txt` | 122 | 220 members | each kept with an approved reason, or removed |
@@ -102,10 +102,10 @@ Largest 8 of 8 (all in `LongMethods.txt`):
 
 ## 4. Services per type
 
-- 17 types use more than 10 services: 14 through the constructor only, 3 through the lookup only, 0 through both.
+- 16 types use more than 10 services: 13 through the constructor only, 3 through the lookup only, 0 through both.
 - Exempt and over the limit: 0 (none).
 
-Largest 15 of 17 (all in `ServicesPerType.txt`):
+Largest 15 of 16 (all in `ServicesPerType.txt`):
 
 | Entry | Services | Detail |
 |---|---:|---|
@@ -113,7 +113,6 @@ Largest 15 of 17 (all in `ServicesPerType.txt`):
 | `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 21 | constructor 21, lookup 0 |
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 18 | constructor 18, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 17 | constructor 17, lookup 0 |
-| `SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService` | 17 | constructor 17, lookup 0 |
 | `SWLOR.Game.Server.Domain.Creatures.AIService` | 16 | constructor 16, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Companions.BeastMasteryService` | 14 | constructor 14, lookup 0 |
@@ -124,15 +123,16 @@ Largest 15 of 17 (all in `ServicesPerType.txt`):
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 12 | constructor 12, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.AbilityDamageStageService` | 11 | constructor 11, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 11 | constructor 11, lookup 0 |
+| `SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade.HeavyVibrobladeActiveAbilityDefinitionBase` | 11 | constructor 0, lookup 11 |
 
 ## 5. Deferred resolution
 
-- 37 deferred constructor parameters in 22 files (Lazy 37, Func 0), taken by 22 types, deferring 24 distinct services.
-- By direction in the domain order: up 2, down 20, inside one domain 15.
+- 36 deferred constructor parameters in 21 files (Lazy 36, Func 0), taken by 21 types, deferring 23 distinct services.
+- By direction in the domain order: up 2, down 20, inside one domain 14.
 - Up: Character -> Combat 1, Items -> Combat 1.
 - IServiceProvider outside Composition/: 0 uses.
 
-Largest 15 of 31 (all in `DeferredResolution.txt`):
+Largest 15 of 30 (all in `DeferredResolution.txt`):
 
 | Entry | Parameters | Detail |
 |---|---:|---|
@@ -149,8 +149,8 @@ Largest 15 of 31 (all in `DeferredResolution.txt`):
 | `SWLOR.Game.Server/Domain/Character/SkillService.cs -> Character (inside)` | 1 | Character -> Character: Lazy 1 (IStatService) |
 | `SWLOR.Game.Server/Domain/Character/StatusEffectCombatEventService.cs -> Character (inside)` | 1 | Character -> Character: Lazy 1 (IStatService) |
 | `SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs -> Character (inside)` | 1 | Character -> Character: Lazy 1 (IStatService) |
-| `SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs -> Combat (inside)` | 1 | Combat -> Combat: Lazy 1 (ICombatDamageTakenService) |
 | `SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Character (down)` | 1 | Combat -> Character: Lazy 1 (IStatService) |
+| `SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Combat (inside)` | 1 | Combat -> Combat: Lazy 1 (ICombatQueriesService) |
 
 ## 6. Logic referencing content
 
@@ -182,7 +182,7 @@ Largest 15 of 110 (all in `LogicToContent.txt`):
 
 - 27 pairs of domains depend on each other: 23 between logic (7 of them with Foundation or Platform), 4 between content.
 - Foundation's logic is in a pair with 3 domains, Platform with 5.
-- Members both ways: 4,107.
+- Members both ways: 4,113.
 
 Largest 15 of 27 (all in `DomainCycles.txt`):
 
@@ -201,7 +201,7 @@ Largest 15 of 27 (all in `DomainCycles.txt`):
 | `Abilities content <-> Character content` | 3 | Abilities content -> Character content: 1 edge(s), 444 member(s); Character content -> Abilities content: 2 edge(s), 10 member(s) |
 | `Abilities <-> Character` | 2 | Abilities -> Character: 1 edge(s), 331 member(s); Character -> Abilities: 1 edge(s), 4 member(s) |
 | `Abilities <-> Combat` | 2 | Abilities -> Combat: 1 edge(s), 280 member(s); Combat -> Abilities: 1 edge(s), 10 member(s) |
-| `Character <-> Combat` | 2 | Character -> Combat: 1 edge(s), 7 member(s); Combat -> Character: 1 edge(s), 1020 member(s) |
+| `Character <-> Combat` | 2 | Character -> Combat: 1 edge(s), 7 member(s); Combat -> Character: 1 edge(s), 1026 member(s) |
 | `Character <-> Companions` | 2 | Character -> Companions: 1 edge(s), 2 member(s); Companions -> Character: 1 edge(s), 165 member(s) |
 
 ## 8. Static entry points and static state

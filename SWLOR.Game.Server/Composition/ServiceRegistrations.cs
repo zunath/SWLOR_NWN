@@ -278,6 +278,8 @@ namespace SWLOR.Game.Server.Composition
 
             // Creatures
             services.AddSingleton<IAIService, AIService>();
+            services.AddSingleton<IAICreatureEventService, AICreatureEventService>();
+            services.AddSingleton<IAIAggroService, AIAggroService>();
             services.AddSingleton<IAIProfileDescription>(provider => provider.GetRequiredService<IAIService>());
             services.AddSingleton<ICombatLeash>(provider => provider.GetRequiredService<IAIService>());
             services.AddSingleton<ICompanionControlStoreService, CompanionControlStoreService>();

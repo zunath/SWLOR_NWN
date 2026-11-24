@@ -72,7 +72,7 @@ mod_cache_bef (49)
 mod_cache_aft (17)
   Rerun       SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Creatures.AIService.CacheAIData
-  Rerun       SWLOR.Game.Server.Domain.Creatures.AIService.RegisterStealthAggroListener
+  Rerun       SWLOR.Game.Server.Domain.Creatures.AIAggroService.RegisterStealthAggroListener
   Rerun       SWLOR.Game.Server.Domain.Foundation.ConversationService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Administration.DMBlueprintCatalogService.LoadCustomPalettes
   Rerun       SWLOR.Game.Server.Domain.UI.GuiService.CacheData

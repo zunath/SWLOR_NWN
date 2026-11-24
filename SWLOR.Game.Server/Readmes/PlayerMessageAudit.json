@@ -932,7 +932,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Creatures/AIService.cs",
-    "Line": 1561,
+    "Line": 1130,
     "Member": "ExecuteAction",
     "Delivery": "Retained",
     "Call": "SpeakString(action.Text)"

@@ -30,8 +30,18 @@ public static class CreaturesSource
     {
         new Group(
             "AIService",
-            new[] { "SWLOR.Game.Server/Domain/Creatures/AIService.cs" },
-            new HashSet<string>(StringComparer.Ordinal) { "IAIService" }),
+            new[]
+            {
+                "SWLOR.Game.Server/Domain/Creatures/AIService.cs",
+                "SWLOR.Game.Server/Domain/Creatures/AICreatureEventService.cs",
+                "SWLOR.Game.Server/Domain/Creatures/AIAggroService.cs",
+            },
+            new HashSet<string>(StringComparer.Ordinal)
+            {
+                "IAIService",
+                "IAICreatureEventService",
+                "IAIAggroService",
+            }),
         new Group(
             "CompanionControlService",
             new[]

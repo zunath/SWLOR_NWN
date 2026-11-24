@@ -71,7 +71,7 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
 mod_cache_aft  # run by EventRegistration.OnModulePreload through ExecuteScript, after every mod_cache_bef handler
   action      SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.CacheData
   action      SWLOR.Game.Server.Domain.Creatures.AIService.CacheAIData
-  action      SWLOR.Game.Server.Domain.Creatures.AIService.RegisterStealthAggroListener
+  action      SWLOR.Game.Server.Domain.Creatures.AIAggroService.RegisterStealthAggroListener
   action      SWLOR.Game.Server.Domain.Foundation.ConversationService.CacheData
   action      SWLOR.Game.Server.Domain.Administration.DMBlueprintCatalogService.LoadCustomPalettes
   action      SWLOR.Game.Server.Domain.UI.GuiService.CacheData
@@ -320,13 +320,13 @@ craft_success
   action      SWLOR.Game.Server.Feature.AchievementProgression.CompleteCraftSuccessfully
 
 crea_aggro_enter
-  action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureAggroEnter
+  action      SWLOR.Game.Server.Domain.Creatures.AIAggroService.CreatureAggroEnter
 
 crea_aggro_exit
-  action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureAggroExit
+  action      SWLOR.Game.Server.Domain.Creatures.AIAggroService.CreatureAggroExit
 
 crea_attack_aft
-  action      SWLOR.Game.Server.Domain.Creatures.AIService.CreaturePhysicalAttacked
+  action      SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreaturePhysicalAttacked
   action      SWLOR.Game.Server.Domain.Quests.QuestEncounterService.TrackEncounterActivity
 
 crea_attack_bef
@@ -335,16 +335,16 @@ crea_attack_bef
   action      SWLOR.Game.Server.Domain.Combat.StealthService.RecordPlayerCombatInitiation
 
 crea_block_aft
-  action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureBlocked
+  action      SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureBlocked
 
 crea_convo_aft
-  action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureConversation
+  action      SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureConversation
 
 crea_convo_bef
   action      SWLOR.Game.Server.Domain.Foundation.ConversationService.StartAssignedCreatureConversation
 
 crea_damaged_aft
-  action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureDamaged
+  action      SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureDamaged
   action      SWLOR.Game.Server.Domain.Combat.CombatDamageTakenEffectsService.ApplyDamageTakenEffects
   action      SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.OnDirectDamageApplied
   action      SWLOR.Game.Server.Domain.Quests.QuestEncounterService.TrackEncounterActivity
@@ -354,7 +354,7 @@ crea_damaged_bef
   action      SWLOR.Game.Server.Domain.World.MusicService.StartBattleThemeOnDamage
 
 crea_death_aft
-  action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureDeath
+  action      SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureDeath
   action      SWLOR.Game.Server.Domain.Combat.CombatPointService.OnCreatureDeath
   action      SWLOR.Game.Server.Domain.Combat.EnmityService.CreatureDeath
   action      SWLOR.Game.Server.Domain.Character.EspionageInfiltrationService.OnNpcRemoved
@@ -378,10 +378,10 @@ crea_death_bef
   action      SWLOR.Game.Server.Feature.TrapDefinition.SpawnLarvaeOnSlugDeath.CreatureDeath
 
 crea_disturb_aft
-  action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureDisturbed
+  action      SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureDisturbed
 
 crea_hb_aft
-  action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureHeartbeat
+  action      SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureHeartbeat
   action      SWLOR.Game.Server.Feature.CivilianPatrol.Heartbeat
   action      SWLOR.Game.Server.Feature.EchaniTempleMonks.Heartbeat
 
@@ -395,13 +395,13 @@ crea_perc_aft
   action      SWLOR.Game.Server.Domain.Creatures.AIService.CreaturePerception
 
 crea_rested_aft
-  action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureRested
+  action      SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureRested
 
 crea_rndend_aft
-  action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureCombatRoundEnd
+  action      SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureCombatRoundEnd
 
 crea_spawn_aft
-  action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureSpawn
+  action      SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureSpawn
   action      SWLOR.Game.Server.Feature.PistolAnimationRemap.OnCreatureSpawn
   action      SWLOR.Game.Server.Feature.TrapDefinition.SpawnLarvaeOnSlugDeath.MessageOnDeath
   action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnCreatureSpawn
@@ -413,10 +413,10 @@ crea_spawn_bef
   action      SWLOR.Game.Server.Domain.Space.SpaceService.CreatureSpawn
 
 crea_splcast_aft
-  action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureSpellCastAt
+  action      SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureSpellCastAt
 
 crea_userdef_aft
-  action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureUserDefined
+  action      SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureUserDefined
 
 db_loaded
   action      SWLOR.Game.Server.Domain.Foundation.MigrationService.AfterDatabaseLoaded
@@ -432,7 +432,7 @@ dialog_start
   action      SWLOR.Game.Server.Feature.CivilianPatrol.StopForDialogue
 
 dm_ai_aft
-  action      SWLOR.Game.Server.Domain.Creatures.AIService.DMToggleAIAfter
+  action      SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.DMToggleAIAfter
 
 dm_appear_aft
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.RefreshAppearButton

@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// The ability hit roll for combat: an ability's hit chance, critical rate and roll, the test overrides of the ability
-    /// and auto-attack hit rolls, and the riders of a guarded hit and a ranged ability hit.
+    /// and auto-attack hit rolls, and the rider of a ranged ability hit.
     /// </summary>
     public interface ICombatAbilityHitService
     {
@@ -16,8 +16,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             bool isAreaAbility,
             int criticalRateAdjustment = 0,
             uint defender = OBJECT_INVALID);
-
-        void ApplyGuardedHitNextAttackEffects(uint creature);
 
         int GetAbilityCriticalRate(
             uint attacker,

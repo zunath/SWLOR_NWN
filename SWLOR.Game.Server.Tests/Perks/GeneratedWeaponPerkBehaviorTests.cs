@@ -771,10 +771,10 @@ public class GeneratedWeaponPerkBehaviorTests
         combat.Should().NotContain("ApplyAvoidedAttackAbilityUsedEvasionRefresh");
 
         var applyStart = combat.IndexOf(
-            "private static void ApplyAbilityUsedSkillRangedDeflection(",
+            "static void ApplyAbilityUsedSkillRangedDeflection(",
             StringComparison.Ordinal);
         var applyEnd = combat.IndexOf(
-            "private static void ApplySingleTargetAbilityUsedAttackDeflection(",
+            "static void ApplySingleTargetAbilityUsedAttackDeflection(",
             applyStart,
             StringComparison.Ordinal);
         applyStart.Should().BeGreaterThanOrEqualTo(0);

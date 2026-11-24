@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 CombatRecorder.ExpectHitPointCost(activator, payment);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(payment), activator);
             GameServices.CombatDamageTakenEffects.ApplyLowHPDamageTakenEffects(activator, payment);
-            GameServices.CombatAbilityActivation.ApplyHitPointSpendAbilityEffects(activator, hitPointsSpent, cost);
+            GameServices.CombatAbilityCostEffects.ApplyHitPointSpendAbilityEffects(activator, hitPointsSpent, cost);
         }
 
         /// <summary>HP-cost abilities can't be used at 1 HP, where there is nothing left to pay.</summary>

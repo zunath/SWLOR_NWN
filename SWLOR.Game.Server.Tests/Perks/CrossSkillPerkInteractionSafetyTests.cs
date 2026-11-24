@@ -637,7 +637,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         retaliationPulse.Should().Contain("target != originalAttacker",
             "the triggering attacker must not be struck twice when inside the pulse radius");
 
-        var guardedHitRetaliation = ExtractMethod(combat, "private static void ApplyGuardedHitRetaliation(");
+        var guardedHitRetaliation = ExtractMethod(combat, "public static void ApplyGuardedHitRetaliation(");
         guardedHitRetaliation.Should().Contain("StatType.GuardedHitPulseDMG");
         guardedHitRetaliation.Should().NotContain("SkillTypeMatches(",
             "Iron Elbows is cross-skill and must work with any equipped weapon or unarmed");
@@ -648,7 +648,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         evasion.Should().Contain("evasionStatType);",
             "each trigger family needs an independent replacement group so valid cross-skill Evasion perks can stack");
 
-        var skillEvasion = ExtractMethod(combat, "private static void ApplyAbilityUsedSkillEvasion(");
+        var skillEvasion = ExtractMethod(combat, "static void ApplyAbilityUsedSkillEvasion(");
         skillEvasion.Should().Contain("StatType.AbilityUsedEvasionPercentAdjustmentSkillType");
         skillEvasion.Should().Contain("StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType");
         var skillEvasionChannel = ExtractMethod(combat, "private static void ApplyAbilityUsedSkillEvasionChannel(");
@@ -667,10 +667,10 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         staminaCost.Should().Contain("if (ability.IsHostileAbility)");
         staminaCost.Should().Contain("StatType.HostileAbilityStaminaCostFlatAdjustment");
 
-        var hostileEvasion = ExtractMethod(combat, "private static void ApplyHostileAbilityUsedEvasion(");
+        var hostileEvasion = ExtractMethod(combat, "static void ApplyHostileAbilityUsedEvasion(");
         hostileEvasion.Should().Contain("SkillTypeMatchesOrGlobal(skillType, requiredSkillType)",
             "an omitted selector makes Vigor Stance trigger from every hostile combat skill");
-        var costlyEvasion = ExtractMethod(combat, "private static void ApplyCostlyAbilityUsedEvasion(");
+        var costlyEvasion = ExtractMethod(combat, "static void ApplyCostlyAbilityUsedEvasion(");
         costlyEvasion.Should().Contain("SkillTypeMatchesOrGlobal(skillType, requiredSkillType)");
         var costlyDamage = ExtractMethod(combat, "public static int GetCostlyAbilityDamageBonus(");
         costlyDamage.Should().Contain("SkillTypeMatchesOrGlobal(skillType, requiredSkillType)");

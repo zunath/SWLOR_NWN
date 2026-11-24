@@ -26,6 +26,8 @@ public class CombatDamageTakenTranscriptTests
         var taken = bench.Get<ICombatDamageTakenService>();
         var effects = bench.Get<ICombatDamageTakenEffectsService>();
         var reflection = bench.Get<ICombatDamageReflectionService>();
+        var guarded = bench.Get<ICombatGuardedHitService>();
+        var guardedEffects = bench.Get<ICombatGuardedHitEffectsService>();
         var memory = bench.Get<ICombatDefenseMemoryService>();
 
         foreach (var stat in new[] { 0, 5 })
@@ -47,10 +49,10 @@ public class CombatDamageTakenTranscriptTests
             bench.Step("fatal damage prevented or not" + tag, () =>
                 taken.TryPreventFatalDamageAndGrantTemporaryHP(Defender, 250, true));
             bench.Step("guarded hit" + tag, () =>
-                taken.ApplyGuardedHitModifiers(Defender, Attacker, 60, CombatDamageType.Physical, true));
+                guarded.ApplyGuardedHitModifiers(Defender, Attacker, 60, CombatDamageType.Physical, true));
             bench.Step("guarded hit that did not land" + tag, () =>
-                taken.ApplyGuardedHitModifiers(Defender, Attacker, 60, CombatDamageType.Force, false));
-            bench.Step("track a guarded hit" + tag, () => taken.TrackGuardedHit(Defender));
+                guarded.ApplyGuardedHitModifiers(Defender, Attacker, 60, CombatDamageType.Force, false));
+            bench.Step("track a guarded hit" + tag, () => guardedEffects.TrackGuardedHit(Defender));
             bench.Step("track a deflection" + tag, () => effects.TrackDeflection(Defender, DeflectionSource.Melee));
             bench.Step("track an avoided attack" + tag, () => effects.TrackAvoidedAttack(Defender, Attacker));
             bench.Step("the after-damage handler" + tag, () =>

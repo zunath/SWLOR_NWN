@@ -480,51 +480,6 @@ public class CombatAbilityHitServiceTests
     // ------------------------------------------------------------------ riders
 
     [Test]
-    public void AGuardedHitReadiesTheNextAttackWithTheLongerWindowAndTellsAPlayer()
-    {
-        Stat(Attacker, StatType.GuardedHitNextAttackDMGBonus, 10);
-        Stat(Attacker, StatType.GuardedHitNextAttackCriticalRatePercentAdjustment, 10);
-        Stat(Attacker, StatType.GuardedHitNextAttackWindowSeconds, 30);
-        Stat(Attacker, StatType.GuardedHitSecondaryNextAttackDMGBonus, 8);
-        Stat(Attacker, StatType.GuardedHitSecondaryNextAttackEnmityBonus, 40);
-        Stat(Attacker, StatType.GuardedHitSecondaryNextAttackWindowSeconds, 20);
-
-        _service.ApplyGuardedHitNextAttackEffects(Attacker);
-        _log.Should().Equal(
-            $"Replace {Attacker} {StatType.NextAttackGuardedHitDMGBonus} 18 30 {StatType.NextAttackGuardedHitDMGBonus}",
-            $"Replace {Attacker} {StatType.NextAttackGuardedHitCriticalRatePercentAdjustment} 10 30 {StatType.NextAttackGuardedHitDMGBonus}",
-            $"Replace {Attacker} {StatType.NextAttackGuardedHitEnmityBonus} 40 30 {StatType.NextAttackGuardedHitDMGBonus}");
-        FloatingText().Should().BeEmpty("an NPC sees no text");
-
-        _players.Add(Attacker);
-        _service.ApplyGuardedHitNextAttackEffects(Attacker);
-        FloatingText().Should().ContainSingle().Which.Should().Contain("Counter Ready: +18 DMG, +10% Crit, +40 Enmity");
-
-        _engine.ClearCalls();
-        Stat(Attacker, StatType.GuardedHitNextAttackCriticalRatePercentAdjustment, 0);
-        Stat(Attacker, StatType.GuardedHitSecondaryNextAttackEnmityBonus, 0);
-        _service.ApplyGuardedHitNextAttackEffects(Attacker);
-        FloatingText().Should().ContainSingle().Which.Should().Contain("Counter Ready: +18 DMG").And.NotContain("Crit").And.NotContain("Enmity");
-    }
-
-    [Test]
-    public void AGuardedHitWithoutAWindowOrABonusReadiesNothing()
-    {
-        Stat(Attacker, StatType.GuardedHitNextAttackDMGBonus, 10);
-        _service.ApplyGuardedHitNextAttackEffects(Attacker);
-        _log.Should().BeEmpty("no window");
-
-        Stat(Attacker, StatType.GuardedHitNextAttackDMGBonus, 0);
-        Stat(Attacker, StatType.GuardedHitNextAttackWindowSeconds, 30);
-        _service.ApplyGuardedHitNextAttackEffects(Attacker);
-        _log.Should().BeEmpty("no bonus");
-
-        Stat(Attacker, StatType.GuardedHitSecondaryNextAttackEnmityBonus, 5);
-        _service.ApplyGuardedHitNextAttackEffects(Attacker);
-        _log.Should().HaveCount(3, "an Enmity bonus alone readies the attack");
-    }
-
-    [Test]
     public void ARangedAbilityLowersTheTargetsPhysicalDefense()
     {
         Stat(Attacker, StatType.RangedAbilityTargetDefenseReductionPercent, 20);

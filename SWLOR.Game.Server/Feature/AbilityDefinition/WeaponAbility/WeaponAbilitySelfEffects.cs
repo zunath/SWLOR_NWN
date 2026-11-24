@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
     public class WeaponAbilitySelfEffects
     {
         private IAbilityImmunityService AbilityImmunity { get; }
-        private ICombatAbilityActivationService CombatAbilityActivation { get; }
+        private ICombatAbilityCostEffectsService CombatAbilityCostEffects { get; }
         private ICombatDamageTakenEffectsService CombatDamageTakenEffects { get; }
         private ICombatRecorderService CombatRecorder { get; }
         private ICombatResourcesService CombatResources { get; }
@@ -30,10 +30,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
         private ITemporaryStatModifierService TemporaryStatModifier { get; }
         private WeaponAbilityTemporaryModifiers WeaponAbilityTemporaryModifiers { get; }
 
-        public WeaponAbilitySelfEffects(IAbilityImmunityService abilityImmunity, ICombatAbilityActivationService combatAbilityActivation, ICombatDamageTakenEffectsService combatDamageTakenEffects, ICombatRecorderService combatRecorder, ICombatResourcesService combatResources, IEnmityService enmity, StatusAbilityEffects statusAbilityEffects, IStatusEffectApplicationService statusEffectApplication, ITemporaryStatModifierService temporaryStatModifier, WeaponAbilityTemporaryModifiers weaponAbilityTemporaryModifiers)
+        public WeaponAbilitySelfEffects(IAbilityImmunityService abilityImmunity, ICombatAbilityCostEffectsService combatAbilityCostEffects, ICombatDamageTakenEffectsService combatDamageTakenEffects, ICombatRecorderService combatRecorder, ICombatResourcesService combatResources, IEnmityService enmity, StatusAbilityEffects statusAbilityEffects, IStatusEffectApplicationService statusEffectApplication, ITemporaryStatModifierService temporaryStatModifier, WeaponAbilityTemporaryModifiers weaponAbilityTemporaryModifiers)
         {
             AbilityImmunity = abilityImmunity;
-            CombatAbilityActivation = combatAbilityActivation;
+            CombatAbilityCostEffects = combatAbilityCostEffects;
             CombatDamageTakenEffects = combatDamageTakenEffects;
             CombatRecorder = combatRecorder;
             CombatResources = combatResources;
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
             if (CombatRecorder.IsRecording)
                 CombatRecorder.ExpectHitPointCost(activator, hpCost);
             AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(hpCost), activator));
-            CombatAbilityActivation.ApplyHitPointSpendAbilityEffects(activator, hpCost);
+            CombatAbilityCostEffects.ApplyHitPointSpendAbilityEffects(activator, hpCost);
         }
 
         public void AfterActivation(WeaponAbilityProfile profile, uint activator, SkillType skillType)

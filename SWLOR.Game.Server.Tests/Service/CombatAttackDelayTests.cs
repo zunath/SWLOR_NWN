@@ -1058,7 +1058,7 @@ public class CombatAttackDelayTests
             landedDamageHandlingStart,
             StringComparison.Ordinal);
         var landedDamageHandling = hitEffects[landedDamageHandlingStart..landedDamageHandlingEnd];
-        landedDamageHandling.Should().Contain("GameServices.CombatHitEffects.ApplyCriticalHitEffects(");
+        landedDamageHandling.Should().Contain("GameServices.CombatCriticalHitEffects.ApplyCriticalHitEffects(");
         landedDamageHandling.Should().NotContain("if (isLandedAttack && totalDamage > 0)",
             "a fully mitigated landed native critical must still notify critical-hit effects");
     }

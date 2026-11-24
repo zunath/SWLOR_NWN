@@ -483,7 +483,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
 
         var weaponScope = nativeDamage.IndexOf("using var damageDerivedHealing = GameServices.CombatResources.BeginDamageDerivedHealing", StringComparison.Ordinal);
         weaponScope.Should().BeGreaterThanOrEqualTo(0);
-        weaponScope.Should().BeLessThan(nativeDamage.IndexOf("GameServices.CombatHitEffects.ApplyCriticalHitEffects", weaponScope, StringComparison.Ordinal));
+        weaponScope.Should().BeLessThan(nativeDamage.IndexOf("GameServices.CombatCriticalHitEffects.ApplyCriticalHitEffects", weaponScope, StringComparison.Ordinal));
         weaponScope.Should().BeLessThan(nativeDamage.IndexOf("PublishDamageDealtEvent", weaponScope, StringComparison.Ordinal));
 
         // The hostile impact opens the scope before it hands the damage to the delivery part, which converts Dark Force and

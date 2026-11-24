@@ -734,12 +734,12 @@ public class CombatDamageTests
         preparedAutoAttackCleanupBody.Should().Contain("ConsumeNextSkillAutoAttackDamageBonus(attacker, skillType);");
         preparedAutoAttackCleanupBody.Should().Contain("StatType.NextAutoAttackDamageBonus");
         damageRollSource.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType, attacker.m_pcCombatRound.m_nCurrentAttack)");
-        damageRollSource.Should().Contain("GameServices.CombatHitEffects.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);");
+        damageRollSource.Should().Contain("GameServices.CombatAutoAttackEffects.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);");
         var queuedAbilitySuppressionIndex = damageRollSource.IndexOf(
             "UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType, attacker.m_pcCombatRound.m_nCurrentAttack)",
             StringComparison.Ordinal);
         var queuedAbilityCleanupIndex = damageRollSource.IndexOf(
-            "GameServices.CombatHitEffects.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);",
+            "GameServices.CombatAutoAttackEffects.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);",
             StringComparison.Ordinal);
         var calculateDamageIndex = damageRollSource.IndexOf(
             "var damage = CalculateTargetSpecificDamage",

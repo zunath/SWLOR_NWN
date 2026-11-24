@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Mutated Frog")
                 .Appearance(AppearanceType.BullywugGreenbabayaga)
                 .AppearanceScale(1f)
-                .SoundSetId(84)
+                .SoundSetId(311)
                 .PortraitId(3095)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Tank)

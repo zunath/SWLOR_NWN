@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Umbratalon Corvax")
                 .Appearance(AppearanceType.BirdRaven)
                 .AppearanceScale(0.66f)
-                .SoundSetId(14)
+                .SoundSetId(77)
                 .PortraitId(2224)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Damage)

@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Native
                     attacker, targetObject, IsSuccessfulAttackResult(pAttackData.m_nAttackResult));
 
             if (!IsSuccessfulAttackResult(pAttackData.m_nAttackResult))
-                GameServices.CombatAbilityBonus.ClearOpeningAutoAttackModifiers(attacker.m_idSelf);
+                GameServices.CombatQueuedAbilityBonus.ClearOpeningAutoAttackModifiers(attacker.m_idSelf);
 
             // A landed queued weapon ability is finalized through AbilityImpactLifecycle.EndAbilityImpact,
             // which sends the single attempt notification for that originating swing. A miss
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Native
             {
                 UsePerkFeat.ReserveQueuedWeaponAbilityAttack(
                     attacker.m_idSelf, pCombatRound.m_nCurrentAttack, weapon?.m_idSelf ?? OBJECT_INVALID);
-                GameServices.CombatAbilityBonus.StoreQueuedWeaponAbilityCriticalRateBonus(
+                GameServices.CombatQueuedAbilityBonus.StoreQueuedWeaponAbilityCriticalRateBonus(
                     attacker.m_idSelf,
                     abilitySkillType,
                     autoAttackCycleCriticalRate);

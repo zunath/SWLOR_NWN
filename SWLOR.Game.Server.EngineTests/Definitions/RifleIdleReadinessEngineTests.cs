@@ -209,13 +209,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssertBonuses(ctx, caster, true);
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 {
-                    GameServices.CombatAbilityBonus.PrepareOpeningAutoAttack(caster, SkillType.Rifle);
+                    GameServices.CombatQueuedAbilityBonus.PrepareOpeningAutoAttack(caster, SkillType.Rifle);
                     ctx.AssertEqual(12, TemporaryStatModifier.GetStatAdjustment(caster,
                         StatType.CurrentAutoAttackDamageBonus, StatType.CurrentAutoAttackDamageBonus),
                         "Steady Aim prepares its next swing's damage");
-                    ctx.AssertEqual(15, GameServices.CombatAbilityBonus.ConsumeOpeningAutoAttackCriticalDamageAdjustment(caster),
+                    ctx.AssertEqual(15, GameServices.CombatQueuedAbilityBonus.ConsumeOpeningAutoAttackCriticalDamageAdjustment(caster),
                         "Dead Center prepares its next swing's critical damage");
-                    GameServices.CombatAbilityBonus.ClearOpeningAutoAttackModifiers(caster);
+                    GameServices.CombatQueuedAbilityBonus.ClearOpeningAutoAttackModifiers(caster);
                 });
                 var before = GameServices.CombatActivity.GetLastCompletedOffensiveActivityAt(caster);
                 SetCommandable(true, caster);

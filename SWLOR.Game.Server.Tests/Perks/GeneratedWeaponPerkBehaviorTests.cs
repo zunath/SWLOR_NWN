@@ -206,7 +206,7 @@ public class GeneratedWeaponPerkBehaviorTests
         luckyChamberPreparation.Should().BeLessThan(hitBranch,
             "Lucky Chamber must advance before hit, miss, or deflection resolution");
         resolveAttackRoll.Should().Contain("autoAttackCycleCriticalRate);");
-        resolveAttackRoll.Should().Contain("GameServices.CombatAbilityBonus.StoreQueuedWeaponAbilityCriticalRateBonus(");
+        resolveAttackRoll.Should().Contain("GameServices.CombatQueuedAbilityBonus.StoreQueuedWeaponAbilityCriticalRateBonus(");
         var ability = AbilitySource.Read();
         ability.Should().Contain("ConsumeQueuedWeaponAbilityBonuses(activator, abilitySkillType)");
         combat.Should().Contain("new DamageDealtAdjustmentStatusEffect(");
@@ -354,7 +354,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "the idle qualification must be captured before the delayed impact begins");
         weaponBaseSource.Should().Contain("GetWeaponAbilityActivationIdleCriticalRateBonus(activator)");
         weaponBaseSource.Should().Contain("GetWeaponAbilityActivationIdleDefenseIgnorePercent(activator)");
-        weaponBaseSource.Should().Contain("CombatAbilityBonus.ClearWeaponAbilityActivationIdleBonuses(activator);");
+        weaponBaseSource.Should().Contain("CombatQueuedAbilityBonus.ClearWeaponAbilityActivationIdleBonuses(activator);");
         var snapshotSource = CombatSource.Read();
         snapshotSource.Should().Contain("isIdle ? criticalRatePercentAdjustment : 0");
         snapshotSource.Should().Contain("isIdle ? defenseIgnorePercent : 0");
@@ -438,7 +438,7 @@ public class GeneratedWeaponPerkBehaviorTests
         var root = FindRepositoryRoot();
         var source = WeaponAbilitySource.Read();
         var snapshotIndex = source.IndexOf(
-            "CombatAbilityBonus.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(activator, skill);",
+            "CombatQueuedAbilityBonus.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(activator, skill);",
             StringComparison.Ordinal);
         snapshotIndex.Should().BeGreaterThanOrEqualTo(0);
         source.Should().NotContain("TrackHostileAbilityActivity(activator, true);",
@@ -479,13 +479,13 @@ public class GeneratedWeaponPerkBehaviorTests
             root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
         usePerkFeatSource.Should().Contain("ClearAbilityActivationIdleSnapshots(activator);");
         usePerkFeatSource.Should().Contain("GameServices.CombatActivity.ClearAbilityActivationIdleBonuses(activator);");
-        usePerkFeatSource.Should().Contain("GameServices.CombatAbilityBonus.ClearWeaponAbilityActivationIdleBonuses(activator);");
-        usePerkFeatSource.Should().Contain("GameServices.CombatAbilityBonus.ClearQueuedWeaponAbilityAttemptBonuses(player);");
+        usePerkFeatSource.Should().Contain("GameServices.CombatQueuedAbilityBonus.ClearWeaponAbilityActivationIdleBonuses(activator);");
+        usePerkFeatSource.Should().Contain("GameServices.CombatQueuedAbilityBonus.ClearQueuedWeaponAbilityAttemptBonuses(player);");
         var rejectedQueueIndex = usePerkFeatSource.IndexOf("if (!executeQueue)", StringComparison.Ordinal);
         rejectedQueueIndex.Should().BeGreaterThanOrEqualTo(0);
         var rejectedQueueBody = usePerkFeatSource.Substring(rejectedQueueIndex, 400);
-        rejectedQueueBody.Should().Contain("GameServices.CombatAbilityBonus.ClearQueuedWeaponAbilityActivationBonuses(activator);");
-        rejectedQueueBody.Should().Contain("GameServices.CombatAbilityBonus.ClearQueuedWeaponAbilityAttemptBonuses(activator);");
+        rejectedQueueBody.Should().Contain("GameServices.CombatQueuedAbilityBonus.ClearQueuedWeaponAbilityActivationBonuses(activator);");
+        rejectedQueueBody.Should().Contain("GameServices.CombatQueuedAbilityBonus.ClearQueuedWeaponAbilityAttemptBonuses(activator);");
         rejectedQueueBody.Should().Contain("ClearAbilityActivationIdleSnapshots(activator);");
         var queuedUseIndex = usePerkFeatSource.IndexOf(
             "GameServices.CombatAbilityActivation.TrackQueuedWeaponAbilityUse(activator, ability);",
@@ -1594,8 +1594,8 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().NotContain("StaffSentinelGuardCategoryId");
         combatSource.Should().Contain("StatType.AbilityUsedRangedDeflection");
         usePerkFeatSource.Should().Contain("GameServices.CombatAbilityBonus.ApplyAbilityRecastDelayModifiers(");
-        nativeAttackSource.Should().Contain("GameServices.CombatAbilityHit.GetHitChanceAgainstSunderedTargetAdjustment(");
-        nativeAttackSource.Should().Contain("GameServices.CombatAbilityHit.GetCriticalRateAgainstSunderedTargetAdjustment(");
+        nativeAttackSource.Should().Contain("GameServices.CombatAbilityHitAdjustment.GetHitChanceAgainstSunderedTargetAdjustment(");
+        nativeAttackSource.Should().Contain("GameServices.CombatAbilityHitAdjustment.GetCriticalRateAgainstSunderedTargetAdjustment(");
         statusEffectSource.Should().Contain("OutgoingControlDurationPercentAdjustment");
         generatorSource.Should().Contain("EXPLICIT_RECAST_SHORT_NAMES");
         generatorSource.Should().Contain("Missing explicit recast short name");

@@ -23,11 +23,11 @@ SWLOR.Game.Server/Domain/Character/CreatureStatService.cs -> Feature/AbilityDefi
 SWLOR.Game.Server/Domain/Character/RobeModelRenderer.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Combat/AbilityEffectScaling.cs -> Feature/AbilityDefinition | 1
-SWLOR.Game.Server/Domain/Combat/CombatAbilityBonusService.cs -> Feature/StatusEffectDefinition | 7
+SWLOR.Game.Server/Domain/Combat/CombatAbilityBonusService.cs -> Feature/StatusEffectDefinition | 6
 SWLOR.Game.Server/Domain/Combat/CombatAbilityCostEffectsService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Combat/CombatAbilityCostEffectsService.cs -> Feature/StatusEffectDefinition | 3
 SWLOR.Game.Server/Domain/Combat/CombatAbilityDefenseEffectsService.cs -> Feature/StatusEffectDefinition | 4
-SWLOR.Game.Server/Domain/Combat/CombatAbilityHitService.cs -> Feature/StatusEffectDefinition | 2
+SWLOR.Game.Server/Domain/Combat/CombatAbilityHitAdjustmentService.cs -> Feature/StatusEffectDefinition | 2
 SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs -> Feature/AbilityDefinition | 2
 SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs -> Feature/StatusEffectDefinition | 28
 SWLOR.Game.Server/Domain/Combat/CombatAbilityOffenseEffectsService.cs -> Feature/StatusEffectDefinition | 2
@@ -42,6 +42,7 @@ SWLOR.Game.Server/Domain/Combat/CombatDamageTakenEffectsService.cs -> Feature/St
 SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Combat/CombatDealtEffectsService.cs -> Feature/StatusEffectDefinition | 10
 SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs -> Feature/StatusEffectDefinition | 12
+SWLOR.Game.Server/Domain/Combat/CombatQueuedAbilityBonusService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Combat/CombatRateModifiersService.cs -> Feature/StatusEffectDefinition | 2
 SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Combat/CombatRepeatedTargetService.cs -> Feature/StatusEffectDefinition | 3

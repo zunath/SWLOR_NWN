@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Native
                 var criticalModifier = CalculateCriticalRateModifier(attacker, defender, weaponSkillType);
                 criticalModifier += GameServices.CombatAbilityBonus.ConsumeNextAttackGuardedHitCriticalRateBonus(attacker.m_idSelf);
                 criticalModifier += GameServices.CombatAttackTiming.ConsumeNextAutoAttackCriticalRateBonus(attacker.m_idSelf, weaponSkillType);
-                criticalModifier += GameServices.CombatAbilityBonus.PrepareOpeningAutoAttack(attacker.m_idSelf, weaponSkillType);
+                criticalModifier += GameServices.CombatQueuedAbilityBonus.PrepareOpeningAutoAttack(attacker.m_idSelf, weaponSkillType);
                 criticalModifier += GameServices.CombatRateModifiers.GetAutoAttackCriticalRateAdjustment(
                     attacker.m_idSelf,
                     defender.m_idSelf,
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Native
         {
             var criticalModifier = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.CriticalRatePercentAdjustment);
             criticalModifier += GameServices.CombatDamageModifiers.GetSkillCriticalRatePercentAdjustment(attacker.m_idSelf, skillType);
-            criticalModifier += GameServices.CombatAbilityHit.GetCriticalRateAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf);
+            criticalModifier += GameServices.CombatAbilityHitAdjustment.GetCriticalRateAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf);
 
             Log.Write(LogGroup.Attack, $"SWLOR crit rate modifier: {criticalModifier}");
 

@@ -1271,6 +1271,7 @@
 "Item","ship_reactor","Ship Reactor","Utility","","iit_sc_reactor","SWLOR_Haks/sw_item_source/general/ship_reactor.png",""
 "Item","enh_accuracy","Starship accuracy enhancement","Utility","","iit_smenhacc","SWLOR_Haks/sw_item_source/enh_accuracy.png",""
 "Item","enh_capacitor","Starship capacitor enhancement","Utility","","iit_smenhcap","SWLOR_Haks/sw_item_source/enh_capacitor.png",""
+"Item","enh_cargo","Starship cargo enhancement","Utility","","iit_smenhcargo","SWLOR_Haks/sw_item_source/general/enh_cargo.png",""
 "Item","enh_em_damage","Starship EM damage enhancement","Utility","","iit_smenhemdmg","SWLOR_Haks/sw_item_source/enh_em_damage.png",""
 "Item","enh_em_defense","Starship EM defense enhancement","Utility","","iit_smenhemdef","SWLOR_Haks/sw_item_source/enh_em_defense.png",""
 "Item","enh_evasion","Starship evasion enhancement","Utility","","iit_smenheva","SWLOR_Haks/sw_item_source/enh_evasion.png",""

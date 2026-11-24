@@ -54329,6 +54329,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Starship Enhancement - Cargo I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_cargo1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Cargo II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_cargo2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Cargo III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_cargo3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Cargo IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_cargo4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Enhancement - Cargo V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sen_cargo5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Starship Enhancement - EM Damage I"
                     },
                     "RESREF": {

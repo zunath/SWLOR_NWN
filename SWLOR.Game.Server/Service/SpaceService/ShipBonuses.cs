@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
     /// </summary>
     public class ShipBonuses
     {
-        /// <summary>Adds one Starship Bonus property (subtypes 46-57, as crafting builds them). Other subtypes add nothing.</summary>
+        /// <summary>Adds one Starship Bonus property (subtypes 46-57 and 59, as crafting builds them). Other subtypes add nothing.</summary>
         public void Add(int subtype, int amount)
         {
             switch (subtype)
@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 case 55: ThermalDefense += amount; break;
                 case 56: ExplosiveDefense += amount; break;
                 case 57: EMDefense += amount; break;
+                case 59: Cargo += amount; break;
             }
         }
 
@@ -38,5 +39,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int ThermalDefense { get; set; }
         public int ExplosiveDefense { get; set; }
         public int EMDefense { get; set; }
+
+        /// <summary>Percent of the hull's own cargo the cargo bay gains (<see cref="TradeService.ShipCargoRules"/>).</summary>
+        public int Cargo { get; set; }
     }
 }

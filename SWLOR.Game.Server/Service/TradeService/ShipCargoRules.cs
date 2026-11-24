@@ -26,12 +26,13 @@ namespace SWLOR.Game.Server.Service.TradeService
 
         /// <summary>
         /// The cargo bay of a hull with these fitted modules: each expander's share grows with its Module Bonus
-        /// (<see cref="ShipTraitRules.Apply"/>). A hull with no cargo has none, expanders or not.
+        /// (<see cref="ShipTraitRules.Apply"/>), and the deed's Cargo enhancements add
+        /// <paramref name="deedCargoPercent"/> percent of the hull's cargo. A hull with no cargo has none, expanders or not.
         /// </summary>
-        public static int GetCapacity(int hullCargo, IEnumerable<(string Tag, int ModuleBonus)> modules)
+        public static int GetCapacity(int hullCargo, IEnumerable<(string Tag, int ModuleBonus)> modules, int deedCargoPercent = 0)
         {
             var cargo = Math.Max(0, hullCargo);
-            var capacity = cargo;
+            var capacity = cargo + cargo * Math.Max(0, deedCargoPercent) / 100;
             foreach (var (tag, moduleBonus) in modules ?? Enumerable.Empty<(string, int)>())
             {
                 var step = RevampModuleCatalog.Steps.FirstOrDefault(x => x.Tag == tag);
@@ -57,8 +58,11 @@ namespace SWLOR.Game.Server.Service.TradeService
         /// <summary>The cargo bay of a hull with the modules fitted on this status: its Helm-slot expanders count.</summary>
         public static int GetCapacity(int hullCargo, ShipStatus status)
         {
-            return GetCapacity(hullCargo, GetHelmModules(status));
+            return GetCapacity(hullCargo, GetHelmModules(status), GetDeedCargoPercent(status));
         }
+
+        /// <summary>The percent of the hull's cargo the deed's Cargo enhancements add, 0 with none.</summary>
+        public static int GetDeedCargoPercent(ShipStatus status) => status?.DeedBonuses?.Cargo ?? 0;
 
         /// <summary>Every module fitted in a Helm slot of the status, in any row.</summary>
         public static IEnumerable<string> GetHelmModuleTags(ShipStatus status) => GetHelmModules(status).Select(x => x.Tag);
@@ -107,15 +111,15 @@ namespace SWLOR.Game.Server.Service.TradeService
         /// module coming off (its tag and bonus), one of <paramref name="modules"/>.
         /// </summary>
         public static bool CanRemoveModule(int hullCargo, IReadOnlyCollection<(string Tag, int ModuleBonus)> modules,
-            (string Tag, int ModuleBonus) removed, int usedVolume)
+            (string Tag, int ModuleBonus) removed, int usedVolume, int deedCargoPercent = 0)
         {
             var all = (modules ?? Array.Empty<(string, int)>()).ToList();
             var remaining = all.ToList();
             if (!remaining.Remove(removed))
                 return true;
 
-            var without = GetCapacity(hullCargo, remaining);
-            return without >= usedVolume || without >= GetCapacity(hullCargo, all);
+            var without = GetCapacity(hullCargo, remaining, deedCargoPercent);
+            return without >= usedVolume || without >= GetCapacity(hullCargo, all, deedCargoPercent);
         }
     }
 }

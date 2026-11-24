@@ -2349,7 +2349,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // A Cargo Expander stays while the cargo bay would overflow without it.
                     var hullCargo = Space.FindShipDetail(current.Status.ItemTag)?.Hull?.Cargo ?? 0;
                     if (!ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetHelmModules(current.Status).ToList(),
-                            (fitted.ItemTag, ShipTraitRules.ModuleBonus(fitted)), Trade.GetUsedVolume(current)))
+                            (fitted.ItemTag, ShipTraitRules.ModuleBonus(fitted)), Trade.GetUsedVolume(current),
+                            ShipCargoRules.GetDeedCargoPercent(current.Status)))
                     {
                         SendMessageToPC(Player, "Unload the cargo bay first: its cargo would not fit without this Cargo Expander.");
                         return;

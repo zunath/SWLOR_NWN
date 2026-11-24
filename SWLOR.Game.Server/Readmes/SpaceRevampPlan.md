@@ -552,7 +552,7 @@ Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as 
 
 ### Enhancements
 
-- **Starship enhancements** are rebased to the new stats: one Attack, one Defense, resistances, hull, shield, capacitor, regen, accuracy, evasion and cargo.
+- **Starship enhancements** are rebased to the new stats: one Attack, one Defense, resistances, hull, shield, capacitor, regen, accuracy, evasion and cargo. Cargo is Starship Enhancement - Cargo I-V (`sen_cargo1`-`sen_cargo5`, Starship Bonus subtype 59, `ShipBonuses.Cargo`): each adds 1-5% of the hull's own cargo to the bay (`ShipCargoRules.GetCapacity`), as damage enhancements add percent points.
 - **Module enhancements** (`ModuleBonus`) stay. Each point adds 1% to every number of the module's own, so every family gains from it: damage, Attack, accuracy, hull, shield, capacitor, regen, repair, Defense, resistances, auras, a positive Evasion or speed, the Ion Web slow, Interdictor range, jam, paint, Afterburner speed, probe strength and sweep range, cargo share and customs cut, and a cloak's reveal range shrinks 1% a point. Capacitor use and penalties (plating's -4 Evasion, an expander's -5% speed) never change. It adds to the traits' percents (`ShipTraitRules.Apply`) on every module's cycle, ability shot, range check and fitted stats. Extraction heads also add the points to their yield.
 - **Fix:** subtype 58, which is labelled "Starship - Agility" but builds an ability bonus.
 

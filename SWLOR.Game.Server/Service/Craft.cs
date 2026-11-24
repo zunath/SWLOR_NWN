@@ -781,8 +781,8 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 57, amount);
                 case EnhancementSubType.Agility: // Agility
                     return ItemPropertyAbilityBonus(AbilityType.Agility, amount);
-
-                // 59 is free
+                case EnhancementSubType.StarshipCargo: // Starship Cargo
+                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 59, amount);
 
                 case EnhancementSubType.FoodBonusAttack: // Food Bonus - Attack
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Attack, amount);

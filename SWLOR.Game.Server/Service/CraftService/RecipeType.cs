@@ -4490,5 +4490,12 @@ namespace SWLOR.Game.Server.Service.CraftService
         SpacerCargoStack = 8178,
         SpacerCrewLocker = 8179,
         // END planet identity
+
+        // Starship Enhancement - Cargo I-V (the space revamp's cargo enhancement)
+        StarshipEnhancementCargo1 = 8180,
+        StarshipEnhancementCargo2 = 8181,
+        StarshipEnhancementCargo3 = 8182,
+        StarshipEnhancementCargo4 = 8183,
+        StarshipEnhancementCargo5 = 8184,
     }
 }

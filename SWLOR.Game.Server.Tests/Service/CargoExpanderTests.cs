@@ -71,6 +71,31 @@ public class CargoExpanderTests
     }
 
     [Test]
+    public void CargoEnhancement_AddsItsPercentOfTheHullsCargo()
+    {
+        var bonuses = new ShipBonuses();
+        bonuses.Add(59, 3);
+        bonuses.Add(59, 2);
+        bonuses.Cargo.Should().Be(5, "Starship Bonus subtype 59 is Cargo, and two enhancements stack");
+
+        var status = new ShipStatus { Size = ShipSize.Small, DeedBonuses = bonuses };
+        ShipCargoRules.GetCapacity(480, status).Should().Be(480 + 24, "+5% of a 480 bay");
+        ShipCargoRules.GetCapacity(0, status).Should().Be(0, "a hull with no cargo gains none");
+        ShipCargoRules.GetCapacity(480, new ShipStatus()).Should().Be(480, "an older ship with no deed bonuses");
+
+        // Taking off an expander counts the enhancement on both sides of the check.
+        var fitted = new[] { ("sm_cargo_45", 0) };
+        var withoutExpander = 480 + 24;
+        ShipCargoRules.CanRemoveModule(480, fitted, ("sm_cargo_45", 0), withoutExpander, 5).Should().BeTrue();
+        ShipCargoRules.CanRemoveModule(480, fitted, ("sm_cargo_45", 0), withoutExpander + 1, 5).Should().BeFalse();
+
+        ReadServerSource("Service", "Craft.cs").Should().Contain(
+            "case EnhancementSubType.StarshipCargo: // Starship Cargo\n                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 59, amount);");
+        ReadServerSource("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs")
+            .Should().Contain("ShipCargoRules.GetDeedCargoPercent(current.Status)))", "the removal check counts the deed's Cargo enhancements");
+    }
+
+    [Test]
     public void ModuleBonus_WidensAnExpandersShare()
     {
         var plain = ShipCargoRules.GetCapacity(480, new[] { "sm_cargo_45" });
@@ -115,8 +140,10 @@ public class CargoExpanderTests
             .And.Contain("SendMessageToPC(Player, \"Cargo Expanders and Smuggling Compartments fit Helm slots only.\");",
                 "a station slot refuses an expander")
             .And.Contain("ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetHelmModules(current.Status).ToList(),")
-            .And.Contain("(fitted.ItemTag, ShipTraitRules.ModuleBonus(fitted)), Trade.GetUsedVolume(current)))",
-                "the removal check counts the expander's Module Bonus");
+            .And.Contain("(fitted.ItemTag, ShipTraitRules.ModuleBonus(fitted)), Trade.GetUsedVolume(current),",
+                "the removal check counts the expander's Module Bonus")
+            .And.Contain("ShipCargoRules.GetDeedCargoPercent(current.Status)))",
+                "the removal check counts the Cargo enhancement");
     }
 
     [Test]

@@ -406,9 +406,19 @@ public abstract class CombatDamageTakenTestBase
 
     protected IEnumerable<uint> EffectTargets() => _engine.CallsTo("ApplyEffectToObject").Select(call => (uint)call.Arguments[2]!);
 
-    protected object? PrivateOf(object target, string name, params object[] arguments) =>
-        target.GetType().GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance, null,
-            arguments.Select(argument => argument.GetType()).ToArray(), null)!.Invoke(target, arguments);
+    // A private member of the part itself, found through the test double that derives from it.
+    protected object? PrivateOf(object target, string name, params object[] arguments)
+    {
+        var types = arguments.Select(argument => argument.GetType()).ToArray();
+        for (var type = target.GetType(); type != null; type = type.BaseType)
+        {
+            var method = type.GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, types, null);
+            if (method != null)
+                return method.Invoke(target, arguments);
+        }
+
+        throw new MissingMethodException(target.GetType().Name, name);
+    }
 
     protected object? Private(string name, params object[] arguments) =>
         typeof(CombatDamageTakenService).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance, null,

@@ -22,7 +22,6 @@ SWLOR.Game.Server/Domain/Character/PlayerNameService.cs -> Character (inside) | 
 SWLOR.Game.Server/Domain/Character/SkillService.cs -> Character (inside) | 1
 SWLOR.Game.Server/Domain/Character/StatusEffectCombatEventService.cs -> Character (inside) | 1
 SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs -> Character (inside) | 1
-SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs -> Combat (inside) | 1
 SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Character (down) | 1
 SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Combat (inside) | 1
 SWLOR.Game.Server/Domain/Combat/ResistanceService.cs -> Character (down) | 1

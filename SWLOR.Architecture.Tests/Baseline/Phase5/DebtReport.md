@@ -11,7 +11,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | 2. Large types | `LargeTypes.txt` | 18 | 27,173 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 8 | 2,419 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 16 | 239 services | none over 10 services |
-| 5. Deferred resolution | `DeferredResolution.txt` | 32 | 38 parameters | none |
+| 5. Deferred resolution | `DeferredResolution.txt` | 31 | 37 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 107 | 223 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 27 | 92 edges | none |
 | 8. Static entry points and static state | `StaticState.txt` | 122 | 220 members | each kept with an approved reason, or removed |
@@ -127,12 +127,12 @@ Largest 15 of 16 (all in `ServicesPerType.txt`):
 
 ## 5. Deferred resolution
 
-- 38 deferred constructor parameters in 22 files (Lazy 38, Func 0), taken by 22 types, deferring 25 distinct services.
-- By direction in the domain order: up 2, down 20, inside one domain 16.
+- 37 deferred constructor parameters in 21 files (Lazy 37, Func 0), taken by 21 types, deferring 24 distinct services.
+- By direction in the domain order: up 2, down 20, inside one domain 15.
 - Up: Character -> Combat 1, Items -> Combat 1.
 - IServiceProvider outside Composition/: 0 uses.
 
-Largest 15 of 32 (all in `DeferredResolution.txt`):
+Largest 15 of 31 (all in `DeferredResolution.txt`):
 
 | Entry | Parameters | Detail |
 |---|---:|---|
@@ -149,8 +149,8 @@ Largest 15 of 32 (all in `DeferredResolution.txt`):
 | `SWLOR.Game.Server/Domain/Character/SkillService.cs -> Character (inside)` | 1 | Character -> Character: Lazy 1 (IStatService) |
 | `SWLOR.Game.Server/Domain/Character/StatusEffectCombatEventService.cs -> Character (inside)` | 1 | Character -> Character: Lazy 1 (IStatService) |
 | `SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs -> Character (inside)` | 1 | Character -> Character: Lazy 1 (IStatService) |
-| `SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs -> Combat (inside)` | 1 | Combat -> Combat: Lazy 1 (ICombatDamageTakenService) |
 | `SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Character (down)` | 1 | Combat -> Character: Lazy 1 (IStatService) |
+| `SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Combat (inside)` | 1 | Combat -> Combat: Lazy 1 (ICombatQueriesService) |
 
 ## 6. Logic referencing content
 

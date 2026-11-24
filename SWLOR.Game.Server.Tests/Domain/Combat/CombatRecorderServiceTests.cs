@@ -121,6 +121,7 @@ public class CombatRecorderServiceTests
         {
             services.Replace(ServiceDescriptor.Singleton<ICombatRecordSession>(_recorder.Core));
             services.Replace(ServiceDescriptor.Singleton<ICombatRecorderService>(_recorder));
+            services.Replace(ServiceDescriptor.Singleton<ICombatRecordAbilityService>(_recorder.Ability));
         });
         _scopes.Add(_facades.Install());
     }
@@ -365,7 +366,7 @@ public class CombatRecorderServiceTests
         _recorder.BeginSetupAttribution(Alpha).Should().Be(default(CombatRecordAttributionScope));
         _recorder.BeginRespawnAttribution().Should().Be(default(CombatRecordAttributionScope));
         _recorder.BeginHealingReaction(Alpha).Should().Be(default(CombatRecordHealingReactionScope));
-        _recorder.BeginAbilityCost(Alpha, Strike).Should().Be(default(CombatRecordAbilityCostScope));
+        _recorder.Ability.BeginAbilityCost(Alpha, Strike).Should().Be(default(CombatRecordAbilityCostScope));
         _recorder.CaptureScope().Actor.Should().Be(0);
         _recorder.CaptureAttackAttribution(Alpha).Actor.Should().Be(0);
         _recorder.BeginAttribution(default(CombatRecordAttribution)).Should().Be(default(CombatRecordAttributionScope));
@@ -472,6 +473,70 @@ public class CombatRecorderServiceTests
     }
 
     [Test]
+    public void TryGetInnermostAttribution_ReadsTheOpenScopeAsItIs()
+    {
+        _recorder.TryGetInnermostAttribution(out var none).Should().BeFalse();
+        none.Actor.Should().Be(0);
+        Start();
+        _recorder.TryGetInnermostAttribution(out _).Should().BeFalse("no scope is open yet");
+
+        using (_recorder.BeginAttribution(Gamma, CombatRecordSourceKind.Ability, "Stun", 9, 2))
+        {
+            _recorder.TryGetInnermostAttribution(out var open).Should().BeTrue();
+            open.Actor.Should().Be(Gamma);
+            open.Name.Should().Be("Stun");
+            open.Code.Should().Be(9);
+            open.Recording.Should().Be(0, "a captured scope carries the recording number, this read does not");
+            _recorder.CaptureScope().Recording.Should().BeGreaterThan(0);
+        }
+
+        _recorder.TryGetInnermostAttribution(out _).Should().BeFalse("the scope closed");
+    }
+
+    [Test]
+    public void ResolveOwnAttribution_ReturnsTheScopeOfTheActorAndNeverLendsAnotherCreaturesSource()
+    {
+        Start();
+
+        using (_recorder.BeginAttribution(Gamma, CombatRecordSourceKind.Ability, "Stun"))
+        {
+            _recorder.ResolveOwnAttribution(Gamma).Name.Should().Be("Stun");
+            var other = _recorder.ResolveOwnAttribution(Beta);
+            other.Kind.Should().Be(CombatRecordSourceKind.Unattributed);
+            other.Actor.Should().Be(Beta);
+        }
+
+        _recorder.ActiveImpacts[Beta] = new AbilityImpactSummary { Ability = Strike };
+        _recorder.ResolveOwnAttribution(Beta).Kind.Should().Be(CombatRecordSourceKind.Ability, "the actor's active impact names its source");
+    }
+
+    [Test]
+    public void GetFeatCode_PrefersTheActivatedFeatThenTheRegisteredOne()
+    {
+        var ability = Strike;
+        _recorder.Abilities[FeatType.Alertness] = ability;
+        Start();
+
+        _recorder.GetFeatCode(ability, FeatType.Ambidexterity).Should().Be((int)FeatType.Ambidexterity);
+        _recorder.GetFeatCode(ability, FeatType.Invalid).Should().Be((int)FeatType.Alertness);
+        _recorder.GetFeatCode(Strike, FeatType.Invalid).Should().Be((int)FeatType.Invalid, "an ability that is not registered has no feat");
+        _recorder.GetFeatCode(null!, FeatType.Invalid).Should().Be((int)FeatType.Invalid);
+    }
+
+    [Test]
+    public void AToggleNoteSurvivesAStopAndAStartBecauseTheRecorderDoesNotClearIt()
+    {
+        _recorder.Frame = 8;
+        _recorder.Ability.NoteToggleDeactivated(Alpha);
+
+        Start();
+        _recorder.Stop("one", out _);
+        Start();
+
+        _recorder.Ability.TakeToggleDeactivation(Alpha).Should().BeTrue();
+    }
+
+    [Test]
     public void BeginAbilityFeatAttribution_NeedsARegisteredFeat()
     {
         _recorder.Abilities[FeatType.Alertness] = Strike;
@@ -553,9 +618,9 @@ public class CombatRecorderServiceTests
         _engine.SetReturnHandler("GetPositionFromLocation", _ => new System.Numerics.Vector3(1.234f, 2f, 3f));
         var location = EngineStructures.Create<Location>(5);
 
-        _recorder.RecordAbilityCast(Alpha, ObjectInvalid, location, Strike, FeatType.Alertness, 1.5f, true);
-        _recorder.RecordAbilityCast(Alpha, Beta, location, null!, FeatType.Alertness, 1.5f);
-        _recorder.RecordAbilityCast(Alpha, Beta, location, Strike, FeatType.Alertness, 0.5f);
+        _recorder.Ability.RecordAbilityCast(Alpha, ObjectInvalid, location, Strike, FeatType.Alertness, 1.5f, true);
+        _recorder.Ability.RecordAbilityCast(Alpha, Beta, location, null!, FeatType.Alertness, 1.5f);
+        _recorder.Ability.RecordAbilityCast(Alpha, Beta, location, Strike, FeatType.Alertness, 0.5f);
 
         var casts = Of(StopAndRead(), "ability_cast");
         casts.Should().HaveCount(2);
@@ -571,12 +636,12 @@ public class CombatRecorderServiceTests
     {
         Start();
 
-        _recorder.RecordAbilityDenied(Alpha, Beta, Strike, FeatType.Alertness, "no FP", true);
-        _recorder.RecordAbilityDenied(Outsider, Outsider, Strike, FeatType.Alertness, "elsewhere", false);
-        _recorder.RecordAbilityQueued(Alpha, Beta, Strike, FeatType.Alertness);
-        _recorder.RecordAbilityQueued(Alpha, Beta, null!, FeatType.Alertness);
-        _recorder.RecordAbilityInterrupted(Alpha, Strike, CombatRecordInterruptCause.Moved);
-        _recorder.RecordAbilityInterrupted(Outsider, Strike, CombatRecordInterruptCause.Moved);
+        _recorder.Ability.RecordAbilityDenied(Alpha, Beta, Strike, FeatType.Alertness, "no FP", true);
+        _recorder.Ability.RecordAbilityDenied(Outsider, Outsider, Strike, FeatType.Alertness, "elsewhere", false);
+        _recorder.Ability.RecordAbilityQueued(Alpha, Beta, Strike, FeatType.Alertness);
+        _recorder.Ability.RecordAbilityQueued(Alpha, Beta, null!, FeatType.Alertness);
+        _recorder.Ability.RecordAbilityInterrupted(Alpha, Strike, CombatRecordInterruptCause.Moved);
+        _recorder.Ability.RecordAbilityInterrupted(Outsider, Strike, CombatRecordInterruptCause.Moved);
 
         var events = StopAndRead();
         var denied = Of(events, "ability_denied").Single();
@@ -592,11 +657,11 @@ public class CombatRecorderServiceTests
     {
         Start();
 
-        _recorder.RecordAbilityInterrupted(Alpha, Strike, CombatRecordInterruptCause.Damage, Beta);
-        _recorder.RecordAbilityInterrupted(Alpha, Strike, CombatRecordInterruptCause.Damage, Alpha);
+        _recorder.Ability.RecordAbilityInterrupted(Alpha, Strike, CombatRecordInterruptCause.Damage, Beta);
+        _recorder.Ability.RecordAbilityInterrupted(Alpha, Strike, CombatRecordInterruptCause.Damage, Alpha);
         using (_recorder.BeginAttribution(Gamma, CombatRecordSourceKind.Ability, "Stun"))
-            _recorder.RecordAbilityInterrupted(Alpha, Strike, CombatRecordInterruptCause.Other);
-        _recorder.RecordAbilityInterrupted(Alpha, Strike, CombatRecordInterruptCause.Other);
+            _recorder.Ability.RecordAbilityInterrupted(Alpha, Strike, CombatRecordInterruptCause.Other);
+        _recorder.Ability.RecordAbilityInterrupted(Alpha, Strike, CombatRecordInterruptCause.Other);
 
         var interrupted = Of(StopAndRead(), "ability_interrupted");
         interrupted.Should().HaveCount(4);
@@ -614,11 +679,11 @@ public class CombatRecorderServiceTests
         var summary = new AbilityImpactSummary { ImpactedTargetCount = 2, CriticalHitCount = 1, AttributedDamage = 40, ImpactedTargets = new[] { Beta } };
         var outside = new AbilityImpactSummary { ImpactedTargets = new[] { Outsider } };
 
-        _recorder.RecordAbilityImpact(Alpha, Beta, default!, Strike, FeatType.Alertness, summary);
-        _recorder.RecordAbilityImpact(Outsider, Outsider, default!, Strike, FeatType.Alertness, summary);
-        _recorder.RecordAbilityImpact(Outsider, Outsider, default!, Strike, FeatType.Alertness, outside);
-        _recorder.RecordAbilityImpact(Outsider, Outsider, default!, Strike, FeatType.Alertness, null!);
-        _recorder.RecordAbilityImpact(Alpha, Beta, default!, null!, FeatType.Alertness, summary);
+        _recorder.Ability.RecordAbilityImpact(Alpha, Beta, default!, Strike, FeatType.Alertness, summary);
+        _recorder.Ability.RecordAbilityImpact(Outsider, Outsider, default!, Strike, FeatType.Alertness, summary);
+        _recorder.Ability.RecordAbilityImpact(Outsider, Outsider, default!, Strike, FeatType.Alertness, outside);
+        _recorder.Ability.RecordAbilityImpact(Outsider, Outsider, default!, Strike, FeatType.Alertness, null!);
+        _recorder.Ability.RecordAbilityImpact(Alpha, Beta, default!, null!, FeatType.Alertness, summary);
         _recorder.RecordRecurringAbilityImpact(Outsider, Strike, summary);
         _recorder.RecordRecurringAbilityImpact(Outsider, Strike, null!);
         _recorder.RecordRecurringAbilityImpact(Alpha, null!, summary);
@@ -637,15 +702,15 @@ public class CombatRecorderServiceTests
     public void ToggleDeactivationIsTakenOnceInTheFrameItWasNoted()
     {
         _recorder.Frame = 4;
-        _recorder.NoteToggleDeactivated(Alpha);
+        _recorder.Ability.NoteToggleDeactivated(Alpha);
 
-        _recorder.TakeToggleDeactivation(Beta).Should().BeFalse();
-        _recorder.NoteToggleDeactivated(Alpha);
+        _recorder.Ability.TakeToggleDeactivation(Beta).Should().BeFalse();
+        _recorder.Ability.NoteToggleDeactivated(Alpha);
         _recorder.Frame = 5;
-        _recorder.TakeToggleDeactivation(Alpha).Should().BeFalse("it was noted in an earlier frame");
-        _recorder.NoteToggleDeactivated(Alpha);
-        _recorder.TakeToggleDeactivation(Alpha).Should().BeTrue();
-        _recorder.TakeToggleDeactivation(Alpha).Should().BeFalse("taking it clears it");
+        _recorder.Ability.TakeToggleDeactivation(Alpha).Should().BeFalse("it was noted in an earlier frame");
+        _recorder.Ability.NoteToggleDeactivated(Alpha);
+        _recorder.Ability.TakeToggleDeactivation(Alpha).Should().BeTrue();
+        _recorder.Ability.TakeToggleDeactivation(Alpha).Should().BeFalse("taking it clears it");
     }
 
     [Test]
@@ -655,14 +720,14 @@ public class CombatRecorderServiceTests
         _recorder.Fp[Alpha] = 50;
         _recorder.Stamina[Alpha] = 30;
 
-        var cost = _recorder.BeginAbilityCost(Alpha, Strike, FeatType.Alertness);
+        var cost = _recorder.Ability.BeginAbilityCost(Alpha, Strike, FeatType.Alertness);
         _recorder.CaptureScope().Kind.Should().Be(CombatRecordSourceKind.AbilityCost);
         _recorder.Fp[Alpha] = 40;
         _recorder.Stamina[Alpha] = 25;
         cost.Dispose();
 
-        _recorder.BeginAbilityCost(Outsider, Strike).Should().Be(default(CombatRecordAbilityCostScope));
-        _recorder.BeginAbilityCost(Alpha, null!).Should().Be(default(CombatRecordAbilityCostScope));
+        _recorder.Ability.BeginAbilityCost(Outsider, Strike).Should().Be(default(CombatRecordAbilityCostScope));
+        _recorder.Ability.BeginAbilityCost(Alpha, null!).Should().Be(default(CombatRecordAbilityCostScope));
         var recorded = Of(StopAndRead(), "ability_cost").Single();
         recorded.GetProperty("fp").GetInt32().Should().Be(10);
         recorded.GetProperty("stm").GetInt32().Should().Be(5);
@@ -673,13 +738,13 @@ public class CombatRecorderServiceTests
     public void AbilityCostScope_WritesNothingWhenTheRecordingEndedOrTheActivatorIsGone()
     {
         Start();
-        var first = _recorder.BeginAbilityCost(Alpha, Strike);
+        var first = _recorder.Ability.BeginAbilityCost(Alpha, Strike);
         _areaOf.Remove(Alpha);
         _engine.SetReturnHandler("GetIsObjectValid", args => (uint)args[0]! != ObjectInvalid && (uint)args[0]! != Alpha);
         first.Dispose();
         _areaOf[Alpha] = AreaOne;
         _engine.SetReturnHandler("GetIsObjectValid", args => (uint)args[0]! != ObjectInvalid && (uint)args[0]! != 0);
-        var second = _recorder.BeginAbilityCost(Alpha, Strike);
+        var second = _recorder.Ability.BeginAbilityCost(Alpha, Strike);
         _recorder.Stop("x", out _);
         second.Dispose();
 

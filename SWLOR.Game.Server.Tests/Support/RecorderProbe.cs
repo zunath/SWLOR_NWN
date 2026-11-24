@@ -24,11 +24,15 @@ internal sealed partial class RecorderProbe : CombatRecorderService
         : base(core, presence, db, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatQueriesService>())
     {
         Core = core;
+        Ability = new RecorderProbeAbility(core, this, Fp, Stamina);
         _logDirectory = logDirectory;
     }
 
     /// <summary>The session the recorder writes through, which the native hooks open their scopes on.</summary>
     public RecorderProbeCore Core { get; }
+
+    /// <summary>The ability records part, which writes through the same session and reads this probe's attribution stack.</summary>
+    public RecorderProbeAbility Ability { get; }
 
     public int Hooks { get; private set; }
     public Exception? HookFailure { get; set; }

@@ -111,6 +111,9 @@ namespace SWLOR.Game.Server.Composition
         /// </summary>
         public static ICombatRecorderService CombatRecorder => FacadeAccessor.Resolve<ICombatRecorderService>();
 
+        /// <summary>The ability records of the combat recorder: casts, refusals, interruptions, impacts, costs and toggle notes, a part of the recorder.</summary>
+        public static ICombatRecordAbilityService CombatRecordAbility => FacadeAccessor.Resolve<ICombatRecordAbilityService>();
+
         /// <summary>The state and event queue of a combat recording, which the native damage and heal hooks open and close their scopes on.</summary>
         public static ICombatRecordSession CombatRecordSession => FacadeAccessor.Resolve<ICombatRecordSession>();
 

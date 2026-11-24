@@ -32,7 +32,7 @@
     },
     "Combat": {
       "services": [
-        "Combat", "CombatPoint", "CombatRecorder", "Enmity", "PvpCombat", "Resistance", "Recast",
+        "Combat", "CombatPoint", "CombatRecordAbility", "CombatRecorder", "Enmity", "PvpCombat", "Resistance", "Recast",
         "Telegraph", "Targeting", "QueuedAttackAnimation",
         "WeaponAttackEligibility", "WeaponDelay", "OrdinaryAttackTraits",
         "PairedRangedTraits", "MeleeTechnique", "TwinPistolEquipment",

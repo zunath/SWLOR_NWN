@@ -385,10 +385,16 @@ public class CombatDamageTakenEffectsServiceTests : CombatDamageTakenTestBase
         Lines("Apply").Should().BeEmpty();
 
         Stat(Defender, StatType.AbilityUsedRangedDeflectionStatusEffectIcon, (int)EffectIconType.ACIncrease);
+        // The FP rider is ready, so only the rejected status keeps it from triggering.
+        _deflectionSources[StatType.AbilityUsedRangedDeflection] = DeflectionSource.Ranged;
+        _deflectionSources[StatType.AbilityGrantedAttackDeflectionFPRestore] = DeflectionSource.Ranged;
+        Stat(Defender, StatType.AbilityGrantedAttackDeflectionFPRestore, 3);
+        _restoredFP = 3;
         _statusApplies = false;
         _effects.TrackAvoidedAttack(Defender, Attacker);
         Lines("Apply").Should().ContainSingle();
         Lines("Trigger").Should().BeEmpty();
+        Lines("RestoreFP").Should().BeEmpty();
 
         _log.Clear();
         _invalid.Add(Gone);

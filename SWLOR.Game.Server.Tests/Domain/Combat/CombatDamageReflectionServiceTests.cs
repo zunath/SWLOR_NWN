@@ -44,14 +44,19 @@ public class CombatDamageReflectionServiceTests : CombatDamageTakenTestBase
     {
         Stat(Defender, StatType.ForceDamageTakenForceDefense, 5);
         Stat(Defender, StatType.ForceDamageTakenForceDefenseDurationSeconds, 12);
+        Stat(Defender, StatType.ForceDamageReflectionPercentAdjustment, 25);
 
         _reflection.ApplyDamageReflectionEffects(Attacker, Defender, 40, CombatDamageType.Force);
-        _log.Should().Equal($"Apply {Defender}>{Defender} ForceWarding 12 Force");
+        _log.Should().Equal(
+            $"Apply {Defender}>{Defender} ForceWarding 12 Force",
+            $"Attribute {Defender} {StatType.ForceDamageReflectionPercentAdjustment}",
+            $"Triggered {Defender} {Attacker} 10 Force Invalid False null False");
 
         _log.Clear();
         Stat(Defender, StatType.ForceDamageTakenForceDefenseDurationSeconds, 0);
         _reflection.ApplyDamageReflectionEffects(Attacker, Defender, 40, CombatDamageType.Force);
-        _log.Should().BeEmpty();
+        Lines("Apply").Should().BeEmpty("a zero duration grants no ward");
+        Lines("Triggered").Should().Equal($"Triggered {Defender} {Attacker} 10 Force Invalid False null False");
     }
 
     [Test]
@@ -78,11 +83,12 @@ public class CombatDamageReflectionServiceTests : CombatDamageTakenTestBase
         Stat(Defender, StatType.RangedDeflectionReflectionCapPercent, 100);
         _equippedSkill = SkillType.Vibroblade;
         _weaponDamage[Attacker] = 40;
-        _weaponDamage[Defender] = 30;
-        var reflected = CombatRules.GetRangedDeflectionReflectionAmount(40, 50, 30, 100);
+        // Half of the attacker's 40 is 20, over the cap of the defender's own 10, so 10 is reflected.
+        _weaponDamage[Defender] = 10;
+        const int reflected = 10;
         _triggered = damage => damage - 1;
 
-        _reflection.ApplyRangedDeflectionReflection(Defender, Attacker, SkillType.Rifle).Should().Be(reflected - 1);
+        _reflection.ApplyRangedDeflectionReflection(Defender, Attacker, SkillType.Rifle).Should().Be(9);
         _log.Should().Equal(
             $"WeaponDamage {Attacker} Rifle False True null False",
             $"WeaponDamage {Defender} Vibroblade False False null False",
@@ -90,7 +96,7 @@ public class CombatDamageReflectionServiceTests : CombatDamageTakenTestBase
             $"Attribute {Defender} {StatType.RangedDeflectionReflectionPercent}",
             $"Triggered {Defender} {Attacker} {reflected} Force Invalid False null False",
             $"Nearby {Defender} 60");
-        _message!(Other).Should().Be(_reflection.BuildDeflectingReturnCombatLogMessage(Other, Defender, Attacker, reflected - 1));
+        _message!(Other).Should().Be(_reflection.BuildDeflectingReturnCombatLogMessage(Other, Defender, Attacker, 9));
     }
 
     [Test]

@@ -107,11 +107,13 @@ public class CompanionControlPartsTests
         state.AttackNearestTarget = _master.Id;
         state.TrackedTarget = _master.Id;
         state.LastProgressAt = _service.Now;
+        state.LastOffensiveActivityAt = _service.Now;
 
         _service.Positioning.ResetProgress(state);
 
         state.TrackedTarget.Should().Be(AIBench.Invalid);
         state.LastProgressAt.Should().Be(default);
+        state.LastOffensiveActivityAt.Should().Be(default);
         state.AttackNearestTarget.Should().Be(_master.Id);
     }
 }

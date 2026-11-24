@@ -8,6 +8,9 @@ namespace SWLOR.Game.Server.Domain.Creatures
     {
         /// <summary>
         /// Scores the candidate actions of the creature's profile and phase and returns the best one, or null when none can run.
+        /// It reads the action cache on the context's state, which <c>AIDecisionService</c> fills before it calls this, and
+        /// considers only the first <c>MaxCandidateActions</c> of the profile. A caller that needs a complete decision run uses
+        /// <c>IAIDecisionService.ProcessTrigger</c> instead.
         /// </summary>
         AIActionEvaluation SelectAction(AIContext context);
 

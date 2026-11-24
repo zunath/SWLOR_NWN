@@ -1219,8 +1219,8 @@ public class CombatFacadeAllocationTests
             var reads = new (string Name, Action Part, Action Forwarder)[]
             {
                 ("ApplyAbilityActivatedEffects(no ability)", () => part.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.DoubleShot1, null!, abilities.Single), () => GameServices.CombatAbilityActivation.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.DoubleShot1, null!, abilities.Single)),
-                ("ApplyHitPointSpendAbilityEffects", () => part.ApplyHitPointSpendAbilityEffects(Attacker, 10, 12), () => GameServices.CombatAbilityActivation.ApplyHitPointSpendAbilityEffects(Attacker, 10, 12)),
-                ("ApplyHitPointSpendAbilityEffects(0)", () => part.ApplyHitPointSpendAbilityEffects(Attacker, 0), () => GameServices.CombatAbilityActivation.ApplyHitPointSpendAbilityEffects(Attacker, 0)),
+                ("ApplyHitPointSpendAbilityEffects", () => FacadeContainer.Current.Get<ICombatAbilityCostEffectsService>().ApplyHitPointSpendAbilityEffects(Attacker, 10, 12), () => GameServices.CombatAbilityCostEffects.ApplyHitPointSpendAbilityEffects(Attacker, 10, 12)),
+                ("ApplyHitPointSpendAbilityEffects(0)", () => FacadeContainer.Current.Get<ICombatAbilityCostEffectsService>().ApplyHitPointSpendAbilityEffects(Attacker, 0), () => GameServices.CombatAbilityCostEffects.ApplyHitPointSpendAbilityEffects(Attacker, 0)),
                 ("ForgetActivationState", () => part.ForgetActivationState(Attacker), () => GameServices.CombatAbilityActivation.ForgetActivationState(Attacker)),
             };
 

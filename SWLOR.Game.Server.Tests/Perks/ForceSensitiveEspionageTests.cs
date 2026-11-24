@@ -437,7 +437,7 @@ public class ForceSensitiveEspionageTests
         ability.Should().Contain("if (IsForcePower(activator, ability) &&\n                GetStatAdjustment(activator, StatType.ForceAbilityActivationDisabled) > 0)",
             "Force Disruption blocks the new powers");
         var combat = CombatSource.Read().Replace("\r\n", "\n");
-        var triggerStart = combat.IndexOf("private static void ApplyForceFPCostActivatedEffects", StringComparison.Ordinal);
+        var triggerStart = combat.IndexOf("static void ApplyForceFPCostActivatedEffects", StringComparison.Ordinal);
         combat.Substring(triggerStart, 400).Should().Contain("!IsForcePower(activator, ability)",
             "Danger Sense and Force Convergence fire on the new powers' FP spend");
     }

@@ -97,8 +97,9 @@ Head color maps use BC1, normals use BC5, scalar masks/specularity use BC4 and
 two-channel masks use BC5. Ordinary maps retain full mip chains. Newly authored
 packed shade/category maps retain a single BC5 level with `mipmap 0`. Shared
 legacy masks can retain mip chains; head shaders fetch their categorical layer
-IDs unfiltered from level 0, separately from shade filtering, matching native
-tint shaders and preventing anisotropic dye-boundary contamination. Dimensions
+IDs unfiltered from level 0, separately from shade filtering. Shade samples blend
+from a close biased sample to unbiased mipmaps as the pixel footprint grows,
+matching native tint shaders while preventing categorical dye-boundary contamination. Dimensions
 are powers of two. Authored head maps
 are DDS; all head profiles reuse the existing shared `plt_palette` resource
 without a head-specific palette copy or TGA exception. Texture roles and codecs

@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static async Task HitAsync(EngineTestContext ctx, uint attacker, uint target)
         {
             await ctx.ExecuteInCreatureContextAsync(attacker, () =>
-                GameServices.CombatHitEffects.ApplyTriggeredDamage(attacker, target, 5, CombatDamageType.Physical));
+                GameServices.CombatTriggeredDamage.ApplyTriggeredDamage(attacker, target, 5, CombatDamageType.Physical));
         }
 
         private static async Task HealAsync(EngineTestContext ctx, uint healer, uint target, int amount)

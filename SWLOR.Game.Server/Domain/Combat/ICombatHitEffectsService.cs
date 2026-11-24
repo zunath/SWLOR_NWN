@@ -6,7 +6,8 @@ namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// The hit effects for combat: the riders of an auto-attack, of landed damage, of a critical and of a non-critical ability,
-    /// the effects of defeating an enemy, and triggered damage.
+    /// and the effects of defeating an enemy. The steps a landed hit grants the attacker are
+    /// <see cref="ICombatDealtEffectsService"/>'s, and triggered damage is <see cref="ICombatTriggeredDamageService"/>'s.
     /// </summary>
     public interface ICombatHitEffectsService
     {
@@ -50,16 +51,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         void ApplySourceStatusStackEffects(uint attacker, uint defender);
 
         void SpreadPoisonFromTarget(uint activator, uint target);
-
-        int ApplyTriggeredDamage(
-            uint activator,
-            uint target,
-            int damage,
-            CombatDamageType damageType,
-            SkillType skillType = SkillType.Invalid,
-            bool typedLeadershipReductionAlreadyApplied = false,
-            int? targetStatusDamagePercentAdjustment = null,
-            bool outgoingModifiersAlreadyApplied = false);
 
         void ForgetHitEffectState(uint creature);
     }

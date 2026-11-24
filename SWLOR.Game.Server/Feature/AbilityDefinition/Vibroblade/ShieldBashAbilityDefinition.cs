@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             if (bonusDamage <= 0)
                 return;
 
-            GameServices.CombatHitEffects.ApplyTriggeredDamage(
+            GameServices.CombatTriggeredDamage.ApplyTriggeredDamage(
                 activator,
                 target,
                 bonusDamage,

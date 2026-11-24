@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     {
         private readonly ICombatQueriesService _queries;
         private readonly ICombatResourcesService _resources;
-        private readonly ICombatHitEffectsService _hitEffects;
+        private readonly ICombatTriggeredDamageService _triggeredDamage;
         private readonly IStatService _stat;
         private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly ICombatRecorderService _combatRecorder;
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         public CombatDamageReflectionService(
             ICombatQueriesService queries,
             ICombatResourcesService resources,
-            ICombatHitEffectsService hitEffects,
+            ICombatTriggeredDamageService triggeredDamage,
             IStatService stat,
             IStatusEffectApplicationService statusEffectApplication,
             ICombatRecorderService combatRecorder,
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             _queries = queries;
             _resources = resources;
-            _hitEffects = hitEffects;
+            _triggeredDamage = triggeredDamage;
             _stat = stat;
             _statusEffectApplication = statusEffectApplication;
             _combatRecorder = combatRecorder;
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             var reflectedDamage = GameMath.PercentOf(damage, adjustment);
             using var recorderAttribution = _combatRecorder.BeginStatTriggerAttribution(defender, GetDamageReflectionStat(damageType));
-            _hitEffects.ApplyTriggeredDamage(defender, attacker, reflectedDamage, damageType);
+            _triggeredDamage.ApplyTriggeredDamage(defender, attacker, reflectedDamage, damageType);
         }
 
         private void ApplyForceDamageTakenEffects(uint defender)
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             {
                 using var recorderScope = _combatRecorder.BeginAttribution(recorderAttribution);
                 if (GetIsObjectValid(attacker) && GetIsObjectValid(defender))
-                    _hitEffects.ApplyTriggeredDamage(
+                    _triggeredDamage.ApplyTriggeredDamage(
                         attacker,
                         defender,
                         forcePortion,
@@ -197,7 +197,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return 0;
 
             using var recorderAttribution = _combatRecorder.BeginStatTriggerAttribution(defender, StatType.RangedDeflectionReflectionPercent);
-            var appliedDamage = _hitEffects.ApplyTriggeredDamage(defender, attacker, reflected, CombatDamageType.Force);
+            var appliedDamage = _triggeredDamage.ApplyTriggeredDamage(defender, attacker, reflected, CombatDamageType.Force);
             if (appliedDamage <= 0)
                 return 0;
 

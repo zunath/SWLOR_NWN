@@ -87,6 +87,12 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The combat log lines, a part of combat.</summary>
         public static ICombatFeedbackService CombatFeedback => FacadeAccessor.Resolve<ICombatFeedbackService>();
 
+        /// <summary>The steps a landed direct hit grants the attacker, a part of combat.</summary>
+        public static ICombatDealtEffectsService CombatDealtEffects => FacadeAccessor.Resolve<ICombatDealtEffectsService>();
+
+        /// <summary>Damage a trigger deals (a reflection, a proc, a splash or a retaliation), a part of combat.</summary>
+        public static ICombatTriggeredDamageService CombatTriggeredDamage => FacadeAccessor.Resolve<ICombatTriggeredDamageService>();
+
         /// <summary>The hit effects of combat, a part of combat.</summary>
         public static ICombatHitEffectsService CombatHitEffects => FacadeAccessor.Resolve<ICombatHitEffectsService>();
 

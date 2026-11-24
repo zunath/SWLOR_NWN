@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     {
         private readonly ICombatQueriesService _queries;
         private readonly ICombatDamageModifiersService _damageModifiers;
-        private readonly ICombatHitEffectsService _hitEffects;
+        private readonly ICombatTriggeredDamageService _triggeredDamage;
         private readonly IStatService _stat;
         private readonly ICombatRatingService _combatRating;
         private readonly ICombatRecorderService _combatRecorder;
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         public CombatGuardRetaliationService(
             ICombatQueriesService queries,
             ICombatDamageModifiersService damageModifiers,
-            ICombatHitEffectsService hitEffects,
+            ICombatTriggeredDamageService triggeredDamage,
             IStatService stat,
             ICombatRatingService combatRating,
             ICombatRecorderService combatRecorder,
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             _queries = queries;
             _damageModifiers = damageModifiers;
-            _hitEffects = hitEffects;
+            _triggeredDamage = triggeredDamage;
             _stat = stat;
             _combatRating = combatRating;
             _combatRecorder = combatRecorder;
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                     retaliationDMG,
                     skillType);
                 using var retaliationAttribution = _combatRecorder.BeginStatTriggerAttribution(defender, StatType.GuardRetaliationDMG);
-                _hitEffects.ApplyTriggeredDamage(defender, attacker, retaliationDamage, CombatDamageType.Physical, skillType);
+                _triggeredDamage.ApplyTriggeredDamage(defender, attacker, retaliationDamage, CombatDamageType.Physical, skillType);
             }
 
             if (pulseDMG <= 0)
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (radius <= 0)
             {
                 var pulseDamage = ResolveGuardRetaliationDamage(defender, attacker, pulseDMG, skillType);
-                _hitEffects.ApplyTriggeredDamage(defender, attacker, pulseDamage, CombatDamageType.Physical, skillType);
+                _triggeredDamage.ApplyTriggeredDamage(defender, attacker, pulseDamage, CombatDamageType.Physical, skillType);
                 return;
             }
 
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 GetIsReactionTypeHostile(originalAttacker, defender))
             {
                 var damage = ResolveGuardRetaliationDamage(defender, originalAttacker, dmg, skillType);
-                _hitEffects.ApplyTriggeredDamage(defender, originalAttacker, damage, CombatDamageType.Physical, skillType);
+                _triggeredDamage.ApplyTriggeredDamage(defender, originalAttacker, damage, CombatDamageType.Physical, skillType);
                 applied = true;
             }
 
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                     GetIsReactionTypeHostile(target, defender))
                 {
                     var damage = ResolveGuardRetaliationDamage(defender, target, dmg, skillType);
-                    _hitEffects.ApplyTriggeredDamage(defender, target, damage, CombatDamageType.Physical, skillType);
+                    _triggeredDamage.ApplyTriggeredDamage(defender, target, damage, CombatDamageType.Physical, skillType);
                     if (additionalTargetEnmity > 0)
                         _enmity.ModifyEnmity(defender, target, additionalTargetEnmity);
 

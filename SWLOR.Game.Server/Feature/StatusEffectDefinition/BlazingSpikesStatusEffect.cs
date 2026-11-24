@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (reflectedDamage <= 0)
                 return;
 
-            GameServices.CombatHitEffects.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire);
+            GameServices.CombatTriggeredDamage.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire);
         }
     }
 }

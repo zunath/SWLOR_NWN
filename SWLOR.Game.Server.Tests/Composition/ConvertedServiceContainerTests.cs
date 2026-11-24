@@ -150,6 +150,8 @@ public class ConvertedServiceContainerTests
             .Concat(new[] { "IAbilityCatalog", "IAbilityImpactState", "IActiveAbilityImpact" })
             // The ability split: the party roster as Combat reads it, and the aura part as the death service's revive listener.
             .Concat(new[] { "IPartyRoster", "ICreatureRevivedListener" })
+            // The hit effects split: the record of a beast hit as Combat reads it, the same instance as the capstone proofs.
+            .Concat(new[] { "IBeastDamageRecording" })
             // The ability split: the space mode read the activation checks own, which Space answers.
             .Concat(new[] { "ISpaceModeQuery" })
             // The ability split: the music and capstone proof services as the hostile impact's observers.
@@ -195,12 +197,12 @@ public class ConvertedServiceContainerTests
     }
 
     [Test]
-    public void Combat_lists_its_twenty_seven_parts_and_each_part_has_a_GameServices_property()
+    public void Combat_lists_its_twenty_nine_parts_and_each_part_has_a_GameServices_property()
     {
         // The cases above would pass vacuously if the list lost its parts. The ability split added the impact
-        // geometry and the ability magnitude; the combat split added the damage roll, the defense memory, the rate modifiers, the repeated-target stacks, the damage taken effects, the damage reflection, the ability activation cost and defense effects, the guarded hit, its effects and the guard retaliation.
+        // geometry and the ability magnitude; the combat split added the damage roll, the defense memory, the rate modifiers, the repeated-target stacks, the damage taken effects, the damage reflection, the ability activation cost and defense effects, the dealt effects, the triggered damage, the guarded hit, its effects and the guard retaliation.
         var combat = ConvertedServiceFixtures.Load().Single(service => service.Name == "Combat");
-        combat.Parts.Should().HaveCount(27);
+        combat.Parts.Should().HaveCount(29);
         Rules(combat).Should().NotBeNull();
         combat.Parts.Should().OnlyContain(part => typeof(GameServices).GetProperty(part.Name.Substring(1, part.Name.Length - 1 - "Service".Length), BindingFlags.Public | BindingFlags.Static) != null);
     }

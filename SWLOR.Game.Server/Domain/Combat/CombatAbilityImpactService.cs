@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatAttackTimingService _attackTiming;
         private readonly ICombatActivityService _combatActivity;
         private readonly ICombatHitEffectsService _hitEffects;
-        private readonly ICombatDamageTakenService _damageTaken;
+        private readonly ICombatGuardedHitEffectsService _guardedHitEffects;
         private readonly ICombatDamageTakenEffectsService _damageTakenEffects;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatAttackTimingService attackTiming,
             ICombatActivityService combatActivity,
             ICombatHitEffectsService hitEffects,
-            ICombatDamageTakenService damageTaken,
+            ICombatGuardedHitEffectsService guardedHitEffects,
             ICombatDamageTakenEffectsService damageTakenEffects,
             IStatService stat,
             IStatusEffectService statusEffect,
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _attackTiming = attackTiming;
             _combatActivity = combatActivity;
             _hitEffects = hitEffects;
-            _damageTaken = damageTaken;
+            _guardedHitEffects = guardedHitEffects;
             _damageTakenEffects = damageTakenEffects;
             _stat = stat;
             _statusEffect = statusEffect;
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 bonus += _combatActivity.GetDirectDamageToStatusCategoryOrStealthBonus(activator, target);
             }
 
-            bonus += _damageTaken.ConsumeGuardedHitNextSkillAbilityExposedDamageBonus(activator, skillType);
+            bonus += _guardedHitEffects.ConsumeGuardedHitNextSkillAbilityExposedDamageBonus(activator, skillType);
 
             if (ability.IsHostileAbility)
                 bonus += GetHighResourceAbilityDamageBonus(activator, ability);

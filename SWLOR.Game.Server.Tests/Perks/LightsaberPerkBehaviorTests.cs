@@ -233,7 +233,7 @@ public class LightsaberPerkBehaviorTests
         // The native auto-attack path splits the physical hit before physical resistance.
         var native = NativeCombatSource.DamageRoll();
         var nativeConversion = native.IndexOf(
-            "GameServices.CombatDamageTaken.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment, convertedDamageScheduler)",
+            "GameServices.CombatDamageReflection.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment, convertedDamageScheduler)",
             StringComparison.Ordinal);
         var nativeLeadership = native.IndexOf(
             "GameServices.CombatDamageTaken.ApplyTypedLeadershipDamageTakenModifier(target.m_idSelf, damage, damageType)",
@@ -327,7 +327,7 @@ public class LightsaberPerkBehaviorTests
 
         // Only Ranged Deflection reflects. A shield deflecting a ranged auto-attack cannot trigger it.
         resolve.Should().Contain("deflectionSource == DeflectionSource.Ranged");
-        resolve.Should().Contain("GameServices.CombatDamageTaken.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
+        resolve.Should().Contain("GameServices.CombatDamageReflection.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
         CombatSource.Read()
             .Should().Contain("GetCombatImpactWeaponDamage(defender, GetEquippedWeaponSkillType(defender))");
     }

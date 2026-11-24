@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Native
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
             if (isLandedAttack)
             {
-                GameServices.CombatDamageTaken.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment, convertedDamageScheduler);
+                GameServices.CombatDamageReflection.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment, convertedDamageScheduler);
             }
 
             // Conversion must split first so each portion receives only its own typed Leadership channel.

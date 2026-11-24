@@ -35,12 +35,16 @@ public static class CreaturesSource
                 "SWLOR.Game.Server/Domain/Creatures/AIService.cs",
                 "SWLOR.Game.Server/Domain/Creatures/AICreatureEventService.cs",
                 "SWLOR.Game.Server/Domain/Creatures/AIAggroService.cs",
+                "SWLOR.Game.Server/Domain/Creatures/AIDecisionService.cs",
+                "SWLOR.Game.Server/Domain/Creatures/AIActionService.cs",
             },
             new HashSet<string>(StringComparer.Ordinal)
             {
                 "IAIService",
                 "IAICreatureEventService",
                 "IAIAggroService",
+                "IAIDecisionService",
+                "IAIActionService",
             }),
         new Group(
             "CompanionControlService",

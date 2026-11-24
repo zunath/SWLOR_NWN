@@ -10,7 +10,7 @@ Domain/Combat/CombatService.cs
 Domain/Combat/CombatResourcesService.cs
 Domain/Combat/CombatSuppressionService.cs
 Domain/Combat/CombatActivityService.cs
-Domain/Combat/CombatAbilityBonusService.cs
+Domain/Combat/CombatQueuedAbilityBonusService.cs
 Domain/Combat/CombatRecordWriter.cs
 Domain/Combat/CombatAbilityImpactService.cs
 Domain/Combat/CombatDamageModifiersService.cs
@@ -161,7 +161,8 @@ Domain/Creatures/AITarget.cs
 Domain/Creatures/AITriggerType.cs
 Domain/Creatures/IAIProfileDefinition.cs
 Domain/Creatures/NPCAI.cs
-Domain/Creatures/AIService.cs
+Domain/Creatures/AIActionService.cs
+Domain/Creatures/AIDecisionService.cs
 Native/WeaponAttackAnimation.cs
 NativeSinks/WeaponAttackAnimationSink.cs
 Domain/Crafting/Minigame/CraftSessionLifecycle.cs

@@ -24,8 +24,8 @@ public abstract class AIServiceTestBase
     protected TestAIService Service => Bench.Service;
     protected TestAICreatureEventService Events => Bench.Events;
     protected TestAIAggroService Aggro => Bench.Aggro;
-    protected TestAIService Decision => Bench.Decision;
-    protected TestAIService Action => Bench.Action;
+    protected TestAIDecisionService Decision => Bench.Decision;
+    protected TestAIActionService Action => Bench.Action;
 
     // The AI asks the busy status of a creature (Activity facade), which resolves from a container.
     private FacadeContainer _baseFacades = null!;

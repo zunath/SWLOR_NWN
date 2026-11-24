@@ -114,7 +114,7 @@ public class AIServiceSeamTests
         var engine = new TimelineNWScript();
         using var scope = SWLOR.NWN.API.NWScript.NWScriptRuntime.Override(engine);
 
-        _ = new AIService(_bench.Party, _bench.BeastMastery, _bench.DMPresence, FacadeForwarder.For<IAbilityActivationService>(), FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICompanionControlStoreService>(), FacadeForwarder.For<ICompanionTargetAuthorityService>(), FacadeForwarder.LazyFor<IEnmityService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatusEffectService>());
+        _ = new AIService(_bench.Party, _bench.BeastMastery, _bench.DMPresence, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.LazyFor<IEnmityService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatusEffectService>());
 
         engine.Calls.Should().BeEmpty();
         _bench.PartyScript.Calls.Should().BeEmpty();

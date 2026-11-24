@@ -17,6 +17,8 @@ public class CreaturesSourceTests
         CreaturesSource.RelativePath("CreatureBlocked").Should().Be("Domain/Creatures/AICreatureEventService.cs");
         CreaturesSource.RelativePath("CreatureAggroEnter").Should().Be("Domain/Creatures/AIAggroService.cs");
         CreaturesSource.RelativePath("ProcessFlags").Should().Be("Domain/Creatures/AIService.cs");
+        CreaturesSource.RelativePath("ProcessProfileTrigger").Should().Be("Domain/Creatures/AIDecisionService.cs");
+        CreaturesSource.RelativePath("ResolveTarget").Should().Be("Domain/Creatures/AIActionService.cs");
         CreaturesSource.RelativePath("PeekAuthorizedTarget").Should().Be("Domain/Creatures/CompanionTargetAuthorityService.cs");
         CreaturesSource.RelativePath("ProcessSpawnSystem").Should().Be("Domain/Creatures/SpawnService.cs");
     }

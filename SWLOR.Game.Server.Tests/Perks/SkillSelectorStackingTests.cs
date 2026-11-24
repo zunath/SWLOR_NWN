@@ -180,7 +180,7 @@ public class SkillSelectorStackingTests
 
         // Ability hit chance and critical rate both have selectorless sources that are authored
         // as global, so those call sites must opt into the global fallback.
-        var hitOrCritical = ExtractMethod(combat, "private static int GetAbilityHitOrCriticalAdjustment(");
+        var hitOrCritical = ExtractMethod(combat, "public static int GetAbilityHitOrCriticalAdjustment(");
         hitOrCritical.Should().Contain("unselectedSourcesApplyToEverySkill: true",
             "Eclipse of Resolve, Alpha Rhythm and Improved Attentiveness declare no skill of their own");
 

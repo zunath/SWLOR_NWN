@@ -39,7 +39,7 @@ public class TriggeredResourceRestoreGateTests : SkillFacadeFixture
     {
         ("private static void ApplyGuardedHitRecovery(", "TryUseStatTrigger"),
         ("public static void ApplyMeleeDamageTakenEffects(", "StatType.MeleeDamageTakenStaminaRestoreChance"),
-        ("private static void ApplyForceAbilityEvadedEffects(", "TryUseStatTrigger")
+        ("public static void ApplyForceAbilityEvadedEffects(", "TryUseStatTrigger")
     };
 
     [TestCaseSource(nameof(DefensiveRestoreGates))]

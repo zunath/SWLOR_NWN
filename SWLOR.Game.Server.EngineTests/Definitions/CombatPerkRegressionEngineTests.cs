@@ -25,16 +25,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 var bonus = rank == 1 ? 5 : 8;
                 IStatusEffect effect = rank == 1 ? new FocusStim1StatusEffect() : new FocusStim2StatusEffect();
-                ctx.AssertEqual(0, GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
+                ctx.AssertEqual(0, GameServices.CombatQueuedAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
                     "Queued accuracy starts without a bonus or idle snapshot");
                 var accuracy = Stat.GetStatAdjustment(attacker, StatType.AccuracyPercentAdjustment);
                 ctx.Assert(StatusEffectApplication.ApplyStatusEffect(attacker, attacker, effect, 120f), "Focus Stim applies");
-                ctx.AssertEqual(bonus, GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
+                ctx.AssertEqual(bonus, GameServices.CombatQueuedAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
                     "Focus Stim affects the queued weapon roll without an idle snapshot");
                 ctx.AssertEqual(76 + bonus, CombatRules.CalculateHitRate(2, 0,
-                    GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade)),
+                    GameServices.CombatQueuedAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade)),
                     "Focus Stim adds percentage points to the queued hit chance");
-                ctx.AssertEqual(0, GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Mimicry),
+                ctx.AssertEqual(0, GameServices.CombatQueuedAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Mimicry),
                     "Focus Stim excludes Mimicry");
                 ctx.AssertEqual(accuracy, Stat.GetStatAdjustment(attacker, StatType.AccuracyPercentAdjustment),
                     "Focus Stim does not change ordinary attack accuracy");
@@ -43,13 +43,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     (int)SkillType.Vibroblade, 30f, StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
                 TemporaryStatModifier.Replace(attacker, StatType.QueuedWeaponAbilityIdleHitChancePercentAdjustment,
                     3, 30f, StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
-                ctx.AssertEqual(bonus + 3, GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
+                ctx.AssertEqual(bonus + 3, GameServices.CombatQueuedAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
                     "Focus Stim stacks with the matching idle bonus");
-                ctx.AssertEqual(bonus, GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Rifle),
+                ctx.AssertEqual(bonus, GameServices.CombatQueuedAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Rifle),
                     "Focus Stim remains when the idle bonus belongs to another skill");
-                GameServices.CombatAbilityBonus.ClearQueuedWeaponAbilityActivationBonuses(attacker);
+                GameServices.CombatQueuedAbilityBonus.ClearQueuedWeaponAbilityActivationBonuses(attacker);
                 StatusEffect.RemoveAllStatusEffects(attacker);
-                ctx.AssertEqual(0, GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
+                ctx.AssertEqual(0, GameServices.CombatQueuedAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
                     "Removing Focus Stim removes its accuracy bonus");
             }
         }
@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(caster, PerkType.ScrapperControl, 1);
 
             // Queued abilities roll with the weapon attack, so the category accuracy must be added there.
-            int QueuedHitChance(FeatType feat) => GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
+            int QueuedHitChance(FeatType feat) => GameServices.CombatQueuedAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
                 caster, SkillType.Katar, AbilityCatalog.GetAbilityDetail(feat));
             var baseline = QueuedHitChance(FeatType.GuardCounter1);
             ctx.AssertEqual(baseline, QueuedHitChance(FeatType.GuardCounter3),
@@ -745,8 +745,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Prepare(ctx, target);
             ctx.MakeHostile(target);
             var passiveCritical = Stat.GetStatAdjustment(caster, StatType.CriticalRatePercentAdjustment);
-            var baseRate = GameServices.CombatAbilityHit.GetAbilityCriticalRate(caster, SkillType.BeastMastery, false);
-            ctx.AssertEqual(baseRate + 25, GameServices.CombatAbilityHit.GetAbilityCriticalRate(caster, SkillType.BeastMastery, false, 25), "Apex Bite impact critical chance");
+            var baseRate = GameServices.CombatAbilityHitAdjustment.GetAbilityCriticalRate(caster, SkillType.BeastMastery, false);
+            ctx.AssertEqual(baseRate + 25, GameServices.CombatAbilityHitAdjustment.GetAbilityCriticalRate(caster, SkillType.BeastMastery, false, 25), "Apex Bite impact critical chance");
             var apex = AbilityCatalog.GetAbilityDetail(FeatType.ApexBite1);
             var criticals = 0;
             ctx.SeedRandom(54321);

@@ -22,19 +22,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow
         private IBeastMasteryService BeastMastery { get; }
         private CharacterSheetWeaponTiming CharacterSheetWeaponTiming { get; }
         private ICombatAbilityBonusService CombatAbilityBonus { get; }
-        private ICombatAbilityHitService CombatAbilityHit { get; }
+        private ICombatAbilityHitAdjustmentService CombatAbilityHitAdjustment { get; }
         private ICombatDamageModifiersService CombatDamageModifiers { get; }
         private ICombatRatingService CombatRating { get; }
         private IDBService DB { get; }
         private ISkillService Skill { get; }
         private IStatService Stat { get; }
 
-        public CharacterSheetAccuracyRows(IBeastMasteryService beastMastery, CharacterSheetWeaponTiming characterSheetWeaponTiming, ICombatAbilityBonusService combatAbilityBonus, ICombatAbilityHitService combatAbilityHit, ICombatDamageModifiersService combatDamageModifiers, ICombatRatingService combatRating, IDBService db, ISkillService skill, IStatService stat)
+        public CharacterSheetAccuracyRows(IBeastMasteryService beastMastery, CharacterSheetWeaponTiming characterSheetWeaponTiming, ICombatAbilityBonusService combatAbilityBonus, ICombatAbilityHitAdjustmentService combatAbilityHitAdjustment, ICombatDamageModifiersService combatDamageModifiers, ICombatRatingService combatRating, IDBService db, ISkillService skill, IStatService stat)
         {
             BeastMastery = beastMastery;
             CharacterSheetWeaponTiming = characterSheetWeaponTiming;
             CombatAbilityBonus = combatAbilityBonus;
-            CombatAbilityHit = combatAbilityHit;
+            CombatAbilityHitAdjustment = combatAbilityHitAdjustment;
             CombatDamageModifiers = combatDamageModifiers;
             CombatRating = combatRating;
             DB = db;
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow
 
         private int GetAssaultGadgetCriticalRate(ICharacterSheetHost host)
         {
-            return CombatAbilityHit.GetAbilityCriticalRate(
+            return CombatAbilityHitAdjustment.GetAbilityCriticalRate(
                 host.Target,
                 SkillType.Devices,
                 false,

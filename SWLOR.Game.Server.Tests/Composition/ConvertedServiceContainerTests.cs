@@ -197,12 +197,12 @@ public class ConvertedServiceContainerTests
     }
 
     [Test]
-    public void Combat_lists_its_thirty_one_parts_and_each_part_has_a_GameServices_property()
+    public void Combat_lists_its_thirty_three_parts_and_each_part_has_a_GameServices_property()
     {
         // The cases above would pass vacuously if the list lost its parts. The ability split added the impact
-        // geometry and the ability magnitude; the combat split added the damage roll, the defense memory, the rate modifiers, the repeated-target stacks, the damage taken effects, the damage reflection, the ability activation cost, defense, offense and weapon parts, the dealt effects, the triggered damage, the guarded hit, its effects and the guard retaliation.
+        // geometry and the ability magnitude; the combat split added the damage roll, the defense memory, the rate modifiers, the repeated-target stacks, the damage taken effects, the damage reflection, the ability activation cost, defense, offense and weapon parts, the dealt effects, the triggered damage, the guarded hit, its effects and the guard retaliation, the queued ability bonuses and the ability hit adjustments.
         var combat = ConvertedServiceFixtures.Load().Single(service => service.Name == "Combat");
-        combat.Parts.Should().HaveCount(31);
+        combat.Parts.Should().HaveCount(33);
         Rules(combat).Should().NotBeNull();
         combat.Parts.Should().OnlyContain(part => typeof(GameServices).GetProperty(part.Name.Substring(1, part.Name.Length - 1 - "Service".Length), BindingFlags.Public | BindingFlags.Static) != null);
     }

@@ -9,10 +9,11 @@ public sealed class BlankIdentityPlayerNameService : PlayerNameService
     public BlankIdentityPlayerNameService(IDBService db)
         : base(db, null!, null!, FacadeForwarder.LazyFor<IDisguiseService>(), FacadeForwarder.LazyFor<IPlayerDescriptorService>())
     {
+        KnownNames = new PlayerKnownNameService(db, this, null!);
     }
 
-    /// <summary>The part that validates a known name (this instance until the part moves).</summary>
-    public BlankIdentityPlayerNameService KnownNames => this;
+    /// <summary>The part that validates a known name, over this instance.</summary>
+    public PlayerKnownNameService KnownNames { get; }
 
-    protected override string GetIdentityKey(uint player) => " ";
+    public override string GetIdentityKey(uint player) => " ";
 }

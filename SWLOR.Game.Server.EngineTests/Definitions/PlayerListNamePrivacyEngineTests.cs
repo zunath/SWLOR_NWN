@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using NWN.Native.API;
 using NWNX.NET;
 using NWNX.NET.Native;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -49,8 +50,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 foreach (var observer in new[] { first, second })
                     observer.Update(player => player.Settings.ShowDescriptorsForNamedPlayers = false);
                 PlayerDescriptor.SetUnknownDisplayName(target.Creature, Descriptor);
-                PlayerName.SetKnownName(first.Creature, target.Creature, FirstLabel);
-                PlayerName.SetKnownName(second.Creature, target.Creature, SecondLabel);
+                GameServices.PlayerKnownName.SetKnownName(first.Creature, target.Creature, FirstLabel);
+                GameServices.PlayerKnownName.SetKnownName(second.Creature, target.Creature, SecondLabel);
                 PlayerName.RefreshNameOverridesForPlayer(target.Creature);
                 var canonicalName = GetName(target.Creature);
                 var expected = new Dictionary<uint, string>
@@ -68,7 +69,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssertPackets(AllClients, expected.Keys.ToArray());
                 AssertPackets(ClientId(first), new[] { ClientId(first) });
 
-                PlayerName.ForgetKnownName(first.Creature, target.Creature);
+                GameServices.PlayerKnownName.ForgetKnownName(first.Creature, target.Creature);
                 expected[ClientId(first)] = Descriptor;
                 AssertPackets(AllPlayers, expected.Keys.Where(id => id != ClientId(dm)).ToArray());
                 ctx.AssertEqual(canonicalName, GetName(target.Creature), "native Rename restores canonical identity after every recipient");
@@ -104,7 +105,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 dmPlayerInfo.m_bGameMasterIsPlayerLogin = playerDmLogin;
                 foreach (var observer in new[] { first, second })
                     foreach (var names in DB.Search(new DBQuery<PlayerKnownName>()
-                                 .AddFieldSearch(nameof(PlayerKnownName.ObserverPlayerId), observer.Id, false)
+                                 .AddFieldSearch(nameof(Entity.PlayerKnownName.ObserverPlayerId), observer.Id, false)
                                  .AddPaging(50, 0)).ToList())
                         DB.Delete<PlayerKnownName>(names.Id);
             }

@@ -137,6 +137,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPlayerDescriptorService, PlayerDescriptorService>();
             services.AddSingleton<IPlayerIntroductionService, PlayerIntroductionService>();
             services.AddSingleton<IPlayerNameService, PlayerNameService>();
+            services.AddSingleton<IDisplayNameLookup>(provider => provider.GetRequiredService<IPlayerNameService>());
+            services.AddSingleton<IPlayerKnownNameService, PlayerKnownNameService>();
             services.AddSingleton<IRaceService, RaceService>();
             services.AddSingleton<IRoleplayXPDetectionService, RoleplayXPDetectionService>();
             services.AddSingleton<ISkillService, SkillService>();

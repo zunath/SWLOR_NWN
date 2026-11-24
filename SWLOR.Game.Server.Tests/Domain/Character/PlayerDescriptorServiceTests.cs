@@ -45,13 +45,14 @@ public class PlayerDescriptorServiceTests
         _refreshes = 0;
         var names = ScriptedProxy.Create<IPlayerNameService>(out _nameScript);
         _nameScript.On("SanitizeKnownName", arguments => ((string?)arguments[0])?.Trim() ?? string.Empty);
-        _nameScript.On("ValidateKnownNameInput", arguments => string.IsNullOrWhiteSpace((string?)arguments[0]) ? "Please enter a name." : string.Empty);
         _nameScript.On("RefreshNameOverridesForPlayer", _ =>
         {
             _refreshes++;
             return null;
         });
-        _service = new BenchDescriptorService(_db, names);
+        var knownNames = ScriptedProxy.Create<IPlayerKnownNameService>(out var knownNameScript);
+        knownNameScript.On("ValidateKnownNameInput", arguments => string.IsNullOrWhiteSpace((string?)arguments[0]) ? "Please enter a name." : string.Empty);
+        _service = new BenchDescriptorService(_db, names, knownNames);
     }
 
     [TearDown]
@@ -59,8 +60,8 @@ public class PlayerDescriptorServiceTests
 
     private sealed class BenchDescriptorService : PlayerDescriptorService
     {
-        public BenchDescriptorService(IDBService db, IPlayerNameService names)
-            : base(db, names, FacadeForwarder.LazyFor<IDisguiseService>())
+        public BenchDescriptorService(IDBService db, IPlayerNameService names, IPlayerKnownNameService knownNames)
+            : base(db, names, knownNames, FacadeForwarder.LazyFor<IDisguiseService>())
         {
         }
 

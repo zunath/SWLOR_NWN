@@ -43,6 +43,7 @@ public class InvertedInterfaceRegistrationTests
         (typeof(IDMSpawnPreparation), typeof(ISpawnObjectService)),
         (typeof(ICombatLeash), typeof(IAIService)),
         (typeof(ICompanionTargetQuery), typeof(ICompanionTargetAuthorityService)),
+        (typeof(IDisplayNameLookup), typeof(IPlayerNameService)),
     };
 
     private static ContainerHost Build()

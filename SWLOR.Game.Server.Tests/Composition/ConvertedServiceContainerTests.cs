@@ -167,6 +167,8 @@ public class ConvertedServiceContainerTests
             .Concat(new[] { "IStatusResistance" })
             // The recorder split: the state and queue of a recording, a store with no services.
             .Concat(new[] { "ICombatRecordSession" })
+            // The player name split: the display name read Foundation owns, which the name service answers.
+            .Concat(new[] { "IDisplayNameLookup" })
             .ToArray();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);

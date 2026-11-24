@@ -19,15 +19,15 @@ public sealed partial class BenchPlayerNameService
         ScriptContextEnd = handler;
     }
 
-    protected override PlayerDisguise GetActiveDisguise(uint player) => Disguises.GetValueOrDefault(player)!;
+    public override PlayerDisguise GetActiveDisguise(uint player) => Disguises.GetValueOrDefault(player)!;
 
-    protected override string GetDisplayDescriptor(uint player) => Descriptors.GetValueOrDefault(player, "Tall Stranger");
+    public override string GetDisplayDescriptor(uint player) => Descriptors.GetValueOrDefault(player, "Tall Stranger");
 
-    protected override string GetIdentityKey(uint player) =>
+    public override string GetIdentityKey(uint player) =>
         Disguises.TryGetValue(player, out var disguise) ? "disguise:" + disguise.Id : "id-of-" + player;
 
-    protected override bool ShouldScrambleAccountName(uint player) => ScrambledAccounts.Contains(player);
+    public override bool ShouldScrambleAccountName(uint player) => ScrambledAccounts.Contains(player);
 
-    protected override string GetUnknownDisplayNameByPlayerId(string targetPlayerId) =>
+    public override string GetUnknownDisplayNameByPlayerId(string targetPlayerId) =>
         DescriptorsById.GetValueOrDefault(targetPlayerId, "Someone");
 }

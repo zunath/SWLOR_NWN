@@ -92,20 +92,23 @@ public sealed class DisguiseWorld : IDisposable
         PlayerName = ScriptedProxy.Create<IPlayerNameService>(out var nameScript);
         nameScript
             .On("SanitizeKnownName", a => ((string?)a[0])?.Trim() ?? string.Empty)
-            .On("ValidateKnownNameInput", a => string.IsNullOrWhiteSpace((string?)a[0]) ? "Required" : string.Empty)
-            .On("DeleteKnownNameReferences", a =>
-            {
-                DeletedReferences.Add((string)a[0]!);
-                return 3;
-            })
             .On("RefreshNameOverridesForPlayer", a =>
             {
                 NameRefreshes.Add((uint)a[0]!);
                 return null;
             });
 
-        Descriptors = new BenchDescriptors(Db, PlayerName, Logs);
-        Disguises = new BenchDisguises(Db, Cache, Gui, DmPresence, PlayerName, Descriptors, Logs);
+        PlayerKnownName = ScriptedProxy.Create<IPlayerKnownNameService>(out var knownNameScript);
+        knownNameScript
+            .On("ValidateKnownNameInput", a => string.IsNullOrWhiteSpace((string?)a[0]) ? "Required" : string.Empty)
+            .On("DeleteKnownNameReferences", a =>
+            {
+                DeletedReferences.Add((string)a[0]!);
+                return 3;
+            });
+
+        Descriptors = new BenchDescriptors(Db, PlayerName, PlayerKnownName, Logs);
+        Disguises = new BenchDisguises(Db, Cache, Gui, DmPresence, PlayerName, PlayerKnownName, Descriptors, Logs);
         Descriptors.Disguises = Disguises;
     }
 
@@ -122,6 +125,7 @@ public sealed class DisguiseWorld : IDisposable
     public IGuiService Gui { get; }
     public IDMPresenceService DmPresence { get; }
     public IPlayerNameService PlayerName { get; }
+    public IPlayerKnownNameService PlayerKnownName { get; }
     public List<WorldLog> Logs { get; } = new();
     public List<string> DeletedReferences { get; } = new();
     public List<uint> NameRefreshes { get; } = new();
@@ -151,8 +155,8 @@ public sealed class DisguiseWorld : IDisposable
         private readonly List<WorldLog> _logs;
 
         public BenchDisguises(IDBService db, ICacheService cache, IGuiService gui, IDMPresenceService dm,
-            IPlayerNameService names, IPlayerDescriptorService descriptors, List<WorldLog> logs)
-            : base(db, cache, gui, dm, names, descriptors, FacadeForwarder.For<IStatService>())
+            IPlayerNameService names, IPlayerKnownNameService knownNames, IPlayerDescriptorService descriptors, List<WorldLog> logs)
+            : base(db, cache, gui, dm, names, knownNames, descriptors, FacadeForwarder.For<IStatService>())
         {
             _logs = logs;
         }
@@ -172,8 +176,8 @@ public sealed class DisguiseWorld : IDisposable
     {
         private readonly List<WorldLog> _logs;
 
-        public BenchDescriptors(IDBService db, IPlayerNameService names, List<WorldLog> logs)
-            : base(db, names, FacadeForwarder.LazyFor<IDisguiseService>())
+        public BenchDescriptors(IDBService db, IPlayerNameService names, IPlayerKnownNameService knownNames, List<WorldLog> logs)
+            : base(db, names, knownNames, FacadeForwarder.LazyFor<IDisguiseService>())
         {
             _logs = logs;
         }

@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual("Fat Mac", PlayerName.GetDisplayName(observer.Creature, target.Creature), "arriving observer sees the custom NPC name");
                     ctx.AssertEqual("Fat Mac", PlayerName.GetChatDisplayName(observer.Creature, target.Creature), "chat resolves the custom NPC name");
                     ctx.AssertEqual("Known names may only target player characters.",
-                        PlayerName.ValidateKnownNameAssignment(observer.Creature, target.Creature, "Republic Soldier"), "NPC cannot acquire a private player identity");
+                        GameServices.PlayerKnownName.ValidateKnownNameAssignment(observer.Creature, target.Creature, "Republic Soldier"), "NPC cannot acquire a private player identity");
                     PlayerName.SendChatMessageWithChatNameOverride(observer.Creature, target.Creature, () =>
                         ctx.AssertEqual(string.Empty, RenamePlugin.GetPCNameOverride(target.Creature, observer.Creature), "chat cannot install a player override on the NPC"));
                     ctx.AssertEqual(string.Empty, RenamePlugin.GetPCNameOverride(target.Creature, observer.Creature), "observer and staff refreshes cannot install a player override");

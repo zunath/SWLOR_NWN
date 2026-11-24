@@ -250,15 +250,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var itemNames = new GuiBindingList<string>();
             var itemToggles = new GuiBindingList<bool>();
             var itemResrefs = new GuiBindingList<string>();
+            var category = HasCategorySelection
+                ? DB.Get<WorldPropertyCategory>(_categoryIds[SelectedCategoryIndex])
+                : null;
 
-            if (HasCategorySelection)
+            if (category != null)
             {
                 var area = GetArea(Player);
                 var propertyId = Property.GetPropertyId(area);
                 var propertyPermission = GetPropertyPermission(playerId, propertyId);
-                var categoryId = _categoryIds[SelectedCategoryIndex];
-                var category = DB.Get<WorldPropertyCategory>(categoryId);
-                var categoryPermission = GetCategoryPermission(playerId, categoryId);
+                var categoryPermission = GetCategoryPermission(playerId, category.Id);
 
                 foreach (var (itemId, item) in category.Items)
                 {
@@ -276,6 +277,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
+                if (HasCategorySelection)
+                {
+                    _categoryIds.RemoveAt(SelectedCategoryIndex);
+                    CategoryNames.RemoveAt(SelectedCategoryIndex);
+                    CategoryEnables.RemoveAt(SelectedCategoryIndex);
+                    CategoryToggles.RemoveAt(SelectedCategoryIndex);
+                    SelectedCategoryIndex = -1;
+                    Instructions = "This category is no longer available.";
+                    InstructionsColor = GuiColor.Red;
+                }
+
                 IsCategorySelected = false;
                 CategoryName = string.Empty;
                 CanEditCategory = false;

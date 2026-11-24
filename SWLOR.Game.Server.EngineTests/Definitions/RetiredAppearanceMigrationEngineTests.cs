@@ -66,7 +66,7 @@ public static partial class MigrationEngineTests
         {
             SetCreatureAppearanceType(creature, AppearanceType.Human);
             SetGender(creature, Gender.Female);
-            SetCreatureBodyPart(CreaturePart.Head, 258, creature);
+            SetCreatureBodyPart(CreaturePart.Head, 63, creature);
             SetCreatureBodyPart(CreaturePart.LeftBicep, 18, creature);
             SetCreatureBodyPart(CreaturePart.RightBicep, 2, creature);
             RacialAppearanceRegistry.TryGet(AppearanceType.Human, out var human);

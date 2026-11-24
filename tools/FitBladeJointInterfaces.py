@@ -55,6 +55,9 @@ COLLAR_SAMPLE = 0.002  # A short grip's end cross-section is sampled over this l
 FIT_TOLERANCE = 0.0005
 # Authored interface geometry ends within this depth of a joint (the authoring limit).
 SLEEVE_DEPTH = MeshyWeaponParts.MAX_JOINT_DEPTH + FIT_TOLERANCE
+# A collar closes the gap left where a part's surfaces stop short of a joint
+# (AlignWeaponPartJoints.py gives a guard piece cut into a top or bottom back to its middle).
+COLLAR_DEPTH = 0.06
 CAP_COVERAGE = 0.98  # Share of the cut outline a cap must fill.
 PLANE = 1e-5
 POSITION, UV, NORMAL, TANGENT, SIGN = 444, 452, 468, 488, 496
@@ -107,6 +110,13 @@ def components(positions, faces):
     return np.array([union.find(int(a)) for a, _, _ in faces], dtype=int)
 
 
+def _is_collar(verts, joint):
+    """A closed prism standing on the joint plane: two Y levels, the far one within COLLAR_DEPTH."""
+    d = _distance(verts, joint)
+    levels = np.unique(np.round(d / PLANE).astype(int))
+    return len(levels) == 2 and levels[0] == 0 and PLANE < d.max() <= COLLAR_DEPTH
+
+
 def _joint_of(ys, role):
     """The joint whose plane holds every given Y, or None."""
     for joint in JOINTS[role]:
@@ -130,10 +140,12 @@ def classify(positions, faces, role):
         if joint is not None:
             kind = ("cap", joint)
         else:
-            # A sleeve reaches from its joint plane into the part.
+            # A sleeve reaches from its joint plane into the part; a collar is a prism between the
+            # joint plane and the end of a part that stops short of it.
             near = [j for j in JOINTS[role]
                     if np.all((_distance(verts, j) > -PLANE) & (_distance(verts, j) < SLEEVE_DEPTH))
                     and np.abs(_distance(verts, j)).min() < PLANE and np.ptp(verts[:, 1]) > PLANE]
+            near = near or [j for j in JOINTS[role] if _is_collar(verts, j)]
             if len(near) != 1:
                 return None
             kind = ("tube", near[0])
@@ -165,14 +177,32 @@ def interface_index(meshes, role):
 
 
 def rim_points(sources, joint):
-    """(x, z) points where the source surfaces are cut by a joint plane."""
+    """(x, z) points where the source surfaces are cut by a joint plane: the ends of the surface
+    edges that lie in the plane.
+
+    A surface that runs on through the plane (a guard piece a middle took back from its top or
+    bottom) is whole there: an edge with faces on both sides of the plane is not a cut.
+    """
     points = []
     for mesh in sources:
         positions = mesh["streams"][POSITION].astype(float)
         faces = mesh["faces"].astype(int)
         on = np.abs(positions[:, 1] - joint[0]) < PLANE
-        used = np.unique(faces[on[faces].sum(axis=1) >= 2])
-        points.extend(positions[used[on[used]]][:, [0, 2]])
+        flat = on[faces].sum(axis=1) >= 2
+        if not flat.any():
+            continue
+        # Weld by position: authored seams split one surface point into several vertices.
+        keys = np.unique(np.ascontiguousarray(positions, dtype="<f4").view("V12").ravel(), return_inverse=True)[1]
+        beyond = (_distance(positions, joint) < -PLANE)[faces].any(axis=1)
+        continued = set()
+        for face in faces[beyond & flat]:
+            for a, b in ((0, 1), (1, 2), (2, 0)):
+                if on[face[a]] and on[face[b]]:
+                    continued.add(frozenset((keys[face[a]], keys[face[b]])))
+        for face in faces[flat & ~beyond]:
+            for a, b in ((0, 1), (1, 2), (2, 0)):
+                if on[face[a]] and on[face[b]] and frozenset((keys[face[a]], keys[face[b]])) not in continued:
+                    points.extend(positions[[face[a], face[b]]][:, [0, 2]])
     return np.asarray(points).reshape(-1, 2)
 
 

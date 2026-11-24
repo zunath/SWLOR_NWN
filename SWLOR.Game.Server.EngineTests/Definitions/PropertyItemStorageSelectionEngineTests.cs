@@ -80,6 +80,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(!reopened.IsItemSelected, "Reopening the window disables Retrieve");
                     reopened.OnRetrieveItem()();
                     ctx.AssertEqual(0, CountCarried(player, LargeItemResref), "Retrieve does nothing after reopening");
+
+                    var reopenedIds = (List<string>)Get(reopened, "_categoryIds");
+                    secondIndex = reopenedIds.IndexOf(second.Id);
+                    ctx.Assert(secondIndex >= 0, "The reopened window still lists the second category");
+                    second.Items.Clear();
+                    DB.Set(second);
+                    DB.Delete<WorldPropertyCategory>(second.Id);
+                    Call(reopened, "SelectCategory", secondIndex);
+                    ctx.Assert(!reopened.IsCategorySelected, "A deleted category cannot be selected");
+                    ctx.Assert(!reopenedIds.Contains(second.Id), "The deleted category leaves the list");
+                    ctx.AssertEqual(1, reopened.CategoryNames.Count, "The other category remains visible");
                 });
             }
             finally

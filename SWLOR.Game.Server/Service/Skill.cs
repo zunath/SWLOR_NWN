@@ -21,6 +21,12 @@ namespace SWLOR.Game.Server.Service
                 .ToHashSet());
 
         /// <summary>
+        /// Skills whose rank limit warning a player has seen since logging in. A limited skill keeps
+        /// receiving XP awards, so the warning explains why XP stopped once and then stays quiet.
+        /// </summary>
+        private static readonly HashSet<(string PlayerId, SkillType Skill)> _limitWarningsSent = new();
+
+        /// <summary>
         /// This is the maximum number of skill points a single character can have at any time.
         /// </summary>
         public const int SkillCap = 400;
@@ -285,8 +291,10 @@ namespace SWLOR.Game.Server.Service
                     Gui.PublishRefreshEvent(player, new SkillXPRefreshEvent(new List<SkillType> { skill }));
 
                 // Languages gain XP from overheard speech, so a limited language would warn whenever someone speaks it.
-                if (rankCeiling < details.MaxRank && details.ContributesToSkillCap)
-                    PlayerFeedback.SendWarningToPlayer(player, "SKILL_LIMIT", ColorToken.Red($"{details.Name} is at your limit of {rankCeiling}. Raise it in the Skills window."));
+                // Warn once per skill per login; the once-per-login set replaces the shared timed limit.
+                if (rankCeiling < details.MaxRank && details.ContributesToSkillCap &&
+                    _limitWarningsSent.Add((GetObjectUUID(player), skill)))
+                    PlayerFeedback.SendWarningToPlayer(player, "SKILL_LIMIT", ColorToken.Red($"{details.Name} is at your limit of {rankCeiling}. Raise it in the Skills window."), intervalSeconds: 0);
 
                 return debtRemoved;
             }
@@ -462,6 +470,33 @@ namespace SWLOR.Game.Server.Service
             }
 
             DB.Set(dbPlayer);
+        }
+
+        /// <summary>
+        /// A new login shows each limited skill's warning again.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ResetLimitWarningsOnEnter()
+        {
+            var player = GetEnteringObject();
+            if (GetIsPC(player) && !GetIsDM(player))
+                ForgetLimitWarnings(GetObjectUUID(player));
+        }
+
+        /// <summary>
+        /// Drops a departing player's warning records so the set does not grow until a restart.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public static void ResetLimitWarningsOnExit()
+        {
+            var player = GetExitingObject();
+            if (GetIsPC(player) && !GetIsDM(player))
+                ForgetLimitWarnings(GetObjectUUID(player));
+        }
+
+        internal static void ForgetLimitWarnings(string playerId)
+        {
+            _limitWarningsSent.RemoveWhere(entry => entry.PlayerId == playerId);
         }
 
         /// <summary>

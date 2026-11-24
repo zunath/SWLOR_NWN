@@ -82,7 +82,8 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     var playerId = GetObjectUUID(player);
                     var dbPlayer = DB.Get<Player>(playerId);
 
-                    return dbPlayer.Quests.ContainsKey(questId) && dbPlayer.Quests[questId].DateLastCompleted == null;
+                    return dbPlayer != null && dbPlayer.Quests.TryGetValue(questId, out var quest) &&
+                        quest.DateLastCompleted == null;
                 });
         }
 
@@ -108,7 +109,8 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     var questId = args[0];
                     var playerId = GetObjectUUID(player);
                     var dbPlayer = DB.Get<Player>(playerId);
-                    if (!dbPlayer.Quests.ContainsKey(questId))
+                    if (dbPlayer == null || !dbPlayer.Quests.TryGetValue(questId, out var quest) ||
+                        quest.DateLastCompleted != null)
                         return false;
 
                     // Try to parse each Id. If it parses, check the player's current state.
@@ -117,8 +119,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         if (int.TryParse(args[index], out var stateId))
                         {
-                            if (dbPlayer.Quests[questId].CurrentState == stateId &&
-                                dbPlayer.Quests[questId].DateLastCompleted == null)
+                            if (quest.CurrentState == stateId)
                             {
                                 return true;
                             }

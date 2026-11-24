@@ -32,6 +32,22 @@ public class DMSettingsWindowTests
                 public string Id;
                 public EmoteStyle EmoteStyle = EmoteStyle.Regular;
                 public DMCommsFilter CommsFilter = DMCommsFilter.AllParties;
+                public string TimeZoneId;
+            }
+
+            public sealed class Zone { public string Id; }
+
+            public static class PlayerTimeZones
+            {
+                public static readonly string[] Ids = { "UTC", "America/New_York" };
+                public static int IndexOf(string id) { var index = Array.IndexOf(Ids, id); return index < 0 ? 0 : index; }
+                public static Zone GetByIndex(int index) => new() { Id = index >= 0 && index < Ids.Length ? Ids[index] : Ids[0] };
+            }
+
+            public static class HostedEvents
+            {
+                public static readonly List<uint> Refreshed = new();
+                public static void RefreshWindows(uint player) => Refreshed.Add(player);
             }
 
             public static class DB
@@ -84,12 +100,7 @@ public class DMSettingsWindowTests
 
             public static class ColorToken { public static string Red(string text) => text; }
 
-            public abstract class ViewModelBase
-            {
-                protected virtual void OnClientPropertyUpdated(string propertyName) { }
-            }
-
-            public sealed class Settings : ViewModelBase
+            public sealed class Settings
             {
                 public const int RegularEmoteIndex = 0;
                 public const int NovelEmoteIndex = 1;
@@ -101,6 +112,7 @@ public class DMSettingsWindowTests
                 public bool ShowHelmet { get; set; }
                 public bool ShowCloak { get; set; }
                 public string ArmorDisplayText { get; set; }
+                public int TimeZoneIndex { get; set; }
 
                 public Settings(uint player)
                 {
@@ -111,13 +123,13 @@ public class DMSettingsWindowTests
                 public void ClientChanged(string propertyName, object value)
                 {
                     GetType().GetProperty(propertyName)!.SetValue(this, value);
-                    OnClientPropertyUpdated(propertyName);
+                    SaveSetting(propertyName);
                 }
 
                 public void Reload() => LoadSettings();
 
                 {{Method("Feature/GuiDefinition/ViewModel/DMSettingsViewModel.cs", "LoadSettings")}}
-                {{Method("Feature/GuiDefinition/ViewModel/DMSettingsViewModel.cs", "OnClientPropertyUpdated")}}
+                {{Method("Feature/GuiDefinition/ViewModel/DMSettingsViewModel.cs", "SaveSetting")}}
             }
 
             public static class Driver
@@ -135,7 +147,12 @@ public class DMSettingsWindowTests
                 public static string Saved(uint player, string field)
                 {
                     var preferences = (DMPreferences)DB.Records["DM:KEY" + player];
-                    return field == "EmoteStyle" ? preferences.EmoteStyle.ToString() : preferences.CommsFilter.ToString();
+                    return field switch
+                    {
+                        "EmoteStyle" => preferences.EmoteStyle.ToString(),
+                        "TimeZoneId" => preferences.TimeZoneId,
+                        _ => preferences.CommsFilter.ToString(),
+                    };
                 }
             }
             """);
@@ -148,6 +165,7 @@ public class DMSettingsWindowTests
         ((IDictionary)_harness.GetField("DB", "Records")).Clear();
         ((IDictionary)_harness.GetField("ArmorDisplay", "Worn")).Clear();
         ((IList)_harness.GetField("DMPresence", "Sent")).Clear();
+        ((IList)_harness.GetField("HostedEvents", "Refreshed")).Clear();
         _harness.SetField("ArmorDisplay", "SaveFails", false);
     }
 
@@ -163,6 +181,17 @@ public class DMSettingsWindowTests
         Saved(DM, "EmoteStyle").Should().Be("Novel");
         Saved(DM, "CommsFilter").Should().Be("OwnParty");
         Read(settings, nameof(DMSettingsViewModel.ArmorDisplayText)).Should().Be("Helmet and Cloak: your avatar");
+    }
+
+    [Test]
+    public void TimeZoneSavesToTheDMsPreferencesAndRedrawsTheirEventWindows()
+    {
+        _harness.AddPlayer(DM, isDM: true);
+        Change(Open(DM), nameof(DMSettingsViewModel.TimeZoneIndex), 1);
+
+        Saved(DM, "TimeZoneId").Should().Be("America/New_York");
+        ((IList)_harness.GetField("HostedEvents", "Refreshed")).Cast<uint>().Should().Equal(DM);
+        Read(Open(DM), nameof(DMSettingsViewModel.TimeZoneIndex)).Should().Be(1);
     }
 
     [TestCase(DMPossess)]

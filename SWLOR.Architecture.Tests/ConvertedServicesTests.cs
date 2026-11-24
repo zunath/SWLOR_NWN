@@ -46,12 +46,14 @@ public class ConvertedServicesTests
     }
 
     [Test]
-    public void CombatRecorder_is_listed_with_its_ability_records_part()
+    public void The_ability_records_of_the_recorder_are_their_own_converted_service_beside_the_recorder()
     {
-        // The recorder split: the session core is a store behind ICombatRecordSession, not a service; the ability records are a part.
-        var recorder = List.Services.Should().ContainSingle(service => service.Name == "CombatRecorder").Subject;
-        recorder.Domain.Should().Be("Combat");
-        recorder.Extras.Select(extra => extra.Name).Should().Equal("CombatRecordAbility");
+        // The recorder split: the session core is a store behind ICombatRecordSession, not a service. The ability records are a
+        // service of their own (the domain map would count a part named Combat... under Combat), reached as GameServices.CombatRecordAbility.
+        List.Services.Should().ContainSingle(service => service.Name == "CombatRecorder").Which.Domain.Should().Be("Combat");
+        var ability = List.Services.Should().ContainSingle(service => service.Name == "CombatRecordAbility").Subject;
+        ability.Domain.Should().Be("Combat");
+        ability.Extras.Should().BeEmpty();
     }
 
     [Test]

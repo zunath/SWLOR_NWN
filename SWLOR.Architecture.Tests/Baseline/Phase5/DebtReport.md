@@ -7,10 +7,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,074 | 12,794 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 17 | 25,812 lines | none over 1,000 lines |
+| 1. Static service lookup | `StaticLookups.txt` | 1,075 | 12,797 uses | none: GameServices and FacadeAccessor deleted |
+| 2. Large types | `LargeTypes.txt` | 17 | 25,662 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 8 | 2,419 lines | none over 150 lines (400 for layout) |
-| 4. Services per type | `ServicesPerType.txt` | 17 | 258 services | none over 10 services |
+| 4. Services per type | `ServicesPerType.txt` | 17 | 260 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 31 | 37 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 107 | 223 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 27 | 92 edges | none |
@@ -20,10 +20,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 ## 1. Static service lookup
 
-- 1,074 files, 12,794 uses: 821 using directives and 11,973 uses in code (7,249 in a static context).
+- 1,075 files, 12,797 uses: 821 using directives and 11,976 uses in code (7,249 in a static context).
 - SWLOR.Game.Server: 635 file(s), 5,353 use(s) (Feature/ 524, Domain/ 86, Native/ 16, NativeSinks/ 7, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 230 file(s), 5,234 use(s).
-- SWLOR.Game.Server.Tests: 180 file(s), 2,049 use(s).
+- SWLOR.Game.Server.Tests: 181 file(s), 2,052 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
 - SWLOR.CraftSim.Tests: 5 file(s), 15 use(s).
 - SWLOR.Game.Server.IntegrationTests: 4 file(s), 20 use(s).
@@ -36,7 +36,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - Content (Feature/) uses in code: 4,080 (1,535 in a static context).
 - Content (Feature/) types that use it: 522. Static classes: 63. Instance classes that use it from a static member: 198 (155 only from static members).
 
-Largest 15 of 1,074 (all in `StaticLookups.txt`):
+Largest 15 of 1,075 (all in `StaticLookups.txt`):
 
 | Entry | Uses | Detail |
 |---|---:|---|
@@ -58,7 +58,7 @@ Largest 15 of 1,074 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 17 types over 1,000 lines, 25,812 lines in all.
+- 17 types over 1,000 lines, 25,662 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 2, fluent builder 1, owner exception 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
@@ -74,8 +74,8 @@ Largest 15 of 17 (all in `LargeTypes.txt`):
 | `SWLOR.Game.Server.Feature.UsePerkFeat` | 1,687 | UsePerkFeat.cs |
 | `SWLOR.Game.Server.Domain.Items.ItemService` | 1,605 | ItemService.cs |
 | `SWLOR.Game.Server.Domain.Character.PerkService` | 1,486 | PerkService.cs |
-| `SWLOR.Game.Server.Domain.Combat.CombatRecorderService` | 1,417 | CombatRecorderService.cs |
 | `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 1,307 | MimicryService.cs |
+| `SWLOR.Game.Server.Domain.Combat.CombatRecorderService` | 1,267 | CombatRecorderService.cs |
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 1,243 | EnmityService.cs |
 | `SWLOR.Game.Server.Domain.Companions.BeastMasteryService` | 1,240 | BeastMasteryService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService` | 1,203 | CombatAbilityActivationService.cs |
@@ -109,7 +109,7 @@ Largest 15 of 17 (all in `ServicesPerType.txt`):
 
 | Entry | Services | Detail |
 |---|---:|---|
-| `SWLOR.Game.Server.Feature.UsePerkFeat` | 32 | constructor 0, lookup 32 |
+| `SWLOR.Game.Server.Feature.UsePerkFeat` | 33 | constructor 0, lookup 33 |
 | `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 21 | constructor 21, lookup 0 |
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 18 | constructor 18, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 17 | constructor 17, lookup 0 |
@@ -122,8 +122,8 @@ Largest 15 of 17 (all in `ServicesPerType.txt`):
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityHitService` | 13 | constructor 13, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatService` | 13 | constructor 13, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 12 | constructor 12, lookup 0 |
+| `SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade.HeavyVibrobladeActiveAbilityDefinitionBase` | 12 | constructor 0, lookup 12 |
 | `SWLOR.Game.Server.Domain.Abilities.AbilityDamageStageService` | 11 | constructor 11, lookup 0 |
-| `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 11 | constructor 11, lookup 0 |
 
 ## 5. Deferred resolution
 

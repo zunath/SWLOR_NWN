@@ -4,6 +4,8 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Support;
@@ -228,7 +230,7 @@ public class CombatRecordingSessionNoticeTests
     {
         _recorder.RegisterSessionListener(_recorder.Damage);
         _recorder.Start(AreaOne, "first", out _).Should().BeTrue();
-        using (_recorder.BeginAbilityAttribution(Beta, new SWLOR.Game.Server.Domain.Abilities.AbilityDetail { Name = "Strike", AbilityLevel = 3 }))
+        using (_recorder.BeginAbilityAttribution(Beta, new AbilityDetail { Name = "Strike", AbilityLevel = 3 }))
             _recorder.Damage.RecordTemporaryHitPointsGranted(Beta, Beta, "shield", 30, 5f);
         StopAndRead();
 

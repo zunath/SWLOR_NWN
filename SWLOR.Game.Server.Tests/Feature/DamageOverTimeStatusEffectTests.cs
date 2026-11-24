@@ -278,8 +278,9 @@ public class DamageOverTimeStatusEffectTests
         // there has no owner, NWNX refuses to queue it, and the splash silently never lands.
         foreach (var delay in delays)
             delay.Ancestors().OfType<InvocationExpressionSyntax>()
-                .Should().Contain(call => call.Expression.ToString() == "AssignCommand",
-                    "a real auto-attack must queue the splash on an object that exists");
+                .Should().Contain(call => call.Expression.ToString() == "AssignCommand" &&
+                                          call.ArgumentList.Arguments.First().ToString() == "GetModule()",
+                    "a real auto-attack must queue the splash on the module, an object that always exists");
     }
 
     [TestCase("BleedStatusEffect.cs", "EffectDamage(damageAmount, CombatDamageType.Physical.GetNWScriptDamageType())")]

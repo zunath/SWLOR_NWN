@@ -300,7 +300,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(5), caster);
             });
             ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, ability, 3, false), "periodic damage cannot charge Payback");
-            await ctx.ExecuteInCreatureContextAsync(attacker, () => GameServices.CombatHitEffects.ApplyTriggeredDamage(attacker, caster, 5, CombatDamageType.Physical));
+            await ctx.ExecuteInCreatureContextAsync(attacker, () => GameServices.CombatTriggeredDamage.ApplyTriggeredDamage(attacker, caster, 5, CombatDamageType.Physical));
             ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, ability, 3, false), "triggered and reflected damage cannot charge Payback");
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {
@@ -663,7 +663,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(5), caster);
                 });
                 ctx.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(caster, target), "periodic damage cannot grant a counter");
-                await ctx.ExecuteInCreatureContextAsync(target, () => GameServices.CombatHitEffects.ApplyTriggeredDamage(target, caster, 5, CombatDamageType.Physical));
+                await ctx.ExecuteInCreatureContextAsync(target, () => GameServices.CombatTriggeredDamage.ApplyTriggeredDamage(target, caster, 5, CombatDamageType.Physical));
                 ctx.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(caster, target), "triggered or reflected damage cannot grant a counter");
                 await ctx.EquipItemAsync(caster, "b_pistol", InventorySlot.RightHand);
                 var baselineHP = GetCurrentHitPoints(caster);

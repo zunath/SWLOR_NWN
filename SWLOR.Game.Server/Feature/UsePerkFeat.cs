@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordAbilityInterrupted(activator, activation.Ability, cause, damagedBy);
+                CombatRecordAbility.RecordAbilityInterrupted(activator, activation.Ability, cause, damagedBy);
 
             Log.WriteStructured(
                 LogGroup.Server,
@@ -463,7 +463,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordAbilityDenied(activator, target, ability, feat, AbilityActivation.GetLastActivationDenialReason(), false);
+                CombatRecordAbility.RecordAbilityDenied(activator, target, ability, feat, AbilityActivation.GetLastActivationDenialReason(), false);
             return false;
         }
 
@@ -513,7 +513,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="feat">The feat being activated</param>
         private static void ApplyRequirementEffects(uint activator, uint target, AbilityDetail ability, FeatType feat)
         {
-            using var recordedCost = CombatRecorder.BeginAbilityCost(activator, ability, feat);
+            using var recordedCost = CombatRecordAbility.BeginAbilityCost(activator, ability, feat);
             foreach (var req in ability.Requirements)
             {
                 req.AfterActivationAction(activator, ability);
@@ -581,7 +581,7 @@ namespace SWLOR.Game.Server.Feature
                 var summary = AbilityImpactLifecycle.EndAbilityImpact(activator);
                 impactEnded = true;
                 if (CombatRecorder.IsRecording)
-                    CombatRecorder.RecordAbilityImpact(activator, target, targetLocation, ability, feat, summary);
+                    CombatRecordAbility.RecordAbilityImpact(activator, target, targetLocation, ability, feat, summary);
 
                 GameServices.CombatAbilityActivation.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);
                 GameServices.CombatAbilityImpact.ApplyAbilityImpactEffects(activator, summary);
@@ -824,7 +824,7 @@ namespace SWLOR.Game.Server.Feature
                 if (!activatorIsAlive)
                 {
                     if (CombatRecorder.IsRecording)
-                        CombatRecorder.RecordAbilityInterrupted(activator, ability, CombatRecordInterruptCause.Died);
+                        CombatRecordAbility.RecordAbilityInterrupted(activator, ability, CombatRecordInterruptCause.Died);
                     if (AbilityAnimationBinding.ActivationClip(ability, GetIsPC(activator)) != null)
                         NamedAnimation.Stop(activator);
                     ClearAbilityActivationIdleSnapshots(activator);
@@ -846,7 +846,7 @@ namespace SWLOR.Game.Server.Feature
                     !CompanionTargetAuthority.IsHostileAbilityTargetAuthorized(activator, ability, target))
                 {
                     if (CombatRecorder.IsRecording)
-                        CombatRecorder.RecordAbilityInterrupted(activator, ability, CombatRecordInterruptCause.Other);
+                        CombatRecordAbility.RecordAbilityInterrupted(activator, ability, CombatRecordInterruptCause.Other);
                     ClearAbilityActivationIdleSnapshots(activator);
                     CancelActivation(true);
                     return;
@@ -860,7 +860,7 @@ namespace SWLOR.Game.Server.Feature
                 if (!AbilityActivation.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
                     if (CombatRecorder.IsRecording)
-                        CombatRecorder.RecordAbilityDenied(activator, target, ability, feat, AbilityActivation.GetLastActivationDenialReason(), true);
+                        CombatRecordAbility.RecordAbilityDenied(activator, target, ability, feat, AbilityActivation.GetLastActivationDenialReason(), true);
                     ClearAbilityActivationIdleSnapshots(activator);
                     CancelActivation(true);
                     return;
@@ -928,7 +928,7 @@ namespace SWLOR.Game.Server.Feature
                             if (!IsDelayedImpactTargetValid(activator, target, targetLocation, ability))
                             {
                                 if (CombatRecorder.IsRecording)
-                                    CombatRecorder.RecordAbilityInterrupted(activator, ability, GetCurrentHitPoints(activator) <= 0
+                                    CombatRecordAbility.RecordAbilityInterrupted(activator, ability, GetCurrentHitPoints(activator) <= 0
                                         ? CombatRecordInterruptCause.Died
                                         : CombatRecordInterruptCause.Other);
                                 ClearAbilityActivationIdleSnapshots(activator);
@@ -986,8 +986,8 @@ namespace SWLOR.Game.Server.Feature
             if (executeImpact != true)
             {
                 // Turning a toggled stance off ends the activation but is still a use.
-                if (CombatRecorder.IsRecording && CombatRecorder.TakeToggleDeactivation(activator))
-                    CombatRecorder.RecordAbilityCast(activator, target, targetLocation, ability, feat, 0f, isToggleOff: true);
+                if (CombatRecorder.IsRecording && CombatRecordAbility.TakeToggleDeactivation(activator))
+                    CombatRecordAbility.RecordAbilityCast(activator, target, targetLocation, ability, feat, 0f, isToggleOff: true);
                 ClearAbilityActivationIdleSnapshots(activator);
                 ClearActiveAbilityActivation(activator, activationId);
                 DeleteLocalInt(activator, activationId);
@@ -999,7 +999,7 @@ namespace SWLOR.Game.Server.Feature
             MeleeTechnique.HoldSetupForCast(activator, target, ability, activationId);
 
             if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordAbilityCast(activator, target, targetLocation, ability, feat, activationDelay);
+                CombatRecordAbility.RecordAbilityCast(activator, target, targetLocation, ability, feat, activationDelay);
 
             if (GetIsPC(activator))
             {
@@ -1059,7 +1059,7 @@ namespace SWLOR.Game.Server.Feature
         private static void QueueWeaponAbility(uint activator, uint target, AbilityDetail ability, FeatType feat)
         {
             if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordAbilityQueued(activator, target, ability, feat);
+                CombatRecordAbility.RecordAbilityQueued(activator, target, ability, feat);
 
             AbilityActivationState.RemoveQueuedWeaponAttack(activator);
             AbilityActivationState.RemoveQueuedWeaponTraits(activator);
@@ -1548,7 +1548,7 @@ namespace SWLOR.Game.Server.Feature
                 var summary = AbilityImpactLifecycle.EndAbilityImpact(activator);
                 impactEnded = true;
                 if (CombatRecorder.IsRecording)
-                    CombatRecorder.RecordAbilityImpact(activator, target, targetLocation, abilityDetail, activeWeaponAbility, summary);
+                    CombatRecordAbility.RecordAbilityImpact(activator, target, targetLocation, abilityDetail, activeWeaponAbility, summary);
                 GameServices.CombatAbilityActivation.ApplyAbilityActivatedEffects(activator, target, activeWeaponAbility, abilityDetail, summary);
                 GameServices.CombatAbilityImpact.ApplyAbilityImpactEffects(activator, summary);
 

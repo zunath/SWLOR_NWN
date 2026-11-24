@@ -256,8 +256,8 @@ public abstract class CombatDamageTakenTestBase
                 _log.Add($"TargetAttack {args[0]} {args[1]} {args[2]} {args[3]}");
                 return (int)args[2]! + _attackBonus;
             });
-        var hitEffects = ScriptedProxy.Create<ICombatHitEffectsService>(out var hitEffectCalls);
-        hitEffectCalls.On(nameof(ICombatHitEffectsService.ApplyTriggeredDamage), args =>
+        var triggeredDamage = ScriptedProxy.Create<ICombatTriggeredDamageService>(out var triggeredDamageCalls);
+        triggeredDamageCalls.On(nameof(ICombatTriggeredDamageService.ApplyTriggeredDamage), args =>
         {
             _log.Add($"Triggered {string.Join(" ", args.Select(arg => arg ?? "null"))}");
             return _triggered((int)args[2]!);
@@ -362,11 +362,11 @@ public abstract class CombatDamageTakenTestBase
         var playerName = ScriptedProxy.Create<IPlayerNameService>(out var playerNameCalls);
         playerNameCalls.On(nameof(IPlayerNameService.GetColoredDisplayName), args => $"<{args[0]}:{args[1]}>");
 
-        _effects = new CombatDamageTakenEffectsService(resources, timing, activity, hitEffects, stat, statusEffect, statusApplication, temporary, recorder, _defenseMemory);
-        _reflection = new CombatDamageReflectionService(queries, resources, hitEffects, stat, statusApplication, recorder, messaging, playerName);
+        _effects = new CombatDamageTakenEffectsService(resources, timing, activity, triggeredDamage, stat, statusEffect, statusApplication, temporary, recorder, _defenseMemory);
+        _reflection = new CombatDamageReflectionService(queries, resources, triggeredDamage, stat, statusApplication, recorder, messaging, playerName);
         var taken = new CombatDamageTakenService(queries, resources, stat, statusEffect, recorder, pvp, enmity);
         _guardedEffects = new CombatGuardedHitEffectsService(queries, timing, stat, temporary, _defenseMemory);
-        _retaliation = new TestGuardRetaliation(_log, () => _calculated, queries, modifiers, hitEffects, stat, rating, recorder, enmity, taken);
+        _retaliation = new TestGuardRetaliation(_log, () => _calculated, queries, modifiers, triggeredDamage, stat, rating, recorder, enmity, taken);
         _guardedHit = new CombatGuardedHitService(feedback, rating, statusCombat, taken, _guardedEffects, _retaliation, stat, resources, enmity);
         return taken;
     }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Game.Server.Domain.Quests
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Domain.Quests
     /// container's instance of this interface through <c>GameServices.CapstoneProof</c>. As an
     /// <see cref="IAbilityImpactObserver"/> it records each hostile ability impact.
     /// </summary>
-    public interface ICapstoneProofService : IAbilityImpactObserver
+    public interface ICapstoneProofService : IAbilityImpactObserver, IBeastDamageRecording
     {
         /// <summary>
         /// Adds a proof to the registry and to the indexes by status effect and by ability.
@@ -57,13 +58,6 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// <param name="target">The ally it reached.</param>
         /// <param name="ability">The ability.</param>
         void RecordSupportAbilityImpact(uint source, uint target, AbilityDetail ability);
-
-        /// <summary>
-        /// Records that a player's beast damaged an enemy, for the proofs that count owned beast damage.
-        /// </summary>
-        /// <param name="beast">The beast that dealt the damage.</param>
-        /// <param name="target">The enemy it damaged.</param>
-        void RecordBeastDamage(uint beast, uint target);
 
         /// <summary>
         /// Whether a beast owned by this player hit the enemy with a normal attack or damaging ability, for quests

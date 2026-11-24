@@ -31,6 +31,8 @@ public class CombatPartForwardingTests
         typeof(ICombatAbilityHitService),
         typeof(ICombatAbilityHitAdjustmentService),
         typeof(ICombatAbilityImpactService),
+        typeof(ICombatAbilityOffenseEffectsService),
+        typeof(ICombatAbilityWeaponActivationService),
         typeof(ICombatActivityService),
         typeof(ICombatAttackTimingService),
         typeof(ICombatDamageModifiersService),
@@ -45,9 +47,12 @@ public class CombatPartForwardingTests
         typeof(ICombatGuardRetaliationService),
         typeof(ICombatDefenseMemoryService),
         typeof(ICombatFeedbackService),
+        typeof(ICombatDealtEffectsService),
         typeof(ICombatHitEffectsService),
+        typeof(ICombatTriggeredDamageService),
         typeof(ICombatQueriesService),
         typeof(ICombatQueuedAbilityBonusService),
+        typeof(ICombatRecordAbilityService),
         typeof(ICombatResourcesService),
         typeof(ICombatService),
         typeof(ICombatSuppressionService),
@@ -108,9 +113,9 @@ public class CombatPartForwardingTests
     [TestCase(typeof(ICombatHitEffectsService), "ApplyDamageDealtEffects(skillType=Invalid, damageType=Physical, deliveryType=Direct, isAbilityDamage=False, allowsHitProcs=True)")]
     [TestCase(typeof(ICombatHitEffectsService), "ApplyCriticalHitEffects(isSingleTargetImpact=False, skillType=Invalid)")]
     [TestCase(typeof(ICombatHitEffectsService), "ApplyDefeatedEnemyEffects(defeated=2130706432)")]
-    [TestCase(typeof(ICombatHitEffectsService), "ApplyTriggeredDamage(skillType=Invalid, typedLeadershipReductionAlreadyApplied=False, targetStatusDamagePercentAdjustment=null, outgoingModifiersAlreadyApplied=False)")]
+    [TestCase(typeof(ICombatTriggeredDamageService), "ApplyTriggeredDamage(skillType=Invalid, typedLeadershipReductionAlreadyApplied=False, targetStatusDamagePercentAdjustment=null, outgoingModifiersAlreadyApplied=False)")]
     public void TheMovedHitDefaultsKeepTheirValues(Type part, string expected) =>
-        AssertMovedDefaults(part, expected, 9, typeof(ICombatAbilityHitService), typeof(ICombatAbilityHitAdjustmentService), typeof(ICombatHitEffectsService));
+        AssertMovedDefaults(part, expected, 9, typeof(ICombatAbilityHitService), typeof(ICombatAbilityHitAdjustmentService), typeof(ICombatHitEffectsService), typeof(ICombatTriggeredDamageService));
 
     // The members of the damage taken part that have default arguments, with the defaults they had as static members of
     // Combat, on the interface and the instance class alike.
@@ -138,6 +143,14 @@ public class CombatPartForwardingTests
     [TestCase(typeof(ICombatDamageRollService), "CalculateDamage(deltaCap=0)")]
     public void TheMovedServiceDefaultsKeepTheirValues(Type part, string expected) =>
         AssertMovedDefaults(part, expected, 1, typeof(ICombatDamageRollService));
+
+    // The members of the ability records part of the recorder that have default arguments, with the defaults they had on the
+    // recorder, on the interface and the instance class alike.
+    [TestCase(typeof(ICombatRecordAbilityService), "RecordAbilityCast(isToggleOff=False)")]
+    [TestCase(typeof(ICombatRecordAbilityService), "RecordAbilityInterrupted(damagedBy=2130706432)")]
+    [TestCase(typeof(ICombatRecordAbilityService), "BeginAbilityCost(feat=Invalid)")]
+    public void TheMovedRecordAbilityDefaultsKeepTheirValues(Type part, string expected) =>
+        AssertMovedDefaults(part, expected, 3, typeof(ICombatRecordAbilityService));
 
     private static string Defaults(MethodInfo method) => $"{method.Name}(" + string.Join(", ", method.GetParameters()
         .Where(parameter => parameter.HasDefaultValue)

@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// The ability activation part of combat: the order of the riders that run when a creature activates an ability, and the
-    /// queued weapon ability use. The riders of an HP-cost ability are on <see cref="ICombatAbilityCostEffectsService"/>.
+    /// queued weapon ability use. The riders are on the cost, defense, offense and weapon activation parts.
     /// </summary>
     public interface ICombatAbilityActivationService
     {
@@ -18,7 +18,5 @@ namespace SWLOR.Game.Server.Domain.Combat
             AbilityImpactSummary summary);
 
         void TrackQueuedWeaponAbilityUse(uint activator, AbilityDetail ability);
-
-        void ForgetActivationState(uint creature);
     }
 }

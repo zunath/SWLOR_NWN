@@ -43,7 +43,7 @@ public class CombatCleanupOrderTests
             ForwardingRecorder.Decorate<ICombatActivityService>(services, "Activity", lines, format, forgets);
             ForwardingRecorder.Decorate<ICombatDefenseMemoryService>(services, "DefenseMemory", lines, format, forgets);
             ForwardingRecorder.Decorate<ICombatSuppressionService>(services, "Suppression", lines, format, forgets);
-            ForwardingRecorder.Decorate<ICombatAbilityActivationService>(services, "Activation", lines, format, forgets);
+            ForwardingRecorder.Decorate<ICombatAbilityOffenseEffectsService>(services, "OffenseEffects", lines, format, forgets);
             ForwardingRecorder.Decorate<ICombatHitEffectsService>(services, "HitEffects", lines, format, forgets);
             ForwardingRecorder.Decorate<ICombatAbilityImpactService>(services, "Impact", lines, format, forgets);
             ForwardingRecorder.Decorate<ICombatAttackTimingService>(services, "AttackTiming", lines, format, forgets);
@@ -54,7 +54,7 @@ public class CombatCleanupOrderTests
         var tables = new object[]
         {
             bench.Get<ICombatResourcesService>(), bench.Get<ICombatActivityService>(), bench.Get<ICombatDefenseMemoryService>(),
-            bench.Get<ICombatSuppressionService>(), bench.Get<ICombatAbilityActivationService>(), bench.Get<ICombatHitEffectsService>(),
+            bench.Get<ICombatSuppressionService>(), bench.Get<ICombatAbilityOffenseEffectsService>(), bench.Get<ICombatHitEffectsService>(),
             bench.Get<ICombatAbilityImpactService>(), bench.Get<ICombatAttackTimingService>(), bench.Get<ICombatRateModifiersService>(), bench.Get<ICombatRepeatedTargetService>(),
             bench.Get<ITemporaryStatModifierService>()
         }.Select(ForwardingRecorder.Unwrap).ToArray();

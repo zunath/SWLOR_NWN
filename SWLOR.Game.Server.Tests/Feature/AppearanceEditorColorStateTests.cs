@@ -167,6 +167,25 @@ public class AppearanceEditorColorStateTests
     }
 
     [Test]
+    public void ReopeningAfterWardrobeOrSettingsLoadsThePartPictures()
+    {
+        var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
+        var outfits = CSharpSyntaxTree.ParseText(ReadViewModel("AppearanceEditorViewModel.Outfits.cs")).GetRoot();
+        var hiddenFlags = outfits.DescendantNodes().OfType<PropertyDeclarationSyntax>()
+            .Single(property => property.Identifier.ValueText == "IsPartEditorHidden")
+            .ExpressionBody!.Expression.DescendantNodesAndSelf().OfType<IdentifierNameSyntax>()
+            .Select(name => name.Identifier.ValueText).ToList();
+        hiddenFlags.Should().BeEquivalentTo("IsSettingsSelected", "IsOutfitsSelected");
+
+        var initialize = FindMethod(root, "Initialize").Body!.Statements.Select(statement => statement.ToString()).ToList();
+        var loadBodyParts = initialize.IndexOf("LoadBodyParts();");
+        loadBodyParts.Should().BeGreaterThan(-1);
+        foreach (var flag in hiddenFlags)
+            initialize.IndexOf($"{flag} = false;").Should().BeInRange(0, loadBodyParts - 1,
+                $"a window closed on that tab reopens on Appearance, so {flag} must be cleared before the part pictures load");
+    }
+
+    [Test]
     public void GeometryUpdatesNeverRebuildTheEditor()
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();

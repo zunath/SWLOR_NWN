@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Deepstone Graxal")
                 .Appearance(AppearanceType.CattleRotheDeep)
                 .AppearanceScale(1f)
-                .SoundSetId(25)
+                .SoundSetId(385)
                 .PortraitId(1276)
                 .CombatStats(AbilityType.Willpower, AbilityType.Social)
                 .Role(BeastRoleType.Bruiser)

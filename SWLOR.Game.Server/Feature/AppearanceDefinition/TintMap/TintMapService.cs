@@ -211,6 +211,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             GetEffectiveColor(creature, selection, layer));
                 }
             }
+
+            ProgFxCoatRenderer.Apply(creature, selections, resetShaderOverrides);
         }
 
         private static void ProjectNativeRobeColors(uint creature, IReadOnlyList<TintMapMaterialSelection> selections,

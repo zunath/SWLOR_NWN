@@ -25,6 +25,7 @@ public class CombatHitEffectsTranscriptTests
     {
         using var bench = new CombatTranscriptBench();
         var hitEffects = bench.Get<ICombatHitEffectsService>();
+        var triggeredDamage = bench.Get<ICombatTriggeredDamageService>();
 
         foreach (var stat in new[] { 0, 5 })
         {
@@ -40,9 +41,9 @@ public class CombatHitEffectsTranscriptTests
                 hitEffects.ApplyDamageDealtEffects(Attacker, Defender, 40, deliveryType: CombatDamageDeliveryType.Triggered));
             bench.Step("no damage" + tag, () => hitEffects.ApplyDamageDealtEffects(Attacker, Defender, 0));
             bench.Step("triggered damage" + tag, () =>
-                hitEffects.ApplyTriggeredDamage(Attacker, Defender, 30, CombatDamageType.Physical, SkillType.Vibroblade));
+                triggeredDamage.ApplyTriggeredDamage(Attacker, Defender, 30, CombatDamageType.Physical, SkillType.Vibroblade));
             bench.Step("triggered force damage" + tag, () =>
-                hitEffects.ApplyTriggeredDamage(Attacker, Defender, 30, CombatDamageType.Force, SkillType.Force));
+                triggeredDamage.ApplyTriggeredDamage(Attacker, Defender, 30, CombatDamageType.Force, SkillType.Force));
             bench.Step("critical hit" + tag, () =>
                 hitEffects.ApplyCriticalHitEffects(Attacker, Defender, 50, 120, true, SkillType.Vibroblade));
             bench.Step("critical hit of an auto-attack" + tag, () =>

@@ -32,13 +32,13 @@ public sealed partial class TestGuardRetaliation : CombatGuardRetaliationService
         Func<int> calculated,
         ICombatQueriesService queries,
         ICombatDamageModifiersService damageModifiers,
-        ICombatHitEffectsService hitEffects,
+        ICombatTriggeredDamageService triggeredDamage,
         IStatService stat,
         ICombatRatingService combatRating,
         ICombatRecorderService combatRecorder,
         IEnmityService enmity,
         ICombatDamageTakenService damageTaken)
-        : base(queries, damageModifiers, hitEffects, stat, combatRating, combatRecorder, enmity,
+        : base(queries, damageModifiers, triggeredDamage, stat, combatRating, combatRecorder, enmity,
             FacadeForwarder.For<ICombatDamageRollService>(), damageTaken)
     {
         _log = log;

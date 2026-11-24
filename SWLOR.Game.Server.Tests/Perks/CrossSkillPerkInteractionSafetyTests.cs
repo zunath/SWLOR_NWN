@@ -190,12 +190,12 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
             damageEffects.IndexOf("ApplyDamageDealtMimicryTraitProcs", StringComparison.Ordinal),
             "triggered damage and damage-over-time must exit before any direct-hit perk proc runs");
         directGate.Should().BeLessThan(
-            damageEffects.IndexOf("ApplyDamageDerivedHealing", StringComparison.Ordinal),
+            damageEffects.IndexOf("ApplyDamageDealtHPPercentRestore", StringComparison.Ordinal),
             "secondary damage must not recursively sustain its source");
 
         var triggeredDamage = ExtractMethod(combat, "public static int ApplyTriggeredDamage(");
         triggeredDamage.Should().Contain(
-            "ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered)");
+            "ApplyDamageDealtTracking(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered, false)");
         triggeredDamage.Should().Contain(
             "_statusEffectCombatEvents.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered)");
         triggeredDamage.Should().NotContain("ApplyDamageReflectionEffects");
@@ -203,7 +203,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         statusBase.Should().Contain("if (deliveryType != CombatDamageDeliveryType.Direct)",
             "legacy and delivery-aware status hooks must ignore triggered and periodic damage");
         blazingSpikes.Should().Contain("if (deliveryType != CombatDamageDeliveryType.Direct)");
-        blazingSpikes.Should().Contain("GameServices.CombatHitEffects.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire)");
+        blazingSpikes.Should().Contain("GameServices.CombatTriggeredDamage.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire)");
         markedForDeath.Should().NotContain("ApplyTriggeredDamage",
             "Marked for Death amplifies the marker's own hits instead of adding a separate unmitigated damage instance");
         new MarkedForDeathStatusEffect().StatGroup.Stats[StatType.DamageTakenFromStatusSourcePercentAdjustment]
@@ -280,7 +280,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
 
         var bleedingRestore = ExtractMethod(
             combat,
-            "private static void ApplyBleedingTargetStaminaRestore(");
+            "public static void ApplyBleedingTargetStaminaRestore(");
         bleedingRestore.Should().Contain("SkillDamageBleedingTargetStaminaRestoreSkillType");
         bleedingRestore.Should().Contain("SkillAbilityBleedingTargetStaminaRestoreSkillType");
         bleedingRestore.Should().Contain("if (!isAbilityDamage)");

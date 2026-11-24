@@ -44,7 +44,9 @@ public class CombatPartForwardingTests
         typeof(ICombatGuardRetaliationService),
         typeof(ICombatDefenseMemoryService),
         typeof(ICombatFeedbackService),
+        typeof(ICombatDealtEffectsService),
         typeof(ICombatHitEffectsService),
+        typeof(ICombatTriggeredDamageService),
         typeof(ICombatQueriesService),
         typeof(ICombatResourcesService),
         typeof(ICombatService),
@@ -106,9 +108,9 @@ public class CombatPartForwardingTests
     [TestCase(typeof(ICombatHitEffectsService), "ApplyDamageDealtEffects(skillType=Invalid, damageType=Physical, deliveryType=Direct, isAbilityDamage=False, allowsHitProcs=True)")]
     [TestCase(typeof(ICombatHitEffectsService), "ApplyCriticalHitEffects(isSingleTargetImpact=False, skillType=Invalid)")]
     [TestCase(typeof(ICombatHitEffectsService), "ApplyDefeatedEnemyEffects(defeated=2130706432)")]
-    [TestCase(typeof(ICombatHitEffectsService), "ApplyTriggeredDamage(skillType=Invalid, typedLeadershipReductionAlreadyApplied=False, targetStatusDamagePercentAdjustment=null, outgoingModifiersAlreadyApplied=False)")]
+    [TestCase(typeof(ICombatTriggeredDamageService), "ApplyTriggeredDamage(skillType=Invalid, typedLeadershipReductionAlreadyApplied=False, targetStatusDamagePercentAdjustment=null, outgoingModifiersAlreadyApplied=False)")]
     public void TheMovedHitDefaultsKeepTheirValues(Type part, string expected) =>
-        AssertMovedDefaults(part, expected, 8, typeof(ICombatAbilityHitService), typeof(ICombatHitEffectsService));
+        AssertMovedDefaults(part, expected, 8, typeof(ICombatAbilityHitService), typeof(ICombatHitEffectsService), typeof(ICombatTriggeredDamageService));
 
     // The members of the damage taken part that have default arguments, with the defaults they had as static members of
     // Combat, on the interface and the instance class alike.

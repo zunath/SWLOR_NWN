@@ -16,6 +16,12 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// <param name="resetShaderOverrides">True to clear the creature's shader overrides first.</param>
         void ApplyCurrentColors(uint creature, bool resetShaderOverrides = true);
 
+        /// <summary>
+        /// Rebuilds the creature's tint state once the engine and clients have handled a coating visual effect or
+        /// petrification. Must run in a script context whose object is the creature.
+        /// </summary>
+        void QueueCoatRefresh(uint creature);
+
         /// <summary>Writes the colours of an item lying in an area.</summary>
         void ApplyCurrentItemColors(uint item);
 

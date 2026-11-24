@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// that call, so the events they raise are held from <see cref="HeldEventStart"/> on and
     /// written after the damage event that caused them.
     /// </summary>
-    internal struct CombatRecordDamageApplication
+    public struct CombatRecordDamageApplication
     {
         public uint Target;
         public int HeldEventStart;

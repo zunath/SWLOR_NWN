@@ -31,9 +31,11 @@ SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs -> Feature/Ability
 SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs -> Feature/StatusEffectDefinition | 28
 SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs -> Feature/StatusEffectDefinition | 2
 SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs -> Feature/StatusEffectDefinition | 9
-SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Domain/Combat/CombatDamageReflectionService.cs -> Feature/StatusEffectDefinition | 2
+SWLOR.Game.Server/Domain/Combat/CombatDamageTakenEffectsService.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Domain/Combat/CombatDamageTakenEffectsService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Combat/CombatDamageTakenEffectsService.cs -> Feature/StatusEffectDefinition | 4
 SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Feature/AbilityDefinition | 1
-SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Feature/StatusEffectDefinition | 5
 SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs -> Feature/StatusEffectDefinition | 17
 SWLOR.Game.Server/Domain/Combat/CombatRateModifiersService.cs -> Feature/StatusEffectDefinition | 2
 SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Feature/AbilityDefinition | 1
@@ -81,11 +83,10 @@ SWLOR.Game.Server/Domain/Crafting/NwnScavengeWorld.cs -> Feature/GuiDefinition |
 SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs -> Feature/StatusEffectDefinition | 1
-SWLOR.Game.Server/Domain/Foundation/CharacterFileUpgrade.cs -> Feature/MigrationDefinition | 1
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs -> Feature/GuiDefinition | 2
 SWLOR.Game.Server/Domain/Foundation/NamedAnimationService.cs -> Feature.PistolAnimationRemap | 1
 SWLOR.Game.Server/Domain/Foundation/SavedCharacter.cs -> Feature/MigrationDefinition | 4
-SWLOR.Game.Server/Domain/Foundation/SavedCharacterDataStore.cs -> Feature/MigrationDefinition | 5
+SWLOR.Game.Server/Domain/Foundation/SavedCharacterDataStore.cs -> Feature/MigrationDefinition | 1
 SWLOR.Game.Server/Domain/Foundation/SavedItem.cs -> Feature/MigrationDefinition | 3
 SWLOR.Game.Server/Domain/Items/WardrobeService.cs -> Feature/AppearanceDefinition | 2
 SWLOR.Game.Server/Domain/Quests/CapstoneProofService.cs -> Feature/QuestDefinition | 1

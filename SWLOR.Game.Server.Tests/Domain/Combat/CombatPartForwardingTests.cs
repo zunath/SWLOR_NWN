@@ -35,6 +35,8 @@ public class CombatPartForwardingTests
         typeof(ICombatRepeatedTargetService),
         typeof(ICombatDamageRollService),
         typeof(ICombatDamageTakenService),
+        typeof(ICombatDamageTakenEffectsService),
+        typeof(ICombatDamageReflectionService),
         typeof(ICombatDefenseMemoryService),
         typeof(ICombatFeedbackService),
         typeof(ICombatHitEffectsService),
@@ -106,10 +108,10 @@ public class CombatPartForwardingTests
     // The members of the damage taken part that have default arguments, with the defaults they had as static members of
     // Combat, on the interface and the instance class alike.
     [TestCase(typeof(ICombatDamageTakenService), "ApplyDamageTakenModifiers(attacker=2130706432, damageType=Physical, deliveryType=Direct, targetStatusDamagePercentAdjustment=0, isLandedAttack=True, typedLeadershipReductionAlreadyApplied=False)")]
-    [TestCase(typeof(ICombatDamageTakenService), "ApplyIncomingPhysicalToForceConversion(targetStatusDamagePercentAdjustment=0, convertedDamageScheduler=null)")]
-    [TestCase(typeof(ICombatDamageTakenService), "ApplyAbilityUsedAttackDeflection(deflectionFPRestoreStatType=Invalid)")]
+    [TestCase(typeof(ICombatDamageReflectionService), "ApplyIncomingPhysicalToForceConversion(targetStatusDamagePercentAdjustment=0, convertedDamageScheduler=null)")]
+    [TestCase(typeof(ICombatDamageTakenEffectsService), "ApplyAbilityUsedAttackDeflection(deflectionFPRestoreStatType=Invalid)")]
     public void TheMovedDamageTakenDefaultsKeepTheirValues(Type part, string expected) =>
-        AssertMovedDefaults(part, expected, 3, typeof(ICombatDamageTakenService));
+        AssertMovedDefaults(part, expected, 3, typeof(ICombatDamageTakenService), typeof(ICombatDamageTakenEffectsService), typeof(ICombatDamageReflectionService));
 
     // The one member of the ability activation part that has a default argument, with the default it had as a static member
     // of Combat, on the interface and the instance class alike.
@@ -167,11 +169,11 @@ public class CombatPartForwardingTests
         ((object)activity.RecentDamageTargets).Should().BeSameAs(table, "every read returns the same table, so a prune is seen by the next read");
         typeof(CombatHitEffectsService).GetField("_combatActivity", Instance)!.GetValue(facades.Get<ICombatHitEffectsService>())
             .Should().BeSameAs(activity);
-        typeof(CombatDamageTakenService).GetField("_combatActivity", Instance)!.GetValue(facades.Get<ICombatDamageTakenService>())
+        typeof(CombatDamageTakenEffectsService).GetField("_combatActivity", Instance)!.GetValue(facades.Get<ICombatDamageTakenEffectsService>())
             .Should().BeSameAs(activity);
     }
 
-    [TestCase(typeof(CombatDamageTakenService), "ApplyDamageTakenEffects", ScriptName.OnCreatureDamagedAfter)]
+    [TestCase(typeof(CombatDamageTakenEffectsService), "ApplyDamageTakenEffects", ScriptName.OnCreatureDamagedAfter)]
     [TestCase(typeof(CombatService), "ApplyDefeatedEnemyEffects", ScriptName.OnCreatureDeathBefore)]
     [TestCase(typeof(CombatService), "ClearStatTriggerState", ScriptName.OnModuleExit)]
     [TestCase(typeof(CombatService), "ClearCombatState", ScriptName.OnIntervalPC6Seconds)]

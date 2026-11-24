@@ -2,6 +2,7 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -124,23 +125,23 @@ public class AIServiceAggroTests : AIServiceTestBase
     {
         _player.Position = new Vector3(8.5f, 0f, 0f);
 
-        Service.IsInAggroRange(Npc.Id, _player.Id).Should().BeTrue();
+        CreatureAIRules.IsInAggroRange(Npc.Id, _player.Id).Should().BeTrue();
         _player.Position = new Vector3(8.6f, 0f, 0f);
-        Service.IsInAggroRange(Npc.Id, _player.Id).Should().BeFalse();
-        Service.IsInAggroRange(Npc.Id, Invalid).Should().BeFalse();
+        CreatureAIRules.IsInAggroRange(Npc.Id, _player.Id).Should().BeFalse();
+        CreatureAIRules.IsInAggroRange(Npc.Id, Invalid).Should().BeFalse();
         _player.Position = new Vector3(2f, 0f, 0f);
         _player.Area = Bench.AddArea("elsewhere");
-        Service.IsInAggroRange(Npc.Id, _player.Id).Should().BeFalse();
+        CreatureAIRules.IsInAggroRange(Npc.Id, _player.Id).Should().BeFalse();
     }
 
     [Test]
     public void The_aggro_range_needs_line_of_sight()
     {
-        Service.IsInAggroRange(Npc.Id, _player.Id).Should().BeTrue();
+        CreatureAIRules.IsInAggroRange(Npc.Id, _player.Id).Should().BeTrue();
 
         Bench.BlockSight(_player.Id, Npc.Id);
 
-        Service.IsInAggroRange(Npc.Id, _player.Id).Should().BeFalse();
+        CreatureAIRules.IsInAggroRange(Npc.Id, _player.Id).Should().BeFalse();
     }
 
     [Test]

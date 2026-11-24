@@ -20,6 +20,9 @@ public static class PerformanceInstrumentEngineTests
     [EngineTest("Tambourine animation preserves cosmetics during play stop and unequip", Category = "PerformanceInstruments", TimeoutSeconds = 90f)]
     public static Task TambourineFitRestoresCosmetics(EngineTestContext ctx) => PlayingFitRestoresCosmetics(ctx, "tambourine");
 
+    [EngineTest("Flanged Jessoon playing fit preserves cosmetics on stop and unequip", Category = "PerformanceInstruments", TimeoutSeconds = 90f)]
+    public static Task JessoonFitRestoresCosmetics(EngineTestContext ctx) => PlayingFitRestoresCosmetics(ctx, "jessoon");
+
     private static async Task PlayingFitRestoresCosmetics(EngineTestContext ctx, string resref)
     {
         const ObjectVisualTransformDataScopeType scope =
@@ -44,7 +47,9 @@ public static class PerformanceInstrumentEngineTests
                 await ctx.ExecuteInCreatureContextAsync(player, () => GameServices.Performance.TogglePlayInstrument(player, 1));
                 await ctx.WaitUntilAsync(() => GameServices.PerformanceRegistry.TryGetSession(player, out _), 8f, "instrument to start performing");
                 var fitted = channels.Select(channel => GetObjectVisualTransform(item, channel, nScope: scope)).ToArray();
-                if (resref == "panpipes")
+                if (resref == "jessoon")
+                    ctx.Assert(Math.Abs(fitted[5] - authored[5]) > .0001f, "the Jessoon's playing fit turns it on the RotateX channel too");
+                if (resref != "tambourine")
                     ctx.Assert(fitted.Where((value, i) => Math.Abs(value - authored[i]) > .0001f).Any(), "the playing fit is applied");
                 else
                     for (var i = 0; i < channels.Length; i++)
@@ -73,7 +78,7 @@ public static class PerformanceInstrumentEngineTests
         }
     }
 
-    [EngineTest("Performance recognizes existing microphones pipes tambourine and paired violins", Category = "PerformanceInstruments", TimeoutSeconds = 180f)]
+    [EngineTest("Performance recognizes existing microphones pipes Jessoon tambourine and paired violins", Category = "PerformanceInstruments", TimeoutSeconds = 180f)]
     public static async Task ExistingPropsPerformAndStopWhenRemoved(EngineTestContext ctx)
     {
         foreach (var (resref, slot, family) in new[]
@@ -81,6 +86,7 @@ public static class PerformanceInstrumentEngineTests
                      ("night_microplain", InventorySlot.LeftHand, PerformanceInstrumentFamily.Vocals),
                      ("night_microbrand", InventorySlot.LeftHand, PerformanceInstrumentFamily.Vocals),
                      ("panpipes", InventorySlot.RightHand, PerformanceInstrumentFamily.Pipes),
+                     ("jessoon", InventorySlot.RightHand, PerformanceInstrumentFamily.Horns),
                      ("tambourine", InventorySlot.RightHand, PerformanceInstrumentFamily.Percussion),
                      ("violin_m", InventorySlot.LeftHand, PerformanceInstrumentFamily.BowedStrings),
                      ("violin_f", InventorySlot.LeftHand, PerformanceInstrumentFamily.BowedStrings)

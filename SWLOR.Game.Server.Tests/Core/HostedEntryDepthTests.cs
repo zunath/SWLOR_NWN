@@ -22,7 +22,11 @@ public class HostedEntryDepthTests
 
     [OneTimeSetUp]
     public void BuildContainer() =>
-        _container = new FacadeContainer(services => services.Replace(ServiceDescriptor.Singleton(RecordingFlagCombatRecorder.Create())));
+        _container = new FacadeContainer(services =>
+        {
+            services.Replace(ServiceDescriptor.Singleton(RecordingFlagCombatRecorder.Create()));
+            services.Replace(ServiceDescriptor.Singleton<ICombatRecordSession>(new CombatRecordSessionCore { IsRecording = true }));
+        });
 
     [OneTimeTearDown]
     public void DisposeContainer() => _container.Dispose();

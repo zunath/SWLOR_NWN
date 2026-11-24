@@ -194,7 +194,7 @@ namespace SWLOR.Game.Server.Native
 
                 // Deflecting Return is a Ranged Deflection rider. Shield Deflection never triggers it.
                 if (deflectionSource == DeflectionSource.Ranged)
-                    GameServices.CombatDamageTaken.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType);
+                    GameServices.CombatDamageReflection.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType);
             }
 
             // Hit
@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.Native
             // Miss
             else
             {
-                GameServices.CombatDamageTaken.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
+                GameServices.CombatDamageTakenEffects.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
                 if (accuracyEvasionMiss && GetIsReactionTypeHostile(attacker.m_idSelf, defender.m_idSelf))
                     PairedRangedTraits.RecordAccuracyEvasionMiss(defender.m_idSelf);
                 GameServices.CombatActivity.TrackAttackActivity(attacker.m_idSelf);

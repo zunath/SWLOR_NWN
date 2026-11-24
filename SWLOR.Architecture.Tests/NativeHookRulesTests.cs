@@ -25,11 +25,11 @@ public class NativeHookRulesTests
     /// <summary>The namespace of the native entry's four NWNX callbacks, the server's only other unmanaged entry points.</summary>
     private const string ServerCallbackNamespace = "SWLOR.Game.Server.Core";
 
-    /// <summary>The 36 hooked engine functions: 17 hook files.</summary>
-    private const int HookCount = 36;
+    /// <summary>The 41 hooked engine functions: 18 hook files.</summary>
+    private const int HookCount = 41;
 
     /// <summary>The sink interfaces: one per hook file.</summary>
-    private const int SinkInterfaceCount = 17;
+    private const int SinkInterfaceCount = 18;
 
     private static readonly string[] AllowedContractsReferences = ["Nwn.Hosting.Contracts", "StackExchange.Redis"];
     private static readonly string[] AllowedHooksReferences = ["NWNX.NET", "SWLOR.Game.Contracts"];

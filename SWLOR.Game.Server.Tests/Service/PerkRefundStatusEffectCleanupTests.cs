@@ -126,10 +126,7 @@ public class PerkRefundStatusEffectCleanupTests
     [Test]
     public void SourceOwnedRefundPath_PassesTheOriginatingAbilityToCleanup()
     {
-        var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Domain", "Character", "PerkService.cs"))).GetRoot();
-        var method = syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Single(node => node.Identifier.ValueText == "RemoveStatusEffectsOnPerkRefund");
+        var method = CharacterCompanionsSource.Perk.Method("RemoveStatusEffectsOnPerkRefund");
         var cleanup = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
             .Single(node => node.Expression.ToString() == "_statusEffect.RemoveStatusEffectsFromAllTargetsBySource");
         cleanup.ArgumentList.Arguments.Select(argument => argument.ToString()).Should()
@@ -172,7 +169,7 @@ public class PerkRefundStatusEffectCleanupTests
     public void PerkRefundPaths_RemoveMarkedStatusEffects()
     {
         var root = FindRepositoryRoot();
-        var perkSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "PerkService.cs"));
+        var perkSource = CharacterCompanionsSource.Perk.Read();
         var perksViewModelSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",

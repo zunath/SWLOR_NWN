@@ -111,7 +111,7 @@
     },
     "Creatures": {
       "services": [
-        "AI", "Spawn", "NPCGroup", "NPC", "CompanionControl"
+        "AI", "Spawn", "NPCGroup", "NPC", "CompanionControl", "CompanionPositioning", "CompanionTargetAuthority"
       ],
       "featureFolders": [
         "AIDefinition", "SpawnDefinition"
@@ -119,7 +119,7 @@
     },
     "Companions": {
       "services": [
-        "BeastMastery", "IncubationFieldNote", "Droid", "DroidEquipmentDiagnostics", "TintMap"
+        "BeastMastery", "IncubationFieldNote", "Droid", "DroidEquipmentDiagnostics", "ProgFxCoat", "TintMap"
       ],
       "featureFolders": [
         "BeastDefinition"

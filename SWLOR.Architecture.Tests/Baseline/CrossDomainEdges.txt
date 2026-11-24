@@ -84,9 +84,6 @@ Feature/StatusEffectDefinition -> Domain/Companions | 4
 Feature/PerkDefinition -> Domain/Crafting | 12
 Feature/StatusEffectDefinition -> Domain/Crafting | 6
 
-# Character -> Creatures (1 edge)
-Domain/Character -> Domain/Creatures | 4
-
 # Character -> Items (2 edges)
 Domain/Character -> Domain/Items | 1
 Feature/PerkDefinition -> Domain/Items | 4
@@ -113,9 +110,6 @@ Domain/Combat -> Domain/Administration | 7
 Domain/Combat -> Domain/Character | 1043
 Domain/Combat -> Feature/AppearanceDefinition | 3
 Domain/Combat -> Feature/StatusEffectDefinition | 115
-
-# Combat -> Creatures (1 edge)
-Domain/Combat -> Domain/Creatures | 17
 
 # Combat -> Gameplay (3 edges)
 Domain/Combat -> Feature.LightsaberAudio | 2
@@ -236,9 +230,6 @@ Domain/Economy -> Domain/UI | 12
 # Economy -> World (1 edge)
 Domain/Economy -> Domain/World | 7
 
-# Foundation -> Abilities (1 edge)
-Feature/MigrationDefinition -> Domain/Abilities | 4
-
 # Foundation -> Character (4 edges)
 Domain/Foundation -> Domain/Character | 6
 Feature/DialogDefinition -> Domain/Character | 19
@@ -253,18 +244,13 @@ Feature/SnippetDefinition -> Domain/Combat | 2
 # Foundation -> Companions (1 edge)
 Feature/MigrationDefinition -> Domain/Companions | 50
 
-# Foundation -> Crafting (1 edge)
-Feature/MigrationDefinition -> Domain/Crafting | 2
-
 # Foundation -> Economy (2 edges)
 Feature/DialogDefinition -> Domain/Economy | 10
 Feature/MigrationDefinition -> Domain/Economy | 2
 
-# Foundation -> Gameplay (5 edges)
+# Foundation -> Gameplay (3 edges)
 Domain/Foundation -> Feature.PistolAnimationRemap | 1
-Feature/MigrationDefinition -> Feature.BasicVibrobladeCompatibility | 2
 Feature/MigrationDefinition -> Feature.EquipmentStats | 1
-Feature/MigrationDefinition -> Feature.PistolBaseItemCompatibility | 6
 Feature/SnippetDefinition -> Feature.PlaceableScripts | 4
 
 # Foundation -> Items (3 edges)
@@ -360,9 +346,7 @@ Feature.ResearchInterruptions -> Domain/Crafting | 2
 Feature.ScavengePoint -> Domain/Crafting | 3
 Feature.SlicingTerminal -> Domain/Crafting | 1
 
-# Gameplay -> Creatures (4 edges)
-Feature.CivilianPatrol -> Domain/Creatures | 1
-Feature.EchaniTempleMonks -> Domain/Creatures | 1
+# Gameplay -> Creatures (2 edges)
 Feature.ScavengePoint -> Domain/Creatures | 1
 Feature.UsePerkFeat -> Domain/Creatures | 5
 
@@ -469,9 +453,6 @@ Platform/Root -> Domain/Character | 1
 
 # Platform -> Combat (1 edge)
 Platform/Native -> Domain/Combat | 61
-
-# Platform -> Creatures (1 edge)
-Platform/Native -> Domain/Creatures | 1
 
 # Platform -> Gameplay (1 edge)
 Platform/Native -> Feature.UsePerkFeat | 11
@@ -581,9 +562,6 @@ Feature/ShipModuleDefinition -> Domain/Combat | 16
 
 # Space -> Companions (1 edge)
 Domain/Space -> Domain/Companions | 3
-
-# Space -> Creatures (1 edge)
-Domain/Space -> Domain/Creatures | 6
 
 # Space -> Items (1 edge)
 Feature/ShipModuleDefinition -> Domain/Items | 2

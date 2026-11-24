@@ -249,7 +249,7 @@ public class ForceLightGuardianTests
             StringComparison.Ordinal);
         weaponPreDamageNotification.Should().BeGreaterThan(-1);
         weaponPreDamageNotification.Should().BeLessThan(
-            weaponProcessDamage.IndexOf("GameServices.CombatDamageTaken.ApplyDamageReflectionEffects(", weaponPreDamageNotification, StringComparison.Ordinal),
+            weaponProcessDamage.IndexOf("GameServices.CombatDamageReflection.ApplyDamageReflectionEffects(", weaponPreDamageNotification, StringComparison.Ordinal),
             "an exhausted conditional reflection status must be removed before weapon reflection is calculated");
         weaponProcessDamage.Should().NotContain("PublishDamageDealtEvent(",
             "reflection must retain its original position in weapon damage calculation rather than moving across damage-dealt callbacks");

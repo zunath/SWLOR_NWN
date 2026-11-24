@@ -1,0 +1,386 @@
+== step 1 refused: the skill is Invalid
+-> GiveSkillXP(Attacker, Invalid, 100, ignoreBonuses: False, henchmanPenalty: True, source: none)
+<- 0
+  record: debt=0;sp=0/0;ap=0/0
+== step 2 refused: nothing to give
+-> GiveSkillXP(Attacker, Armor, 0, ignoreBonuses: False, henchmanPenalty: True, source: none)
+<- 0
+  record: debt=0;sp=0/0;ap=0/0
+== step 3 refused: the target is not a player
+-> GiveSkillXP(Other, Armor, 100, ignoreBonuses: False, henchmanPenalty: True, source: none)
+<- 0
+  record: debt=0;sp=0/0;ap=0/0
+== step 4 refused: a DM
+-> GiveSkillXP(Attacker, Armor, 100, ignoreBonuses: False, henchmanPenalty: True, source: none)
+<- 0
+  record: debt=0;sp=0/0;ap=0/0
+== step 5 refused: dead
+-> GiveSkillXP(Attacker, Armor, 100, ignoreBonuses: False, henchmanPenalty: True, source: none)
+<- 0
+  record: debt=0;sp=0/0;ap=0/0
+== step 6 refused: no hit points
+-> GiveSkillXP(Attacker, Armor, 100, ignoreBonuses: False, henchmanPenalty: True, source: none)
+<- 0
+  record: debt=0;sp=0/0;ap=0/0
+== step 7 plain award with the default henchman penalty
+-> GiveSkillXP(Attacker, Armor, 100, ignoreBonuses: False, henchmanPenalty: True, source: none)
+Db.db.get
+Stat.GetStatAdjustment(Attacker, ExperiencePercentAdjustment)
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (70))
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Armor
+<- 70
+  record: debt=0;sp=0/0;ap=0/0
+  changed Armor: rank=0 xp=70 locked=False limit=none
+== step 8 plain award, bonuses ignored and no penalty
+-> GiveSkillXP(Attacker, Armor, 100, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (100))
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Armor
+<- 100
+  record: debt=0;sp=0/0;ap=0/0
+  changed Armor: rank=0 xp=100 locked=False limit=none
+== step 9 bonuses: social 4, status adjustment 20, DM bonus 10, with the penalty
+-> GiveSkillXP(Attacker, Armor, 100, ignoreBonuses: False, henchmanPenalty: True, source: none)
+Db.db.get
+Stat.GetStatAdjustment(Attacker, ExperiencePercentAdjustment)
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (98))
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Armor
+<- 98
+  record: debt=0;sp=0/0;ap=0/0
+  changed Armor: rank=0 xp=98 locked=False limit=none
+== step 10 bonuses: social 4, status adjustment 20, DM bonus 10, no penalty
+-> GiveSkillXP(Attacker, Armor, 100, ignoreBonuses: False, henchmanPenalty: False, source: none)
+Db.db.get
+Stat.GetStatAdjustment(Attacker, ExperiencePercentAdjustment)
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (139))
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Armor
+<- 139
+  record: debt=0;sp=0/0;ap=0/0
+  changed Armor: rank=0 xp=139 locked=False limit=none
+== step 11 bonuses: ignored while the stats stay raised
+-> GiveSkillXP(Attacker, Armor, 100, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (100))
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Armor
+<- 100
+  record: debt=0;sp=0/0;ap=0/0
+  changed Armor: rank=0 xp=100 locked=False limit=none
+== step 12 message source: two awards from one source are one message
+-> GiveSkillXP(Attacker, Armor, 100, ignoreBonuses: True, henchmanPenalty: False, source: Other)
+Db.db.get
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Armor
+<- 100
+  record: debt=0;sp=0/0;ap=0/0
+  changed Armor: rank=0 xp=100 locked=False limit=none
+-> GiveSkillXP(Attacker, Armor, 50, ignoreBonuses: True, henchmanPenalty: False, source: Other)
+Db.db.get
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Armor
+<- 50
+  record: debt=0;sp=0/0;ap=0/0
+  changed Armor: rank=0 xp=150 locked=False limit=none
+-> GiveSkillXP(Attacker, Piloting, 20, ignoreBonuses: True, henchmanPenalty: False, source: Other)
+Db.db.get
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Piloting
+<- 20
+  record: debt=0;sp=0/0;ap=0/0
+  changed Piloting: rank=0 xp=20 locked=False limit=none
+== step 13 debt: 500 owed, 100 repays part of it
+-> GiveSkillXP(Attacker, Armor, 100, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, 100 XP was removed from your debt. (Remaining: 400))
+Db.db.set
+<- 100
+  record: debt=400;sp=0/0;ap=0/0
+== step 14 debt: 40 owed, 100 clears it and 60 is applied
+-> GiveSkillXP(Attacker, Armor, 100, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, Your XP debt has been cleared.)
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (60))
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Armor
+<- 100
+  record: debt=0;sp=0/0;ap=0/0
+  changed Armor: rank=0 xp=60 locked=False limit=none
+== step 15 debt: exactly what is owed
+-> GiveSkillXP(Attacker, Armor, 100, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, Your XP debt has been cleared.)
+Db.db.set
+<- 100
+  record: debt=0;sp=0/0;ap=0/0
+== step 16 ceiling: a maxed skill with leftover progress clears it
+-> GiveSkillXP(Attacker, Armor, 100, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Armor
+<- 0
+  record: debt=0;sp=0/0;ap=0/0
+  changed Armor: rank=50 xp=0 locked=False limit=none
+== step 17 ceiling: a skill at its limit warns once per login
+-> GiveSkillXP(Attacker, Armor, 100, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Armor
+PlayerFeedback.SendWarningToPlayer(Attacker, SKILL_LIMIT, <c\u00fc>Armor is at your limit of 10. Raise it in the Skills window.</c>, 0)
+<- 0
+  record: debt=0;sp=0/0;ap=0/0
+  changed Armor: rank=10 xp=0 locked=False limit=10
+-> GiveSkillXP(Attacker, Armor, 100, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Db.db.set
+<- 0
+  record: debt=0;sp=0/0;ap=0/0
+-> GiveSkillXP(Attacker, Piloting, 100, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Piloting skill experience. (100))
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Piloting
+<- 100
+  record: debt=0;sp=0/0;ap=0/0
+  changed Piloting: rank=0 xp=100 locked=False limit=none
+== step 18 ceiling: a language at its limit does not warn
+-> GiveSkillXP(Attacker, Mirialan, 100, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Db.db.set
+<- 0
+  record: debt=0;sp=0/0;ap=0/0
+== step 19 ceiling: debt repaid at the ceiling stays repaid
+-> GiveSkillXP(Attacker, Armor, 100, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, Your XP debt has been cleared.)
+Db.db.set
+<- 30
+  record: debt=0;sp=0/0;ap=0/0
+== step 20 rank-up: one rank below the cap
+-> GiveSkillXP(Attacker, Armor, 557, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (557))
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 1!, Attacker, False)
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Armor
+Events.SignalEvent(SWLOR_GAIN_SKILL_POINT, Attacker)
+<- 557
+  record: debt=0;sp=1/1;ap=0/0
+  changed Armor: rank=1 xp=7 locked=False limit=none
+== step 21 rank-up: several ranks in one award
+-> GiveSkillXP(Attacker, Armor, 2478, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (2478))
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 1!, Attacker, False)
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 2!, Attacker, False)
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 3!, Attacker, False)
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Armor
+Events.SignalEvent(SWLOR_GAIN_SKILL_POINT, Attacker)
+<- 2478
+  record: debt=0;sp=3/3;ap=0/0
+  changed Armor: rank=3 xp=3 locked=False limit=none
+== step 22 rank-up: the tenth skill point earns an ability point
+-> GiveSkillXP(Attacker, Armor, 550, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (550))
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 1!, Attacker, False)
+Engine.SendMessageToPC(Attacker, <c\u00fc>You acquired 1 ability point!</c>)
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Armor
+Events.SignalEvent(SWLOR_GAIN_SKILL_POINT, Attacker)
+<- 550
+  record: debt=0;sp=1/10;ap=1/1
+  changed Armor: rank=1 xp=0 locked=False limit=none
+== step 23 rank-up: the ability point pool is full
+-> GiveSkillXP(Attacker, Armor, 550, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (550))
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 1!, Attacker, False)
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Armor
+Events.SignalEvent(SWLOR_GAIN_SKILL_POINT, Attacker)
+<- 550
+  record: debt=0;sp=1/10;ap=0/40
+  changed Armor: rank=1 xp=0 locked=False limit=none
+== step 24 rank-up: a language earns no skill point
+-> GiveSkillXP(Attacker, Mirialan, 551, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Mirialan skill experience. (551))
+Engine.FloatingTextStringOnCreature(Your Mirialan skill level increased to rank 1!, Attacker, False)
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Mirialan
+Events.SignalEvent(SWLOR_GAIN_SKILL_POINT, Attacker)
+<- 551
+  record: debt=0;sp=0/9;ap=0/0
+  changed Mirialan: rank=1 xp=1 locked=False limit=none
+== step 25 rank-up: leftover progress is discarded at the ceiling
+-> GiveSkillXP(Attacker, Armor, 48000, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (48000))
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 50!, Attacker, False)
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Armor
+Events.SignalEvent(SWLOR_GAIN_SKILL_POINT, Attacker)
+<- 16000
+  record: debt=0;sp=1/1;ap=0/0
+  changed Armor: rank=50 xp=0 locked=False limit=none
+== step 26 rank-up: a limit lower than the max stops the climb
+-> GiveSkillXP(Attacker, Armor, 4950, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (4950))
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 5!, Attacker, False)
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Armor
+Events.SignalEvent(SWLOR_GAIN_SKILL_POINT, Attacker)
+<- 1650
+  record: debt=0;sp=1/1;ap=0/0
+  changed Armor: rank=5 xp=0 locked=False limit=5
+== step 27 cap: no other skill can decay, the award is refused with a warning
+-> GiveSkillXP(Attacker, Armor, 1100, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+PlayerFeedback.SendWarningToPlayer(Attacker, SKILL_CAP, <c\u00fc>You cannot gain Armor XP. You are at the skill cap of 400 and all of your other skills are locked or at their limits. Unlock a skill or change a limit in the Skills menu to resume gaining Armor XP.</c>, 60)
+<- 0
+  record: debt=0;sp=0/0;ap=0/0
+== step 28 cap: refused, with debt repaid by the same award
+-> GiveSkillXP(Attacker, Armor, 1100, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, Your XP debt has been cleared.)
+Db.db.set
+PlayerFeedback.SendWarningToPlayer(Attacker, SKILL_CAP, <c\u00fc>You cannot gain Armor XP. You are at the skill cap of 400 and all of your other skills are locked or at their limits. Unlock a skill or change a limit in the Skills menu to resume gaining Armor XP.</c>, 60)
+<- 25
+  record: debt=0;sp=0/0;ap=0/0
+== step 29 cap: a rank gained decays the only unlocked skill
+-> GiveSkillXP(Attacker, Armor, 550, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (550))
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 1!, Attacker, False)
+Random.Next(1) = 0
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Piloting, Armor
+Events.SignalEvent(SWLOR_GAIN_SKILL_POINT, Attacker)
+Events.SignalEvent(SWLOR_SKILL_LOST_BY_DECAY, Attacker)
+<- 550
+  record: debt=0;sp=1/1;ap=0/0
+  changed Armor: rank=1 xp=0 locked=False limit=none
+  changed Piloting: rank=9 xp=0 locked=False limit=none
+== step 30 cap: a rank gained draws one of three decay candidates
+-> GiveSkillXP(Attacker, Armor, 550, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (550))
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 1!, Attacker, False)
+Random.Next(3) = 0
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Piloting, Armor
+Events.SignalEvent(SWLOR_GAIN_SKILL_POINT, Attacker)
+Events.SignalEvent(SWLOR_SKILL_LOST_BY_DECAY, Attacker)
+<- 550
+  record: debt=0;sp=1/1;ap=0/0
+  changed Armor: rank=1 xp=0 locked=False limit=none
+  changed Piloting: rank=9 xp=0 locked=False limit=none
+== step 31 cap: three ranks gained draw three times
+-> GiveSkillXP(Attacker, Armor, 2475, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (2475))
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 1!, Attacker, False)
+Random.Next(4) = 3
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 2!, Attacker, False)
+Random.Next(4) = 3
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 3!, Attacker, False)
+Random.Next(4) = 0
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Fabrication, Piloting, Armor
+Events.SignalEvent(SWLOR_GAIN_SKILL_POINT, Attacker)
+Events.SignalEvent(SWLOR_SKILL_LOST_BY_DECAY, Attacker)
+Events.SignalEvent(SWLOR_SKILL_LOST_BY_DECAY, Attacker)
+<- 2475
+  record: debt=0;sp=3/3;ap=0/0
+  changed Armor: rank=3 xp=0 locked=False limit=none
+  changed Piloting: rank=9 xp=0 locked=False limit=none
+  changed Fabrication: rank=8 xp=0 locked=False limit=none
+== step 32 cap: the same skill decays twice
+-> GiveSkillXP(Attacker, Armor, 1375, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (1375))
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 1!, Attacker, False)
+Random.Next(1) = 0
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 2!, Attacker, False)
+Random.Next(1) = 0
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Piloting, Armor
+Events.SignalEvent(SWLOR_GAIN_SKILL_POINT, Attacker)
+Events.SignalEvent(SWLOR_SKILL_LOST_BY_DECAY, Attacker)
+<- 1375
+  record: debt=0;sp=2/2;ap=0/0
+  changed Armor: rank=2 xp=0 locked=False limit=none
+  changed Piloting: rank=3 xp=0 locked=False limit=none
+== step 33 cap: the last candidate runs out and the climb stops
+-> GiveSkillXP(Attacker, Armor, 2200, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (2200))
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 1!, Attacker, False)
+Random.Next(1) = 0
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Piloting, Armor
+Events.SignalEvent(SWLOR_GAIN_SKILL_POINT, Attacker)
+Events.SignalEvent(SWLOR_SKILL_LOST_BY_DECAY, Attacker)
+<- 550
+  record: debt=0;sp=1/1;ap=0/0
+  changed Armor: rank=1 xp=0 locked=False limit=none
+  cleared Piloting
+== step 34 cap: skills above their limit decay first
+-> GiveSkillXP(Attacker, Armor, 1375, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Armor skill experience. (1375))
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 1!, Attacker, False)
+Random.Next(2) = 1
+Engine.FloatingTextStringOnCreature(Your Armor skill level increased to rank 2!, Attacker, False)
+Random.Next(2) = 1
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Smithery, Armor
+Events.SignalEvent(SWLOR_GAIN_SKILL_POINT, Attacker)
+Events.SignalEvent(SWLOR_SKILL_LOST_BY_DECAY, Attacker)
+<- 1375
+  record: debt=0;sp=2/2;ap=0/0
+  changed Armor: rank=2 xp=0 locked=False limit=none
+  changed Smithery: rank=4 xp=0 locked=False limit=3
+== step 35 cap: a language at the cap gains ranks and nothing decays
+-> GiveSkillXP(Attacker, Mirialan, 1100, ignoreBonuses: True, henchmanPenalty: False, source: none)
+Db.db.get
+Engine.SendMessageToPC(Attacker, You earned Mirialan skill experience. (1100))
+Engine.FloatingTextStringOnCreature(Your Mirialan skill level increased to rank 1!, Attacker, False)
+Db.db.set
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, SkillXPRefreshEvent, Invalid)
+  refreshed skills: Mirialan
+Events.SignalEvent(SWLOR_GAIN_SKILL_POINT, Attacker)
+<- 1100
+  record: debt=0;sp=0/0;ap=0/0
+  changed Mirialan: rank=1 xp=550 locked=False limit=none

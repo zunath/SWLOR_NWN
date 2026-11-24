@@ -679,16 +679,16 @@ public class AIModelTests
             enmitySource.IndexOf("public void IssueAttackCommand", StringComparison.Ordinal));
         attackHighestBody.Should().Contain("ShouldRemoveStaleProximityTarget(creature, target)");
         attackHighestBody.Should().Contain("RemoveProximityEnmity(target, creature);");
-        attackHighestBody.Should().Contain("_ai.TryStartCombatLeashEvade(creature, target)");
+        attackHighestBody.Should().Contain("_leash.TryStartCombatLeashEvade(creature, target)");
         attackHighestBody.Should().Contain("IssueAttackCommand(creature, target);");
-        issueBody.Should().Contain("_ai.TryStartCombatLeashEvade(creature, target)");
+        issueBody.Should().Contain("_leash.TryStartCombatLeashEvade(creature, target)");
         issueBody.Should().Contain("ActionDoCommand(() =>");
         issueBody.IndexOf("ActionDoCommand(() =>", StringComparison.Ordinal)
             .Should()
             .BeGreaterThan(issueBody.IndexOf("ActionMoveToObject(target, true, GetAttackMoveRange(creature));", StringComparison.Ordinal));
         issueBody.IndexOf("ActionAttack(target);", StringComparison.Ordinal)
             .Should()
-            .BeGreaterThan(issueBody.LastIndexOf("_ai.TryStartCombatLeashEvade(creature, target)", StringComparison.Ordinal));
+            .BeGreaterThan(issueBody.LastIndexOf("_leash.TryStartCombatLeashEvade(creature, target)", StringComparison.Ordinal));
         issueBody.Should().Contain("ClearAllActions(true);");
         issueBody.Should().Contain("ActionMoveToObject(target, true, GetAttackMoveRange(creature));");
         enmitySource.Should().Contain("CombatRules.GetWeaponEngagementRange(skillType)");

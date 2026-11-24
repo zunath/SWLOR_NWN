@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -69,12 +70,7 @@ public class PerksWindowTests
             "GuiDefinition",
             "PerksWindow",
             "PerkDetailText.cs")).Replace("\r\n", "\n");
-        var perkSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "PerkService.cs")).Replace("\r\n", "\n");
+        var perkSource = CharacterCompanionsSource.Perk.Read().Replace("\r\n", "\n");
         var recastSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",

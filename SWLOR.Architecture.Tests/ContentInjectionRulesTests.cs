@@ -218,11 +218,7 @@ public class ContentInjectionRulesTests
     [Test]
     public void No_static_initializer_reads_a_service()
     {
-        WithoutLocation(Real.Value.StaticInitializers()).Should().Equal(new[]
-        {
-            // WeaponDamageScales reads Item 11 times; the read moves to first use when the migrations are converted to instance services.
-            "SWLOR.Game.Server.Feature.MigrationDefinition.SerializedItemWeaponDamageTypeMigration: a static initializer of SWLOR.Game.Server.Feature.MigrationDefinition.SerializedItemWeaponDamageTypeMigration reads a service",
-        });
+        WithoutLocation(Real.Value.StaticInitializers()).Should().BeEmpty();
     }
 
     [Test]

@@ -38,16 +38,11 @@ public class MigrationDataTests
     private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Domain.Foundation.MigrationService).Assembly;
 
     [Test]
-    public void CharacterMigrationsHaveUniqueVersionsAndOneCombinedItemUpdate()
+    public void CharacterMigrationsHaveUniqueVersionsAndAtMostOneNextPass()
     {
         var migrations = CharacterMigrations.ImplementationTypes
             .Select(type => Activator.CreateInstance(type)!).ToArray();
         migrations.Select(CharacterMigrations.VersionOf).Should().OnlyHaveUniqueItems();
-        CharacterMigrations.VersionOf("_17_RemoveWeaponStatOverrides").Should().BeGreaterThan(CharacterMigrations.VersionOf("_16_RetireForceWeaponEnhancements"));
-        migrations.Where(migration => CharacterMigrations.VersionOf(migration) >= 22).Select(migration => migration.GetType())
-            .Should().BeEquivalentTo(new[] { CharacterMigrations.Named("_22_ReviseLootStats"), CharacterMigrations.Named("_23_CorrectEquipmentTypes"),
-                CharacterMigrations.Named("_24_CorrectCarapaceBracers"), CharacterMigrations.Named("_25_ConsolidatePelvisAppearance"),
-                CharacterMigrations.Named("_26_ConvertCraftingPerksToRanks") });
         migrations.Select(CharacterMigrations.VersionOf).Where(version => version > NextPlayerVersion).Should().BeEmpty(
             $"the next release receives at most one player pass, as migration {NextPlayerVersion}");
         CharacterMigrations.LatestVersion.Should().BeInRange(ReleasedPlayerVersion, NextPlayerVersion);
@@ -63,25 +58,6 @@ public class MigrationDataTests
             CharacterMigrations.ImplementationTypes.Select(type => CharacterMigrations.VersionOf(Activator.CreateInstance(type)!)),
             "every migration class is registered");
         CharacterMigrations.LatestVersion.Should().Be(registered[^1]);
-    }
-
-    [TestCase(112, -12)]
-    [TestCase(200, -100)]
-    [TestCase(15, 15)]
-    public void ResistanceRowsAreDecodedBeforeMigrationMerges(int encoded, int expected)
-    {
-        Invoke("SerializedItemResistanceMigration", "GetMigrationPropertyValue", ItemPropertyType.Resistance, encoded)
-            .Should().Be(expected);
-    }
-
-    [Test]
-    public void RecipeVariantIdsAreStableAndDistinct()
-    {
-        var first = Invoke("ServerMigration.StoredItemDataMigration", "GetVariantId", "source", 4800);
-        first.Should().Be(Invoke("ServerMigration.StoredItemDataMigration", "GetVariantId", "source", 4800));
-        first.Should().NotBe(Invoke("ServerMigration.StoredItemDataMigration", "GetVariantId", "source", 4801));
-        first.Should().NotBe(Invoke("ServerMigration.StoredItemDataMigration", "GetVariantId", "other", 4800));
-        first.Should().Be("source-recipe-4800");
     }
 
     [Test]

@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly ICombatFeedbackService _feedback;
         private readonly ICombatRepeatedTargetService _repeatedTarget;
         private readonly ICombatHitEffectsService _hitEffects;
-        private readonly ICombatDamageTakenService _damageTaken;
+        private readonly ICombatDamageReflectionService _damageReflection;
         private readonly ICombatAbilityBonusService _abilityBonus;
 
         public AbilityDamageDeliveryService(
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             ICombatFeedbackService feedback,
             ICombatRepeatedTargetService repeatedTarget,
             ICombatHitEffectsService hitEffects,
-            ICombatDamageTakenService damageTaken,
+            ICombatDamageReflectionService damageReflection,
             ICombatAbilityBonusService abilityBonus)
         {
             _statusEffectCombatEvents = statusEffectCombatEvents;
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _feedback = feedback;
             _repeatedTarget = repeatedTarget;
             _hitEffects = hitEffects;
-            _damageTaken = damageTaken;
+            _damageReflection = damageReflection;
             _abilityBonus = abilityBonus;
         }
 
@@ -159,6 +159,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
         protected virtual void ApplyDamageDealtEffects(uint attacker, uint defender, int damage, SkillType skillType, CombatDamageType damageType, bool isAbilityDamage, bool allowsHitProcs) =>
             _hitEffects.ApplyDamageDealtEffects(attacker, defender, damage, skillType, damageType, isAbilityDamage: isAbilityDamage, allowsHitProcs: allowsHitProcs);
 
-        protected virtual void ApplyDamageReflectionEffects(uint attacker, uint defender, int damage, CombatDamageType damageType) => _damageTaken.ApplyDamageReflectionEffects(attacker, defender, damage, damageType);
+        protected virtual void ApplyDamageReflectionEffects(uint attacker, uint defender, int damage, CombatDamageType damageType) => _damageReflection.ApplyDamageReflectionEffects(attacker, defender, damage, damageType);
     }
 }

@@ -13,7 +13,7 @@ internal static unsafe class RecordingSinks
 
     public static NativeSinkSet Create() => new(
         new Chat(), new Json(), new Recorder(), new DamageRoll(), new LegacyItems(), new Neck(), new Attack(), new Creation(),
-        new Checkpoint(), new PlayerList(), new Slots(), new Quickbar(), new AttackRoll(), new Inventory(), new Drive(),
+        new Checkpoint(), new PlayerList(), new Slots(), new ProgFxCoat(), new Quickbar(), new AttackRoll(), new Inventory(), new Drive(),
         new Vitality(), new Animation());
 
     private sealed class Chat : IChatPortraitSpeakersSink
@@ -31,6 +31,39 @@ internal static unsafe class RecordingSinks
         {
             CallLog.Sink(nameof(ReadJson), original, 2, (long)result, (long)message);
             return (void*)Result;
+        }
+
+        public int HandleNuiEvent(void* message, void* player, byte minor, nint original)
+        {
+            CallLog.Sink(nameof(HandleNuiEvent), original, 3, (long)message, (long)player, minor);
+            return Result;
+        }
+    }
+
+    private sealed class ProgFxCoat : IProgFxCoatEffectHooksSink
+    {
+        public int ApplyVisualEffect(void* effectListHandler, void* pObject, void* pEffect, int bLoadingGame, nint original)
+        {
+            CallLog.Sink(nameof(ApplyVisualEffect), original, 4, (long)effectListHandler, (long)pObject, (long)pEffect, bLoadingGame);
+            return Result;
+        }
+
+        public int RemoveVisualEffect(void* effectListHandler, void* pObject, void* pEffect, nint original)
+        {
+            CallLog.Sink(nameof(RemoveVisualEffect), original, 3, (long)effectListHandler, (long)pObject, (long)pEffect);
+            return Result;
+        }
+
+        public int ApplyPetrify(void* effectListHandler, void* pObject, void* pEffect, int bLoadingGame, nint original)
+        {
+            CallLog.Sink(nameof(ApplyPetrify), original, 4, (long)effectListHandler, (long)pObject, (long)pEffect, bLoadingGame);
+            return Result;
+        }
+
+        public int RemovePetrify(void* effectListHandler, void* pObject, void* pEffect, nint original)
+        {
+            CallLog.Sink(nameof(RemovePetrify), original, 3, (long)effectListHandler, (long)pObject, (long)pEffect);
+            return Result;
         }
     }
 

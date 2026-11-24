@@ -39,7 +39,7 @@ public class EnmityTranscriptTests
         .Concat(new[]
         {
             typeof(IAIService), typeof(IActivityService), typeof(IHoloComService), typeof(ICompanionLookup), typeof(IStealthService),
-            typeof(ICompanionControlService), typeof(ICombatQueriesService)
+            typeof(ICompanionTargetAuthorityService), typeof(ICombatQueriesService)
         })
         .ToArray();
 
@@ -68,9 +68,15 @@ public class EnmityTranscriptTests
         // The attacker is the one player; the enemies are creatures. Everything is in the one area and in line of sight.
         bench.Engine.SetReturnHandler("GetIsPC", args => (uint)args[0]! == Attacker);
         bench.Engine.SetReturnHandler("LineOfSightObject", _ => true);
+        // The creature AI's aggro rules read the engine: nobody is inside an aggro aura unless a scene says so (the stale proximity check
+        // is the only caller of the aggro range), and a creature is leash-evading while the scene sets the flag.
+        var leashing = false;
+        bench.Engine.SetReturnHandler("GetLocalBool", _ => leashing);
+        bench.Engine.SetReturnHandler("GetDistanceBetween",
+            _ => new System.Diagnostics.StackTrace().GetFrames().Any(frame => frame.GetMethod()?.Name == "ShouldRemoveStaleProximityTarget") ? 20f : 3.0f);
         bench.Engine.SetReturnHandler("StringToObject", args => uint.TryParse((string)args[0]!, out var id) ? id : 0x7F000000u);
         bench.Events.SetReturnHandler("GetEventData", args => eventData.GetValueOrDefault((string)args[0]!, string.Empty));
-        bench.Leaf<ICompanionControlService>().Script("CanIssueAttackCommand", _ => true);
+        bench.Leaf<ICompanionTargetAuthorityService>().Script("CanIssueAttackCommand", _ => true);
         bench.SetStat(Attacker, StatType.DamageEnmityPercentAdjustment, 25);
         bench.SetStat(Other, StatType.DamageEnmityPercentAdjustment, -30);
 
@@ -268,10 +274,10 @@ public class EnmityTranscriptTests
         });
         Scene("an enemy that is already leashing gains no enmity", () =>
         {
-            aiLeaf.Script("IsLeashEvading", _ => true);
+            leashing = true;
             enmity.ModifyEnmity(Other, Defender, 70);
             enmity.TryTaunt(Other, Defender, 50);
-            aiLeaf.Script("IsLeashEvading", _ => false);
+            leashing = false;
         });
 
         // A reload carries the three tables through the reload carrier under their field keys and reads them into a new build's instance.

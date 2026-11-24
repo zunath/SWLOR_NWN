@@ -1679,7 +1679,7 @@ public class GeneratedWeaponPerkBehaviorTests
         reportCombatEntrySource.Should().Contain("ReportFirstStrikeCombatEntry(creature, now);");
         combatSource.Should().Contain("TrackHostileDefensiveCombatEntryActivity(defender, attacker);");
         combatSource.Should().Contain("TrackHostileDefensiveCombatEntryActivity(creature, attacker);");
-        nativeAttackSource.Should().Contain("GameServices.CombatDamageTaken.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);");
+        nativeAttackSource.Should().Contain("GameServices.CombatDamageTakenEffects.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);");
         nativeAttackSource.Should().Contain("var wasSuccessfulBeforeDefensiveEffects = IsSuccessfulAttackResult(");
         nativeAttackSource.Should().Contain("wasSuccessfulBeforeDefensiveEffects &&");
         var defensiveEffectsIndex = nativeAttackSource.IndexOf(
@@ -1687,7 +1687,7 @@ public class GeneratedWeaponPerkBehaviorTests
             StringComparison.Ordinal);
         defensiveEffectsIndex.Should().BeGreaterThan(-1);
         nativeAttackSource.IndexOf(
-                "GameServices.CombatDamageTaken.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);",
+                "GameServices.CombatDamageTakenEffects.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);",
                 defensiveEffectsIndex,
                 StringComparison.Ordinal)
             .Should().BeGreaterThan(defensiveEffectsIndex,
@@ -1880,7 +1880,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusSourceContains(root, "GuardedStatusEffect.cs", "PlayerName.GetColoredDisplayName(guarded, source)");
         AssertStatusSourceContains(root, "GuardedStatusEffect.cs", "PlayerName.GetColoredDisplayName(source, guarded)");
         AssertStatusSourceContains(root, "GuardedStatusEffect.cs", "TemporaryStatModifier.GetStatAdjustment(source, StatType.Guard, GuardShareGroup)");
-        AssertStatusSourceContains(root, "GuardedStatusEffect.cs", "GameServices.CombatDamageTaken.ApplyLowHPGuardEffectFromProtectedTarget(Source, defender, damage)");
+        AssertStatusSourceContains(root, "GuardedStatusEffect.cs", "GameServices.CombatDamageTakenEffects.ApplyLowHPGuardEffectFromProtectedTarget(Source, defender, damage)");
 
         var combatSource = CombatSource.Read();
         var statusEffectSource = StatusEffectSource.Read();

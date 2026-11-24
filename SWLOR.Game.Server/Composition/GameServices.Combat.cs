@@ -57,6 +57,12 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The damage taken part of combat, a part of combat.</summary>
         public static ICombatDamageTakenService CombatDamageTaken => FacadeAccessor.Resolve<ICombatDamageTakenService>();
 
+        /// <summary>The damage taken handler, low HP, melee damage taken, avoided attack and deflection effects, a part of combat.</summary>
+        public static ICombatDamageTakenEffectsService CombatDamageTakenEffects => FacadeAccessor.Resolve<ICombatDamageTakenEffectsService>();
+
+        /// <summary>Damage reflection, the physical-to-Force conversion and Deflecting Return, a part of combat.</summary>
+        public static ICombatDamageReflectionService CombatDamageReflection => FacadeAccessor.Resolve<ICombatDamageReflectionService>();
+
         /// <summary>The random damage roll, a part of combat.</summary>
         public static ICombatDamageRollService CombatDamageRoll => FacadeAccessor.Resolve<ICombatDamageRollService>();
 
@@ -89,6 +95,9 @@ namespace SWLOR.Game.Server.Composition
         /// <c>CombatRecorder.IsRecording</c> first, through this property, which reads the same per-service slot the facade read.
         /// </summary>
         public static ICombatRecorderService CombatRecorder => FacadeAccessor.Resolve<ICombatRecorderService>();
+
+        /// <summary>The state and event queue of a combat recording, which the native damage and heal hooks open and close their scopes on.</summary>
+        public static ICombatRecordSession CombatRecordSession => FacadeAccessor.Resolve<ICombatRecordSession>();
 
         /// <summary>The resource bookkeeping of combat, a part of combat.</summary>
         public static ICombatResourcesService CombatResources => FacadeAccessor.Resolve<ICombatResourcesService>();

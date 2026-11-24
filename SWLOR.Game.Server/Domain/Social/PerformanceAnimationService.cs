@@ -27,12 +27,18 @@ namespace SWLOR.Game.Server.Domain.Social
         // Every performance clip plays on the looping carrier, so the routine loop repeats in place for minutes at a time.
         public void StartLoopingAnimation(PerformanceSession session)
         {
-            var clip = PerformanceAnimations.FitToBody(
-                PerformanceAnimations.GetLoopClip(session.Kind, session.InstrumentFamily, session.Routine),
-                GetAppearanceType(session.Performer), GetGender(session.Performer));
+            var clip = FitClip(session,
+                PerformanceAnimations.GetLoopClip(session.Kind, session.InstrumentFamily, session.Routine));
             session.AnimationToken = _namedAnimation.Play(session.Performer, clip, LoopPlaybackSeconds, holdMode: HoldMode(session));
             session.AnimationRenewUtc = UtcNow().AddSeconds(LoopRenewSeconds);
         }
+
+        // The instrument picks its own copies of the family's clips, then the body picks its own.
+        private static AnimationClip FitClip(PerformanceSession session, AnimationClip clip) =>
+            PerformanceAnimations.FitToBody(
+                PerformanceAnimations.FitToInstrument(clip, GetResRef(session.Instrument),
+                    GetAppearanceType(session.Performer), GetGender(session.Performer)),
+                GetAppearanceType(session.Performer), GetGender(session.Performer));
 
         private NamedAnimationHold HoldMode(PerformanceSession session) =>
             PerformanceAnimations.GetHoldMode(session.Kind, session.InstrumentFamily);
@@ -44,7 +50,7 @@ namespace SWLOR.Game.Server.Domain.Social
         public void PlayThenLoop(PerformanceSession session, AnimationClip clip, NamedAnimationHold holdMode)
         {
             var player = session.Performer;
-            clip = PerformanceAnimations.FitToBody(clip, GetAppearanceType(player), GetGender(player));
+            clip = FitClip(session, clip);
             var token = _namedAnimation.Play(player, clip, holdMode: holdMode);
             session.AnimationToken = token;
             session.AnimationRenewUtc = UtcNow().AddSeconds(clip.Duration + AccentRecoverySeconds);

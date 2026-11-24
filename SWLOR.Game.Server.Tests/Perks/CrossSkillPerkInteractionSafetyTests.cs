@@ -106,8 +106,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
             .Should().Be((int)StatusEffectCategory.Control,
                 "owning Charged Blows and Skull Rattle must not turn two Control selectors into Bleeding");
 
-        var perkSource = Read(root, "SWLOR.Game.Server", "Domain", "Character", "PerkService.cs");
-        var getStatBonus = ExtractMethod(perkSource, "public int GetStatBonus(uint creature, StatType stat)");
+        var getStatBonus = CharacterCompanionsSource.Perk.Member("GetStatBonus");
         getStatBonus.Should().Contain("AggregateStatAdjustment(stat, bonus, statBonus.Calculate(creature))");
 
         var combat = CombatSource.Read();
@@ -236,8 +235,9 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         var reflectionDispatchFiles = Directory
             .EnumerateFiles(Path.Combine(root.FullName, "SWLOR.Game.Server"), "*.cs", SearchOption.AllDirectories)
             .Where(path => !CombatSource.IsCombatFile(path))
-            .Where(path => File.ReadAllText(path) is var text && (text.Contains("GameServices.CombatDamageTaken.ApplyDamageReflectionEffects(", StringComparison.Ordinal) ||
-                                                                  text.Contains("_damageTaken.ApplyDamageReflectionEffects(", StringComparison.Ordinal)))
+            .Where(path => File.ReadAllText(path) is var text && (text.Contains("GameServices.CombatDamageReflection.ApplyDamageReflectionEffects(", StringComparison.Ordinal) ||
+                                                                  text.Contains("_damageTaken.ApplyDamageReflectionEffects(", StringComparison.Ordinal) ||
+                                                                  text.Contains("_damageReflection.ApplyDamageReflectionEffects(", StringComparison.Ordinal)))
             // The part files of AbilityService count as the one ability source they were split from.
             .Select(path => AbilitySource.IsAbilityFile(path) ? "AbilityService" : Path.GetRelativePath(root.FullName, path).Replace('\\', '/'))
             .Distinct()

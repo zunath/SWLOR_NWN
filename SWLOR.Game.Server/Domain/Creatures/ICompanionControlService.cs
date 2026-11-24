@@ -1,25 +1,14 @@
-using SWLOR.Game.Server.Domain.Abilities;
-using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Creatures;
-
 namespace SWLOR.Game.Server.Domain.Creatures
 {
     /// <summary>
-    /// Companion control for a player's droid or beast: mode, engagement and hostile ability authorization.
+    /// Companion control for a player's droid or beast: the orders, the owner events and the combat round. The registered
+    /// companions, the mode position and the authorized target are in the store, positioning and target authority parts.
     /// </summary>
     public interface ICompanionControlService
     {
-        bool IsRegisteredCompanion(uint creature);
-
-        bool IsControlledCompanion(uint creature);
-
         void Initialize(uint companion, bool preserveActionQueue = false);
 
         void Clear(uint companion);
-
-        CompanionMode GetMode(uint companion);
-
-        bool AreAbilitiesEnabled(uint companion);
 
         bool HandleConversation(uint companion);
 
@@ -38,14 +27,6 @@ namespace SWLOR.Game.Server.Domain.Creatures
         void ResumeModePosition(uint companion);
 
         bool TryProcessPendingDefensiveReaction(uint companion);
-
-        uint PeekAuthorizedTarget(uint companion);
-
-        uint ResolveHostileAbilityTarget(uint companion, AbilityDetail ability, uint authorizedTarget, uint selectedTarget);
-
-        bool IsHostileAbilityTargetAuthorized(uint companion, AbilityDetail ability, uint selectedTarget);
-
-        bool CanIssueAttackCommand(uint companion, uint target);
 
         void ResetOwnerCompanionToFollow(uint master);
 

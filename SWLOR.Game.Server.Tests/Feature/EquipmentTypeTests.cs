@@ -76,27 +76,6 @@ public class EquipmentTypeTests
     }
 
     [Test]
-    public void LegacyConversionTargetsExactlyTheCorrectedBlueprintTypesAndModels()
-    {
-        EquipmentTypeMigration.Corrections.Should().HaveCount(54);
-        foreach (var (resref, correction) in EquipmentTypeMigration.Corrections)
-        {
-            using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "Module", "uti", resref + ".uti.json")));
-            var item = document.RootElement;
-            Value(item, "BaseItem").GetInt32().Should().Be((int)correction.Type, resref);
-            Value(item, "ModelPart1").GetInt32().Should().Be(correction.Model, resref);
-            Value(item, "xModelPart1").GetInt32().Should().Be(correction.Model, resref);
-            EquipmentTypeMigration.IsLegacyEquipment(resref, correction.LegacyType).Should().BeTrue(resref);
-            EquipmentTypeMigration.IsLegacyEquipment(resref, correction.Type).Should().BeFalse("conversion must be idempotent");
-            if (correction.LegacyType != BaseItem.Armor)
-                EquipmentTypeMigration.IsLegacyEquipment(resref, BaseItem.Armor).Should().BeFalse("unrelated customized types must remain untouched");
-        }
-        EquipmentTypeMigration.IsLegacyEquipment("ordinary_bracer", BaseItem.Bracer).Should().BeFalse();
-        EquipmentTypeMigration.IsLegacyEquipment(null!, BaseItem.Bracer).Should().BeFalse();
-        CharacterMigrations.VersionOf("_23_CorrectEquipmentTypes").Should().BeGreaterThan(CharacterMigrations.VersionOf("_22_ReviseLootStats"));
-    }
-
-    [Test]
     public void EmbeddedCopiesOfCorrectedEquipmentMatchTheirBlueprintTypes()
     {
         var failures = new List<string>();

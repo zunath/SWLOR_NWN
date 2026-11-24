@@ -180,6 +180,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatRepeatedTargetService, CombatRepeatedTargetService>();
             services.AddSingleton<ICombatDeflectionReactionService, CombatDeflectionReactionService>();
             services.AddSingleton<ICombatDamageTakenService, CombatDamageTakenService>();
+            services.AddSingleton<ICombatDamageTakenEffectsService, CombatDamageTakenEffectsService>();
+            services.AddSingleton<ICombatDamageReflectionService, CombatDamageReflectionService>();
             services.AddSingleton<ICombatDamageRollService, CombatDamageRollService>();
             services.AddSingleton<ICombatDefenseMemoryService, CombatDefenseMemoryService>();
             services.AddSingleton<ICombatFeedbackService, CombatFeedbackService>();
@@ -188,11 +190,12 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatPointService, CombatPointService>();
             services.AddSingleton<ICombatQueriesService, CombatQueriesService>();
             services.AddSingleton<ICombatRatingService, CombatRatingService>();
+            services.AddSingleton<ICombatRecordSession, CombatRecordSessionCore>();
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
             // The same instance, seen through the interfaces the lower domains and the platform own.
             services.AddSingleton<ICombatRecording>(provider => provider.GetRequiredService<ICombatRecorderService>());
             services.AddSingleton<ICharacterRecording>(provider => provider.GetRequiredService<ICombatRecorderService>());
-            services.AddSingleton<ICombatRecordingState>(provider => provider.GetRequiredService<ICombatRecorderService>());
+            services.AddSingleton<ICombatRecordingState>(provider => provider.GetRequiredService<ICombatRecordSession>());
             services.AddSingleton<IShutdownStep>(provider => provider.GetRequiredService<ICombatRecorderService>());
             services.AddSingleton<ICombatResourcesService, CombatResourcesService>();
             services.AddSingleton<ICombatService, CombatService>();
@@ -242,6 +245,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IDroidEquipmentDiagnosticsService, DroidEquipmentDiagnosticsService>();
             services.AddSingleton<IIncubationFieldNoteService, IncubationFieldNoteService>();
             services.AddSingleton<ITintMapDroidOverrideService, TintMapDroidOverrideService>();
+            services.AddSingleton<IProgFxCoatService, ProgFxCoatService>();
             services.AddSingleton<ITintMapApplyService, TintMapApplyService>();
             services.AddSingleton<ITintMapItemColorService, TintMapItemColorService>();
             services.AddSingleton<ITintMapCarryService, TintMapCarryService>();
@@ -268,6 +272,11 @@ namespace SWLOR.Game.Server.Composition
             // Creatures
             services.AddSingleton<IAIService, AIService>();
             services.AddSingleton<IAIProfileDescription>(provider => provider.GetRequiredService<IAIService>());
+            services.AddSingleton<ICombatLeash>(provider => provider.GetRequiredService<IAIService>());
+            services.AddSingleton<ICompanionControlStoreService, CompanionControlStoreService>();
+            services.AddSingleton<ICompanionPositioningService, CompanionPositioningService>();
+            services.AddSingleton<ICompanionTargetAuthorityService, CompanionTargetAuthorityService>();
+            services.AddSingleton<ICompanionTargetQuery>(provider => provider.GetRequiredService<ICompanionTargetAuthorityService>());
             services.AddSingleton<ICompanionControlService, CompanionControlService>();
             services.AddSingleton<INPCGroupService, NPCGroupService>();
             services.AddSingleton<ISpawnRegistryService, SpawnRegistryService>();

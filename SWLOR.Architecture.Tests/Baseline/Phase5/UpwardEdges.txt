@@ -26,16 +26,12 @@ SWLOR.Game.Server/Domain/Character/SkillService.cs: Character -> Combat | 3
 SWLOR.Game.Server/Domain/Combat/CombatAbilityCostEffectsService.cs: Combat -> Abilities | 1
 SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs: Combat -> Social | 3
 SWLOR.Game.Server/Domain/Combat/CombatAbilityOffenseEffectsService.cs: Combat -> Abilities | 1
-SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs: Combat -> Quests | 3
-SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs: Combat -> Social | 3
 SWLOR.Game.Server/Domain/Combat/CombatResourcesService.cs: Combat -> Abilities | 1
 SWLOR.Game.Server/Domain/Combat/EnmityService.cs: Combat -> Social | 3
 SWLOR.Game.Server/Domain/Combat/EnmityService.cs: Combat -> World | 3
 SWLOR.Game.Server/Domain/Combat/RecastService.cs: Combat -> Abilities | 4
 SWLOR.Game.Server/Domain/Combat/ResistanceService.cs: Combat -> Abilities | 3
-SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> Character | 3
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> UI | 6
-SWLOR.Game.Server/Domain/Foundation/PlayerFeedbackService.cs: Foundation -> Character | 3
 SWLOR.Game.Server/Domain/Items/EquipmentPredicates.cs: Items -> Combat | 3
 SWLOR.Game.Server/Domain/Items/ItemService.cs: Items -> Combat | 6
 SWLOR.Game.Server/Domain/Items/ItemService.cs: Items -> Crafting | 3

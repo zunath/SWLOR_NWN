@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// The module step as its traits and Module Bonus make it: a copy with the percent stats applied, or the step
         /// itself when the module has neither. Each Module Bonus point (<paramref name="moduleBonus"/>, after Yield
         /// traits, see <see cref="ModuleBonus"/>) adds <see cref="ModuleBonusPercentPerPoint"/>% to every number a percent
-        /// trait changes, on top of the traits' own percents; capacitor use is left alone. Evasion, Speed, Yield and
+        /// trait changes, on top of the traits' own percents, and to the module's own Evasion; capacitor use and penalties are left alone. Evasion, Speed, Yield and
         /// RareFind are not module numbers and are read separately.
         /// </summary>
         public static ShipModuleStep Apply(ShipModuleStep step, IReadOnlyCollection<ShipComponentTraitType> traits, int moduleBonus = 0)
@@ -112,6 +112,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
             s.CapacitorRestore = Scale(step.CapacitorRestore, capacitor);
             s.CapacitorRegen = Math.Round(step.CapacitorRegen * (100 + P(ShipTraitStat.CapacitorRegen)) / 100.0, 3);
             s.ModuleDefense = Scale(step.ModuleDefense, P(ShipTraitStat.Defense));
+            // A module's own Evasion takes the Module Bonus too (master added it to the Evasion modules); a penalty, such
+            // as plating's -4, is a drawback and is left alone. Evasion traits add to the ship instead.
+            s.ModuleEvasion = step.ModuleEvasion > 0 ? Scale(step.ModuleEvasion, bonus) : step.ModuleEvasion;
             s.ResistAll = Scale(step.ResistAll, resistance);
             s.ResistThermal = Scale(step.ResistThermal, resistance);
             s.ResistEM = Scale(step.ResistEM, resistance);

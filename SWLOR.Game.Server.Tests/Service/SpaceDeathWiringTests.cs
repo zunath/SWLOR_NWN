@@ -25,6 +25,23 @@ public class SpaceDeathWiringTests
     }
 
     [Test]
+    public void DeferredShipDeaths_DestroyTheShipOnlyOnce()
+    {
+        // A shot's main hit and its ExtraDamage rider can each queue a death before either runs; the first ejects the
+        // pilot alive, so a later one must not kill the revived player on the ground.
+        var space = ReadServerSource("Service", "Space.cs");
+        var helper = space.Substring(space.IndexOf("private static void DestroyShipIfStillWrecked(uint target)", StringComparison.Ordinal));
+        helper = helper.Substring(0, helper.IndexOf("\n        }\n", StringComparison.Ordinal));
+
+        helper.Should().Contain("if (!GetIsObjectValid(target) || GetIsDead(target))");
+        helper.Should().Contain("if (!IsPlayerInSpaceMode(target))");
+        helper.Should().Contain("else if (GetShipStatus(target) is { Hull: > 0 })");
+        space.Split("DestroyShipIfStillWrecked(target)").Length.Should().Be(3, "both ship damage paths defer through the check");
+        space.Should().Contain("AssignCommand(OBJECT_SELF, () => DestroyShipIfStillWrecked(creature));");
+        space.Should().NotContain("ApplyEffectToObject(DurationType.Instant, EffectDeath(), target));");
+    }
+
+    [Test]
     public void EnemyFinders_UseTheShipEnemyTest()
     {
         ReadServerSource("Service", "SpaceThreat.cs").Should().Contain("!IsShipEnemy(source, nearby)");

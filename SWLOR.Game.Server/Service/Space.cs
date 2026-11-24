@@ -1906,10 +1906,34 @@ namespace SWLOR.Game.Server.Service
 
             if (shipStatus.Hull <= 0)
             {
-                AssignCommand(OBJECT_SELF, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), creature));
+                AssignCommand(OBJECT_SELF, () => DestroyShipIfStillWrecked(creature));
             }
 
             ExecuteScript("pc_hull_adjusted", creature);
+        }
+
+        /// <summary>
+        /// Kills a ship whose hull reached 0, from a deferred callback. Several lethal hits can resolve before their
+        /// callbacks run (a shot's main hit and its ExtraDamage rider each queue one), and the first destroys the ship
+        /// and ejects its pilot alive. So each callback checks the ship is still there: a dead creature, a player no
+        /// longer in space mode (already ejected) or an NPC ship with hull left is left alone.
+        /// </summary>
+        private static void DestroyShipIfStillWrecked(uint target)
+        {
+            if (!GetIsObjectValid(target) || GetIsDead(target))
+                return;
+
+            if (GetIsPC(target))
+            {
+                if (!IsPlayerInSpaceMode(target))
+                    return;
+            }
+            else if (GetShipStatus(target) is { Hull: > 0 })
+            {
+                return;
+            }
+
+            ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
         }
 
         public static void RestoreCapacitor(uint creature, ShipStatus shipStatus, int amount)
@@ -2647,7 +2671,7 @@ namespace SWLOR.Game.Server.Service
                 // To work around this, put the death effect on a 0f delay.
                 DelayCommand(0f, () =>
                 {
-                    AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), target));
+                    AssignCommand(attacker, () => DestroyShipIfStillWrecked(target));
                 });
                 ClearCurrentTarget(attacker);
             }
@@ -2746,7 +2770,7 @@ namespace SWLOR.Game.Server.Service
             {
                 targetShipStatus.Shield = 0;
                 RecordShipKiller(target, attacker);
-                AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), target));
+                AssignCommand(attacker, () => DestroyShipIfStillWrecked(target));
                 ClearCurrentTarget(attacker);
             }
             else

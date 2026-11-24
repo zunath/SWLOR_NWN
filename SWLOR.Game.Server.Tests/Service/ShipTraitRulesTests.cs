@@ -135,6 +135,13 @@ public class ShipTraitRulesTests
         ShipTraitRules.Apply(hardener, null, 6).ResistAll.Should().Be(ShipTraitRules.Scale(hardener.ResistAll, 6));
         var bulwark = RevampModuleCatalog.Steps.Single(x => x.Tag == "sm_bulw_45");
         ShipTraitRules.Apply(bulwark, null, 5).AuraShieldPercent.Should().Be(21, "20% x 1.05");
+
+        var evasion = RevampModuleCatalog.Steps.Where(x => x.ModuleEvasion > 0).OrderByDescending(x => x.ModuleEvasion).First();
+        ShipTraitRules.Apply(evasion, null, 6).ModuleEvasion.Should().Be(ShipTraitRules.Scale(evasion.ModuleEvasion, 6));
+        var plating = RevampModuleCatalog.Steps.First(x => x.ModuleEvasion < 0);
+        ShipTraitRules.Apply(plating, null, 6).ModuleEvasion.Should().Be(plating.ModuleEvasion, "a penalty is not raised");
+        ShipTraitRules.Apply(evasion, new[] { ShipComponentTraitType.Focused }).ModuleEvasion
+            .Should().Be(evasion.ModuleEvasion, "Evasion traits add to the ship, not the module");
     }
 
     [Test]

@@ -264,8 +264,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                     // Clear the ship property's space position and update its last docked position with the new destination.
                     var dbPlayer = DB.Get<Player>(playerId);
-                    var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
-                    var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+                    var dbShip = string.IsNullOrEmpty(dbPlayer?.ActiveShipId) ? null : DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+                    var dbProperty = string.IsNullOrEmpty(dbShip?.PropertyId) ? null : DB.Get<WorldProperty>(dbShip.PropertyId);
+                    if (dbProperty == null)
+                    {
+                        SendMessageToPC(player, ColorToken.Red("Your active ship is no longer available for docking."));
+                        Close();
+                        return;
+                    }
+
                     dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
 
                     // Docking at an NPC starport will update the safety location to that dock.

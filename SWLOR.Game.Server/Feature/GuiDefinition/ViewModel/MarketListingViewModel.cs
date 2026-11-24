@@ -93,6 +93,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return dbPlayer?.MarketListingLimit > 0 ? dbPlayer.MarketListingLimit : Entity.Player.DefaultMarketListingLimit;
         }
 
+        private DBQuery<MarketItem> GetListingsQuery(string playerId)
+        {
+            var market = PlayerMarket.GetMarketRegion(_regionType);
+            return new DBQuery<MarketItem>()
+                .AddFieldSearch(nameof(MarketItem.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(MarketItem.MarketId), market.MarketId, false);
+        }
+
         private void LoadData()
         {
             var itemIconResrefs = new GuiBindingList<string>();
@@ -104,11 +112,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _itemIds.Clear();
             _itemPrices.Clear();
             var playerId = GetObjectUUID(Player);
-            var market = PlayerMarket.GetMarketRegion(_regionType);
-            var query = new DBQuery<MarketItem>()
-                .AddFieldSearch(nameof(MarketItem.PlayerId), playerId, false)
-                .AddFieldSearch(nameof(MarketItem.MarketId), market.MarketId, false)
-                .OrderBy(nameof(MarketItem.Name));
+            var query = GetListingsQuery(playerId).OrderBy(nameof(MarketItem.Name));
             var records = DB.Search(query);
             var count = 0;
 
@@ -252,6 +256,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RemoveListing(int index)
         {
+            if (index < 0 || index >= _itemIds.Count)
+                return;
+
             ClosePriceWindow();
             var itemId = _itemIds[index];
             var isShip = !string.IsNullOrWhiteSpace(DB.Get<MarketItem>(itemId)?.ShipId);
@@ -263,8 +270,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var dbListing = DB.Get<MarketItem>(itemId);
 
-                // The item was either bought or removed already.
-                // Remove it from the client's view, but don't take any action on the server.
                 // A ship listing (plan section 7) holds no item: removing it just unlocks the ship.
                 if (dbListing != null && !string.IsNullOrWhiteSpace(dbListing.ShipId))
                 {
@@ -283,18 +288,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 else
                 {
-                    FloatingTextStringOnCreature("Your listing for '' has been removed or sold already.", Player, false);
+                    FloatingTextStringOnCreature("This listing has already been removed or sold.", Player, false);
                 }
 
-                _itemIds.RemoveAt(index);
-                ItemIconResrefs.RemoveAt(index);
-                ItemNames.RemoveAt(index);
-                _itemPrices.RemoveAt(index);
-                ItemPriceNames.RemoveAt(index);
-                ItemListed.RemoveAt(index);
-                ListingCheckboxEnabled.RemoveAt(index);
+                var currentIndex = _itemIds.IndexOf(itemId);
+                if (currentIndex >= 0)
+                {
+                    _itemIds.RemoveAt(currentIndex);
+                    ItemIconResrefs.RemoveAt(currentIndex);
+                    ItemNames.RemoveAt(currentIndex);
+                    _itemPrices.RemoveAt(currentIndex);
+                    ItemPriceNames.RemoveAt(currentIndex);
+                    ItemListed.RemoveAt(currentIndex);
+                    ListingCheckboxEnabled.RemoveAt(currentIndex);
+                }
 
-                _itemCount--;
+                _itemCount = (int)DB.SearchCount(GetListingsQuery(GetObjectUUID(Player)));
                 UpdateItemCount();
             });
         }

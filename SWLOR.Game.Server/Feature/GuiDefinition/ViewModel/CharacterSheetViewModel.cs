@@ -613,8 +613,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void UpgradeAttribute(AbilityType ability, string abilityName)
         {
+            if (!IsPlayerMode || !GetIsObjectValid(_target))
+                return;
+
             var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
             var isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
             var promptMessage = isRacial
                 ? "WARNING: You are about to spend your one-time racial stat bonus. Once spent, this action can only be undone with a stat rebuild. Are you SURE you want to upgrade this stat?"
@@ -622,14 +628,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal(promptMessage, () =>
             {
+                if (!GetIsObjectValid(_target) || GetObjectUUID(_target) != playerId)
+                    return;
+
                 if (GetResRef(GetArea(_target)) == "char_migration")
                 {
                     FloatingTextStringOnCreature($"Stats cannot be upgraded in this area.", _target, false);
                     return;
                 }
 
-                playerId = GetObjectUUID(_target);
                 dbPlayer = DB.Get<Player>(playerId);
+                if (dbPlayer == null)
+                    return;
+
                 isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
                 var rawScore = CreaturePlugin.GetRawAbilityScore(_target, ability);
                 var purchasedScore = GetPurchasedAttributeScore(dbPlayer, ability);

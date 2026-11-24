@@ -264,6 +264,24 @@ public class DamageOverTimeStatusEffectTests
                     "splash hits must not re-enter GetDamageRoll or overwrite the original attack's damage source");
     }
 
+    [Test]
+    public void AutoAttackSplash_GivesItsDeferralAnOwnerBecauseNativeSwingsHaveNoObjectSelf()
+    {
+        var file = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var method = CSharpSyntaxTree.ParseText(File.ReadAllText(file)).GetRoot()
+            .DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.Text == "ApplyAutoAttackSplashEffects");
+        var delays = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Where(call => call.Expression.ToString() == "DelayCommand").ToArray();
+        delays.Should().NotBeEmpty();
+        // GetDamageRoll runs in a script context whose OBJECT_SELF is invalid. A bare DelayCommand
+        // there has no owner, NWNX refuses to queue it, and the splash silently never lands.
+        foreach (var delay in delays)
+            delay.Ancestors().OfType<InvocationExpressionSyntax>()
+                .Should().Contain(call => call.Expression.ToString() == "AssignCommand",
+                    "a real auto-attack must queue the splash on an object that exists");
+    }
+
     [TestCase("BleedStatusEffect.cs", "EffectDamage(damageAmount, CombatDamageType.Physical.GetNWScriptDamageType())")]
     [TestCase("FragmentationStatusEffect.cs", "EffectDamage(amount, CombatDamageType.Physical.GetNWScriptDamageType())")]
     [TestCase("DiseaseStatusEffect.cs", "EffectDamage(damage, CombatDamageType.Poison.GetNWScriptDamageType())")]

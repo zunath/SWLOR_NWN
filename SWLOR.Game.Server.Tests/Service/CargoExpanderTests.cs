@@ -71,6 +71,24 @@ public class CargoExpanderTests
     }
 
     [Test]
+    public void ModuleBonus_WidensAnExpandersShare()
+    {
+        var plain = ShipCargoRules.GetCapacity(480, new[] { "sm_cargo_45" });
+        var bonused = ShipCargoRules.GetCapacity(480, new[] { ("sm_cargo_45", 10) });
+        bonused.Should().BeGreaterThan(plain, "+10 Module Bonus widens the expander's share 10%");
+
+        // Taking off the bonused expander checks the bay without its larger share.
+        var fitted = new[] { ("sm_cargo_45", 10), ("sm_cargo_45", 0) };
+        var withoutBonused = ShipCargoRules.GetCapacity(480, new[] { ("sm_cargo_45", 0) });
+        ShipCargoRules.CanRemoveModule(480, fitted, ("sm_cargo_45", 10), withoutBonused).Should().BeTrue();
+        ShipCargoRules.CanRemoveModule(480, fitted, ("sm_cargo_45", 10), withoutBonused + 1).Should().BeFalse();
+
+        var status = new ShipStatus { Size = ShipSize.Small, SlotTags = new Dictionary<int, ShipSlotTag> { [11] = ShipSlotTag.Helm } };
+        status.LowPowerModules[1] = new ShipStatus.ShipStatusModule { ItemTag = "sm_cargo_45", ModuleBonus = 10 };
+        ShipCargoRules.GetCapacity(480, status).Should().Be(bonused, "a fitted expander's bonus reaches the bay");
+    }
+
+    [Test]
     public void OnlyHelmSlotExpanders_AddCargo()
     {
         // Low slots 11-13 on a hull with three Low slots, the last a station (Engineer) slot.
@@ -89,14 +107,16 @@ public class CargoExpanderTests
         RevampModuleCatalog.Steps.Where(x => x.Family is ShipModuleFamily.CargoExpander or ShipModuleFamily.SmugglingCompartment)
             .Should().OnlyContain(x => ShipCargoRules.IsHelmOnlyModule(x.Tag));
         ShipCargoRules.IsHelmOnlyModule("sm_laser_00").Should().BeFalse();
-        ReadServerSource("Service", "TradeOrbitRisk.cs").Should().Contain("return ShipCargoRules.GetHelmModuleTags(ship?.Status);",
-            "a compartment in an empty station slot gives no customs cut");
+        ReadServerSource("Service", "TradeOrbitRisk.cs").Should().Contain("return ShipCargoRules.GetHelmModules(ship?.Status);",
+            "a compartment in an empty station slot gives no customs cut, and a Helm one counts its Module Bonus");
 
         ReadServerSource("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs")
             .Should().Contain("if (ShipCargoRules.IsHelmOnlyModule(itemTag))")
             .And.Contain("SendMessageToPC(Player, \"Cargo Expanders and Smuggling Compartments fit Helm slots only.\");",
                 "a station slot refuses an expander")
-            .And.Contain("ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetHelmModuleTags(current.Status)");
+            .And.Contain("ShipCargoRules.CanRemoveModule(hullCargo, ShipCargoRules.GetHelmModules(current.Status).ToList(),")
+            .And.Contain("(fitted.ItemTag, ShipTraitRules.ModuleBonus(fitted)), Trade.GetUsedVolume(current)))",
+                "the removal check counts the expander's Module Bonus");
     }
 
     [Test]

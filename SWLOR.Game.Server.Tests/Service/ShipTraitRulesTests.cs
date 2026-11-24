@@ -145,6 +145,33 @@ public class ShipTraitRulesTests
     }
 
     [Test]
+    public void ModuleBonus_ReachesEveryFamilysOwnNumbers()
+    {
+        ShipModuleStep Top(Func<ShipModuleStep, int> field) =>
+            RevampModuleCatalog.Steps.Where(x => field(x) != 0).OrderByDescending(x => Math.Abs(field(x))).First();
+
+        // Every number a family runs on grows 1% a point, so no family wastes a crafted Module Bonus.
+        foreach (var (name, field) in new (string, Func<ShipModuleStep, int>)[]
+                 {
+                     ("Attack", x => x.Attack), ("WebPercent", x => x.WebPercent), ("InterdictRange", x => x.InterdictRange),
+                     ("TargetAccuracy", x => x.TargetAccuracy), ("PaintPercent", x => x.PaintPercent),
+                     ("AfterburnerPercent", x => x.AfterburnerPercent), ("ScanStrength", x => x.ScanStrength),
+                     ("SweepRange", x => x.SweepRange), ("ScanReduction", x => x.ScanReduction), ("CargoPercent", x => x.CargoPercent),
+                 })
+        {
+            var step = Top(field);
+            field(ShipTraitRules.Apply(step, null, 10)).Should().Be(ShipTraitRules.Scale(field(step), 10), name);
+        }
+
+        var jammer = Top(x => x.TargetAccuracy);
+        ShipTraitRules.Apply(jammer, null, 10).TargetAccuracy.Should().BeLessThan(jammer.TargetAccuracy, "a stronger jam takes more Accuracy");
+        var cloak = Top(x => x.RevealRange);
+        ShipTraitRules.Apply(cloak, null, 10).RevealRange.Should().Be(ShipTraitRules.Scale(cloak.RevealRange, -10), "a cloak is seen from closer");
+        var expander = RevampModuleCatalog.Steps.First(x => x.SpeedPercent < 0);
+        ShipTraitRules.Apply(expander, null, 10).SpeedPercent.Should().Be(expander.SpeedPercent, "a speed penalty is not raised");
+    }
+
+    [Test]
     public void ModuleBonus_AddsToTheTraitsPercents()
     {
         var laser = Laser(45);

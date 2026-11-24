@@ -51,11 +51,11 @@ namespace SWLOR.Game.Server.Service
             return GetIsObjectValid(player) && GetArea(player) == area && Space.IsPlayerInSpaceMode(player) && Space.IsShipInSpace(player);
         }
 
-        /// <summary>The module tags fitted to a ship, in every row.</summary>
-        private static IEnumerable<string> GetFittedModuleTags(PlayerShip ship)
+        /// <summary>The modules fitted to a ship's Helm slots, with their Module Bonus.</summary>
+        private static IEnumerable<(string Tag, int ModuleBonus)> GetFittedModuleTags(PlayerShip ship)
         {
             // A Smuggling Compartment works from a Helm slot only, as a Cargo Expander does (ShipCargoRules).
-            return ShipCargoRules.GetHelmModuleTags(ship?.Status);
+            return ShipCargoRules.GetHelmModules(ship?.Status);
         }
 
         /// <summary>

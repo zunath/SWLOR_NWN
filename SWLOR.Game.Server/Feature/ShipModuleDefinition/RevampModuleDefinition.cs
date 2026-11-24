@@ -429,7 +429,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         private void Interdictor(ShipModuleStep step)
         {
             _builder
-                .MaxDistance((_, status, _, _, _) => Space.GetInterdictorRange(status, step.InterdictRange))
+                .MaxDistance((_, status, _, _, moduleBonus) =>
+                    Space.GetInterdictorRange(status, ShipTraitRules.Apply(step, null, moduleBonus).InterdictRange))
                 .ValidTargetType(ObjectType.Creature)
                 .ValidationAction((activator, _, target, targetStatus, _) => Space.HostileElectronicWarfareError(activator, target, targetStatus))
                 .ActivatedAction((activator, _, target, targetStatus, _) =>

@@ -296,9 +296,10 @@ namespace SWLOR.Game.Server.Service
             var launchers = status.HighPowerModules.Select(x => (Slot: x.Key, Module: x.Value))
                 .Concat(status.LowPowerModules.Select(x => (Slot: x.Key + 10, Module: x.Value)))
                 .Concat(status.MidPowerModules.Select(x => (Slot: x.Key + 20, Module: x.Value)))
-                .Select(x => (x.Slot, Detail: FindShipModuleDetail(x.Module?.ItemTag)))
+                .Select(x => (x.Slot, x.Module, Detail: FindShipModuleDetail(x.Module?.ItemTag)))
                 .Where(x => x.Detail?.Type == ShipModuleType.ProbeLauncher && x.Detail.Step != null)
-                .Select(x => (x.Slot, x.Detail.Step));
+                // The launcher's traits and Module Bonus widen its sweep, as on its own cycle.
+                .Select(x => (x.Slot, ShipTraitRules.Apply(x.Detail.Step, x.Module.Traits, ShipTraitRules.ModuleBonus(x.Module))));
             return SensorSweepRules.ChooseLauncher(launchers, slot => GetStationSlotEffectiveness(ship, status, slot));
         }
 

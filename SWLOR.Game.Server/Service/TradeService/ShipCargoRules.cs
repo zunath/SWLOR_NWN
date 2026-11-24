@@ -20,16 +20,23 @@ namespace SWLOR.Game.Server.Service.TradeService
             return TradeTuning.CargoExpanderBasePercent + Math.Max(0, rank) / TradeTuning.CargoExpanderRanksPerPercent;
         }
 
-        /// <summary>The cargo bay of a hull with these fitted module tags. A hull with no cargo has none, expanders or not.</summary>
-        public static int GetCapacity(int hullCargo, IEnumerable<string> moduleTags)
+        /// <summary>The cargo bay of a hull with these fitted module tags, none with a Module Bonus. A hull with no cargo has none, expanders or not.</summary>
+        public static int GetCapacity(int hullCargo, IEnumerable<string> moduleTags) =>
+            GetCapacity(hullCargo, (moduleTags ?? Enumerable.Empty<string>()).Select(x => (x, 0)));
+
+        /// <summary>
+        /// The cargo bay of a hull with these fitted modules: each expander's share grows with its Module Bonus
+        /// (<see cref="ShipTraitRules.Apply"/>). A hull with no cargo has none, expanders or not.
+        /// </summary>
+        public static int GetCapacity(int hullCargo, IEnumerable<(string Tag, int ModuleBonus)> modules)
         {
             var cargo = Math.Max(0, hullCargo);
             var capacity = cargo;
-            foreach (var tag in moduleTags ?? Enumerable.Empty<string>())
+            foreach (var (tag, moduleBonus) in modules ?? Enumerable.Empty<(string, int)>())
             {
                 var step = RevampModuleCatalog.Steps.FirstOrDefault(x => x.Tag == tag);
                 if (step is { Family: ShipModuleFamily.CargoExpander })
-                    capacity += cargo * step.CargoPercent / 100;
+                    capacity += cargo * ShipTraitRules.Apply(step, null, moduleBonus).CargoPercent / 100;
             }
 
             return capacity;
@@ -50,14 +57,17 @@ namespace SWLOR.Game.Server.Service.TradeService
         /// <summary>The cargo bay of a hull with the modules fitted on this status: its Helm-slot expanders count.</summary>
         public static int GetCapacity(int hullCargo, ShipStatus status)
         {
-            return GetCapacity(hullCargo, GetHelmModuleTags(status));
+            return GetCapacity(hullCargo, GetHelmModules(status));
         }
 
         /// <summary>Every module fitted in a Helm slot of the status, in any row.</summary>
-        public static IEnumerable<string> GetHelmModuleTags(ShipStatus status)
+        public static IEnumerable<string> GetHelmModuleTags(ShipStatus status) => GetHelmModules(status).Select(x => x.Tag);
+
+        /// <summary>Every module fitted in a Helm slot of the status, in any row, with its Module Bonus after Yield traits.</summary>
+        public static IEnumerable<(string Tag, int ModuleBonus)> GetHelmModules(ShipStatus status)
         {
             if (status == null)
-                return Enumerable.Empty<string>();
+                return Enumerable.Empty<(string, int)>();
 
             return new[]
                 {
@@ -69,7 +79,7 @@ namespace SWLOR.Game.Server.Service.TradeService
                     .Where(x => x.Value != null &&
                                 ShipCrewSeats.GetSeatForSlot(status.Size, status.SlotTags, ShipStatCalculator.GetHotbarSlot(row.Row, x.Key)) ==
                                 ShipCrewSeat.Pilot)
-                    .Select(x => x.Value.ItemTag));
+                    .Select(x => (x.Value.ItemTag, ShipTraitRules.ModuleBonus(x.Value))));
         }
 
         /// <summary>Every module fitted on the status, in any row.</summary>
@@ -89,13 +99,23 @@ namespace SWLOR.Game.Server.Service.TradeService
         /// Whether a fitted module can come off: a Cargo Expander cannot while the bay holds more than it would without
         /// it. <paramref name="usedVolume"/> is the bay's filled volume (commodities and sealed freight).
         /// </summary>
-        public static bool CanRemoveModule(int hullCargo, IReadOnlyCollection<string> moduleTags, string removedTag, int usedVolume)
+        public static bool CanRemoveModule(int hullCargo, IReadOnlyCollection<string> moduleTags, string removedTag, int usedVolume) =>
+            CanRemoveModule(hullCargo, (moduleTags ?? Array.Empty<string>()).Select(x => (x, 0)).ToList(), (removedTag, 0), usedVolume);
+
+        /// <summary>
+        /// Whether a fitted module can come off, counting each expander's Module Bonus: <paramref name="removed"/> is the
+        /// module coming off (its tag and bonus), one of <paramref name="modules"/>.
+        /// </summary>
+        public static bool CanRemoveModule(int hullCargo, IReadOnlyCollection<(string Tag, int ModuleBonus)> modules,
+            (string Tag, int ModuleBonus) removed, int usedVolume)
         {
-            var tags = (moduleTags ?? Array.Empty<string>()).ToList();
-            if (!tags.Remove(removedTag))
+            var all = (modules ?? Array.Empty<(string, int)>()).ToList();
+            var remaining = all.ToList();
+            if (!remaining.Remove(removed))
                 return true;
 
-            return GetCapacity(hullCargo, tags) >= usedVolume || GetCapacity(hullCargo, tags) >= GetCapacity(hullCargo, moduleTags);
+            var without = GetCapacity(hullCargo, remaining);
+            return without >= usedVolume || without >= GetCapacity(hullCargo, all);
         }
     }
 }

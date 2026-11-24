@@ -89,15 +89,22 @@ namespace SWLOR.Game.Server.Service.TradeService
             return TradeTuning.CompartmentBasePercent + Math.Max(0, rank) / TradeTuning.CompartmentRanksPerPercent;
         }
 
-        /// <summary>The cut of the best Smuggling Compartment among these fitted module tags, or 0 with none.</summary>
-        public static double GetCompartmentPercent(IEnumerable<string> moduleTags)
+        /// <summary>The cut of the best Smuggling Compartment among these fitted module tags, none with a Module Bonus, or 0 with none.</summary>
+        public static double GetCompartmentPercent(IEnumerable<string> moduleTags) =>
+            GetCompartmentPercent((moduleTags ?? Enumerable.Empty<string>()).Select(x => (x, 0)));
+
+        /// <summary>
+        /// The cut of the best Smuggling Compartment among these fitted modules, its Module Bonus counted
+        /// (<see cref="ShipTraitRules.Apply"/>), or 0 with none.
+        /// </summary>
+        public static double GetCompartmentPercent(IEnumerable<(string Tag, int ModuleBonus)> modules)
         {
             var best = 0;
-            foreach (var tag in moduleTags ?? Enumerable.Empty<string>())
+            foreach (var (tag, moduleBonus) in modules ?? Enumerable.Empty<(string, int)>())
             {
                 var step = RevampModuleCatalog.Steps.FirstOrDefault(x => x.Tag == tag);
                 if (step is { Family: ShipModuleFamily.SmugglingCompartment })
-                    best = Math.Max(best, step.ScanReduction);
+                    best = Math.Max(best, ShipTraitRules.Apply(step, null, moduleBonus).ScanReduction);
             }
 
             return best;

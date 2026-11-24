@@ -78,7 +78,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// The module step as its traits and Module Bonus make it: a copy with the percent stats applied, or the step
         /// itself when the module has neither. Each Module Bonus point (<paramref name="moduleBonus"/>, after Yield
         /// traits, see <see cref="ModuleBonus"/>) adds <see cref="ModuleBonusPercentPerPoint"/>% to every number a percent
-        /// trait changes, on top of the traits' own percents, and to the module's own Evasion; capacitor use and penalties are left alone. Evasion, Speed, Yield and
+        /// trait changes, on top of the traits' own percents, and to the numbers no trait touches (Attack, Evasion, speed, E-War,
+        /// Afterburner, probe, cargo and customs); capacitor use and penalties are left alone and a cloak's reveal range shrinks. Evasion, Speed, Yield and
         /// RareFind are not module numbers and are read separately.
         /// </summary>
         public static ShipModuleStep Apply(ShipModuleStep step, IReadOnlyCollection<ShipComponentTraitType> traits, int moduleBonus = 0)
@@ -112,9 +113,24 @@ namespace SWLOR.Game.Server.Service.SpaceService
             s.CapacitorRestore = Scale(step.CapacitorRestore, capacitor);
             s.CapacitorRegen = Math.Round(step.CapacitorRegen * (100 + P(ShipTraitStat.CapacitorRegen)) / 100.0, 3);
             s.ModuleDefense = Scale(step.ModuleDefense, P(ShipTraitStat.Defense));
-            // A module's own Evasion takes the Module Bonus too (master added it to the Evasion modules); a penalty, such
-            // as plating's -4, is a drawback and is left alone. Evasion traits add to the ship instead.
+            // The Module Bonus also strengthens the numbers no trait touches, so every family gains from it: a weapon's
+            // Attack, a module's own Evasion and speed (master added it to the Evasion modules), the E-War, Afterburner,
+            // probe, Cargo Expander and Smuggling Compartment numbers, and a jam (a negative number) grows. A penalty,
+            // such as plating's -4 Evasion or an expander's -5% speed, is a drawback and is left alone, and a cloak's
+            // reveal range, where smaller is better, shrinks instead. Evasion and Speed traits add to the ship.
+            s.Attack = Scale(step.Attack, bonus);
             s.ModuleEvasion = step.ModuleEvasion > 0 ? Scale(step.ModuleEvasion, bonus) : step.ModuleEvasion;
+            s.SpeedPercent = step.SpeedPercent > 0 ? Scale(step.SpeedPercent, bonus) : step.SpeedPercent;
+            s.WebPercent = Scale(step.WebPercent, bonus);
+            s.InterdictRange = Scale(step.InterdictRange, bonus);
+            s.TargetAccuracy = Scale(step.TargetAccuracy, bonus);
+            s.PaintPercent = Scale(step.PaintPercent, bonus);
+            s.AfterburnerPercent = Scale(step.AfterburnerPercent, bonus);
+            s.ScanStrength = Scale(step.ScanStrength, bonus);
+            s.SweepRange = Scale(step.SweepRange, bonus);
+            s.RevealRange = Scale(step.RevealRange, -bonus);
+            s.ScanReduction = Scale(step.ScanReduction, bonus);
+            s.CargoPercent = Scale(step.CargoPercent, bonus);
             s.ResistAll = Scale(step.ResistAll, resistance);
             s.ResistThermal = Scale(step.ResistThermal, resistance);
             s.ResistEM = Scale(step.ResistEM, resistance);
@@ -125,6 +141,10 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>A module's capacitor use per cycle after its traits, never below 0.</summary>
         public static int CapacitorCost(int cost, IEnumerable<ShipComponentTraitType> traits) =>
             Math.Max(0, Scale(cost, Sum(traits, ShipTraitStat.CapacitorCost)));
+
+        /// <summary>A fitted module's Module Bonus after its Yield traits, never below 0.</summary>
+        public static int ModuleBonus(ShipStatus.ShipStatusModule module) =>
+            module == null ? 0 : ModuleBonus(module.ModuleBonus, module.Traits);
 
         /// <summary>A module's Module Bonus after its Yield traits, never below 0.</summary>
         public static int ModuleBonus(int moduleBonus, IEnumerable<ShipComponentTraitType> traits) =>

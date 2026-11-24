@@ -125,6 +125,8 @@ public class TradeRiskTests
         CustomsRules.GetCompartmentPercent(new[] { "sm_laser_00", "sm_plate_10" }).Should().Be(0);
         CustomsRules.GetCompartmentPercent(new[] { "sm_smug_00", "sm_smug_20" }).Should().Be(21);
         CustomsRules.GetCompartmentPercent(new[] { "sm_smug_00" }).Should().Be(15);
+        CustomsRules.GetCompartmentPercent(new[] { ("sm_smug_00", 10) }).Should().Be(ShipTraitRules.Scale(15, 10),
+            "a compartment's Module Bonus deepens its cut");
         CustomsRules.GetScanChance(40000, CustomsRules.GetCompartmentPercent(new[] { "sm_smug_45" }))
             .Should().BeApproximately(CustomsRules.GetScanChance(40000, 0) * 0.70, 1e-9);
     }

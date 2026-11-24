@@ -197,8 +197,9 @@ namespace SWLOR.Game.Server.Service
             var percent = 0;
             foreach (var slot in GetRunningAfterburnerSlots(status))
             {
-                if (TryGetFittedModule(status, slot, out var module) && _shipModules.TryGetValue(module.ItemTag, out var detail))
-                    percent = Math.Max(percent, detail.Step?.AfterburnerPercent ?? 0);
+                // The Afterburner's Module Bonus raises its speed, as it raises every module's own numbers.
+                if (TryGetFittedModule(status, slot, out var module) && _shipModules.TryGetValue(module.ItemTag, out var detail) && detail.Step != null)
+                    percent = Math.Max(percent, ShipTraitRules.Apply(detail.Step, module.Traits, ShipTraitRules.ModuleBonus(module)).AfterburnerPercent);
             }
 
             return percent;

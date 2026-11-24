@@ -295,7 +295,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs",
-    "Line": 1463,
+    "Line": 1466,
     "Member": "ApplyStatusAppliedTargetStaminaDrain",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                ColorToken.Combat($\"-{staminaDrained} STM\"),\n                target,\n                false)"
@@ -362,6 +362,20 @@
     "Member": "HandleParalyze",
     "Delivery": "Rate limited in Production",
     "Call": "_playerFeedback.SendWarningNearby(\n                    attacker,\n                    \"PARALYZED\",\n                    receiver => $\"{_playerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!\",\n                    5)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatCriticalHitEffectsService.cs",
+    "Line": 83,
+    "Member": "ApplyCriticalHitEffects",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Weak Points\"), attacker, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatCriticalHitEffectsService.cs",
+    "Line": 288,
+    "Member": "ApplyNonCriticalAbilityEffects",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Next ranged ability +{currentTotal}% Critical Rate\"),\n                    activator,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
@@ -460,20 +474,6 @@
     "Member": "ApplyGuardedHitRetaliationPulse",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Retaliation Pulse\"), defender, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs",
-    "Line": 511,
-    "Member": "ApplyCriticalHitEffects",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Weak Points\"), attacker, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs",
-    "Line": 716,
-    "Member": "ApplyNonCriticalAbilityEffects",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Next ranged ability +{currentTotal}% Critical Rate\"),\n                    activator,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatRateModifiersService.cs",

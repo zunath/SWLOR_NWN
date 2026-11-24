@@ -31,7 +31,6 @@ SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Combat (inside) | 1
 SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs -> Character (down) | 1
 SWLOR.Game.Server/Domain/Companions/DroidEquipmentDiagnosticsService.cs -> Companions (inside) | 1
 SWLOR.Game.Server/Domain/Companions/IncubationFieldNoteService.cs -> Companions (inside) | 1
-SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Character (down) | 1
 SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Combat (down) | 1
 SWLOR.Game.Server/Domain/Items/ItemService.cs -> Character (down) | 1
 SWLOR.Game.Server/Domain/Items/ItemService.cs -> Combat (up) | 1

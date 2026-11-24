@@ -8,10 +8,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
 | 1. Static service lookup | `StaticLookups.txt` | 1,074 | 12,790 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 17 | 26,086 lines | none over 1,000 lines |
+| 2. Large types | `LargeTypes.txt` | 17 | 25,637 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 8 | 2,419 lines | none over 150 lines (400 for layout) |
-| 4. Services per type | `ServicesPerType.txt` | 17 | 258 services | none over 10 services |
-| 5. Deferred resolution | `DeferredResolution.txt` | 31 | 37 parameters | none |
+| 4. Services per type | `ServicesPerType.txt` | 17 | 254 services | none over 10 services |
+| 5. Deferred resolution | `DeferredResolution.txt` | 30 | 36 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 107 | 223 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 27 | 92 edges | none |
 | 8. Static entry points and static state | `StaticState.txt` | 122 | 220 members | each kept with an approved reason, or removed |
@@ -58,7 +58,7 @@ Largest 15 of 1,074 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 17 types over 1,000 lines, 26,086 lines in all.
+- 17 types over 1,000 lines, 25,637 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 2, fluent builder 1, owner exception 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
@@ -68,13 +68,13 @@ Largest 15 of 17 (all in `LargeTypes.txt`):
 |---|---:|---|
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 2,768 | SpaceService.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel` | 2,081 | ShipManagementViewModel.cs |
-| `SWLOR.Game.Server.Domain.Creatures.AIService` | 1,857 | AIService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 1,723 | CombatAbilityImpactService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 1,719 | CombatHitEffectsService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatRecorderService` | 1,691 | CombatRecorderService.cs |
 | `SWLOR.Game.Server.Feature.UsePerkFeat` | 1,687 | UsePerkFeat.cs |
 | `SWLOR.Game.Server.Domain.Items.ItemService` | 1,605 | ItemService.cs |
 | `SWLOR.Game.Server.Domain.Character.PerkService` | 1,486 | PerkService.cs |
+| `SWLOR.Game.Server.Domain.Creatures.AIService` | 1,408 | AIService.cs |
 | `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 1,307 | MimicryService.cs |
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 1,243 | EnmityService.cs |
 | `SWLOR.Game.Server.Domain.Companions.BeastMasteryService` | 1,240 | BeastMasteryService.cs |
@@ -114,7 +114,6 @@ Largest 15 of 17 (all in `ServicesPerType.txt`):
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 18 | constructor 18, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 17 | constructor 17, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService` | 17 | constructor 17, lookup 0 |
-| `SWLOR.Game.Server.Domain.Creatures.AIService` | 16 | constructor 16, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Companions.BeastMasteryService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Companions.DroidService` | 14 | constructor 14, lookup 0 |
@@ -122,17 +121,18 @@ Largest 15 of 17 (all in `ServicesPerType.txt`):
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityHitService` | 13 | constructor 13, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatService` | 13 | constructor 13, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 12 | constructor 12, lookup 0 |
+| `SWLOR.Game.Server.Domain.Creatures.AIService` | 12 | constructor 12, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.AbilityDamageStageService` | 11 | constructor 11, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 11 | constructor 11, lookup 0 |
 
 ## 5. Deferred resolution
 
-- 37 deferred constructor parameters in 22 files (Lazy 37, Func 0), taken by 22 types, deferring 24 distinct services.
-- By direction in the domain order: up 2, down 20, inside one domain 15.
+- 36 deferred constructor parameters in 22 files (Lazy 36, Func 0), taken by 22 types, deferring 24 distinct services.
+- By direction in the domain order: up 2, down 19, inside one domain 15.
 - Up: Character -> Combat 1, Items -> Combat 1.
 - IServiceProvider outside Composition/: 0 uses.
 
-Largest 15 of 31 (all in `DeferredResolution.txt`):
+Largest 15 of 30 (all in `DeferredResolution.txt`):
 
 | Entry | Parameters | Detail |
 |---|---:|---|

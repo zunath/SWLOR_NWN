@@ -182,7 +182,8 @@ public class CombatPartForwardingTests
     [Test]
     public void TheRecentDamageTargetsTheHitEffectsAndDamageTakenPartsReadAreTheActivityPartsOwnTable()
     {
-        // Both readers of the table take the activity part.
+        // The readers of the table take the activity part: the damage taken effects part and the defeated enemy part, which took
+        // the read from the hit effects part (that part still holds the activity part).
         using var facades = new FacadeContainer();
         using var installed = facades.Install();
         var activity = facades.Get<ICombatActivityService>();
@@ -192,6 +193,8 @@ public class CombatPartForwardingTests
         table.Should().BeSameAs(typeof(CombatActivityService).GetField("_recentDamageTargets", Instance)!.GetValue(activity));
         ((object)activity.RecentDamageTargets).Should().BeSameAs(table, "every read returns the same table, so a prune is seen by the next read");
         typeof(CombatHitEffectsService).GetField("_combatActivity", Instance)!.GetValue(facades.Get<ICombatHitEffectsService>())
+            .Should().BeSameAs(activity);
+        typeof(CombatDefeatedEnemyEffectsService).GetField("_combatActivity", Instance)!.GetValue(facades.Get<ICombatDefeatedEnemyEffectsService>())
             .Should().BeSameAs(activity);
         typeof(CombatDamageTakenEffectsService).GetField("_combatActivity", Instance)!.GetValue(facades.Get<ICombatDamageTakenEffectsService>())
             .Should().BeSameAs(activity);

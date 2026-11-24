@@ -8,7 +8,6 @@ import tomllib
 import uuid
 
 MARKER = '.swlor-visual-profile.json'
-ENGINE_LOG_RECOVERY = '.preserve-engine-log'
 SETTINGS = """[sound.effects]
 volume=0.0
 [sound.music]

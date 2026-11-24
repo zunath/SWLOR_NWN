@@ -41,17 +41,24 @@ The generated tint materials share three fragment shaders in
 `fs_plt_hair_nm`. A change to palette lighting must cover all three, including
 materials shared by multiple models through `tintmap.2da`.
 
-Authored CU head materials use five profiles: `fs_head_legacy`,
-`fs_head_plain`, `fs_head_mapped`, `fs_head_hair` and `fs_head_full`.
+Authored CU head materials use four custom profiles: `fs_head_legacy`,
+`fs_head_plain`, `fs_head_mapped` and `fs_head_hair`.
 Each includes `inc_hd_tint`; the wrappers select lighting features while MTR
 parameters select cutoffs, hair filtering, eye limits, lip coverage and glow.
 `fs_head_plain` still receives lighting; it omits mapped textures and environment
 reflection. The three equipment shaders retain their existing behavior.
 Head materials that contain Metal 1 or Metal 2 use a profile with
-`ENVIRONMENT_MAP 1` (normally `fs_head_full`), so the engine receives the native
+`ENVIRONMENT_MAP 1` (normally `fs_head_hair`), so the engine receives the native
 palette's reflectance coverage. Removing specular-map bindings alone is not
 sufficient on an environment-disabled profile. `HeadTintAssets.py --check`
 validates both the metadata profile and the declared fragment shader.
+
+The 83 legacy materials with default head settings reuse `fs_plt_tinter` and
+its coating binding at texture slot 8. Materials with authored head effects
+retain a custom profile and coating slot 4, preserving their detail maps at
+slot 8. The generator rejects native reuse that would discard an authored
+effect or occupy an authored texture slot. Profiles do not enable roughness
+or self-illumination maps when none are bound.
 
 Masked eye/lens emission intentionally pierces fog, as requested by the owner.
 Only authored detail-glow masks and designated glow layers bypass fog attenuation;

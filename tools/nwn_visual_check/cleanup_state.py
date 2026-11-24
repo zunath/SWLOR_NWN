@@ -79,12 +79,8 @@ def retain_profile(path, pid=None):
 def remove_owned_profile(path, cleanup=None):
     """Snapshot ownership, publishing recovery state only when removal fails."""
     record=_profile_record(path)
-    directory = Path(record['profile'])
-    if (directory / profile.ENGINE_LOG_RECOVERY).is_file():
-        forget_profile(record['token'])
-        return
     try:
-        (cleanup or profile.cleanup)(directory)
+        (cleanup or profile.cleanup)(Path(record['profile']))
     except BaseException as error:
         try:
             _write_record('profile-'+record['token']+'.json',record)
@@ -184,6 +180,5 @@ def recover_profile(record):
         actual=json.loads((path/profile.MARKER).read_text(encoding='utf8'))['token']
         if actual!=record['token']:
             raise ValueError('Retained profile ownership token changed')
-        if not (path / profile.ENGINE_LOG_RECOVERY).is_file():
-            profile.cleanup(path)
+        profile.cleanup(path)
     forget_profile(record['token'])

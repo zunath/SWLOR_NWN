@@ -135,11 +135,14 @@ def main(argv=None):
             """Do not delete a profile still used by an unconfirmed owned process."""
             if offline_client.has_retained_profile(owned):
                 if owned.exists():
-                    cleanup_state.retain_profile(owned,offline_client.retained_profile_pid(owned))
+                    cleanup_state.retain_profile(owned,offline_client.retained_profile_pid(owned),
+                        engine_log_marker_pending='engine_log_recovery_marker_failure' in manifest)
                 raise RuntimeError('Owned process control retained; preserve profile for shutdown retry')
             if 'engine_log_copy_failure' in manifest:
-                cleanup_state.retain_profile(owned)
-                cleanup_state.remove_owned_profile(owned)
+                pending = 'engine_log_recovery_marker_failure' in manifest
+                cleanup_state.retain_profile(owned, engine_log_marker_pending=pending)
+                if not pending:
+                    cleanup_state.remove_owned_profile(owned)
                 return
             if owned.exists():
                 cleanup_state.remove_owned_profile(owned)

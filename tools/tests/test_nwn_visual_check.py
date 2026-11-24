@@ -783,6 +783,57 @@ class EvidenceCleanupTests(unittest.TestCase):
                 if owned.exists():
                     profile.cleanup(owned)
 
+    @unittest.skipUnless(sys.platform == 'win32', 'CLI requires Windows')
+    def test_engine_log_copy_and_marker_failures_keep_persistent_preservation_intent(self):
+        owned = profile.create_profile()
+        engine = owned / 'logs/nwengineLog1.txt'
+        engine.parent.mkdir()
+        engine.write_text('sole diagnostic copy')
+        (owned / 'hak/staged.hak').write_bytes(b'staged asset')
+        original_copy, original_touch = profile.copy_input, Path.touch
+
+        def fail_copy(source, target):
+            if source == engine:
+                raise OSError('Copy failed')
+            return original_copy(source, target)
+
+        def fail_marker(path, *args, **kwargs):
+            if path == owned / profile.ENGINE_LOG_RECOVERY:
+                raise OSError('Marker write failed')
+            return original_touch(path, *args, **kwargs)
+
+        try:
+            with tempfile.TemporaryDirectory() as temporary, tempfile.TemporaryDirectory() as journal, \
+                    patch.object(cleanup_state, 'state_root', return_value=Path(journal)):
+                fixture = Path(temporary) / 'fixture.mod'
+                fixture.write_bytes(b'fixture')
+                with patch('nwn_visual_check.module.discover_client', return_value=Path('C:/nwmain.exe')), \
+                        patch('nwn_visual_check.profile.create_profile', return_value=owned), \
+                        patch('nwn_visual_check.offline_client.run', return_value=ClientRun(0, '', True, False)), \
+                        patch('nwn_visual_check.profile.copy_input', side_effect=fail_copy), \
+                        patch.object(Path, 'touch', fail_marker):
+                    with self.assertRaises(ExceptionGroup):
+                        main(['--module', str(fixture), '--output', str(Path(temporary) / 'evidence'), '--capture', 'READY=close'])
+                    record = cleanup_state.pending_profiles()[0]
+                    self.assertTrue(record['engine_log_marker_pending'])
+                    with self.assertRaises(OSError):
+                        cleanup_state.remove_owned_profile(owned)
+                    with self.assertRaises(OSError):
+                        cleanup_state.recover_profile(record)
+                    self.assertEqual(engine.read_text(), 'sole diagnostic copy')
+                    self.assertEqual(len(cleanup_state.pending_profiles()), 1)
+                offline_client.retry_retained_processes()
+                self.assertEqual(engine.read_text(), 'sole diagnostic copy')
+                self.assertFalse((owned / 'hak').exists())
+                self.assertNotIn('engine_log_marker_pending', cleanup_state.pending_profiles()[0])
+                (owned / profile.ENGINE_LOG_RECOVERY).unlink()
+                offline_client.retry_retained_processes()
+                self.assertFalse(owned.exists())
+                self.assertEqual(cleanup_state.pending_profiles(), [])
+        finally:
+            if owned.exists():
+                profile.cleanup(owned)
+
     def test_engine_log_recovery_keeps_journal_when_transient_cleanup_fails(self):
         owned = profile.create_profile()
         engine = owned / 'logs/nwengineLog1.txt'

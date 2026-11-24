@@ -121,13 +121,15 @@ public class TournamentWiringTests
         var load = settle.IndexOf("var receipts = LoadReceipts(GetObjectUUID(player));", StringComparison.Ordinal);
         var keeps = settle.IndexOf("mark.KeepsPayment(GetRecordPaymentId(player, mark), receipts.Any(x => x.Id == mark.Id))", load, StringComparison.Ordinal);
         var refund = settle.IndexOf("GiveGoldToCreature(player, mark.Credits);", keeps, StringComparison.Ordinal);
-        var retire = settle.IndexOf("if (!CharacterCheckpoint.Save(player))", refund, StringComparison.Ordinal);
+        var save = settle.IndexOf("() => CharacterCheckpoint.Save(player),", refund, StringComparison.Ordinal);
+        var retire = settle.IndexOf("if (!settled)", save, StringComparison.Ordinal);
         var delete = settle.IndexOf("DB.Delete<CreditPaymentReceipt>(receipt.Id);", retire, StringComparison.Ordinal);
 
         load.Should().BeGreaterThan(0);
         keeps.Should().BeGreaterThan(load);
         refund.Should().BeGreaterThan(keeps);
-        retire.Should().BeGreaterThan(refund);
+        save.Should().BeGreaterThan(refund);
+        retire.Should().BeGreaterThan(save);
         delete.Should().BeGreaterThan(retire, "a restart before the receipts go leaves them for a login that has no mark");
     }
 

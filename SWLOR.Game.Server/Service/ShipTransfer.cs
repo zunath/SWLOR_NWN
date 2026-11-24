@@ -726,6 +726,15 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static bool SavePayment(uint payer, ShipTransferPayment payment)
         {
+            // A mark still held from an earlier payment (its login settling could not be saved) would be replaced and lose
+            // what that payment is owed, so nothing is paid until the next login settles it.
+            if (!string.IsNullOrWhiteSpace(ObjectPlugin.GetString(payer, PaymentVariable)))
+            {
+                FloatingTextStringOnCreature(ColorToken.Red("An earlier ship payment is still being settled. Log out and back in before paying again."), payer, false);
+                Log.Write(LogGroup.Property, $"Ship payment by {PlayerName.GetAuditName(payer)} refused: an earlier payment's mark is still unsettled.");
+                return false;
+            }
+
             var saved = CheckpointedChange.Run(
                 () =>
                 {

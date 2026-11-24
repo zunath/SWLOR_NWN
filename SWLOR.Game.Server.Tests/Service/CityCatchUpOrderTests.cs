@@ -59,7 +59,8 @@ public class CityCatchUpOrderTests
         var payments = ReadServer("Service", "CreditPayments.cs");
         var settle = Between(payments, "public static void SettleInterruptedPayment()", "private static string GetRecordPaymentId(");
 
-        var save = Index(settle, "if (!CharacterCheckpoint.Save(player))");
+        var save = Index(settle, "if (!settled)");
+        Index(settle, "() => CharacterCheckpoint.Save(player),").Should().BeLessThan(save);
         Index(settle, "ObjectPlugin.DeleteString(player, MarkVariable);").Should().BeLessThan(save);
         Index(settle, "DB.Delete<CreditPaymentReceipt>(receipt.Id);").Should().BeGreaterThan(save,
             "a receipt is deleted only once the file no longer holds the mark it guards");

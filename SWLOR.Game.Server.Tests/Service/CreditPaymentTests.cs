@@ -82,6 +82,7 @@ public class CreditPaymentTests
 
         var payments = Source("Service", "CreditPayments.cs");
         InOrder(Method(payments, "public static bool TryTakeSaved("),
+            "if (!string.IsNullOrWhiteSpace(ObjectPlugin.GetString(player, MarkVariable)))", "return false;", "CheckpointedChange.Run(",
             "TakeGoldFromCreature(mark.Credits, player, true);", "ObjectPlugin.SetString(player, MarkVariable, mark.Serialize(), true);",
             "() => CharacterCheckpoint.Save(player),", "GiveGoldToCreature(player, mark.Credits);", "ObjectPlugin.DeleteString(player, MarkVariable);");
         payments.Should().NotContain("public static void Take(", "a payment is taken and saved at once, and put back when the file cannot be saved");

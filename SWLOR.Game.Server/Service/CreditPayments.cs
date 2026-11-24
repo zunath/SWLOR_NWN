@@ -34,10 +34,19 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Takes the credits with the mark and saves the character file at once (<see cref="CharacterCheckpoint"/>), for a payment
         /// whose record is saved right after. When the file cannot be saved the credits and the mark are put back and nothing is paid.
+        /// A mark still held from an earlier payment (its login settling could not be saved) refuses the payment, since the new
+        /// mark would replace it and lose what the earlier payment is owed; the next login settles it.
         /// </summary>
         /// <returns>True when the file holds the payment.</returns>
         public static bool TryTakeSaved(uint player, CreditPaymentMark mark)
         {
+            if (!string.IsNullOrWhiteSpace(ObjectPlugin.GetString(player, MarkVariable)))
+            {
+                SendMessageToPC(player, ColorToken.Red("An earlier payment is still being settled. Log out and back in before paying again."));
+                Log.Write(LogGroup.Space, $"CREDIT PAYMENT REFUSED - {PlayerName.GetAuditName(player)} - an earlier payment's mark is still unsettled");
+                return false;
+            }
+
             return CheckpointedChange.Run(
                 () =>
                 {

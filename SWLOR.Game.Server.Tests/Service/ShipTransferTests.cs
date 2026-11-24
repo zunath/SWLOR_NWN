@@ -364,6 +364,7 @@ public class ShipTransferTests
             "Complete(ship, offer.RecipientPlayerId, \"changed owner\", payment.Id);", "RetirePayment(giver, payment.Id);");
 
         AssertInOrder(ExtractMethod(source, "private static bool SavePayment("),
+            "if (!string.IsNullOrWhiteSpace(ObjectPlugin.GetString(payer, PaymentVariable)))", "return false;", "CheckpointedChange.Run(",
             "TakeGoldFromCreature(payment.Credits, payer, true);", "ObjectPlugin.SetString(payer, PaymentVariable, payment.Serialize(), true);",
             "() => CharacterCheckpoint.Save(payer),", "GiveGoldToCreature(payer, payment.Credits);", "ObjectPlugin.DeleteString(payer, PaymentVariable);",
             "if (!saved)", "return saved;");

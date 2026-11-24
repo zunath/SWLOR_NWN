@@ -932,14 +932,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Creatures/AIService.cs",
-    "Line": 1558,
+    "Line": 1561,
     "Member": "ExecuteAction",
     "Delivery": "Retained",
     "Call": "SpeakString(action.Text)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Creatures/CompanionPositioningService.cs",
-    "Line": 115,
+    "Line": 101,
     "Member": "SendResponse",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(master, $\"{GetName(companion)}: {response}\")"
@@ -1058,7 +1058,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Foundation/MigrationService.cs",
-    "Line": 294,
+    "Line": 302,
     "Member": "DeliverUpgradeNotices",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, notice)"
@@ -2682,7 +2682,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/World/WeatherService.cs",
-    "Line": 507,
+    "Line": 509,
     "Member": "Thunderstorm",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, WeatherFeedbackText.Lightning)"
@@ -4495,35 +4495,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 91,
+    "Line": 95,
     "Member": "OnClickConfirm",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(GetRefusalReason(DB.Get<Player>(playerId)), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 101,
+    "Line": 105,
     "Member": "OnClickConfirm",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed in this area.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 107,
+    "Line": 111,
     "Member": "OnClickConfirm",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed while dead.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 144,
+    "Line": 148,
     "Member": "OnClickConfirm",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(GetRefusalReason(dbPlayer), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DistributeRPXPViewModel.cs",
-    "Line": 182,
+    "Line": 186,
     "Member": "DistributeToBeast",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(GetRefusalReason(dbPlayer), Player, false)"
@@ -5657,14 +5657,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/SkillsViewModel.cs",
-    "Line": 326,
+    "Line": 334,
     "Member": "OnClickDistributeRPXP",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed in this area.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/SkillsViewModel.cs",
-    "Line": 332,
+    "Line": 340,
     "Member": "OnClickDistributeRPXP",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"XP cannot be distributed while dead.\", Player, false)"

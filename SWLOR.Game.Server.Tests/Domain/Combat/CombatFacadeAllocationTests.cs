@@ -523,7 +523,7 @@ public class CombatFacadeAllocationTests
         }
     }
 
-    private sealed record BonusParts(ICombatAbilityBonusService Bonus, ICombatDamageModifiersService Modifiers, AbilityDetail Hostile, ICombatRateModifiersService Rate, ICombatRepeatedTargetService Repeated);
+    private sealed record BonusParts(ICombatAbilityBonusService Bonus, ICombatQueuedAbilityBonusService Queued, ICombatDamageModifiersService Modifiers, AbilityDetail Hostile, ICombatRateModifiersService Rate, ICombatRepeatedTargetService Repeated);
 
     // The same world as the timing parts (a container of its own, the constant engine, the clock held still, a status table
     // for both creatures and the stat service that allocates nothing), with the ability bonus and damage modifier parts.
@@ -533,7 +533,7 @@ public class CombatFacadeAllocationTests
         var container = FacadeContainer.Current;
         var hostile = new AbilityDetail { IsHostileAbility = true, SkillType = SkillType.Rifle, EffectiveLevelPerkType = PerkType.DoubleShot };
         hostile.Requirements.Add(new AbilityRequirementStamina(10));
-        return new BonusParts(container.Get<ICombatAbilityBonusService>(), container.Get<ICombatDamageModifiersService>(), hostile, container.Get<ICombatRateModifiersService>(), container.Get<ICombatRepeatedTargetService>());
+        return new BonusParts(container.Get<ICombatAbilityBonusService>(), container.Get<ICombatQueuedAbilityBonusService>(), container.Get<ICombatDamageModifiersService>(), hostile, container.Get<ICombatRateModifiersService>(), container.Get<ICombatRepeatedTargetService>());
     }
 
     [Test]
@@ -544,7 +544,7 @@ public class CombatFacadeAllocationTests
         var scopes = new List<IDisposable>();
         try
         {
-            var (bonus, modifiers, hostile, rate, repeated) = InstallBonusParts(scopes);
+            var (bonus, queued, modifiers, hostile, rate, repeated) = InstallBonusParts(scopes);
             var sink = 0;
             var fsink = 0f;
             var reads = new (string Name, Action Part, Action Forwarder)[]
@@ -552,8 +552,8 @@ public class CombatFacadeAllocationTests
                 // Ability bonuses.
                 ("GetNextSkillAbilityStaminaCostAdjustment", () => sink += bonus.GetNextSkillAbilityStaminaCostAdjustment(Attacker, SkillType.Rifle, true), () => sink += GameServices.CombatAbilityBonus.GetNextSkillAbilityStaminaCostAdjustment(Attacker, SkillType.Rifle, true)),
                 ("ConsumeNextSkillAbilityStaminaCostAdjustment", () => sink += bonus.ConsumeNextSkillAbilityStaminaCostAdjustment(Attacker, SkillType.Rifle), () => sink += GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityStaminaCostAdjustment(Attacker, SkillType.Rifle)),
-                ("StoreQueuedWeaponAbilityCriticalRateBonus", () => bonus.StoreQueuedWeaponAbilityCriticalRateBonus(Attacker, SkillType.Rifle, 0), () => GameServices.CombatAbilityBonus.StoreQueuedWeaponAbilityCriticalRateBonus(Attacker, SkillType.Rifle, 0)),
-                ("StoreQueuedWeaponAbilityActivationCriticalRateBonus", () => bonus.StoreQueuedWeaponAbilityActivationCriticalRateBonus(Attacker, SkillType.Rifle, 0), () => GameServices.CombatAbilityBonus.StoreQueuedWeaponAbilityActivationCriticalRateBonus(Attacker, SkillType.Rifle, 0)),
+                ("StoreQueuedWeaponAbilityCriticalRateBonus", () => queued.StoreQueuedWeaponAbilityCriticalRateBonus(Attacker, SkillType.Rifle, 0), () => GameServices.CombatQueuedAbilityBonus.StoreQueuedWeaponAbilityCriticalRateBonus(Attacker, SkillType.Rifle, 0)),
+                ("StoreQueuedWeaponAbilityActivationCriticalRateBonus", () => queued.StoreQueuedWeaponAbilityActivationCriticalRateBonus(Attacker, SkillType.Rifle, 0), () => GameServices.CombatQueuedAbilityBonus.StoreQueuedWeaponAbilityActivationCriticalRateBonus(Attacker, SkillType.Rifle, 0)),
                 ("ApplyNextAttackGuardedHitEnmityBonus", () => bonus.ApplyNextAttackGuardedHitEnmityBonus(Attacker, Defender, 0), () => GameServices.CombatAbilityBonus.ApplyNextAttackGuardedHitEnmityBonus(Attacker, Defender, 0)),
                 ("GetAbilityStatusCategoryDamageBonus", () => sink += bonus.GetAbilityStatusCategoryDamageBonus(Attacker, SkillType.Rifle, StatusEffectCategory.Control), () => sink += GameServices.CombatAbilityBonus.GetAbilityStatusCategoryDamageBonus(Attacker, SkillType.Rifle, StatusEffectCategory.Control)),
                 ("GetAbilityStatusCategoryHitChancePercentAdjustment", () => sink += bonus.GetAbilityStatusCategoryHitChancePercentAdjustment(Attacker, SkillType.Rifle, StatusEffectCategory.Control), () => sink += GameServices.CombatAbilityBonus.GetAbilityStatusCategoryHitChancePercentAdjustment(Attacker, SkillType.Rifle, StatusEffectCategory.Control)),
@@ -611,27 +611,27 @@ public class CombatFacadeAllocationTests
         var scopes = new List<IDisposable>();
         try
         {
-            var (bonus, modifiers, hostile, rate, repeated) = InstallBonusParts(scopes);
+            var (bonus, queued, modifiers, hostile, rate, repeated) = InstallBonusParts(scopes);
             var sink = 0;
             var fsink = 0f;
             var reads = new (string Name, long Bytes, Action Part, Action Forwarder)[]
             {
-                ("ConsumeOpeningAutoAttackCriticalDamageAdjustment", 56, () => sink += bonus.ConsumeOpeningAutoAttackCriticalDamageAdjustment(Attacker), () => sink += GameServices.CombatAbilityBonus.ConsumeOpeningAutoAttackCriticalDamageAdjustment(Attacker)),
-                ("ClearOpeningAutoAttackModifiers", 336, () => bonus.ClearOpeningAutoAttackModifiers(Attacker), () => GameServices.CombatAbilityBonus.ClearOpeningAutoAttackModifiers(Attacker)),
+                ("ConsumeOpeningAutoAttackCriticalDamageAdjustment", 56, () => sink += queued.ConsumeOpeningAutoAttackCriticalDamageAdjustment(Attacker), () => sink += GameServices.CombatQueuedAbilityBonus.ConsumeOpeningAutoAttackCriticalDamageAdjustment(Attacker)),
+                ("ClearOpeningAutoAttackModifiers", 336, () => queued.ClearOpeningAutoAttackModifiers(Attacker), () => GameServices.CombatQueuedAbilityBonus.ClearOpeningAutoAttackModifiers(Attacker)),
                 ("HasNextAbilityNoStaminaCost", 56, () => sink += bonus.HasNextAbilityNoStaminaCost(Attacker, SkillType.Rifle) ? 1 : 0, () => sink += GameServices.CombatAbilityBonus.HasNextAbilityNoStaminaCost(Attacker, SkillType.Rifle) ? 1 : 0),
                 ("ConsumeNextAbilityNoStaminaCost", 56, () => sink += bonus.ConsumeNextAbilityNoStaminaCost(Attacker, SkillType.Rifle) ? 1 : 0, () => sink += GameServices.CombatAbilityBonus.ConsumeNextAbilityNoStaminaCost(Attacker, SkillType.Rifle) ? 1 : 0),
                 ("ConsumeNextSkillAbilityBonuses", 56, () => sink += bonus.ConsumeNextSkillAbilityBonuses(Attacker, SkillType.Rifle).DamageBonus, () => sink += GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(Attacker, SkillType.Rifle).DamageBonus),
                 ("ConsumePersistentNextSkillAbilityCriticalRateBonus", 112, () => sink += bonus.ConsumePersistentNextSkillAbilityCriticalRateBonus(Attacker, SkillType.Rifle), () => sink += GameServices.CombatAbilityBonus.ConsumePersistentNextSkillAbilityCriticalRateBonus(Attacker, SkillType.Rifle)),
                 ("GetPersistentNextSkillAbilityCriticalRateBonus", 112, () => sink += bonus.GetPersistentNextSkillAbilityCriticalRateBonus(Attacker, SkillType.Rifle), () => sink += GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(Attacker, SkillType.Rifle)),
-                ("StoreQueuedWeaponAbilityActivationIdleBonuses", 56, () => bonus.StoreQueuedWeaponAbilityActivationIdleBonuses(Attacker, SkillType.Rifle), () => GameServices.CombatAbilityBonus.StoreQueuedWeaponAbilityActivationIdleBonuses(Attacker, SkillType.Rifle)),
-                ("HasWeaponAbilityActivationIdleSnapshot", 56, () => sink += bonus.HasWeaponAbilityActivationIdleSnapshot(Attacker) ? 1 : 0, () => sink += GameServices.CombatAbilityBonus.HasWeaponAbilityActivationIdleSnapshot(Attacker) ? 1 : 0),
-                ("GetWeaponAbilityActivationIdleDamageBonus", 56, () => sink += bonus.GetWeaponAbilityActivationIdleDamageBonus(Attacker), () => sink += GameServices.CombatAbilityBonus.GetWeaponAbilityActivationIdleDamageBonus(Attacker)),
-                ("GetWeaponAbilityActivationIdleCriticalRateBonus", 56, () => sink += bonus.GetWeaponAbilityActivationIdleCriticalRateBonus(Attacker), () => sink += GameServices.CombatAbilityBonus.GetWeaponAbilityActivationIdleCriticalRateBonus(Attacker)),
-                ("GetWeaponAbilityActivationIdleDefenseIgnorePercent", 56, () => sink += bonus.GetWeaponAbilityActivationIdleDefenseIgnorePercent(Attacker), () => sink += GameServices.CombatAbilityBonus.GetWeaponAbilityActivationIdleDefenseIgnorePercent(Attacker)),
-                ("ClearWeaponAbilityActivationIdleBonuses", 224, () => bonus.ClearWeaponAbilityActivationIdleBonuses(Attacker), () => GameServices.CombatAbilityBonus.ClearWeaponAbilityActivationIdleBonuses(Attacker)),
-                ("ClearQueuedWeaponAbilityActivationBonuses", 280, () => bonus.ClearQueuedWeaponAbilityActivationBonuses(Attacker), () => GameServices.CombatAbilityBonus.ClearQueuedWeaponAbilityActivationBonuses(Attacker)),
-                ("ConsumeQueuedWeaponAbilityBonuses", 112, () => sink += bonus.ConsumeQueuedWeaponAbilityBonuses(Attacker, SkillType.Rifle).DamageBonus, () => sink += GameServices.CombatAbilityBonus.ConsumeQueuedWeaponAbilityBonuses(Attacker, SkillType.Rifle).DamageBonus),
-                ("ClearQueuedWeaponAbilityAttemptBonuses", 224, () => bonus.ClearQueuedWeaponAbilityAttemptBonuses(Attacker), () => GameServices.CombatAbilityBonus.ClearQueuedWeaponAbilityAttemptBonuses(Attacker)),
+                ("StoreQueuedWeaponAbilityActivationIdleBonuses", 56, () => queued.StoreQueuedWeaponAbilityActivationIdleBonuses(Attacker, SkillType.Rifle), () => GameServices.CombatQueuedAbilityBonus.StoreQueuedWeaponAbilityActivationIdleBonuses(Attacker, SkillType.Rifle)),
+                ("HasWeaponAbilityActivationIdleSnapshot", 56, () => sink += queued.HasWeaponAbilityActivationIdleSnapshot(Attacker) ? 1 : 0, () => sink += GameServices.CombatQueuedAbilityBonus.HasWeaponAbilityActivationIdleSnapshot(Attacker) ? 1 : 0),
+                ("GetWeaponAbilityActivationIdleDamageBonus", 56, () => sink += queued.GetWeaponAbilityActivationIdleDamageBonus(Attacker), () => sink += GameServices.CombatQueuedAbilityBonus.GetWeaponAbilityActivationIdleDamageBonus(Attacker)),
+                ("GetWeaponAbilityActivationIdleCriticalRateBonus", 56, () => sink += queued.GetWeaponAbilityActivationIdleCriticalRateBonus(Attacker), () => sink += GameServices.CombatQueuedAbilityBonus.GetWeaponAbilityActivationIdleCriticalRateBonus(Attacker)),
+                ("GetWeaponAbilityActivationIdleDefenseIgnorePercent", 56, () => sink += queued.GetWeaponAbilityActivationIdleDefenseIgnorePercent(Attacker), () => sink += GameServices.CombatQueuedAbilityBonus.GetWeaponAbilityActivationIdleDefenseIgnorePercent(Attacker)),
+                ("ClearWeaponAbilityActivationIdleBonuses", 224, () => queued.ClearWeaponAbilityActivationIdleBonuses(Attacker), () => GameServices.CombatQueuedAbilityBonus.ClearWeaponAbilityActivationIdleBonuses(Attacker)),
+                ("ClearQueuedWeaponAbilityActivationBonuses", 280, () => queued.ClearQueuedWeaponAbilityActivationBonuses(Attacker), () => GameServices.CombatQueuedAbilityBonus.ClearQueuedWeaponAbilityActivationBonuses(Attacker)),
+                ("ConsumeQueuedWeaponAbilityBonuses", 112, () => sink += queued.ConsumeQueuedWeaponAbilityBonuses(Attacker, SkillType.Rifle).DamageBonus, () => sink += GameServices.CombatQueuedAbilityBonus.ConsumeQueuedWeaponAbilityBonuses(Attacker, SkillType.Rifle).DamageBonus),
+                ("ClearQueuedWeaponAbilityAttemptBonuses", 224, () => queued.ClearQueuedWeaponAbilityAttemptBonuses(Attacker), () => GameServices.CombatQueuedAbilityBonus.ClearQueuedWeaponAbilityAttemptBonuses(Attacker)),
                 ("ConsumeNextAttackGuardedHitBonuses", 168, () => sink += bonus.ConsumeNextAttackGuardedHitBonuses(Attacker).DMGBonus, () => sink += GameServices.CombatAbilityBonus.ConsumeNextAttackGuardedHitBonuses(Attacker).DMGBonus),
                 ("ConsumeNextAttackGuardedHitAutoAttackBonuses", 112, () => sink += bonus.ConsumeNextAttackGuardedHitAutoAttackBonuses(Attacker).DMGBonus, () => sink += GameServices.CombatAbilityBonus.ConsumeNextAttackGuardedHitAutoAttackBonuses(Attacker).DMGBonus),
                 ("ConsumeNextAttackGuardedHitCriticalRateBonus", 56, () => sink += bonus.ConsumeNextAttackGuardedHitCriticalRateBonus(Attacker), () => sink += GameServices.CombatAbilityBonus.ConsumeNextAttackGuardedHitCriticalRateBonus(Attacker)),
@@ -683,13 +683,13 @@ public class CombatFacadeAllocationTests
         var scopes = new List<IDisposable>();
         try
         {
-            var (bonus, modifiers, hostile, rate, repeated) = InstallBonusParts(scopes);
+            var (bonus, queued, modifiers, hostile, rate, repeated) = InstallBonusParts(scopes);
             var sink = 0;
             var reads = new (string Name, Action Part, Action Forwarder)[]
             {
                 ("GetAbilityDefenseIgnorePercentAdjustment", () => sink += bonus.GetAbilityDefenseIgnorePercentAdjustment(Attacker, PerkType.DoubleShot, SkillType.Rifle, Defender), () => sink += GameServices.CombatAbilityBonus.GetAbilityDefenseIgnorePercentAdjustment(Attacker, PerkType.DoubleShot, SkillType.Rifle, Defender)),
-                ("PrepareOpeningAutoAttack", () => sink += bonus.PrepareOpeningAutoAttack(Attacker, SkillType.Rifle), () => sink += GameServices.CombatAbilityBonus.PrepareOpeningAutoAttack(Attacker, SkillType.Rifle)),
-                ("GetQueuedWeaponAbilityActivationHitChanceAdjustment", () => sink += bonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(Attacker, SkillType.Rifle, hostile), () => sink += GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(Attacker, SkillType.Rifle, hostile)),
+                ("PrepareOpeningAutoAttack", () => sink += queued.PrepareOpeningAutoAttack(Attacker, SkillType.Rifle), () => sink += GameServices.CombatQueuedAbilityBonus.PrepareOpeningAutoAttack(Attacker, SkillType.Rifle)),
+                ("GetQueuedWeaponAbilityActivationHitChanceAdjustment", () => sink += queued.GetQueuedWeaponAbilityActivationHitChanceAdjustment(Attacker, SkillType.Rifle, hostile), () => sink += GameServices.CombatQueuedAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(Attacker, SkillType.Rifle, hostile)),
                 ("ApplyCriticalDamageModifier", () => sink += modifiers.ApplyCriticalDamageModifier(Attacker, 100, 2, SkillType.Rifle, Defender), () => sink += GameServices.CombatDamageModifiers.ApplyCriticalDamageModifier(Attacker, 100, 2, SkillType.Rifle, Defender)),
                 ("GetSkillCriticalRatePercentAdjustment", () => sink += modifiers.GetSkillCriticalRatePercentAdjustment(Attacker, SkillType.Rifle), () => sink += GameServices.CombatDamageModifiers.GetSkillCriticalRatePercentAdjustment(Attacker, SkillType.Rifle)),
                 ("ApplyBackAttackDamageModifier", () => sink += rate.ApplyBackAttackDamageModifier(Attacker, Defender, SkillType.Rifle, 100), () => sink += GameServices.CombatRateModifiers.ApplyBackAttackDamageModifier(Attacker, Defender, SkillType.Rifle, 100)),
@@ -702,9 +702,9 @@ public class CombatFacadeAllocationTests
                 ("ApplyDamageDealtModifiers(13)", () => sink += modifiers.ApplyDamageDealtModifiers(Attacker, Defender, 100, SkillType.Rifle, CombatDamageType.Physical, false, true, true, null!, out _, 0, 0, true), () => sink += GameServices.CombatDamageModifiers.ApplyDamageDealtModifiers(Attacker, Defender, 100, SkillType.Rifle, CombatDamageType.Physical, false, true, true, null!, out _, 0, 0, true)),
                 ("ApplyDamageDealtModifiers(13, ability)", () => sink += modifiers.ApplyDamageDealtModifiers(Attacker, Defender, 100, SkillType.Rifle, CombatDamageType.Physical, true, true, true, hostile, out _), () => sink += GameServices.CombatDamageModifiers.ApplyDamageDealtModifiers(Attacker, Defender, 100, SkillType.Rifle, CombatDamageType.Physical, true, true, true, hostile, out _)),
                 ("ApplyDamageDealtModifiers(9)", () => sink += modifiers.ApplyDamageDealtModifiers(Attacker, Defender, 100), () => sink += GameServices.CombatDamageModifiers.ApplyDamageDealtModifiers(Attacker, Defender, 100)),
-                ("PrepareQueuedWeaponAbilityOpeningAttackAtActivation", () => bonus.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(Attacker, SkillType.Rifle), () => GameServices.CombatAbilityBonus.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(Attacker, SkillType.Rifle)),
-                ("StoreQueuedWeaponAbilityActivationCriticalRateBonus", () => bonus.StoreQueuedWeaponAbilityActivationCriticalRateBonus(Attacker, SkillType.Rifle, 5), () => GameServices.CombatAbilityBonus.StoreQueuedWeaponAbilityActivationCriticalRateBonus(Attacker, SkillType.Rifle, 5)),
-                ("StoreWeaponAbilityActivationIdleBonuses", () => bonus.StoreWeaponAbilityActivationIdleBonuses(Attacker, true, 1, 2, 3), () => GameServices.CombatAbilityBonus.StoreWeaponAbilityActivationIdleBonuses(Attacker, true, 1, 2, 3)),
+                ("PrepareQueuedWeaponAbilityOpeningAttackAtActivation", () => queued.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(Attacker, SkillType.Rifle), () => GameServices.CombatQueuedAbilityBonus.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(Attacker, SkillType.Rifle)),
+                ("StoreQueuedWeaponAbilityActivationCriticalRateBonus", () => queued.StoreQueuedWeaponAbilityActivationCriticalRateBonus(Attacker, SkillType.Rifle, 5), () => GameServices.CombatQueuedAbilityBonus.StoreQueuedWeaponAbilityActivationCriticalRateBonus(Attacker, SkillType.Rifle, 5)),
+                ("StoreWeaponAbilityActivationIdleBonuses", () => queued.StoreWeaponAbilityActivationIdleBonuses(Attacker, true, 1, 2, 3), () => GameServices.CombatQueuedAbilityBonus.StoreWeaponAbilityActivationIdleBonuses(Attacker, true, 1, 2, 3)),
                 ("ConsumeNextAbilityDamageBonus", () => sink += bonus.ConsumeNextAbilityDamageBonus(Attacker, PerkType.DoubleShot), () => sink += GameServices.CombatAbilityBonus.ConsumeNextAbilityDamageBonus(Attacker, PerkType.DoubleShot)),
                 ("GetNextAbilityStaminaCostAdjustment", () => sink += bonus.GetNextAbilityStaminaCostAdjustment(Attacker, PerkType.DoubleShot), () => sink += GameServices.CombatAbilityBonus.GetNextAbilityStaminaCostAdjustment(Attacker, PerkType.DoubleShot)),
                 ("ConsumeNextAbilityStaminaCostAdjustment", () => sink += bonus.ConsumeNextAbilityStaminaCostAdjustment(Attacker, PerkType.DoubleShot), () => sink += GameServices.CombatAbilityBonus.ConsumeNextAbilityStaminaCostAdjustment(Attacker, PerkType.DoubleShot)),
@@ -733,7 +733,7 @@ public class CombatFacadeAllocationTests
         }
     }
 
-    private sealed record HitParts(ICombatAbilityHitService Hit, ICombatHitEffectsService Effects);
+    private sealed record HitParts(ICombatAbilityHitService Hit, ICombatAbilityHitAdjustmentService Adjustment, ICombatHitEffectsService Effects);
 
     // The same world as the timing parts (a container of its own, the constant engine, the clock held still, a status table
     // for both creatures and the stat service that allocates nothing), with the ability hit and hit effects parts. The three
@@ -744,7 +744,7 @@ public class CombatFacadeAllocationTests
     {
         InstallTimingParts(scopes);
         var container = FacadeContainer.Current;
-        return new HitParts(container.Get<ICombatAbilityHitService>(), container.Get<ICombatHitEffectsService>());
+        return new HitParts(container.Get<ICombatAbilityHitService>(), container.Get<ICombatAbilityHitAdjustmentService>(), container.Get<ICombatHitEffectsService>());
     }
 
     [Test]
@@ -755,7 +755,7 @@ public class CombatFacadeAllocationTests
         var scopes = new List<IDisposable>();
         try
         {
-            var (hit, effects) = InstallHitParts(scopes);
+            var (hit, adjustment, effects) = InstallHitParts(scopes);
             var autoAttack = FacadeContainer.Current.Get<ICombatAutoAttackEffectsService>();
             var critical = FacadeContainer.Current.Get<ICombatCriticalHitEffectsService>();
             var defeated = FacadeContainer.Current.Get<ICombatDefeatedEnemyEffectsService>();
@@ -765,7 +765,7 @@ public class CombatFacadeAllocationTests
             var reads = new (string Name, Action Part, Action Forwarder)[]
             {
                 // Ability hit roll.
-                ("ApplyRangedAbilityTargetDefenseReduction", () => hit.ApplyRangedAbilityTargetDefenseReduction(Attacker, Defender, SkillType.Rifle), () => GameServices.CombatAbilityHit.ApplyRangedAbilityTargetDefenseReduction(Attacker, Defender, SkillType.Rifle)),
+                ("ApplyRangedAbilityTargetDefenseReduction", () => adjustment.ApplyRangedAbilityTargetDefenseReduction(Attacker, Defender, SkillType.Rifle), () => GameServices.CombatAbilityHitAdjustment.ApplyRangedAbilityTargetDefenseReduction(Attacker, Defender, SkillType.Rifle)),
                 ("ApplyGuardedHitNextAttackEffects", () => guardedEffects.ApplyGuardedHitNextAttackEffects(Attacker), () => GameServices.CombatGuardedHitEffects.ApplyGuardedHitNextAttackEffects(Attacker)),
                 ("SetAbilityHitResolutionOverride", () => hit.SetAbilityHitResolutionOverride(null), () => GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null)),
                 ("SetAutoAttackHitResolutionOverride", () => hit.SetAutoAttackHitResolutionOverride(null), () => GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null)),
@@ -804,7 +804,7 @@ public class CombatFacadeAllocationTests
         var scopes = new List<IDisposable>();
         try
         {
-            var (_, effects) = InstallHitParts(scopes);
+            var (_, _, effects) = InstallHitParts(scopes);
             var autoAttack = FacadeContainer.Current.Get<ICombatAutoAttackEffectsService>();
             var critical = FacadeContainer.Current.Get<ICombatCriticalHitEffectsService>();
             var defeated = FacadeContainer.Current.Get<ICombatDefeatedEnemyEffectsService>();
@@ -846,7 +846,7 @@ public class CombatFacadeAllocationTests
         var scopes = new List<IDisposable>();
         try
         {
-            var (hit, effects) = InstallHitParts(scopes);
+            var (hit, adjustment, effects) = InstallHitParts(scopes);
             var autoAttack = FacadeContainer.Current.Get<ICombatAutoAttackEffectsService>();
             var critical = FacadeContainer.Current.Get<ICombatCriticalHitEffectsService>();
             var defeated = FacadeContainer.Current.Get<ICombatDefeatedEnemyEffectsService>();
@@ -855,11 +855,11 @@ public class CombatFacadeAllocationTests
             var reads = new (string Name, Action Part, Action Forwarder)[]
             {
                 ("ApplyRecentDamagerDefeatedEnemyEffects", () => defeated.ApplyRecentDamagerDefeatedEnemyEffects(Defender), () => GameServices.CombatDefeatedEnemyEffects.ApplyRecentDamagerDefeatedEnemyEffects(Defender)),
-                ("GetAbilityCriticalRate", () => sink += hit.GetAbilityCriticalRate(Attacker, SkillType.Rifle, false, 0, Defender), () => sink += GameServices.CombatAbilityHit.GetAbilityCriticalRate(Attacker, SkillType.Rifle, false, 0, Defender)),
-                ("CalculateAbilityCriticalRating", () => sink += hit.CalculateAbilityCriticalRating(Attacker, SkillType.Rifle, false, 0, Defender), () => sink += GameServices.CombatAbilityHit.CalculateAbilityCriticalRating(Attacker, SkillType.Rifle, false, 0, Defender)),
+                ("GetAbilityCriticalRate", () => sink += adjustment.GetAbilityCriticalRate(Attacker, SkillType.Rifle, false, 0, Defender), () => sink += GameServices.CombatAbilityHitAdjustment.GetAbilityCriticalRate(Attacker, SkillType.Rifle, false, 0, Defender)),
+                ("CalculateAbilityCriticalRating", () => sink += adjustment.CalculateAbilityCriticalRating(Attacker, SkillType.Rifle, false, 0, Defender), () => sink += GameServices.CombatAbilityHitAdjustment.CalculateAbilityCriticalRating(Attacker, SkillType.Rifle, false, 0, Defender)),
                 ("TryResolveAbilityHit", () => sink += hit.TryResolveAbilityHit(Attacker, Defender, SkillType.Rifle, PerkType.DoubleShot, out _) ? 1 : 0, () => sink += GameServices.CombatAbilityHit.TryResolveAbilityHit(Attacker, Defender, SkillType.Rifle, PerkType.DoubleShot, out _) ? 1 : 0),
-                ("GetHitChanceAgainstSunderedTargetAdjustment", () => sink += hit.GetHitChanceAgainstSunderedTargetAdjustment(Attacker, Defender), () => sink += GameServices.CombatAbilityHit.GetHitChanceAgainstSunderedTargetAdjustment(Attacker, Defender)),
-                ("GetCriticalRateAgainstSunderedTargetAdjustment", () => sink += hit.GetCriticalRateAgainstSunderedTargetAdjustment(Attacker, Defender), () => sink += GameServices.CombatAbilityHit.GetCriticalRateAgainstSunderedTargetAdjustment(Attacker, Defender)),
+                ("GetHitChanceAgainstSunderedTargetAdjustment", () => sink += adjustment.GetHitChanceAgainstSunderedTargetAdjustment(Attacker, Defender), () => sink += GameServices.CombatAbilityHitAdjustment.GetHitChanceAgainstSunderedTargetAdjustment(Attacker, Defender)),
+                ("GetCriticalRateAgainstSunderedTargetAdjustment", () => sink += adjustment.GetCriticalRateAgainstSunderedTargetAdjustment(Attacker, Defender), () => sink += GameServices.CombatAbilityHitAdjustment.GetCriticalRateAgainstSunderedTargetAdjustment(Attacker, Defender)),
                 ("ConsumeAutoAttackCycleDamageBonus", () => sink += effects.ConsumeAutoAttackCycleDamageBonus(Attacker, SkillType.Rifle), () => sink += GameServices.CombatHitEffects.ConsumeAutoAttackCycleDamageBonus(Attacker, SkillType.Rifle)),
                 ("ApplyDamageDealtEffects(auto)", () => effects.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle), () => GameServices.CombatHitEffects.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle)),
                 ("ApplyDamageDealtEffects(ability)", () => effects.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle, CombatDamageType.Physical, CombatDamageDeliveryType.Direct, true), () => GameServices.CombatHitEffects.ApplyDamageDealtEffects(Attacker, Defender, 10, SkillType.Rifle, CombatDamageType.Physical, CombatDamageDeliveryType.Direct, true)),
@@ -1237,7 +1237,7 @@ public class CombatFacadeAllocationTests
                 ("ApplyAbilityActivatedEffects(no ability)", () => part.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.DoubleShot1, null!, abilities.Single), () => GameServices.CombatAbilityActivation.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.DoubleShot1, null!, abilities.Single)),
                 ("ApplyHitPointSpendAbilityEffects", () => FacadeContainer.Current.Get<ICombatAbilityCostEffectsService>().ApplyHitPointSpendAbilityEffects(Attacker, 10, 12), () => GameServices.CombatAbilityCostEffects.ApplyHitPointSpendAbilityEffects(Attacker, 10, 12)),
                 ("ApplyHitPointSpendAbilityEffects(0)", () => FacadeContainer.Current.Get<ICombatAbilityCostEffectsService>().ApplyHitPointSpendAbilityEffects(Attacker, 0), () => GameServices.CombatAbilityCostEffects.ApplyHitPointSpendAbilityEffects(Attacker, 0)),
-                ("ForgetActivationState", () => part.ForgetActivationState(Attacker), () => GameServices.CombatAbilityActivation.ForgetActivationState(Attacker)),
+                ("ForgetActivationState", () => FacadeContainer.Current.Get<ICombatAbilityOffenseEffectsService>().ForgetActivationState(Attacker), () => GameServices.CombatAbilityOffenseEffects.ForgetActivationState(Attacker)),
             };
 
             foreach (var (name, own, forwarder) in reads)

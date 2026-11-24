@@ -36,14 +36,14 @@ public static class AbilityInternals
             FacadeForwarder.For<ICombatRepeatedTargetService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatDamageReflectionService>(),
             FacadeForwarder.For<ICombatAbilityBonusService>());
         var statusApplication = new AbilityStatusApplicationService(null!, null!, null!, impactState, FacadeForwarder.For<ICombatAbilityBonusService>());
-        var damageStage = new AbilityDamageStageService(damageInput, impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ICombatAbilityHitService>(),
+        var damageStage = new AbilityDamageStageService(damageInput, impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ICombatAbilityHitAdjustmentService>(),
             FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatDamageReflectionService>(), FacadeForwarder.For<ICombatFeedbackService>(),
             FacadeForwarder.For<ICombatCriticalHitEffectsService>(), magnitude, null!);
         var impactMessage = new AbilityImpactMessageService(null!, null!, FacadeForwarder.For<ICombatFeedbackService>());
         var impactVisual = new AbilityImpactVisualService(null!);
         var observers = Array.Empty<IAbilityImpactObserver>();
         var lifecycle = new AbilityImpactLifecycleService(impactState, null!, null!, damageDelivery, null!, FacadeForwarder.For<ICombatQueriesService>(),
-            FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatResourcesService>(),
+            FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatQueuedAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatResourcesService>(),
             FacadeForwarder.For<ICombatCriticalHitEffectsService>());
         var hostileImpact = new AbilityHostileImpactService(impactState, observers, null!, null!, FacadeForwarder.For<ICombatResourcesService>(),
             FacadeForwarder.For<ICombatAbilityImpactService>(), damageDelivery, statusApplication, darkForce, impactVisual);

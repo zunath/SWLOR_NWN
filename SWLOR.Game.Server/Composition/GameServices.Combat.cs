@@ -28,14 +28,26 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The defense riders of an ability activation (evasion, deflection, ally defense), a part of combat.</summary>
         public static ICombatAbilityDefenseEffectsService CombatAbilityDefenseEffects => FacadeAccessor.Resolve<ICombatAbilityDefenseEffectsService>();
 
+        /// <summary>The queued ability bonuses of combat (opening auto-attack, queued weapon ability and idle activation bonuses), a part of combat.</summary>
+        public static ICombatQueuedAbilityBonusService CombatQueuedAbilityBonus => FacadeAccessor.Resolve<ICombatQueuedAbilityBonusService>();
+
         /// <summary>The ability hit roll of combat, a part of combat.</summary>
         public static ICombatAbilityHitService CombatAbilityHit => FacadeAccessor.Resolve<ICombatAbilityHitService>();
+
+        /// <summary>The ability critical rate and hit adjustments of combat, a part of combat.</summary>
+        public static ICombatAbilityHitAdjustmentService CombatAbilityHitAdjustment => FacadeAccessor.Resolve<ICombatAbilityHitAdjustmentService>();
 
         /// <summary>The ability impact part of combat, a part of combat.</summary>
         public static ICombatAbilityImpactService CombatAbilityImpact => FacadeAccessor.Resolve<ICombatAbilityImpactService>();
 
         /// <summary>How Force affinity and combat readiness scale an ability's magnitude, a part of combat.</summary>
         public static ICombatAbilityMagnitudeService CombatAbilityMagnitude => FacadeAccessor.Resolve<ICombatAbilityMagnitudeService>();
+
+        /// <summary>The offense riders of an ability activation (movement speed, area rewards, Force Attack, sequence, resource restore), a part of combat.</summary>
+        public static ICombatAbilityOffenseEffectsService CombatAbilityOffenseEffects => FacadeAccessor.Resolve<ICombatAbilityOffenseEffectsService>();
+
+        /// <summary>The weapon family riders of an ability activation (Heavy Vibroblade, Beast, Vibroknife, Pistol, Lightsaber), a part of combat.</summary>
+        public static ICombatAbilityWeaponActivationService CombatAbilityWeaponActivation => FacadeAccessor.Resolve<ICombatAbilityWeaponActivationService>();
 
         /// <summary>The combat activity records, a part of combat.</summary>
         public static ICombatActivityService CombatActivity => FacadeAccessor.Resolve<ICombatActivityService>();

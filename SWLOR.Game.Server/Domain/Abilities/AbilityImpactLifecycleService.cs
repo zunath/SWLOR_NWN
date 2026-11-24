@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly IStatusEffectCombatEventService _statusEffectCombatEvents;
         private readonly ICombatQueriesService _queries;
         private readonly ICombatAbilityBonusService _abilityBonus;
+        private readonly ICombatQueuedAbilityBonusService _queuedAbilityBonus;
         private readonly ICombatAbilityImpactService _abilityImpact;
         private readonly ICombatResourcesService _resources;
         private readonly ICombatCriticalHitEffectsService _criticalHitEffects;
@@ -36,6 +37,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             IStatusEffectCombatEventService statusEffectCombatEvents,
             ICombatQueriesService queries,
             ICombatAbilityBonusService abilityBonus,
+            ICombatQueuedAbilityBonusService queuedAbilityBonus,
             ICombatAbilityImpactService abilityImpact,
             ICombatResourcesService resources,
             ICombatCriticalHitEffectsService criticalHitEffects)
@@ -47,6 +49,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _statusEffectCombatEvents = statusEffectCombatEvents;
             _queries = queries;
             _abilityBonus = abilityBonus;
+            _queuedAbilityBonus = queuedAbilityBonus;
             _abilityImpact = abilityImpact;
             _resources = resources;
             _criticalHitEffects = criticalHitEffects;
@@ -428,7 +431,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         protected virtual int GetPersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType) => _abilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(creature, skillType);
 
         protected virtual (int DamageBonus, int CriticalRatePercentAdjustment, int CriticalDamagePercentAdjustment) ConsumeQueuedWeaponAbilityBonuses(uint creature, SkillType skillType) =>
-            _abilityBonus.ConsumeQueuedWeaponAbilityBonuses(creature, skillType);
+            _queuedAbilityBonus.ConsumeQueuedWeaponAbilityBonuses(creature, skillType);
 
         protected virtual (int DMGBonus, int CriticalRatePercentAdjustment, int EnmityBonus) ConsumeNextAttackGuardedHitBonuses(uint creature) =>
             _abilityBonus.ConsumeNextAttackGuardedHitBonuses(creature);

@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly IAbilityDamageInputService _damageInput;
         private readonly IAbilityImpactState _impactState;
         private readonly IPerkService _perk;
-        private readonly ICombatAbilityHitService _abilityHit;
+        private readonly ICombatAbilityHitAdjustmentService _abilityHitAdjustment;
         private readonly ICombatDamageModifiersService _damageModifiers;
         private readonly ICombatDamageTakenService _damageTaken;
         private readonly ICombatDamageReflectionService _damageReflection;
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             IAbilityDamageInputService damageInput,
             IAbilityImpactState impactState,
             IPerkService perk,
-            ICombatAbilityHitService abilityHit,
+            ICombatAbilityHitAdjustmentService abilityHitAdjustment,
             ICombatDamageModifiersService damageModifiers,
             ICombatDamageTakenService damageTaken,
             ICombatDamageReflectionService damageReflection,
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _damageInput = damageInput;
             _impactState = impactState;
             _perk = perk;
-            _abilityHit = abilityHit;
+            _abilityHitAdjustment = abilityHitAdjustment;
             _damageModifiers = damageModifiers;
             _damageTaken = damageTaken;
             _damageReflection = damageReflection;
@@ -303,7 +303,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _damageTaken.ApplyDamageTakenModifiers(defender, damage, attacker, damageType, targetStatusDamagePercentAdjustment: targetStatusDamagePercentAdjustment, typedLeadershipReductionAlreadyApplied: typedLeadershipReductionAlreadyApplied);
 
         protected virtual int CalculateAbilityCriticalRating(uint attacker, SkillType skillType, bool isAreaAbility, int criticalRateAdjustment, uint defender) =>
-            _abilityHit.CalculateAbilityCriticalRating(attacker, skillType, isAreaAbility, criticalRateAdjustment, defender);
+            _abilityHitAdjustment.CalculateAbilityCriticalRating(attacker, skillType, isAreaAbility, criticalRateAdjustment, defender);
 
         protected virtual (int Damage, int CriticalRating, bool WasCriticalDowngraded) CalculateDamageWithCriticalMitigation(uint defender, int attackerAttack, int attackerDMG, int attackerStat, int defenderDefense, int defenderStat, int critical) =>
             _damageModifiers.CalculateDamageWithCriticalMitigation(defender, attackerAttack, attackerDMG, attackerStat, defenderDefense, defenderStat, critical);

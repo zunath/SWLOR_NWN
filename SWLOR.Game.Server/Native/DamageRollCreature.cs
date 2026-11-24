@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Native
             }
 
             var openingCriticalDamageAdjustment = isLandedAttack
-                ? GameServices.CombatAbilityBonus.ConsumeOpeningAutoAttackCriticalDamageAdjustment(attacker.m_idSelf)
+                ? GameServices.CombatQueuedAbilityBonus.ConsumeOpeningAutoAttackCriticalDamageAdjustment(attacker.m_idSelf)
                 : 0;
             damage = GameServices.CombatDamageModifiers.ApplyCriticalDamageModifier(
                 attacker.m_idSelf,

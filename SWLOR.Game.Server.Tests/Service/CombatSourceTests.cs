@@ -468,7 +468,7 @@ public class CombatSourceTests
     [Test]
     public void ReflectionReachesTheActivationSequenceTableOfTheInstalledContainer()
     {
-        // The hostile ability sequence per activator moved from a static field of Combat to the ability activation part; a test
+        // The hostile ability sequence per activator moved from a static field of Combat to the ability offense effects part; a test
         // that reads it by name gets the installed container's table, which Combat's forget forwarder clears.
         using var facades = new FacadeContainer();
         using var installed = facades.Install();
@@ -478,9 +478,9 @@ public class CombatSourceTests
         field.Should().NotBeNull();
         field!.IsStatic.Should().BeFalse();
         field.IsInitOnly.Should().BeTrue();
-        field.DeclaringType.Should().Be(typeof(CombatAbilityActivationService));
+        field.DeclaringType.Should().Be(typeof(CombatAbilityOffenseEffectsService));
         var table = CombatMembers.FieldValue<System.Collections.IDictionary>(name);
-        table.Should().BeSameAs(field.GetValue(facades.Get<ICombatAbilityActivationService>()));
+        table.Should().BeSameAs(field.GetValue(facades.Get<ICombatAbilityOffenseEffectsService>()));
 
         // A record put into the reflected table is the one Combat's forget forwarder removes.
         const uint creature = 0xFFFFFFF3;

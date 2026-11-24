@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatHitEffectsService _hitEffects;
         private readonly ICombatDefeatedEnemyEffectsService _defeatedEnemyEffects;
         private readonly ICombatDefenseMemoryService _defenseMemory;
-        private readonly ICombatAbilityActivationService _abilityActivation;
+        private readonly ICombatAbilityOffenseEffectsService _abilityOffense;
         private readonly ICombatAbilityImpactService _abilityImpact;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatHitEffectsService hitEffects,
             ICombatDefeatedEnemyEffectsService defeatedEnemyEffects,
             ICombatDefenseMemoryService defenseMemory,
-            ICombatAbilityActivationService abilityActivation,
+            ICombatAbilityOffenseEffectsService abilityOffense,
             ICombatAbilityImpactService abilityImpact,
             IStatService stat,
             IStatusEffectService statusEffect,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _hitEffects = hitEffects;
             _defeatedEnemyEffects = defeatedEnemyEffects;
             _defenseMemory = defenseMemory;
-            _abilityActivation = abilityActivation;
+            _abilityOffense = abilityOffense;
             _abilityImpact = abilityImpact;
             _stat = stat;
             _statusEffect = statusEffect;
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _combatActivity.ForgetActivityState(creature);
             _defenseMemory.ForgetDefenseMemory(creature);
             _suppression.ForgetSuppressionState(creature);
-            _abilityActivation.ForgetActivationState(creature);
+            _abilityOffense.ForgetActivationState(creature);
             _hitEffects.ForgetHitEffectState(creature);
             _abilityImpact.ForgetImpactState(creature);
             _combatActivity.ForgetOpeningActivityState(creature);

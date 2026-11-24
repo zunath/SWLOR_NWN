@@ -75,7 +75,7 @@ public class CombatAbilityTranscriptTests
             bench.Step("activate with no ability" + tag, () =>
                 activation.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.Invalid, null, null));
             bench.Step("track a queued weapon ability" + tag, () => activation.TrackQueuedWeaponAbilityUse(Attacker, Ability(SkillType.Pistol)));
-            bench.Step("spend hit points on an ability" + tag, () => activation.ApplyHitPointSpendAbilityEffects(Attacker, 30, 30));
+            bench.Step("spend hit points on an ability" + tag, () => bench.Get<ICombatAbilityCostEffectsService>().ApplyHitPointSpendAbilityEffects(Attacker, 30, 30));
             bench.Step("forget the activator" + tag, () => activation.ForgetActivationState(Attacker));
         }
 

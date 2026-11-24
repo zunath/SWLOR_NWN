@@ -46,6 +46,15 @@ public class ConvertedServicesTests
     }
 
     [Test]
+    public void CombatRecorder_is_listed_with_its_ability_records_part()
+    {
+        // The recorder split: the session core is a store behind ICombatRecordSession, not a service; the ability records are a part.
+        var recorder = List.Services.Should().ContainSingle(service => service.Name == "CombatRecorder").Subject;
+        recorder.Domain.Should().Be("Combat");
+        recorder.Extras.Select(extra => extra.Name).Should().Equal("CombatRecordAbility");
+    }
+
+    [Test]
     public void Every_converted_service_has_an_interface_an_instance_class_and_a_GameServices_property()
     {
         Fail(ConvertedServiceRules.MissingPieces(List, ArchitectureProject.Facts), "A converted service is missing a piece");

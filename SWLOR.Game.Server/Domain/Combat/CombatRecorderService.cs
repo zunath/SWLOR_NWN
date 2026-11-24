@@ -34,8 +34,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly Dictionary<(uint Target, string Key), (int SourceId, CombatRecordAttribution Attribution)> _temporaryHitPointGrants = new();
         private readonly List<CombatRecordWriter> _unfinishedWriters = new();
         private readonly Dictionary<uint, ulong> _deathFrames = new();
-        private uint _toggleDeactivatedBy = OBJECT_INVALID;
-        private ulong _toggleDeactivatedFrame;
         private Dictionary<AbilityDetail, FeatType> _abilityFeats;
 
         private IDisposable _snapshotSchedule;
@@ -397,6 +395,21 @@ namespace SWLOR.Game.Server.Domain.Combat
         }
 
         /// <summary>
+        /// The innermost open scope as it is, with no recording number set, or false when none is open.
+        /// </summary>
+        public bool TryGetInnermostAttribution(out CombatRecordAttribution attribution)
+        {
+            if (_attributionDepth <= 0)
+            {
+                attribution = default;
+                return false;
+            }
+
+            attribution = _attributions[_attributionDepth - 1];
+            return true;
+        }
+
+        /// <summary>
         /// Attribution for damage split off a hit and applied later: the attacker's own open scope
         /// (the ability that hit), or a weapon swing when no scope is open.
         /// </summary>
@@ -492,7 +505,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// active ability impact, then the actor alone. Used where another creature's scope
         /// must not lend its source to the actor.
         /// </summary>
-        private CombatRecordAttribution ResolveOwnAttribution(uint actor)
+        public CombatRecordAttribution ResolveOwnAttribution(uint actor)
         {
             if (!GetIsObjectValid(actor))
                 return ResolveAttribution(actor);
@@ -520,7 +533,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// The activated feat when known, else the feat the ability is registered under.
         /// </summary>
-        private int GetFeatCode(AbilityDetail ability, FeatType feat)
+        public int GetFeatCode(AbilityDetail ability, FeatType feat)
         {
             if (feat != FeatType.Invalid)
                 return (int)feat;
@@ -533,133 +546,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         #endregion
 
         #region Abilities
-
-        public void RecordAbilityCast(
-            uint activator, uint target, Location targetLocation, AbilityDetail ability, FeatType feat, float activationDelay,
-            bool isToggleOff = false)
-        {
-            if (ability == null || !_session.IsRecorded(activator, target))
-                return;
-
-            var recordEvent = CombatRecordEvent.AbilityCast(
-                _session.GetParticipantId(activator),
-                _session.GetParticipantId(target),
-                ability.Name,
-                (int)feat,
-                ability.AbilityLevel,
-                (int)ability.ActivationType,
-                (int)Math.Round(activationDelay * 1000f),
-                isToggleOff);
-            _session.Enqueue(_session.WithTargetLocation(recordEvent, target, targetLocation));
-        }
-
-        /// <summary>
-        /// Records an attempted activation the ability's rules refused, with the refusal shown.
-        /// </summary>
-        /// <param name="atCompletion">True when the cast was refused as it completed.</param>
-        public void RecordAbilityDenied(
-            uint activator, uint target, AbilityDetail ability, FeatType feat, string reason, bool atCompletion)
-        {
-            if (ability == null || !_session.IsRecorded(activator, target))
-                return;
-
-            _session.Enqueue(CombatRecordEvent.AbilityDenied(
-                _session.GetParticipantId(activator),
-                _session.GetParticipantId(target),
-                ability.Name,
-                (int)feat,
-                ability.AbilityLevel,
-                reason,
-                atCompletion));
-        }
-
-        /// <summary>
-        /// Records a cast or channel stopped before it completed. A damage interruption names the
-        /// creature that dealt the damage; an <see cref="CombatRecordInterruptCause.Other"/> stop made
-        /// inside another creature's scope is that creature's crowd control.
-        /// </summary>
-        public void RecordAbilityInterrupted(
-            uint activator, AbilityDetail ability, CombatRecordInterruptCause cause, uint damagedBy = OBJECT_INVALID)
-        {
-            if (ability == null || !_session.IsInRecordedArea(activator))
-                return;
-
-            var interrupter = default(CombatRecordAttribution);
-            if (cause == CombatRecordInterruptCause.Damage)
-            {
-                if (GetIsObjectValid(damagedBy) && damagedBy != activator)
-                    interrupter = ResolveOwnAttribution(damagedBy);
-            }
-            else if (cause == CombatRecordInterruptCause.Other &&
-                     _attributionDepth > 0 &&
-                     _attributions[_attributionDepth - 1].Actor != activator)
-            {
-                interrupter = _attributions[_attributionDepth - 1];
-                cause = CombatRecordInterruptCause.CrowdControl;
-            }
-
-            _session.Enqueue(CombatRecordEvent.AbilityInterrupted(
-                _session.GetParticipantId(activator),
-                ability.Name,
-                GetFeatCode(ability, FeatType.Invalid),
-                ability.AbilityLevel,
-                cause,
-                _session.GetParticipantId(interrupter.Actor),
-                interrupter.Kind,
-                interrupter.Name,
-                interrupter.Code));
-        }
-
-        public void RecordAbilityQueued(uint activator, uint target, AbilityDetail ability, FeatType feat)
-        {
-            if (ability == null || !_session.IsRecorded(activator, target))
-                return;
-
-            _session.Enqueue(CombatRecordEvent.AbilityQueued(
-                _session.GetParticipantId(activator),
-                _session.GetParticipantId(target),
-                ability.Name,
-                (int)feat,
-                ability.AbilityLevel));
-        }
-
-        public void RecordAbilityImpact(
-            uint activator, uint target, Location targetLocation, AbilityDetail ability, FeatType feat, AbilityImpactSummary summary)
-        {
-            if (ability == null || (!_session.IsRecorded(activator, target) && !_session.AnyInRecordedArea(summary?.ImpactedTargets)))
-                return;
-
-            var recordEvent = CombatRecordEvent.AbilityImpact(
-                _session.GetParticipantId(activator),
-                _session.GetParticipantId(target),
-                ability.Name,
-                (int)feat,
-                ability.AbilityLevel,
-                summary?.ImpactedTargetCount ?? 0,
-                summary?.CriticalHitCount ?? 0,
-                summary?.AttributedDamage ?? 0);
-            _session.Enqueue(_session.WithTargetLocation(recordEvent, target, targetLocation));
-        }
-
-        /// <summary>
-        /// Notes that an activation turned a toggled stance off, which is a use of the ability
-        /// even though its activation action reports no impact.
-        /// </summary>
-        public void NoteToggleDeactivated(uint activator)
-        {
-            _toggleDeactivatedBy = activator;
-            _toggleDeactivatedFrame = _session.CurrentFrame();
-        }
-
-        /// <summary>
-        /// Whether the activation that just ran turned <paramref name="activator"/>'s stance off.
-        /// </summary>
-        public bool TakeToggleDeactivation(uint activator)
-        {
-            var deactivated = _toggleDeactivatedBy == activator && _toggleDeactivatedFrame == _session.CurrentFrame();
-            _toggleDeactivatedBy = OBJECT_INVALID;
-            return deactivated;
-        }
 
         /// <summary>
         /// Records a later pulse of a cast, such as a damage field's tick or an emitter's pulse.
@@ -680,42 +566,6 @@ namespace SWLOR.Game.Server.Domain.Combat
                 summary?.CriticalHitCount ?? 0,
                 summary?.AttributedDamage ?? 0,
                 isRecurring: true));
-        }
-
-        /// <summary>
-        /// Wraps an ability's activation requirements: measures the FP and STM they take and
-        /// attributes resource changes inside the scope (including consumed items) to the
-        /// ability's cost. Hit points an ability spends are self-damage during its impact and
-        /// are recorded as damage attributed to the cost.
-        /// </summary>
-        public CombatRecordAbilityCostScope BeginAbilityCost(uint activator, AbilityDetail ability, FeatType feat = FeatType.Invalid)
-        {
-            if (!IsRecording || ability == null || !_session.IsInRecordedArea(activator))
-                return default;
-
-            var attribution = BeginAttribution(activator, CombatRecordSourceKind.AbilityCost, ability.Name, (int)feat, ability.AbilityLevel);
-            return new CombatRecordAbilityCostScope(
-                activator,
-                ability,
-                (int)feat,
-                GetCurrentFP(activator),
-                GetCurrentStamina(activator),
-                attribution);
-        }
-
-        public void CompleteAbilityCost(in CombatRecordAbilityCostScope cost)
-        {
-            cost.Attribution.Dispose();
-            if (!IsRecording || !GetIsObjectValid(cost.Activator))
-                return;
-
-            _session.Enqueue(CombatRecordEvent.AbilityCost(
-                _session.GetParticipantId(cost.Activator),
-                cost.Ability.Name,
-                cost.Feat,
-                cost.Ability.AbilityLevel,
-                cost.FPBefore - GetCurrentFP(cost.Activator),
-                cost.StaminaBefore - GetCurrentStamina(cost.Activator)));
         }
 
         /// <param name="attackResult">The native attack result: 1/7 hit, 2 deflect, 3 critical, 4 miss.</param>

@@ -20,15 +20,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
     {
         private IAbilityService Ability { get; }
         private ICombatRecorderService CombatRecorder { get; }
+        private ICombatRecordAbilityService CombatRecordAbility { get; }
         private IPartyService Party { get; }
         private IStatusEffectService StatusEffect { get; }
         private IStatusEffectApplicationService StatusEffectApplication { get; }
         private IStatusEffectCatalogService StatusEffectCatalog { get; }
 
-        public StatusAbilityEffects(IAbilityService ability, ICombatRecorderService combatRecorder, IPartyService party, IStatusEffectService statusEffect, IStatusEffectApplicationService statusEffectApplication, IStatusEffectCatalogService statusEffectCatalog)
+        public StatusAbilityEffects(IAbilityService ability, ICombatRecorderService combatRecorder, ICombatRecordAbilityService combatRecordAbility, IPartyService party, IStatusEffectService statusEffect, IStatusEffectApplicationService statusEffectApplication, IStatusEffectCatalogService statusEffectCatalog)
         {
             Ability = ability;
             CombatRecorder = combatRecorder;
+            CombatRecordAbility = combatRecordAbility;
             Party = party;
             StatusEffect = statusEffect;
             StatusEffectApplication = statusEffectApplication;
@@ -43,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
             StatusEffect.RemoveStatusEffect(activator, type, false);
             SendMessageToPC(activator, $"{StatusEffectCatalog.GetStatusEffectName(type)} deactivated.");
             if (CombatRecorder.IsRecording)
-                CombatRecorder.NoteToggleDeactivated(activator);
+                CombatRecordAbility.NoteToggleDeactivated(activator);
             return false;
         }
 

@@ -130,6 +130,20 @@ public class GameServicesAllocationTests
     }
 
     [Test]
+    public void The_ability_cost_scope_every_activation_opens_allocates_nothing_while_no_recording_runs()
+    {
+        // UsePerkFeat opens a cost scope on every activation: one read of the accessor's slot and one interface call, which
+        // returns the inactive scope before it reads anything else.
+        var instance = _host.Provider.GetRequiredService<ICombatRecordAbilityService>();
+        var scope = default(CombatRecordAbilityCostScope);
+
+        Allocated(() => scope = GameServices.CombatRecordAbility.BeginAbilityCost(1, null!)).Should().Be(0);
+        Allocated(() => scope = instance.BeginAbilityCost(1, null!)).Should().Be(0);
+        GameServices.CombatRecordAbility.Should().BeSameAs(instance);
+        scope.Should().Be(default(CombatRecordAbilityCostScope));
+    }
+
+    [Test]
     public void A_call_through_GameServices_allocates_what_the_call_on_the_instance_allocates()
     {
         var instance = _host.Provider.GetRequiredService<IServerTaskService>();

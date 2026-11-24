@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         public void Dispose()
         {
             if (IsActive)
-                CombatRecorder.CompleteAbilityCost(this);
+                CombatRecordAbility.CompleteAbilityCost(this);
         }
     }
 }

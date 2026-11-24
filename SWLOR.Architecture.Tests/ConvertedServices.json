@@ -24,7 +24,7 @@
     { "name": "CombatDeflectionReaction", "domain": "Combat" },
     { "name": "CombatPoint", "domain": "Combat" },
     { "name": "CombatRating", "domain": "Combat" },
-    { "name": "CombatRecorder", "domain": "Combat" },
+    { "name": "CombatRecorder", "domain": "Combat", "extras": [ { "part": "CombatRecordAbility" } ] },
     { "name": "Communication", "domain": "Social", "extras": [ { "part": "CommunicationAudience" }, { "part": "CommunicationMessageSplit" } ] },
     { "name": "CompanionControl", "domain": "Creatures", "extras": [ { "part": "CompanionControlStore" } ] },
     { "name": "CompanionPositioning", "domain": "Creatures" },

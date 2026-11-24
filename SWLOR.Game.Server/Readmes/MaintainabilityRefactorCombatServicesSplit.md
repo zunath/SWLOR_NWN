@@ -727,7 +727,7 @@ coordinator decisions that take this guide's recommendation.
 
 ## Progress
 
-P5-7a: this guide (2026-11-18), revised after the coordinator's review. P5-7b: the proof (2026-11-18, "P5-7b as built" below). P5-7c: the damage roll, the defense memory and the serializer cut (2026-11-18, "P5-7c as built" below). P5-7d: the rate and repeated-target parts (2026-11-21, "P5-7d as built" below). P5-7e1: the damage taken effects and reflection parts (2026-11-23, "P5-7e1 as built" below). P5-7j1: the recorder session core (2026-11-23, "P5-7j1 as built" below). P5-7i1: the ability activation defense and cost parts (2026-11-23, "P5-7i1 as built" below). P5-7e2: the guarded hit, its effects and the guard retaliation parts (2026-11-24, "P5-7e2 as built" below). P5-7j2: the recorder ability records (2026-11-24, "P5-7j2 as built" below). P5-7f1: the dealt effects and triggered damage parts (2026-11-24, "P5-7f1 as built" below). P5-7i2: the ability activation offense and weapon parts (2026-11-24, "P5-7i2 as built" below). Next: P5-7f2, P5-7g and P5-7j3 can start.
+P5-7a: this guide (2026-11-18), revised after the coordinator's review. P5-7b: the proof (2026-11-18, "P5-7b as built" below). P5-7c: the damage roll, the defense memory and the serializer cut (2026-11-18, "P5-7c as built" below). P5-7d: the rate and repeated-target parts (2026-11-21, "P5-7d as built" below). P5-7e1: the damage taken effects and reflection parts (2026-11-23, "P5-7e1 as built" below). P5-7j1: the recorder session core (2026-11-23, "P5-7j1 as built" below). P5-7i1: the ability activation defense and cost parts (2026-11-23, "P5-7i1 as built" below). P5-7e2: the guarded hit, its effects and the guard retaliation parts (2026-11-24, "P5-7e2 as built" below). P5-7j2: the recorder ability records (2026-11-24, "P5-7j2 as built" below). P5-7f1: the dealt effects and triggered damage parts (2026-11-24, "P5-7f1 as built" below). P5-7i2: the ability activation offense and weapon parts (2026-11-24, "P5-7i2 as built" below). P5-7j3: the recorder damage records and the session notice (2026-11-24, "P5-7j3 as built" below). Next: P5-7f2 and P5-7g can start.
 
 ### P5-7b as built (2026-11-18)
 
@@ -1387,3 +1387,77 @@ Branch `claude/mr-p5-7i2`, base `b7313553f` (the P5-7i1 record).
     The driver source, the commands, the readouts, the normalized chat and the screenshots are in `C:/Temp/mr-p5-7i2/evidence/{base,head,driver}/` (kept outside the repository).
   - *Not run:* the `-Check` scripts (content, facade, clock) and `ExportPlayerMessageAudit.ps1 -Check`, which the agent rules leave to the owner; `CombatSim` (this change touches no rule); the hot reload check.
     `PlayerMessageAudit.json` has no row for the activation files and the moved code sends no player message, so it is unchanged.
+
+### P5-7j3 as built (2026-11-24)
+
+Branch `claude/mr-p5-7j3`, base `d8611b8ab` (the P5-7i2 record).
+
+- **`CombatRecordDamageService`** (`ICombatRecordDamageService` and `ICombatRecordingSessionListener`, 482 lines, interface 91, **2 services**: the session core and the recorder stay-part, both
+  plain) and **`CombatRecorderService`** (stay, 884 lines, 1,267 before; 7 services, unchanged). Members moved, bodies as they were: `RecordDamageApplied`, `RecordDamageEvents`,
+  `ResolveDamageAttribution`, `RecordHealingApplied` (and `ReleaseAwaitingHealFor`), `RecordTemporaryHitPointPoolRemoving`, `RecordTemporaryHitPointsTrimmed`,
+  `RecordTemporaryHitPointsGranted`, the `RecordCreatureDeath` and `RecordPlayerDeath` handlers, `RecordRespawn`, `RecordResurrection`, `RecordSubdual`, `KeepLethalHitPoints`, the `KeepHitPointsLeftByHit(int, uint)`
+  overload, `RecordDeath`, `IsDeathRecorded`, `EnqueueDeath`, `EnqueueSubdual`, the two tables and the two frame-window constants. `RecordPvpHealingReduced` stays (the map's stay list).
+  The part keeps two `protected virtual` native seams (`GetHitPointsExcludingTemporary`, `CaptureTemporaryHitPointPools`), moved from the recorder so a test double answers them as it did.
+- **The session notice.** `ICombatRecordingSessionListener` (`OnRecordingStarted`, `OnRecordingStopped`) has its list in the stay-part (`_sessionListeners`, `[ReloadState(Runtime)]`, a repeat registration keeps one
+  entry, `RegisterSessionListener` on `ICombatRecorderService`). `Start` fires `OnRecordingStarted` where it cleared the part's tables (after `_session.Reset()`, before the writer is created and before `TakeSnapshots`)
+  and `Stop` fires `OnRecordingStopped` where it cleared them (last, after the reset); both call `RequireSessionListeners`, which throws `InvalidOperationException` on an empty list. The damage part registers from
+  `RegisterSessionListener()`, a `Rerun` boot handler on `OnModuleCacheBefore`, and clears its two tables on both notices.
+- **Departures from the map.**
+  - **Two tables, not three, and two services, not three.** P5-7j1 moved `_lastDamageSources` into the core (`Reset` clears it), so the notice clears `_temporaryHitPointGrants` and `_deathFrames` only, and both are
+    `[ReloadState(ReloadStateKind.Runtime)]`. The part needs no `impactState`: the attribution reads it makes go through the recorder stay-part.
+  - **Four members promoted on `ICombatRecorderService`:** `ResolveAttribution`, `ResolveActiveAbilityAttribution` and `IsOwnedBy` (private before) and `RegisterSessionListener` (new). `TryGetInnermostAttribution` (P5-7j2) is
+    used for the two reads of the attribution stack that were direct (`ResolveDamageAttribution`, `RecordResurrection`); those two bodies change in that read only.
+  - **The part is its own service in the registries**, as P5-7j2's: `ConvertedServices.json` and `DomainMap.json` list `CombatRecordDamage`, and `RemovedFacades.json` moves the 11 names (`KeepLethalHitPoints`,
+    `RecordCreatureDeath`, `RecordDamageApplied`, `RecordHealingApplied`, `RecordPlayerDeath`, `RecordRespawn`, `RecordResurrection`, `RecordSubdual`, the three temporary hit point records) from the `CombatRecorder` owner
+    to `CombatRecordDamage`. `GameServices.CombatRecordDamage` is new. `CombatParts.OtherServices` (engine tests) already named `CombatRecordDamageService`, so it is unchanged.
+  - **`DeathService` goes from 10 to 11 services** (it takes the part for `RecordSubdual` and `RecordRespawn`, and still holds the recorder stay-part for `IsRecording` and `BeginRespawnAttribution`): a new
+    `ServicesPerType.txt` line, which P5-7l removes (the map expected the stay-part to be at 10 only after the respawn part leaves it). `CombatDamageTakenService` takes the part for `KeepLethalHitPoints` (7 to 8 services, under the limit).
+  - **Handlers.** `RecordCreatureDeath` and `RecordPlayerDeath` are renamed in place in `ScriptHandlerOrder.txt` and `HandlerRenames.txt`; the new `Rerun` handler stands after `CombatDamageCatalogService.LoadDamageTypes` in
+    the `mod_cache_bef` script, and its name is appended to the `Service.Combat.LoadDamageTypes` line of `HandlerRenames.txt` (as `AIAggroService.RegisterStealthAggroListener` was to `CacheAIData`); `SplitBootHandlerTests`
+    lists that master handler as a service split and `BootHandlerClassification.txt` gains the `Rerun` line (49 to 50 handlers in the bucket). `ScriptHandlerOrder.EngineTests.txt` is unchanged and no engine test script handler was added.
+  - **`LargeTypes.txt`:** the recorder leaves the list (884 lines). `PlayerMessageAudit.json` has no row for a moved line (unchanged).
+  - 14 call sites changed receiver: 12 content (`ReviveBeastAbilityDefinition` 3, `ResuscitationAbilityDefinition` 2, `TemporaryHitPointEffects` 6, `DMWorldChatCommand` 1), 2 native (`CombatRecorderEffectHooksSink`), and 3 domain holders by
+    constructor (`CombatDamageTakenService` 1, `DeathService` 2).
+- **Tests.** New `CombatRecordDamageServiceTests` (7: constructor services and no `Lazy<>`, the two tables, the `Runtime` marks, the `Rerun` registration handler, the death handlers' events, the recorder no longer declaring the
+  moved members, one container singleton) and `CombatRecordingSessionNoticeTests` (10: both empty-list throws, one notice per listener in order, a repeat registration keeping one entry, the registration handler run twice, the
+  tables cleared at the same point of `Start` and of `Stop` (the writer, flag and participants seen from a listener), a grant and a death frame not carrying into the next recording). The old recorder tests call the part
+  (`_recorder.Damage`, a `RecorderProbeDamage` that answers hit points and pools from the probe's dictionaries, registered for the notices as the boot handler registers the real part); the transcript registers a `ProbeDamage`;
+  `CombatTranscriptBench.DefaultLeaves` gains the interface, so `Death.txt` changes `Recorder.RecordSubdual` and `Recorder.RecordRespawn` to `RecordDamage.` (the label only); `CombatDamageTakenTestBase`, `TestDeath` and
+  `ReviveProbe` take the part. `CombatPartForwardingTests` lists the interface, pins its two defaults and the two death handlers; `GameServicesAllocationTests` pins `KeepLethalHitPoints` at 0 bytes through the accessor and the
+  instance. `WeaponAbilityTraceBench.Leaves` gains the interface and the call trace is regenerated: 152 lines change, all `Recorder.RecordTemporaryHitPointPoolRemoving(...)` (77) and
+  `Recorder.RecordTemporaryHitPointsGranted(...)` (75) to `RecordDamage.`, nothing else (with the label put back, the new trace equals the old one). The 23 serializer goldens and the recorder transcript fixture are unchanged.
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored, names without a leading underscore and case) of the 111 members of the old class at `d8611b8ab` (fields, constructor, methods) against
+    the stay-part, the part, the session core and the ability part: 105 identical, 6 different, 0 missing. The six: `_temporaryHitPointGrants` and `_deathFrames` (the `ReloadState` attribute), `ResolveDamageAttribution` and
+    `RecordResurrection` (the stack read above), `Start` and `Stop` (statement by statement: each of the two statements `_temporaryHitPointGrants.Clear(); _deathFrames.Clear();` becomes `NotifyRecordingStarted();` in `Start`
+    and `NotifyRecordingStopped();` in `Stop`, in the same place; every other statement is untouched).
+  - *Unit tests* (`SWLOR.Game.Server.Tests`, filter `Combat|Recorder|Serializer|Allocation|Transcript|Death|Respawn|Resurrection|Subdual|Healing|TemporaryHitPoint|CallTrace|Handler|Boot|Reload|DMPossession|HostedEntry|PlayerMessageAudit|ConvertedService|LazyDependency|ClockSeam|Teardown|PlayerSession|ParityHandler|FacadeRemoval|Ability|SplitBootHandler`):
+    4,860 tests, 4,858 pass, 1 skipped, 1 fails: `AbilityImpactVisualEffectTests.EveryActiveAbilityRank_BindsItsDeclaredImpactEffect` needs the compiled model `vx_callbeast` from a hak folder that was not copied (only `sw_2da`,
+    `sw_t_office`, `sw_tlk` and `sw_ability` were, read-only, from the main checkout, a different haks commit than the pin; removed after). The whole of `SWLOR.Game.Server.Tests`, unfiltered: 20,094 tests, 19,979 pass, 3 skipped, 112 fail.
+    95 of the 112 read hak folders or source art that were not copied (`sw_cr_creature`, `sw_item`, the tilesets, `sw_pt_robe`, the model sources and the like) and fail on the missing data; the other 17 (the call-beast model
+    above, the placeable and wall walkmesh lookups, robe parts, icons and source art, and `EshanBlueprints_AreDiscoverableInTheirToolsetPalettes` and `KillRewards_FollowExistingBountyRatesRatherThanIntroducingAHigherTier`) fail the same way
+    at `d8611b8ab` (run there alone, with the same four hak folders). No failure touches the recorder, its parts or a file of this change. `SWLOR.Architecture.Tests`: 298 pass.
+  - *Baselines changed* (`SWLOR_UPDATE_SNAPSHOTS=1`): `ServicesPerType.txt` (`DeathService` 11, new), `LargeTypes.txt` (`CombatRecorderService` leaves), `StaticLookups.txt` (the allocation tests 17 to 19, the new part's tests 1),
+    `DebtReport.md` (the same figures). `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` moved in member counts only and were reverted, with the two debt report lines that follow them.
+    `BootHandlerClassification.txt`, `ScriptHandlerOrder.txt`, `HandlerRenames.txt`, `ConvertedServices.json`, `DomainMap.json` and `RemovedFacades.json` changed as above.
+  - *Engine tests* at `d8611b8ab` and at the head, host entry, filter `CombatRecorder|Characterization|CombatPerkRegression|TwinPistol|BossMinimumHitChance|HostileAbilityDelay|PvpCombat|StealthRetarget|Death|Respawn|DMPossession`
+    (171 tests): base 171 pass; head 170 pass and 1 timed out on its first run, `Twin Pistol generated Basic and Veteran guns retain native attribute damage caps` ("Timed out after 65 seconds"), while a 50-minute unit run shared the
+    machine; alone, at the head, it passed. The per-test outcomes of the two reports are otherwise identical (names and outcomes compared), and no snapshot file changed.
+  - *Hot reload* (`scripts/run-hot-reload-check.sh --engine-filter HotReloadPlayers --reloads 2`, head, with a temporary uncommitted engine test in the `HotReloadPlayers` category that ran in every generation): both reloads
+    applied (pauses 128 s and 141 s, a fresh home bakes its walkmeshes), the engine run of each of the three generations passed (2 of 2), and the probe passed in each: with a recording running, one temporary hit point grant and a lethal hit
+    on a creature wrote one `temp_hp_grant` and one `death`, so the moved death handler fires once per generation and the part is registered once. The cache digests (257 after each reload) and the adopted and world digests (86) match.
+    The check's own 300-second wait for the first digest set was too short on a busy machine (it failed twice before the module finished loading), so it ran from a scratch copy of the script with 1,800 s.
+  - *Client evidence* (the map said none; taken anyway): one NWN client, the same module, haks, character (`agantarn`) and steps at the base (`d8611b8ab`) and the head, Release builds with a temporary driver compiled in from
+    outside the repository, in `veles_sewers` at `SEWERS_GATE`. The real command `/combatrecord` was typed in the client (staff authorization from an `AuthorizedDM` record seeded in each stack's Redis for the public key, the
+    same way on both sides). The driver never calls a moved member: it spawns two frozen hostile Outlaws (`looter_1`, one immortal, one mortal) and applies damage and heals through the engine, grants a temporary hit point pool
+    through `TemporaryHitPointEffects`, and the death handlers, the respawn panel and the chat command are the real ones. Steps: status, start `p57j3a`, the Outlaw hurt (damage dealt), the character hurt by it (damage taken), a heal, a
+    40-point temporary hit point grant, a 30-point hit absorbed by it, the mortal Outlaw killed (creature death), status, stop, start `p57j3b` at once (a second hit lands in the 10 points left of the first recording's pool), the
+    character killed (player death), the respawn panel (respawn), back to the area, a second Outlaw killed, status, stop, status, stop again. Result: the recorder messages the player sees are the same at both (not running, started with the file, status while running,
+    stopped with the two files, started again, status, stopped, "last recording (finished)", "not running"); the written events are identical in kind, count and normalized content in both recordings (first: 4 damage,
+    1 heal, 1 grant, 1 absorb, 1 death; second: 3 damage, 8 regeneration heals, 1 absorb, 2 deaths, 1 respawn resurrection), apart from the snapshots (one per second, so their number follows the length of the run) and the
+    regeneration heals. The absorb in the second recording names no granter at both (`granted_by` null, `granted_kind` unattributed): the first recording's grant did not carry over, which is the notice clearing the tables,
+    and the second recording's own death after the respawn was recorded. Kept under `C:/Temp/mr-p5-7j3/evidence/{base,head}/`: the screenshots, `steps.log`, `client-chat.txt`, `driver-out.txt`, the raw recordings; and beside them `compare-events.txt`, `events-normalized-base.txt` and `events-normalized-head.txt`.
+  - *Not done:* the resurrection through the DM command (`/rez`, which calls `RecordResurrection`) and a subdual. `/rez` needs a click on a dead target: the dead player's respawn panel covers the world, and a dead
+    creature leaves nothing the targeting cursor takes (two tries, with screenshots in the trial runs), so the respawn path (`RecordRespawn`) was captured instead; `RecordResurrection` and `RecordSubdual` are pinned by the unit tests,
+    the recorder transcript and `CombatRecorderEngineTests` (a Revive Beast resurrection). A subdual needs a second player. The `-Check` scripts (content, facade, clock) and `ExportPlayerMessageAudit.ps1 -Check`, which the agent rules
+    leave to the owner; `CombatSim` (this change touches no rule).

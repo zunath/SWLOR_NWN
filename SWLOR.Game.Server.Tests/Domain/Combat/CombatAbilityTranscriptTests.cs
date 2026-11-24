@@ -161,6 +161,8 @@ public class CombatAbilityTranscriptTests
         var hit = bench.Get<ICombatAbilityHitService>();
         var guardedEffects = bench.Get<ICombatGuardedHitEffectsService>();
         var bonus = bench.Get<ICombatAbilityBonusService>();
+        var hitAdjustment = bench.Get<ICombatAbilityHitAdjustmentService>();
+        var queuedBonus = bench.Get<ICombatQueuedAbilityBonusService>();
 
         foreach (var stat in new[] { 0, 5 })
         {
@@ -236,11 +238,11 @@ public class CombatAbilityTranscriptTests
             });
             bench.Step("critical rating and adjustments of an ability" + tag, () =>
             {
-                hit.CalculateAbilityCriticalRating(Attacker, SkillType.Rifle, false, 5, Defender);
-                hit.GetAbilityCriticalRate(Attacker, SkillType.Rifle, true, 5, Defender);
-                hit.GetHitChanceAgainstSunderedTargetAdjustment(Attacker, Defender);
-                hit.GetCriticalRateAgainstSunderedTargetAdjustment(Attacker, Defender);
-                hit.ApplyRangedAbilityTargetDefenseReduction(Attacker, Defender, SkillType.Rifle);
+                hitAdjustment.CalculateAbilityCriticalRating(Attacker, SkillType.Rifle, false, 5, Defender);
+                hitAdjustment.GetAbilityCriticalRate(Attacker, SkillType.Rifle, true, 5, Defender);
+                hitAdjustment.GetHitChanceAgainstSunderedTargetAdjustment(Attacker, Defender);
+                hitAdjustment.GetCriticalRateAgainstSunderedTargetAdjustment(Attacker, Defender);
+                hitAdjustment.ApplyRangedAbilityTargetDefenseReduction(Attacker, Defender, SkillType.Rifle);
                 guardedEffects.ApplyGuardedHitNextAttackEffects(Attacker);
             });
             bench.Step("ability bonus reads" + tag, () =>
@@ -257,12 +259,12 @@ public class CombatAbilityTranscriptTests
             {
                 bonus.GrantNextAbilityDamageBonus(Attacker, 0, 10, 30);
                 bonus.GrantNextSkillAbilityBonuses(Attacker, (int)SkillType.Rifle, 10, 5, 30);
-                bonus.PrepareOpeningAutoAttack(Attacker, SkillType.Rifle);
-                bonus.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(Attacker, SkillType.Pistol);
-                bonus.StoreQueuedWeaponAbilityCriticalRateBonus(Attacker, SkillType.Pistol, 7);
-                bonus.StoreQueuedWeaponAbilityActivationIdleBonuses(Attacker, SkillType.Pistol);
-                bonus.ConsumeQueuedWeaponAbilityBonuses(Attacker, SkillType.Pistol);
-                bonus.ClearQueuedWeaponAbilityActivationBonuses(Attacker);
+                queuedBonus.PrepareOpeningAutoAttack(Attacker, SkillType.Rifle);
+                queuedBonus.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(Attacker, SkillType.Pistol);
+                queuedBonus.StoreQueuedWeaponAbilityCriticalRateBonus(Attacker, SkillType.Pistol, 7);
+                queuedBonus.StoreQueuedWeaponAbilityActivationIdleBonuses(Attacker, SkillType.Pistol);
+                queuedBonus.ConsumeQueuedWeaponAbilityBonuses(Attacker, SkillType.Pistol);
+                queuedBonus.ClearQueuedWeaponAbilityActivationBonuses(Attacker);
                 bonus.ConsumeNextAttackGuardedHitBonuses(Attacker);
                 bonus.ConsumeStatusAppliedNextAttackDamageBonus(Attacker);
             });

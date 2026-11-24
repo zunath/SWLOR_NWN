@@ -5,25 +5,11 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
-    /// The ability hit roll for combat: an ability's hit chance, critical rate and roll, the test overrides of the ability
-    /// and auto-attack hit rolls, and the rider of a ranged ability hit.
+    /// The ability hit roll for combat: an ability's hit chance and roll, and the test overrides of the ability and
+    /// auto-attack hit rolls.
     /// </summary>
     public interface ICombatAbilityHitService
     {
-        int CalculateAbilityCriticalRating(
-            uint attacker,
-            SkillType skillType,
-            bool isAreaAbility,
-            int criticalRateAdjustment = 0,
-            uint defender = OBJECT_INVALID);
-
-        int GetAbilityCriticalRate(
-            uint attacker,
-            SkillType skillType,
-            bool isAreaAbility,
-            int criticalRateAdjustment = 0,
-            uint defender = OBJECT_INVALID);
-
         /// <summary>
         /// Forces every TryResolveAbilityHit call to the given outcome instead of rolling.
         /// Intended solely for the in-engine test harness: ability behavior assertions cannot
@@ -58,14 +44,5 @@ namespace SWLOR.Game.Server.Domain.Combat
             int skillLevelOverride = -1,
             AbilityType statOverride = AbilityType.Invalid,
             int accuracyFlatAdjustment = 0);
-
-        void ApplyRangedAbilityTargetDefenseReduction(
-            uint attacker,
-            uint defender,
-            SkillType skillType);
-
-        int GetHitChanceAgainstSunderedTargetAdjustment(uint attacker, uint defender);
-
-        int GetCriticalRateAgainstSunderedTargetAdjustment(uint attacker, uint defender);
     }
 }

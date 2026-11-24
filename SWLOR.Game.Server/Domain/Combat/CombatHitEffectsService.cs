@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatSuppressionService _suppression;
         private readonly ICombatActivityService _combatActivity;
         private readonly ICombatRepeatedTargetService _repeatedTarget;
-        private readonly ICombatAbilityHitService _abilityHit;
+        private readonly ICombatAbilityHitAdjustmentService _abilityHitAdjustment;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly IStatusEffectApplicationService _statusEffectApplication;
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatSuppressionService suppression,
             ICombatActivityService combatActivity,
             ICombatRepeatedTargetService repeatedTarget,
-            ICombatAbilityHitService abilityHit,
+            ICombatAbilityHitAdjustmentService abilityHitAdjustment,
             IStatService stat,
             IStatusEffectService statusEffect,
             IStatusEffectApplicationService statusEffectApplication,
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _suppression = suppression;
             _combatActivity = combatActivity;
             _repeatedTarget = repeatedTarget;
-            _abilityHit = abilityHit;
+            _abilityHitAdjustment = abilityHitAdjustment;
             _stat = stat;
             _statusEffect = statusEffect;
             _statusEffectApplication = statusEffectApplication;
@@ -506,7 +506,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (damage <= 0)
                 return;
 
-            if (_abilityHit.GetCriticalRateAgainstSunderedTargetAdjustment(attacker, defender) > 0)
+            if (_abilityHitAdjustment.GetCriticalRateAgainstSunderedTargetAdjustment(attacker, defender) > 0)
             {
                 FloatingTextStringOnCreature(ColorToken.Combat("Weak Points"), attacker, false);
             }

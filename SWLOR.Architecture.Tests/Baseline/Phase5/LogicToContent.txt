@@ -24,8 +24,11 @@ SWLOR.Game.Server/Domain/Character/RobeModelRenderer.cs -> Feature/AppearanceDef
 SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Combat/AbilityEffectScaling.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs -> Feature/AbilityDefinition | 1
-SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs -> Feature/StatusEffectDefinition | 12
+SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs -> Feature/StatusEffectDefinition | 5
 SWLOR.Game.Server/Domain/Combat/CombatAbilityBonusService.cs -> Feature/StatusEffectDefinition | 7
+SWLOR.Game.Server/Domain/Combat/CombatAbilityCostEffectsService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Combat/CombatAbilityCostEffectsService.cs -> Feature/StatusEffectDefinition | 3
+SWLOR.Game.Server/Domain/Combat/CombatAbilityDefenseEffectsService.cs -> Feature/StatusEffectDefinition | 4
 SWLOR.Game.Server/Domain/Combat/CombatAbilityHitService.cs -> Feature/StatusEffectDefinition | 2
 SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs -> Feature/AbilityDefinition | 2
 SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs -> Feature/StatusEffectDefinition | 28

@@ -37,10 +37,10 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly IAbilityImpactState _impactState;
-        private readonly IPerkService _perk;
-        private readonly IRecastService _recast;
         private readonly IEnmityService _enmity;
         private readonly ICombatRecorderService _combatRecorder;
+        private readonly ICombatAbilityCostEffectsService _costEffects;
+        private readonly ICombatAbilityDefenseEffectsService _defenseEffects;
 
         public CombatAbilityActivationService(
             ICombatQueriesService queries,
@@ -53,10 +53,10 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatusEffectApplicationService statusEffectApplication,
             ITemporaryStatModifierService temporaryStatModifier,
             IAbilityImpactState impactState,
-            IPerkService perk,
-            IRecastService recast,
             IEnmityService enmity,
-            ICombatRecorderService combatRecorder)
+            ICombatRecorderService combatRecorder,
+            ICombatAbilityCostEffectsService costEffects,
+            ICombatAbilityDefenseEffectsService defenseEffects)
         {
             _queries = queries;
             _resources = resources;
@@ -68,10 +68,10 @@ namespace SWLOR.Game.Server.Domain.Combat
             _statusEffectApplication = statusEffectApplication;
             _temporaryStatModifier = temporaryStatModifier;
             _impactState = impactState;
-            _perk = perk;
-            _recast = recast;
             _enmity = enmity;
             _combatRecorder = combatRecorder;
+            _costEffects = costEffects;
+            _defenseEffects = defenseEffects;
         }
 
         public void ApplyAbilityActivatedEffects(
@@ -84,11 +84,11 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (!GetIsObjectValid(activator) || ability == null || summary == null)
                 return;
 
-            ApplyAbilityUsedRecastReduction(activator, ability);
-            ApplyAbilityUsedNextSkillAutoAttackDamageBonus(activator, ability);
-            ApplyAbilityUsedNextSkillFPCostAdjustment(activator, ability);
-            ApplyAbilityUsedMasterAbilityHitChance(activator);
-            ApplyForceFPCostActivatedEffects(activator, ability);
+            _costEffects.ApplyAbilityUsedRecastReduction(activator, ability);
+            _costEffects.ApplyAbilityUsedNextSkillAutoAttackDamageBonus(activator, ability);
+            _costEffects.ApplyAbilityUsedNextSkillFPCostAdjustment(activator, ability);
+            _costEffects.ApplyAbilityUsedMasterAbilityHitChance(activator);
+            _costEffects.ApplyForceFPCostActivatedEffects(activator, ability);
 
             var skillType = ResolveActivatedAbilitySkillType(activator, ability, summary);
             var isSingleTargetAbility = summary.IsSingleTargetAbility ||
@@ -96,22 +96,22 @@ namespace SWLOR.Game.Server.Domain.Combat
                 ability.IsHostileAbility &&
                 ability.IsSingleTargetAbility;
 
-            ApplyAbilityUsedSkillEvasion(activator, ability);
-            ApplyHostileAbilityUsedEvasion(activator, ability, skillType);
-            ApplyCostlyAbilityUsedEvasion(activator, ability, skillType);
-            ApplyAbilityUsedSkillRangedDeflection(activator, ability);
+            _defenseEffects.ApplyAbilityUsedSkillEvasion(activator, ability);
+            _defenseEffects.ApplyHostileAbilityUsedEvasion(activator, ability, skillType);
+            _defenseEffects.ApplyCostlyAbilityUsedEvasion(activator, ability, skillType);
+            _defenseEffects.ApplyAbilityUsedSkillRangedDeflection(activator, ability);
             ApplyAbilityUsedMovementSpeed(activator, ability, skillType);
-            ApplyAbilityUsedSkillAttackDeflection(activator, ability);
-            ApplyAbilityUsedPerkCategoryAttackDeflection(activator, ability);
-            ApplySingleTargetAbilityUsedAttackDeflection(activator, ability, isSingleTargetAbility);
+            _defenseEffects.ApplyAbilityUsedSkillAttackDeflection(activator, ability);
+            _defenseEffects.ApplyAbilityUsedPerkCategoryAttackDeflection(activator, ability);
+            _defenseEffects.ApplySingleTargetAbilityUsedAttackDeflection(activator, ability, isSingleTargetAbility);
             var isAreaAbility = _impactState.IsAreaImpact(summary, ability);
-            ApplyAreaAbilityUsedEvasion(activator, ability, skillType, isAreaAbility);
+            _defenseEffects.ApplyAreaAbilityUsedEvasion(activator, ability, skillType, isAreaAbility);
             ApplyAreaAbilityUsedRewards(activator, ability, isAreaAbility);
             ApplyHostileAbilityForceAttack(activator, ability);
             ApplyHostileAbilityFPSpendForceAttack(activator, ability);
-            ApplyAbilityUsedNearbyAllyDefense(activator);
-            ApplyAbilityUsedPerkCategoryNearbyAllyAttackDeflection(activator, ability);
-            ApplyAbilityUsedPerkCategorySelfDefense(activator, ability);
+            _defenseEffects.ApplyAbilityUsedNearbyAllyDefense(activator);
+            _defenseEffects.ApplyAbilityUsedPerkCategoryNearbyAllyAttackDeflection(activator, ability);
+            _defenseEffects.ApplyAbilityUsedPerkCategorySelfDefense(activator, ability);
             ApplyHostileAbilityUsedAttackAdjustment(activator, ability);
             ApplyAbilityActivatedRiders(activator, target, ability, skillType);
             ApplyHostileAbilitySequenceEffects(activator, feat, ability);
@@ -161,84 +161,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             var restore = _stat.GetStatAdjustment(activator, StatType.AreaAbilityUsedFPRestore);
             if (restore > 0 && _resources.RestoreFPFromStat(activator, StatType.AreaAbilityUsedFPRestore, restore) > 0)
                 _resources.ApplyAbilityRestoredFPEffects(activator);
-        }
-
-        private void ApplyAreaAbilityUsedEvasion(
-            uint activator,
-            AbilityDetail ability,
-            SkillType skillType,
-            bool isAreaAbility)
-        {
-            if (ability?.IsHostileAbility != true || !isAreaAbility)
-                return;
-
-            var requiredSkillType = GetSkillTypeFromStat(_stat.GetStatAdjustment(
-                activator,
-                StatType.AreaAbilityUsedEvasionPercentAdjustmentSkillType));
-            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType))
-                return;
-
-            var evasion = _stat.GetStatAdjustment(activator, StatType.AreaAbilityUsedEvasionPercentAdjustment);
-            var duration = _stat.GetStatAdjustment(activator, StatType.AreaAbilityUsedEvasionDurationSeconds);
-            if (evasion == 0 || duration <= 0)
-                return;
-
-            _temporaryStatModifier.Replace(
-                activator,
-                StatType.EvasionPercentAdjustment,
-                evasion,
-                duration,
-                StatType.AreaAbilityUsedEvasionPercentAdjustment);
-        }
-
-        private void ApplyHostileAbilityUsedEvasion(
-            uint activator,
-            AbilityDetail ability,
-            SkillType skillType)
-        {
-            if (ability?.IsHostileAbility != true)
-                return;
-
-            var requiredSkillType = GetSkillTypeFromStat(_stat.GetStatAdjustment(
-                activator,
-                StatType.HostileAbilityUsedEvasionPercentAdjustmentSkillType));
-            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType))
-                return;
-
-            ApplyAbilityUsedEvasion(
-                activator,
-                StatType.HostileAbilityUsedEvasionPercentAdjustment,
-                StatType.HostileAbilityUsedEvasionDurationSeconds);
-        }
-
-        private void ApplyCostlyAbilityUsedEvasion(
-            uint activator,
-            AbilityDetail ability,
-            SkillType skillType)
-        {
-            if (ability?.IsHostileAbility != true ||
-                !_resources.TryGetAbilityStaminaCostState(activator, ability, out var costState))
-            {
-                return;
-            }
-
-            var requiredSkillType = GetSkillTypeFromStat(_stat.GetStatAdjustment(
-                activator,
-                StatType.CostlyAbilityUsedEvasionPercentAdjustmentSkillType));
-            var minimumCost = _stat.GetStatAdjustment(
-                activator,
-                StatType.CostlyAbilityUsedEvasionMinimumStaminaCost);
-            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType) ||
-                minimumCost <= 0 ||
-                costState.Cost < minimumCost)
-            {
-                return;
-            }
-
-            ApplyAbilityUsedEvasion(
-                activator,
-                StatType.CostlyAbilityUsedEvasionPercentAdjustment,
-                StatType.CostlyAbilityUsedEvasionDurationSeconds);
         }
 
         private void ApplyAbilityUsedMovementSpeed(
@@ -364,38 +286,6 @@ namespace SWLOR.Game.Server.Domain.Combat
                     activator,
                     new ButchersTempoStatusEffect(currentTotal),
                     duration);
-            }
-        }
-
-        private void ApplyAbilityUsedNearbyAllyDefense(uint activator)
-        {
-            var defense = _stat.GetStatAdjustment(activator, StatType.AbilityUsedNearbyAllyDefensePercentAdjustment);
-            var forceDefense = _stat.GetStatAdjustment(activator, StatType.AbilityUsedNearbyAllyForceDefensePercentAdjustment);
-            var duration = _stat.GetStatAdjustment(activator, StatType.AbilityUsedNearbyAllyDefenseDurationSeconds);
-            if (duration <= 0 || defense == 0 && forceDefense == 0)
-                return;
-
-            foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 5f, false))
-            {
-                if (defense != 0)
-                {
-                    _temporaryStatModifier.Replace(
-                        friendly,
-                        StatType.PhysicalDefensePercentAdjustment,
-                        defense,
-                        duration,
-                        StatType.AbilityUsedNearbyAllyDefensePercentAdjustment);
-                }
-
-                if (forceDefense != 0)
-                {
-                    _temporaryStatModifier.Replace(
-                        friendly,
-                        StatType.ForceDefensePercentAdjustment,
-                        forceDefense,
-                        duration,
-                        StatType.AbilityUsedNearbyAllyDefensePercentAdjustment);
-                }
             }
         }
 
@@ -695,405 +585,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
         }
 
-        private void ApplyAbilityUsedPerkCategorySelfDefense(
-            uint activator,
-            AbilityDetail ability)
-        {
-            if (!_queries.AbilityMatchesPerkCategoryStat(
-                    activator,
-                    ability,
-                    StatType.AbilityUsedPerkCategorySelfDefenseCategoryId))
-            {
-                return;
-            }
-
-            var evasion = _stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedPerkCategorySelfEvasionPercentAdjustment);
-            var defense = _stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedPerkCategorySelfDefensePercentAdjustment);
-            var forceDefense = _stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedPerkCategorySelfForceDefensePercentAdjustment);
-            var duration = _stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedPerkCategorySelfDefenseDurationSeconds);
-            if (duration <= 0 || evasion == 0 && defense == 0 && forceDefense == 0)
-                return;
-
-            var cooldown = _stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedPerkCategorySelfDefenseCooldownSeconds);
-            if (!_resources.TryUseStatTrigger(
-                    activator,
-                    StatType.AbilityUsedPerkCategorySelfDefensePercentAdjustment,
-                    cooldown))
-            {
-                return;
-            }
-
-            _statusEffectApplication.ApplyStatusEffect(
-                activator,
-                activator,
-                new GuardingStepStatusEffect(evasion, defense, forceDefense),
-                duration);
-        }
-
-        private void ApplyAbilityUsedPerkCategoryNearbyAllyAttackDeflection(
-            uint activator,
-            AbilityDetail ability)
-        {
-            if (!_queries.AbilityMatchesPerkCategoryStat(
-                    activator,
-                    ability,
-                    StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionCategoryId))
-            {
-                return;
-            }
-
-            var attackDeflection = _stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflection);
-            var deflectionStatType = _stat.GetGrantedDeflectionStatType(
-                StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflection);
-            var duration = _stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionDurationSeconds);
-            var selfEnmity = _stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionSelfEnmityPercentAdjustment);
-            if (deflectionStatType == StatType.Invalid || attackDeflection <= 0 || duration <= 0)
-                return;
-
-            foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 5f))
-            {
-                _statusEffectApplication.ApplyStatusEffect(
-                    activator,
-                    friendly,
-                    new SentinelGuardStatusEffect(attackDeflection, selfEnmity, deflectionStatType),
-                    duration);
-            }
-        }
-
-        /// <param name="hitPointsSpent">HP actually paid. Nothing triggers when no HP was paid.</param>
-        /// <param name="hitPointCost">Full HP cost before the payment was clipped at 1 HP; 0 when it was paid in full.</param>
-        public void ApplyHitPointSpendAbilityEffects(uint activator, int hitPointsSpent, int hitPointCost = 0)
-        {
-            if (hitPointsSpent <= 0)
-                return;
-
-            var window = Math.Max(1, _stat.GetStatAdjustment(
-                activator,
-                StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds));
-
-            if (_stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeOffenseHitPointSpendSoulSacrifice) > 0)
-            {
-                _statusEffectApplication.ApplyStatusEffect(activator, activator, typeof(SoulSacrificeStatusEffect), 30f);
-            }
-
-            if (_stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeOffenseSoulAscension) > 0)
-            {
-                _temporaryStatModifier.Replace(
-                    activator,
-                    StatType.HeavyVibrobladeOffenseSoulAscension,
-                    1,
-                    window,
-                    StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds);
-            }
-
-            ApplyHitPointSpendStaminaRestore(activator, hitPointsSpent, hitPointCost);
-            ApplyHitPointSpendTemporaryHitPoints(activator, hitPointsSpent);
-        }
-
-        private void ApplyHitPointSpendTemporaryHitPoints(uint activator, int hitPointsSpent)
-        {
-            if (hitPointsSpent <= 0)
-                return;
-
-            var percent = _stat.GetStatAdjustment(activator, StatType.HitPointSpendTemporaryHPPercentOfSpentHP);
-            var duration = _stat.GetStatAdjustment(activator, StatType.HitPointSpendTemporaryHPDurationSeconds);
-            if (percent <= 0 || duration <= 0)
-                return;
-
-            var temporaryHP = GameMath.PercentOf(hitPointsSpent, percent);
-            using var recorderAttribution = _combatRecorder.BeginStatTriggerAttribution(activator, StatType.HitPointSpendTemporaryHPPercentOfSpentHP);
-            TemporaryHitPointEffects.ApplyFlat(activator, "HIT_POINT_SPEND", temporaryHP, duration);
-        }
-
-        private void ApplyHitPointSpendStaminaRestore(uint activator, int hitPointsSpent, int hitPointCost)
-        {
-            var basePercent = _stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent);
-            if (basePercent <= 0)
-                return;
-
-            var cooldown = _stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreCooldownSeconds);
-            if (!_resources.TryUseStatTrigger(activator, StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent, cooldown))
-                return;
-
-            var percent = basePercent;
-            var scalingAbility = GetAbilityTypeFromStatPlusOne(_stat.GetStatAdjustment(
-                activator,
-                StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreScalingAbility));
-            if (scalingAbility != AbilityType.Invalid)
-            {
-                percent += Math.Max(0, GetAbilityScore(activator, scalingAbility));
-            }
-
-            var maximum = _stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreMaximumPercent);
-            if (maximum > 0)
-            {
-                percent = Math.Min(maximum, percent);
-            }
-
-            _resources.RestoreStaminaFromStat(
-                activator,
-                StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent,
-                CalculateHitPointSpendStaminaRestore(_stat.GetMaxStamina(activator), percent, hitPointsSpent, hitPointCost));
-        }
-
-        private void ApplyForceFPCostActivatedEffects(uint activator, AbilityDetail ability)
-        {
-            if (!_queries.IsForcePower(activator, ability) ||
-                !ability.Requirements.OfType<AbilityRequirementFP>().Any(x => x.RequiredFP > 0))
-            {
-                return;
-            }
-
-            if (_stat.GetStatAdjustment(activator, StatType.ForcePrecognition) > 0 &&
-                _resources.TryUseStatTrigger(activator, StatType.ForcePrecognition, 12))
-            {
-                _statusEffectApplication.ApplyStatusEffect(activator, activator, typeof(DangerSenseStatusEffect), 30f);
-            }
-
-            if (_stat.GetStatAdjustment(activator, StatType.ForceConvergence) > 0 &&
-                _resources.TryUseStatTrigger(activator, StatType.ForceConvergence, 45))
-            {
-                _statusEffectApplication.ApplyStatusEffect(activator, activator, typeof(ForceConvergenceStatusEffect), 30f);
-            }
-        }
-
-        private void ApplyAbilityUsedMasterAbilityHitChance(uint activator)
-        {
-            var master = GetMaster(activator);
-            if (!GetIsObjectValid(master))
-                return;
-
-            var adjustment = _stat.GetStatAdjustment(activator, StatType.AbilityUsedMasterAbilityHitChancePercentAdjustment);
-            var duration = _stat.GetStatAdjustment(activator, StatType.AbilityUsedMasterAbilityHitChanceDurationSeconds);
-            if (adjustment == 0 || duration <= 0)
-                return;
-
-            _temporaryStatModifier.Replace(
-                master,
-                StatType.AbilityHitChancePercentAdjustment,
-                adjustment,
-                duration,
-                StatType.AbilityUsedMasterAbilityHitChancePercentAdjustment);
-        }
-
-        private void ApplyAbilityUsedRecastReduction(uint activator, AbilityDetail ability)
-        {
-            ApplyAbilityUsedRecastReduction(activator, ability?.RecastGroup ?? RecastGroup.Invalid);
-        }
-
-        private void ApplyAbilityUsedRecastReduction(uint activator, RecastGroup activatedRecastGroup)
-        {
-            var triggerGroup = GetRecastGroupFromStat(_stat.GetStatAdjustment(activator, StatType.AbilityUsedRecastReductionTriggerGroup));
-            var secondaryTriggerGroup = GetRecastGroupFromStat(_stat.GetStatAdjustment(activator, StatType.AbilityUsedRecastReductionSecondaryTriggerGroup));
-            if (activatedRecastGroup == RecastGroup.Invalid ||
-                activatedRecastGroup != triggerGroup &&
-                activatedRecastGroup != secondaryTriggerGroup)
-                return;
-
-            var targetGroup = GetRecastGroupFromStat(_stat.GetStatAdjustment(activator, StatType.AbilityUsedRecastReductionTargetGroup));
-            var seconds = _stat.GetStatAdjustment(activator, StatType.AbilityUsedRecastReductionSeconds);
-            if (targetGroup == RecastGroup.Invalid || seconds <= 0)
-                return;
-
-            _recast.ReduceRecastDelay(activator, targetGroup, seconds);
-        }
-
-        private void ApplyAbilityUsedNextSkillAutoAttackDamageBonus(uint activator, AbilityDetail ability)
-        {
-            var triggerSkillType = GetSkillTypeFromStat(_stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedNextSkillAutoAttackDamageBonusTriggerSkillType));
-            var abilitySkillType = _queries.GetAbilitySkillType(activator, ability);
-            if (!SkillTypeMatches(abilitySkillType, triggerSkillType))
-                return;
-
-            var targetSkillType = GetSkillTypeFromStat(_stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedNextSkillAutoAttackDamageBonusSkillType));
-            var damageBonus = _stat.GetStatAdjustment(activator, StatType.AbilityUsedNextSkillAutoAttackDamageBonus);
-            var duration = _stat.GetStatAdjustment(activator, StatType.AbilityUsedNextSkillAutoAttackDamageWindowSeconds);
-            _attackTiming.GrantNextSkillAutoAttackDamageBonus(activator, targetSkillType, damageBonus, duration);
-        }
-
-        private void ApplyAbilityUsedNextSkillFPCostAdjustment(uint activator, AbilityDetail ability)
-        {
-            var triggerSkillType = GetSkillTypeFromStat(_stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedNextSkillFPCostAdjustmentTriggerSkillType));
-            var abilitySkillType = _queries.GetAbilitySkillType(activator, ability);
-            if (!SkillTypeMatches(abilitySkillType, triggerSkillType))
-                return;
-
-            var targetSkillType = GetSkillTypeFromStat(_stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedNextSkillFPCostAdjustmentSkillType));
-            var adjustment = _stat.GetStatAdjustment(activator, StatType.AbilityUsedNextSkillFPCostAdjustment);
-            var duration = _stat.GetStatAdjustment(activator, StatType.AbilityUsedNextSkillFPCostAdjustmentWindowSeconds);
-            _attackTiming.GrantNextAbilityFPCostAdjustment(activator, targetSkillType, adjustment, duration);
-        }
-
-        private void ApplyAbilityUsedSkillEvasion(uint activator, AbilityDetail ability)
-        {
-            ApplyAbilityUsedSkillEvasionChannel(
-                activator,
-                ability,
-                StatType.AbilityUsedEvasionPercentAdjustmentSkillType,
-                StatType.AbilityUsedEvasionPercentAdjustment,
-                StatType.AbilityUsedEvasionDurationSeconds);
-            ApplyAbilityUsedSkillEvasionChannel(
-                activator,
-                ability,
-                StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType,
-                StatType.SecondaryAbilityUsedEvasionPercentAdjustment,
-                StatType.SecondaryAbilityUsedEvasionDurationSeconds,
-                StatType.SecondaryAbilityUsedEvasionRangedOnly);
-        }
-
-        private void ApplyAbilityUsedSkillEvasionChannel(
-            uint activator,
-            AbilityDetail ability,
-            StatType skillTypeStat,
-            StatType evasionStat,
-            StatType durationStat,
-            StatType? rangedOnlyStat = null)
-        {
-            if (!_queries.AbilityUsedTriggerSkillMatches(
-                    activator,
-                    ability,
-                    _queries.GetAbilitySkillType(activator, ability),
-                    skillTypeStat,
-                    rangedOnlyStat))
-            {
-                return;
-            }
-
-            var evasionPercent = _stat.GetStatAdjustment(
-                activator,
-                evasionStat);
-            var duration = _stat.GetStatAdjustment(
-                activator,
-                durationStat);
-            if (evasionPercent == 0 || duration <= 0)
-                return;
-
-            _statusEffectApplication.ApplyStatusEffect(
-                activator,
-                activator,
-                new EvasiveFootworkStatusEffect(evasionPercent),
-                duration);
-        }
-
-        private void ApplyAbilityUsedSkillRangedDeflection(uint activator, AbilityDetail ability)
-        {
-            if (ability?.IsHostileAbility != true)
-                return;
-
-            if (!_queries.AbilityUsedTriggerSkillMatches(
-                    activator,
-                    ability,
-                    _queries.GetAbilitySkillType(activator, ability),
-                    StatType.AbilityUsedRangedDeflectionSkillType,
-                    StatType.AbilityUsedRangedDeflectionRangedOnly))
-            {
-                return;
-            }
-
-            var deflection = _stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedRangedDeflection);
-            var duration = _stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedRangedDeflectionDurationSeconds);
-            var statusEffectIcon = GetEffectIconTypeFromStat(_stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedRangedDeflectionStatusEffectIcon));
-            if (deflection <= 0 || duration <= 0 || statusEffectIcon == EffectIconType.Invalid)
-                return;
-
-            if (_statusEffectApplication.ApplyStatusEffect(
-                    activator,
-                    activator,
-                    new RangedDeflectionStatusEffect(deflection, statusEffectIcon),
-                    duration))
-            {
-                var source = _stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection);
-                _damageTakenEffects.ApplyAbilityGrantedAttackDeflectionEffects(activator, source);
-            }
-        }
-
-        private void ApplySingleTargetAbilityUsedAttackDeflection(
-            uint activator,
-            AbilityDetail ability,
-            bool isSingleTargetAbility)
-        {
-            if (!isSingleTargetAbility)
-                return;
-
-            var triggerSkillType = GetSkillTypeFromStat(_stat.GetStatAdjustment(
-                activator,
-                StatType.SingleTargetAbilityAttackDeflectionSkillType));
-            var abilitySkillType = _queries.GetAbilitySkillType(activator, ability);
-            if (!SkillTypeMatches(abilitySkillType, triggerSkillType))
-                return;
-
-            _damageTakenEffects.ApplyAbilityUsedAttackDeflection(
-                activator,
-                StatType.SingleTargetAbilityAttackDeflection,
-                StatType.SingleTargetAbilityAttackDeflectionDurationSeconds);
-        }
-
-        private void ApplyAbilityUsedSkillAttackDeflection(uint activator, AbilityDetail ability)
-        {
-            if (ability == null || !ability.IsHostileAbility)
-                return;
-
-            var triggerSkillType = GetSkillTypeFromStat(_stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedAttackDeflectionSkillType));
-            var abilitySkillType = _queries.GetAbilitySkillType(activator, ability);
-            if (!SkillTypeMatches(abilitySkillType, triggerSkillType))
-                return;
-
-            _damageTakenEffects.ApplyAbilityUsedAttackDeflection(
-                activator,
-                StatType.AbilityUsedAttackDeflection,
-                StatType.AbilityUsedAttackDeflectionDurationSeconds,
-                StatType.AbilityUsedAttackDeflectionFPRestore);
-        }
-
-        private void ApplyAbilityUsedPerkCategoryAttackDeflection(uint activator, AbilityDetail ability)
-        {
-            var categoryValue = _stat.GetStatAdjustment(
-                activator,
-                StatType.AbilityUsedPerkCategoryAttackDeflectionCategoryType);
-            if (!_perk.IsPerkInCategory(ability?.EffectiveLevelPerkType ?? PerkType.Invalid, categoryValue))
-            {
-                return;
-            }
-
-            _damageTakenEffects.ApplyAbilityUsedAttackDeflection(
-                activator,
-                StatType.AbilityUsedPerkCategoryAttackDeflection,
-                StatType.AbilityUsedPerkCategoryAttackDeflectionDurationSeconds,
-                StatType.AbilityUsedPerkCategoryAttackDeflectionFPRestore);
-        }
-
         private void ApplyHostileAbilitySequenceEffects(
             uint activator,
             FeatType feat,
@@ -1174,25 +665,6 @@ namespace SWLOR.Game.Server.Domain.Combat
                 bonus,
                 duration,
                 StatType.NextAutoAttackDamageBonus);
-        }
-
-        private void ApplyAbilityUsedEvasion(
-            uint activator,
-            StatType evasionStatType,
-            StatType durationStatType,
-            StatType targetStatType = StatType.EvasionPercentAdjustment)
-        {
-            var evasionPercent = _stat.GetStatAdjustment(activator, evasionStatType);
-            var duration = _stat.GetStatAdjustment(activator, durationStatType);
-            if (evasionPercent == 0 || duration <= 0)
-                return;
-
-            _temporaryStatModifier.Replace(
-                activator,
-                targetStatType,
-                evasionPercent,
-                duration,
-                evasionStatType);
         }
 
         public void ForgetActivationState(uint creature)

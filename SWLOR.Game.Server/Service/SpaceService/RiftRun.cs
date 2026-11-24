@@ -33,6 +33,19 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         public uint KeyUser { get; set; } = OBJECT_INVALID;
 
+        /// <summary>
+        /// The character id of <see cref="KeyUser"/>, or empty for a run opened without a key. The spend's state is kept by it,
+        /// so a key user who disconnects (an invalid handle) or rejoins (a new handle) never turns an unconfirmed spend into
+        /// a confirmed one.
+        /// </summary>
+        public string KeyUserId { get; set; } = string.Empty;
+
+        /// <summary>A save of the key user's character file holds the spent key as spent: the run pays its spoils.</summary>
+        public bool KeySpendSaved { get; set; }
+
+        /// <summary>The spent key goes back to the key user instead: the run pays no spoils.</summary>
+        public bool KeyRefunded { get; set; }
+
         public List<uint> Pilots { get; set; } = new();
         public Dictionary<uint, Location> Origins { get; set; } = new();
 

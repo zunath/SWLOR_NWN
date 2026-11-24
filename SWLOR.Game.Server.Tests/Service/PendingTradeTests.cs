@@ -14,7 +14,7 @@ public class PendingTradeTests
         var trade = new PendingTrade
         {
             Id = "t1", ShipId = "s1", Commodity = CommodityType.Grain, Units = -12, Credits = 0,
-            Exchange = TradeExchangeType.Viscara, CityId = "city1", Tariff = 45
+            Exchange = TradeExchangeType.Viscara, CityId = "city1", Tariff = 45, Xp = 150
         };
 
         PendingTrade.TryParse(trade.Serialize(), out var parsed).Should().BeTrue();
@@ -23,7 +23,8 @@ public class PendingTradeTests
         PendingTrade.TryParse(npc.Serialize(), out var parsedNpc).Should().BeTrue();
         parsedNpc.Should().BeEquivalentTo(npc, "an NPC dock's mark has no city and no tariff");
         PendingTrade.TryParse(string.Empty, out _).Should().BeFalse();
-        PendingTrade.TryParse("t1|s1|8|x|0|1||0", out _).Should().BeFalse();
+        PendingTrade.TryParse("t1|s1|8|x|0|1||0|0", out _).Should().BeFalse();
+        PendingTrade.TryParse("t1|s1|8|-12|0|1||0", out _).Should().BeFalse("a sale mark carries its XP");
         PendingTrade.TryParse("t1|s1|8|-12|0", out _).Should().BeFalse("a mark without its market and tariff cannot be replayed");
         PendingTrade.TryParse(null, out _).Should().BeFalse();
     }
@@ -109,6 +110,34 @@ public class PendingTradeTests
 
         trade.ApplyTo(cargo, "earlier").Should().BeTrue();
         CargoHoldRules.GetUnits(cargo, CommodityType.Grain).Should().Be(0);
+    }
+
+    [Test]
+    public void ASalesXp_IsCountedAgainstTheRestOfItsLot_WithTheBayChange_AndGivenOnce()
+    {
+        var cargo = new Dictionary<CommodityType, CargoLot>();
+        CargoHoldRules.AddUnits(cargo, CommodityType.Grain, 10, 600);
+        var trade = new PendingTrade { Id = "sell", ShipId = "s1", Commodity = CommodityType.Grain, Units = -5, Xp = 150 };
+
+        trade.ApplyTo(cargo, "earlier").Should().BeTrue();
+        CargoHoldRules.GetUnits(cargo, CommodityType.Grain).Should().Be(5);
+        cargo[CommodityType.Grain].XpEarned.Should().Be(150, "the rest of the lot keeps the award against its cap");
+        trade.ApplyTo(cargo, "sell").Should().BeFalse();
+        cargo[CommodityType.Grain].XpEarned.Should().Be(150);
+
+        var source = ReadServerSource("Service", "Trade.cs");
+        var sell = source[source.IndexOf("public static void Sell(", StringComparison.Ordinal)..];
+        sell = sell[..sell.IndexOf("private static PendingTrade NewTrade(", StringComparison.Ordinal)];
+        sell.Should().Contain("var trade = NewTrade(ship, exchangeType, dock, commodity, -order.Units, 0, order.Tariff, xp);")
+            .And.Contain("GiveTradeXp(player, trade);")
+            .And.NotContain("restOfLot.XpEarned += xp;", "the mark adds the lot's XP with the bay change")
+            .And.NotContain("Skill.GiveSkillXP(", "the XP is given once through the mark");
+        var login = source[source.IndexOf("public static void ApplyPendingTrade()", StringComparison.Ordinal)..];
+        login.IndexOf("if (GiveTradeXp(player, trade))", StringComparison.Ordinal)
+            .Should().BeInRange(0, login.IndexOf("foreach (var reserved in", StringComparison.Ordinal), "a restart before the award gives it at login");
+        var give = source[source.IndexOf("private static bool GiveTradeXp(", StringComparison.Ordinal)..];
+        give.IndexOf("dbPlayer.LastTradeXpId = trade.Id;", StringComparison.Ordinal)
+            .Should().BeLessThan(give.IndexOf("Skill.GiveSkillXP(player, SkillType.Piloting, trade.Xp);", StringComparison.Ordinal), "the award is recorded before it is given");
     }
 
     [Test]

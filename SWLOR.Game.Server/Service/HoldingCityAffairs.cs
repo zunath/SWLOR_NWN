@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CityAffairsService;
@@ -75,39 +76,43 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
-        /// <summary>The city drives the raiders off the holding the situation is about. Returns false when nothing was left to do.</summary>
-        public static bool SendHelp(WorldProperty city, CitySituation situation, DateTime nowUtc)
+        /// <summary>
+        /// Applies a situation outcome's changes to its holding once, after the city record holds the outcome that pays for them:
+        /// the city drives the raiders off, and the treasury pays off part of the customs fine. The holding records the outcome's
+        /// situation in the same write, so an outcome a restart left on the city changes the holding once. True when it changed now.
+        /// </summary>
+        public static bool ApplyOutcome(WorldProperty city, CitySituationOutcome outcome, DateTime nowUtc)
         {
-            var holding = string.IsNullOrWhiteSpace(situation.SubjectId) ? null : DB.Get<PlanetaryHolding>(situation.SubjectId);
-            if (holding == null || !holding.RaidPending)
+            if (outcome == null || !outcome.ChangesHolding)
                 return false;
 
-            holding.RaidPending = false;
-            var text = HoldingSituationRules.BuildHelpLog(city.CustomName);
-            HoldingRules.AddLog(holding, nowUtc, text);
+            var holding = DB.Get<PlanetaryHolding>(outcome.HoldingId);
+            if (holding == null || string.Equals(holding.LastCitySituationId, outcome.SituationId, StringComparison.Ordinal))
+                return false;
+
+            var texts = new List<string>();
+            if (outcome.HoldingHelp && holding.RaidPending)
+            {
+                holding.RaidPending = false;
+                texts.Add(HoldingSituationRules.BuildHelpLog(city.CustomName));
+                Log.Write(LogGroup.Space, $"HOLDING HELP - city {city.CustomName} ({city.Id}) drove the raiders off holding {holding.Id} of {holding.OwnerPlayerId}");
+            }
+
+            var relieved = outcome.HoldingFineCredits > 0 ? HoldingSituationRules.ApplyFineRelief(holding, outcome.HoldingFineCredits) : 0;
+            if (relieved > 0)
+            {
+                texts.Add(HoldingSituationRules.BuildFineLog(city.CustomName, relieved, holding.CustomsFine));
+                Log.Write(LogGroup.Space, $"HOLDING FINE - city {city.CustomName} ({city.Id}) paid {relieved} of the fine of holding {holding.Id} of {holding.OwnerPlayerId}");
+            }
+
+            foreach (var text in texts)
+                HoldingRules.AddLog(holding, nowUtc, text);
+            holding.LastCitySituationId = outcome.SituationId;
             DB.Set(holding);
-            TellOwner(holding.OwnerPlayerId, $"{PlanetaryHoldings.GetHoldingName(holding)}: {text}");
-            Log.Write(LogGroup.Space, $"HOLDING HELP - city {city.CustomName} ({city.Id}) drove the raiders off holding {holding.Id} of {holding.OwnerPlayerId}");
-            return true;
-        }
 
-        /// <summary>The treasury pays off <paramref name="credits"/> of the fine of the holding the situation is about.</summary>
-        public static int PayFine(WorldProperty city, CitySituation situation, int credits, DateTime nowUtc)
-        {
-            var holding = string.IsNullOrWhiteSpace(situation.SubjectId) ? null : DB.Get<PlanetaryHolding>(situation.SubjectId);
-            if (holding == null || credits <= 0)
-                return 0;
-
-            var relieved = HoldingSituationRules.ApplyFineRelief(holding, credits);
-            if (relieved <= 0)
-                return 0;
-
-            var text = HoldingSituationRules.BuildFineLog(city.CustomName, relieved, holding.CustomsFine);
-            HoldingRules.AddLog(holding, nowUtc, text);
-            DB.Set(holding);
-            TellOwner(holding.OwnerPlayerId, $"{PlanetaryHoldings.GetHoldingName(holding)}: {text}");
-            Log.Write(LogGroup.Space, $"HOLDING FINE - city {city.CustomName} ({city.Id}) paid {relieved} of the fine of holding {holding.Id} of {holding.OwnerPlayerId}");
-            return relieved;
+            foreach (var text in texts)
+                TellOwner(holding.OwnerPlayerId, $"{PlanetaryHoldings.GetHoldingName(holding)}: {text}");
+            return texts.Count > 0;
         }
 
         private static void TellOwner(string playerId, string text)

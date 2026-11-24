@@ -86,6 +86,12 @@ namespace SWLOR.Game.Server.Entity
         /// <summary>A customs fine waiting to be paid, or 0.</summary>
         public int CustomsFine { get; set; }
 
+        /// <summary>
+        /// The last city situation whose outcome changed this holding (help against raiders, a fine paid), saved with the change,
+        /// so an outcome a restart left on the city is applied once. Empty on holdings saved before, so no migration.
+        /// </summary>
+        public string LastCitySituationId { get; set; }
+
         public DateTime CustomsDeadline { get; set; }
 
         /// <summary>

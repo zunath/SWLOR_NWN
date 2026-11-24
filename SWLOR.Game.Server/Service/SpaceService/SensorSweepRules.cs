@@ -12,6 +12,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>The sweep range in meters of a Probe Launcher of this rank.</summary>
         public static int Range(int rank) => ScanningTuning.SweepRangeBase + ScanningTuning.SweepRangePerRank * Math.Max(0, rank);
 
+        /// <summary>The sweep range in meters of a launcher's step, its traits and Module Bonus applied.</summary>
+        public static int Range(ShipModuleStep step) => step.SweepRange > 0 ? step.SweepRange : Range(step.Rank);
+
         /// <summary>When a ship that last swept at <paramref name="lastSweep"/> can sweep again.</summary>
         public static DateTime ReadyAt(DateTime? lastSweep) =>
             lastSweep?.AddSeconds(ScanningTuning.SweepCooldownSeconds) ?? DateTime.MinValue;
@@ -30,14 +33,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
             now < sweptAt.AddSeconds(ScanningTuning.SweepResultSeconds);
 
         /// <summary>
-        /// The launcher a Sensor Sweep uses: the highest rank among the fitted Probe Launchers (by slot number) whose slot
-        /// is worked (<paramref name="slotEffectiveness"/> above 0: a Helm slot, or a station slot whose occupant meets the
+        /// The launcher a Sensor Sweep uses: the longest sweep (its traits and Module Bonus applied), then the highest rank,
+        /// among the fitted Probe Launchers whose slot is worked (<paramref name="slotEffectiveness"/> above 0: a Helm slot, or a station slot whose occupant meets the
         /// module's rank). Null when none is worked.
         /// </summary>
         public static ShipModuleStep ChooseLauncher(IEnumerable<(int Slot, ShipModuleStep Step)> launchers, Func<int, double> slotEffectiveness) =>
             (launchers ?? Enumerable.Empty<(int Slot, ShipModuleStep Step)>())
                 .Where(x => x.Step != null && slotEffectiveness(x.Slot) > 0)
-                .OrderByDescending(x => x.Step.Rank)
+                .OrderByDescending(x => Range(x.Step))
+                .ThenByDescending(x => x.Step.Rank)
                 .Select(x => x.Step)
                 .FirstOrDefault();
 

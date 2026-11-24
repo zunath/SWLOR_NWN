@@ -284,7 +284,7 @@ namespace SWLOR.Game.Server.Service
             SaveShipStatus(player, status);
             _lastSensorSweep[player] = now;
 
-            var range = launcher.SweepRange > 0 ? launcher.SweepRange : SensorSweepRules.Range(launcher.Rank);
+            var range = SensorSweepRules.Range(launcher);
             var contacts = new List<SensorSweepContact>();
             foreach (var ship in ObjectSnapshot.InShape(Shape.Sphere, range, GetLocation(player), false, ObjectType.Creature))
             {

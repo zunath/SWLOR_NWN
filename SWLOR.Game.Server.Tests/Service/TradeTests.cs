@@ -359,9 +359,11 @@ public class TradeTests
 
         var sell = ReadServerSource("Service", "Trade.cs").Replace("\r\n", "\n");
         sell.Should().Contain("var xp = TradeRules.GetSaleXp(profit, ship.Cargo.TryGetValue(commodity, out var soldLot) ? soldLot.XpEarned : 0);")
-            .And.Contain("restOfLot.XpEarned += xp;");
-        sell.IndexOf("restOfLot.XpEarned += xp;", StringComparison.Ordinal)
-            .Should().BeInRange(0, sell.IndexOf("DB.Set(ship);\n            if (trade.ApplyPressureTo(state,", StringComparison.Ordinal), "the lot's total is saved with the bay");
+            .And.Contain("var trade = NewTrade(ship, exchangeType, dock, commodity, -order.Units, 0, order.Tariff, xp);");
+        sell.IndexOf("RecordTrade(ship, player, trade);", StringComparison.Ordinal)
+            .Should().BeInRange(0, sell.IndexOf("DB.Set(ship);\n            if (trade.ApplyPressureTo(state,", StringComparison.Ordinal),
+                "the mark adds the lot's total with the bay change, saved with the bay");
+        ReadServerSource("Service", "TradeService", "PendingTrade.cs").Should().Contain("restOfLot.XpEarned += Xp;");
     }
 
     // Cargo spill

@@ -224,12 +224,13 @@ namespace SWLOR.Game.Server.Service
 
             situation.State = CitySituationState.Expired;
             situation.ResolvedUtc = now;
+            var holdingEffects = new CityHoldingEffects();
             if (detail != null)
-                ApplyEffects(city, situation, detail.IgnoredEffects, now, situations, string.Empty);
+                ApplyEffects(city, situation, detail.IgnoredEffects, now, situations, string.Empty, holdingEffects);
 
             city.NeglectCount = RecallRules.AddExpired(city.NeglectCount, 1);
 
-            SaveOutcome(city, situation);
+            SaveOutcome(city, situation, holdingEffects);
 
             if (detail != null && !string.IsNullOrWhiteSpace(detail.IgnoredGazetteText))
                 CityGazette.Post(city.Id, CityGazetteEntryType.Decision, detail.IgnoredGazetteText, isHook: detail.IgnoredIsHook);
@@ -415,10 +416,11 @@ namespace SWLOR.Game.Server.Service
             situation.ChosenOption = choiceIndex;
             situation.DecidedByPlayerId = playerId;
             situation.ResolvedUtc = now;
-            var change = ApplyEffects(city, situation, choice.Effects, now, situations, entry?.Id ?? string.Empty, subjectCredits);
+            var holdingEffects = new CityHoldingEffects();
+            var change = ApplyEffects(city, situation, choice.Effects, now, situations, entry?.Id ?? string.Empty, holdingEffects, subjectCredits);
             city.NeglectCount = 0;
 
-            SaveOutcome(city, situation);
+            SaveOutcome(city, situation, holdingEffects);
 
             GiveReward(player, playerId, city);
             Log.Write(LogGroup.Property, $"Player '{playerId}' ({title}) decided '{situation.Type}' for city '{city.CustomName}' ({city.Id}): '{choice.Text}'. Treasury change: {change}.");
@@ -455,15 +457,17 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Saves a decided or expired situation together with the effects it put on the city. The city is saved first, holding
-        /// the outcome beside its treasury, modifier and neglect changes in one write; then the situation; then the city without
-        /// the outcome. A restart after the first write leaves the outcome for <see cref="SettlePendingOutcome"/>, so the
-        /// situation is settled once and its effects are never lost or applied twice.
+        /// the outcome beside its treasury, modifier and neglect changes in one write; then the holding the outcome changes (the
+        /// help or fine relief the treasury paid for), then the situation; then the city without the outcome. A restart after the
+        /// first write leaves the outcome for <see cref="SettlePendingOutcome"/>, so the situation is settled once and its effects,
+        /// the holding's included, are never lost or applied twice.
         /// </summary>
-        private static void SaveOutcome(WorldProperty city, CitySituation situation)
+        private static void SaveOutcome(WorldProperty city, CitySituation situation, CityHoldingEffects holdingEffects)
         {
-            city.PendingSituationOutcome = CitySituationOutcome.Capture(situation);
+            city.PendingSituationOutcome = CitySituationOutcome.Capture(situation, holdingEffects);
             DB.Set(city);
 
+            HoldingCityAffairs.ApplyOutcome(city, city.PendingSituationOutcome, DateTime.UtcNow);
             DB.Set(situation);
 
             city.PendingSituationOutcome = null;
@@ -472,13 +476,17 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Settles the situation of an outcome a restart left on the city record (<see cref="SaveOutcome"/>): its effects are
-        /// already in the city, so only the situation is saved, and only when it is still open. Then the outcome is cleared.
+        /// already in the city, so the holding it changes is changed once, and the situation is saved when it is still open.
+        /// Then the outcome is cleared.
         /// </summary>
         public static void SettlePendingOutcome(WorldProperty city)
         {
             var outcome = city?.PendingSituationOutcome;
             if (outcome == null)
                 return;
+
+            if (HoldingCityAffairs.ApplyOutcome(city, outcome, DateTime.UtcNow))
+                Log.Write(LogGroup.Property, $"The holding change of situation '{outcome.SituationId}' of city '{city.CustomName}' ({city.Id}) was applied after a restart.");
 
             var situation = string.IsNullOrWhiteSpace(outcome.SituationId) ? null : DB.Get<CitySituation>(outcome.SituationId);
             if (outcome.ApplyTo(situation))
@@ -504,6 +512,7 @@ namespace SWLOR.Game.Server.Service
             DateTime now,
             List<CitySituation> situations,
             string secretEntryId,
+            CityHoldingEffects holdingEffects,
             int subjectCredits = 0)
         {
             var change = SituationRules.ResolveTreasuryChange(
@@ -523,14 +532,15 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var effect in effects)
             {
+                // The holding changes only once the city holds the outcome that pays for them (SaveOutcome).
                 if (effect.Type == SituationEffectType.HoldingHelp)
                 {
-                    HoldingCityAffairs.SendHelp(city, situation, now);
+                    holdingEffects.Help = true;
                 }
                 else if (effect.Type == SituationEffectType.HoldingFine)
                 {
                     // The treasury paid what the fine cost it, less any other charge in the choice, so a short treasury pays part.
-                    HoldingCityAffairs.PayFine(city, situation, Math.Min(subjectCredits, Math.Max(0, -change)), now);
+                    holdingEffects.FineCredits = Math.Min(subjectCredits, Math.Max(0, -change));
                 }
                 else if (effect.Type == SituationEffectType.Modifier)
                 {

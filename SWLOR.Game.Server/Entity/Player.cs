@@ -242,6 +242,12 @@ namespace SWLOR.Game.Server.Entity
         public string LastAgentPurchaseId { get; set; }
 
         /// <summary>
+        /// The last exchange sale whose Piloting XP was given (<see cref="Service.TradeService.PendingTrade.Xp"/>), so a sale's
+        /// XP is given once, at the next login if a restart came first. Older records load empty.
+        /// </summary>
+        public string LastTradeXpId { get; set; }
+
+        /// <summary>
         /// The space lockbox grants whose agent intel was kept last, saved with the intel, so a grant kept again after a
         /// restart adds none. Older records load empty.
         /// </summary>

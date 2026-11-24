@@ -463,9 +463,14 @@ public class SpaceItemMigrationTests
         claim.IndexOf("GrantCarriedEntitlements(player, itemData);", StringComparison.Ordinal)
             .Should().BeGreaterThan(claim.IndexOf("ObjectPlugin.AcquireItem(player, item)", StringComparison.Ordinal), "the claimant is granted them with the item");
         var removal = board[board.IndexOf("public static string RemoveRewardItem(uint player, int index)", StringComparison.Ordinal)..];
-        removal.IndexOf("GrantCarriedEntitlements(player, rewardItem);", StringComparison.Ordinal)
-            .Should().BeInRange(removal.IndexOf("ObjectPlugin.AcquireItem(player, deserialized)", StringComparison.Ordinal),
-                removal.IndexOf("draft.RewardItems.RemoveAt(index);", StringComparison.Ordinal));
+        removal = removal[..removal.IndexOf("public static string DeleteDraft(", StringComparison.Ordinal)];
+        removal.Should().NotContain("GrantCarriedEntitlements(", "a removed reward is claimed through the delivery checkpoint, which grants them");
+        var moved = removal.IndexOf("delivery.Items.Add(rewardItem);", StringComparison.Ordinal);
+        moved.Should().BeGreaterThan(0);
+        removal.IndexOf("DB.Set(delivery);", moved, StringComparison.Ordinal)
+            .Should().BeLessThan(removal.IndexOf("draft.RewardItems.RemoveAt(index);", StringComparison.Ordinal), "the delivery holds the item before the draft lets it go");
+        removal.IndexOf("ClaimDeliveries(player, SaveCharacterOrThrow, delivery.Id);", StringComparison.Ordinal)
+            .Should().BeGreaterThan(removal.IndexOf("DB.Set(draft);", StringComparison.Ordinal));
         board.Should().Contain("GiveGoldToCreature(player, item.RetiredSpaceCredits);")
             .And.Contain("unlocked |= dbPlayer.UnlockedHullDesigns.TryAdd(design, DateTime.UtcNow);");
 

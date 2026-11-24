@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Entity
             SituationId = string.Empty;
             ChosenOption = -1;
             DecidedByPlayerId = string.Empty;
+            HoldingId = string.Empty;
         }
 
         /// <summary>The situation the outcome settles.</summary>
@@ -34,11 +35,27 @@ namespace SWLOR.Game.Server.Entity
         /// <summary>The credits the outcome added to the treasury, which count toward the weekly gain cap.</summary>
         public int TreasuryGain { get; set; }
 
+        /// <summary>The planetary holding the outcome changes, or empty (<see cref="CityHoldingEffects"/>).</summary>
+        public string HoldingId { get; set; }
+
+        /// <summary>The city drives the raiders off <see cref="HoldingId"/>.</summary>
+        public bool HoldingHelp { get; set; }
+
+        /// <summary>The credits of <see cref="HoldingId"/>'s customs fine the treasury paid off.</summary>
+        public int HoldingFineCredits { get; set; }
+
+        /// <summary>Whether the outcome changes a holding.</summary>
+        public bool ChangesHolding => !string.IsNullOrWhiteSpace(HoldingId) && (HoldingHelp || HoldingFineCredits > 0);
+
         /// <summary>The outcome of a situation settled in memory, before either record is saved.</summary>
-        public static CitySituationOutcome Capture(CitySituation situation)
+        public static CitySituationOutcome Capture(CitySituation situation, CityHoldingEffects holdingEffects = null)
         {
+            var changesHolding = holdingEffects != null && (holdingEffects.Help || holdingEffects.FineCredits > 0);
             return new CitySituationOutcome
             {
+                HoldingId = changesHolding ? situation.SubjectId ?? string.Empty : string.Empty,
+                HoldingHelp = changesHolding && holdingEffects.Help,
+                HoldingFineCredits = changesHolding ? System.Math.Max(0, holdingEffects.FineCredits) : 0,
                 SituationId = situation.Id,
                 State = situation.State,
                 ChosenOption = situation.ChosenOption,

@@ -33,6 +33,12 @@ namespace SWLOR.Game.Server.Service.TradeService
         /// <summary>The tariff the trade pays the city, in credits.</summary>
         public int Tariff { get; init; }
 
+        /// <summary>
+        /// The Piloting XP a sale gives: added to the rest of the lot's <see cref="CargoLot.XpEarned"/> with the bay change,
+        /// and given to the seller once (<see cref="Entity.Player.LastTradeXpId"/>). 0 for a purchase.
+        /// </summary>
+        public int Xp { get; init; }
+
         /// <summary>The pressure the trade puts on its market: a sale adds its units, a purchase takes them away.</summary>
         public int Pressure => -Units;
 
@@ -40,20 +46,21 @@ namespace SWLOR.Game.Server.Service.TradeService
             string.Join("|", Id, ShipId, ((int)Commodity).ToString(CultureInfo.InvariantCulture),
                 Units.ToString(CultureInfo.InvariantCulture), Credits.ToString(CultureInfo.InvariantCulture),
                 ((int)Exchange).ToString(CultureInfo.InvariantCulture), CityId ?? string.Empty,
-                Tariff.ToString(CultureInfo.InvariantCulture));
+                Tariff.ToString(CultureInfo.InvariantCulture), Xp.ToString(CultureInfo.InvariantCulture));
 
         public static bool TryParse(string value, out PendingTrade trade)
         {
             trade = null;
             var parts = (value ?? string.Empty).Split('|');
-            if (parts.Length != 8 ||
+            if (parts.Length != 9 ||
                 string.IsNullOrWhiteSpace(parts[0]) ||
                 string.IsNullOrWhiteSpace(parts[1]) ||
                 !int.TryParse(parts[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out var commodity) ||
                 !int.TryParse(parts[3], NumberStyles.Integer, CultureInfo.InvariantCulture, out var units) ||
                 !int.TryParse(parts[4], NumberStyles.Integer, CultureInfo.InvariantCulture, out var credits) ||
                 !int.TryParse(parts[5], NumberStyles.Integer, CultureInfo.InvariantCulture, out var exchange) ||
-                !int.TryParse(parts[7], NumberStyles.Integer, CultureInfo.InvariantCulture, out var tariff))
+                !int.TryParse(parts[7], NumberStyles.Integer, CultureInfo.InvariantCulture, out var tariff) ||
+                !int.TryParse(parts[8], NumberStyles.Integer, CultureInfo.InvariantCulture, out var xp))
             {
                 return false;
             }
@@ -67,14 +74,15 @@ namespace SWLOR.Game.Server.Service.TradeService
                 Credits = credits,
                 Exchange = (TradeExchangeType)exchange,
                 CityId = parts[6],
-                Tariff = tariff
+                Tariff = tariff,
+                Xp = Math.Max(0, xp)
             };
             return true;
         }
 
         /// <summary>
-        /// Applies the cargo change to a bay that has not had it yet. True when the bay changed; false when the trade is
-        /// already applied (<paramref name="lastTradeId"/> names it).
+        /// Applies the cargo change to a bay that has not had it yet, with a sale's XP counted against the rest of its lot.
+        /// True when the bay changed; false when the trade is already applied (<paramref name="lastTradeId"/> names it).
         /// </summary>
         public bool ApplyTo(Dictionary<CommodityType, CargoLot> cargo, string lastTradeId)
         {
@@ -84,7 +92,11 @@ namespace SWLOR.Game.Server.Service.TradeService
             if (Units > 0)
                 CargoHoldRules.AddUnits(cargo, Commodity, Units, Credits);
             else if (Units < 0)
+            {
                 CargoHoldRules.RemoveUnits(cargo, Commodity, Math.Min(-Units, CargoHoldRules.GetUnits(cargo, Commodity)));
+                if (Xp > 0 && cargo.TryGetValue(Commodity, out var restOfLot))
+                    restOfLot.XpEarned += Xp;
+            }
 
             return true;
         }

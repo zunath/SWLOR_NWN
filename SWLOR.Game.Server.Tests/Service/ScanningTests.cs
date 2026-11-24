@@ -353,6 +353,14 @@ public class ScanningTests
         SensorSweepRules.ChooseLauncher(launchers, _ => 0.0).Should().BeNull();
         SensorSweepRules.ChooseLauncher(null, _ => 1.0).Should().BeNull();
 
+        // Two launchers of one rank: the one whose Module Bonus widens its sweep is used, whatever the fitting order.
+        var plain = new ShipModuleStep { Rank = 1, Tag = "plain", SweepRange = 100 };
+        var bonused = new ShipModuleStep { Rank = 1, Tag = "bonused", SweepRange = 106 };
+        SensorSweepRules.ChooseLauncher(new[] { (Slot: 1, Step: plain), (Slot: 2, Step: bonused) }, _ => 1.0).Should().BeSameAs(bonused);
+        SensorSweepRules.ChooseLauncher(new[] { (Slot: 1, Step: bonused), (Slot: 2, Step: plain) }, _ => 1.0).Should().BeSameAs(bonused);
+        SensorSweepRules.Range(plain).Should().Be(100);
+        SensorSweepRules.Range(basic).Should().Be(SensorSweepRules.Range(1), "a step without its own sweep range uses its rank's");
+
         var scanning = File.ReadAllText(RepositoryFile("SWLOR.Game.Server", "Service", "SpaceScanning.cs")).Replace("\r\n", "\n");
         var worked = scanning.Substring(scanning.IndexOf("public static ShipModuleStep GetBestWorkedProbeLauncher(", StringComparison.Ordinal));
         worked = worked.Substring(0, worked.IndexOf("public static ShipModuleStep GetBestProbeLauncher(", StringComparison.Ordinal));
@@ -367,7 +375,7 @@ public class ScanningTests
             .Should().BeInRange(0, sweep.IndexOf("var shipStatus = GetShipStatus(ship);", StringComparison.Ordinal),
                 "station crew and viewport passengers beside their pilot are no contact of their own");
         sweep.IndexOf("var launcher = GetBestWorkedProbeLauncher(player, status);", StringComparison.Ordinal)
-            .Should().BeLessThan(sweep.IndexOf("launcher.SweepRange", StringComparison.Ordinal), "the range and cloak reveal come from the worked launcher");
+            .Should().BeLessThan(sweep.IndexOf("var range = SensorSweepRules.Range(launcher);", StringComparison.Ordinal), "the range and cloak reveal come from the worked launcher");
     }
 
     [Test]

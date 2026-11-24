@@ -267,7 +267,9 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Removes an escrowed reward item from the player's Draft contract by its index in
-        /// <see cref="QuestContract.RewardItems"/> and returns it to their inventory.
+        /// <see cref="QuestContract.RewardItems"/> and returns it to their inventory. The item moves to a pending delivery
+        /// first and is claimed through the delivery's character checkpoint, so a restart before the character file is
+        /// saved leaves the item (and the credits a migrated item carries) owed in the delivery rather than lost.
         /// </summary>
         /// <returns>An empty string on success, otherwise an error message to show the player.</returns>
         public static string RemoveRewardItem(uint player, int index)
@@ -279,21 +281,21 @@ namespace SWLOR.Game.Server.Service
 
             var rewardItem = draft.RewardItems[index];
             var deserialized = ObjectPlugin.Deserialize(rewardItem.Data);
-
-            if (!GetIsObjectValid(deserialized) || !Item.FitsInInventory(player, deserialized) ||
-                !ObjectPlugin.AcquireItem(player, deserialized))
-            {
-                if (GetIsObjectValid(deserialized))
-                    DestroyObject(deserialized);
-
+            var fits = GetIsObjectValid(deserialized) && Item.FitsInInventory(player, deserialized);
+            if (GetIsObjectValid(deserialized))
+                DestroyObject(deserialized);
+            if (!fits)
                 return "The item could not be returned to your inventory. Make room and try again.";
-            }
 
-            GrantCarriedEntitlements(player, rewardItem);
+            // Claimed at once below, so the author is not told a delivery is waiting.
+            var delivery = GetOrCreatePendingDelivery(draft.AuthorPlayerId, draft.Id, draft.Title, false);
+            delivery.Items.Add(rewardItem);
+            DB.Set(delivery);
             draft.RewardItems.RemoveAt(index);
             DB.Set(draft);
 
-            Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{draft.AuthorPlayerId}] removed reward item '{rewardItem.Name}' from contract draft '{draft.Id}'.");
+            Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{draft.AuthorPlayerId}] removed reward item '{rewardItem.Name}' from contract draft '{draft.Id}' into delivery '{delivery.Id}'.");
+            ClaimDeliveries(player, SaveCharacterOrThrow, delivery.Id);
 
             return string.Empty;
         }
@@ -607,24 +609,35 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void ClaimDeliveries(uint player)
         {
-            ClaimDeliveries(player, () =>
-            {
-                var client = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetClientObjectByObjectId(player);
-                if (client == null || client.SaveServerCharacter() == 0)
-                    throw new InvalidOperationException("The contract claim character checkpoint could not be saved.");
-            });
+            ClaimDeliveries(player, () => SaveCharacterOrThrow(player));
+        }
+
+        /// <summary>Saves the player's character file for a contract claim, throwing when it could not be saved.</summary>
+        private static void SaveCharacterOrThrow(uint player)
+        {
+            var client = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetClientObjectByObjectId(player);
+            if (client == null || client.SaveServerCharacter() == 0)
+                throw new InvalidOperationException("The contract claim character checkpoint could not be saved.");
+        }
+
+        /// <summary>Claims one pending delivery of the player's (<paramref name="deliveryId"/>) as <see cref="ClaimDeliveries(uint)"/> does.</summary>
+        private static void ClaimDeliveries(uint player, Action<uint> saveCharacter, string deliveryId)
+        {
+            ClaimDeliveries(player, () => saveCharacter(player), deliveryId);
         }
 
         /// <summary>
         /// Claims each delivery through a durable character checkpoint before persisting its remaining
         /// value. Empty reward receipts remain only while their source can recover settlement.
         /// </summary>
-        private static void ClaimDeliveries(uint player, Action saveCharacter)
+        private static void ClaimDeliveries(uint player, Action saveCharacter, string onlyDeliveryId = null)
         {
             var playerId = GetObjectUUID(player);
             var query = new DBQuery<QuestContractDelivery>()
                 .AddFieldSearch(nameof(QuestContractDelivery.PlayerId), playerId, false);
-            var deliveries = ReadDeliveries(query).Where(IsClaimable).ToList();
+            var deliveries = ReadDeliveries(query)
+                .Where(x => IsClaimable(x) && (onlyDeliveryId == null || x.Id == onlyDeliveryId))
+                .ToList();
             if (deliveries.Count == 0)
             {
                 SendMessageToPC(player, "You have no pending contract deliveries.");
@@ -690,7 +703,7 @@ namespace SWLOR.Game.Server.Service
         /// it doesn't exist yet. Refunds accumulate separately from held objective submissions and
         /// retained reward-payment receipts.
         /// </summary>
-        public static QuestContractDelivery GetOrCreatePendingDelivery(string playerId, string contractId, string contractTitle)
+        public static QuestContractDelivery GetOrCreatePendingDelivery(string playerId, string contractId, string contractTitle, bool notify = true)
         {
             var query = new DBQuery<QuestContractDelivery>()
                 .AddFieldSearch(nameof(QuestContractDelivery.PlayerId), playerId, false)
@@ -708,7 +721,8 @@ namespace SWLOR.Game.Server.Service
             };
 
             DB.Set(delivery);
-            NotifyDeliveryRecipientIfOnline(playerId);
+            if (notify)
+                NotifyDeliveryRecipientIfOnline(playerId);
 
             return delivery;
         }

@@ -201,16 +201,25 @@ public class RiftRunTests
         pay = pay[..pay.IndexOf("SaveIncursions();", StringComparison.Ordinal)];
         runs.Should().Contain("KeyUser = spentKey ? user : OBJECT_INVALID,", "the run remembers who spent the key");
         new RiftRun().KeyUser.Should().Be(SWLOR.NWN.API.NWScript.NWScript.OBJECT_INVALID, "a run opened without a key has no key user");
-        var gate = pay.IndexOf("if (!IsRiftKeySpendSaved(run.KeyUser))", StringComparison.Ordinal);
+        runs.Should().Contain("KeyUserId = spentKey ? GetObjectUUID(user) : string.Empty,", "the spend is kept by the key user's character id");
+        var gate = pay.IndexOf("if (!IsRiftKeySpendSaved(run))", StringComparison.Ordinal);
         gate.Should().BeGreaterThan(0);
         pay.IndexOf("return;", gate, StringComparison.Ordinal)
             .Should().BeLessThan(pay.IndexOf("CapitalBattleRules.AddPending(", StringComparison.Ordinal),
                 "no ship's spoils are recorded while the key that opened the run can still be refunded");
         pay.Should().NotContain("aboard.Where(IsRiftKeySpendSaved)", "the gate is run-wide, not per recipient");
         var settled = runs[runs.IndexOf("private static bool IsRiftKeySpendSaved(", StringComparison.Ordinal)..];
-        settled.IndexOf("if (CharacterCheckpoint.Save(player))", StringComparison.Ordinal)
+        settled.IndexOf("if (string.IsNullOrEmpty(resref) || CharacterCheckpoint.Save(player))", StringComparison.Ordinal)
             .Should().BeLessThan(settled.IndexOf("ObjectPlugin.SetString(player, PendingRiftKeyVariable, resref, true);", StringComparison.Ordinal),
                 "the spend is saved again first, and only a second failure turns the spoils into the key's refund");
+        settled.Should().Contain("if (!GetIsObjectValid(player) || GetObjectUUID(player) != run.KeyUserId)",
+            "a key user who disconnected before a save held the spend never confirms it");
+        var login = runs[runs.IndexOf("public static void ReturnPendingRiftKey(", StringComparison.Ordinal)..];
+        login.Should().Contain("foreach (var run in _riftRuns.Values.Where(x => x.KeyUserId == playerId && !x.KeySpendSaved && !x.KeyRefunded))",
+                "the key user's login settles the spend from what their saved file holds")
+            .And.Contain("run.KeySpendSaved = true;")
+            .And.Contain("run.KeyRefunded = true;");
+        open.Should().Contain("run.KeySpendSaved = true;", "the save after the opening confirms the spend");
     }
 
     [Test]

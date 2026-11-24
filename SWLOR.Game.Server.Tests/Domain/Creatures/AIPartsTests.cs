@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Domain.Creatures;
@@ -59,7 +60,9 @@ public class AIPartsTests : AIServiceTestBase
         var events = new DefaultSeamsAICreatureEventService(Service, Decision);
 
         events.DefaultHighestEnmityTarget(Npc.Id).Should().Be(Invalid);
-        [Test]
+    }
+
+    [Test]
     public void The_container_builds_the_decision_part_and_the_action_part_as_their_own_services()
     {
         using var container = new FacadeContainer();
@@ -114,5 +117,4 @@ public class AIPartsTests : AIServiceTestBase
         decision.DefaultHighestEnmityTarget(Npc.Id).Should().Be(Invalid);
         action.DefaultIsControlledCompanion(Npc.Id).Should().BeFalse();
     }
-}
 }

@@ -994,6 +994,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsAppearanceSelected = true;
             IsEquipmentSelected = false;
             IsSettingsSelected = false;
+            IsOutfitsSelected = false;
             IsColorPickerVisible = true;
             IsCopyEnabled = true;
             IsCustomTintAvailable = false;

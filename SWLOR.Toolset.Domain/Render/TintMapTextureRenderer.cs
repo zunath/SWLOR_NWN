@@ -106,9 +106,10 @@ namespace SWLOR.Toolset.Domain.Render
                 : null;
 
             // The color selection depends only on the layer, so resolve each layer once rather than
-            // repeating the nearest-swatch search for every pixel.
-            var layerTints = new (bool IsCustom, TintMapColor CustomColor, int PaletteIndex)[10];
-            for (var layerValue = 0; layerValue < layerTints.Length; layerValue++)
+            // repeating the nearest-swatch search and custom shading for every pixel.
+            // Each layer reads one row of RGBA shades: its palette row, or the custom color's shading of it.
+            var layerRows = new (byte[] Pixels, int Start)[10];
+            for (var layerValue = 0; layerValue < layerRows.Length; layerValue++)
             {
                 var tintLayer = (TintMapLayerType)layerValue;
                 var savedValue = TintMapOverrides.GetMaterialColor(
@@ -128,10 +129,17 @@ namespace SWLOR.Toolset.Domain.Render
                           layerColorIndices.TryGetValue(layerValue, out var standardIndex)
                             ? standardIndex
                             : 0;
-                layerTints[layerValue] = (isCustom, customColor, Math.Clamp(
-                    paletteIndex,
-                    0,
-                    TintMapMaterialRegistry.PaletteColorCount - 1));
+                paletteIndex = Math.Clamp(paletteIndex, 0, TintMapMaterialRegistry.PaletteColorCount - 1);
+                var definition = TintMapMaterialRegistry.GetLayer(tintLayer);
+                var imageRow = PaletteImageRow(palette, definition.PaletteBaseRow + paletteIndex);
+                // Custom RGB takes the tint shaders' shading of its swatch's row (TintRgbShading).
+                layerRows[layerValue] = isCustom
+                    ? (TintRgbShading.ShadeRow(
+                        customColor,
+                        palette,
+                        imageRow,
+                        PaletteImageRow(palette, definition.PaletteBaseRow)), 0)
+                    : (palette.Pixels, imageRow * palette.Width * 4);
             }
 
             var output = new byte[checked(tintMap.Width * tintMap.Height * 4)];
@@ -143,44 +151,11 @@ namespace SWLOR.Toolset.Domain.Render
                     tintMap.Pixels[offset + 1] * 10 / byte.MaxValue,
                     0,
                     9);
-                var (isCustom, customColor, paletteIndex) = layerTints[(int)layer];
-
-                var definition = TintMapMaterialRegistry.GetLayer(layer);
-                var paletteX = shade * (palette.Width - 1) / 255;
-                // Tint palette coordinates are authored from the bottom of the texture because
-                // NWN shaders use OpenGL texture coordinates. TextureLoader exposes decoded
-                // images top-first, so convert the shader row before indexing the CPU image.
-                var shaderPaletteRow = Math.Clamp(
-                    definition.PaletteBaseRow + paletteIndex,
-                    0,
-                    palette.Height - 1);
-                var paletteY = palette.Height - 1 - shaderPaletteRow;
-                var paletteOffset = (paletteY * palette.Width + paletteX) * 4;
-                output[offset] = palette.Pixels[paletteOffset];
-                output[offset + 1] = palette.Pixels[paletteOffset + 1];
-                output[offset + 2] = palette.Pixels[paletteOffset + 2];
-                if (isCustom)
-                {
-                    // Offset the swatch row by the color's difference from the swatch midtone,
-                    // scaled by the row's shading. An all-black swatch row borrows the layer's
-                    // first row for the shading so a near-black color keeps its hue.
-                    var midpointX = 128 * (palette.Width - 1) / 255;
-                    var midpointOffset = (paletteY * palette.Width + midpointX) * 4;
-                    var rampOffset = paletteOffset;
-                    var rampMidpointOffset = midpointOffset;
-                    if (Luminance(palette.Pixels, midpointOffset) < 0.5f)
-                    {
-                        var firstRowY = palette.Height - 1 - Math.Clamp(definition.PaletteBaseRow, 0, palette.Height - 1);
-                        rampOffset = (firstRowY * palette.Width + paletteX) * 4;
-                        rampMidpointOffset = (firstRowY * palette.Width + midpointX) * 4;
-                    }
-
-                    var scale = Luminance(palette.Pixels, rampOffset) /
-                                Math.Max(Luminance(palette.Pixels, rampMidpointOffset), 1f);
-                    output[offset] = Shade(palette.Pixels[paletteOffset], customColor.Red, palette.Pixels[midpointOffset], scale);
-                    output[offset + 1] = Shade(palette.Pixels[paletteOffset + 1], customColor.Green, palette.Pixels[midpointOffset + 1], scale);
-                    output[offset + 2] = Shade(palette.Pixels[paletteOffset + 2], customColor.Blue, palette.Pixels[midpointOffset + 2], scale);
-                }
+                var (row, rowStart) = layerRows[(int)layer];
+                var sourceOffset = rowStart + shade * (palette.Width - 1) / 255 * 4;
+                output[offset] = row[sourceOffset];
+                output[offset + 1] = row[sourceOffset + 1];
+                output[offset + 2] = row[sourceOffset + 2];
                 output[offset + 3] = SampleAlpha(
                     alphaTexture,
                     alphaSource,
@@ -200,11 +175,13 @@ namespace SWLOR.Toolset.Domain.Render
             };
         }
 
-        private static float Luminance(byte[] pixels, int offset) =>
-            pixels[offset] * 0.2126f + pixels[offset + 1] * 0.7152f + pixels[offset + 2] * 0.0722f;
-
-        private static byte Shade(byte swatchShade, byte component, byte swatchMidpoint, float scale) =>
-            (byte)Math.Clamp(MathF.Round(swatchShade + (component - swatchMidpoint) * scale), 0, 255);
+        /// <summary>
+        /// Tint palette coordinates are authored from the bottom of the texture because NWN shaders
+        /// use OpenGL texture coordinates. TextureLoader exposes decoded images top-first, so convert
+        /// the shader row before indexing the CPU image.
+        /// </summary>
+        internal static int PaletteImageRow(TextureImage palette, int shaderRow) =>
+            palette.Height - 1 - Math.Clamp(shaderRow, 0, palette.Height - 1);
 
         private static byte SampleAlpha(
             TextureImage? texture,

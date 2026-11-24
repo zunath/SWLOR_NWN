@@ -62,7 +62,8 @@ public class SpeederTailRemovalTests
         Directory.EnumerateFiles(Path.Combine(root, "sw_pt_robe"), "*.mdl")
             .Count(path => Regex.IsMatch(Path.GetFileName(path), @"^p[fm][a-z]22_robe\d{3}\.mdl$",
                 RegexOptions.IgnoreCase))
-            .Should().BeGreaterThanOrEqualTo(1241, "the existing large-body robe catalog must remain intact");
+            // SWLOR_Haks #693 retired 31 unused robes and deleted their 189 large-body models (1241 -> 1052).
+            .Should().BeGreaterThanOrEqualTo(1052, "the existing large-body robe catalog must remain intact");
     }
 
     [TestCase("pfh22_robe007")]

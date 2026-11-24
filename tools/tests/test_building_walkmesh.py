@@ -205,8 +205,55 @@ class CorHistoric02WalkmeshTests(BuildingWalkmeshTests):
     approach = ((172, 180), (168, 180))  # East wall with the two posters.
     exterior_points = ((-6, 0), (-6, 6), (8, 0), (8, 6), (0, -12.5), (0, 12.5))
     # Include the corner wings and a projecting column, as well as the main body.
-    interior_points = ((0, 0), (6, -5), (-7, -10), (-7, 10), (8, 2.7))
+    interior_points = ((0, 0), (6, -5), (-4, -10), (-4, 10), (8, 2.7))
     probe_heights = (.01, .891101, 2, 9.1)
+    # The model's front corner pads (cor_hist_trim_a1 sides, metal top) are pedestals
+    # that end at local Z 0.88, in front of the wing walls at local X -4.82. Their
+    # collision stops 0.2 m lower: in the client, collision ending 0.06 m under the
+    # street still blocked, while 0.11 m under it did not.
+    pads = ((-7, -10), (-7, 10), (-8.2, -11.4), (-5.2, -8.75))
+    pad_top = .68
+    engine_clearance = .1
+
+    def test_corner_pads_stop_at_their_visible_top(self):
+        for x, y in self.pads:
+            with self.subTest(pad=(x, y)):
+                self.assertAlmostEqual(roof_height_at(self.vertices, self.faces, x, y), self.pad_top, places=3)
+                for z, inside in ((.01, 1), (self.pad_top - .01, 1), (self.pad_top + .01, 0), (2, 0), (9.1, 0)):
+                    self.assertEqual(len(intersections(self.vertices, self.faces,
+                                                       (x, y, z), (30.123, 26.789, z))) % 2, inside)
+        # Above the pads, the wing walls behind them still block.
+        for y in (-10, 10):
+            for z in (1, 2, 9.1):
+                with self.subTest(wing=(y, z)):
+                    self.assertTrue(intersections(self.vertices, self.faces, (-7, y, z), (-4, y, z)))
+
+    def test_sunken_veles_instance_leaves_its_buried_pad_walkable(self):
+        # Tile (1, 9) report: the building is sunk 0.69 m, so its visible pad top is
+        # flush with the 0.2 m street. Walks that stopped at the old roof-high pad
+        # must cross it now.
+        area = json.loads((ROOT / "Module/git/veles_exterior.git.json").read_text())
+        building = next(p for p in area["Placeable List"]["value"]
+                        if p["Appearance"]["value"] == self.appearance
+                        and abs(p["X"]["value"] - 7.68) < .01
+                        and abs(p["Y"]["value"] - 99.13) < .01)
+        angle, z = building["Bearing"]["value"], .2 - building["Z"]["value"]
+        self.assertGreater(z - self.pad_top, self.engine_clearance)
+
+        def local(x, y):
+            dx, dy = x - building["X"]["value"], y - building["Y"]["value"]
+            return (dx * math.cos(angle) + dy * math.sin(angle),
+                    -dx * math.sin(angle) + dy * math.cos(angle), z)
+
+        for start, end in (((17.6, 88.6), (17.6, 93.6)), ((18.7, 88.6), (18.7, 93.6)),
+                           ((15.0, 91.91), (21.0, 91.91)), ((16.5, 88.6), (16.5, 93.6))):
+            with self.subTest(walk=(start, end)):
+                self.assertFalse(intersections(self.vertices, self.faces, local(*start), local(*end)))
+                self.assertFalse(intersections(self.vertices, self.faces, local(*end), local(*start)))
+        # The wing wall behind the crates and the arched facade beside it stay solid.
+        for start, end in (((18.6, 92), (18.6, 95)), ((15.5, 92.6), (15.5, 95))):
+            with self.subTest(wall=(start, end)):
+                self.assertTrue(intersections(self.vertices, self.faces, local(*start), local(*end)))
 
 
 class CorHistoric04NorthernAwningTests(unittest.TestCase):

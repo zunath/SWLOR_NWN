@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
@@ -63,18 +64,27 @@ public class SkillXPTranscriptTests
             return null;
         });
 
-        Refusals();
-        Plain();
-        Bonuses();
-        Messages();
-        Debt();
-        Ceiling();
-        RankUps();
-        AtTheCap();
+        try
+        {
+            Refusals();
+            Plain();
+            Bonuses();
+            Messages();
+            Debt();
+            Ceiling();
+            RankUps();
+            AtTheCap();
 
-        // Color tokens carry control characters; the text keeps to ASCII.
-        var text = string.Concat(_bench.Text.Select(character => character < 128 ? character.ToString() : $"\\u{(int)character:x4}"));
-        CombatTranscriptBench.AssertGolden(FixturePath, text);
+            // Color tokens carry control characters; the text keeps to ASCII.
+            var text = string.Concat(_bench.Text.Select(character => character < 128 ? character.ToString() : $"\\u{(int)character:x4}"));
+            CombatTranscriptBench.AssertGolden(FixturePath, text);
+        }
+        finally
+        {
+            // The message-source step queues its combined XP message on the real scheduler. It runs here, while the bench is still
+            // installed, so no callback is left for a later test to run without the fake engine.
+            Scheduler.Process();
+        }
     }
 
     private void Refusals()

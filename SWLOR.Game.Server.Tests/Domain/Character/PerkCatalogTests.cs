@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
@@ -65,21 +66,31 @@ public class PerkCatalogTests
         bench.CacheData();
         bench.Feats.CachePerkFeatData();
 
-        var text = new StringBuilder();
-        var perks = bench.Catalog.GetAllPerks().OrderBy(pair => (int)pair.Key).ToArray();
-        text.Append("perks ").Append(perks.Length).Append('\n');
-        foreach (var (perkType, detail) in perks)
+        // The fixture's numbers use a dot for decimals, so the text is built in the invariant culture whatever the machine's is.
+        var culture = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+        try
         {
-            text.Append("perk ").Append((int)perkType).Append(' ').Append(perkType).Append(" levels=")
-                .Append(string.Join(",", detail.PerkLevels.Keys)).Append(" active=").Append(detail.IsActive)
-                .Append(" group=").Append(detail.GroupType).Append(" affinity=")
-                .Append(detail.ForceAffinityType?.ToString() ?? "none").Append('\n');
-            AppendFeats(text, bench, perkType, detail);
-            AppendStatBonuses(text, bench, perkType, detail);
-            AppendAffinity(text, bench, perkType, detail);
-        }
+            var text = new StringBuilder();
+            var perks = bench.Catalog.GetAllPerks().OrderBy(pair => (int)pair.Key).ToArray();
+            text.Append("perks ").Append(perks.Length).Append('\n');
+            foreach (var (perkType, detail) in perks)
+            {
+                text.Append("perk ").Append((int)perkType).Append(' ').Append(perkType).Append(" levels=")
+                    .Append(string.Join(",", detail.PerkLevels.Keys)).Append(" active=").Append(detail.IsActive)
+                    .Append(" group=").Append(detail.GroupType).Append(" affinity=")
+                    .Append(detail.ForceAffinityType?.ToString() ?? "none").Append('\n');
+                AppendFeats(text, bench, perkType, detail);
+                AppendStatBonuses(text, bench, perkType, detail);
+                AppendAffinity(text, bench, perkType, detail);
+            }
 
-        CombatTranscriptBench.AssertGolden(FixturePath, text.ToString());
+            CombatTranscriptBench.AssertGolden(FixturePath, text.ToString());
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = culture;
+        }
     }
 
     private static void AppendFeats(StringBuilder text, PerkBench bench, PerkType perkType, PerkDetail detail)

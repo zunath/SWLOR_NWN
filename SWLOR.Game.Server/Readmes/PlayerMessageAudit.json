@@ -540,28 +540,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/DeathService.cs",
-    "Line": 110,
+    "Line": 113,
     "Member": "OnPlayerDeath",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have been subdued.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/DeathService.cs",
-    "Line": 111,
+    "Line": 114,
     "Member": "OnPlayerDeath",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(\n                    player,\n                    receiver => $\"{_playerName.GetDisplayName(receiver, player)} has been subdued by {_playerName.GetDisplayName(receiver, hostile)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/DeathService.cs",
-    "Line": 303,
+    "Line": 306,
     "Member": "ApplyPenalties",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Requiem spares you any XP debt.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/DeathService.cs",
-    "Line": 345,
+    "Line": 348,
     "Member": "ApplyPenalties",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{newDebt} XP added to your debt. (Total: {dbPlayer.XPDebt} XP)\")"

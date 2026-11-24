@@ -81,7 +81,10 @@ def remove_owned_profile(path, cleanup=None):
     record=_profile_record(path)
     directory = Path(record['profile'])
     if (directory / profile.ENGINE_LOG_RECOVERY).is_file():
-        forget_profile(record['token'])
+        # A later process must still discover the original diagnostics if their
+        # evidence copy failed. Only staged, non-evidence contents are disposable.
+        _write_record('profile-'+record['token']+'.json', record)
+        profile.cleanup_engine_log_transients(directory)
         return
     try:
         (cleanup or profile.cleanup)(directory)
@@ -184,6 +187,8 @@ def recover_profile(record):
         actual=json.loads((path/profile.MARKER).read_text(encoding='utf8'))['token']
         if actual!=record['token']:
             raise ValueError('Retained profile ownership token changed')
-        if not (path / profile.ENGINE_LOG_RECOVERY).is_file():
-            profile.cleanup(path)
+        if (path / profile.ENGINE_LOG_RECOVERY).is_file():
+            profile.cleanup_engine_log_transients(path)
+            return  # Keep discovery until the diagnostic recovery marker is cleared.
+        profile.cleanup(path)
     forget_profile(record['token'])

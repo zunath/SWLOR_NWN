@@ -138,6 +138,8 @@ def main(argv=None):
                     cleanup_state.retain_profile(owned,offline_client.retained_profile_pid(owned))
                 raise RuntimeError('Owned process control retained; preserve profile for shutdown retry')
             if 'engine_log_copy_failure' in manifest:
+                cleanup_state.retain_profile(owned)
+                cleanup_state.remove_owned_profile(owned)
                 return
             if owned.exists():
                 cleanup_state.remove_owned_profile(owned)

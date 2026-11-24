@@ -42,6 +42,13 @@ python tools/VerifyNwnVisuals.py `
 
 ## Build a faithful fixture
 
+If copying an engine log fails, the cleanup journal retains the owned profile's
+diagnostics and `.preserve-engine-log` marker while removing staged inputs.
+Recover the original `logs/nwengineLog*.txt` files into the evidence directory,
+then clear that marker in the recorded owned profile. The next cleanup retry
+removes the remaining profile and its journal record. Do not clear the marker
+before recovering the diagnostics.
+
 1. Record the source commit, changed subjects, area resrefs, tags, authored XYZ and facing, and SHA-256 hashes of the inspected source files.
 2. Make a flat fixture folder with `module.ifo.json`, the affected area's real `Module/are` and `Module/git` resources (plus GIC when needed), required blueprints, and the probe `.nss`. Keep the area geometry and all placed objects, and the subject's authored position, facing, appearance, and equipment. An empty test room cannot validate world placement.
 3. Build or copy the HAKs named by `Module/ifo/module.ifo.json`, with the matching custom TLK, from current assets. An installed HAK may predate the change.

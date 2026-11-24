@@ -744,6 +744,7 @@ class EvidenceCleanupTests(unittest.TestCase):
         engine_log = owned / 'logs/nwengineLog1.txt'
         engine_log.parent.mkdir(exist_ok=True)
         engine_log.write_text('original diagnostic')
+        (owned / 'hak/staged.hak').write_bytes(b'disposable staged asset')
         copy_input = profile.copy_input
 
         def fail_engine_log(source, target):
@@ -757,26 +758,61 @@ class EvidenceCleanupTests(unittest.TestCase):
             fixture.write_bytes(b'fixture')
             output = root / 'evidence'
             try:
-                with patch('nwn_visual_check.module.discover_client', return_value=Path('C:/nwmain.exe')), \
+                with tempfile.TemporaryDirectory() as journal, \
+                        patch.object(cleanup_state, 'state_root', return_value=Path(journal)), \
+                        patch('nwn_visual_check.module.discover_client', return_value=Path('C:/nwmain.exe')), \
                         patch('nwn_visual_check.profile.create_profile', return_value=owned), \
                         patch('nwn_visual_check.offline_client.run', return_value=ClientRun(0, '', True, False)), \
                         patch('nwn_visual_check.profile.copy_input', side_effect=fail_engine_log):
                     with self.assertRaises(ExceptionGroup):
                         main(['--module', str(fixture), '--output', str(output), '--capture', 'READY=close'])
+                    self.assertEqual(len(cleanup_state.pending_profiles()), 1)
+                    self.assertFalse((owned / 'hak').exists())
+                    offline_client.retry_retained_processes()
+                    self.assertEqual(len(cleanup_state.pending_profiles()), 1)
+                    self.assertEqual(engine_log.read_text(), 'original diagnostic')
+                    (owned / profile.ENGINE_LOG_RECOVERY).unlink()
+                    offline_client.retry_retained_processes()
+                    self.assertEqual(cleanup_state.pending_profiles(), [])
+                    self.assertFalse(owned.exists())
                 manifest = json.loads((output / 'manifest.json').read_text())
                 self.assertEqual(manifest['engine_log_copy_failure'], 'Engine log copy failed')
                 self.assertEqual(manifest['retained_engine_log_profile'], str(owned))
                 self.assertFalse(manifest['profile_removed'])
-                self.assertEqual(engine_log.read_text(), 'original diagnostic')
-                with tempfile.TemporaryDirectory() as journal, \
-                        patch.object(cleanup_state, 'state_root', return_value=Path(journal)):
-                    cleanup_state.retain_profile(owned)
-                    offline_client.retry_retained_processes()
-                    self.assertEqual(cleanup_state.pending_profiles(), [])
-                    self.assertEqual(engine_log.read_text(), 'original diagnostic')
             finally:
                 if owned.exists():
                     profile.cleanup(owned)
+
+    def test_engine_log_recovery_keeps_journal_when_transient_cleanup_fails(self):
+        owned = profile.create_profile()
+        engine = owned / 'logs/nwengineLog1.txt'
+        engine.parent.mkdir()
+        engine.write_text('diagnostic evidence')
+        (owned / profile.ENGINE_LOG_RECOVERY).touch()
+        (owned / 'hak/staged.hak').write_bytes(b'staged asset')
+        try:
+            with tempfile.TemporaryDirectory() as journal, \
+                    patch.object(cleanup_state, 'state_root', return_value=Path(journal)):
+                with patch.object(profile.shutil, 'rmtree', side_effect=OSError('Locked input')):
+                    with self.assertRaises(OSError):
+                        cleanup_state.remove_owned_profile(owned)
+                self.assertEqual(len(cleanup_state.pending_profiles()), 1)
+                record = cleanup_state.pending_profiles()[0]
+                with patch.object(profile.shutil, 'rmtree', side_effect=OSError('Still locked')):
+                    with self.assertRaises(OSError):
+                        cleanup_state.recover_profile(record)
+                self.assertEqual(len(cleanup_state.pending_profiles()), 1)
+                cleanup_state.recover_profile(record)
+                self.assertFalse((owned / 'hak').exists())
+                self.assertEqual(engine.read_text(), 'diagnostic evidence')
+                self.assertEqual(len(cleanup_state.pending_profiles()), 1)
+                (owned / profile.ENGINE_LOG_RECOVERY).unlink()
+                cleanup_state.recover_profile(record)
+                self.assertFalse(owned.exists())
+                self.assertEqual(cleanup_state.pending_profiles(), [])
+        finally:
+            if owned.exists():
+                profile.cleanup(owned)
 
     @unittest.skipUnless(sys.platform == 'win32', 'CLI requires Windows')
     def test_retained_process_profile_is_preserved_without_isolation_file(self):

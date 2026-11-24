@@ -238,11 +238,11 @@ namespace SWLOR.Game.Server.Service
             DateTime recastEnd,
             bool setGlobalRecast)
         {
-            // The module's component traits apply while its action runs; Yield traits add to its Module Bonus.
-            using (ShipModuleTraitContext.Begin(shipModule.Traits, slotNumber))
+            // The module's component traits and Module Bonus apply while its action runs; Yield traits add to its Module Bonus.
+            var moduleBonus = ShipTraitRules.ModuleBonus(shipModule.ModuleBonus, shipModule.Traits);
+            using (ShipModuleTraitContext.Begin(shipModule.Traits, slotNumber, moduleBonus))
             {
-                shipModuleDetails.ModuleActivatedAction?.Invoke(activator, activatorShipStatus, target, targetShipStatus,
-                    ShipTraitRules.ModuleBonus(shipModule.ModuleBonus, shipModule.Traits));
+                shipModuleDetails.ModuleActivatedAction?.Invoke(activator, activatorShipStatus, target, targetShipStatus, moduleBonus);
             }
 
             if (applyRecast)

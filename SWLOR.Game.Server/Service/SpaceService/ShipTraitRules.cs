@@ -68,15 +68,26 @@ namespace SWLOR.Game.Server.Service.SpaceService
             value > 0 ? Math.Max(1, Scale(value, percent)) : Scale(value, percent);
 
         /// <summary>
-        /// The module step as its traits make it: a copy with the percent stats applied, or the step itself when the
-        /// module has no traits. Evasion, Speed, Yield and RareFind are not module numbers and are read separately.
+        /// The percent each Module Bonus point adds to the module's own numbers, before the hull-size multiplier (Design
+        /// Bible "Ship Modules (Revamp)", scaling rules). A percent keeps one point worth the same on every tier and stat:
+        /// a top Module Bonus enhancement (+6) matches a crafted component trait (+6%).
         /// </summary>
-        public static ShipModuleStep Apply(ShipModuleStep step, IReadOnlyCollection<ShipComponentTraitType> traits)
+        public const int ModuleBonusPercentPerPoint = 1;
+
+        /// <summary>
+        /// The module step as its traits and Module Bonus make it: a copy with the percent stats applied, or the step
+        /// itself when the module has neither. Each Module Bonus point (<paramref name="moduleBonus"/>, after Yield
+        /// traits, see <see cref="ModuleBonus"/>) adds <see cref="ModuleBonusPercentPerPoint"/>% to every number a percent
+        /// trait changes, on top of the traits' own percents; capacitor use is left alone. Evasion, Speed, Yield and
+        /// RareFind are not module numbers and are read separately.
+        /// </summary>
+        public static ShipModuleStep Apply(ShipModuleStep step, IReadOnlyCollection<ShipComponentTraitType> traits, int moduleBonus = 0)
         {
-            if (step == null || traits == null || traits.Count == 0)
+            var bonus = Math.Max(0, moduleBonus) * ModuleBonusPercentPerPoint;
+            if (step == null || ((traits == null || traits.Count == 0) && bonus == 0))
                 return step;
 
-            int P(ShipTraitStat stat) => Sum(traits, stat);
+            int P(ShipTraitStat stat) => Sum(traits, stat) + bonus;
             var damage = P(ShipTraitStat.Damage);
             var accuracy = P(ShipTraitStat.Accuracy);
             var shield = P(ShipTraitStat.Shield);

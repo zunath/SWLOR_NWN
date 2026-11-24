@@ -350,8 +350,9 @@ namespace SWLOR.Game.Server.Service
             string ammo,
             bool consumeAmmo)
         {
-            // The weapon's component traits shape the step, as on its own cycle (RevampModuleDefinition.Effective).
-            var step = ShipTraitRules.Apply(weapon.Fitted.Step, weapon.Fitted.Traits);
+            // The weapon's component traits and Module Bonus shape the step, as on its own cycle (RevampModuleDefinition.Effective).
+            var step = ShipTraitRules.Apply(weapon.Fitted.Step, weapon.Fitted.Traits,
+                ShipTraitRules.ModuleBonus(weapon.Fitted.ModuleBonus, weapon.Fitted.Traits));
 
             // An ammo variant changes the weapon's shot before the ability adds to it, as on the launcher's own
             // cycle, and its rider follows the landed hit.

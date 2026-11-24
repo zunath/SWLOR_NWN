@@ -120,6 +120,34 @@ public class ShipTraitRulesTests
     }
 
     [Test]
+    public void ModuleBonus_RaisesEveryOutputOnePercentAPointButNotCapacitorUse()
+    {
+        var laser = Laser(45);
+        var plus6 = ShipTraitRules.Apply(laser, null, 6);
+        plus6.Should().NotBeSameAs(laser);
+        plus6.Dmg.Should().Be(ShipTraitRules.Scale(laser.Dmg, 6));
+        plus6.Accuracy.Should().Be(ShipTraitRules.Scale(laser.Accuracy, 6));
+        plus6.CapacitorCost.Should().Be(laser.CapacitorCost, "Module Bonus never changes capacitor use");
+
+        var repairer = RevampModuleCatalog.Steps.Single(x => x.Tag == "sm_shrep_45");
+        ShipTraitRules.Apply(repairer, null, 6).Repair.Should().Be(ShipTraitRules.Scale(repairer.Repair, 6));
+        var hardener = RevampModuleCatalog.Steps.First(x => x.Family == ShipModuleFamily.ShieldHardener && x.ResistAll > 0);
+        ShipTraitRules.Apply(hardener, null, 6).ResistAll.Should().Be(ShipTraitRules.Scale(hardener.ResistAll, 6));
+        var bulwark = RevampModuleCatalog.Steps.Single(x => x.Tag == "sm_bulw_45");
+        ShipTraitRules.Apply(bulwark, null, 5).AuraShieldPercent.Should().Be(21, "20% x 1.05");
+    }
+
+    [Test]
+    public void ModuleBonus_AddsToTheTraitsPercents()
+    {
+        var laser = Laser(45);
+        ShipTraitRules.Apply(laser, new[] { ShipComponentTraitType.Overcharged }, 4).Dmg
+            .Should().Be(ShipTraitRules.Scale(laser.Dmg, 10), "+6% Overcharged and +4 Module Bonus");
+        ShipTraitRules.Apply(laser, null, 0).Should().BeSameAs(laser, "no bonus and no traits leave the step alone");
+        ShipTraitRules.Apply(laser, null, -3).Should().BeSameAs(laser, "a negative bonus counts as none");
+    }
+
+    [Test]
     public void DamageNeverDropsBelowOne()
     {
         var weak = new ShipModuleStep { Dmg = 1, Repair = 1 };

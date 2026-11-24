@@ -553,7 +553,7 @@ Toggled modules are the ship's auto-attacks; perk abilities are the buttons, as 
 ### Enhancements
 
 - **Starship enhancements** are rebased to the new stats: one Attack, one Defense, resistances, hull, shield, capacitor, regen, accuracy, evasion and cargo.
-- **Module enhancements** (`ModuleBonus`) stay.
+- **Module enhancements** (`ModuleBonus`) stay. Each point adds 1% to the module's own numbers, the ones a percent trait changes (damage, accuracy, hull, shield, capacitor, regen, repair, Defense, resistances, auras; never capacitor use), added to its traits' percents (`ShipTraitRules.Apply`), on every module's cycle, ability shot and fitted stats. Extraction heads also add the points to their yield.
 - **Fix:** subtype 58, which is labelled "Starship - Agility" but builds an ability bonus.
 
 ## 9. Combat rules

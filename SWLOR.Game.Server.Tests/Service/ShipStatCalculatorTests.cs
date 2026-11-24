@@ -553,9 +553,9 @@ public class ShipStatCalculatorTests
     }
 
     [Test]
-    public void ModuleBonus_AddsOnePercentAPointToTheModulesOwnHullShieldAndCapacitor()
+    public void ModuleBonus_AddsOnePercentAPointToTheModulesOwnNumbers()
     {
-        ShipStatCalculator.ModuleBonusPercentPerPoint.Should().Be(1);
+        ShipTraitRules.ModuleBonusPercentPerPoint.Should().Be(1);
         ShipFittedModule Plating(int bonus)
         {
             var module = Fit(ShipModulePowerType.Low, 1, s => { s.Hull = 300; s.ModuleDefense = 20; });
@@ -568,7 +568,7 @@ public class ShipStatCalculatorTests
         plus5.MaxHull.Should().Be(100 + 315, "+5 Module Bonus adds 5% (15 hull) to a Small hull's 300-hull plating");
         plus5.MaxShield.Should().Be(80, "plating gives no shield, so its bonus adds none");
         plus5.MaxCapacitor.Should().Be(60);
-        plus5.Defense.Should().Be(8 + 20, "the bonus does not change Defense");
+        plus5.Defense.Should().Be(8 + 21, "the plating's own Defense rises 5% too: 20 x 1.05 = 21");
 
         // On a Medium hull the bonus scales with the module's output: 300 x 1.05 x 1.1 = 346.5, rounded to 346 (banker's).
         Calculate(Hull(ShipSize.Medium), 0, Plating(5)).MaxHull.Should().Be(100 + 346);

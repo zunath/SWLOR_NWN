@@ -180,8 +180,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             return shot;
         }
 
-        /// <summary>The step as the firing module's component traits make it.</summary>
-        private static ShipModuleStep Effective(ShipModuleStep step) => ShipTraitRules.Apply(step, ShipModuleTraitContext.Current);
+        /// <summary>The step as the firing module's component traits and Module Bonus make it.</summary>
+        private static ShipModuleStep Effective(ShipModuleStep step) =>
+            ShipTraitRules.Apply(step, ShipModuleTraitContext.Current, ShipModuleTraitContext.CurrentModuleBonus);
 
         private void Weapon(ShipModuleStep step)
         {

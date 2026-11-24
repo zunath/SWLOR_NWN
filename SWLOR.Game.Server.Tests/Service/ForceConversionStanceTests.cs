@@ -145,8 +145,12 @@ public class ForceConversionStanceTests
             "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"))).GetRoot();
         var hook = attackSource.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "OnResolveAttackRoll");
-        var delegation = hook.DescendantNodes().OfType<InvocationExpressionSyntax>().Should().ContainSingle().Which;
-        delegation.Expression.ToString().Should().Be("ResolveWeaponRoll");
+        // The engine hook clears its slot's queued impact work (engine rolls only), then delegates to the roll the
+        // companion shares, so the stance preparation below covers both.
+        var hookCalls = hook.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
+        hookCalls.Select(call => call.Expression.ToString())
+            .Should().Equal("NativeWeaponImpactSignal.BeginRoll", "ResolveWeaponRoll");
+        var delegation = hookCalls.Single(call => call.Expression.ToString() == "ResolveWeaponRoll");
         delegation.ArgumentList.Arguments.Select(argument => argument.ToString()).Should().Equal("thisPtr", "pTarget");
         var sharedRoll = attackSource.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "ResolveWeaponRoll");

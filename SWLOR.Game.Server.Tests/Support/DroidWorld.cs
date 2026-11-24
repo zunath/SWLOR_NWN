@@ -258,21 +258,28 @@ public sealed class DroidWorld : IDisposable
 
     public IReadOnlyList<RecordedCall> Calls(string member) => Engine.CallsTo(member);
 
-    /// <summary>Runs the actions the code under test handed to AssignCommand and DelayCommand (and those they hand on).</summary>
+    /// <summary>
+    /// Runs the actions the code under test handed to AssignCommand and DelayCommand (and those they hand on). A later call runs only
+    /// the commands queued since the previous one, so a command already run is never run again.
+    /// </summary>
     public void RunDeferred()
     {
-        var done = 0;
         while (true)
         {
             var calls = Engine.Calls;
-            var pending = calls.Skip(done).Where(call => call.Member is "AssignCommand" or "DelayCommand").ToList();
-            done = calls.Count;
+            if (_deferredCallsSeen > calls.Count)
+                _deferredCallsSeen = 0;
+            var pending = calls.Skip(_deferredCallsSeen).Where(call => call.Member is "AssignCommand" or "DelayCommand").ToList();
+            _deferredCallsSeen = calls.Count;
             if (pending.Count == 0)
                 return;
             foreach (var call in pending)
                 ((Action)call.Arguments[1]!).Invoke();
         }
     }
+
+    // How many engine calls RunDeferred has already looked at.
+    private int _deferredCallsSeen;
 
     public IReadOnlyList<string> Spoken() => Engine.CallsTo("SpeakString").Select(call => (string)call.Arguments[0]!).ToList();
     public IReadOnlyList<string> Messages() => Engine.CallsTo("SendMessageToPC").Select(call => (string)call.Arguments[1]!).ToList();

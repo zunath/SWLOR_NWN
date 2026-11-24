@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
@@ -169,7 +170,10 @@ public class BeastIncubationTranscriptTests
             incubation.UseIncubator();
         });
 
-        AssertGolden("SWLOR.Game.Server.Tests/Fixtures/CompanionTranscripts/BeastUseIncubator.txt", bench.Text);
+        // The service counts the running job down from its own read of the clock, so the seconds left depend on how long the steps took
+        // (29 on a run under a second). The transcript masks them; days, hours and minutes stay exact.
+        var text = Regex.Replace(bench.Text, @"(This job will complete in: [^.\n]*?)\d+ seconds?\.", "$1<seconds> seconds.");
+        AssertGolden("SWLOR.Game.Server.Tests/Fixtures/CompanionTranscripts/BeastUseIncubator.txt", text);
     }
 
     [Test]
@@ -185,13 +189,13 @@ public class BeastIncubationTranscriptTests
         bench.Step("the beasts of the scenario", () =>
             bench.Note("mutations: " + beast.GetBeastDetail(mutating).Name + " (" + beast.GetBeastDetail(mutating).PossibleMutations.Count + " mutations); plain: " + beast.GetBeastDetail(plain).Name));
 
+        // A deletion is written when it happens, so a job deleted before its egg is made shows in the transcript.
+        bench.Db.OnDelete = (type, id) => bench.Lines.Add("DB.Deleted " + type.Name + " " + id);
+
         void Finish(string label, IncubationJob job) => bench.Step(label, () =>
         {
             bench.Db.With(job);
             incubation.CreateBeastEgg(job, Attacker);
-            foreach (var deleted in bench.Db.Deleted.ToArray())
-                bench.Lines.Add("DB.Deleted IncubationJob " + deleted);
-            bench.Db.Deleted.Clear();
         });
 
         Finish("mutation suppressed: no roll, the DNA beast", Job(mutating, 1000, suppressed: true));

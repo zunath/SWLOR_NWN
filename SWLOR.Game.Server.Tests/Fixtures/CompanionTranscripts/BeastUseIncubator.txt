@@ -12,7 +12,7 @@ Gui.TogglePlayerWindow(Attacker, Incubator, IncubatorPayload{IncubationJobId=,Pr
 == step 4 another player's job is still running
 Perk.GetPerkLevel(Attacker, DNAManipulation)
 Property.GetPropertyId(Incubator)
-Engine.SendMessageToPC(Attacker, Another player's incubation job is active. This job will complete in: 3 days, 12 hours, 30 minutes, 29 seconds.)
+Engine.SendMessageToPC(Attacker, Another player's incubation job is active. This job will complete in: 3 days, 12 hours, 30 minutes, <seconds> seconds.)
 == step 5 another player's job has finished
 Perk.GetPerkLevel(Attacker, DNAManipulation)
 Property.GetPropertyId(Incubator)

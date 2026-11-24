@@ -252,3 +252,4 @@ Engine.AddItemProperty(Permanent, ItemProperty, Egg8, 0)
 DamageCatalog.GetDefenseDamageTypes()
 Resistance.GetAllResistanceTypes()
 Engine.SetAddGoldPieceValue(Egg8, 544)
+DB.Deleted IncubationJob job-1

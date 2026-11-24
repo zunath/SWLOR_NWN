@@ -823,8 +823,9 @@ Tests only; no production file changed. A later PR of the Mimicry, Beast or Droi
 - **Engine tests:** none are new (the skill decay test is P5-10b1's). Run on this base through `scripts/run-engine-tests.sh` (a scratch copy with the repo root fixed and CRLF removed; no `jq`, so the report was
   read directly): the categories and names of the map's Mimicry, Beast and Droid lists (`MimicryLoadouts`, `MimicryObservation`, `MimicryDescriptions`, the Mimicry potency tests, `MimicryTraitPotency`,
   `PlayerTechniques`, the Beastmaster ability behaviors (`PlayerBeastAbilityEngineTests`), `Incubation`, `CapstoneProof`, `TankEnmity`, every `Droid` name or category, `ItemClaimSpace`): 112 selected, 110 passed,
-  1 skipped (the opt-in view model transcript), **1 failed: `Migration expands blueprint alternatives inside serialized droid inventories`** (`KeyNotFoundException` for `DroidLightsaberBoost1` in
-  `CraftService.GetRecipe`: the droid migration names a recipe no definition registers). It fails on the base as it stands, the PR changes no production code, and no split touches it; a split PR's engine run must expect it.
+  1 skipped (the opt-in view model transcript), 1 failed: `Migration expands blueprint alternatives inside serialized droid inventories` (`KeyNotFoundException` for `DroidLightsaberBoost1` in
+  `CraftService.GetRecipe`), on the base this was built from. Master's #3486 deleted that test with the retired migrations, and the master sync to 82ebe9f00 took the deletion, so the branch no longer
+  has it and a split PR's engine run expects no failure from it.
 - **Unit tests** (`SWLOR.Game.Server.Tests`, filters `Mimicry`, `Beast`, `Droid`, `Incubation`, `PlayerMessageAudit`, `ConvertedServiceContainer`, `DMPossessionPlayerLoop`): 1,585 passed, 0 failed, including the
   six new tests; the transcripts are identical across repeated runs. `SWLOR.Architecture.Tests`: 297 passed, no baseline changed.
 - **Client evidence:** none. No production file changed and nothing in game changes; the transcripts and the engine run are the evidence, as for P5-7b.

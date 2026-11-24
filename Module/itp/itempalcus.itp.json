@@ -2216,6 +2216,28 @@
                       "type": "resref",
                       "value": "hc_tradecoat"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Captain Teral Voss's Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_captain_o"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Quartermaster Ysa Morn's Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_quarter_o"
+                    }
                   }
                 ]
               },
@@ -8340,6 +8362,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hc_workwear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Huntmaster Daven Ryl's Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "esh_hunt_o"
                     }
                   }
                 ]

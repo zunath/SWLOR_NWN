@@ -147,15 +147,15 @@ SWLOR.Game.Server.Service.Combat.ApplyDamageTakenEffects SWLOR.Game.Server.Domai
 SWLOR.Game.Server.Service.Combat.ApplyDefeatedEnemyEffects SWLOR.Game.Server.Domain.Combat.CombatService.ApplyDefeatedEnemyEffects
 SWLOR.Game.Server.Service.Combat.ClearCombatState SWLOR.Game.Server.Domain.Combat.CombatService.ClearCombatState
 SWLOR.Game.Server.Service.Combat.ClearStatTriggerState SWLOR.Game.Server.Domain.Combat.CombatService.ClearStatTriggerState
-SWLOR.Game.Server.Service.Combat.LoadDamageTypes SWLOR.Game.Server.Domain.Combat.CombatDamageCatalogService.LoadDamageTypes
+SWLOR.Game.Server.Service.Combat.LoadDamageTypes SWLOR.Game.Server.Domain.Combat.CombatDamageCatalogService.LoadDamageTypes SWLOR.Game.Server.Domain.Combat.CombatRecordDamageService.RegisterSessionListener
 SWLOR.Game.Server.Service.Combat.PurgeInvalidOffensiveActivity SWLOR.Game.Server.Domain.Combat.CombatActivityService.PurgeInvalidOffensiveActivity
 SWLOR.Game.Server.Service.Combat.RestoreIdleReadinessOnPlayerEnter SWLOR.Game.Server.Domain.Combat.CombatActivityService.RestoreIdleReadinessOnPlayerEnter
 SWLOR.Game.Server.Service.CombatPoint.ClearPendingWeaponAttackPoints SWLOR.Game.Server.Domain.Combat.CombatPointService.ClearPendingWeaponAttackPoints
 SWLOR.Game.Server.Service.CombatPoint.OnCreatureDeath SWLOR.Game.Server.Domain.Combat.CombatPointService.OnCreatureDeath
 SWLOR.Game.Server.Service.CombatPoint.OnHitCastSpell SWLOR.Game.Server.Domain.Combat.CombatPointService.OnHitCastSpell
 SWLOR.Game.Server.Service.CombatPoint.OnPlayerExit SWLOR.Game.Server.Domain.Combat.CombatPointService.OnPlayerExit
-SWLOR.Game.Server.Service.CombatRecorder.RecordCreatureDeath SWLOR.Game.Server.Domain.Combat.CombatRecorderService.RecordCreatureDeath
-SWLOR.Game.Server.Service.CombatRecorder.RecordPlayerDeath SWLOR.Game.Server.Domain.Combat.CombatRecorderService.RecordPlayerDeath
+SWLOR.Game.Server.Service.CombatRecorder.RecordCreatureDeath SWLOR.Game.Server.Domain.Combat.CombatRecordDamageService.RecordCreatureDeath
+SWLOR.Game.Server.Service.CombatRecorder.RecordPlayerDeath SWLOR.Game.Server.Domain.Combat.CombatRecordDamageService.RecordPlayerDeath
 SWLOR.Game.Server.Service.CombatRecorder.StopOnShutdown SWLOR.Game.Server.Domain.Combat.CombatRecorderService.StopOnShutdown
 SWLOR.Game.Server.Service.Communication.ApplyCommsChannelName SWLOR.Game.Server.Domain.Social.CommunicationService.ApplyCommsChannelName
 SWLOR.Game.Server.Service.Communication.ApplyShoutChannelName SWLOR.Game.Server.Domain.Social.CommunicationService.ApplyShoutChannelName

@@ -108,8 +108,6 @@ public class CombatRecorderTranscriptTests
         protected override int GetCurrentStamina(uint creature, Player dbPlayer = null!) => 33;
         protected override int GetMaxStamina(uint creature, Player dbPlayer = null!) => 44;
         protected override int GetTemporaryHitPoints(uint creature) => 7;
-        protected override int GetHitPointsExcludingTemporary(uint creature) => 80;
-        protected override CombatRecordTemporaryHitPointPool[] CaptureTemporaryHitPointPools(uint creature) => null!;
         protected override string GetLogDirectory() => _logDirectory;
 
         protected override IDisposable ScheduleRepeating(Action task, TimeSpan schedule, TimeSpan delay)
@@ -140,6 +138,17 @@ public class CombatRecorderTranscriptTests
         protected override int GetCurrentStamina(uint creature, Player dbPlayer = null!) => 33;
     }
 
+    private sealed class ProbeDamage : CombatRecordDamageService
+    {
+        public ProbeDamage(ProbeCore core, Probe recorder)
+            : base(core, recorder)
+        {
+        }
+
+        protected override int GetHitPointsExcludingTemporary(uint creature) => 80;
+        protected override CombatRecordTemporaryHitPointPool[] CaptureTemporaryHitPointPools(uint creature) => null!;
+    }
+
     private static IStatusEffect Status(StatusEffectBase effect, uint source)
     {
         effect.ReassignSource(source);
@@ -162,9 +171,13 @@ public class CombatRecorderTranscriptTests
                 services.Replace(ServiceDescriptor.Singleton<ICombatRecordSession>(core));
                 services.Replace(ServiceDescriptor.Singleton<ICombatRecorderService>(probe));
                 services.Replace(ServiceDescriptor.Singleton<ICombatRecordAbilityService>(new ProbeAbility(core, probe)));
+                var damagePart = new ProbeDamage(core, probe);
+                probe.RegisterSessionListener(damagePart);
+                services.Replace(ServiceDescriptor.Singleton<ICombatRecordDamageService>(damagePart));
             });
             var recorder = bench.Get<ICombatRecorderService>();
             var ability = bench.Get<ICombatRecordAbilityService>();
+            var damage = bench.Get<ICombatRecordDamageService>();
             recorder.Should().BeSameAs(probe);
             var session = bench.Get<ICombatRecordSession>();
             bench.NameCreature(AreaOne, "Cantina");
@@ -226,14 +239,14 @@ public class CombatRecorderTranscriptTests
             Fight("temporary hit points granted, then damage that they absorb", () =>
             {
                 using (probe!.BeginAbilityAttribution(Defender, Strike, FeatType.Alertness))
-                    probe.RecordTemporaryHitPointsGranted(Defender, Defender, "shield", 30, 12.5f);
+                    damage.RecordTemporaryHitPointsGranted(Defender, Defender, "shield", 30, 12.5f);
                 using (probe.BeginAbilityAttribution(Attacker, Strike, FeatType.Alertness))
                 {
                     var index = session.BeginDamageApplication(Attacker, Defender, 40, 100);
-                    probe.RecordDamageApplied(index, true, Attacker, Defender, physical, 100, 90, 200, shieldBefore, shieldAfter);
+                    damage.RecordDamageApplied(index, true, Attacker, Defender, physical, 100, 90, 200, shieldBefore, shieldAfter);
                 }
             });
-            Fight("temporary hit points trimmed", () => probe!.RecordTemporaryHitPointsTrimmed(Defender, "shield", 5, 5));
+            Fight("temporary hit points trimmed", () => damage.RecordTemporaryHitPointsTrimmed(Defender, "shield", 5, 5));
             Fight("ability impact", () =>
             {
                 var summary = new AbilityImpactSummary
@@ -263,14 +276,14 @@ public class CombatRecorderTranscriptTests
                 var outer = session.EndHealApplication(Defender);
                 bench.Lines.Add($"inner reduction {inner}, outer reduction {outer}");
                 using (probe.BeginAbilityAttribution(Other, Strike, FeatType.Alertness))
-                    probe.RecordHealingApplied(Other, Defender, 100, 20, 80, 200, outer);
+                    damage.RecordHealingApplied(Other, Defender, 100, 20, 80, 200, outer);
             });
             Fight("a healing reaction is written after the heal", () =>
             {
                 var reaction = probe!.BeginHealingReaction(Defender);
                 probe.RecordResourceChange(Defender, CombatRecordResource.Stamina, 4, 10);
                 reaction.Dispose();
-                probe.RecordHealingApplied(Attacker, Defender, 10, 50, 60, 200);
+                damage.RecordHealingApplied(Attacker, Defender, 10, 50, 60, 200);
             });
             Fight("resources and items", () =>
             {
@@ -300,24 +313,24 @@ public class CombatRecorderTranscriptTests
             {
                 self = Defender;
                 killer = Attacker;
-                probe!.RecordCreatureDeath();
-                probe.RecordCreatureDeath();
+                damage.RecordCreatureDeath();
+                damage.RecordCreatureDeath();
             });
             Fight("a player dies", () =>
             {
                 lastPlayerDied = Attacker;
                 lastHostile = Defender;
-                probe!.RecordPlayerDeath();
+                damage.RecordPlayerDeath();
             });
             Fight("the player respawns and the creature is resurrected", () =>
             {
-                probe!.RecordRespawn(Attacker);
-                probe.RecordResurrection(Defender, CombatRecordSourceKind.DungeonMaster);
+                damage.RecordRespawn(Attacker);
+                damage.RecordResurrection(Defender, CombatRecordSourceKind.DungeonMaster);
             });
             Fight("a subdual", () =>
             {
                 lastPlayerDied = Attacker;
-                probe!.RecordSubdual(Attacker, Defender);
+                damage.RecordSubdual(Attacker, Defender);
             });
             Fight("stop recording", () =>
             {

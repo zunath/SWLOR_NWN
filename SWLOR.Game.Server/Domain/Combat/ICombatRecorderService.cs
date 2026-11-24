@@ -98,6 +98,27 @@ namespace SWLOR.Game.Server.Domain.Combat
         bool TryGetInnermostAttribution(out CombatRecordAttribution attribution);
 
         /// <summary>
+        /// Resolves who caused a change: the innermost attribution scope, then the actor's active ability impact, then the
+        /// actor alone. The damage records read it to name who healed or granted temporary hit points.
+        /// </summary>
+        CombatRecordAttribution ResolveAttribution(uint fallbackActor);
+
+        /// <summary>
+        /// The actor's active ability impact as an attribution, or the actor alone when it has none.
+        /// </summary>
+        CombatRecordAttribution ResolveActiveAbilityAttribution(uint actor);
+
+        /// <summary>
+        /// Whether an open scope belongs to <paramref name="actor"/>, as its actor or its owner.
+        /// </summary>
+        bool IsOwnedBy(in CombatRecordAttribution scope, uint actor);
+
+        /// <summary>
+        /// Registers who is told when a recording starts and stops. Registering the same listener twice keeps one entry.
+        /// </summary>
+        void RegisterSessionListener(ICombatRecordingSessionListener listener);
+
+        /// <summary>
         /// The innermost scope when it belongs to <paramref name="actor"/>; otherwise the actor's active ability impact, then the
         /// actor alone. Used where another creature's scope must not lend its source to the actor.
         /// </summary>
@@ -142,83 +163,11 @@ namespace SWLOR.Game.Server.Domain.Combat
         void ExpectWeaponDamage(uint attacker, uint defender, int amount, SkillType weaponSkill);
 
         /// <summary>
-        /// Called by the native damage hook after the engine applied a damage effect.
-        /// Hit points exclude temporary HP, which is reported separately.
-        /// </summary>
-        /// <param name="isEngineApplied">True when no script or closure applied the effect, as for weapon hits.</param>
-        void RecordDamageApplied(
-            int applicationIndex,
-            bool isEngineApplied,
-            uint source,
-            uint target,
-            in CombatRecordDamageBreakdown damage,
-            int hitPointsBefore,
-            int hitPointsAfter,
-            int maxHitPoints,
-            CombatRecordTemporaryHitPointPool[] poolsBefore,
-            CombatRecordTemporaryHitPointPool[] poolsAfter);
-
-        /// <summary>
         /// Notes how much the PvP healing reduction took off the heal now being applied to
         /// <paramref name="target"/>, so the heal is recorded with the cut instead of as overheal.
         /// </summary>
         void RecordPvpHealingReduced(uint target, int requested, int reduced);
 
-        /// <summary>
-        /// Called by the native heal hook after the engine applied a heal effect.
-        /// </summary>
-        void RecordHealingApplied(
-            uint creator,
-            uint target,
-            int requested,
-            int hitPointsBefore,
-            int hitPointsAfter,
-            int maxHitPoints,
-            int pvpReduced = 0);
-
-        /// <summary>
-        /// Called before a keyed temporary-HP pool is removed or replaced. During a hit on that
-        /// creature, what each pool had left is kept, so the hit's absorption is measured against
-        /// that remainder instead of treating the removed pool as fully absorbed.
-        /// </summary>
-        void RecordTemporaryHitPointPoolRemoving(uint creature);
-
-        /// <summary>
-        /// Records a pool cut back to fit the temporary HP cap, credited to whoever granted it.
-        /// </summary>
-        void RecordTemporaryHitPointsTrimmed(uint target, string effectKey, int trimmed, int remaining);
-
-        void RecordTemporaryHitPointsGranted(uint source, uint target, string effectKey, int amount, float durationSeconds);
-
         void RecordItemConsumed(uint creature, string itemResref, int quantity);
-
-        void RecordCreatureDeath();
-
-        void RecordPlayerDeath();
-
-        /// <summary>
-        /// Records a respawn. Called by the respawn handler after the resurrection and before it
-        /// sends the player home, which may be outside the recorded area.
-        /// </summary>
-        void RecordRespawn(uint player);
-
-        /// <summary>
-        /// Keeps the HP a lethal hit left when a handler inside the damage call restores the
-        /// creature (a fatal-damage save), so the damage event reports the hit, not the recovery.
-        /// </summary>
-        void KeepLethalHitPoints(uint creature);
-
-        /// <summary>
-        /// Records a resurrection, attributed to the innermost scope (for example the reviving
-        /// ability's impact) or to <paramref name="kindWithoutScope"/>.
-        /// </summary>
-        void RecordResurrection(uint target, CombatRecordSourceKind kindWithoutScope = CombatRecordSourceKind.Unattributed);
-
-        /// <summary>
-        /// Records a subdual and its resurrection. Call before the subdued player is resurrected:
-        /// inside the lethal damage call both events wait for that damage and death, and the HP
-        /// the hit left is kept for the damage event.
-        /// </summary>
-        void RecordSubdual(uint subdued, uint subduedBy);
     }
 }

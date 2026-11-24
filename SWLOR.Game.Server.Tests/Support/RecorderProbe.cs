@@ -15,16 +15,19 @@ internal sealed partial class RecorderProbe : CombatRecorderService
 {
     private readonly string _logDirectory;
 
-    public RecorderProbe(IDMPresenceService presence, IDBService db, string logDirectory)
-        : this(new RecorderProbeCore(), presence, db, logDirectory)
+    public RecorderProbe(IDMPresenceService presence, IDBService db, string logDirectory, bool registerDamageListener = true)
+        : this(new RecorderProbeCore(), presence, db, logDirectory, registerDamageListener)
     {
     }
 
-    private RecorderProbe(RecorderProbeCore core, IDMPresenceService presence, IDBService db, string logDirectory)
+    private RecorderProbe(RecorderProbeCore core, IDMPresenceService presence, IDBService db, string logDirectory, bool registerDamageListener)
         : base(core, presence, db, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatQueriesService>())
     {
         Core = core;
         Ability = new RecorderProbeAbility(core, this, Fp, Stamina);
+        Damage = new RecorderProbeDamage(core, this, HitPoints, Pools);
+        if (registerDamageListener)
+            RegisterSessionListener(Damage);
         _logDirectory = logDirectory;
     }
 
@@ -33,6 +36,9 @@ internal sealed partial class RecorderProbe : CombatRecorderService
 
     /// <summary>The ability records part, which writes through the same session and reads this probe's attribution stack.</summary>
     public RecorderProbeAbility Ability { get; }
+
+    /// <summary>The damage records part, which writes through the same session and reads this probe's attribution stack. It is registered for the session notices, as its boot handler registers it.</summary>
+    public RecorderProbeDamage Damage { get; }
 
     public int Hooks { get; private set; }
     public Exception? HookFailure { get; set; }
@@ -73,9 +79,6 @@ internal sealed partial class RecorderProbe : CombatRecorderService
     protected override int GetCurrentStamina(uint creature, Player dbPlayer = null!) => Stamina.GetValueOrDefault(creature, 33);
     protected override int GetMaxStamina(uint creature, Player dbPlayer = null!) => 44;
     protected override int GetTemporaryHitPoints(uint creature) => 7;
-    protected override int GetHitPointsExcludingTemporary(uint creature) => HitPoints.GetValueOrDefault(creature, 80);
-    protected override CombatRecordTemporaryHitPointPool[] CaptureTemporaryHitPointPools(uint creature) =>
-        Pools.GetValueOrDefault(creature)!;
     protected override string GetLogDirectory() => _logDirectory;
 
     protected override IDisposable ScheduleRepeating(Action task, TimeSpan schedule, TimeSpan delay)

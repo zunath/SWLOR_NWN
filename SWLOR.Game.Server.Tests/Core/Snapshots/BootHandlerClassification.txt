@@ -26,6 +26,7 @@ mod_cache_bef (49)
   Rerun       SWLOR.Game.Server.Domain.Foundation.CacheService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Social.ChatCommandService.OnModuleLoad
   Rerun       SWLOR.Game.Server.Domain.Combat.CombatDamageCatalogService.LoadDamageTypes
+  Rerun       SWLOR.Game.Server.Domain.Combat.CombatRecordDamageService.RegisterSessionListener
   Rerun       SWLOR.Game.Server.Domain.Foundation.ConversationMenuService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Economy.CurrencyService.CacheCurrencies
   Rerun       SWLOR.Game.Server.Domain.Companions.DroidService.CacheData

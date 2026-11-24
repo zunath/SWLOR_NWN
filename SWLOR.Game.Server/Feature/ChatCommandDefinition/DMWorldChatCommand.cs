@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
                         PlayerTemporaryEffects.RestoreGhostAfterRevive(target);
                         if (CombatRecorder.IsRecording)
-                            CombatRecorder.RecordResurrection(target);
+                            CombatRecordDamage.RecordResurrection(target);
                         AbilityAura.ReapplyPlayerAuraAOE(target);
                     }
 

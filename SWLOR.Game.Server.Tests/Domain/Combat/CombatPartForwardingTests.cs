@@ -51,6 +51,7 @@ public class CombatPartForwardingTests
         typeof(ICombatTriggeredDamageService),
         typeof(ICombatQueriesService),
         typeof(ICombatRecordAbilityService),
+        typeof(ICombatRecordDamageService),
         typeof(ICombatResourcesService),
         typeof(ICombatService),
         typeof(ICombatSuppressionService),
@@ -150,6 +151,13 @@ public class CombatPartForwardingTests
     public void TheMovedRecordAbilityDefaultsKeepTheirValues(Type part, string expected) =>
         AssertMovedDefaults(part, expected, 3, typeof(ICombatRecordAbilityService));
 
+    // The members of the damage records part of the recorder that have default arguments, with the defaults they had on the
+    // recorder, on the interface and the instance class alike.
+    [TestCase(typeof(ICombatRecordDamageService), "RecordHealingApplied(pvpReduced=0)")]
+    [TestCase(typeof(ICombatRecordDamageService), "RecordResurrection(kindWithoutScope=Unattributed)")]
+    public void TheMovedRecordDamageDefaultsKeepTheirValues(Type part, string expected) =>
+        AssertMovedDefaults(part, expected, 2, typeof(ICombatRecordDamageService));
+
     private static string Defaults(MethodInfo method) => $"{method.Name}(" + string.Join(", ", method.GetParameters()
         .Where(parameter => parameter.HasDefaultValue)
         .Select(parameter => $"{parameter.Name}={parameter.DefaultValue ?? "null"}")) + ")";
@@ -199,6 +207,8 @@ public class CombatPartForwardingTests
     [TestCase(typeof(CombatActivityService), "RestoreIdleReadinessOnPlayerEnter", ScriptName.OnModuleEnter)]
     [TestCase(typeof(CombatDamageCatalogService), "LoadDamageTypes", ScriptName.OnModuleCacheBefore)]
     [TestCase(typeof(CombatDamageCatalogService), "AddDamageTypeResistances", ScriptName.OnModuleEnter)]
+    [TestCase(typeof(CombatRecordDamageService), "RecordCreatureDeath", ScriptName.OnCreatureDeathBefore)]
+    [TestCase(typeof(CombatRecordDamageService), "RecordPlayerDeath", ScriptName.OnModuleDeath)]
     public void EachHandlerOfTheRemovedFacadeIsOnTheClassThatOwnsItUnderItsName(Type service, string name, string script)
     {
         var handler = service.GetMethod(name, BindingFlags.Public | BindingFlags.Instance, Type.EmptyTypes)!;

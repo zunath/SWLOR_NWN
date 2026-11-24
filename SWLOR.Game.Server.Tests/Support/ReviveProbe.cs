@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 internal sealed partial class ReviveProbe : DeathService
 {
     public ReviveProbe(IEnumerable<ICreatureRevivedListener> listeners)
-        : base(null!, null!, null!, null!, null!, null!, null!, null!, null!, listeners, null!)
+        : base(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, listeners, null!)
     {
     }
 

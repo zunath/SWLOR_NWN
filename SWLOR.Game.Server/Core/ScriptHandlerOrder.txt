@@ -25,6 +25,7 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Domain.Foundation.CacheService.CacheData
   action      SWLOR.Game.Server.Domain.Social.ChatCommandService.OnModuleLoad
   action      SWLOR.Game.Server.Domain.Combat.CombatDamageCatalogService.LoadDamageTypes
+  action      SWLOR.Game.Server.Domain.Combat.CombatRecordDamageService.RegisterSessionListener
   action      SWLOR.Game.Server.Domain.Foundation.ConversationMenuService.CacheData
   action      SWLOR.Game.Server.Domain.Economy.CurrencyService.CacheCurrencies
   action      SWLOR.Game.Server.Domain.Companions.DroidService.CacheData
@@ -370,7 +371,7 @@ crea_death_aft
 
 crea_death_bef
   action      SWLOR.Game.Server.Domain.Combat.CombatService.ApplyDefeatedEnemyEffects
-  action      SWLOR.Game.Server.Domain.Combat.CombatRecorderService.RecordCreatureDeath
+  action      SWLOR.Game.Server.Domain.Combat.CombatRecordDamageService.RecordCreatureDeath
   action      SWLOR.Game.Server.Domain.Items.LootService.SpawnLootOnCreatureDeath
   action      SWLOR.Game.Server.Domain.Items.LootService.ProcessCorpse
   action      SWLOR.Game.Server.Domain.Quests.QuestService.ProgressKillTargetObjectives
@@ -715,7 +716,7 @@ mod_chat
 mod_death
   action      SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.ClearAurasOnDeath
   action      SWLOR.Game.Server.Domain.Character.ActivityService.WipeStatusOnDeath
-  action      SWLOR.Game.Server.Domain.Combat.CombatRecorderService.RecordPlayerDeath
+  action      SWLOR.Game.Server.Domain.Combat.CombatRecordDamageService.RecordPlayerDeath
   action      SWLOR.Game.Server.Domain.Combat.DeathService.OnPlayerDeath
   action      SWLOR.Game.Server.Domain.Combat.EnmityService.PlayerDeath
   action      SWLOR.Game.Server.Domain.Character.EspionageInfiltrationService.OnPlayerDeath

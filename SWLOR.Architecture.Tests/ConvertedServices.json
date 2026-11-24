@@ -25,6 +25,7 @@
     { "name": "CombatPoint", "domain": "Combat" },
     { "name": "CombatRating", "domain": "Combat" },
     { "name": "CombatRecordAbility", "domain": "Combat" },
+    { "name": "CombatRecordDamage", "domain": "Combat" },
     { "name": "CombatRecorder", "domain": "Combat" },
     { "name": "Communication", "domain": "Social", "extras": [ { "part": "CommunicationAudience" }, { "part": "CommunicationMessageSplit" } ] },
     { "name": "CompanionControl", "domain": "Creatures", "extras": [ { "part": "CompanionControlStore" } ] },

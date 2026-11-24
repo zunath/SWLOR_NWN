@@ -204,6 +204,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatRecordAbilityService, CombatRecordAbilityService>();
             services.AddSingleton<ICombatRecordSession, CombatRecordSessionCore>();
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
+            services.AddSingleton<ICombatRecordDamageService, CombatRecordDamageService>();
             // The same instance, seen through the interfaces the lower domains and the platform own.
             services.AddSingleton<ICombatRecording>(provider => provider.GetRequiredService<ICombatRecorderService>());
             services.AddSingleton<ICharacterRecording>(provider => provider.GetRequiredService<ICombatRecorderService>());

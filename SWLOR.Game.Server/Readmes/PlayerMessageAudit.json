@@ -294,13 +294,6 @@
     "Call": "SendMessageToPC(creature, BuildWornOffMessage(creature))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Combat/CombatAbilityHitService.cs",
-    "Line": 134,
-    "Member": "ApplyGuardedHitNextAttackEffects",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{dmgBonus} DMG{criticalText}{enmityText}\"),\n                    creature,\n                    false)"
-  },
-  {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs",
     "Line": 1460,
     "Member": "ApplyStatusAppliedTargetStaminaDrain",
@@ -392,20 +385,6 @@
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), guardRecipient, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 654,
-    "Member": "ApplyGuardedHitRetaliationPulse",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Retaliation Pulse\"), defender, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 772,
-    "Member": "ApplyGuardedHitNextSkillAbilityEffects",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{selected.DamageBonus} DMG{criticalText}\"),\n                    creature,\n                    false)"
-  },
-  {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatFeedbackService.cs",
     "Line": 31,
     "Member": "SendGuardedHitFeedback",
@@ -460,6 +439,27 @@
     "Member": "SendTemporaryHitPointDamageFeedback",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(\n                defender,\n                receiver => BuildTemporaryHitPointDamageCombatLogMessage(receiver, attacker, defender, damage),\n                60f)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatGuardedHitEffectsService.cs",
+    "Line": 105,
+    "Member": "ApplyGuardedHitNextAttackEffects",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{dmgBonus} DMG{criticalText}{enmityText}\"),\n                    creature,\n                    false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatGuardedHitEffectsService.cs",
+    "Line": 167,
+    "Member": "ApplyGuardedHitNextSkillAbilityEffects",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{selected.DamageBonus} DMG{criticalText}\"),\n                    creature,\n                    false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatGuardRetaliationService.cs",
+    "Line": 149,
+    "Member": "ApplyGuardedHitRetaliationPulse",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Retaliation Pulse\"), defender, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs",

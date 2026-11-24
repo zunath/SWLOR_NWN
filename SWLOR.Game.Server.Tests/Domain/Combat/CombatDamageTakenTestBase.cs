@@ -22,10 +22,11 @@ using SWLOR.Game.Server.Composition;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// The shared bench of the damage taken parts of <c>Combat</c> (the stay-part, the effects part and the reflection part): stats
+/// The shared bench of the damage taken parts of <c>Combat</c> (the stay-part, the effects part, the reflection part and the three
+/// guard parts): stats
 /// come from tables, every other part and service is scripted and writes what it was asked into one log (so a test sees the
 /// order), the clock is held still and the shared <c>Random</c> is seeded where a chance is rolled. The one call that lives on
-/// the damage roll part, the guard retaliation damage roll, is overridden; the defense memory is the real part.
+/// the damage roll part, the guard retaliation damage roll, is overridden on the retaliation part; the defense memory is the real part.
 /// </summary>
 public abstract class CombatDamageTakenTestBase
 {
@@ -43,7 +44,10 @@ public abstract class CombatDamageTakenTestBase
     protected readonly List<string> _log = new();
     protected FacadeContainer _facades = null!;
     protected FakeNWScript _engine = null!;
-    protected TestDamageTaken _service = null!;
+    protected CombatDamageTakenService _service = null!;
+    protected CombatGuardedHitService _guardedHit = null!;
+    protected CombatGuardedHitEffectsService _guardedEffects = null!;
+    protected TestGuardRetaliation _retaliation = null!;
     protected CombatDamageTakenEffectsService _effects = null!;
     protected CombatDamageReflectionService _reflection = null!;
     protected CombatDefenseMemoryService _defenseMemory = null!;
@@ -190,7 +194,7 @@ public abstract class CombatDamageTakenTestBase
         _service = BuildService();
     }
 
-    protected TestDamageTaken BuildService()
+    protected CombatDamageTakenService BuildService()
     {
         var feedback = ScriptedProxy.Create<ICombatFeedbackService>(out var feedbackCalls);
         feedbackCalls.On(nameof(ICombatFeedbackService.SendGuardedHitFeedback), args => Log($"Feedback {args[0]} {args[1]} {args[2]}"));
@@ -252,8 +256,6 @@ public abstract class CombatDamageTakenTestBase
                 _log.Add($"TargetAttack {args[0]} {args[1]} {args[2]} {args[3]}");
                 return (int)args[2]! + _attackBonus;
             });
-        var abilityHit = ScriptedProxy.Create<ICombatAbilityHitService>(out var abilityHitCalls);
-        abilityHitCalls.On(nameof(ICombatAbilityHitService.ApplyGuardedHitNextAttackEffects), args => Log($"GuardedNextAttack {args[0]}"));
         var hitEffects = ScriptedProxy.Create<ICombatHitEffectsService>(out var hitEffectCalls);
         hitEffectCalls.On(nameof(ICombatHitEffectsService.ApplyTriggeredDamage), args =>
         {
@@ -362,8 +364,11 @@ public abstract class CombatDamageTakenTestBase
 
         _effects = new CombatDamageTakenEffectsService(resources, timing, activity, hitEffects, stat, statusEffect, statusApplication, temporary, recorder, _defenseMemory);
         _reflection = new CombatDamageReflectionService(queries, resources, hitEffects, stat, statusApplication, recorder, messaging, playerName);
-        return new TestDamageTaken(_log, () => _calculated, feedback, queries, resources, timing, modifiers, abilityHit, hitEffects,
-            stat, rating, statusEffect, statusCombat, temporary, recorder, pvp, enmity, _defenseMemory);
+        var taken = new CombatDamageTakenService(queries, resources, stat, statusEffect, recorder, pvp, enmity);
+        _guardedEffects = new CombatGuardedHitEffectsService(queries, timing, stat, temporary, _defenseMemory);
+        _retaliation = new TestGuardRetaliation(_log, () => _calculated, queries, modifiers, hitEffects, stat, rating, recorder, enmity, taken);
+        _guardedHit = new CombatGuardedHitService(feedback, rating, statusCombat, taken, _guardedEffects, _retaliation, stat, resources, enmity);
+        return taken;
     }
 
     [TearDown]
@@ -401,9 +406,19 @@ public abstract class CombatDamageTakenTestBase
 
     protected IEnumerable<uint> EffectTargets() => _engine.CallsTo("ApplyEffectToObject").Select(call => (uint)call.Arguments[2]!);
 
-    protected object? PrivateOf(object target, string name, params object[] arguments) =>
-        target.GetType().GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance, null,
-            arguments.Select(argument => argument.GetType()).ToArray(), null)!.Invoke(target, arguments);
+    // A private member of the part itself, found through the test double that derives from it.
+    protected object? PrivateOf(object target, string name, params object[] arguments)
+    {
+        var types = arguments.Select(argument => argument.GetType()).ToArray();
+        for (var type = target.GetType(); type != null; type = type.BaseType)
+        {
+            var method = type.GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly, null, types, null);
+            if (method != null)
+                return method.Invoke(target, arguments);
+        }
+
+        throw new MissingMethodException(target.GetType().Name, name);
+    }
 
     protected object? Private(string name, params object[] arguments) =>
         typeof(CombatDamageTakenService).GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance, null,

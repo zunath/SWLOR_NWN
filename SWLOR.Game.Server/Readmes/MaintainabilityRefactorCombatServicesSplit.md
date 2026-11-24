@@ -727,7 +727,7 @@ coordinator decisions that take this guide's recommendation.
 
 ## Progress
 
-P5-7a: this guide (2026-11-18), revised after the coordinator's review. P5-7b: the proof (2026-11-18, "P5-7b as built" below). P5-7c: the damage roll, the defense memory and the serializer cut (2026-11-18, "P5-7c as built" below). P5-7d: the rate and repeated-target parts (2026-11-21, "P5-7d as built" below). P5-7e1: the damage taken effects and reflection parts (2026-11-23, "P5-7e1 as built" below). P5-7j1: the recorder session core (2026-11-23, "P5-7j1 as built" below). P5-7i1: the ability activation defense and cost parts (2026-11-23, "P5-7i1 as built" below). Next: P5-7e2, P5-7g, P5-7i2 and P5-7j2 can start.
+P5-7a: this guide (2026-11-18), revised after the coordinator's review. P5-7b: the proof (2026-11-18, "P5-7b as built" below). P5-7c: the damage roll, the defense memory and the serializer cut (2026-11-18, "P5-7c as built" below). P5-7d: the rate and repeated-target parts (2026-11-21, "P5-7d as built" below). P5-7e1: the damage taken effects and reflection parts (2026-11-23, "P5-7e1 as built" below). P5-7j1: the recorder session core (2026-11-23, "P5-7j1 as built" below). P5-7i1: the ability activation defense and cost parts (2026-11-23, "P5-7i1 as built" below). P5-7e2: the guarded hit, its effects and the guard retaliation parts (2026-11-24, "P5-7e2 as built" below). Next: P5-7f1, P5-7g, P5-7i2 and P5-7j2 can start.
 
 ### P5-7b as built (2026-11-18)
 
@@ -1118,3 +1118,57 @@ Branch `claude/mr-p5-7i1`, base `766f0475d` (the P5-7e1 record).
     `C:/Temp/mr-p5-7i1/evidence/{base,head,driver,proof}/` (kept outside the repository).
   - *Not run:* the `-Check` scripts (content, facade, clock) and `ExportPlayerMessageAudit.ps1 -Check`, which the agent rules leave to the owner; `CombatSim`
     (this change touches no rule); the hot reload check (no handler or reload state moved). `PlayerMessageAudit.json` has no row for the activation files and the moved code sends no player message, so it is unchanged.
+
+### P5-7e2 as built (2026-11-24)
+
+Branch `claude/mr-p5-7e2`, base `766f0475d` (the P5-7e1 record).
+
+- **`CombatGuardedHitService`** (`ICombatGuardedHitService`, 112 lines, **9 services**: feedback, combatRating, statusEffectCombatEvents, damageTaken, guardedHitEffects, retaliation, stat,
+  resources, enmity): `ApplyGuardedHitModifiers`, `ApplyGuardedHitRecovery`, `ApplyGuardedHitEnmity`, verbatim. It calls `IsHostileAttackSource` and `GetGuardDamageReductionPercent` on the stay-part
+  (already public), so nothing is promoted there.
+- **`CombatGuardedHitEffectsService`** (`ICombatGuardedHitEffectsService`, 249 lines, **5 services**: queries, attackTiming, stat, temporaryStatModifier, defenseMemory): `TrackGuardedHit`,
+  `ApplyGuardedHitNextSkillAbilityEffects` with its bonuses helper and `ApplyGuardedHitNextSkillAbilityStatusEffects`, `ConsumeGuardedHitNextSkillAbilityExposedDamageBonus`, and
+  `ApplyGuardedHitNextAttackEffects` from `CombatAbilityHitService`, verbatim (public on the interface, as it was on the hit interface; the unit tests and the allocation test call it).
+- **`CombatGuardRetaliationService`** (`ICombatGuardRetaliationService`, 200 lines, **9 services**: queries, damageModifiers, hitEffects, stat, combatRating, combatRecorder, enmity, damageRoll,
+  damageTaken): `ApplyGuardedHitRetaliation` (promoted from private to public: `CombatGuardedHitService` calls it), `ApplyGuardedHitRetaliationPulse`, `ResolveGuardRetaliationDamage`,
+  `GetGuardRetaliationDamageAbility`, and the `CalculateDamage` wrapper over the damage roll part (it moves with its one caller and stays `protected virtual`). None of the three reads the clock, so
+  `ClockSeamFiles.txt` is unchanged.
+- **`CombatDamageTakenService`** (stay, 504 lines, 885 before; **7 services**: queries, resources, stat, statusEffect, combatRecorder, pvpCombat, enmity; 17 before): modifiers only, as the map says.
+  The map counts 8 (a recorder damage part that does not exist yet). `CombatAbilityHitService` is 370 lines (429) with the same 12 services.
+- **Handlers and state:** none move (`ScriptHandlerOrder.txt`, `HandlerRenames.txt`, the classification files and `ReloadAdoption.txt` are unchanged, no `[ReloadState]` field). `RemovedFacades.json`:
+  `ApplyGuardedHitModifiers` re-points to `CombatGuardedHit`, `TrackGuardedHit` to `CombatGuardedHitEffects`. `ConvertedServices.json` lists them (25 parts).
+- **Departures from the map.**
+  - `CombatHitEffectsService` takes `ICombatDamageTakenService` plainly now (the map's P5-7f1 row). With the guard code gone the stay-part reaches no hit effects part through its constructor, so the
+    `Lazy<>` is needless and `LazyDependencyCycleTests` fails on it. `DeferredResolution.txt` loses the line (32 to 31 files); P5-7f1 no longer has this edit.
+  - `CombatAbilityImpactService` keeps 17 services: `ICombatGuardedHitEffectsService` replaces `ICombatDamageTakenService` (it called only `ConsumeGuardedHitNextSkillAbilityExposedDamageBonus`).
+  - `StaticLookups.txt` moves with the tests (one lookup in the retaliation test class instead of the damage taken test class). `ServicesPerType.txt` loses the `CombatDamageTakenService` line (17 to 7).
+  - `PlayerMessageAudit.json` is left for the owner (agent rules): three rows are keyed by moved files. `ApplyGuardedHitNextAttackEffects` becomes `CombatGuardedHitEffectsService.cs` line 105,
+    `ApplyGuardedHitNextSkillAbilityEffects` `CombatGuardedHitEffectsService.cs` line 167, `ApplyGuardedHitRetaliationPulse` `CombatGuardRetaliationService.cs` line 149 (the audit's `File` and `Line`,
+    sorted into place). `PlayerMessageAuditTests.MessageInventory_CoversEveryRuntimeCallSite` fails until `ExportPlayerMessageAudit.ps1` is run.
+- **Call sites** by hand with a literal receiver rewrite: `DamageRollMitigation` (`ApplyGuardedHitModifiers`), `GuardedStatusEffect` and three engine tests in `CombatPerkRegressionEngineTests`
+  (`TrackGuardedHit`), `CombatAbilityImpactService` (constructor and the one `Consume` call). Registrations and `GameServices.Combat.cs` for the three parts.
+- **Tests.** `CombatDamageTakenServiceTests` gives 24 test methods to `CombatGuardedHitServiceTests` (5), `CombatGuardRetaliationServiceTests` (10, with the damage roll wrapper checks) and
+  `CombatGuardedHitEffectsServiceTests` (9, plus the two `AGuardedHit...NextAttack` tests of `CombatAbilityHitServiceTests`); every old test name is kept. The shared `CombatDamageTakenTestBase` builds
+  the three parts, and `TestDamageTaken` becomes `TestGuardRetaliation` (it overrides `CalculateDamage` on the retaliation part). Two expectations changed with where the call is made: the guarded hit part now
+  runs `ApplyGuardedHitNextAttackEffects` for real (zero stats read nothing and log nothing), so the `GuardedNextAttack` log line of the fake is gone and `_log.Skip(2)` is `Skip(1)` in the counter tests.
+  `CombatPartForwardingTests` lists the three interfaces; `CombatFacadeAllocationTests` re-points the part side (no pinned byte count changed); `WeaponAbilityTraceBench.Leaves` gains the three interfaces
+  and the weapon ability call trace is unchanged; the damage taken and ability transcripts call the new parts and their fixtures are unchanged. Source readers needed no change but two needles
+  (`public static void ApplyGuardedHitRetaliation`, `GameServices.CombatGuardedHit.ApplyGuardedHitModifiers(`).
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored) of the 14 moved members at `766f0475d` against the three new classes: 14 identical, 0 different, 0 missing.
+  - *Unit tests* (`SWLOR.Game.Server.Tests`), unfiltered, with the hak folders the tests read copied read-only from the main checkout (nine folders; the main checkout's haks are not the pin's): 19,959 tests,
+    19,887 pass, 70 fail, 2 skipped. The same run at `766f0475d` in a scratch worktree with the same nine folders: 19,947 tests, 70 fail. 69 failures are the same on both sides and need hak or
+    Module data a checkout without the submodule lacks (missing `sw_*` folders, walkmesh, models, icon sources). One differs each way: `ReopeningAfterWardrobeOrSettingsLoadsThePartPictures` fails at the base only
+    and passes at the head; `MessageInventory_CoversEveryRuntimeCallSite` fails at the head only (the audit rows above). `SWLOR.Architecture.Tests`: 297 pass.
+  - *Baselines changed:* `ServicesPerType.txt` (`CombatDamageTakenService` leaves), `StaticLookups.txt`, `DeferredResolution.txt`, `DebtReport.md`. `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` moved by member counts only and were reverted.
+  - *Engine tests* at `766f0475d` and at the head, host entry, filter `Characterization|CombatPerkRegression|PerkTracker|ReviveRules|UnarmedMastery|DualWield|SaberWard|TwinPistol|StealthRetarget|Deflection|Reflection|Guard|Retaliation|TankEnmity|DMLimboEnmity`:
+    199 tests each, no characterization snapshot written. Base: 197 pass and 2 fail (`Dual wield commanded animation sequence delivers main then off before the next cycle` and `Dual wield temporary off-hand no-delay proc grants a matching bonus once`, both timing assertions). Head, on the final code: 198 pass and 1 fail (`Area taunts recover multiple enemies and replace pending approaches`, a 10 s wait for the enemy's attack target). An earlier head run before the plain `CombatHitEffectsService` parameter had one other timing failure (`Twin Pistol actual mastery trials save and reload independent proof and unlocks`); it passed on a rerun on both sides. The three tests that differed in the final pair were rerun together on a quiet machine at the base and the head: the same per-test outcomes on both (`Dual wield commanded animation sequence...` and `Area taunts recover multiple enemies...` fail on both, `Dual wield temporary off-hand no-delay proc...` passes on both), so no per-test difference is left that the load does not explain. The reports are in the evidence folder. No hot reload run: no handler moved.
+  - *Client evidence:* one NWN client, the same module, haks, build flags, character and driver steps at the base and the head, in `veles_sewers` at `SEWERS_GATE` after a jump from `ooc_area`, a Training Katar
+    equipped, the player immortal, hostile Bandits (`nw_bandit001`) spawned beside the player. A temporary driver built outside the repository (`CustomAfterMicrosoftCommonTargets`) gave temporary stats for 60 s per step:
+    guarded hit (reduction 10, stamina 4, enmity +50 percent), retaliation (8 DMG plus a 6 DMG pulse, radius 8, enmity 50 percent), counters (next attack, next skill and the Guard Reversal exposed rider), then a seeded
+    direct run of `ApplyGuardedHitModifiers` six times against a frozen Bandit. The chat log is split by step and compared by message kind (digits removed). The guard, counters and direct steps show the same kinds on both
+    sides; the direct step is identical (the same six returns of 69, the same enmity 150 per hit, 12 lines of retaliation damage, 6 guards, 6 pulses, 6 counter lines of each kind and one Guard Reversal line);
+    the live counts differ by the dice (guard lines 42 and 48, 28 and 28, pulses 66 and 56). The retaliation step shows one more kind at the head ("damages Someone", 4 lines: a Bandit out of the player's sight; the same line
+    appears on both sides in the direct step). The head capture was taken before the plain `CombatHitEffectsService` parameter; that change is a container edit with no behavior.
+    Screenshots and the normalized chat are in `C:/Temp/mr-p5-7e2/evidence/{base,head}/` (kept outside the repository).
+  - *Not run:* the `-Check` scripts (content, facade, clock), `ExportPlayerMessageAudit.ps1`, `CombatSim` (this change touches no rule) and the hot reload check (no handler or `[ReloadState]` field moved).

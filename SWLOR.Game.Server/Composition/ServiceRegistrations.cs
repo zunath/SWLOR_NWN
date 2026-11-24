@@ -184,6 +184,9 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatDamageTakenService, CombatDamageTakenService>();
             services.AddSingleton<ICombatDamageTakenEffectsService, CombatDamageTakenEffectsService>();
             services.AddSingleton<ICombatDamageReflectionService, CombatDamageReflectionService>();
+            services.AddSingleton<ICombatGuardedHitService, CombatGuardedHitService>();
+            services.AddSingleton<ICombatGuardedHitEffectsService, CombatGuardedHitEffectsService>();
+            services.AddSingleton<ICombatGuardRetaliationService, CombatGuardRetaliationService>();
             services.AddSingleton<ICombatDamageRollService, CombatDamageRollService>();
             services.AddSingleton<ICombatDefenseMemoryService, CombatDefenseMemoryService>();
             services.AddSingleton<ICombatFeedbackService, CombatFeedbackService>();

@@ -727,7 +727,7 @@ coordinator decisions that take this guide's recommendation.
 
 ## Progress
 
-P5-7a: this guide (2026-11-18), revised after the coordinator's review. P5-7b: the proof (2026-11-18, "P5-7b as built" below). P5-7c: the damage roll, the defense memory and the serializer cut (2026-11-18, "P5-7c as built" below). P5-7d: the rate and repeated-target parts (2026-11-21, "P5-7d as built" below). P5-7e1: the damage taken effects and reflection parts (2026-11-23, "P5-7e1 as built" below). P5-7j1: the recorder session core (2026-11-23, "P5-7j1 as built" below). Next: P5-7e2, P5-7g, P5-7i1 and P5-7j2 can start.
+P5-7a: this guide (2026-11-18), revised after the coordinator's review. P5-7b: the proof (2026-11-18, "P5-7b as built" below). P5-7c: the damage roll, the defense memory and the serializer cut (2026-11-18, "P5-7c as built" below). P5-7d: the rate and repeated-target parts (2026-11-21, "P5-7d as built" below). P5-7e1: the damage taken effects and reflection parts (2026-11-23, "P5-7e1 as built" below). P5-7j1: the recorder session core (2026-11-23, "P5-7j1 as built" below). P5-7j2: the recorder ability records (2026-11-24, "P5-7j2 as built" below). Next: P5-7e2, P5-7g, P5-7i1 and P5-7j3 can start.
 
 ### P5-7b as built (2026-11-18)
 
@@ -1032,3 +1032,66 @@ Branch `claude/mr-p5-7j1`, base `34c3373a0` (the comment label sweep).
     the run's length (the recording ran 621 s at the base and 441 s at the head). Kept under `C:/Temp/mr-p5-7j1/evidence/{base,head}/`: the screenshots,
     `recorder-messages.txt`, `kinds-by-step.txt`, `events-normalized.txt` (timestamps and frames dropped, numbers masked), the raw record and summary files, the
     client chat and the driver output.
+
+### P5-7j2 as built (2026-11-24)
+
+Branch `claude/mr-p5-7j2`, base `97958db3c` (the P5-10b2 record).
+
+- **`CombatRecordAbilityService`** (`ICombatRecordAbilityService`, 206 lines, interface 80, **3 services**: the session core, the recorder stay-part, `IStatService`, all
+  plain) and **`CombatRecorderService`** (stay, 1,267 lines, 1,417 before; 7 services, unchanged). Members moved, bodies as they were: `RecordAbilityCast`,
+  `RecordAbilityDenied`, `RecordAbilityInterrupted`, `RecordAbilityQueued`, `RecordAbilityImpact`, `BeginAbilityCost`, `CompleteAbilityCost`, `NoteToggleDeactivated`,
+  `TakeToggleDeactivation`, with the two toggle fields. `RecordRecurringAbilityImpact` stays (the map's stay list). The part keeps two `protected virtual` seams
+  (`GetCurrentFP`, `GetCurrentStamina`, bodies over `IStatService`) so a test double answers them as it answered the recorder's.
+- **Cycles.** The constructor scan finds no service that holds the part except `StatusAbilityEffects` (below), so no path leads back to it from `IStatService`: the plain edge
+  cannot close a cycle. `LazyDependencyCycleTests` and the container build (`ConvertedServiceContainerTests`) pass. The recorder keeps its two `Lazy<>` (map, "Cycles").
+- **Registration.** `ICombatRecordAbilityService` is registered beside the recorder; `GameServices.CombatRecordAbility` is new. No handler moves, no state is carried and the
+  part registers no session listener (`Start` and `Stop` never cleared the toggle notes, and a test pins that a note survives a stop and a start), so
+  `ScriptHandlerOrder.txt`, `HandlerRenames.txt`, `BootHandlerClassification.txt`, `ClockSeamFiles.txt` and `[ReloadState]` do not change (the part reads no clock).
+- **Departures from the map.**
+  - The part is listed in `ConvertedServices.json` and `DomainMap.json` as a service of its own (`CombatRecordAbility`), not as a part of `CombatRecorder`: the domain map rule
+    counts a part whose class does not start with the service name under `Combat`. `CombatParts.OtherServices` already named it.
+  - The recorder promotes `ResolveOwnAttribution` and `GetFeatCode` from private to public on `ICombatRecorderService`, as the map's "Order" says, and gains one member the map
+    did not name, `TryGetInnermostAttribution(out CombatRecordAttribution)`: `RecordAbilityInterrupted` read the attribution stack (`_attributionDepth`, `_attributions`) directly.
+    The body of that one method changes in that condition only (an open scope exists and its actor is not the activator).
+  - `StatusAbilityEffects` (content, instance) is one of the 15 content call sites and a holder: it takes the part as a new constructor parameter (6 to 7 services).
+  - `RemovedFacades.json`: `CombatRecorder` becomes a split facade with its names per owner: 47 stay on `CombatRecorder`, 9 go to `CombatRecordAbility`, and the 4 scope members
+    (`BeginDamageApplication`, `EndDamageApplication`, `BeginHealApplication`, `EndHealApplication`) go to `CombatRecordSession`, which P5-7j1 moved without updating the file.
+  - The 13 sites of `Feature/UsePerkFeat.cs`, `HeavyVibrobladeActiveAbilityDefinitionBase` and `CombatRecordAbilityCostScope` (the one domain site) are receiver edits.
+- **Tests.** New `CombatRecordAbilityServiceTests` (6: the three constructor services and no `Lazy<>`, the default seams reading `IStatService`, the toggle notes as the part's own
+  state with no listener, the recorder no longer declaring the nine members, one singleton that is not the recorder) and four tests in `CombatRecorderServiceTests` (the innermost
+  scope read as it is, `ResolveOwnAttribution`, `GetFeatCode`, a toggle note surviving a stop and a start). The old recorder tests call the part (`_recorder.Ability`, a
+  `RecorderProbeAbility` that answers FP and stamina from the probe's dictionaries); the transcript registers a `ProbeAbility` and its fixture is unchanged; the 23 serializer goldens are
+  unchanged. `CombatPartForwardingTests` lists the interface and pins its three defaults; `GameServicesAllocationTests` pins the idle cost scope at 0 bytes through the accessor and the
+  instance. `WeaponAbilityTraceBench.Leaves` gains the interface and the call trace is regenerated: 130 lines change, all `Recorder.NoteToggleDeactivated(...)` to
+  `RecordAbility.NoteToggleDeactivated(...)`, nothing else. `ConvertedServicesTests` gains one test; `PlayerMessageAudit.json` has no row for a moved line (unchanged).
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored) of the 121 members of the old class at `97958db3c` against the stay-part and the part:
+    120 identical, 1 different (`RecordAbilityInterrupted`, the condition above), 0 missing.
+  - *Unit tests* (`SWLOR.Game.Server.Tests`, filter `Combat|Recorder|Serializer|Allocation|Transcript|Handler|Teardown|PlayerMessageAudit|ConvertedServiceContainer|ReloadState|BootHandler|ScriptHandler|ClockSeam|LazyDependency|HostedEntry|DMPossession|ReloadDigest|ReloadCarry|PlayerSession|ParityHandler|Ability|CallTrace|FacadeRemoval|ConvertedService`):
+    4,521 tests, 4,519 pass, 1 skipped, 1 fails: `AbilityImpactVisualEffectTests.EveryActiveAbilityRank_BindsItsDeclaredImpactEffect` needs the compiled model `vx_callbeast` from a hak folder that was
+    not copied (only `sw_2da`, `sw_t_office`, `sw_tlk` and `sw_ability` were, read-only, from the main checkout, a different haks commit than the pin; removed after). After the
+    `ConvertedServices.json` change, `ConvertedService|FacadeRemoval|DomainMap|CombatPartForwarding|GameServices|CombatRecordAbility|PlayerMessageAudit`: 936 tests, all pass. The whole of `SWLOR.Game.Server.Tests`, unfiltered: 20,009 tests, 19,894 pass, 3 skipped, 112 fail. 110 of the 112 read hak folders that were not copied (`sw_cr_creature`, `sw_weapon`, `sw_shader`, `sw_tint_mtr`, `sw_ui`, `sw_item`, the tilesets, `sw_pt_robe`, the haks builder file and the like) or source art under `SWLOR_Haks` and fail on the missing data; the two others, `EshanBlueprints_AreDiscoverableInTheirToolsetPalettes` and `KillRewards_FollowExistingBountyRatesRatherThanIntroducingAHigherTier`, fail the same way at `97958db3c` (run there alone), as does `EveryActiveAbilityRank_BindsItsDeclaredImpactEffect` above. No failure touches the recorder, its parts or a file of this change.
+    `SWLOR.Architecture.Tests`: 297 pass, 1 skipped.
+  - *Baselines changed* (`SWLOR_UPDATE_SNAPSHOTS=1`): `LargeTypes.txt` (`CombatRecorderService` 1,417 to 1,267), `ServicesPerType.txt` (`UsePerkFeat` 32 to 33 and
+    `HeavyVibrobladeActiveAbilityDefinitionBase` 11 to 12: each looks up the part besides the recorder; P5-16 types), `StaticLookups.txt` (the allocation tests 15 to 17, the new test class 1),
+    `DebtReport.md`. `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` moved in member counts only and were reverted, with the two debt report lines that follow them.
+  - *Engine tests* at `97958db3c` and at the head, host entry, filter `CombatRecorder|Characterization|CombatPerkRegression|TwinPistol|BossMinimumHitChance|HostileAbilityDelay|PvpCombat|StealthRetarget`
+    (162 tests: the characterization scenarios and ability categories, `CombatPerkRegression` and `TwinPistol`): base 162 pass; head 161 pass and 1 fails, `Focused Burst keeps its fixed commitment and preserves an armed next-cast speed bonus`
+    ("The three volleys resolve in separate timed waves rather than one instant attack"). It is a timing test: alone, it fails the same way at the base and at the head; the whole `TwinPistol`
+    category (79 tests) passed 79 of 79 at the base and at the head on a second run, while the head's first category run failed a different timing test (`Walking interrupts Focused Burst ...`, "Timed out waiting for the first paired
+    volley") on a machine shared with other sessions' engine runs. No snapshot file was written on either side, and the per-test outcomes of the two full reports differ in that one test only.
+  - *Hot reload:* not run, no handler or registration moves (the map asks for it on P5-7j3).
+  - *Client evidence* (the map said none; taken anyway): one NWN client, the same module, haks, character (`agantarn`) and steps at the base (`97958db3c`) and the head, Release builds with a temporary driver
+    compiled in from outside the repository, in `veles_sewers` at `SEWERS_GATE`, the player immortal (plot), one frozen immortal Outlaw (`looter_1`, paralyzed) as the target. The real command `/combatrecord` was
+    typed in the client (staff authorization from an `AuthorizedDM` record seeded in each stack's Redis for the public key; the first status of each side, typed before the seed, shows one "Invalid chat command").
+    Steps: status before, start, status while running, Force Lightning I (cast, FP cost, impact), the same ability again during its recast (denied), Force Lightning I and a walk 0.4 s later (interrupted by moving),
+    Headshot I queued with a rifle and an attack (queued), Berserker Stance on and, 33 s later, off (weapon stance, `StatusAbilityEffects`), Bastion Stance on and off (heavy vibroblade stance), status, stop, status, stop.
+    The driver never calls a moved member; the abilities run through `UsePerkFeat.TryUseAbility`. Result: the recorder messages the player sees are the same kinds at the base and the head (not running, started with the file,
+    status while running, stopped with the two files, status after, "This ability can be used in N seconds", "ability has been interrupted", "queues Headshot I", "Bastion/Berserker Stance deactivated"). The head
+    run was recorded three times (an attempt in which a harness call was dropped, and one in which the scripted walk left the player where it could not move further, so no cast was interrupted), so its message counts are triple; the kinds match. The events written
+    for the player's abilities (the Outlaw's own Suppressing Shot casts, costs and impacts are left out, they follow the AI) are identical in kind and count in the base recording and in the last head recording: `ability_cast` Force Lightning I 2,
+    Berserker Stance 2 (one `toggled_off`), Bastion Stance 2 (one `toggled_off`); `ability_cost` Force Lightning I, Headshot I, Berserker Stance, Bastion Stance; `ability_impact` Force Lightning I, Berserker Stance, Bastion Stance;
+    `ability_denied` 1 (recast); `ability_interrupted` 1 (`moved`); `ability_queued` Headshot I 1. The queued Headshot's own impact did not occur on either side (the rifle attacks missed, dice). Other event counts
+    follow the Outlaw's dice and the length of the run (snapshots one per second). Kept under `C:/Temp/mr-p5-7j2/evidence/{base,head}/`: the screenshots, `kinds.txt`, `recorder-messages.txt`, the raw records and
+    summaries, the client chat and the driver output.
+  - *Not run:* the `-Check` scripts (content, facade, clock) and `ExportPlayerMessageAudit.ps1 -Check`, which the agent rules leave to the owner; `CombatSim` (no rule changes); hot reload.

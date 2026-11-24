@@ -119,15 +119,15 @@
     "Call": "SendMessageToPC(presenter, ColorToken.Green(\n                $\"You introduced yourself as '{name}' to nearby players. They choose whether to remember this name.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Character/PlayerNameService.cs",
-    "Line": 170,
+    "File": "SWLOR.Game.Server/Domain/Character/PlayerNameOverrideService.cs",
+    "Line": 138,
     "Member": "CheckAfkMovement",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You are no longer AFK.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Character/PlayerNameService.cs",
-    "Line": 232,
+    "File": "SWLOR.Game.Server/Domain/Character/PlayerNameOverrideService.cs",
+    "Line": 200,
     "Member": "PreventAmbiguousTellTargets",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, ColorToken.Red($\"'{displayName}' is ambiguous. Use /name on the intended player before sending tells.\"))"
@@ -1912,7 +1912,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Social/PlayerListService.cs",
-    "Line": 244,
+    "Line": 247,
     "Member": "SendTell",
     "Delivery": "Retained",
     "Call": "ChatPlugin.SendMessage(channel, message, speaker, _dmPresence.GetControlledCreature(target))"

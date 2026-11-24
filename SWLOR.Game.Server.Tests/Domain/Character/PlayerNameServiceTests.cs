@@ -137,63 +137,6 @@ public class PlayerNameServiceTests
         _scopes.Clear();
     }
 
-    private sealed class BenchPlayerNameService : PlayerNameService
-    {
-        public BenchPlayerNameService(IDBService db, IPlayerListService list, IChatPortraitTellsService portraits)
-            : base(db, list, portraits, FacadeForwarder.LazyFor<IDisguiseService>(), FacadeForwarder.LazyFor<IPlayerDescriptorService>())
-        {
-        }
-
-        public Action? ScriptContextEnd { get; private set; }
-        public int ContextSubscriptions { get; private set; }
-        public Action? RepeatingTask { get; private set; }
-        public int DisposedChecks { get; private set; }
-        public Dictionary<uint, PlayerDisguise> Disguises { get; } = new();
-        public Dictionary<uint, string> Descriptors { get; } = new();
-        public HashSet<uint> ScrambledAccounts { get; } = new();
-        public List<uint> EnsuredDescriptors { get; } = new();
-        public Dictionary<string, string> DescriptorsById { get; } = new();
-
-        protected override void SubscribeScriptContextEnd(Action handler)
-        {
-            ContextSubscriptions++;
-            ScriptContextEnd = handler;
-        }
-
-        protected override IDisposable ScheduleRepeating(Action task, TimeSpan schedule)
-        {
-            RepeatingTask = task;
-            return new Handle(this);
-        }
-
-        protected override PlayerDisguise GetActiveDisguise(uint player) => Disguises.GetValueOrDefault(player)!;
-
-        protected override string GetDisplayDescriptor(uint player) => Descriptors.GetValueOrDefault(player, "Tall Stranger");
-
-        protected override string GetIdentityKey(uint player) =>
-            Disguises.TryGetValue(player, out var disguise) ? "disguise:" + disguise.Id : "id-of-" + player;
-
-        protected override bool ShouldScrambleAccountName(uint player) => ScrambledAccounts.Contains(player);
-
-        protected override bool EnsureUnknownDisplayName(uint player)
-        {
-            EnsuredDescriptors.Add(player);
-            return true;
-        }
-
-        protected override string GetUnknownDisplayNameByPlayerId(string targetPlayerId) =>
-            DescriptorsById.GetValueOrDefault(targetPlayerId, "Someone");
-
-        private sealed class Handle : IDisposable
-        {
-            private readonly BenchPlayerNameService _owner;
-
-            public Handle(BenchPlayerNameService owner) => _owner = owner;
-
-            public void Dispose() => _owner.DisposedChecks++;
-        }
-    }
-
     private static string Unknown(string descriptor) => ColorToken.Gray(descriptor);
 
     private void Knows(uint observer, uint target, string name)
@@ -226,24 +169,24 @@ public class PlayerNameServiceTests
     [TestCase("Kira     Vos", "Kira Vos")]
     public void Names_are_stripped_of_colors_control_characters_and_repeated_spaces(string? raw, string expected)
     {
-        _service.SanitizeKnownName(raw!).Should().Be(expected);
+        _service.Names.SanitizeKnownName(raw!).Should().Be(expected);
     }
 
     [Test]
     public void Names_must_be_present_and_short_enough()
     {
-        _service.ValidateKnownName(" ").Should().Be("Please enter a name.");
-        _service.ValidateKnownName(new string('a', 65)).Should().Be("Names may be no longer than 64 characters.");
-        _service.ValidateKnownName(new string('a', 64)).Should().BeEmpty();
+        _service.KnownNames.ValidateKnownName(" ").Should().Be("Please enter a name.");
+        _service.KnownNames.ValidateKnownName(new string('a', 65)).Should().Be("Names may be no longer than 64 characters.");
+        _service.KnownNames.ValidateKnownName(new string('a', 64)).Should().BeEmpty();
     }
 
     [Test]
     public void Input_with_color_codes_is_refused_before_it_is_cleaned()
     {
-        _service.ValidateKnownNameInput("<c\u007f\u007f\u007f>Kira</c>").Should().Be("Names may not contain color codes.");
-        _service.ValidateKnownNameInput("Kira").Should().BeEmpty();
-        _service.ValidateKnownNameInput("  ").Should().Be("Please enter a name.");
-        _service.ValidateKnownNameInput(null!).Should().Be("Please enter a name.");
+        _service.KnownNames.ValidateKnownNameInput("<c\u007f\u007f\u007f>Kira</c>").Should().Be("Names may not contain color codes.");
+        _service.KnownNames.ValidateKnownNameInput("Kira").Should().BeEmpty();
+        _service.KnownNames.ValidateKnownNameInput("  ").Should().Be("Please enter a name.");
+        _service.KnownNames.ValidateKnownNameInput(null!).Should().Be("Please enter a name.");
     }
 
     [TestCase(Nobody, "Known names may only target player characters.")]
@@ -253,32 +196,22 @@ public class PlayerNameServiceTests
     [TestCase(Alice, "Known names cannot target the observer.")]
     public void A_known_name_needs_a_player_target_other_than_the_observer(uint target, string error)
     {
-        _service.ValidateKnownNameAssignment(Alice, target, "Kira").Should().Be(error);
+        _service.KnownNames.ValidateKnownNameAssignment(Alice, target, "Kira").Should().Be(error);
     }
 
     [Test]
     public void A_known_name_is_checked_for_validity_and_for_an_identifiable_target()
     {
-        _service.ValidateKnownNameAssignment(Alice, Bob, " ").Should().Be("Please enter a name.");
-        _service.ValidateKnownNameAssignment(Alice, Bob, "Kira").Should().BeEmpty();
+        _service.KnownNames.ValidateKnownNameAssignment(Alice, Bob, " ").Should().Be("Please enter a name.");
+        _service.KnownNames.ValidateKnownNameAssignment(Alice, Bob, "Kira").Should().BeEmpty();
     }
 
     [Test]
     public void A_target_without_an_identity_key_cannot_be_named()
     {
-        var blank = new BlankIdentityService(_db, _service);
+        var blank = new BlankIdentityPlayerNameService(_db);
 
-        blank.ValidateKnownNameAssignment(Alice, Bob, "Kira").Should().Be("Unable to identify that player.");
-    }
-
-    private sealed class BlankIdentityService : PlayerNameService
-    {
-        public BlankIdentityService(IDBService db, PlayerNameService other)
-            : base(db, null!, null!, FacadeForwarder.LazyFor<IDisguiseService>(), FacadeForwarder.LazyFor<IPlayerDescriptorService>())
-        {
-        }
-
-        protected override string GetIdentityKey(uint player) => " ";
+        blank.KnownNames.ValidateKnownNameAssignment(Alice, Bob, "Kira").Should().Be("Unable to identify that player.");
     }
 
     [Test]
@@ -286,10 +219,10 @@ public class PlayerNameServiceTests
     {
         Knows(Alice, Carol, "Kira");
 
-        _service.ValidateKnownNameAssignment(Alice, Bob, "kira")
+        _service.KnownNames.ValidateKnownNameAssignment(Alice, Bob, "kira")
             .Should().Be("You already use that name for another character who is online.");
-        _service.ValidateKnownNameAssignment(Alice, Carol, "kira").Should().BeEmpty("the target being renamed is not compared with itself");
-        _service.ValidateKnownNameAssignment(Alice, Bob, "Kirra").Should().BeEmpty();
+        _service.KnownNames.ValidateKnownNameAssignment(Alice, Carol, "kira").Should().BeEmpty("the target being renamed is not compared with itself");
+        _service.KnownNames.ValidateKnownNameAssignment(Alice, Bob, "Kirra").Should().BeEmpty();
     }
 
     [Test]
@@ -298,7 +231,7 @@ public class PlayerNameServiceTests
         Knows(Alice, Staff, "Kira");
         Knows(Alice, Alice, "Kira");
 
-        _service.ValidateKnownNameAssignment(Alice, Bob, "Kira").Should().BeEmpty();
+        _service.KnownNames.ValidateKnownNameAssignment(Alice, Bob, "Kira").Should().BeEmpty();
     }
 
     // ---- known names
@@ -306,13 +239,13 @@ public class PlayerNameServiceTests
     [Test]
     public void Setting_a_known_name_stores_it_under_the_targets_identity_and_refreshes_the_views()
     {
-        _service.SetKnownName(Alice, Bob, "  Kira ");
+        _service.KnownNames.SetKnownName(Alice, Bob, "  Kira ");
 
         var record = _db.Store.Saved.OfType<PlayerKnownName>().Should().ContainSingle().Subject;
         record.ObserverPlayerId.Should().Be("alice-id");
         record.KnownNames.Should().Equal(new Dictionary<string, string> { ["id-of-" + Bob] = "Kira" });
         _queueRefreshes.Should().Be(1);
-        _service.TryGetKnownName(Alice, Bob, out var known).Should().BeTrue();
+        _service.Names.TryGetKnownName(Alice, Bob, out var known).Should().BeTrue();
         known.Should().Be("Kira");
         Overrides().Should().ContainSingle().Which.Arguments.Should().Equal(
             Bob, "Kira [" + Unknown("Tall Stranger") + "]", string.Empty, string.Empty, PlayerNameOverrideType.Default, Alice);
@@ -321,7 +254,7 @@ public class PlayerNameServiceTests
     [Test]
     public void Setting_an_invalid_known_name_throws_and_stores_nothing()
     {
-        var act = () => _service.SetKnownName(Alice, Alice, "Kira");
+        var act = () => _service.KnownNames.SetKnownName(Alice, Alice, "Kira");
 
         act.Should().Throw<ArgumentException>().WithMessage("Known names cannot target the observer.");
         _db.Store.Saved.Should().BeEmpty();
@@ -330,24 +263,24 @@ public class PlayerNameServiceTests
     [Test]
     public void A_second_known_name_updates_the_same_record()
     {
-        _service.SetKnownName(Alice, Bob, "Kira");
-        _service.SetKnownName(Alice, Carol, "Vos");
+        _service.KnownNames.SetKnownName(Alice, Bob, "Kira");
+        _service.KnownNames.SetKnownName(Alice, Carol, "Vos");
 
         _db.Store.Saved.OfType<PlayerKnownName>().Select(r => r.Id).Distinct().Should().HaveCount(1);
-        _service.TryGetKnownName(Alice, Bob, out _).Should().BeTrue();
-        _service.TryGetKnownName(Alice, Carol, out _).Should().BeTrue();
+        _service.Names.TryGetKnownName(Alice, Bob, out _).Should().BeTrue();
+        _service.Names.TryGetKnownName(Alice, Carol, out _).Should().BeTrue();
     }
 
     [Test]
     public void Forgetting_a_known_name_removes_it_and_refreshes_the_views()
     {
-        _service.SetKnownName(Alice, Bob, "Kira");
+        _service.KnownNames.SetKnownName(Alice, Bob, "Kira");
         _queueRefreshes = 0;
         _rename.ClearCalls();
 
-        _service.ForgetKnownName(Alice, Bob);
+        _service.KnownNames.ForgetKnownName(Alice, Bob);
 
-        _service.TryGetKnownName(Alice, Bob, out _).Should().BeFalse();
+        _service.Names.TryGetKnownName(Alice, Bob, out _).Should().BeFalse();
         _queueRefreshes.Should().Be(1);
         Overrides().Should().ContainSingle();
     }
@@ -355,7 +288,7 @@ public class PlayerNameServiceTests
     [Test]
     public void Forgetting_a_name_that_was_never_known_only_reapplies_the_override()
     {
-        _service.ForgetKnownName(Alice, Bob);
+        _service.KnownNames.ForgetKnownName(Alice, Bob);
 
         _db.Store.Saved.Should().BeEmpty();
         _queueRefreshes.Should().Be(0);
@@ -367,20 +300,20 @@ public class PlayerNameServiceTests
     {
         Knows(Alice, Bob, " ");
 
-        _service.TryGetKnownName(Alice, Bob, out _).Should().BeFalse();
+        _service.Names.TryGetKnownName(Alice, Bob, out _).Should().BeFalse();
     }
 
     [Test]
     public void Known_names_are_cached_until_the_player_known_name_table_is_written()
     {
         Knows(Alice, Bob, "Kira");
-        _service.TryGetKnownName(Alice, Bob, out _).Should().BeTrue();
-        _service.TryGetKnownName(Alice, Bob, out _).Should().BeTrue();
+        _service.Names.TryGetKnownName(Alice, Bob, out _).Should().BeTrue();
+        _service.Names.TryGetKnownName(Alice, Bob, out _).Should().BeTrue();
 
         _db.Store.Queries.Should().HaveCount(1, "the second lookup is served from the cache");
 
         Knows(Alice, Bob, "Robert");
-        _service.TryGetKnownName(Alice, Bob, out var known).Should().BeTrue();
+        _service.Names.TryGetKnownName(Alice, Bob, out var known).Should().BeTrue();
 
         known.Should().Be("Robert");
         _db.Store.Queries.Should().HaveCount(2);
@@ -390,12 +323,12 @@ public class PlayerNameServiceTests
     public void Leaving_drops_the_cached_known_names_of_the_player()
     {
         Knows(Alice, Bob, "Kira");
-        _service.TryGetKnownName(Alice, Bob, out _);
+        _service.Names.TryGetKnownName(Alice, Bob, out _);
         _world[Alice].Uuid = "alice-id";
         _engine.SetReturnHandler("GetExitingObject", _ => Alice);
 
-        _service.ReleaseKnownNamesOnExit();
-        _service.TryGetKnownName(Alice, Bob, out _);
+        _service.Names.ReleaseKnownNamesOnExit();
+        _service.Names.TryGetKnownName(Alice, Bob, out _);
 
         _db.Store.Queries.Should().HaveCount(2);
     }
@@ -405,7 +338,7 @@ public class PlayerNameServiceTests
     {
         _engine.SetReturnHandler("GetExitingObject", _ => Npc);
 
-        var act = () => _service.ReleaseKnownNamesOnExit();
+        var act = () => _service.Names.ReleaseKnownNamesOnExit();
 
         act.Should().NotThrow();
     }
@@ -419,8 +352,8 @@ public class PlayerNameServiceTests
         stored.KnownNames["disguise:abc"] = "Kira Hidden";
         _db.With(stored);
 
-        _service.SearchKnownPlayerIdsByName(Alice, "KIRA", 10).Should().Equal("id-of-" + Bob);
-        _service.SearchKnownPlayerIdsByName(Alice, "a", 1).Should().HaveCount(1);
+        _service.KnownNames.SearchKnownPlayerIdsByName(Alice, "KIRA", 10).Should().Equal("id-of-" + Bob);
+        _service.KnownNames.SearchKnownPlayerIdsByName(Alice, "a", 1).Should().HaveCount(1);
     }
 
     [TestCase(Staff, "kira", 5)]
@@ -432,13 +365,13 @@ public class PlayerNameServiceTests
     {
         Knows(Alice, Bob, "Kira");
 
-        _service.SearchKnownPlayerIdsByName(observer, term, max).Should().BeEmpty();
+        _service.KnownNames.SearchKnownPlayerIdsByName(observer, term, max).Should().BeEmpty();
     }
 
     [Test]
     public void A_search_with_no_stored_names_finds_nothing()
     {
-        _service.SearchKnownPlayerIdsByName(Alice, "kira", 5).Should().BeEmpty();
+        _service.KnownNames.SearchKnownPlayerIdsByName(Alice, "kira", 5).Should().BeEmpty();
     }
 
     [Test]
@@ -448,11 +381,11 @@ public class PlayerNameServiceTests
         Knows(Carol, Bob, "Robert");
         Knows(Staff, Alice, "Unrelated");
 
-        var removed = _service.DeleteKnownNameReferences("id-of-" + Bob);
+        var removed = _service.KnownNames.DeleteKnownNameReferences("id-of-" + Bob);
 
         removed.Should().Be(2);
         _db.Store.Saved.OfType<PlayerKnownName>().Should().HaveCount(2);
-        _service.TryGetKnownName(Alice, Bob, out _).Should().BeFalse();
+        _service.Names.TryGetKnownName(Alice, Bob, out _).Should().BeFalse();
     }
 
     [Test]
@@ -464,7 +397,7 @@ public class PlayerNameServiceTests
         var paged = new PagedDb(records);
         var service = new BenchPlayerNameService(paged, null!, null!);
 
-        service.DeleteKnownNameReferences("target").Should().Be(120);
+        service.KnownNames.DeleteKnownNameReferences("target").Should().Be(120);
 
         paged.SearchCalls.Should().Be(3);
         paged.Saved.Should().HaveCount(120);
@@ -536,7 +469,7 @@ public class PlayerNameServiceTests
     [TestCase(" ")]
     public void Deleting_references_to_a_blank_identity_does_nothing(string? identity)
     {
-        _service.DeleteKnownNameReferences(identity!).Should().Be(0);
+        _service.KnownNames.DeleteKnownNameReferences(identity!).Should().Be(0);
     }
 
     // ---- display names
@@ -544,8 +477,8 @@ public class PlayerNameServiceTests
     [Test]
     public void A_target_that_is_not_valid_has_no_name()
     {
-        _service.GetDisplayName(Alice, Nobody).Should().BeEmpty();
-        _service.GetChatDisplayName(Alice, Nobody).Should().BeEmpty();
+        _service.Names.GetDisplayName(Alice, Nobody).Should().BeEmpty();
+        _service.Overrides.GetChatDisplayName(Alice, Nobody).Should().BeEmpty();
     }
 
     [TestCase(Npc)]
@@ -553,34 +486,34 @@ public class PlayerNameServiceTests
     [TestCase(Possessed)]
     public void An_NPC_staff_or_possessed_target_shows_its_own_name(uint target)
     {
-        _service.GetDisplayName(Alice, target).Should().Be(_world[target].Name);
-        _service.GetChatDisplayName(Alice, target).Should().Be(_world[target].Name);
+        _service.Names.GetDisplayName(Alice, target).Should().Be(_world[target].Name);
+        _service.Overrides.GetChatDisplayName(Alice, target).Should().Be(_world[target].Name);
     }
 
     [Test]
     public void A_player_sees_themselves_and_invalid_observers_see_the_real_name()
     {
-        _service.GetDisplayName(Alice, Alice).Should().Be("Alice");
-        _service.GetDisplayName(Nobody, Bob).Should().Be("Bob");
-        _service.GetChatDisplayName(Alice, Alice).Should().Be("Alice");
-        _service.GetChatDisplayName(Nobody, Bob).Should().Be("Bob");
-        _service.GetChatDisplayName(Npc, Bob).Should().Be("Bob");
-        _service.GetDisplayName(Npc, Bob).Should().Be("Bob");
+        _service.Names.GetDisplayName(Alice, Alice).Should().Be("Alice");
+        _service.Names.GetDisplayName(Nobody, Bob).Should().Be("Bob");
+        _service.Overrides.GetChatDisplayName(Alice, Alice).Should().Be("Alice");
+        _service.Overrides.GetChatDisplayName(Nobody, Bob).Should().Be("Bob");
+        _service.Overrides.GetChatDisplayName(Npc, Bob).Should().Be("Bob");
+        _service.Names.GetDisplayName(Npc, Bob).Should().Be("Bob");
     }
 
     [Test]
     public void Staff_see_the_real_name_with_the_descriptor()
     {
-        _service.GetDisplayName(Staff, Bob).Should().Be("Bob [" + Unknown("Tall Stranger") + "]");
-        _service.GetDisplayName(Possessed, Bob).Should().Be("Bob [" + Unknown("Tall Stranger") + "]");
-        _service.GetChatDisplayName(Staff, Bob).Should().Be("Bob [" + Unknown("Tall Stranger") + "]");
+        _service.Names.GetDisplayName(Staff, Bob).Should().Be("Bob [" + Unknown("Tall Stranger") + "]");
+        _service.Names.GetDisplayName(Possessed, Bob).Should().Be("Bob [" + Unknown("Tall Stranger") + "]");
+        _service.Overrides.GetChatDisplayName(Staff, Bob).Should().Be("Bob [" + Unknown("Tall Stranger") + "]");
     }
 
     [Test]
     public void A_stranger_is_shown_by_descriptor()
     {
-        _service.GetDisplayName(Alice, Bob).Should().Be("Tall Stranger");
-        _service.GetChatDisplayName(Alice, Bob).Should().Be("Tall Stranger");
+        _service.Names.GetDisplayName(Alice, Bob).Should().Be("Tall Stranger");
+        _service.Overrides.GetChatDisplayName(Alice, Bob).Should().Be("Tall Stranger");
     }
 
     [Test]
@@ -589,8 +522,8 @@ public class PlayerNameServiceTests
         Knows(Alice, Bob, "Kira");
         _db.With(new Player("alice-id"));
 
-        _service.GetDisplayName(Alice, Bob).Should().Be("Kira [" + Unknown("Tall Stranger") + "]");
-        _service.GetChatDisplayName(Alice, Bob).Should().Be("Kira");
+        _service.Names.GetDisplayName(Alice, Bob).Should().Be("Kira [" + Unknown("Tall Stranger") + "]");
+        _service.Overrides.GetChatDisplayName(Alice, Bob).Should().Be("Kira");
     }
 
     [Test]
@@ -599,7 +532,7 @@ public class PlayerNameServiceTests
         Knows(Alice, Bob, "Kira");
         _db.With(new Player("alice-id") { Settings = { ShowDescriptorsForNamedPlayers = false } });
 
-        _service.GetDisplayName(Alice, Bob).Should().Be("Kira");
+        _service.Names.GetDisplayName(Alice, Bob).Should().Be("Kira");
     }
 
     [Test]
@@ -608,7 +541,7 @@ public class PlayerNameServiceTests
         Wears(Bob, "d1", "Masked Wanderer");
         Knows(Alice, Bob, "Original");
 
-        _service.GetDisplayName(Alice, Bob).Should().Be("Masked Wanderer");
+        _service.Names.GetDisplayName(Alice, Bob).Should().Be("Masked Wanderer");
     }
 
     [Test]
@@ -619,14 +552,14 @@ public class PlayerNameServiceTests
         _service.DescriptorsById["bob-id"] = "Tall Stranger";
         _service.DescriptorsById["unknown-id"] = "Short Stranger";
 
-        _service.GetDisplayNameByPlayerId(Alice, " ", "Fallback").Should().Be("Someone");
-        _service.GetDisplayNameByPlayerId(Alice, "x", " ").Should().Be("Someone");
-        _service.GetDisplayNameByPlayerId(Nobody, "bob-id", "Bob").Should().Be("Bob");
-        _service.GetDisplayNameByPlayerId(Npc, "bob-id", "Bob").Should().Be("Bob");
-        _service.GetDisplayNameByPlayerId(Alice, "alice-id", "Alice").Should().Be("Alice");
-        _service.GetDisplayNameByPlayerId(Staff, "bob-id", "Bob").Should().Be("Bob [" + Unknown("Tall Stranger") + "]");
-        _service.GetDisplayNameByPlayerId(Possessed, "bob-id", "Bob").Should().Be("Bob [" + Unknown("Tall Stranger") + "]");
-        _service.GetDisplayNameByPlayerId(Alice, "unknown-id", "Nope").Should().Be("Short Stranger");
+        _service.Names.GetDisplayNameByPlayerId(Alice, " ", "Fallback").Should().Be("Someone");
+        _service.Names.GetDisplayNameByPlayerId(Alice, "x", " ").Should().Be("Someone");
+        _service.Names.GetDisplayNameByPlayerId(Nobody, "bob-id", "Bob").Should().Be("Bob");
+        _service.Names.GetDisplayNameByPlayerId(Npc, "bob-id", "Bob").Should().Be("Bob");
+        _service.Names.GetDisplayNameByPlayerId(Alice, "alice-id", "Alice").Should().Be("Alice");
+        _service.Names.GetDisplayNameByPlayerId(Staff, "bob-id", "Bob").Should().Be("Bob [" + Unknown("Tall Stranger") + "]");
+        _service.Names.GetDisplayNameByPlayerId(Possessed, "bob-id", "Bob").Should().Be("Bob [" + Unknown("Tall Stranger") + "]");
+        _service.Names.GetDisplayNameByPlayerId(Alice, "unknown-id", "Nope").Should().Be("Short Stranger");
     }
 
     [Test]
@@ -636,13 +569,13 @@ public class PlayerNameServiceTests
         _db.With(new Player("alice-id"));
         _service.DescriptorsById["bob-id"] = "Tall Stranger";
 
-        _service.GetDisplayNameByPlayerId(Alice, "bob-id", "Bob").Should().Be("Kira [" + Unknown("Tall Stranger") + "]");
+        _service.Names.GetDisplayNameByPlayerId(Alice, "bob-id", "Bob").Should().Be("Kira [" + Unknown("Tall Stranger") + "]");
 
         var quiet = new Player("alice-id") { Settings = { ShowDescriptorsForNamedPlayers = false } };
         _db.With(quiet);
-        _service.RefreshNameOverridesForObserver(Alice);
+        _service.Overrides.RefreshNameOverridesForObserver(Alice);
 
-        _service.GetDisplayNameByPlayerId(Alice, "bob-id", "Bob").Should().Be("Kira");
+        _service.Names.GetDisplayNameByPlayerId(Alice, "bob-id", "Bob").Should().Be("Kira");
     }
 
     [Test]
@@ -652,13 +585,13 @@ public class PlayerNameServiceTests
         _service.DescriptorsById["bob-id"] = "Tall Stranger";
         _service.DescriptorsById["carol-id"] = "Short Stranger";
 
-        _service.GetPlainDisplayNameByPlayerId(Alice, "", "x").Should().Be("Someone");
-        _service.GetPlainDisplayNameByPlayerId(Alice, "bob-id", " ").Should().Be("Kira");
-        _service.GetPlainDisplayNameByPlayerId(Alice, "carol-id", "x").Should().Be("Short Stranger");
-        _service.GetPlainDisplayNameByPlayerId(Nobody, "bob-id", "<c\u007f\u007f\u007f>Bob</c>").Should().Be("Bob");
-        _service.GetPlainDisplayNameByPlayerId(Alice, "alice-id", "Alice").Should().Be("Alice");
-        _service.GetPlainDisplayNameByPlayerId(Staff, "bob-id", "Bob").Should().Be("Bob [Tall Stranger]");
-        _service.GetPlainDisplayNameByPlayerId(Alice, "nobody-id", null!).Should().Be("Someone");
+        _service.Names.GetPlainDisplayNameByPlayerId(Alice, "", "x").Should().Be("Someone");
+        _service.Names.GetPlainDisplayNameByPlayerId(Alice, "bob-id", " ").Should().Be("Kira");
+        _service.Names.GetPlainDisplayNameByPlayerId(Alice, "carol-id", "x").Should().Be("Short Stranger");
+        _service.Names.GetPlainDisplayNameByPlayerId(Nobody, "bob-id", "<c\u007f\u007f\u007f>Bob</c>").Should().Be("Bob");
+        _service.Names.GetPlainDisplayNameByPlayerId(Alice, "alice-id", "Alice").Should().Be("Alice");
+        _service.Names.GetPlainDisplayNameByPlayerId(Staff, "bob-id", "Bob").Should().Be("Bob [Tall Stranger]");
+        _service.Names.GetPlainDisplayNameByPlayerId(Alice, "nobody-id", null!).Should().Be("Someone");
     }
 
     [Test]
@@ -666,14 +599,14 @@ public class PlayerNameServiceTests
     {
         _db.With(new PlayerKnownName("alice-id") { KnownNames = { ["bob-id"] = "Kira" } });
 
-        _service.GetKnownNameOrFallbackByPlayerId(Alice, " ", "Fallback").Should().Be("Fallback");
-        _service.GetKnownNameOrFallbackByPlayerId(Alice, "", " ").Should().Be("Someone");
-        _service.GetKnownNameOrFallbackByPlayerId(Alice, "bob-id", "Bob").Should().Be("Kira");
-        _service.GetKnownNameOrFallbackByPlayerId(Alice, "carol-id", "Carol").Should().Be("Carol");
-        _service.GetKnownNameOrFallbackByPlayerId(Alice, "carol-id", "").Should().Be("Someone");
-        _service.GetKnownNameOrFallbackByPlayerId(Alice, "alice-id", "Alice").Should().Be("Alice");
-        _service.GetKnownNameOrFallbackByPlayerId(Staff, "bob-id", "Bob").Should().Be("Bob");
-        _service.GetKnownNameOrFallbackByPlayerId(Nobody, "bob-id", "Bob").Should().Be("Bob");
+        _service.Names.GetKnownNameOrFallbackByPlayerId(Alice, " ", "Fallback").Should().Be("Fallback");
+        _service.Names.GetKnownNameOrFallbackByPlayerId(Alice, "", " ").Should().Be("Someone");
+        _service.Names.GetKnownNameOrFallbackByPlayerId(Alice, "bob-id", "Bob").Should().Be("Kira");
+        _service.Names.GetKnownNameOrFallbackByPlayerId(Alice, "carol-id", "Carol").Should().Be("Carol");
+        _service.Names.GetKnownNameOrFallbackByPlayerId(Alice, "carol-id", "").Should().Be("Someone");
+        _service.Names.GetKnownNameOrFallbackByPlayerId(Alice, "alice-id", "Alice").Should().Be("Alice");
+        _service.Names.GetKnownNameOrFallbackByPlayerId(Staff, "bob-id", "Bob").Should().Be("Bob");
+        _service.Names.GetKnownNameOrFallbackByPlayerId(Nobody, "bob-id", "Bob").Should().Be("Bob");
     }
 
     // ---- colored names
@@ -683,24 +616,24 @@ public class PlayerNameServiceTests
     {
         var expected = ColorToken.GetNameNPCColor(Npc);
 
-        _service.GetColoredDisplayName(Alice, Npc).Should().Be(expected);
-        _service.GetColoredChatDisplayName(Alice, Npc).Should().Be(expected);
-        _service.GetColoredDisplayName(Alice, Staff).Should().Be(ColorToken.GetNameNPCColor(Staff));
-        _service.GetColoredChatDisplayName(Alice, Possessed).Should().Be(ColorToken.GetNameNPCColor(Possessed));
+        _service.Names.GetColoredDisplayName(Alice, Npc).Should().Be(expected);
+        _service.Overrides.GetColoredChatDisplayName(Alice, Npc).Should().Be(expected);
+        _service.Names.GetColoredDisplayName(Alice, Staff).Should().Be(ColorToken.GetNameNPCColor(Staff));
+        _service.Overrides.GetColoredChatDisplayName(Alice, Possessed).Should().Be(ColorToken.GetNameNPCColor(Possessed));
     }
 
     [Test]
     public void A_stranger_is_gray_and_a_known_player_has_the_player_color()
     {
-        _service.GetColoredDisplayName(Alice, Bob).Should().Be(ColorToken.Gray("Tall Stranger"));
-        _service.GetColoredChatDisplayName(Alice, Bob).Should().Be(ColorToken.Gray("Tall Stranger"));
+        _service.Names.GetColoredDisplayName(Alice, Bob).Should().Be(ColorToken.Gray("Tall Stranger"));
+        _service.Overrides.GetColoredChatDisplayName(Alice, Bob).Should().Be(ColorToken.Gray("Tall Stranger"));
 
         Knows(Alice, Bob, "Kira");
         _db.With(new Player("alice-id") { Settings = { ShowDescriptorsForNamedPlayers = false } });
-        _service.RefreshNameOverridesForObserver(Alice);
+        _service.Overrides.RefreshNameOverridesForObserver(Alice);
 
-        _service.GetColoredDisplayName(Alice, Bob).Should().Be(ColorToken.GetPCColor("Kira"));
-        _service.GetColoredChatDisplayName(Alice, Bob).Should().Be(ColorToken.GetPCColor("Kira"));
+        _service.Names.GetColoredDisplayName(Alice, Bob).Should().Be(ColorToken.GetPCColor("Kira"));
+        _service.Overrides.GetColoredChatDisplayName(Alice, Bob).Should().Be(ColorToken.GetPCColor("Kira"));
     }
 
     [Test]
@@ -709,17 +642,17 @@ public class PlayerNameServiceTests
         Knows(Alice, Bob, "Kira");
         _db.With(new Player("alice-id"));
 
-        _service.GetColoredDisplayName(Alice, Bob)
+        _service.Names.GetColoredDisplayName(Alice, Bob)
             .Should().Be(ColorToken.GetPCColor("Kira") + " [" + ColorToken.Gray("Tall Stranger") + "]");
     }
 
     [Test]
     public void Staff_see_the_true_name_with_the_descriptor_in_color()
     {
-        _service.GetColoredDisplayName(Staff, Bob)
+        _service.Names.GetColoredDisplayName(Staff, Bob)
             .Should().Be(ColorToken.GetPCColor("Bob") + " [" + ColorToken.Gray("Tall Stranger") + "]");
-        _service.GetColoredDisplayName(Alice, Alice).Should().Be(ColorToken.GetPCColor("Alice"));
-        _service.GetColoredChatDisplayName(Staff, Bob).Should().Be(ColorToken.GetPCColor("Bob [" + ColorToken.Gray("Tall Stranger") + "]"));
+        _service.Names.GetColoredDisplayName(Alice, Alice).Should().Be(ColorToken.GetPCColor("Alice"));
+        _service.Overrides.GetColoredChatDisplayName(Staff, Bob).Should().Be(ColorToken.GetPCColor("Bob [" + ColorToken.Gray("Tall Stranger") + "]"));
     }
 
     // ---- audit names
@@ -727,24 +660,24 @@ public class PlayerNameServiceTests
     [Test]
     public void Audit_names_add_the_current_descriptor_for_players_only()
     {
-        _service.GetAuditName(Alice).Should().Be("Alice [Tall Stranger]");
-        _service.GetAuditName(Npc).Should().Be("Guard");
-        _service.GetAuditName(Staff).Should().Be("Staff");
-        _service.GetAuditName(Possessed).Should().Be("Possessed Guard");
-        _service.GetAuditName(Nobody).Should().BeEmpty();
+        _service.Names.GetAuditName(Alice).Should().Be("Alice [Tall Stranger]");
+        _service.Names.GetAuditName(Npc).Should().Be("Guard");
+        _service.Names.GetAuditName(Staff).Should().Be("Staff");
+        _service.Names.GetAuditName(Possessed).Should().Be("Possessed Guard");
+        _service.Names.GetAuditName(Nobody).Should().BeEmpty();
     }
 
     [Test]
     public void Audit_identities_name_the_disguise_when_one_is_worn()
     {
-        _service.GetAuditIdentity(Alice).Should().Be("Alice [Tall Stranger] [PlayerId=alice-id IdentityKey=alice-id Disguised=False DisguiseId=none DisguiseName=none]");
+        _service.Names.GetAuditIdentity(Alice).Should().Be("Alice [Tall Stranger] [PlayerId=alice-id IdentityKey=alice-id Disguised=False DisguiseId=none DisguiseName=none]");
         Wears(Bob, "d1", "Masked Wanderer");
 
-        var identity = _service.GetAuditIdentity(Bob);
+        var identity = _service.Names.GetAuditIdentity(Bob);
 
         identity.Should().StartWith("Bob [Masked Wanderer] [PlayerId=bob-id IdentityKey=");
         identity.Should().Contain("Disguised=True DisguiseId=d1 DisguiseName=Private d1]");
-        _service.GetAuditIdentity(Npc).Should().Be("Guard");
+        _service.Names.GetAuditIdentity(Npc).Should().Be("Guard");
     }
 
     // ---- name overrides
@@ -754,7 +687,7 @@ public class PlayerNameServiceTests
     {
         _engine.SetReturnHandler("GetEnteringObject", _ => Alice);
 
-        _service.ApplyNameOverridesOnEnter();
+        _service.Overrides.ApplyNameOverridesOnEnter();
 
         _service.EnsuredDescriptors.Should().Equal(Alice);
         Overrides().Should().NotBeEmpty();
@@ -772,7 +705,7 @@ public class PlayerNameServiceTests
     {
         _engine.SetReturnHandler("GetEnteringObject", _ => Staff);
 
-        _service.ApplyNameOverridesOnEnter();
+        _service.Overrides.ApplyNameOverridesOnEnter();
 
         var targets = Overrides().Select(call => (uint)call.Arguments[0]!).ToList();
         targets.Should().BeEquivalentTo(new[] { Alice, Bob, Carol });
@@ -788,7 +721,7 @@ public class PlayerNameServiceTests
     public void A_reload_applies_the_overrides_of_everyone_online_again_whose_restoring_closures_it_dropped()
     {
         // Hot reload: a tell's chat-name override is put back by a closure the reload drops.
-        _service.OnCarriedStateAdopted();
+        _service.Overrides.OnCarriedStateAdopted();
 
         Overrides().Select(call => (uint)call.Arguments[5]!).Distinct().Should().Contain(new[] { Alice, Bob, Carol, Staff },
             "each player's view of every name, and the staff's true names, are derived again");
@@ -799,7 +732,7 @@ public class PlayerNameServiceTests
     {
         _engine.SetReturnHandler("GetEnteringObject", _ => Npc);
 
-        _service.ApplyNameOverridesOnEnter();
+        _service.Overrides.ApplyNameOverridesOnEnter();
 
         _service.EnsuredDescriptors.Should().BeEmpty();
         Overrides().Should().BeEmpty();
@@ -808,7 +741,7 @@ public class PlayerNameServiceTests
     [Test]
     public void Refreshing_a_player_sets_their_own_two_names_and_those_every_other_player_sees()
     {
-        _service.RefreshNameOverridesForPlayer(Alice);
+        _service.Overrides.RefreshNameOverridesForPlayer(Alice);
 
         _queueRefreshes.Should().Be(1);
         var forSelf = Overrides().Where(call => (uint)call.Arguments[0]! == Alice && (uint)call.Arguments[5]! == Alice).Single();
@@ -828,7 +761,7 @@ public class PlayerNameServiceTests
     {
         _db.With(new Player("alice-id") { Settings = { ShowOwnDescriptor = false } });
 
-        _service.RefreshNameOverridesForPlayer(Alice);
+        _service.Overrides.RefreshNameOverridesForPlayer(Alice);
 
         Name(Overrides().Single(call => (uint)call.Arguments[0]! == Alice && (uint)call.Arguments[5]! == Alice)).Should().Be("Alice");
     }
@@ -838,7 +771,7 @@ public class PlayerNameServiceTests
     {
         _service.ScrambledAccounts.Add(Alice);
 
-        _service.RefreshNameOverridesForPlayer(Alice);
+        _service.Overrides.RefreshNameOverridesForPlayer(Alice);
 
         _rename.CallsTo("ClearPCNameOverride").Should().BeEmpty();
         Overrides().Should().Contain(call => (PlayerNameOverrideType)call.Arguments[4]! == PlayerNameOverrideType.Obfuscate);
@@ -850,7 +783,7 @@ public class PlayerNameServiceTests
     [TestCase(Nobody)]
     public void Refreshing_something_that_is_not_a_plain_player_sets_nothing(uint player)
     {
-        _service.RefreshNameOverridesForPlayer(player);
+        _service.Overrides.RefreshNameOverridesForPlayer(player);
 
         Overrides().Should().BeEmpty();
         _queueRefreshes.Should().Be(1);
@@ -860,14 +793,14 @@ public class PlayerNameServiceTests
     public void Refreshing_an_observer_reapplies_every_other_players_name_and_forgets_the_cached_setting()
     {
         _db.With(new Player("alice-id"));
-        _service.ShouldShowDescriptorForNamedPlayers(Alice).Should().BeTrue();
+        _service.Names.ShouldShowDescriptorForNamedPlayers(Alice).Should().BeTrue();
         _db.With(new Player("alice-id") { Settings = { ShowDescriptorsForNamedPlayers = false } });
 
-        _service.RefreshNameOverridesForObserver(Alice);
+        _service.Overrides.RefreshNameOverridesForObserver(Alice);
 
         Overrides().Select(call => (uint)call.Arguments[0]!).Should().BeEquivalentTo(new[] { Bob, Carol });
         _queueRefreshes.Should().Be(1);
-        _service.ShouldShowDescriptorForNamedPlayers(Alice).Should().BeFalse();
+        _service.Names.ShouldShowDescriptorForNamedPlayers(Alice).Should().BeFalse();
     }
 
     [TestCase(Npc)]
@@ -876,7 +809,7 @@ public class PlayerNameServiceTests
     [TestCase(Nobody)]
     public void Refreshing_an_observer_that_is_not_a_plain_player_does_nothing(uint observer)
     {
-        _service.RefreshNameOverridesForObserver(observer);
+        _service.Overrides.RefreshNameOverridesForObserver(observer);
 
         Overrides().Should().BeEmpty();
         _queueRefreshes.Should().Be(0);
@@ -887,7 +820,7 @@ public class PlayerNameServiceTests
     {
         Wears(Bob, "d1", "Masked Wanderer");
 
-        _service.RefreshNameOverridesForPlayer(Bob);
+        _service.Overrides.RefreshNameOverridesForPlayer(Bob);
 
         var forStaff = Overrides().Single(call => (uint)call.Arguments[0]! == Bob && (uint)call.Arguments[5]! == Staff);
         forStaff.Arguments[3].Should().Be(" " + ColorToken.Orange("[Disguised]"));
@@ -898,7 +831,7 @@ public class PlayerNameServiceTests
     [Test]
     public void An_override_is_not_applied_when_the_observer_or_target_is_not_a_player_of_the_right_kind()
     {
-        _service.RefreshNameOverridesForPlayer(Bob);
+        _service.Overrides.RefreshNameOverridesForPlayer(Bob);
 
         Overrides().Should().NotContain(call => (uint)call.Arguments[0]! == Npc || (uint)call.Arguments[5]! == Npc);
     }
@@ -908,9 +841,9 @@ public class PlayerNameServiceTests
     [Test]
     public void Toggling_afk_marks_the_player_and_shows_the_tag_in_their_names()
     {
-        _service.ToggleAfk(Alice).Should().BeTrue();
+        _service.Overrides.ToggleAfk(Alice).Should().BeTrue();
 
-        _service.IsAfk(Alice).Should().BeTrue();
+        _service.Overrides.IsAfk(Alice).Should().BeTrue();
         Overrides().Should().Contain(call => ((string)call.Arguments[3]!).Contains("[AFK]"));
         _service.RepeatingTask.Should().NotBeNull();
         _service.ContextSubscriptions.Should().Be(0);
@@ -919,22 +852,22 @@ public class PlayerNameServiceTests
     [Test]
     public void Toggling_afk_again_clears_it_and_stops_the_movement_check()
     {
-        _service.ToggleAfk(Alice);
+        _service.Overrides.ToggleAfk(Alice);
 
-        _service.ToggleAfk(Alice).Should().BeFalse();
+        _service.Overrides.ToggleAfk(Alice).Should().BeFalse();
 
-        _service.IsAfk(Alice).Should().BeFalse();
+        _service.Overrides.IsAfk(Alice).Should().BeFalse();
         _service.DisposedChecks.Should().Be(1);
     }
 
     [Test]
     public void The_movement_check_runs_once_for_all_afk_players()
     {
-        _service.ToggleAfk(Alice);
+        _service.Overrides.ToggleAfk(Alice);
         var task = _service.RepeatingTask;
 
-        _service.ToggleAfk(Bob);
-        _service.ToggleAfk(Alice);
+        _service.Overrides.ToggleAfk(Bob);
+        _service.Overrides.ToggleAfk(Alice);
 
         _service.RepeatingTask.Should().BeSameAs(task);
         _service.DisposedChecks.Should().Be(0, "Bob is still afk");
@@ -946,22 +879,22 @@ public class PlayerNameServiceTests
     [TestCase(Nobody)]
     public void Only_plain_players_can_go_afk(uint player)
     {
-        _service.ToggleAfk(player).Should().BeFalse();
+        _service.Overrides.ToggleAfk(player).Should().BeFalse();
 
-        _service.IsAfk(player).Should().BeFalse();
+        _service.Overrides.IsAfk(player).Should().BeFalse();
         _service.RepeatingTask.Should().BeNull();
     }
 
     [Test]
     public void Moving_ends_afk_and_tells_the_player()
     {
-        _service.ToggleAfk(Alice);
+        _service.Overrides.ToggleAfk(Alice);
         _world[Alice].Position = new Vector3(1, 0, 0);
         _engine.ClearCalls();
 
         _service.RepeatingTask!();
 
-        _service.IsAfk(Alice).Should().BeFalse();
+        _service.Overrides.IsAfk(Alice).Should().BeFalse();
         _engine.CallsTo("SendMessageToPC").Should().ContainSingle().Which.Arguments.Should().Equal(Alice, "You are no longer AFK.");
         Overrides().Should().NotBeEmpty();
     }
@@ -969,57 +902,57 @@ public class PlayerNameServiceTests
     [Test]
     public void Changing_area_ends_afk()
     {
-        _service.ToggleAfk(Alice);
+        _service.Overrides.ToggleAfk(Alice);
         _world[Alice].Area = AreaTwo;
 
         _service.RepeatingTask!();
 
-        _service.IsAfk(Alice).Should().BeFalse();
+        _service.Overrides.IsAfk(Alice).Should().BeFalse();
     }
 
     [Test]
     public void Standing_still_stays_afk()
     {
-        _service.ToggleAfk(Alice);
+        _service.Overrides.ToggleAfk(Alice);
 
         _service.RepeatingTask!();
 
-        _service.IsAfk(Alice).Should().BeTrue();
+        _service.Overrides.IsAfk(Alice).Should().BeTrue();
     }
 
     [Test]
     public void A_player_who_left_is_dropped_from_the_afk_list_without_a_message()
     {
-        _service.ToggleAfk(Alice);
+        _service.Overrides.ToggleAfk(Alice);
         _world.Remove(Alice);
         _engine.ClearCalls();
 
         _service.RepeatingTask!();
 
-        _service.IsAfk(Alice).Should().BeFalse();
+        _service.Overrides.IsAfk(Alice).Should().BeFalse();
         _engine.CallsTo("SendMessageToPC").Should().BeEmpty();
     }
 
     [Test]
     public void Leaving_the_module_clears_afk()
     {
-        _service.ToggleAfk(Alice);
+        _service.Overrides.ToggleAfk(Alice);
         _engine.SetReturnHandler("GetExitingObject", _ => Alice);
 
-        _service.ClearAfkOnExit();
+        _service.Overrides.ClearAfkOnExit();
 
-        _service.IsAfk(Alice).Should().BeFalse();
+        _service.Overrides.IsAfk(Alice).Should().BeFalse();
     }
 
     [Test]
     public void Entering_the_module_clears_a_stale_afk_flag()
     {
-        _service.ToggleAfk(Alice);
+        _service.Overrides.ToggleAfk(Alice);
         _engine.SetReturnHandler("GetEnteringObject", _ => Alice);
 
-        _service.ApplyNameOverridesOnEnter();
+        _service.Overrides.ApplyNameOverridesOnEnter();
 
-        _service.IsAfk(Alice).Should().BeFalse();
+        _service.Overrides.IsAfk(Alice).Should().BeFalse();
     }
 
     // ---- descriptor settings cache
@@ -1027,12 +960,12 @@ public class PlayerNameServiceTests
     [Test]
     public void The_descriptor_settings_default_to_on_for_anyone_who_is_not_a_plain_player()
     {
-        _service.ShouldShowDescriptorForNamedPlayers(Staff).Should().BeTrue();
-        _service.ShouldShowDescriptorForNamedPlayers(Possessed).Should().BeTrue();
-        _service.ShouldShowDescriptorForNamedPlayers(Npc).Should().BeTrue();
-        _service.ShouldShowDescriptorForNamedPlayers(Nobody).Should().BeTrue();
+        _service.Names.ShouldShowDescriptorForNamedPlayers(Staff).Should().BeTrue();
+        _service.Names.ShouldShowDescriptorForNamedPlayers(Possessed).Should().BeTrue();
+        _service.Names.ShouldShowDescriptorForNamedPlayers(Npc).Should().BeTrue();
+        _service.Names.ShouldShowDescriptorForNamedPlayers(Nobody).Should().BeTrue();
         _world[Alice].Uuid = " ";
-        _service.ShouldShowDescriptorForNamedPlayers(Alice).Should().BeTrue();
+        _service.Names.ShouldShowDescriptorForNamedPlayers(Alice).Should().BeTrue();
         _db.Store.Reads.Should().BeEmpty();
     }
 
@@ -1041,8 +974,8 @@ public class PlayerNameServiceTests
     {
         _db.With(new Player("alice-id") { Settings = { ShowDescriptorsForNamedPlayers = false } });
 
-        _service.ShouldShowDescriptorForNamedPlayers(Alice).Should().BeFalse();
-        _service.ShouldShowDescriptorForNamedPlayers(Alice).Should().BeFalse();
+        _service.Names.ShouldShowDescriptorForNamedPlayers(Alice).Should().BeFalse();
+        _service.Names.ShouldShowDescriptorForNamedPlayers(Alice).Should().BeFalse();
 
         _db.Store.Reads.Should().HaveCount(1);
         _service.ContextSubscriptions.Should().Be(1);
@@ -1050,27 +983,27 @@ public class PlayerNameServiceTests
         _db.With(new Player("alice-id"));
         _service.ScriptContextEnd!();
 
-        _service.ShouldShowDescriptorForNamedPlayers(Alice).Should().BeTrue();
+        _service.Names.ShouldShowDescriptorForNamedPlayers(Alice).Should().BeTrue();
         _service.ContextSubscriptions.Should().Be(1, "the hook is registered once");
     }
 
     [Test]
     public void A_player_without_a_record_shows_descriptors()
     {
-        _service.ShouldShowDescriptorForNamedPlayers(Alice).Should().BeTrue();
+        _service.Names.ShouldShowDescriptorForNamedPlayers(Alice).Should().BeTrue();
     }
 
     [Test]
     public void The_own_descriptor_setting_is_read_each_time()
     {
-        _service.ShouldShowOwnDescriptor(Alice).Should().BeTrue();
+        _service.Names.ShouldShowOwnDescriptor(Alice).Should().BeTrue();
         _db.With(new Player("alice-id") { Settings = { ShowOwnDescriptor = false } });
-        _service.ShouldShowOwnDescriptor(Alice).Should().BeFalse();
-        _service.ShouldShowOwnDescriptor(Staff).Should().BeFalse();
-        _service.ShouldShowOwnDescriptor(Possessed).Should().BeFalse();
-        _service.ShouldShowOwnDescriptor(Npc).Should().BeFalse();
+        _service.Names.ShouldShowOwnDescriptor(Alice).Should().BeFalse();
+        _service.Names.ShouldShowOwnDescriptor(Staff).Should().BeFalse();
+        _service.Names.ShouldShowOwnDescriptor(Possessed).Should().BeFalse();
+        _service.Names.ShouldShowOwnDescriptor(Npc).Should().BeFalse();
         _world[Bob].Uuid = "";
-        _service.ShouldShowOwnDescriptor(Bob).Should().BeTrue();
+        _service.Names.ShouldShowOwnDescriptor(Bob).Should().BeTrue();
     }
 
     // ---- chat overrides
@@ -1080,7 +1013,7 @@ public class PlayerNameServiceTests
     {
         var order = new List<string>();
 
-        _service.SendChatMessageWithChatNameOverride(Alice, Bob, () => order.Add("sent: " + string.Join("|", Overrides().Select(Name))));
+        _service.Overrides.SendChatMessageWithChatNameOverride(Alice, Bob, () => order.Add("sent: " + string.Join("|", Overrides().Select(Name))));
 
         order.Should().ContainSingle().Which.Should().Be("sent: Tall Stranger");
         Overrides().Select(Name).Should().Equal("Tall Stranger", "Tall Stranger");
@@ -1089,7 +1022,7 @@ public class PlayerNameServiceTests
     [Test]
     public void The_name_is_restored_even_when_sending_fails()
     {
-        var act = () => _service.SendChatMessageWithChatNameOverride(Alice, Bob, () => throw new InvalidOperationException("boom"));
+        var act = () => _service.Overrides.SendChatMessageWithChatNameOverride(Alice, Bob, () => throw new InvalidOperationException("boom"));
 
         act.Should().Throw<InvalidOperationException>();
         Overrides().Should().HaveCount(2);
@@ -1100,7 +1033,7 @@ public class PlayerNameServiceTests
     {
         Wears(Bob, "d1", "Masked Wanderer");
 
-        _service.SendChatMessageWithChatNameOverride(Staff, Bob, () => { });
+        _service.Overrides.SendChatMessageWithChatNameOverride(Staff, Bob, () => { });
 
         var calls = Overrides().ToList();
         calls[0].Arguments[3].Should().Be(" " + ColorToken.Orange("[Disguised]"));
@@ -1111,7 +1044,7 @@ public class PlayerNameServiceTests
     [Test]
     public void Restoring_ones_own_name_uses_the_own_view()
     {
-        _service.SendChatMessageWithChatNameOverride(Alice, Alice, () => { });
+        _service.Overrides.SendChatMessageWithChatNameOverride(Alice, Alice, () => { });
 
         Overrides().Select(Name).Should().Equal("Alice", "Alice [" + Unknown("Tall Stranger") + "]");
     }
@@ -1119,11 +1052,11 @@ public class PlayerNameServiceTests
     [Test]
     public void A_chat_override_needs_two_players_and_a_plain_target()
     {
-        _service.SendChatMessageWithChatNameOverride(Alice, Npc, () => { });
-        _service.SendChatMessageWithChatNameOverride(Npc, Alice, () => { });
-        _service.SendChatMessageWithChatNameOverride(Alice, Staff, () => { });
-        _service.SendChatMessageWithChatNameOverride(Alice, Possessed, () => { });
-        _service.SendChatMessageWithChatNameOverride(Alice, Nobody, () => { });
+        _service.Overrides.SendChatMessageWithChatNameOverride(Alice, Npc, () => { });
+        _service.Overrides.SendChatMessageWithChatNameOverride(Npc, Alice, () => { });
+        _service.Overrides.SendChatMessageWithChatNameOverride(Alice, Staff, () => { });
+        _service.Overrides.SendChatMessageWithChatNameOverride(Alice, Possessed, () => { });
+        _service.Overrides.SendChatMessageWithChatNameOverride(Alice, Nobody, () => { });
 
         Overrides().Should().BeEmpty();
     }
@@ -1146,7 +1079,7 @@ public class PlayerNameServiceTests
         _portraitTellRefused = true;
         Tell(ChatChannel.DMTell, Alice, Bob);
 
-        _service.PreventAmbiguousTellTargets();
+        _service.Overrides.PreventAmbiguousTellTargets();
 
         _chat.CountOf("SkipMessage").Should().Be(1);
         Overrides().Should().BeEmpty();
@@ -1157,7 +1090,7 @@ public class PlayerNameServiceTests
     {
         Tell(ChatChannel.PlayerTalk, Alice, Bob);
 
-        _service.PreventAmbiguousTellTargets();
+        _service.Overrides.PreventAmbiguousTellTargets();
 
         _chat.CountOf("SkipMessage").Should().Be(0);
         _portraitScript.Calls.Should().BeEmpty();
@@ -1175,7 +1108,7 @@ public class PlayerNameServiceTests
     {
         Tell(ChatChannel.PlayerTell, sender, target);
 
-        _service.PreventAmbiguousTellTargets();
+        _service.Overrides.PreventAmbiguousTellTargets();
 
         _chat.CountOf("SkipMessage").Should().Be(0);
         Overrides().Should().BeEmpty();
@@ -1187,7 +1120,7 @@ public class PlayerNameServiceTests
         _service.Descriptors[Carol] = "Short Stranger";
         Tell(ChatChannel.PlayerTell, Alice, Bob);
 
-        _service.PreventAmbiguousTellTargets();
+        _service.Overrides.PreventAmbiguousTellTargets();
 
         _chat.CountOf("SkipMessage").Should().Be(0);
         Overrides().Should().HaveCount(2);
@@ -1205,7 +1138,7 @@ public class PlayerNameServiceTests
     {
         Tell(ChatChannel.PlayerTell, Alice, Bob, direct: true);
 
-        _service.PreventAmbiguousTellTargets();
+        _service.Overrides.PreventAmbiguousTellTargets();
 
         _chat.CountOf("SkipMessage").Should().Be(0);
         Overrides().Should().HaveCount(2);
@@ -1219,7 +1152,7 @@ public class PlayerNameServiceTests
         _db.With(new Player("alice-id") { Settings = { ShowDescriptorsForNamedPlayers = false } });
         Tell(ChatChannel.PlayerTell, Alice, Bob);
 
-        _service.PreventAmbiguousTellTargets();
+        _service.Overrides.PreventAmbiguousTellTargets();
 
         _chat.CountOf("SkipMessage").Should().Be(1);
         _engine.CallsTo("SendMessageToPC").Should().ContainSingle().Which.Arguments[1].Should().Be(
@@ -1236,7 +1169,7 @@ public class PlayerNameServiceTests
         _portraitTellConfirmed = true;
         Tell(ChatChannel.PlayerTell, Alice, Bob);
 
-        _service.PreventAmbiguousTellTargets();
+        _service.Overrides.PreventAmbiguousTellTargets();
 
         _chat.CountOf("SkipMessage").Should().Be(0);
         Overrides().Should().NotBeEmpty();
@@ -1249,7 +1182,7 @@ public class PlayerNameServiceTests
         Wears(Bob, "d1", "Masked Wanderer");
         Tell(ChatChannel.PlayerTell, Alice, Bob);
 
-        _service.PreventAmbiguousTellTargets();
+        _service.Overrides.PreventAmbiguousTellTargets();
 
         _chat.CountOf("SkipMessage").Should().Be(0);
     }

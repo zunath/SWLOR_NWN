@@ -49,8 +49,8 @@ public class PerkFacadeAllocationTests
         _container = new FacadeContainer(services =>
             services.Replace(ServiceDescriptor.Singleton<IPerkService>(_bench.Service)));
         _installed = _container.Install();
-        _bench.Service.CacheData();
-        _bench.Service.CachePerkFeatData();
+        _bench.CacheData();
+        _bench.Feats.CachePerkFeatData();
     }
 
     [TearDown]

@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
     public static class AIInternals
     {
         /// <summary>The interfaces of the AI parts, the service itself first; a part that moves adds its interface here.</summary>
-        private static readonly Type[] Parts = { typeof(IAIService) };
+        private static readonly Type[] Parts = { typeof(IAIService), typeof(IAIDecisionService), typeof(IAIActionService) };
 
         private const BindingFlags Instance = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 

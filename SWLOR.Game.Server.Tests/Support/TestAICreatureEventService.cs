@@ -16,8 +16,8 @@ public sealed class TestAICreatureEventService : AICreatureEventService
     private readonly AIBench _bench;
     private readonly TestAIService _model;
 
-    public TestAICreatureEventService(AIBench bench, TestAIService model)
-        : base(FacadeForwarder.For<IActivityService>(), model, FacadeForwarder.For<IConversationMenuService>(), FacadeForwarder.For<IConversationService>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<ICreatureStatService>())
+    public TestAICreatureEventService(AIBench bench, TestAIService model, TestAIDecisionService decision)
+        : base(FacadeForwarder.For<IActivityService>(), model, decision, FacadeForwarder.For<IConversationMenuService>(), FacadeForwarder.For<IConversationService>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<ICreatureStatService>())
     {
         _bench = bench;
         _model = model;

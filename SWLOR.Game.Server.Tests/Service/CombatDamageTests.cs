@@ -403,7 +403,7 @@ public class CombatDamageTests
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"GetRangedAbilityLongRangeHitChanceAdjustment\(\s*attacker.m_idSelf,\s*defender.m_idSelf,\s*abilitySkillType\)").Should().BeTrue();
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
-            @"queuedAbility == null \? 0 : GameServices\.CombatAbilityBonus\.GetQueuedWeaponAbilityActivationHitChanceAdjustment\(\s*attacker.m_idSelf,\s*abilitySkillType,\s*queuedAbility\)")
+            @"queuedAbility == null \? 0 : GameServices\.CombatQueuedAbilityBonus\.GetQueuedWeaponAbilityActivationHitChanceAdjustment\(\s*attacker.m_idSelf,\s*abilitySkillType,\s*queuedAbility\)")
             .Should().BeTrue("ability accuracy must not affect ordinary weapon attacks");
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"StoreQueuedWeaponAbilityCriticalRateBonus\(\s*attacker.m_idSelf,\s*abilitySkillType,").Should().BeTrue();
@@ -499,7 +499,7 @@ public class CombatDamageTests
         abilitySource.Should().Contain("ApplyCriticalDamageModifier(");
         abilitySource.Should().Contain("idleBonuses.CriticalDamagePercentAdjustment");
         abilitySource.Should().Contain("GetAbilityDamageFlatAdjustment(activator, perkType, skillType)");
-        damageRollSource.Should().Contain("GameServices.CombatAbilityBonus.ConsumeOpeningAutoAttackCriticalDamageAdjustment(attacker.m_idSelf)");
+        damageRollSource.Should().Contain("GameServices.CombatQueuedAbilityBonus.ConsumeOpeningAutoAttackCriticalDamageAdjustment(attacker.m_idSelf)");
         damageRollSource.Should().Contain("openingCriticalDamageAdjustment);");
         damageRollSource.Should().Contain("GameServices.CombatQueries.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType)");
         damageRollSource.Should().Contain("GameServices.CombatDamageModifiers.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType)");
@@ -629,7 +629,7 @@ public class CombatDamageTests
         prepare.Should().Contain("GetLastCompletedOffensiveActivityAt(attacker)",
             "a completed hostile ability must restart Steady Aim and Dead Center's idle window");
         nativeSource.Should().MatchRegex(
-            @"attacker\.ResolveDefensiveEffects\(defender, isHit \? 1 : 0\);[\s\S]*?if \(!IsSuccessfulAttackResult\(pAttackData\.m_nAttackResult\)\)[\s\S]*?GameServices\.CombatAbilityBonus\.ClearOpeningAutoAttackModifiers\(attacker\.m_idSelf\);",
+            @"attacker\.ResolveDefensiveEffects\(defender, isHit \? 1 : 0\);[\s\S]*?if \(!IsSuccessfulAttackResult\(pAttackData\.m_nAttackResult\)\)[\s\S]*?GameServices\.CombatQueuedAbilityBonus\.ClearOpeningAutoAttackModifiers\(attacker\.m_idSelf\);",
             "concealment, miss, or deflection must consume opening riders before another swing can inherit them");
         new OpeningAttackReadyStatusEffect().Name.Should().Be("Opening Attack Ready");
         var refresh = ExtractMethod(combatSource, "private static void RefreshIdleReadiness(uint creature)");
@@ -784,8 +784,8 @@ public class CombatDamageTests
             nativeCriticalPreparationIndex - queuedWeaponHitBranchIndex);
         queuedWeaponHitBranchBody.Should().Contain("pAttackData.m_nAttackResult = AttackResultRegularHit;");
         queuedWeaponHitBranchBody.Should().Contain("else");
-        queuedWeaponHitBranchBody.Should().NotContain("GameServices.CombatAbilityBonus.PrepareQueuedWeaponAbilityOpeningAttack");
-        queuedWeaponHitBranchBody.Should().NotContain("GameServices.CombatAbilityBonus.PrepareOpeningAutoAttack");
+        queuedWeaponHitBranchBody.Should().NotContain("GameServices.CombatQueuedAbilityBonus.PrepareQueuedWeaponAbilityOpeningAttack");
+        queuedWeaponHitBranchBody.Should().NotContain("GameServices.CombatQueuedAbilityBonus.PrepareOpeningAutoAttack");
         queuedWeaponHitBranchBody.Should().NotContain("StatType.CurrentIncomingAttackMinimumDamage");
         abilitySource.Should().Contain("ConsumeQueuedWeaponAbilityBonuses(activator, abilitySkillType)");
         abilitySource.Should().Contain("queuedWeaponBonuses.DamageBonus");
@@ -793,7 +793,7 @@ public class CombatDamageTests
 
         var weaponAbilityBaseSource = WeaponAbilitySource.Read();
         weaponAbilityBaseSource.Should().Contain(
-            "CombatAbilityBonus.StoreQueuedWeaponAbilityActivationIdleBonuses(activator, skillType);");
+            "CombatQueuedAbilityBonus.StoreQueuedWeaponAbilityActivationIdleBonuses(activator, skillType);");
         combatSource.Should().Contain("public static void StoreQueuedWeaponAbilityActivationIdleBonuses(");
         combatSource.Should().Contain("QueuedWeaponAbilityIdleDamageBonus");
         combatSource.Should().Contain("QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment");
@@ -806,7 +806,7 @@ public class CombatDamageTests
         // AttackRollAccuracy builds the hit-chance modifier that the attack roll passes to CalculateHitRate.
         var accuracySource = NativeCombatSource.Read("AttackRollAccuracy.cs");
         var queuedAccuracyIndex = accuracySource.IndexOf(
-            "GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(",
+            "GameServices.CombatQueuedAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(",
             StringComparison.Ordinal);
         var hitChanceIndex = accuracySource.IndexOf("var hitChanceModifier =", StringComparison.Ordinal);
         var hitChanceReturnIndex = accuracySource.IndexOf("return hitChanceModifier;", StringComparison.Ordinal);

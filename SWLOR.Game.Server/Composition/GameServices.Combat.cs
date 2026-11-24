@@ -28,8 +28,14 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The defense riders of an ability activation (evasion, deflection, ally defense), a part of combat.</summary>
         public static ICombatAbilityDefenseEffectsService CombatAbilityDefenseEffects => FacadeAccessor.Resolve<ICombatAbilityDefenseEffectsService>();
 
+        /// <summary>The queued ability bonuses of combat (opening auto-attack, queued weapon ability and idle activation bonuses), a part of combat.</summary>
+        public static ICombatQueuedAbilityBonusService CombatQueuedAbilityBonus => FacadeAccessor.Resolve<ICombatQueuedAbilityBonusService>();
+
         /// <summary>The ability hit roll of combat, a part of combat.</summary>
         public static ICombatAbilityHitService CombatAbilityHit => FacadeAccessor.Resolve<ICombatAbilityHitService>();
+
+        /// <summary>The ability critical rate and hit adjustments of combat, a part of combat.</summary>
+        public static ICombatAbilityHitAdjustmentService CombatAbilityHitAdjustment => FacadeAccessor.Resolve<ICombatAbilityHitAdjustmentService>();
 
         /// <summary>The ability impact part of combat, a part of combat.</summary>
         public static ICombatAbilityImpactService CombatAbilityImpact => FacadeAccessor.Resolve<ICombatAbilityImpactService>();

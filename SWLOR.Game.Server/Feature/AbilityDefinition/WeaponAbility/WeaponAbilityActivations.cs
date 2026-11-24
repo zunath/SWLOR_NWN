@@ -19,14 +19,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
     /// </summary>
     public class WeaponAbilityActivations
     {
-        private ICombatAbilityBonusService CombatAbilityBonus { get; }
+        private ICombatQueuedAbilityBonusService CombatQueuedAbilityBonus { get; }
         private ICombatActivityService CombatActivity { get; }
         private StatusAbilityEffects StatusAbilityEffects { get; }
         private WeaponAbilityDamageModifiers WeaponAbilityDamageModifiers { get; }
 
-        public WeaponAbilityActivations(ICombatAbilityBonusService combatAbilityBonus, ICombatActivityService combatActivity, StatusAbilityEffects statusAbilityEffects, WeaponAbilityDamageModifiers weaponAbilityDamageModifiers)
+        public WeaponAbilityActivations(ICombatQueuedAbilityBonusService combatQueuedAbilityBonus, ICombatActivityService combatActivity, StatusAbilityEffects statusAbilityEffects, WeaponAbilityDamageModifiers weaponAbilityDamageModifiers)
         {
-            CombatAbilityBonus = combatAbilityBonus;
+            CombatQueuedAbilityBonus = combatQueuedAbilityBonus;
             CombatActivity = combatActivity;
             StatusAbilityEffects = statusAbilityEffects;
             WeaponAbilityDamageModifiers = weaponAbilityDamageModifiers;
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
                 CombatActivity.StoreAbilityActivationIdleBonuses(activator, skill);
             WeaponAbilityDamageModifiers.PrepareQueuedActivation(profile, activator, skill);
             if (profile.IsQueuedWeaponAbility)
-                CombatAbilityBonus.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(activator, skill);
+                CombatQueuedAbilityBonus.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(activator, skill);
             return isHostile || isFriendlyTarget || statusEffect == null || StatusAbilityEffects.ToggleSelfStatus(activator, statusEffect);
         }
     }

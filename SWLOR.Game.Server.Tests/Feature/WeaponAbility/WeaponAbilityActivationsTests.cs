@@ -43,7 +43,7 @@ public class WeaponAbilityActivationsTests
         var text = Activate(new WeaponAbilityProfile(), true, false, null, out var result);
 
         result.Should().BeTrue();
-        text.Should().StartWith("AbilityBonus.ClearWeaponAbilityActivationIdleBonuses(Attacker");
+        text.Should().StartWith("QueuedAbilityBonus.ClearWeaponAbilityActivationIdleBonuses(Attacker");
     }
 
     [Test]

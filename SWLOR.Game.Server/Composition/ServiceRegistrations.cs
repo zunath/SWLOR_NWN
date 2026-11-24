@@ -171,9 +171,11 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IBattleGridService, BattleGridService>();
             services.AddSingleton<ICombatAbilityActivationService, CombatAbilityActivationService>();
             services.AddSingleton<ICombatAbilityBonusService, CombatAbilityBonusService>();
+            services.AddSingleton<ICombatQueuedAbilityBonusService, CombatQueuedAbilityBonusService>();
             services.AddSingleton<ICombatAbilityCostEffectsService, CombatAbilityCostEffectsService>();
             services.AddSingleton<ICombatAbilityDefenseEffectsService, CombatAbilityDefenseEffectsService>();
             services.AddSingleton<ICombatAbilityHitService, CombatAbilityHitService>();
+            services.AddSingleton<ICombatAbilityHitAdjustmentService, CombatAbilityHitAdjustmentService>();
             services.AddSingleton<ICombatAbilityImpactService, CombatAbilityImpactService>();
             services.AddSingleton<ICombatAbilityMagnitudeService, CombatAbilityMagnitudeService>();
             services.AddSingleton<ICombatAbilityOffenseEffectsService, CombatAbilityOffenseEffectsService>();
@@ -286,6 +288,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IAIService, AIService>();
             services.AddSingleton<IAICreatureEventService, AICreatureEventService>();
             services.AddSingleton<IAIAggroService, AIAggroService>();
+            services.AddSingleton<IAIDecisionService, AIDecisionService>();
+            services.AddSingleton<IAIActionService, AIActionService>();
             services.AddSingleton<IAIProfileDescription>(provider => provider.GetRequiredService<IAIService>());
             services.AddSingleton<ICombatLeash>(provider => provider.GetRequiredService<IAIService>());
             services.AddSingleton<ICompanionControlStoreService, CompanionControlStoreService>();

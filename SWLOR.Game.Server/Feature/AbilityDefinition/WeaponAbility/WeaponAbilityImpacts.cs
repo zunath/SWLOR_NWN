@@ -22,19 +22,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
         private IAbilityService Ability { get; }
         private IAbilityDamageInputService AbilityDamageInput { get; }
         private IAbilityStatusApplicationService AbilityStatusApplication { get; }
-        private ICombatAbilityHitService CombatAbilityHit { get; }
+        private ICombatAbilityHitAdjustmentService CombatAbilityHitAdjustment { get; }
         private WeaponAbilityDamageModifiers WeaponAbilityDamageModifiers { get; }
         private WeaponAbilityHitRiders WeaponAbilityHitRiders { get; }
         private WeaponAbilityImpactEffects WeaponAbilityImpactEffects { get; }
         private WeaponAbilitySelfEffects WeaponAbilitySelfEffects { get; }
         private IAbilityImpactState IAbilityImpactState { get; }
 
-        public WeaponAbilityImpacts(IAbilityService ability, IAbilityDamageInputService abilityDamageInput, IAbilityStatusApplicationService abilityStatusApplication, ICombatAbilityHitService combatAbilityHit, WeaponAbilityDamageModifiers weaponAbilityDamageModifiers, WeaponAbilityHitRiders weaponAbilityHitRiders, WeaponAbilityImpactEffects weaponAbilityImpactEffects, WeaponAbilitySelfEffects weaponAbilitySelfEffects, IAbilityImpactState abilityImpactState)
+        public WeaponAbilityImpacts(IAbilityService ability, IAbilityDamageInputService abilityDamageInput, IAbilityStatusApplicationService abilityStatusApplication, ICombatAbilityHitAdjustmentService combatAbilityHitAdjustment, WeaponAbilityDamageModifiers weaponAbilityDamageModifiers, WeaponAbilityHitRiders weaponAbilityHitRiders, WeaponAbilityImpactEffects weaponAbilityImpactEffects, WeaponAbilitySelfEffects weaponAbilitySelfEffects, IAbilityImpactState abilityImpactState)
         {
             Ability = ability;
             AbilityDamageInput = abilityDamageInput;
             AbilityStatusApplication = abilityStatusApplication;
-            CombatAbilityHit = combatAbilityHit;
+            CombatAbilityHitAdjustment = combatAbilityHitAdjustment;
             WeaponAbilityDamageModifiers = weaponAbilityDamageModifiers;
             WeaponAbilityHitRiders = weaponAbilityHitRiders;
             WeaponAbilityImpactEffects = weaponAbilityImpactEffects;
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
                         afterSuccessfulHit: impactedTarget =>
                         {
                             WeaponAbilityHitRiders.AfterSuccessfulHit(profile, activator, impactedTarget, AbilityDamageInput.GetWeaponAbilityDamageType(activator, skill, profile.DamageType), spreadSnapshot);
-                            CombatAbilityHit.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
+                            CombatAbilityHitAdjustment.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
                         },
                         beforeSuccessfulImpactRiders: impactedTarget => WeaponAbilityHitRiders.BeforeSuccessfulImpactRiders(profile,
                             activator,
@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
                     afterSuccessfulHit: impactedTarget =>
                     {
                         WeaponAbilityHitRiders.AfterSuccessfulHit(profile, activator, impactedTarget, AbilityDamageInput.GetWeaponAbilityDamageType(activator, skill, profile.DamageType), spreadSnapshot);
-                        CombatAbilityHit.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
+                        CombatAbilityHitAdjustment.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
                     },
                     beforeSuccessfulImpactRiders: impactedTarget => WeaponAbilityHitRiders.BeforeSuccessfulImpactRiders(profile,
                         activator,

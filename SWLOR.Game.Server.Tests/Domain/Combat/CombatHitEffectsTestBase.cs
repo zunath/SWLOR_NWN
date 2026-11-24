@@ -181,8 +181,8 @@ public abstract class CombatHitEffectsTestBase
             });
         var repeatedTarget = ScriptedProxy.Create<ICombatRepeatedTargetService>(out var repeatedTargetCalls);
         repeatedTargetCalls.On(nameof(ICombatRepeatedTargetService.ApplySameTargetPressureDamageEffects), args => Log($"Pressure {string.Join(" ", args)}"));
-        var abilityHit = ScriptedProxy.Create<ICombatAbilityHitService>(out var abilityHitCalls);
-        abilityHitCalls.On(nameof(ICombatAbilityHitService.GetCriticalRateAgainstSunderedTargetAdjustment), _ => _sunderedCritical);
+        var abilityHit = ScriptedProxy.Create<ICombatAbilityHitAdjustmentService>(out var abilityHitCalls);
+        abilityHitCalls.On(nameof(ICombatAbilityHitAdjustmentService.GetCriticalRateAgainstSunderedTargetAdjustment), _ => _sunderedCritical);
         var stat = ScriptedProxy.Create<IStatService>(out var statCalls);
         statCalls
             .On(nameof(IStatService.GetStatAdjustment), args => _stats.GetValueOrDefault(((uint)args[0]!, (StatType)args[1]!)))

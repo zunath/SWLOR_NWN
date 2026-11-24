@@ -37,11 +37,11 @@ public class ConvertedServicesTests
 
         var combat = List.Services.Should().ContainSingle(service => service.Name == "Combat").Subject;
         combat.Domain.Should().Be("Combat");
-        // The ability split added the ability magnitude and the impact geometry; the combat split added the damage roll, the defense memory, the rate modifiers, the repeated-target stacks, the damage taken effects, the damage reflection, the ability activation cost, defense, offense and weapon parts, the dealt effects, the triggered damage, the guarded hit, its effects and the guard retaliation.
+        // The ability split added the ability magnitude and the impact geometry; the combat split added the damage roll, the defense memory, the rate modifiers, the repeated-target stacks, the damage taken effects, the damage reflection, the ability activation cost, defense, offense and weapon parts, the dealt effects, the triggered damage, the guarded hit, its effects and the guard retaliation, the queued ability bonuses and the ability hit adjustments.
         combat.Extras.Select(extra => extra.Name).Should().Equal(
-            "CombatAbilityActivation", "CombatAbilityBonus", "CombatAbilityCostEffects", "CombatAbilityDefenseEffects", "CombatAbilityHit", "CombatAbilityImpact", "CombatAbilityMagnitude", "CombatAbilityOffenseEffects", "CombatAbilityWeaponActivation",
+            "CombatAbilityActivation", "CombatAbilityBonus", "CombatAbilityCostEffects", "CombatAbilityDefenseEffects", "CombatAbilityHit", "CombatAbilityHitAdjustment", "CombatAbilityImpact", "CombatAbilityMagnitude", "CombatAbilityOffenseEffects", "CombatAbilityWeaponActivation",
             "CombatActivity", "CombatAttackTiming", "CombatDamageCatalog", "CombatDamageModifiers", "CombatDamageReflection", "CombatDamageRoll", "CombatDamageTaken", "CombatDamageTakenEffects",
-            "CombatDealtEffects", "CombatDefenseMemory", "CombatFeedback", "CombatGuardRetaliation", "CombatGuardedHit", "CombatGuardedHitEffects", "CombatHitEffects", "CombatImpactGeometry", "CombatQueries", "CombatRateModifiers", "CombatRepeatedTarget",
+            "CombatDealtEffects", "CombatDefenseMemory", "CombatFeedback", "CombatGuardRetaliation", "CombatGuardedHit", "CombatGuardedHitEffects", "CombatHitEffects", "CombatImpactGeometry", "CombatQueries", "CombatQueuedAbilityBonus", "CombatRateModifiers", "CombatRepeatedTarget",
             "CombatResources", "CombatSuppression", "CombatTriggeredDamage");
     }
 

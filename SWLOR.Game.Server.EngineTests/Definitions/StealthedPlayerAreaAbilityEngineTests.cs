@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 var acted = true;
                 await ctx.ExecuteInCreatureContextAsync(tusken,
-                    () => acted = AI.ProcessTrigger(tusken, trigger, OBJECT_INVALID, true));
+                    () => acted = AIDecision.ProcessTrigger(tusken, trigger, OBJECT_INVALID, true));
                 ctx.Assert(!acted, $"the Tusken takes no action on {trigger} with only an undetected player nearby");
                 ctx.Assert(!IsScreechOnRecast(tusken),
                     $"the Tusken does not use Disorienting Screech on {trigger} with only an undetected player nearby");

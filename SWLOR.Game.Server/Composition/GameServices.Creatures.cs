@@ -13,6 +13,12 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The aggro aura handlers, proximity enmity and the stealth detection listener.</summary>
         public static IAIAggroService AIAggro => FacadeAccessor.Resolve<IAIAggroService>();
 
+        /// <summary>The profile engine's decisions: the trigger throttle, the phase, the boss timer and the action cache.</summary>
+        public static IAIDecisionService AIDecision => FacadeAccessor.Resolve<IAIDecisionService>();
+
+        /// <summary>The profile engine's actions: scoring, targeting, the checks and the execution.</summary>
+        public static IAIActionService AIAction => FacadeAccessor.Resolve<IAIActionService>();
+
         /// <summary>The mode, orders and abilities of a controlled companion (the static class <c>CompanionControl</c> until it was removed).</summary>
         public static ICompanionControlService CompanionControl => FacadeAccessor.Resolve<ICompanionControlService>();
 

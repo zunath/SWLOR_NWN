@@ -6,10 +6,10 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Domain.Creatures
 {
     /// <summary>
-    /// Creature AI: the profile tables, the per-creature state and flags, the ally cache, the combat leash and the profile
-    /// decision engine (profiles, per-creature state, action selection). Static callers reach the container's
-    /// instance through <c>GameServices.AI</c>; the creature event handlers are on <see cref="IAICreatureEventService"/>
-    /// and the aggro aura on <see cref="IAIAggroService"/>.
+    /// Creature AI: the profile tables, the per-creature state and flags, the ally cache and the combat leash. Static callers reach the container's
+    /// instance through <c>GameServices.AI</c>; the creature event handlers are on <see cref="IAICreatureEventService"/>,
+    /// the aggro aura on <see cref="IAIAggroService"/> and the decision engine on <see cref="IAIDecisionService"/> and
+    /// <see cref="IAIActionService"/>.
     /// </summary>
     public interface IAIService : IAIProfileDescription, ICombatLeash
     {
@@ -23,11 +23,35 @@ namespace SWLOR.Game.Server.Domain.Creatures
         /// </summary>
         void CreaturePerception();
 
-        bool ProcessTrigger(
-            uint creature,
-            AITriggerType trigger,
-            uint eventTarget = OBJECT_INVALID,
-            bool bypassDecisionThrottle = false);
+        /// <summary>
+        /// The profiles of every profile definition, by type.
+        /// </summary>
+        IReadOnlyDictionary<AIProfileType, AIProfile> Profiles { get; }
+
+        /// <summary>
+        /// The profile a creature uses: the one set on it, or the companion or generic profile its kind implies.
+        /// </summary>
+        AIProfileType GetProfileType(uint creature);
+
+        /// <summary>
+        /// The per-creature state of the engine for a profile; made when the creature has none, and reset when the profile changed.
+        /// </summary>
+        AIState GetState(uint creature, AIProfileType profileType);
+
+        /// <summary>
+        /// The state of a creature the engine has already made one for; false when it has none.
+        /// </summary>
+        bool TryGetState(uint creature, out AIState state);
+
+        /// <summary>
+        /// The creatures a creature may count as its allies: its master's party, or the creatures it has seen of its own faction.
+        /// </summary>
+        IReadOnlyList<uint> BuildAllies(uint creature);
+
+        /// <summary>
+        /// The target selector registered for an ability that its action does not name one for.
+        /// </summary>
+        bool TryGetDefaultTargetSelector(FeatType feat, out AITargetSelector selector);
 
         void SetAIProfile(uint creature, AIProfileType profile);
 
@@ -73,7 +97,5 @@ namespace SWLOR.Game.Server.Domain.Creatures
         /// Forgets the AI state (phase, cooldowns, cached actions) of a creature.
         /// </summary>
         void ClearAIState(uint creature);
-
-        bool TryUseBestTargetedSupportAbility(uint creature, uint target, out string abilityName);
     }
 }

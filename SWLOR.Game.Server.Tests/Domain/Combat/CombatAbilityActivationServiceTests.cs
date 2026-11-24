@@ -200,10 +200,10 @@ public class CombatAbilityActivationServiceTests
             .On(nameof(ICombatAttackTimingService.GrantNextSkillAbilityBonuses), args => Log($"NextSkill {string.Join(" ", args)}"));
         var activity = ScriptedProxy.Create<ICombatActivityService>(out var activityCalls);
         activityCalls.On(nameof(ICombatActivityService.TrackCombatAbilityUse), args => Log($"Track {args[0]} {((AbilityDetail)args[1]!).Name}"));
-        var damageTaken = ScriptedProxy.Create<ICombatDamageTakenService>(out var damageTakenCalls);
+        var damageTaken = ScriptedProxy.Create<ICombatDamageTakenEffectsService>(out var damageTakenCalls);
         damageTakenCalls
-            .On(nameof(ICombatDamageTakenService.ApplyAbilityUsedAttackDeflection), args => Log($"UsedDeflection {string.Join(" ", args)}"))
-            .On(nameof(ICombatDamageTakenService.ApplyAbilityGrantedAttackDeflectionEffects), args => Log($"GrantedDeflection {args[0]} {args[1]}"));
+            .On(nameof(ICombatDamageTakenEffectsService.ApplyAbilityUsedAttackDeflection), args => Log($"UsedDeflection {string.Join(" ", args)}"))
+            .On(nameof(ICombatDamageTakenEffectsService.ApplyAbilityGrantedAttackDeflectionEffects), args => Log($"GrantedDeflection {args[0]} {args[1]}"));
         var stat = ScriptedProxy.Create<IStatService>(out var statCalls);
         statCalls
             .On(nameof(IStatService.GetStatAdjustment), args => _stats.GetValueOrDefault(((uint)args[0]!, (StatType)args[1]!)))
@@ -1629,8 +1629,8 @@ public class CombatAbilityActivationServiceTests
         part.Should().BeOfType<CombatAbilityActivationService>();
         _facades.Get<ICombatAbilityActivationService>().Should().BeSameAs(part);
         const BindingFlags Instance = BindingFlags.NonPublic | BindingFlags.Instance;
-        typeof(CombatAbilityActivationService).GetField("_damageTaken", Instance)!.GetValue(part)
-            .Should().BeSameAs(_facades.Get<ICombatDamageTakenService>());
+        typeof(CombatAbilityActivationService).GetField("_damageTakenEffects", Instance)!.GetValue(part)
+            .Should().BeSameAs(_facades.Get<ICombatDamageTakenEffectsService>());
         typeof(CombatAbilityActivationService).GetField("_combatActivity", Instance)!.GetValue(part)
             .Should().BeSameAs(_facades.Get<ICombatActivityService>());
         typeof(CombatAbilityActivationService).GetFields(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)

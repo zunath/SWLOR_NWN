@@ -395,7 +395,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             StatusEffectCategory Categories(FeatType feat) =>
                 AbilityCatalog.GetAbilityDetail(feat).ResolveImpactStatusCategories(defender);
 
-            GameServices.CombatDamageTaken.ApplyDamageTakenEffects(defender, attacker, 5);
+            GameServices.CombatDamageTakenEffects.ApplyDamageTakenEffects(defender, attacker, 5);
             ctx.AssertEqual((0, 0, 0), GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter1)),
                 "a Katar ability without a Control status does not spend Breaker Reversal");
             ctx.AssertEqual((0, 0, 0), GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter3)),
@@ -405,7 +405,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual((0, 0, 0), GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.JointLock1)),
                 "the bonus is spent once");
 
-            GameServices.CombatDamageTaken.ApplyDamageTakenEffects(defender, attacker, 5);
+            GameServices.CombatDamageTakenEffects.ApplyDamageTakenEffects(defender, attacker, 5);
             GameServices.CombatDamageTaken.TrackGuardedHit(defender);
             ctx.AssertEqual((20, 0, 0), GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter3)),
                 "Guard Counter III after a guarded hit is a control ability for Breaker Reversal");

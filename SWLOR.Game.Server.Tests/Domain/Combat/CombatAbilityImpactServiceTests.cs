@@ -246,8 +246,9 @@ public class CombatAbilityImpactServiceTests
             })
             .On(nameof(ICombatHitEffectsService.SpreadPoisonFromTarget), args => Log($"SpreadPoison {args[0]} {args[1]}"));
         var damageTaken = ScriptedProxy.Create<ICombatDamageTakenService>(out var damageTakenCalls);
+        var damageTakenEffects = ScriptedProxy.Create<ICombatDamageTakenEffectsService>(out var damageTakenEffectsCalls);
+        damageTakenEffectsCalls.On(nameof(ICombatDamageTakenEffectsService.ApplyAbilityGrantedAttackDeflectionEffects), args => Log($"GrantedDeflection {args[0]} {args[1]}"));
         damageTakenCalls
-            .On(nameof(ICombatDamageTakenService.ApplyAbilityGrantedAttackDeflectionEffects), args => Log($"GrantedDeflection {args[0]} {args[1]}"))
             .On(nameof(ICombatDamageTakenService.ConsumeGuardedHitNextSkillAbilityExposedDamageBonus), args =>
             {
                 _log.Add($"GuardedBonus {args[0]} {args[1]}");
@@ -360,7 +361,7 @@ public class CombatAbilityImpactServiceTests
             return default(CombatRecordAttributionScope);
         });
 
-        return new CombatAbilityImpactService(queries, resources, timing, activity, hitEffects, damageTaken, stat, statusEffect,
+        return new CombatAbilityImpactService(queries, resources, timing, activity, hitEffects, damageTaken, damageTakenEffects, stat, statusEffect,
             statusApplication, statusDuration, temporary, ability, enmity, _partyProxy, recorder, pairedRangedTraits);
     }
 

@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // them back up well before the 4-second cast would finish.
                 ApplyEffectToObject(DurationType.Instant, EffectDeath(), caster);
                 await ctx.WaitUntilAsync(() => GetIsDead(caster), 5f, "the caster to die");
-                GameServices.CombatDamageTaken.ApplyDamageTakenEffects(caster, attacker, 50);
+                GameServices.CombatDamageTakenEffects.ApplyDamageTakenEffects(caster, attacker, 50);
                 ApplyEffectToObject(DurationType.Instant, EffectResurrection(), caster);
                 await ctx.WaitUntilAsync(() => !GetIsDead(caster), 2f, "the caster to be back up");
 

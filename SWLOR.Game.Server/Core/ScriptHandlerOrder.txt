@@ -345,7 +345,7 @@ crea_convo_bef
 
 crea_damaged_aft
   action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureDamaged
-  action      SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService.ApplyDamageTakenEffects
+  action      SWLOR.Game.Server.Domain.Combat.CombatDamageTakenEffectsService.ApplyDamageTakenEffects
   action      SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.OnDirectDamageApplied
   action      SWLOR.Game.Server.Domain.Quests.QuestEncounterService.TrackEncounterActivity
 

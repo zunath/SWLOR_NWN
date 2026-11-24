@@ -194,7 +194,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             TemporaryStatModifier.Add(caster, StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment, 10, 45f);
             TemporaryStatModifier.Add(caster, StatType.AreaAbilityAfterDeflectionWindowSeconds, 30, 45f);
-            GameServices.CombatDamageTaken.TrackDeflection(caster, DeflectionSource.Ranged);
+            GameServices.CombatDamageTakenEffects.TrackDeflection(caster, DeflectionSource.Ranged);
             foreach (var skill in new[] { SkillType.Force, SkillType.Saberstaff, SkillType.TwinBlade, SkillType.Mimicry })
             {
                 ctx.AssertEqual(110, GameServices.CombatDamageModifiers.ApplyAreaAbilityAfterDeflectionDamageModifier(caster, skill, 100, true), $"Tempest Focus boosts {skill} areas");
@@ -611,8 +611,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             StatusEffectApplication.ApplyStatusEffect(beast, beast, new EvasiveChallenge1SelfStatusEffect(), 30f);
             var effect = StatusEffect.GetStatusEffect(beast, typeof(EvasiveChallenge1SelfStatusEffect));
             var duration = effect.DurationTicks;
-            GameServices.CombatDamageTaken.TrackAvoidedAttack(beast, attacker);
-            GameServices.CombatDamageTaken.TrackAvoidedAttack(beast, attacker);
+            GameServices.CombatDamageTakenEffects.TrackAvoidedAttack(beast, attacker);
+            GameServices.CombatDamageTakenEffects.TrackAvoidedAttack(beast, attacker);
             ctx.AssertEqual(startingStamina + 1, Stat.GetCurrentStamina(beast), "only the first evasion restores stamina");
             ctx.AssertEqual(8, Stat.GetStatAdjustment(beast, StatType.EvasionPercentAdjustment), "evasion remains after the refund");
             ctx.Assert(ReferenceEquals(effect, StatusEffect.GetStatusEffect(beast, typeof(EvasiveChallenge1SelfStatusEffect))), "original status instance remains active");

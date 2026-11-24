@@ -37,6 +37,12 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>How Force affinity and combat readiness scale an ability's magnitude, a part of combat.</summary>
         public static ICombatAbilityMagnitudeService CombatAbilityMagnitude => FacadeAccessor.Resolve<ICombatAbilityMagnitudeService>();
 
+        /// <summary>The offense riders of an ability activation (movement speed, area rewards, Force Attack, sequence, resource restore), a part of combat.</summary>
+        public static ICombatAbilityOffenseEffectsService CombatAbilityOffenseEffects => FacadeAccessor.Resolve<ICombatAbilityOffenseEffectsService>();
+
+        /// <summary>The weapon family riders of an ability activation (Heavy Vibroblade, Beast, Vibroknife, Pistol, Lightsaber), a part of combat.</summary>
+        public static ICombatAbilityWeaponActivationService CombatAbilityWeaponActivation => FacadeAccessor.Resolve<ICombatAbilityWeaponActivationService>();
+
         /// <summary>The combat activity records, a part of combat.</summary>
         public static ICombatActivityService CombatActivity => FacadeAccessor.Resolve<ICombatActivityService>();
 

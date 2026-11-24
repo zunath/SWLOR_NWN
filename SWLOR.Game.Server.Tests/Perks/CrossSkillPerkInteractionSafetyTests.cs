@@ -416,7 +416,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
             .Should().Contain("ApplyAbilityRestoredFPEffects(creature)",
                 "Energized Forms must trigger when Conduit restores FP");
 
-        var hostileRestore = ExtractMethod(combat, "private static void ApplyHostileAbilityResourceRestoreEffects(");
+        var hostileRestore = ExtractMethod(combat, "static void ApplyHostileAbilityResourceRestoreEffects(");
         hostileRestore.Should().Contain("var restoredFP =");
         hostileRestore.Should().Contain("var restoredStamina =");
         hostileRestore.Should().Contain("if (restoredFP > 0)");

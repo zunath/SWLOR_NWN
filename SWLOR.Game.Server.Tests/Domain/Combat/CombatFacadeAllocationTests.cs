@@ -1228,7 +1228,7 @@ public class CombatFacadeAllocationTests
                 ("ApplyAbilityActivatedEffects(no ability)", () => part.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.DoubleShot1, null!, abilities.Single), () => GameServices.CombatAbilityActivation.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.DoubleShot1, null!, abilities.Single)),
                 ("ApplyHitPointSpendAbilityEffects", () => FacadeContainer.Current.Get<ICombatAbilityCostEffectsService>().ApplyHitPointSpendAbilityEffects(Attacker, 10, 12), () => GameServices.CombatAbilityCostEffects.ApplyHitPointSpendAbilityEffects(Attacker, 10, 12)),
                 ("ApplyHitPointSpendAbilityEffects(0)", () => FacadeContainer.Current.Get<ICombatAbilityCostEffectsService>().ApplyHitPointSpendAbilityEffects(Attacker, 0), () => GameServices.CombatAbilityCostEffects.ApplyHitPointSpendAbilityEffects(Attacker, 0)),
-                ("ForgetActivationState", () => part.ForgetActivationState(Attacker), () => GameServices.CombatAbilityActivation.ForgetActivationState(Attacker)),
+                ("ForgetActivationState", () => FacadeContainer.Current.Get<ICombatAbilityOffenseEffectsService>().ForgetActivationState(Attacker), () => GameServices.CombatAbilityOffenseEffects.ForgetActivationState(Attacker)),
             };
 
             foreach (var (name, own, forwarder) in reads)

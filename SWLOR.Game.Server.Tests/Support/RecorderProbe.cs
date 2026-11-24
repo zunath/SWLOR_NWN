@@ -16,10 +16,19 @@ internal sealed partial class RecorderProbe : CombatRecorderService
     private readonly string _logDirectory;
 
     public RecorderProbe(IDMPresenceService presence, IDBService db, string logDirectory)
-        : base(presence, db, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatQueriesService>())
+        : this(new RecorderProbeCore(), presence, db, logDirectory)
     {
+    }
+
+    private RecorderProbe(RecorderProbeCore core, IDMPresenceService presence, IDBService db, string logDirectory)
+        : base(core, presence, db, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatQueriesService>())
+    {
+        Core = core;
         _logDirectory = logDirectory;
     }
+
+    /// <summary>The session the recorder writes through, which the native hooks open their scopes on.</summary>
+    public RecorderProbeCore Core { get; }
 
     public int Hooks { get; private set; }
     public Exception? HookFailure { get; set; }
@@ -29,10 +38,19 @@ internal sealed partial class RecorderProbe : CombatRecorderService
     public Dictionary<uint, int> Stamina { get; } = new();
     public Dictionary<uint, int> HitPoints { get; } = new();
     public Dictionary<uint, CombatRecordTemporaryHitPointPool[]> Pools { get; } = new();
-    public List<string> WriteLines { get; } = new();
+    public List<string> WriteLines => Core.WriteLines;
     public ScheduledTask? Scheduled { get; private set; }
-    public ulong Frame { get; set; }
-    public long Millis { get; set; } = 1_700_000_000_000;
+    public ulong Frame
+    {
+        get => Core.Frame;
+        set => Core.Frame = value;
+    }
+
+    public long Millis
+    {
+        get => Core.Millis;
+        set => Core.Millis = value;
+    }
 
     protected override void InstallEffectHooks()
     {
@@ -61,8 +79,4 @@ internal sealed partial class RecorderProbe : CombatRecorderService
         Scheduled = new ScheduledTask(task);
         return Scheduled;
     }
-
-    protected override void WriteLog(LogGroup group, string details, bool printToConsole = false) => WriteLines.Add(details);
-    protected override ulong CurrentFrame() => Frame;
-    protected override long UnixTimeMilliseconds() => Millis;
 }

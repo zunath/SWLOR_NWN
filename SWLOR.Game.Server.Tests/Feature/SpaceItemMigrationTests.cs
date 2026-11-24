@@ -465,12 +465,23 @@ public class SpaceItemMigrationTests
         var removal = board[board.IndexOf("public static string RemoveRewardItem(uint player, int index)", StringComparison.Ordinal)..];
         removal = removal[..removal.IndexOf("public static string DeleteDraft(", StringComparison.Ordinal)];
         removal.Should().NotContain("GrantCarriedEntitlements(", "a removed reward is claimed through the delivery checkpoint, which grants them");
-        var moved = removal.IndexOf("delivery.Items.Add(rewardItem);", StringComparison.Ordinal);
-        moved.Should().BeGreaterThan(0);
-        removal.IndexOf("DB.Set(delivery);", moved, StringComparison.Ordinal)
-            .Should().BeLessThan(removal.IndexOf("draft.RewardItems.RemoveAt(index);", StringComparison.Ordinal), "the delivery holds the item before the draft lets it go");
+        var mark = removal.IndexOf("rewardItem.RemovalId = Guid.NewGuid().ToString();\n            DB.Set(draft);", StringComparison.Ordinal);
+        mark.Should().BeGreaterThan(0, "the removal is marked on the draft before either record changes");
+        removal.IndexOf("var delivery = FinishRewardRemoval(draft, rewardItem);", StringComparison.Ordinal).Should().BeGreaterThan(mark);
         removal.IndexOf("ClaimDeliveries(player, SaveCharacterOrThrow, delivery.Id);", StringComparison.Ordinal)
-            .Should().BeGreaterThan(removal.IndexOf("DB.Set(draft);", StringComparison.Ordinal));
+            .Should().BeGreaterThan(removal.IndexOf("var delivery = FinishRewardRemoval(draft, rewardItem);", StringComparison.Ordinal));
+
+        var finish = board[board.IndexOf("private static QuestContractDelivery FinishRewardRemoval(", StringComparison.Ordinal)..];
+        finish = finish[..finish.IndexOf("return delivery;", StringComparison.Ordinal)];
+        finish.IndexOf("if (!delivery.Items.Any(x => string.Equals(x.RemovalId, rewardItem.RemovalId, StringComparison.Ordinal)))", StringComparison.Ordinal)
+            .Should().BeInRange(0, finish.IndexOf("delivery.Items.Add(rewardItem);", StringComparison.Ordinal), "a repeated move gives the delivery the item once");
+        finish.IndexOf("DB.Set(delivery);", StringComparison.Ordinal)
+            .Should().BeLessThan(finish.IndexOf("draft.RewardItems.Remove(rewardItem);", StringComparison.Ordinal), "the delivery holds the item before the draft lets it go");
+        board[board.IndexOf("public static QuestContract GetDraft(uint player)", StringComparison.Ordinal)..]
+            .Should().Contain("SettleRewardRemovals(draft);", "a removal a restart interrupted is finished before the draft is used");
+        claim = board[board.IndexOf("private static void ClaimDeliveries(uint player, Action saveCharacter, string onlyDeliveryId = null)", StringComparison.Ordinal)..];
+        claim.IndexOf("GetDraft(player);", StringComparison.Ordinal)
+            .Should().BeInRange(0, claim.IndexOf("var deliveries = ReadDeliveries(query)", StringComparison.Ordinal), "and before any delivery is claimed");
         board.Should().Contain("GiveGoldToCreature(player, item.RetiredSpaceCredits);")
             .And.Contain("unlocked |= dbPlayer.UnlockedHullDesigns.TryAdd(design, DateTime.UtcNow);");
 

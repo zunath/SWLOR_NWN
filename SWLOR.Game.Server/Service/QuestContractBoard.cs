@@ -180,9 +180,10 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the player's existing Draft contract, or null if they don't have one. This is a
-        /// read-only lookup: it never creates or persists a draft, so opening the editor to look around
-        /// does not leave an empty draft cluttering the player's contract list.
+        /// Retrieves the player's existing Draft contract, or null if they don't have one. This lookup
+        /// never creates a draft, so opening the editor to look around does not leave an empty draft
+        /// cluttering the player's contract list. It only writes to finish a reward removal a restart
+        /// interrupted (<see cref="SettleRewardRemovals"/>).
         /// </summary>
         public static QuestContract GetDraft(uint player)
         {
@@ -191,7 +192,45 @@ namespace SWLOR.Game.Server.Service
                 .AddFieldSearch(nameof(QuestContract.AuthorPlayerId), playerId, false)
                 .AddFieldSearch(nameof(QuestContract.Status), (int)QuestContractStatus.Draft);
 
-            return DB.Search(query).FirstOrDefault();
+            var draft = DB.Search(query).FirstOrDefault();
+            SettleRewardRemovals(draft);
+            return draft;
+        }
+
+        /// <summary>
+        /// Finishes every reward removal a restart left marked on the draft (<see cref="QuestContractItem.RemovalId"/>): the
+        /// delivery gets the item unless it already holds that removal, and the draft lets it go. Runs before the draft or
+        /// the author's deliveries are used, so the reward is never claimable from both.
+        /// </summary>
+        private static void SettleRewardRemovals(QuestContract draft)
+        {
+            if (draft == null)
+                return;
+
+            foreach (var item in draft.RewardItems.Where(x => !string.IsNullOrWhiteSpace(x.RemovalId)).ToList())
+            {
+                var delivery = FinishRewardRemoval(draft, item);
+                Log.Write(LogGroup.QuestContract, $"Finished the removal of reward item '{item.Name}' from contract draft '{draft.Id}' into delivery '{delivery.Id}' after a restart.");
+            }
+        }
+
+        /// <summary>
+        /// Moves a reward whose removal is marked on the draft into the author's pending delivery once, then saves the draft
+        /// without it. Safe to repeat: a delivery that already holds the removal is not given the item again.
+        /// </summary>
+        private static QuestContractDelivery FinishRewardRemoval(QuestContract draft, QuestContractItem rewardItem)
+        {
+            // Claimed at once (RemoveRewardItem) or before any claim (ClaimDeliveries settles first), so the author is not told a delivery is waiting.
+            var delivery = GetOrCreatePendingDelivery(draft.AuthorPlayerId, draft.Id, draft.Title, false);
+            if (!delivery.Items.Any(x => string.Equals(x.RemovalId, rewardItem.RemovalId, StringComparison.Ordinal)))
+            {
+                delivery.Items.Add(rewardItem);
+                DB.Set(delivery);
+            }
+
+            draft.RewardItems.Remove(rewardItem);
+            DB.Set(draft);
+            return delivery;
         }
 
         /// <summary>
@@ -287,12 +326,11 @@ namespace SWLOR.Game.Server.Service
             if (!fits)
                 return "The item could not be returned to your inventory. Make room and try again.";
 
-            // Claimed at once below, so the author is not told a delivery is waiting.
-            var delivery = GetOrCreatePendingDelivery(draft.AuthorPlayerId, draft.Id, draft.Title, false);
-            delivery.Items.Add(rewardItem);
-            DB.Set(delivery);
-            draft.RewardItems.RemoveAt(index);
+            // The removal is marked on the draft first, so a restart between the delivery and the draft finishes the move
+            // once (SettleRewardRemovals) instead of leaving the reward in both.
+            rewardItem.RemovalId = Guid.NewGuid().ToString();
             DB.Set(draft);
+            var delivery = FinishRewardRemoval(draft, rewardItem);
 
             Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{draft.AuthorPlayerId}] removed reward item '{rewardItem.Name}' from contract draft '{draft.Id}' into delivery '{delivery.Id}'.");
             ClaimDeliveries(player, SaveCharacterOrThrow, delivery.Id);
@@ -632,6 +670,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void ClaimDeliveries(uint player, Action saveCharacter, string onlyDeliveryId = null)
         {
+            // A reward removal a restart interrupted is finished first, so its reward is claimable from the delivery only.
+            GetDraft(player);
             var playerId = GetObjectUUID(player);
             var query = new DBQuery<QuestContractDelivery>()
                 .AddFieldSearch(nameof(QuestContractDelivery.PlayerId), playerId, false);

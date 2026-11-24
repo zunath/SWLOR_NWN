@@ -29,5 +29,11 @@ namespace SWLOR.Game.Server.Service.QuestContractService
         /// unlocked for whoever claims it. Null when none.
         /// </summary>
         public List<string> HullDesigns { get; set; }
+
+        /// <summary>
+        /// Names the author's removal of this reward from their draft while it moves to a pending delivery, saved on the draft
+        /// first and carried into the delivery, so a restart between the two records finishes the move once. Empty otherwise.
+        /// </summary>
+        public string RemovalId { get; set; }
     }
 }

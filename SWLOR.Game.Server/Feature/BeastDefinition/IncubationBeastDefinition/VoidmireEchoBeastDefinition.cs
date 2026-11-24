@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Voidmire Echo")
                 .Appearance(AppearanceType.OozeBlackPuddingMediumHalfscan)
                 .AppearanceScale(1f)
-                .SoundSetId(255)
+                .SoundSetId(852)
                 .PortraitId(2246)
                 .CombatStats(AbilityType.Agility, AbilityType.Willpower)
                 .Role(BeastRoleType.Force)

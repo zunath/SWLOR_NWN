@@ -48,6 +48,7 @@ public class CombatPartForwardingTests
         typeof(ICombatHitEffectsService),
         typeof(ICombatTriggeredDamageService),
         typeof(ICombatQueriesService),
+        typeof(ICombatRecordAbilityService),
         typeof(ICombatResourcesService),
         typeof(ICombatService),
         typeof(ICombatSuppressionService),
@@ -138,6 +139,14 @@ public class CombatPartForwardingTests
     [TestCase(typeof(ICombatDamageRollService), "CalculateDamage(deltaCap=0)")]
     public void TheMovedServiceDefaultsKeepTheirValues(Type part, string expected) =>
         AssertMovedDefaults(part, expected, 1, typeof(ICombatDamageRollService));
+
+    // The members of the ability records part of the recorder that have default arguments, with the defaults they had on the
+    // recorder, on the interface and the instance class alike.
+    [TestCase(typeof(ICombatRecordAbilityService), "RecordAbilityCast(isToggleOff=False)")]
+    [TestCase(typeof(ICombatRecordAbilityService), "RecordAbilityInterrupted(damagedBy=2130706432)")]
+    [TestCase(typeof(ICombatRecordAbilityService), "BeginAbilityCost(feat=Invalid)")]
+    public void TheMovedRecordAbilityDefaultsKeepTheirValues(Type part, string expected) =>
+        AssertMovedDefaults(part, expected, 3, typeof(ICombatRecordAbilityService));
 
     private static string Defaults(MethodInfo method) => $"{method.Name}(" + string.Join(", ", method.GetParameters()
         .Where(parameter => parameter.HasDefaultValue)

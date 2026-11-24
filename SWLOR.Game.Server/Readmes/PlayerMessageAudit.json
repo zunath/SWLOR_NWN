@@ -2759,7 +2759,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/AbilityDefinition/WeaponAbility/StatusAbilityEffects.cs",
-    "Line": 44,
+    "Line": 46,
     "Member": "ToggleSelfStatus",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"{StatusEffectCatalog.GetStatusEffectName(type)} deactivated.\")"

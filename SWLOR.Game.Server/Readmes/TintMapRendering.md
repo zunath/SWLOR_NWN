@@ -94,9 +94,12 @@ model, material and layer; other head accessories keep the outfit fallback.
 Its `COLOR` is a palette index (0-175) or a packed `TintMapColor` RGB value.
 
 Head color maps use BC1, normals use BC5, scalar masks/specularity use BC4 and
-two-channel masks use BC5. Ordinary maps retain full mip chains. Packed shade
-and categorical-layer maps retain a single BC5 level with `mipmap 0`, preventing
-interpolation of category IDs. Dimensions are powers of two. Authored head maps
+two-channel masks use BC5. Ordinary maps retain full mip chains. Newly authored
+packed shade/category maps retain a single BC5 level with `mipmap 0`. Shared
+legacy masks can retain mip chains; head shaders fetch their categorical layer
+IDs unfiltered from level 0, separately from shade filtering, matching native
+tint shaders and preventing anisotropic dye-boundary contamination. Dimensions
+are powers of two. Authored head maps
 are DDS; all head profiles reuse the existing shared `plt_palette` resource
 without a head-specific palette copy or TGA exception. Texture roles and codecs
 are recorded and checked in the head manifest. Changed playable

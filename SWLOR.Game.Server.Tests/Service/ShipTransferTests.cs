@@ -371,7 +371,10 @@ public class ShipTransferTests
         source.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleInterruptedPayment()");
         var settle = ExtractMethod(source, "public static void SettleInterruptedPayment(");
         AssertInOrder(settle, "payment.IsSettledBy(DB.Get<ShipTransferReceipt>(payment.Id), DB.Get<PlayerShip>(payment.ShipId))",
-            "GiveGoldToCreature(player, payment.Credits);", "RetirePayment(player, payment.Id);");
+            "var refunded = CheckpointedChange.Run(", "GiveGoldToCreature(player, payment.Credits);", "ObjectPlugin.DeleteString(player, PaymentVariable);",
+            "() => CharacterCheckpoint.Save(player),", "AssignCommand(player, () => TakeGoldFromCreature(credits, player, true));",
+            "ObjectPlugin.SetString(player, PaymentVariable, payment.Serialize(), true);", "if (!refunded)", "return;",
+            "RetirePayment(player, payment.Id);");
     }
 
     private static void AssertInOrder(string source, params string[] parts)

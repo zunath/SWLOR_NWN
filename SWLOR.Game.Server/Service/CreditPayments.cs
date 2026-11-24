@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.TournamentService;
 using SWLOR.Game.Server.Service.TransferService;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.Game.Server.Service.TransferService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -203,20 +202,43 @@ namespace SWLOR.Game.Server.Service
             var receipts = LoadReceipts(GetObjectUUID(player));
             if (mark != null)
             {
-                if (!mark.KeepsPayment(GetRecordPaymentId(player, mark), receipts.Any(x => x.Id == mark.Id)))
+                var refund = !mark.KeepsPayment(GetRecordPaymentId(player, mark), receipts.Any(x => x.Id == mark.Id));
+
+                // The cleared mark and any credits returned reach the character file together. A failed save takes the
+                // credits back and puts the mark back, so they cannot be spent and then returned again after a restart,
+                // and the receipts stay for the next login.
+                var settled = CheckpointedChange.Run(
+                    () =>
+                    {
+                        if (refund)
+                            GiveGoldToCreature(player, mark.Credits);
+                        ObjectPlugin.DeleteString(player, MarkVariable);
+                        return true;
+                    },
+                    () => CharacterCheckpoint.Save(player),
+                    () =>
+                    {
+                        // TakeGoldFromCreature does nothing from the module, so the player's own queue takes it.
+                        if (refund)
+                        {
+                            var credits = mark.Credits;
+                            AssignCommand(player, () => TakeGoldFromCreature(credits, player, true));
+                        }
+                        ObjectPlugin.SetString(player, MarkVariable, mark.Serialize(), true);
+                    });
+                if (!settled)
                 {
-                    GiveGoldToCreature(player, mark.Credits);
+                    Log.Write(LogGroup.Space, $"CREDIT PAYMENT NOT SETTLED - {PlayerName.GetAuditName(player)} - {mark.Kind} {mark.RecordId} - the character could not be saved; it settles at the next login");
+                    return;
+                }
+
+                if (refund)
+                {
                     var credits = mark.Credits;
                     DelayCommand(6f, () => SendMessageToPC(player, ColorToken.Red(
                         $"A restart interrupted a payment of {credits} credits before what it paid for was saved. The credits were returned.")));
                     Log.Write(LogGroup.Space, $"CREDIT PAYMENT RETURNED - {PlayerName.GetAuditName(player)} - {mark.Kind} {mark.RecordId} - {mark.Credits} credits whose change a restart never saved");
                 }
-
-                // The cleared mark (and any credits returned) reach the character file at once. Until the file holds them the
-                // receipts stay, so a restart before the save finds the old mark and its receipt, and pays nothing twice.
-                ObjectPlugin.DeleteString(player, MarkVariable);
-                if (!CharacterCheckpoint.Save(player))
-                    return;
             }
 
             // After the cleared mark is saved: a restart before this leaves the receipts for the next login, which has no mark to settle.

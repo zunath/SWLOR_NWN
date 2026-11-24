@@ -95,8 +95,11 @@ public class CreditPaymentTests
             "CreditPaymentMark.PaysPendingFounding(mark, station.PendingPaymentId)", "UndoStationFounding(station, OBJECT_INVALID);");
         var settle = Method(payments, "public static void SettleInterruptedPayment(");
         InOrder(settle, "SettlePendingFoundings(player, mark);", "var receipts = LoadReceipts(GetObjectUUID(player));",
-            "if (!mark.KeepsPayment(GetRecordPaymentId(player, mark), receipts.Any(x => x.Id == mark.Id)))",
-            "GiveGoldToCreature(player, mark.Credits);", "if (!CharacterCheckpoint.Save(player))", "DB.Delete<CreditPaymentReceipt>(receipt.Id);");
+            "var refund = !mark.KeepsPayment(GetRecordPaymentId(player, mark), receipts.Any(x => x.Id == mark.Id));",
+            "var settled = CheckpointedChange.Run(", "GiveGoldToCreature(player, mark.Credits);", "ObjectPlugin.DeleteString(player, MarkVariable);",
+            "() => CharacterCheckpoint.Save(player),", "AssignCommand(player, () => TakeGoldFromCreature(credits, player, true));",
+            "ObjectPlugin.SetString(player, MarkVariable, mark.Serialize(), true);", "if (!settled)", "return;",
+            "DB.Delete<CreditPaymentReceipt>(receipt.Id);");
         payments.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void SettleInterruptedPayment()");
     }
 

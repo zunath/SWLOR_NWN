@@ -777,7 +777,29 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                GiveGoldToCreature(player, payment.Credits);
+                // The returned credits and the cleared mark reach the character file together. A failed save takes the
+                // credits back and puts the mark back, so they cannot be spent and then returned again after a restart.
+                var refunded = CheckpointedChange.Run(
+                    () =>
+                    {
+                        GiveGoldToCreature(player, payment.Credits);
+                        ObjectPlugin.DeleteString(player, PaymentVariable);
+                        return true;
+                    },
+                    () => CharacterCheckpoint.Save(player),
+                    () =>
+                    {
+                        // TakeGoldFromCreature does nothing from the module, so the player's own queue takes it.
+                        var credits = payment.Credits;
+                        AssignCommand(player, () => TakeGoldFromCreature(credits, player, true));
+                        ObjectPlugin.SetString(player, PaymentVariable, payment.Serialize(), true);
+                    });
+                if (!refunded)
+                {
+                    Log.Write(LogGroup.Property, $"Could not save {PlayerName.GetAuditName(player)} to return ship {payment.ShipId} payment {payment.Id}; it is returned at the next login.");
+                    return;
+                }
+
                 var credits = payment.Credits;
                 DelayCommand(6f, () => SendMessageToPC(player, ColorToken.Red(
                     $"A restart stopped a ship from changing hands after you paid {credits} credits for it. The credits were returned.")));

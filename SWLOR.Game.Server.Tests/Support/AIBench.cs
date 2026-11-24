@@ -69,8 +69,8 @@ public sealed class AIBench : IDisposable
 
     // One accessor per part of the AI split (Readmes/MaintainabilityRefactorCreaturesSplit.md). Each is the one instance until
     // its part moves; the tests call the accessor of the part that owns the member.
-    public TestAIService Events => Service.Events;
-    public TestAIService Aggro => Service.Aggro;
+    public TestAICreatureEventService Events => Service.Events;
+    public TestAIAggroService Aggro => Service.Aggro;
     public TestAIService Decision => Service.Decision;
     public TestAIService Action => Service.Action;
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -5,9 +6,10 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Domain.Creatures
 {
     /// <summary>
-    /// Creature AI: the creature event entry points, the combat leash, the aggro aura, the ally cache and the profile
+    /// Creature AI: the profile tables, the per-creature state and flags, the ally cache, the combat leash and the profile
     /// decision engine (profiles, per-creature state, action selection). Static callers reach the container's
-    /// instance through <c>GameServices.AI</c>; the event handlers are on <see cref="AIService"/>.
+    /// instance through <c>GameServices.AI</c>; the creature event handlers are on <see cref="IAICreatureEventService"/>
+    /// and the aggro aura on <see cref="IAIAggroService"/>.
     /// </summary>
     public interface IAIService : IAIProfileDescription, ICombatLeash
     {
@@ -17,85 +19,9 @@ namespace SWLOR.Game.Server.Domain.Creatures
         void CacheAIData();
 
         /// <summary>
-        /// After a DM toggles the AI of a creature off, its AI state is cleared.
-        /// </summary>
-        void DMToggleAIAfter();
-
-        /// <summary>
-        /// Entry point for creature heartbeat logic.
-        /// </summary>
-        void CreatureHeartbeat();
-
-        /// <summary>
         /// Entry point for creature perception logic.
         /// </summary>
         void CreaturePerception();
-
-        /// <summary>
-        /// Entry point for creature combat round end logic.
-        /// </summary>
-        void CreatureCombatRoundEnd();
-
-        /// <summary>
-        /// Entry point for creature conversation logic.
-        /// </summary>
-        void CreatureConversation();
-
-        /// <summary>
-        /// Entry point for creature physical attacked logic
-        /// </summary>
-        void CreaturePhysicalAttacked();
-
-        /// <summary>
-        /// Entry point for creature damaged logic
-        /// </summary>
-        void CreatureDamaged();
-
-        /// <summary>
-        /// Entry point for creature death logic
-        /// </summary>
-        void CreatureDeath();
-
-        /// <summary>
-        /// Entry point for creature disturbed logic
-        /// </summary>
-        void CreatureDisturbed();
-
-        /// <summary>
-        /// Entry point for creature spawn logic
-        /// </summary>
-        void CreatureSpawn();
-
-        /// <summary>
-        /// Entry point for creature rested logic
-        /// </summary>
-        void CreatureRested();
-
-        /// <summary>
-        /// Entry point for creature spell cast at logic
-        /// </summary>
-        void CreatureSpellCastAt();
-
-        /// <summary>
-        /// Entry point for creature user defined logic
-        /// </summary>
-        void CreatureUserDefined();
-
-        /// <summary>
-        /// Entry point for creature blocked logic
-        /// </summary>
-        void CreatureBlocked();
-
-        /// <summary>
-        /// When a creature enters the aggro aura of another creature, increase their enmity and start the aggro process.
-        /// Invisible creatures do not trigger this.
-        /// </summary>
-        void CreatureAggroEnter();
-
-        /// <summary>
-        /// When a creature exits the aggro aura of another creature,
-        /// </summary>
-        void CreatureAggroExit();
 
         bool ProcessTrigger(
             uint creature,
@@ -111,6 +37,23 @@ namespace SWLOR.Game.Server.Domain.Creatures
         /// When the creature dies or is destroyed, remove it from all caches.
         /// </summary>
         void RemoveFromAlliesCache();
+
+        /// <summary>
+        /// The creatures a creature has seen of its own faction.
+        /// </summary>
+        bool TryGetAllies(uint creature, out HashSet<uint> allies);
+
+        /// <summary>
+        /// When a creature's heartbeat fires, if they have the RandomWalk or ReturnHome AI flag,
+        /// and they are not currently preoccupied (combat, talking, etc.) force them to randomly walk or return home if they are too far away.
+        /// </summary>
+        void ProcessFlags();
+
+        /// <summary>
+        /// Starts the combat leash evade when the target is beyond the leash.
+        /// </summary>
+        /// <returns>true if the creature is evading or began to, false if the leash does not apply.</returns>
+        bool TryStartLeashEvade(uint creature, uint target);
 
         /// <summary>
         /// Sets a set of AI flags onto a particular creature as a local variable.

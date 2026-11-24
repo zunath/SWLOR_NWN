@@ -9,18 +9,27 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
-// Seams that more than one part calls: the highest enmity target (the aggro, event and decision code), the attack command (events, leash, decision and action code) and the movement rate (the creature spawn and the leash).
+// Seams that more than one part calls: the highest enmity target (the aggro, event, leash and decision code), the attack command (events, aggro, leash, decision and action code) and the movement rate (the creature spawn and the leash). The model answers them for every part.
 public sealed partial class TestAIService
 {
-    protected override uint GetHighestEnmityTarget(uint enemy) =>
+    /// <summary>The highest enmity target the model holds for an enemy, or the invalid object.</summary>
+    public uint HighestEnmityTarget(uint enemy) =>
         Tables.TryGetValue(enemy, out var table) && table.Count > 0 ? table.MaxBy(entry => entry.Value).Key : AIBench.Invalid;
 
-    protected override void AttackHighestEnmityTarget(uint creature)
+    /// <summary>Records the attack on the highest enmity target, as <c>AttackHighestEnmityTarget</c> does in every part.</summary>
+    public void AttackHighest(uint creature)
     {
         _bench.Engine.Note($"AttackHighestEnmityTarget({creature})");
-        Attacked[creature] = GetHighestEnmityTarget(creature);
+        Attacked[creature] = HighestEnmityTarget(creature);
     }
 
-    protected override void ApplyCreatureMovementRate(uint creature) =>
+    /// <summary>Records the movement rate reset, as <c>ApplyCreatureMovementRate</c> does in every part.</summary>
+    public void RecordMovementRate(uint creature) =>
         _bench.Engine.Note($"ApplyCreatureMovementRate({creature})");
+
+    protected override uint GetHighestEnmityTarget(uint enemy) => HighestEnmityTarget(enemy);
+
+    protected override void AttackHighestEnmityTarget(uint creature) => AttackHighest(creature);
+
+    protected override void ApplyCreatureMovementRate(uint creature) => RecordMovementRate(creature);
 }

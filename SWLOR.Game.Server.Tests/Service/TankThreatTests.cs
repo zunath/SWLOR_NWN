@@ -228,11 +228,13 @@ public class TankThreatTests
     {
         var guarding = new GuardingBondStanceBeastStatusEffect();
         var predatory = new PredatoryBondStanceBeastStatusEffect();
+        // Guarding Bond plus Focus Attention III: +100% damage Enmity, then the capped +50% general bonus.
         var tank = Enmity.CalculateAdjustedEnmity(Enmity.CalculateDamageEnmity(100,
-            guarding.StatGroup.Stats[StatType.DamageEnmityPercentAdjustment]), 50 + 45);
+            guarding.StatGroup.Stats[StatType.DamageEnmityPercentAdjustment] + 50),
+            guarding.StatGroup.Stats[StatType.EnmityPercentAdjustment]);
         var offense = Enmity.CalculateAdjustedEnmity(125,
             predatory.StatGroup.Stats[StatType.EnmityPercentAdjustment]);
-        tank.Should().Be(225);
+        tank.Should().Be(300);
         offense.Should().Be(75);
         new GuardingBondStanceStatusEffect().StatGroup.Stats[StatType.DamageEnmityPercentAdjustment].Should().Be(0);
     }

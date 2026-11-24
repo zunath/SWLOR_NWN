@@ -117,7 +117,7 @@ public class QuestEncounterTests
             "Quest.cs"));
 
         questSource.Should().Contain("QuestEncounter.IsQuestEncounterCreature(creature)");
-        questSource.Should().Contain("QuestEncounter.ProgressKillCredit(creature, npcGroupType, possibleQuests);");
+        questSource.Should().Contain("QuestEncounter.ProgressKillCredit(creature, group, GetQuestsAssociatedWithNPCGroup(group));");
         questSource.Should().Contain("QuestEncounter.ClearEncounterForCreature(creature);");
     }
 

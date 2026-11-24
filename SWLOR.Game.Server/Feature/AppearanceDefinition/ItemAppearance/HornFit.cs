@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerformanceService;
@@ -23,6 +24,21 @@ public static class HornFit
     private const string AppliedYVariable = "HORN_FIT_Y";
     private const string AppliedRotateYVariable = "HORN_FIT_ROTATE_Y";
     private const string AppliedRotateZVariable = "HORN_FIT_ROTATE_Z";
+    private const string AppliedRotateXVariable = "HORN_FIT_ROTATE_X";
+
+    /// <summary>Places the Flanged Jessoon's shaft and mouthpiece where the kloo horn's are, with no body fit.</summary>
+    public static readonly HornFitOffset JessoonOnKlooHorn = new(-.035f, .065f, -.017f, 12.3f, -152.4f, 28.6f);
+
+    /// <summary>
+    /// The Jessoon clips hold the instrument where the horn clips hold the kloo horn, with the right hand 6 cm lower on its
+    /// body (tools/DeriveJessoonPerformanceMotion.py), so the Jessoon slides 6 cm up through that hand.
+    /// </summary>
+    public static readonly HornFitOffset JessoonHold =
+        HornFitTransform.Compose(JessoonOnKlooHorn, new HornFitOffset(-.0188f, .0569f, .0034f, 0f));
+
+    /// <summary>The Jessoon turned in the right hand as every Jessoon set holds it, moved in that hand.</summary>
+    private static HornFitOffset JessoonInHand(float x, float y, float z) =>
+        new(x, y, z, JessoonHold.RotateY, JessoonHold.RotateZ, JessoonHold.RotateX);
 
     private static readonly Dictionary<(string Resref, AppearanceType Appearance, Gender Gender), HornFitOffset> _playingFits =
         BuildPlayingFits();
@@ -30,6 +46,7 @@ public static class HornFit
     private static Dictionary<(string, AppearanceType, Gender), HornFitOffset> BuildPlayingFits()
     {
         const string kloo = "kloo_horn";
+        const string jessoon = "jessoon";
         const string slitherhorn = "slitherhorn";
         const string panpipes = "panpipes";
         const string tambourine = "tambourine";
@@ -79,14 +96,49 @@ public static class HornFit
             fits[(panpipes, appearance, Gender.Female)] = femalePanpipes;
 
         var femaleKloo = new HornFitOffset(.02f, 0f, 0f, -13f);
-        foreach (var appearance in new[]
-                 {
-                     AppearanceType.Human, AppearanceType.Chiss, AppearanceType.Zabrak, AppearanceType.Twilek,
-                     AppearanceType.Mirialan, AppearanceType.Echani, AppearanceType.KelDor, AppearanceType.Cyborg,
-                     AppearanceType.Trandoshan, AppearanceType.Togruta, AppearanceType.Nautolan,
-                     AppearanceType.Bothan, AppearanceType.Rodian
-                 })
+        var femaleKlooBodies = new[]
+        {
+            AppearanceType.Human, AppearanceType.Chiss, AppearanceType.Zabrak, AppearanceType.Twilek,
+            AppearanceType.Mirialan, AppearanceType.Echani, AppearanceType.KelDor, AppearanceType.Cyborg,
+            AppearanceType.Trandoshan, AppearanceType.Togruta, AppearanceType.Nautolan,
+            AppearanceType.Bothan, AppearanceType.Rodian
+        };
+        foreach (var appearance in femaleKlooBodies)
             fits[(kloo, appearance, Gender.Female)] = femaleKloo;
+
+        // The Flanged Jessoon plays its own clips, one set per body (PerformanceAnimations.FitToInstrument), each with the
+        // hands where the male Human's sit on it and the mouthpiece at that body's mouth. Every set holds the instrument
+        // turned the same way in the right hand, so a body playing its own set only moves it in that hand
+        // (tools/DeriveJessoonPerformanceMotion.py prints these). KelDor, the droids and the female Rodian play another
+        // body's set and keep the fit tools/SolveJessoonFits.py solves for their own hands and mouth.
+        foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
+        {
+            fits[(jessoon, appearance, Gender.Male)] = JessoonHold;
+            fits[(jessoon, appearance, Gender.Female)] = JessoonInHand(-.0465f, .1299f, -.0176f);
+        }
+
+        fits[(jessoon, AppearanceType.Trandoshan, Gender.Male)] = JessoonInHand(-.059f, .1329f, -.0166f);
+        fits[(jessoon, AppearanceType.Trandoshan, Gender.Female)] = JessoonInHand(-.0581f, .1186f, -.0095f);
+        fits[(jessoon, AppearanceType.MonCalamari, Gender.Male)] = JessoonInHand(-.0431f, .1559f, -.0215f);
+        fits[(jessoon, AppearanceType.MonCalamari, Gender.Female)] = JessoonInHand(-.0368f, .1086f, .0032f);
+        fits[(jessoon, AppearanceType.Bothan, Gender.Male)] = JessoonInHand(-.0511f, .1189f, -.0131f);
+        fits[(jessoon, AppearanceType.Bothan, Gender.Female)] = JessoonInHand(-.0496f, .1388f, -.0264f);
+        fits[(jessoon, AppearanceType.Rodian, Gender.Male)] = JessoonInHand(-.0408f, .1206f, -.0506f);
+        fits[(jessoon, AppearanceType.Wookiee, Gender.Male)] = JessoonInHand(-.0417f, .1456f, -.0228f);
+        fits[(jessoon, AppearanceType.Wookiee, Gender.Female)] = JessoonInHand(-.0482f, .1466f, -.0535f);
+        fits[(jessoon, AppearanceType.Cathar, Gender.Male)] = JessoonInHand(-.0289f, .1366f, -.0095f);
+        fits[(jessoon, AppearanceType.Cathar, Gender.Female)] = JessoonInHand(-.0188f, .1262f, .0116f);
+        fits[(jessoon, AppearanceType.Ugnaught, Gender.Male)] = JessoonInHand(-.0477f, .1266f, -.0242f);
+        fits[(jessoon, AppearanceType.Ugnaught, Gender.Female)] = JessoonInHand(-.0429f, .1156f, -.0052f);
+        fits[(jessoon, AppearanceType.Ewok, Gender.Male)] = JessoonInHand(-.0392f, .1402f, -.002f);
+        fits[(jessoon, AppearanceType.Ewok, Gender.Female)] = JessoonInHand(-.0261f, .1298f, -.0013f);
+
+        fits[(jessoon, AppearanceType.KelDor, Gender.Male)] = new(-.0364f, .1277f, -.0255f, 13.43f, -159.65f, 31.65f);
+        fits[(jessoon, AppearanceType.KelDor, Gender.Female)] = new(-.0443f, .1287f, -.0217f, 12.94f, -144.7f, 28f);
+        fits[(jessoon, AppearanceType.Rodian, Gender.Female)] = new(-.044f, .1381f, -.0361f, 13.64f, -154.55f, 29.57f);
+        var droidJessoon = new HornFitOffset(-.034f, .1276f, -.0216f, 13.02f, -154.58f, 31.57f);
+        fits[(jessoon, AppearanceType.Droid, Gender.Male)] = droidJessoon;
+        fits[(jessoon, AppearanceType.Droid, Gender.Female)] = droidJessoon;
 
         return fits;
     }
@@ -224,7 +276,7 @@ public static class HornFit
     {
         var saved = new HornFitOffset(GetLocalFloat(item, AppliedXVariable), GetLocalFloat(item, AppliedYVariable),
             GetLocalFloat(item, AppliedZVariable), GetLocalFloat(item, AppliedRotateYVariable),
-            GetLocalFloat(item, AppliedRotateZVariable));
+            GetLocalFloat(item, AppliedRotateZVariable), GetLocalFloat(item, AppliedRotateXVariable));
         if (saved == default && fit == default)
             return;
         // CopyItem copies locals but resets visual transforms; UUIDs survive ordinary reloads.
@@ -235,6 +287,7 @@ public static class HornFit
         ApplyChannel(item, ObjectVisualTransform.TranslateZ, previous.TranslateZ, fit.TranslateZ);
         ApplyChannel(item, ObjectVisualTransform.RotateY, previous.RotateY, fit.RotateY);
         ApplyChannel(item, ObjectVisualTransform.RotateZ, previous.RotateZ, fit.RotateZ);
+        ApplyChannel(item, ObjectVisualTransform.RotateX, previous.RotateX, fit.RotateX);
         // The fit and its owner persist on the item, so reloading cannot compound the fit.
         if (fit == default)
         {
@@ -243,6 +296,7 @@ public static class HornFit
             DeleteLocalFloat(item, AppliedZVariable);
             DeleteLocalFloat(item, AppliedRotateYVariable);
             DeleteLocalFloat(item, AppliedRotateZVariable);
+            DeleteLocalFloat(item, AppliedRotateXVariable);
             DeleteLocalString(item, FittedItemVariable);
         }
         else
@@ -252,6 +306,7 @@ public static class HornFit
             SetLocalFloat(item, AppliedZVariable, fit.TranslateZ);
             SetLocalFloat(item, AppliedRotateYVariable, fit.RotateY);
             SetLocalFloat(item, AppliedRotateZVariable, fit.RotateZ);
+            SetLocalFloat(item, AppliedRotateXVariable, fit.RotateX);
             SetLocalString(item, FittedItemVariable, identity);
         }
     }

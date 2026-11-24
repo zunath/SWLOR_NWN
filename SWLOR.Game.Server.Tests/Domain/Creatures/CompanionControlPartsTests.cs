@@ -29,7 +29,7 @@ public class CompanionControlPartsTests
         _master = _bench.AddPlayer("Master", _area);
         _companion = _bench.AddCreature("Droid", _area, 1f);
         _companion.Master = _master.Id;
-        _service = new TestCompanionControl(ScriptedProxy.Create<IAIService>(out _), _bench.BeastMastery);
+        _service = new TestCompanionControl(ScriptedProxy.Create<IAIService>(out _), ScriptedProxy.Create<IAIDecisionService>(out _), ScriptedProxy.Create<IAIActionService>(out _), _bench.BeastMastery);
     }
 
     [TearDown]

@@ -86,7 +86,7 @@ SWLOR.Game.Server/Domain/Crafting/Minigame/NwnCraftSessionWorld.cs -> Feature.Pl
 SWLOR.Game.Server/Domain/Crafting/NwnProspectingWorld.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Crafting/NwnProspectingWorld.cs -> Feature/ItemDefinition | 1
 SWLOR.Game.Server/Domain/Crafting/NwnScavengeWorld.cs -> Feature/GuiDefinition | 1
-SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Domain/Creatures/AIActionService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs -> Feature/GuiDefinition | 2

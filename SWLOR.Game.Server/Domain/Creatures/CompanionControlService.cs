@@ -26,6 +26,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
         // The native associate radial combines its Toggle label with base TLK 8127 ("casting").
         public const int AssociateAbilitiesLabelStrRef = 8127;
 
+        private readonly IAIActionService _action;
+        private readonly IAIDecisionService _decision;
         private readonly IAIService _ai;
         private readonly IActivityService _activity;
         private readonly IPlayerNameService _playerName;
@@ -35,6 +37,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly ICompanionTargetAuthorityService _authority;
 
         public CompanionControlService(
+            IAIActionService action,
+            IAIDecisionService decision,
             IAIService ai,
             IActivityService activity,
             IPlayerNameService playerName,
@@ -43,6 +47,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
             ICompanionPositioningService positioning,
             ICompanionTargetAuthorityService authority)
         {
+            _action = action;
+            _decision = decision;
             _ai = ai;
             _activity = activity;
             _playerName = playerName;
@@ -199,7 +205,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             if (!GetIsObjectValid(target))
                 _positioning.MaintainModePosition(companion);
 
-            var actionIssued = _ai.ProcessTrigger(
+            var actionIssued = _decision.ProcessTrigger(
                 companion,
                 AITriggerType.CombatRound,
                 target,
@@ -367,7 +373,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 return;
             }
 
-            if (_ai.TryUseBestTargetedSupportAbility(companion, master, out var abilityName))
+            if (_action.TryUseBestTargetedSupportAbility(companion, master, out var abilityName))
             {
                 _positioning.SendResponse(companion, $"Using {abilityName} on you, then returning to Follow.");
                 return;

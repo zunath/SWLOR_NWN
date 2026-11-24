@@ -20,37 +20,37 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// </summary>
 public sealed partial class TestCompanionControl : CompanionControlService
 {
-    public TestCompanionControl(IAIService ai, ICompanionLookup beastMastery)
-        : this(ai, beastMastery, new CompanionTestState())
+    public TestCompanionControl(IAIService ai, IAIDecisionService decision, IAIActionService action, ICompanionLookup beastMastery)
+        : this(ai, decision, action, beastMastery, new CompanionTestState())
     {
     }
 
-    private TestCompanionControl(IAIService ai, ICompanionLookup beastMastery, CompanionTestState state)
-        : this(ai, state, new TestCompanionControlStoreService(beastMastery, state))
+    private TestCompanionControl(IAIService ai, IAIDecisionService decision, IAIActionService action, ICompanionLookup beastMastery, CompanionTestState state)
+        : this(ai, decision, action, state, new TestCompanionControlStoreService(beastMastery, state))
     {
     }
 
-    private TestCompanionControl(IAIService ai, CompanionTestState state, TestCompanionControlStoreService store)
-        : this(ai, state, store, new TestCompanionPositioningService(store, state))
+    private TestCompanionControl(IAIService ai, IAIDecisionService decision, IAIActionService action, CompanionTestState state, TestCompanionControlStoreService store)
+        : this(ai, decision, action, state, store, new TestCompanionPositioningService(store, state))
     {
     }
 
     private TestCompanionControl(
-        IAIService ai,
+        IAIService ai, IAIDecisionService decision, IAIActionService action,
         CompanionTestState state,
         TestCompanionControlStoreService store,
         TestCompanionPositioningService positioning)
-        : this(ai, state, store, positioning, new TestCompanionTargetAuthorityService(store, positioning, state))
+        : this(ai, decision, action, state, store, positioning, new TestCompanionTargetAuthorityService(store, positioning, state))
     {
     }
 
     private TestCompanionControl(
-        IAIService ai,
+        IAIService ai, IAIDecisionService decision, IAIActionService action,
         CompanionTestState state,
         TestCompanionControlStoreService store,
         TestCompanionPositioningService positioning,
         TestCompanionTargetAuthorityService authority)
-        : base(ai, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStatusEffectService>(), store, positioning, authority)
+        : base(action, decision, ai, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStatusEffectService>(), store, positioning, authority)
     {
         State = state;
         Store = store;

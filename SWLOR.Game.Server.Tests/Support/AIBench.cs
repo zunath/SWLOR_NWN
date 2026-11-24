@@ -71,8 +71,8 @@ public sealed class AIBench : IDisposable
     // its part moves; the tests call the accessor of the part that owns the member.
     public TestAICreatureEventService Events => Service.Events;
     public TestAIAggroService Aggro => Service.Aggro;
-    public TestAIService Decision => Service.Decision;
-    public TestAIService Action => Service.Action;
+    public TestAIDecisionService Decision => Service.Decision;
+    public TestAIActionService Action => Service.Action;
 
     public IPartyRoster Party { get; }
     public ScriptedProxy PartyScript { get; }

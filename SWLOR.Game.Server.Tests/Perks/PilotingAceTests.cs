@@ -263,7 +263,7 @@ public class PilotingAceTests
         ReadServerSource("Service", "SpaceAbilities.cs").Should().Contain(
             "shot.WeaponSlot = weapon.Slot;", "an ability shot names the weapon that fired it");
         ReadServerSource("Service", "SpaceToggles.cs").Should().Contain(
-            "ShipModuleTraitContext.Begin(shipModule.Traits, slotNumber)", "a module's action knows its slot");
+            "ShipModuleTraitContext.Begin(shipModule.Traits, slotNumber, moduleBonus)", "a module's action knows its slot");
         space.Should().Contain("StatSource = source,", "a missile's proc reads the perks of the crew member who fired it");
         ReadServerSource("Service", "SpaceOrdnance.cs").Should().Contain("Stat.GetStatAdjustment(e.StatSource, StatType.SpaceLauncherSplashChance)");
         space.Should().Contain("SpaceHostileAbilityRewards.Clear(player);");

@@ -39,7 +39,7 @@ public class EnmityTranscriptTests
         .Concat(new[]
         {
             typeof(IAIService), typeof(IActivityService), typeof(IHoloComService), typeof(ICompanionLookup), typeof(IStealthService),
-            typeof(ICompanionControlService), typeof(ICombatQueriesService)
+            typeof(ICompanionTargetAuthorityService), typeof(ICombatQueriesService)
         })
         .ToArray();
 
@@ -76,7 +76,7 @@ public class EnmityTranscriptTests
             _ => new System.Diagnostics.StackTrace().GetFrames().Any(frame => frame.GetMethod()?.Name == "ShouldRemoveStaleProximityTarget") ? 20f : 3.0f);
         bench.Engine.SetReturnHandler("StringToObject", args => uint.TryParse((string)args[0]!, out var id) ? id : 0x7F000000u);
         bench.Events.SetReturnHandler("GetEventData", args => eventData.GetValueOrDefault((string)args[0]!, string.Empty));
-        bench.Leaf<ICompanionControlService>().Script("CanIssueAttackCommand", _ => true);
+        bench.Leaf<ICompanionTargetAuthorityService>().Script("CanIssueAttackCommand", _ => true);
         bench.SetStat(Attacker, StatType.DamageEnmityPercentAdjustment, 25);
         bench.SetStat(Other, StatType.DamageEnmityPercentAdjustment, -30);
 

@@ -484,7 +484,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var droid = await Spawn(ctx, owner, controller);
             try
             {
-                ctx.Assert(CompanionControl.IsControlledCompanion(droid), "The droid belongs to a real player fixture");
+                ctx.Assert(CompanionControlStore.IsControlledCompanion(droid), "The droid belongs to a real player fixture");
                 var rifle = await CreateEquipment(ctx, owner, "oph_rifle");
                 await ctx.ExecuteInCreatureContextAsync(owner, () =>
                     AddItemProperty(DurationType.Permanent, ItemPropertyUnlimitedAmmo(), rifle));
@@ -504,15 +504,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(GetObjectSeen(thief, droid), "The droid sees the hostile thief");
 
                 await DispatchHostileInventoryDisturbance(ctx, droid, thief, ammunition, DisturbType.Added);
-                ctx.AssertEqual(OBJECT_INVALID, CompanionControl.PeekAuthorizedTarget(droid), "Adding an item does not register a defensive threat");
+                ctx.AssertEqual(OBJECT_INVALID, CompanionTargetAuthority.PeekAuthorizedTarget(droid), "Adding an item does not register a defensive threat");
                 await Transfer(ctx, droid, ammunition, owner);
                 await DispatchHostileInventoryDisturbance(ctx, droid, thief, ammunition, DisturbType.Removed);
-                ctx.AssertEqual(OBJECT_INVALID, CompanionControl.PeekAuthorizedTarget(droid), "A normal removal does not register a defensive threat");
+                ctx.AssertEqual(OBJECT_INVALID, CompanionTargetAuthority.PeekAuthorizedTarget(droid), "A normal removal does not register a defensive threat");
 
                 await Transfer(ctx, owner, ammunition, droid);
                 await Transfer(ctx, droid, ammunition, thief);
                 await DispatchHostileInventoryDisturbance(ctx, droid, thief, ammunition, DisturbType.Stolen);
-                ctx.AssertEqual(thief, CompanionControl.PeekAuthorizedTarget(droid), "The hostile thief becomes an authorized defensive target");
+                ctx.AssertEqual(thief, CompanionTargetAuthority.PeekAuthorizedTarget(droid), "The hostile thief becomes an authorized defensive target");
                 await ctx.WaitUntilAsync(() => GetAttackTarget(droid) == thief, 5f, "the droid to retaliate against the thief");
                 for (var tick = 0; tick < 12; tick++)
                 {

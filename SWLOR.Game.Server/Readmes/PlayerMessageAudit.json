@@ -932,14 +932,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Creatures/AIService.cs",
-    "Line": 1558,
+    "Line": 1561,
     "Member": "ExecuteAction",
     "Delivery": "Retained",
     "Call": "SpeakString(action.Text)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs",
-    "Line": 1034,
+    "File": "SWLOR.Game.Server/Domain/Creatures/CompanionPositioningService.cs",
+    "Line": 101,
     "Member": "SendResponse",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(master, $\"{GetName(companion)}: {response}\")"

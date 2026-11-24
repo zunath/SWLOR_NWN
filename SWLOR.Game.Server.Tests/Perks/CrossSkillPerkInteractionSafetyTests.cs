@@ -106,8 +106,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
             .Should().Be((int)StatusEffectCategory.Control,
                 "owning Charged Blows and Skull Rattle must not turn two Control selectors into Bleeding");
 
-        var perkSource = Read(root, "SWLOR.Game.Server", "Domain", "Character", "PerkService.cs");
-        var getStatBonus = ExtractMethod(perkSource, "public int GetStatBonus(uint creature, StatType stat)");
+        var getStatBonus = CharacterCompanionsSource.Perk.Member("GetStatBonus");
         getStatBonus.Should().Contain("AggregateStatAdjustment(stat, bonus, statBonus.Calculate(creature))");
 
         var combat = CombatSource.Read();

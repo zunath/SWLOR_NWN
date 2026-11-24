@@ -320,8 +320,7 @@ public class SkillRankLimitTests
         typeof(SkillService).GetMethod(handler)!.GetCustomAttributes<NWNEventHandler>()
             .Should().ContainSingle(attribute => attribute.Script == script);
 
-        var source = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Domain", "Character", "SkillService.cs"));
-        ExtractMethod(source, $"public void {handler}()")
+        CharacterCompanionsSource.Skill.Member(handler)
             .Should().Contain(playerSource).And.Contain("ForgetLimitWarnings(GetObjectUUID(player))");
     }
 

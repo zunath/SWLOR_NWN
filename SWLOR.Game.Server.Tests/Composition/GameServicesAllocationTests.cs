@@ -113,6 +113,23 @@ public class GameServicesAllocationTests
     }
 
     [Test]
+    public void The_recording_flag_the_platform_and_the_native_hooks_read_allocates_nothing()
+    {
+        // ManagedEntryDepth.Enter reads CombatRecordingState.IsRecording and the native damage hook reads the recorder's flag: both
+        // are the session core's flag, one interface call on the core or two through the recorder's one-line getter.
+        var session = _host.Provider.GetRequiredService<ICombatRecordSession>();
+        var recorder = _host.Provider.GetRequiredService<ICombatRecorderService>();
+        var recording = true;
+
+        Allocated(() => recording = GameServices.CombatRecordingState.IsRecording).Should().Be(0);
+        Allocated(() => recording = GameServices.CombatRecordSession.IsRecording).Should().Be(0);
+        Allocated(() => recording = recorder.IsRecording).Should().Be(0);
+        GameServices.CombatRecordingState.Should().BeSameAs(session);
+        GameServices.CombatRecordSession.Should().BeSameAs(session);
+        recording.Should().Be(session.IsRecording);
+    }
+
+    [Test]
     public void A_call_through_GameServices_allocates_what_the_call_on_the_instance_allocates()
     {
         var instance = _host.Provider.GetRequiredService<IServerTaskService>();

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -25,22 +26,14 @@ public class SkillXPAwardTests
 
     private static Type CompileProductionXPAwardWithControlledPlayerAndFeedback()
     {
-        var root = new DirectoryInfo(Path.GetDirectoryName(SourcePath())!);
-        while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
-            root = root.Parent;
-        root.Should().NotBeNull();
-        var methods = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root!.FullName,
-                "SWLOR.Game.Server", "Domain", "Character", "SkillService.cs"))).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>()
+        var methods = CharacterCompanionsSource.Skill.Trees().SelectMany(tree => tree.GetRoot().DescendantNodes()).OfType<MethodDeclarationSyntax>()
             .Where(method => method.Identifier.ValueText is "GiveSkillXP" or "ShouldDecaySkillRank" or "ApplyAbilityPoint" or "GetRankLimit" or "GetRankCeiling"
                 or "GetDecayCandidates" or "IsBlockedBySkillCap" or "GetTotalContributingSkillRanks" or "ForgetLimitWarnings")
             // The production methods are instance methods of the skill service; the harness is a static class.
             .Select(method => method.WithAttributeLists(default).Modifiers.Any(SyntaxKind.StaticKeyword)
                 ? method
                 : method.AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword).WithTrailingTrivia(SyntaxFactory.Space)));
-        var fields = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
-                "SWLOR.Game.Server", "Domain", "Character", "SkillService.cs"))).GetRoot()
-            .DescendantNodes().OfType<FieldDeclarationSyntax>()
+        var fields = CharacterCompanionsSource.Skill.Trees().SelectMany(tree => tree.GetRoot().DescendantNodes()).OfType<FieldDeclarationSyntax>()
             .Where(field => field.Declaration.Variables.Any(variable => variable.Identifier.ValueText == "_limitWarningsSent"))
             .Select(field => field.WithAttributeLists(default)
                 .WithModifiers(SyntaxFactory.TokenList(

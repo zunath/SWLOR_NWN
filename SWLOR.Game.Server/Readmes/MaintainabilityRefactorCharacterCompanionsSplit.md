@@ -752,4 +752,80 @@ The open questions of the first draft, settled by the coordinator (2026-11-23); 
 
 ## Progress
 
-P5-10a: this guide (2026-11-23). Next: P5-10b1 and P5-10b2.
+P5-10a: this guide (2026-11-23). P5-10b1: the Perk, Skill and PlayerName test groundwork and proof (2026-11-23, "P5-10b1 as built" below). P5-10b2: test groundwork for Mimicry, Beast and Droid (2026-11-23, "P5-10b2 as built" below). Next: P5-10c, e1 and f1 can start.
+
+### P5-10b1 as built (2026-11-23)
+
+Tests only; no production file changed. The later Perk, Skill and PlayerName PRs run everything below unchanged except for what the "Per PR" list names (accessor types and
+bodies, the part files added to `CharacterCompanionsSource`, and the harness member names of `SkillXPAwardTests`). No client evidence: nothing in game changes.
+
+- **`CharacterCompanionsSource`** (`Tests/Support/CharacterCompanionsSource.cs`): one `ServiceSource` per service (`Perk`, `Skill`, `PlayerName`), built on `PartSourceFiles`, with `Read()`, `Paths()`, `Trees()`,
+  `Method(name)`, `Member(name)`, `Members(...)`, `RelativePath(name)`, `InstanceMethod(name)`, and `CharacterCompanionsSource.Member(name)` across the three. A PR that moves a part adds its file to that service's list
+  and its interface to the interface set. P5-10b2 adds its three services to the same class.
+- **Readers repointed** (12 reads in 10 files): `PlayerNameRecognitionTests` (11 tests, `ExtractMethod(source, "<signature>")` became `Member("<name>")`, so a promoted modifier or a moved member changes nothing; the needles on
+  `BuildDisplayNameWithDescriptor` and `BuildColoredDisplayNameWithDescriptor` lost `private`, the two become public in f1), `PlayerIdentityAuditTests` (the two harness reads), `PerkStatBonusTests`, `PerkRefundStatusEffectCleanupTests`
+  (2), `PerksWindowTests`, `CrossSkillPerkInteractionSafetyTests`, `SkillRankLimitTests`, `SkillXPAwardTests` (the harness now compiles from `Skill.Trees()`; e1 still edits the member names it lists), `DeadPlayerXPTests`,
+  `PlayerMessageAuditTests` (the file list and the skill cap warning test read `Skill.Paths()`; the Mimicry, Beast and Droid entries stay for b2). `ClockSeamSourceGuardTests` and `ClockSeamFiles.txt` still name
+  `PerkService.cs`; d adds `PerkRefundService.cs` as the map says.
+- **Accessors and doubles.** `PerkBench` gained `Catalog`, `StatBonus`, `Affinity`, `Feats`, `Refund` (all `Service` today) and `CacheData()` (the boot handlers in order; c and d add their calls). `TestPerkService` left `PerkBench.cs` and is
+  `partial` files by the part that calls each seam (`.Catalog`, `.StatBonus`, `.Affinity`, `.Feats`, `.Refund`). `TestSkillService` left `SkillServiceTests` (`Catalog`, `Rank`, `XP` accessors; seams in `.Catalog` and `.XP`;
+  `CreateWithDefaultSeams` for the constructor call), as did `BenchPlayerNameService` (`Names`, `KnownNames`, `Overrides`; seams in `.Names` and `.Overrides`) and `BlankIdentityPlayerNameService`; `LoggingDB` moved to `Support`. The tests of
+  `PerkServiceTests`, `SkillServiceTests` and `PlayerNameServiceTests` call each member through its part's accessor, so a PR changes the accessor and the double file, not the tests. `IsDroid` is one seam on the Perk double
+  until c and d give PK-2 and PK-4 their own.
+- **Transcripts and fixtures** (`Tests/Fixtures/CharacterTranscripts/*.txt`, `-text` in `.gitattributes`, LF, ASCII; regenerate with `SWLOR_UPDATE_SNAPSHOTS=1`): `SkillXPAward.txt` (`SkillXPTranscriptTests`, 35 steps through the real
+  container with recording leaves for stat, the GUI publisher, player feedback and the companion lookup: refusals, bonuses, the henchman penalty, debt, the rank ceiling and the once-per-login warning, rank-ups with skill and ability
+  points, and a rank gained at the skill cap with the decay draw (`Random.Next(n)`, one to four candidates, candidates above their limit first, the last candidate used up), every engine write, database read and write, refresh notice,
+  event and draw in order, then the return value and the record's changes); `PlayerTell.txt` (`PlayerTellTranscriptTests`, 9 steps of `PreventAmbiguousTellTargets` through the real container with the tell, rename and util plugins recorded);
+  `PerkCatalog.txt` (`PerkCatalogTests`, 602 perks, about 4,100 lines, regenerated after the master sync: Focus Attention (perk 283) reads `DamageEnmityPercentAdjustment` 15/30/50 since master #3504, three rows and nothing else changed: each perk's levels, the stat bonus and `GetStatSources` per level and stat, the force affinity reads at seven affinities, and the granted and current active ability feats per
+  level, built from every perk and ability list of the server). `PerkCatalogTests` also pins that no `PerkType` is in two perk lists (the D5 equivalence).
+- **Engine test** (`SkillXPAwardDecayEngineTests`, two tests, constructor-injected): the player is at the cap with one unlocked candidate, so the `Random.Next` pick is not left to chance. Case 1: `Provoke` level 1 needs Armor 5; a rank in Piloting
+  decays Armor to 4, the perk level is refunded (price back, Provoke1 removed). Case 2: Mimicry at the requirement of `BrutalBashTechnique` decays by one; the technique is unequipped and its feat removed while `CombatAnalyzer` keeps its level.
+  Both assert `SWLOR_SKILL_LOST_BY_DECAY` once, on the player, for the decayed skill. The signal is counted without a script handler (a handler would add a script to `ScriptHandlerOrder.EngineTests.txt` that master lacks, which the parity gate refuses): `SignalSpy` wraps the events plugin around the award, inside the creature context (the override is per async flow and the engine runs that context in its own), with `EventsPluginRuntime.Override`, forwards every call, and records each `SignalEvent` with the skill id pushed before it, so a signal that fires twice or not at all fails the count.
+- **Not covered, and why.** The combined XP message of a message source needs the scheduler (it runs on the real clock); `SkillServiceTests` covers it through the double. The warning "Excess XP was lost" in `GiveSkillXP` is unreachable: the loop
+  stops at the top before the branch can see an empty candidate list at a total above the cap. `PerkCatalog.txt` reads stat bonuses through an NPC, so the player path of `GetStatBonusPerkLevel` (`GetPerkLevel`) is covered by `PerkServiceTests`.
+- **Departures from the map.** `PlayerTellTranscriptTests` and `SkillXPTranscriptTests` use the combat transcript bench (`CombatTranscriptBench`) with their own leaves instead of a new bench. The bench `CacheData()` helper stands in for the
+  stat-bonus handler call c would otherwise add to 28 tests.
+- **Runs.** Unit (`SWLOR.Game.Server.Tests --no-build`, filters `PerkService`, `PerkCatalog`, `PerkFacade`, `PerkStatBonus`, `PerkRefund`, `PerksWindow`, `SkillService`, `SkillXP`, `SkillRankLimit`, `SkillFacade`, `PlayerName`, `PlayerTell`,
+  `PlayerIdentityAudit`, `DeadPlayerXP`, `CrossSkillPerk`, `PlayerMessageAudit`, `ConvertedServiceContainer`): 1,174 passed. `SWLOR.Architecture.Tests`: 297 passed, no baseline changed (the first engine test used the static service lookups and
+  was rewritten with constructor injection, which the Phase 5 lookup count requires). Engine tests (host entry, dev server module and haks, scratch home, `scripts/run-engine-tests.sh` with the repository root set by hand): `SkillXPAwardDecay` 2 of 2 passed three times (the third on the constructor-injected class, twice in a row after it); and on the unchanged code `PlayerPerkFeats` 4 of 4, `PlayerName` 9 of 9, `PerkTracker` 26 of 26, `BareHandedAttackSkill` 2 of 2 and `Perk` (which also selects `PerkSweep`) 61 passed, 1 skipped of 62.
+
+### P5-10b2 as built (2026-11-23)
+
+Tests only; no production file changed. A later PR of the Mimicry, Beast or Droid chain edits one file list per service in `MimicryBeastDroidSource`, the receiver one accessor returns
+(`TestMimicry`, `TestBeastMastery`, `TestDroid`, and the one property per part on a transcript scene), and the receiver text of the tests of its own members. It edits no other bench, double or fixture.
+
+- **Source reader** (`Tests/Support/MimicryBeastDroidSource.cs`): one file list and one part-interface set per service, read through `PartSourceFiles` as `EnmitySource` does (`Read`, `Paths`,
+  `AllPaths`, `Method`, `Member`, `InstanceMethod`, `RelativePath`). **Departure:** it is not in `CharacterCompanionsSource`, which P5-10b1 builds for Perk, Skill and PlayerName; the two share no line,
+  and the owner can fold them at cutover. Reads it replaced: `MimicryTests` (the wiring test reads every Mimicry file; the `RevokeTechniqueFeat` slice is now `Member`), `DMPossessionPlayerLoopTests` (two
+  harness reads), `PlayerMessageAuditTests` (the Mimicry failures test reads every Mimicry file; the gameplay-outcome file list gains `AllPaths()` de-duplicated by full path, and its two literal entries
+  stay so b1's edit of the same two lines does not conflict), `TintMapReviewTests` (the `DroidService.cs` read). **The map's count differs:** only these four files read the three services; `AbilitySourceTests`
+  names `MimicryService.cs` as a path `IsAbilityFile` must refuse, and an engine test names it in a comment.
+- **Doubles** (`Tests/Support/TestMimicry*.cs`, `TestBeastMastery*.cs`, `TestDroid*.cs`): the three nested doubles (`TestMimicry`, `TestBeastMastery`, `AmmunitionDroidService`) are top-level `partial`
+  classes with one file per part for the seams its code calls and a `.Shared` file for seams two parts call (Mimicry: witness `GetNpcLevel`, `GiveSkillXP`, `GetDeltaXP`, `HasCombatPoints`,
+  `ScheduleRepeating`; loadout `IsFeatRegistered`, `GetAbilityDetail`, the two status effect removals; shared `GetPerkLevel`. Beast: events the control, restore and rest seams and `ReturnItem`; shared
+  `GetPerkLevel`, `SyncGrantedFeats`, `TogglePlayerWindow`. Droid: inventory `ReadGeneratedAmmunitionFlags`). **Departure:** Beast has no spawn or incubation file, since every seam of those two parts is shared.
+  The accessors (`Techniques`, `Witness`, `Loadout`; `Beasts`, `Spawn`, `Events`, `Incubation`; `Droids`, `Spawn`, `Inventory`, `Events`, `Despawn`, `Restore`) are properties that return the double itself, and
+  `MimicryServiceTests`, `BeastMasteryServiceTests`, `DroidServiceTests` and `DroidServiceWorldTests` call each member through the accessor of its part (the doubles' own state stays on the double).
+  **Departure:** `DroidWorld` builds no service, so the Droid accessors are on `TestDroid` (a constructor over a `DroidWorld`, and one over the facade forwarders); `DroidWorld` gained an optional `OrderedLog` instead.
+- **Transcripts** (`Tests/Fixtures/CompanionTranscripts/*.txt`, `-text` in `.gitattributes`, LF): each line is a call to a leaf, an engine write or a `Random` draw, in order. Mimicry and Beast run on the P5-7b bench
+  (`CombatTranscriptBench`, seed 20261118) with their own leaf lists; Droid runs on `DroidWorld` with `OrderedLog` and `ObservedScriptedProxy` (the engine, the four plugins and the 14 neighbours; seed 20261123).
+  - `MimicryWitnessTranscriptTests`: `MimicryWitness.txt` (`TryRecordWitness` and the analysis credit through `OnCreatureAbilityUsed`: 12 steps) and `MimicryLearn.txt` (`TryLearnTechniques` through
+    `OnCreatureDeath`: 7 steps, the `D100` rolls, the learned-technique writes, messages, skill XP and sound).
+  - `BeastIncubationTranscriptTests`: `BeastUseIncubator.txt` (6 steps) and `BeastCreateEgg.txt` (job eggs with mutation suppressed, impossible, and chances 0, 1000, 500, 500, with the `Next(1000)` and weighted draws,
+    the field note, every purity property, the vendor bonus and the job removal; an egg by beast type). The scenes run on the whole beast catalog, and the first step names the two beasts chosen by a rule
+    (most mutations a job rich in enzymes qualifies for; first with none), so a catalog edit shows in line one. The running-job message reads 29 seconds on any run under a second.
+  - `DroidSpawnTranscriptTests`: `DroidSpawn.txt` (`SpawnDroid` in six summons: nothing saved; saved appearance, tint, portrait and sound set; a saved loadout with a stored container and a pending return;
+    two refused items kept under a retry key and restored by the next summon; an open AI window with no custom name; the delayed heal included). The controller's property reads are left out. `DroidWorld.ItemIds`
+    gives a deserialized item the droid item id it was saved with (a serialized item carries its locals) so no `Guid` reaches the text. **Not covered:** droid perks (the perk facade) and the paths that mint
+    an identifier with `Guid.NewGuid` (an item that cannot be handed back, an item with no valid copy). `TheSavedItemSetIsRestoredToTheSameSlotsAndCarriedItems` is the restore test run before and after the cut with
+    the same item set (slots, possessors, carried items, items handed back, the saved controller data).
+  - P5-10e1 gives the witness part `ISkillXPService`, so it adds that leaf to `MimicryWitnessTranscriptTests.Leaves` and the `Skill.GiveSkillXP` lines of `MimicryLearn.txt` take the new label: the one intended fixture edit.
+- **Engine tests:** none are new (the skill decay test is P5-10b1's). Run on this base through `scripts/run-engine-tests.sh` (a scratch copy with the repo root fixed and CRLF removed; no `jq`, so the report was
+  read directly): the categories and names of the map's Mimicry, Beast and Droid lists (`MimicryLoadouts`, `MimicryObservation`, `MimicryDescriptions`, the Mimicry potency tests, `MimicryTraitPotency`,
+  `PlayerTechniques`, the Beastmaster ability behaviors (`PlayerBeastAbilityEngineTests`), `Incubation`, `CapstoneProof`, `TankEnmity`, every `Droid` name or category, `ItemClaimSpace`): 112 selected, 110 passed,
+  1 skipped (the opt-in view model transcript), 1 failed: `Migration expands blueprint alternatives inside serialized droid inventories` (`KeyNotFoundException` for `DroidLightsaberBoost1` in
+  `CraftService.GetRecipe`), on the base this was built from. Master's #3486 deleted that test with the retired migrations, and the master sync to 82ebe9f00 took the deletion, so the branch no longer
+  has it and a split PR's engine run expects no failure from it.
+- **Unit tests** (`SWLOR.Game.Server.Tests`, filters `Mimicry`, `Beast`, `Droid`, `Incubation`, `PlayerMessageAudit`, `ConvertedServiceContainer`, `DMPossessionPlayerLoop`): 1,585 passed, 0 failed, including the
+  six new tests; the transcripts are identical across repeated runs. `SWLOR.Architecture.Tests`: 297 passed, no baseline changed.
+- **Client evidence:** none. No production file changed and nothing in game changes; the transcripts and the engine run are the evidence, as for P5-7b.

@@ -90,9 +90,9 @@ public class SkillServiceTests
         _twinPair = false;
 
         _service = NewService();
-        _service.CacheData();
-        _service.CacheXPChartData();
-        _service.LoadMappings();
+        _service.Catalog.CacheData();
+        _service.Catalog.CacheXPChartData();
+        _service.Catalog.LoadMappings();
         _engine.ClearCalls();
     }
 
@@ -150,72 +150,72 @@ public class SkillServiceTests
     public void CacheData_ListsEverySkillAndCategory_AndSignalsTheLoad()
     {
         _engine.ClearCalls();
-        _service.CacheData();
+        _service.Catalog.CacheData();
 
-        _service.GetAllSkills().Keys.Should().BeEquivalentTo(Enum.GetValues<SkillType>());
-        _service.GetAllSkillCategories().Keys.Should().BeEquivalentTo(Enum.GetValues<SkillCategoryType>());
+        _service.Catalog.GetAllSkills().Keys.Should().BeEquivalentTo(Enum.GetValues<SkillType>());
+        _service.Catalog.GetAllSkillCategories().Keys.Should().BeEquivalentTo(Enum.GetValues<SkillCategoryType>());
         _log.Should().Contain("signal:SWLOR_CACHE_SKILLS_LOADED");
     }
 
     [Test]
     public void CacheData_SplitsTheCatalogByActivityAndCapContribution()
     {
-        var all = _service.GetAllSkills();
-        var active = _service.GetAllActiveSkills();
+        var all = _service.Catalog.GetAllSkills();
+        var active = _service.Catalog.GetAllActiveSkills();
 
         active.Keys.Should().BeEquivalentTo(all.Where(x => x.Value.IsActive).Select(x => x.Key));
-        _service.GetAllContributingSkills().Keys.Should()
+        _service.Catalog.GetAllContributingSkills().Keys.Should()
             .BeEquivalentTo(all.Where(x => x.Value.ContributesToSkillCap).Select(x => x.Key));
-        _service.GetActiveContributingSkills().Keys.Should()
+        _service.Catalog.GetActiveContributingSkills().Keys.Should()
             .BeEquivalentTo(all.Where(x => x.Value.ContributesToSkillCap && x.Value.IsActive).Select(x => x.Key));
-        _service.GetActiveCraftingSkills().Keys.Should()
+        _service.Catalog.GetActiveCraftingSkills().Keys.Should()
             .BeEquivalentTo(active.Where(x => x.Value.IsShownInCraftMenu).Select(x => x.Key));
-        _service.GetActiveResearchableCraftingSkills().Keys.Should()
+        _service.Catalog.GetActiveResearchableCraftingSkills().Keys.Should()
             .BeEquivalentTo(active.Where(x => x.Value.IsShownInResearchMenu).Select(x => x.Key));
     }
 
     [Test]
     public void CacheData_ReadsHandOutCopies()
     {
-        _service.GetAllSkills().Clear();
+        _service.Catalog.GetAllSkills().Clear();
 
-        _service.GetAllSkills().Should().NotBeEmpty();
+        _service.Catalog.GetAllSkills().Should().NotBeEmpty();
     }
 
     [Test]
     public void Categories_AreGroupedAndFiltered()
     {
-        var categories = _service.GetAllSkillCategories();
+        var categories = _service.Catalog.GetAllSkillCategories();
 
-        _service.GetAllActiveSkillCategories().Keys.Should().Contain(SkillCategoryType.Combat);
-        _service.GetAllContributingSkillCategories().Keys.Should().Contain(SkillCategoryType.Combat);
-        _service.GetActiveContributingSkillCategories().Keys.Should().Contain(SkillCategoryType.Combat);
-        _service.GetSkillCategoryDetails(SkillCategoryType.Combat).Should().BeSameAs(categories[SkillCategoryType.Combat]);
+        _service.Catalog.GetAllActiveSkillCategories().Keys.Should().Contain(SkillCategoryType.Combat);
+        _service.Catalog.GetAllContributingSkillCategories().Keys.Should().Contain(SkillCategoryType.Combat);
+        _service.Catalog.GetActiveContributingSkillCategories().Keys.Should().Contain(SkillCategoryType.Combat);
+        _service.Catalog.GetSkillCategoryDetails(SkillCategoryType.Combat).Should().BeSameAs(categories[SkillCategoryType.Combat]);
     }
 
     [Test]
     public void SkillsByCategory_ListEachSkillUnderItsCategory()
     {
-        foreach (var category in _service.GetAllSkillCategories().Keys)
-            _service.GetAllSkillsByCategory(category).Values.Should().OnlyContain(x => x.Category == category);
+        foreach (var category in _service.Catalog.GetAllSkillCategories().Keys)
+            _service.Catalog.GetAllSkillsByCategory(category).Values.Should().OnlyContain(x => x.Category == category);
 
-        _service.GetActiveSkillsByCategory(SkillCategoryType.Combat).Keys.Should().Contain(SkillType.Armor);
-        _service.GetAllSkillsByCategory(SkillCategoryType.Combat).Keys.Should().Contain(SkillType.Armor);
+        _service.Catalog.GetActiveSkillsByCategory(SkillCategoryType.Combat).Keys.Should().Contain(SkillType.Armor);
+        _service.Catalog.GetAllSkillsByCategory(SkillCategoryType.Combat).Keys.Should().Contain(SkillType.Armor);
     }
 
     [Test]
     public void DisplayOrder_SortsByNameAndPutsLanguagesLast()
     {
-        var display = _service.GetAllActiveSkillsForDisplay().Values.ToList();
+        var display = _service.Catalog.GetAllActiveSkillsForDisplay().Values.ToList();
         var firstLanguage = display.FindIndex(x => x.Category == SkillCategoryType.Languages);
 
         display.Skip(firstLanguage).Should().OnlyContain(x => x.Category == SkillCategoryType.Languages);
         display.Take(firstLanguage).Select(x => x.Name).Should().BeInAscendingOrder(StringComparer.OrdinalIgnoreCase);
         display.Skip(firstLanguage).Select(x => x.Name).Should().BeInAscendingOrder(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var category in _service.GetAllActiveSkillCategories().Keys)
+        foreach (var category in _service.Catalog.GetAllActiveSkillCategories().Keys)
         {
-            _service.GetActiveSkillsByCategoryForDisplay(category).Values.Select(x => x.Name).Should()
+            _service.Catalog.GetActiveSkillsByCategoryForDisplay(category).Values.Select(x => x.Name).Should()
                 .BeInAscendingOrder(StringComparer.OrdinalIgnoreCase);
         }
     }
@@ -223,7 +223,7 @@ public class SkillServiceTests
     [Test]
     public void GetSkillDetails_ReadsTheSkillAttribute()
     {
-        var details = _service.GetSkillDetails(SkillType.Armor);
+        var details = _service.Catalog.GetSkillDetails(SkillType.Armor);
 
         details.Name.Should().Be("Armor");
         details.MaxRank.Should().Be(50);
@@ -239,33 +239,33 @@ public class SkillServiceTests
     [TestCase(900, 410)]
     public void GetTotalSkillPoints_AddsTheStartingPoolToTheClampedEarnedPoints(int earned, int expected)
     {
-        _service.GetTotalSkillPoints(new Player { TotalSPAcquired = earned }).Should().Be(expected);
+        _service.Catalog.GetTotalSkillPoints(new Player { TotalSPAcquired = earned }).Should().Be(expected);
     }
 
     [Test]
     public void ApCap_IsATenthOfTheSkillCap()
     {
-        _service.APCap.Should().Be(40);
+        _service.Catalog.APCap.Should().Be(40);
     }
 
     [Test]
     public void GetRankLimit_ClampsToTheSkillsRankRange_AndIsNullWithoutALimit()
     {
-        var details = _service.GetSkillDetails(SkillType.Armor);
+        var details = _service.Catalog.GetSkillDetails(SkillType.Armor);
 
-        _service.GetRankLimit(new PlayerSkill(), details).Should().BeNull();
-        _service.GetRankLimit(new PlayerSkill { RankLimit = -3 }, details).Should().Be(0);
-        _service.GetRankLimit(new PlayerSkill { RankLimit = 20 }, details).Should().Be(20);
-        _service.GetRankLimit(new PlayerSkill { RankLimit = 99 }, details).Should().Be(50);
+        _service.Rank.GetRankLimit(new PlayerSkill(), details).Should().BeNull();
+        _service.Rank.GetRankLimit(new PlayerSkill { RankLimit = -3 }, details).Should().Be(0);
+        _service.Rank.GetRankLimit(new PlayerSkill { RankLimit = 20 }, details).Should().Be(20);
+        _service.Rank.GetRankLimit(new PlayerSkill { RankLimit = 99 }, details).Should().Be(50);
     }
 
     [Test]
     public void GetRankCeiling_IsTheLimitOrTheMaxRank()
     {
-        var details = _service.GetSkillDetails(SkillType.Armor);
+        var details = _service.Catalog.GetSkillDetails(SkillType.Armor);
 
-        _service.GetRankCeiling(new PlayerSkill(), details).Should().Be(50);
-        _service.GetRankCeiling(new PlayerSkill { RankLimit = 12 }, details).Should().Be(12);
+        _service.Rank.GetRankCeiling(new PlayerSkill(), details).Should().Be(50);
+        _service.Rank.GetRankCeiling(new PlayerSkill { RankLimit = 12 }, details).Should().Be(12);
     }
 
     [Test]
@@ -276,7 +276,7 @@ public class SkillServiceTests
         Give(SkillType.Mirialan, 20);
         Give(SkillType.Smithery, -4);
 
-        _service.GetTotalContributingSkillRanks(_record).Should().Be(15);
+        _service.Rank.GetTotalContributingSkillRanks(_record).Should().Be(15);
     }
 
     [Test]
@@ -286,7 +286,7 @@ public class SkillServiceTests
         Give(SkillType.Armor, 10);
         Give(SkillType.Mirialan, 20);
 
-        uncached.GetTotalContributingSkillRanks(_record).Should().Be(10);
+        uncached.Rank.GetTotalContributingSkillRanks(_record).Should().Be(10);
     }
 
     [Test]
@@ -294,14 +294,14 @@ public class SkillServiceTests
     {
         FillOthers(50);
         Give(SkillType.Armor, 0);
-        _service.IsBlockedBySkillCap(_record, SkillType.Armor).Should().BeFalse("other skills can still give up ranks");
+        _service.Rank.IsBlockedBySkillCap(_record, SkillType.Armor).Should().BeFalse("other skills can still give up ranks");
 
         FillOthers(50, locked: true);
-        _service.IsBlockedBySkillCap(_record, SkillType.Armor).Should().BeTrue();
-        _service.IsBlockedBySkillCap(_record, SkillType.Mirialan).Should().BeFalse("languages are never blocked by the cap");
+        _service.Rank.IsBlockedBySkillCap(_record, SkillType.Armor).Should().BeTrue();
+        _service.Rank.IsBlockedBySkillCap(_record, SkillType.Mirialan).Should().BeFalse("languages are never blocked by the cap");
 
         FillOthers(40, locked: true);
-        _service.IsBlockedBySkillCap(_record, SkillType.Armor).Should().BeFalse("the player is under the cap");
+        _service.Rank.IsBlockedBySkillCap(_record, SkillType.Armor).Should().BeFalse("the player is under the cap");
     }
 
     // ---- GetMaxDistributableXP
@@ -309,14 +309,14 @@ public class SkillServiceTests
     [Test]
     public void GetMaxDistributableXP_ForAPlayerObject_RefusesInvalidSkillsNonPlayersAndDMs()
     {
-        _service.GetMaxDistributableXP(Creature, SkillType.Invalid).Should().Be(0);
+        _service.Rank.GetMaxDistributableXP(Creature, SkillType.Invalid).Should().Be(0);
 
         _engine.SetReturn("GetIsPC", false);
-        _service.GetMaxDistributableXP(Creature, SkillType.Armor).Should().Be(0);
+        _service.Rank.GetMaxDistributableXP(Creature, SkillType.Armor).Should().Be(0);
 
         _engine.SetReturn("GetIsPC", true);
         _engine.SetReturn("GetIsDM", true);
-        _service.GetMaxDistributableXP(Creature, SkillType.Armor).Should().Be(0);
+        _service.Rank.GetMaxDistributableXP(Creature, SkillType.Armor).Should().Be(0);
     }
 
     [Test]
@@ -324,8 +324,8 @@ public class SkillServiceTests
     {
         Give(SkillType.Armor, 0, 50);
 
-        _service.GetMaxDistributableXP(Creature, SkillType.Armor).Should()
-            .Be(_service.GetMaxDistributableXP(_record, SkillType.Armor));
+        _service.Rank.GetMaxDistributableXP(Creature, SkillType.Armor).Should()
+            .Be(_service.Rank.GetMaxDistributableXP(_record, SkillType.Armor));
         _log.Should().Contain("db.get");
     }
 
@@ -333,16 +333,16 @@ public class SkillServiceTests
     public void GetMaxDistributableXP_IsZeroAtTheCeilingOrWhenTheCapBlocksTheSkill()
     {
         Give(SkillType.Armor, 50);
-        _service.GetMaxDistributableXP(_record, SkillType.Armor).Should().Be(0);
+        _service.Rank.GetMaxDistributableXP(_record, SkillType.Armor).Should().Be(0);
 
         Give(SkillType.Armor, 5, 0, limit: 5);
-        _service.GetMaxDistributableXP(_record, SkillType.Armor).Should().Be(0);
+        _service.Rank.GetMaxDistributableXP(_record, SkillType.Armor).Should().Be(0);
 
         FillOthers(50, locked: true);
         Give(SkillType.Armor, 0);
-        _service.GetMaxDistributableXP(_record, SkillType.Armor).Should().Be(0);
+        _service.Rank.GetMaxDistributableXP(_record, SkillType.Armor).Should().Be(0);
 
-        _service.GetMaxDistributableXP(_record, SkillType.Invalid).Should().Be(0);
+        _service.Rank.GetMaxDistributableXP(_record, SkillType.Invalid).Should().Be(0);
     }
 
     [Test]
@@ -350,8 +350,8 @@ public class SkillServiceTests
     {
         Give(SkillType.Mirialan, 18, 100);
 
-        _service.GetMaxDistributableXP(_record, SkillType.Mirialan).Should()
-            .Be(_service.GetRequiredXP(18) - 100 + _service.GetRequiredXP(19));
+        _service.Rank.GetMaxDistributableXP(_record, SkillType.Mirialan).Should()
+            .Be(_service.Catalog.GetRequiredXP(18) - 100 + _service.Catalog.GetRequiredXP(19));
     }
 
     [Test]
@@ -361,25 +361,25 @@ public class SkillServiceTests
         Give(SkillType.Armor, 0);
 
         // 392 ranks leave 8 free ranks and the fillers can give up 392 more: the skill reaches its max rank.
-        _service.GetMaxDistributableXP(_record, SkillType.Armor).Should()
-            .Be(Enumerable.Range(0, 50).Sum(rank => _service.GetRequiredXP(rank)));
+        _service.Rank.GetMaxDistributableXP(_record, SkillType.Armor).Should()
+            .Be(Enumerable.Range(0, 50).Sum(rank => _service.Catalog.GetRequiredXP(rank)));
 
         // Fillers at their limit have nothing to give: only the 8 free ranks remain.
         FillOthers(49, limit: 49);
-        _service.GetMaxDistributableXP(_record, SkillType.Armor).Should()
-            .Be(Enumerable.Range(0, 8).Sum(rank => _service.GetRequiredXP(rank)));
+        _service.Rank.GetMaxDistributableXP(_record, SkillType.Armor).Should()
+            .Be(Enumerable.Range(0, 8).Sum(rank => _service.Catalog.GetRequiredXP(rank)));
     }
 
     [Test]
     public void GetMaxDistributableXP_AcceptsOneXpWhenStoredXpAlreadyPaysTheNextRank()
     {
         FillOthers(49, limit: 49);
-        Give(SkillType.Armor, 8, _service.GetRequiredXP(8) + 5);
+        Give(SkillType.Armor, 8, _service.Catalog.GetRequiredXP(8) + 5);
 
         // 400 ranks are in use and nothing decays, but the skill is not blocked outright: no reachable rank is left.
-        _service.GetMaxDistributableXP(_record, SkillType.Armor).Should().BeOneOf(0, 1);
-        Give(SkillType.Armor, 7, _service.GetRequiredXP(7) + 5);
-        _service.GetMaxDistributableXP(_record, SkillType.Armor).Should().Be(1);
+        _service.Rank.GetMaxDistributableXP(_record, SkillType.Armor).Should().BeOneOf(0, 1);
+        Give(SkillType.Armor, 7, _service.Catalog.GetRequiredXP(7) + 5);
+        _service.Rank.GetMaxDistributableXP(_record, SkillType.Armor).Should().Be(1);
     }
 
     // ---- GiveSkillXP: refusals
@@ -387,23 +387,23 @@ public class SkillServiceTests
     [Test]
     public void GiveSkillXP_RefusesBeforeTouchingTheDatabase()
     {
-        _service.GiveSkillXP(Creature, SkillType.Invalid, 100).Should().Be(0);
-        _service.GiveSkillXP(Creature, SkillType.Armor, 0).Should().Be(0);
+        _service.XP.GiveSkillXP(Creature, SkillType.Invalid, 100).Should().Be(0);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, 0).Should().Be(0);
 
         _engine.SetReturn("GetIsPC", false);
-        _service.GiveSkillXP(Creature, SkillType.Armor, 100).Should().Be(0);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, 100).Should().Be(0);
         _engine.SetReturn("GetIsPC", true);
 
         _engine.SetReturn("GetIsDM", true);
-        _service.GiveSkillXP(Creature, SkillType.Armor, 100).Should().Be(0);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, 100).Should().Be(0);
         _engine.SetReturn("GetIsDM", false);
 
         _engine.SetReturn("GetIsDead", true);
-        _service.GiveSkillXP(Creature, SkillType.Armor, 100).Should().Be(0);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, 100).Should().Be(0);
         _engine.SetReturn("GetIsDead", false);
 
         _engine.SetReturn("GetCurrentHitPoints", 0);
-        _service.GiveSkillXP(Creature, SkillType.Armor, 100).Should().Be(0);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, 100).Should().Be(0);
 
         _log.Should().BeEmpty();
     }
@@ -415,7 +415,7 @@ public class SkillServiceTests
     {
         Give(SkillType.Armor, 0);
 
-        var used = _service.GiveSkillXP(Creature, SkillType.Armor, 100);
+        var used = _service.XP.GiveSkillXP(Creature, SkillType.Armor, 100);
 
         used.Should().Be(70);
         _record.Skills[SkillType.Armor].XP.Should().Be(70);
@@ -435,7 +435,7 @@ public class SkillServiceTests
         _record.DMXPBonus = 10;
 
         // 4 * 2.5% + 20 * 1% + 10 * 1% = 40% of 100, then the 30% henchman penalty.
-        _service.GiveSkillXP(Creature, SkillType.Armor, 100).Should().Be(98);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, 100).Should().Be(98);
         _service.StatAdjustmentRequests.Should().Equal(Creature);
     }
 
@@ -446,7 +446,7 @@ public class SkillServiceTests
         _engine.SetReturn("GetAbilityScore", 4);
         _service.StatAdjustment = 20;
 
-        _service.GiveSkillXP(Creature, SkillType.Armor, 100, ignoreBonuses: true, applyHenchmanPenalty: false)
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, 100, ignoreBonuses: true, applyHenchmanPenalty: false)
             .Should().Be(100);
 
         _service.StatAdjustmentRequests.Should().BeEmpty();
@@ -458,8 +458,8 @@ public class SkillServiceTests
     {
         Give(SkillType.Armor, 0);
 
-        _service.GiveSkillXP(Creature, SkillType.Armor, 100, true, false, MessageSource);
-        _service.GiveSkillXP(Creature, SkillType.Armor, 50, true, false, MessageSource);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, 100, true, false, MessageSource);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, 50, true, false, MessageSource);
 
         _log.Should().NotContain(x => x.StartsWith("message:"));
         _service.Scheduled.Should().HaveCount(1);
@@ -474,7 +474,7 @@ public class SkillServiceTests
     public void GiveSkillXP_TheDeferredFeedbackSkipsPlayersWhoLeftBeforeTheFrame()
     {
         Give(SkillType.Armor, 0);
-        _service.GiveSkillXP(Creature, SkillType.Armor, 100, true, false, MessageSource);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, 100, true, false, MessageSource);
 
         _engine.SetReturn("GetIsObjectValid", false);
         _service.Scheduled.Single()();
@@ -490,7 +490,7 @@ public class SkillServiceTests
         Give(SkillType.Armor, 0);
         _record.XPDebt = 500;
 
-        _service.GiveSkillXP(Creature, SkillType.Armor, 100, true, false).Should().Be(100);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, 100, true, false).Should().Be(100);
 
         _record.XPDebt.Should().Be(400);
         _record.Skills[SkillType.Armor].XP.Should().Be(0);
@@ -506,7 +506,7 @@ public class SkillServiceTests
         Give(SkillType.Armor, 0);
         _record.XPDebt = 40;
 
-        _service.GiveSkillXP(Creature, SkillType.Armor, 100, true, false).Should().Be(100, "40 XP of debt plus 60 XP applied");
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, 100, true, false).Should().Be(100, "40 XP of debt plus 60 XP applied");
 
         _record.XPDebt.Should().Be(0);
         _record.Skills[SkillType.Armor].XP.Should().Be(60);
@@ -525,7 +525,7 @@ public class SkillServiceTests
     {
         Give(SkillType.Armor, 50, 30);
 
-        _service.GiveSkillXP(Creature, SkillType.Armor, 100, true, false).Should().Be(0);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, 100, true, false).Should().Be(0);
 
         _record.Skills[SkillType.Armor].XP.Should().Be(0);
         _log.Should().Equal("db.get", "db.set", "refresh");
@@ -536,7 +536,7 @@ public class SkillServiceTests
     {
         Give(SkillType.Armor, 10, 0, limit: 10);
 
-        _service.GiveSkillXP(Creature, SkillType.Armor, 100, true, false).Should().Be(0);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, 100, true, false).Should().Be(0);
 
         _log.Should().Equal("db.get", "db.set", "warning:SKILL_LIMIT");
     }
@@ -546,7 +546,7 @@ public class SkillServiceTests
     {
         Give(SkillType.Mirialan, 5, 0, limit: 5);
 
-        _service.GiveSkillXP(Creature, SkillType.Mirialan, 100, true, false).Should().Be(0);
+        _service.XP.GiveSkillXP(Creature, SkillType.Mirialan, 100, true, false).Should().Be(0);
 
         _log.Should().Equal("db.get", "db.set");
     }
@@ -558,7 +558,7 @@ public class SkillServiceTests
         Give(SkillType.Armor, 0);
         _record.XPDebt = 10;
 
-        _service.GiveSkillXP(Creature, SkillType.Armor, 100, true, false).Should().Be(10);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, 100, true, false).Should().Be(10);
 
         _record.XPDebt.Should().Be(0);
         _log.Should().Equal(
@@ -574,7 +574,7 @@ public class SkillServiceTests
         FillOthers(50, locked: true);
         Give(SkillType.Armor, 0);
 
-        _service.GiveSkillXP(Creature, SkillType.Armor, 100, true, false).Should().Be(0);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, 100, true, false).Should().Be(0);
 
         _log.Should().Equal("db.get", "warning:SKILL_CAP");
     }
@@ -586,9 +586,9 @@ public class SkillServiceTests
     {
         Give(SkillType.Armor, 0);
         _record.TotalSPAcquired = 9;
-        var required = _service.GetRequiredXP(0);
+        var required = _service.Catalog.GetRequiredXP(0);
 
-        _service.GiveSkillXP(Creature, SkillType.Armor, required + 25, true, false).Should().Be(required + 25);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, required + 25, true, false).Should().Be(required + 25);
 
         _record.Skills[SkillType.Armor].Rank.Should().Be(1);
         _record.Skills[SkillType.Armor].XP.Should().Be(25);
@@ -612,7 +612,7 @@ public class SkillServiceTests
         Give(SkillType.Mirialan, 0);
         _record.TotalSPAcquired = 9;
 
-        _service.GiveSkillXP(Creature, SkillType.Mirialan, _service.GetRequiredXP(0), true, false);
+        _service.XP.GiveSkillXP(Creature, SkillType.Mirialan, _service.Catalog.GetRequiredXP(0), true, false);
 
         _record.Skills[SkillType.Mirialan].Rank.Should().Be(1);
         _record.UnallocatedSP.Should().Be(0);
@@ -625,13 +625,13 @@ public class SkillServiceTests
     {
         Give(SkillType.Armor, 0);
         _record.TotalSPAcquired = 4;
-        _service.GiveSkillXP(Creature, SkillType.Armor, _service.GetRequiredXP(0), true, false);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, _service.Catalog.GetRequiredXP(0), true, false);
         _record.UnallocatedAP.Should().Be(0);
 
         Give(SkillType.Armor, 0);
         _record.TotalSPAcquired = 9;
         _record.TotalAPAcquired = 40;
-        _service.GiveSkillXP(Creature, SkillType.Armor, _service.GetRequiredXP(0), true, false);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, _service.Catalog.GetRequiredXP(0), true, false);
         _record.UnallocatedAP.Should().Be(0);
     }
 
@@ -640,20 +640,20 @@ public class SkillServiceTests
     {
         Give(SkillType.Armor, 0, 0, limit: 1);
 
-        var used = _service.GiveSkillXP(Creature, SkillType.Armor, _service.GetRequiredXP(0) + 100, true, false);
+        var used = _service.XP.GiveSkillXP(Creature, SkillType.Armor, _service.Catalog.GetRequiredXP(0) + 100, true, false);
 
         _record.Skills[SkillType.Armor].Rank.Should().Be(1);
         _record.Skills[SkillType.Armor].XP.Should().Be(0);
-        used.Should().Be(_service.GetRequiredXP(0), "discarded XP is not counted as used");
+        used.Should().Be(_service.Catalog.GetRequiredXP(0), "discarded XP is not counted as used");
     }
 
     [Test]
     public void GiveSkillXP_SeveralRanksInOneAward_RaiseEachInTurn()
     {
         Give(SkillType.Armor, 0);
-        var xp = _service.GetRequiredXP(0) + _service.GetRequiredXP(1) + 1;
+        var xp = _service.Catalog.GetRequiredXP(0) + _service.Catalog.GetRequiredXP(1) + 1;
 
-        _service.GiveSkillXP(Creature, SkillType.Armor, xp, true, false);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, xp, true, false);
 
         _record.Skills[SkillType.Armor].Rank.Should().Be(2);
         _record.Skills[SkillType.Armor].XP.Should().Be(1);
@@ -673,7 +673,7 @@ public class SkillServiceTests
         var expected = Fillers[new System.Random(7).Next(Fillers.Length)];
         _record.Skills[expected].XP = 12;
 
-        _service.GiveSkillXP(Creature, SkillType.Armor, _service.GetRequiredXP(0), true, false);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, _service.Catalog.GetRequiredXP(0), true, false);
 
         _record.Skills[SkillType.Armor].Rank.Should().Be(1);
         _record.Skills[expected].Rank.Should().Be(49);
@@ -692,7 +692,7 @@ public class SkillServiceTests
         Give(SkillType.Armor, 0);
         Random.SetSeed(3);
 
-        _service.GiveSkillXP(Creature, SkillType.Armor, _service.GetRequiredXP(0), true, false);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, _service.Catalog.GetRequiredXP(0), true, false);
 
         _record.Skills[SkillType.Force].Rank.Should().Be(49);
         Fillers.Where(x => x != SkillType.Force).Should().OnlyContain(x => _record.Skills[x].Rank == 50);
@@ -708,8 +708,8 @@ public class SkillServiceTests
         foreach (var filler in Fillers)
             _record.Skills[filler].IsLocked = true;
 
-        var xp = _service.GetRequiredXP(0) + _service.GetRequiredXP(1);
-        _service.GiveSkillXP(Creature, SkillType.Armor, xp, true, false).Should().BeGreaterThan(0);
+        var xp = _service.Catalog.GetRequiredXP(0) + _service.Catalog.GetRequiredXP(1);
+        _service.XP.GiveSkillXP(Creature, SkillType.Armor, xp, true, false).Should().BeGreaterThan(0);
 
         _record.Skills[SkillType.Armor].Rank.Should().Be(1, "the cap stops the second rank");
     }
@@ -722,7 +722,7 @@ public class SkillServiceTests
         _engine.SetReturn("GetEnteringObject", Creature);
         var kept = Give(SkillType.Armor, 12, 34);
 
-        _service.AddMissingSkills();
+        _service.Catalog.AddMissingSkills();
 
         _record.Skills.Keys.Should().BeEquivalentTo(Enum.GetValues<SkillType>());
         _record.Skills[SkillType.Armor].Should().BeSameAs(kept);
@@ -735,11 +735,11 @@ public class SkillServiceTests
     {
         _engine.SetReturn("GetEnteringObject", Creature);
         _engine.SetReturn("GetIsDM", true);
-        _service.AddMissingSkills();
+        _service.Catalog.AddMissingSkills();
 
         _engine.SetReturn("GetIsDM", false);
         _engine.SetReturn("GetIsPC", false);
-        _service.AddMissingSkills();
+        _service.Catalog.AddMissingSkills();
 
         _log.Should().BeEmpty();
     }
@@ -751,21 +751,21 @@ public class SkillServiceTests
     {
         Give(SkillType.Armor, 17);
 
-        _service.GetCreatureSkillRank(Creature, SkillType.Armor).Should().Be(17);
-        _service.GetCreatureSkillRank(Creature, SkillType.Piloting).Should().Be(0);
+        _service.Catalog.GetCreatureSkillRank(Creature, SkillType.Armor).Should().Be(17);
+        _service.Catalog.GetCreatureSkillRank(Creature, SkillType.Piloting).Should().Be(0);
     }
 
     [Test]
     public void GetCreatureSkillRank_IsZeroForDMsInvalidSkillsAndOtherCreatures()
     {
         Give(SkillType.Armor, 17);
-        _service.GetCreatureSkillRank(Creature, SkillType.Invalid).Should().Be(0);
+        _service.Catalog.GetCreatureSkillRank(Creature, SkillType.Invalid).Should().Be(0);
 
         _engine.SetReturn("GetIsPC", false);
-        _service.GetCreatureSkillRank(Creature, SkillType.Armor).Should().Be(0);
+        _service.Catalog.GetCreatureSkillRank(Creature, SkillType.Armor).Should().Be(0);
 
         _engine.SetReturn("GetIsDM", true);
-        _service.GetCreatureSkillRank(Creature, SkillType.Armor).Should().Be(0);
+        _service.Catalog.GetCreatureSkillRank(Creature, SkillType.Armor).Should().Be(0);
     }
 
     [Test]
@@ -775,7 +775,7 @@ public class SkillServiceTests
         _service.DroidRank = 22;
         Give(SkillType.Armor, 17);
 
-        _service.GetCreatureSkillRank(Creature, SkillType.Armor).Should().Be(22);
+        _service.Catalog.GetCreatureSkillRank(Creature, SkillType.Armor).Should().Be(22);
         _log.Should().BeEmpty("a droid's ranks are not stored on a player record");
     }
 
@@ -784,37 +784,37 @@ public class SkillServiceTests
     [Test]
     public void GetSkillTypeByBaseItem_MapsWeaponsAndAmmunition_AndNothingElse()
     {
-        _service.GetSkillTypeByBaseItem(BaseItem.Longsword).Should().Be(SkillType.Vibroblade);
-        _service.GetSkillTypeByBaseItem(BaseItem.Dagger).Should().Be(SkillType.Vibroknife);
-        _service.GetSkillTypeByBaseItem(BaseItem.Lightsaber).Should().Be(SkillType.Lightsaber);
-        _service.GetSkillTypeByBaseItem(BaseItem.Rifle).Should().Be(SkillType.Rifle);
-        _service.GetSkillTypeByBaseItem(BaseItem.Pistol).Should().Be(SkillType.Pistol);
-        _service.GetSkillTypeByBaseItem(BaseItem.CompanionPistol).Should().Be(SkillType.TwinPistol);
-        _service.GetSkillTypeByBaseItem(BaseItem.PowerGlove).Should().Be(SkillType.Unarmed);
-        _service.GetSkillTypeByBaseItem(BaseItem.Shuriken).Should().Be(SkillType.Throwing);
-        _service.GetSkillTypeByBaseItem(BaseItem.Amulet).Should().Be(SkillType.Invalid);
+        _service.Catalog.GetSkillTypeByBaseItem(BaseItem.Longsword).Should().Be(SkillType.Vibroblade);
+        _service.Catalog.GetSkillTypeByBaseItem(BaseItem.Dagger).Should().Be(SkillType.Vibroknife);
+        _service.Catalog.GetSkillTypeByBaseItem(BaseItem.Lightsaber).Should().Be(SkillType.Lightsaber);
+        _service.Catalog.GetSkillTypeByBaseItem(BaseItem.Rifle).Should().Be(SkillType.Rifle);
+        _service.Catalog.GetSkillTypeByBaseItem(BaseItem.Pistol).Should().Be(SkillType.Pistol);
+        _service.Catalog.GetSkillTypeByBaseItem(BaseItem.CompanionPistol).Should().Be(SkillType.TwinPistol);
+        _service.Catalog.GetSkillTypeByBaseItem(BaseItem.PowerGlove).Should().Be(SkillType.Unarmed);
+        _service.Catalog.GetSkillTypeByBaseItem(BaseItem.Shuriken).Should().Be(SkillType.Throwing);
+        _service.Catalog.GetSkillTypeByBaseItem(BaseItem.Amulet).Should().Be(SkillType.Invalid);
     }
 
     [Test]
     public void GetSkillTypeByBaseItem_IsInvalidBeforeTheMappingsLoad()
     {
-        NewService().GetSkillTypeByBaseItem(BaseItem.Longsword).Should().Be(SkillType.Invalid);
+        NewService().Catalog.GetSkillTypeByBaseItem(BaseItem.Longsword).Should().Be(SkillType.Invalid);
     }
 
     [Test]
     public void GetAttackSkillTypeByBaseItem_TreatsGlovesAndBracersAsBareHands()
     {
-        _service.GetAttackSkillTypeByBaseItem(BaseItem.Gloves).Should().Be(SkillType.Unarmed);
-        _service.GetAttackSkillTypeByBaseItem(BaseItem.Bracer).Should().Be(SkillType.Unarmed);
-        _service.GetSkillTypeByBaseItem(BaseItem.Gloves).Should().Be(SkillType.Katar);
-        _service.GetAttackSkillTypeByBaseItem(BaseItem.Katar).Should().Be(SkillType.Katar);
+        _service.Catalog.GetAttackSkillTypeByBaseItem(BaseItem.Gloves).Should().Be(SkillType.Unarmed);
+        _service.Catalog.GetAttackSkillTypeByBaseItem(BaseItem.Bracer).Should().Be(SkillType.Unarmed);
+        _service.Catalog.GetSkillTypeByBaseItem(BaseItem.Gloves).Should().Be(SkillType.Katar);
+        _service.Catalog.GetAttackSkillTypeByBaseItem(BaseItem.Katar).Should().Be(SkillType.Katar);
     }
 
     [Test]
     public void GetWeaponSkill_PrefersAnExplicitOverride()
     {
-        _service.GetWeaponSkill(Creature, Weapon, SkillType.Force).Should().Be(SkillType.Force);
-        _service.GetWeaponSkill(Creature, OBJECT_INVALID, SkillType.Force).Should().Be(SkillType.Force);
+        _service.Catalog.GetWeaponSkill(Creature, Weapon, SkillType.Force).Should().Be(SkillType.Force);
+        _service.Catalog.GetWeaponSkill(Creature, OBJECT_INVALID, SkillType.Force).Should().Be(SkillType.Force);
     }
 
     [Test]
@@ -822,8 +822,8 @@ public class SkillServiceTests
     {
         _engine.SetReturn("GetIsObjectValid", false);
 
-        _service.GetWeaponSkill(Creature, Weapon, SkillType.Invalid).Should().Be(SkillType.Invalid);
-        _service.GetWeaponSkill(Creature, Weapon).Should().Be(SkillType.Invalid);
+        _service.Catalog.GetWeaponSkill(Creature, Weapon, SkillType.Invalid).Should().Be(SkillType.Invalid);
+        _service.Catalog.GetWeaponSkill(Creature, Weapon).Should().Be(SkillType.Invalid);
     }
 
     [Test]
@@ -832,7 +832,7 @@ public class SkillServiceTests
         _engine.SetReturn("GetIsObjectValid", true);
         _engine.SetReturn("GetBaseItemType", BaseItem.Rifle);
 
-        _service.GetWeaponSkill(Creature, Weapon).Should().Be(SkillType.Rifle);
+        _service.Catalog.GetWeaponSkill(Creature, Weapon).Should().Be(SkillType.Rifle);
         _twinProxy.Calls.Should().BeEmpty("the pair is only asked about when the weapon is held");
     }
 
@@ -844,10 +844,10 @@ public class SkillServiceTests
         _engine.SetReturnHandler("GetItemInSlot", args => (InventorySlot)args[0]! == InventorySlot.RightHand ? Weapon : OBJECT_INVALID);
 
         _twinPair = true;
-        _service.GetWeaponSkill(Creature, Weapon).Should().Be(SkillType.TwinPistol);
+        _service.Catalog.GetWeaponSkill(Creature, Weapon).Should().Be(SkillType.TwinPistol);
 
         _twinPair = false;
-        _service.GetWeaponSkill(Creature, Weapon).Should().Be(SkillType.Pistol);
+        _service.Catalog.GetWeaponSkill(Creature, Weapon).Should().Be(SkillType.Pistol);
     }
 
     [Test]
@@ -856,7 +856,7 @@ public class SkillServiceTests
         _engine.SetReturn("GetIsObjectValid", true);
         _engine.SetReturn("GetBaseItemType", BaseItem.CompanionPistol);
 
-        _service.GetWeaponSkill(Creature, Weapon).Should().Be(SkillType.Invalid);
+        _service.Catalog.GetWeaponSkill(Creature, Weapon).Should().Be(SkillType.Invalid);
     }
 
     // ---- the XP chart behind the instance
@@ -864,14 +864,14 @@ public class SkillServiceTests
     [Test]
     public void TheXpChartMembers_AnswerFromTheChart()
     {
-        _service.GetRequiredXP(0).Should().Be(550);
-        _service.GetTotalRequiredXP(1).Should().Be(550 + 825);
-        _service.GetLevelByTotalXP(560).Should().Be((1, 10));
-        _service.GetDeltaXP(-1).Should().Be(450);
-        _service.GetPracticeXP(10, 5, 20).Should().Be(SkillXPChart.GetPracticeXP(10, 5, 20));
-        _service.GetEspionageRequiredRank(PerkType.Poisoncraft, 2).Should().Be(15);
-        _service.GetEspionagePracticeRankLimit(PerkType.Poisoncraft, 5).Should().Be(50);
-        _service.CalculateEspionageXP(PerkType.Poisoncraft, 2, 20).Should()
+        _service.Catalog.GetRequiredXP(0).Should().Be(550);
+        _service.Catalog.GetTotalRequiredXP(1).Should().Be(550 + 825);
+        _service.Catalog.GetLevelByTotalXP(560).Should().Be((1, 10));
+        _service.XP.GetDeltaXP(-1).Should().Be(450);
+        _service.XP.GetPracticeXP(10, 5, 20).Should().Be(SkillXPChart.GetPracticeXP(10, 5, 20));
+        _service.Catalog.GetEspionageRequiredRank(PerkType.Poisoncraft, 2).Should().Be(15);
+        _service.Catalog.GetEspionagePracticeRankLimit(PerkType.Poisoncraft, 5).Should().Be(50);
+        _service.XP.CalculateEspionageXP(PerkType.Poisoncraft, 2, 20).Should()
             .Be(SkillXPChart.CalculateEspionageXP(PerkType.Poisoncraft, 2, 20));
     }
 
@@ -880,100 +880,10 @@ public class SkillServiceTests
     [Test]
     public void TheDefaultSeams_RunWithoutAServer()
     {
-        var plain = new SkillService(new LoggingDB(_store, Mark), ScriptedProxy.Create<IGuiService>(out _),
-            ScriptedProxy.Create<IPlayerFeedbackService>(out _), ScriptedProxy.Create<ITwinPistolEquipmentService>(out _),
-            FacadeForwarder.LazyFor<IStatService>(), ScriptedProxy.Create<ICompanionLookup>(out _));
+        var plain = TestSkillService.CreateWithDefaultSeams(new LoggingDB(_store, Mark));
 
         // A DM answers 0 before any seam is reached, and a creature that is not a droid falls through to the player lookup.
         _engine.SetReturn("GetIsDM", true);
         plain.GetCreatureSkillRank(Creature, SkillType.Armor).Should().Be(0);
-    }
-
-    // ---- stand-ins
-
-    private sealed class TestSkillService : SkillService
-    {
-        public TestSkillService(IDBService db, IGuiService gui, IPlayerFeedbackService feedback, ITwinPistolEquipmentService twin)
-            : base(db, gui, feedback, twin, FacadeForwarder.LazyFor<IStatService>(), ScriptedProxy.Create<ICompanionLookup>(out _))
-        {
-        }
-
-        public int StatAdjustment { get; set; }
-        public List<uint> StatAdjustmentRequests { get; } = new();
-        public HashSet<uint> DroidCreatures { get; } = new();
-        public int DroidRank { get; set; }
-        public List<Action> Scheduled { get; } = new();
-
-        protected override int GetExperiencePercentAdjustment(uint player)
-        {
-            StatAdjustmentRequests.Add(player);
-            return StatAdjustment;
-        }
-
-        protected override bool IsDroid(uint creature) => DroidCreatures.Contains(creature);
-
-        protected override int GetDroidSkillRank(uint creature, SkillType skillType) => DroidRank;
-
-        protected override void ScheduleXPMessages(Action callback) => Scheduled.Add(callback);
-    }
-
-    /// <summary>Logs the order of reads and writes next to the messages, then answers from the in-memory store.</summary>
-    private sealed class LoggingDB : IDBService
-    {
-        private readonly InMemoryDBService _inner;
-        private readonly Action<string> _mark;
-
-        public LoggingDB(InMemoryDBService inner, Action<string> mark)
-        {
-            _inner = inner;
-            _mark = mark;
-        }
-
-        public T Get<T>(string id) where T : EntityBase
-        {
-            _mark("db.get");
-            return _inner.Get<T>(id);
-        }
-
-        public void Set<T>(T entity) where T : EntityBase
-        {
-            _mark("db.set");
-            _inner.Set(entity);
-        }
-
-        public void Delete<T>(string id) where T : EntityBase => _inner.Delete<T>(id);
-
-        public bool Exists<T>(string id) where T : EntityBase => _inner.Exists<T>(id);
-
-        public IEnumerable<T> Search<T>(DBQuery<T> query) where T : EntityBase => _inner.Search(query);
-
-        public long SearchCount<T>(DBQuery<T> query) where T : EntityBase => _inner.SearchCount(query);
-
-        public long GetWriteVersion<T>() where T : EntityBase => _inner.GetWriteVersion<T>();
-
-        public void Load() => _inner.Load();
-        public void Connect() => _inner.Connect();
-        public void SyncIndexes() => _inner.SyncIndexes();
-
-        public StackExchange.Redis.RedisValue StreamAdd(StackExchange.Redis.RedisKey key,
-            StackExchange.Redis.NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false) =>
-            _inner.StreamAdd(key, streamPairs, maxLength, useApproximateMaxLength);
-
-        public string GetRawJson<T>(string id) => _inner.GetRawJson<T>(id);
-
-        public IEnumerable<string> SearchIds<T>(DBQuery<T> query) where T : EntityBase => _inner.SearchIds(query);
-
-        public IEnumerable<string> SearchRawJson<T>(DBQuery<T> query) where T : EntityBase => _inner.SearchRawJson(query);
-
-        public void SetUnindexedJsonProperty<T>(string id, string propertyName, string json) where T : EntityBase =>
-            _inner.SetUnindexedJsonProperty<T>(id, propertyName, json);
-
-        public string EscapeTokens(string str) => _inner.EscapeTokens(str);
-
-        public string StringGet(StackExchange.Redis.RedisKey key) => _inner.StringGet(key);
-
-        public Task<StackExchange.Redis.RedisValue> StreamAddAsync(StackExchange.Redis.RedisKey key,
-            StackExchange.Redis.NameValueEntry[] streamPairs, int? maxLength = null, bool useApproximateMaxLength = false) =>
-            _inner.StreamAddAsync(key, streamPairs, maxLength, useApproximateMaxLength);
     }
 }

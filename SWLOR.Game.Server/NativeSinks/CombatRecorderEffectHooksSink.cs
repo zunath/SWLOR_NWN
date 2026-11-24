@@ -55,7 +55,7 @@ public sealed unsafe class CombatRecorderEffectHooksSink : ICombatRecorderEffect
                 var amount = damage.Total;
                 var hitPoints = hitPointsBefore;
                 applicationIndex = ServerManager.Executor.ExecuteInScriptContext(() =>
-                    CombatRecorder.BeginDamageApplication(source, targetId, amount, hitPoints));
+                    CombatRecordSession.BeginDamageApplication(source, targetId, amount, hitPoints));
             }
             else
             {
@@ -88,7 +88,7 @@ public sealed unsafe class CombatRecorderEffectHooksSink : ICombatRecorderEffect
         }
         finally
         {
-            CombatRecorder.EndDamageApplication(applicationIndex);
+            CombatRecordSession.EndDamageApplication(applicationIndex);
         }
 
         return result;
@@ -128,7 +128,7 @@ public sealed unsafe class CombatRecorderEffectHooksSink : ICombatRecorderEffect
         // The PvP healing reduction runs inside this call and writes its cut into this heal's frame.
         var targetId = target?.m_idSelf ?? OBJECT_INVALID;
         if (target != null)
-            CombatRecorder.BeginHealApplication(targetId);
+            CombatRecordSession.BeginHealApplication(targetId);
         int result;
         var pvpReduced = 0;
         try
@@ -138,7 +138,7 @@ public sealed unsafe class CombatRecorderEffectHooksSink : ICombatRecorderEffect
         finally
         {
             if (target != null)
-                pvpReduced = CombatRecorder.EndHealApplication(targetId);
+                pvpReduced = CombatRecordSession.EndHealApplication(targetId);
         }
 
         if (target == null)

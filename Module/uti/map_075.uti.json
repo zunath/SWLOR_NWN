@@ -115,6 +115,21 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
+          "value": "KEY_ITEM_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 75
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
           "value": "NO_ECONOMY"
         },
         "Type": {

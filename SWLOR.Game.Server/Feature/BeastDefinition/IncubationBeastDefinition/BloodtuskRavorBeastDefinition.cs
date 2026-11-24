@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Bloodtusk Ravor")
                 .Appearance(AppearanceType.SwineBoarDire)
                 .AppearanceScale(1f)
-                .SoundSetId(948)
+                .SoundSetId(11)
                 .PortraitId(181)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)
                 .Role(BeastRoleType.Damage)

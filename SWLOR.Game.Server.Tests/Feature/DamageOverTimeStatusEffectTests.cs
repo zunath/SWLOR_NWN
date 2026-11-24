@@ -283,6 +283,32 @@ public class DamageOverTimeStatusEffectTests
                     "a real auto-attack must queue the splash on the module, an object that always exists");
     }
 
+    [Test]
+    public void AutoAttackSplash_LandsWhenTheEngineAppliesTheWeaponDamage()
+    {
+        var root = FindRepositoryRoot().FullName;
+        var combat = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var method = CSharpSyntaxTree.ParseText(combat).GetRoot()
+            .DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.Text == "ApplyAutoAttackSplashEffects");
+        var dispatches = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Where(call => call.Expression.ToString() == "weaponImpactScheduler").ToArray();
+        dispatches.Should().ContainSingle("a native roll's splash waits for the engine to apply that roll's damage");
+        dispatches[0].ArgumentList.Arguments.Single().ToString().Should().Be("Dispatch");
+
+        // GetDamageRoll resolves a native roll when the swing starts; SignalMeleeDamage and
+        // SignalRangedDamage apply it later. Only that native path gets the impact queue.
+        var damageRoll = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
+        damageRoll.Should().Contain("NativeWeaponImpactQueue.CreateScheduler(attackerId, pCombatRound.m_nCurrentAttack, defenderId)");
+        damageRoll.Should().Contain("weaponImpactScheduler: weaponImpactScheduler");
+        var signal = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "NativeWeaponImpactSignal.cs"));
+        signal.Should().Contain("_ZN12CNWSCreature17SignalMeleeDamageEP10CNWSObjecti")
+            .And.Contain("_ZN12CNWSCreature18SignalRangedDamageEP10CNWSObjecti");
+        var symbols = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "Symbols", "8193.37.15.txt"));
+        symbols.Should().Contain("_ZN12CNWSCreature17SignalMeleeDamageEP10CNWSObjecti")
+            .And.Contain("_ZN12CNWSCreature18SignalRangedDamageEP10CNWSObjecti");
+    }
+
     [TestCase("BleedStatusEffect.cs", "EffectDamage(damageAmount, CombatDamageType.Physical.GetNWScriptDamageType())")]
     [TestCase("FragmentationStatusEffect.cs", "EffectDamage(amount, CombatDamageType.Physical.GetNWScriptDamageType())")]
     [TestCase("DiseaseStatusEffect.cs", "EffectDamage(damage, CombatDamageType.Poison.GetNWScriptDamageType())")]

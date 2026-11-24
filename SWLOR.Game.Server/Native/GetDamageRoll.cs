@@ -215,6 +215,12 @@ namespace SWLOR.Game.Server.Native
                     var damageableTarget = defender.m_bPlotObject == 0;
                     var rolledType = damageProfile.DamageType;
                     var nativeDamageApplication = weaponImpactScheduler == null;
+                    // A native roll resolves when the swing or shot starts; the engine applies its damage
+                    // later, in SignalMeleeDamage or SignalRangedDamage. Managed shots already run these
+                    // effects at their impact.
+                    var nativeImpactScheduler = nativeDamageApplication
+                        ? NativeWeaponImpactQueue.CreateScheduler(attackerId, pCombatRound.m_nCurrentAttack, defenderId)
+                        : null;
 
                     // A bare-handed swing with no arms item or natural weapon has no item on-hit
                     // event to award its combat point, so it is credited to Unarmed here.
@@ -237,7 +243,8 @@ namespace SWLOR.Game.Server.Native
                             // effects restore the captured attribution around their actual application.
                             if (nativeDamageApplication && CombatRecorder.IsRecording)
                                 CombatRecorder.ExpectWeaponDamage(attackerId, defenderId, rolledDamage, weaponSkillType);
-                            PublishDamageDealtEvent(attackerId, defenderId, weaponId, rolledDamage, weaponSkillType, rolledType);
+                            PublishDamageDealtEvent(attackerId, defenderId, weaponId, rolledDamage, weaponSkillType, rolledType,
+                                nativeImpactScheduler);
                         }
                     }
                     if (weaponImpactScheduler == null) ApplyWeaponHitEffects(totalDamage);
@@ -839,9 +846,11 @@ namespace SWLOR.Game.Server.Native
             }
         }
 
-        private static void PublishDamageDealtEvent(uint attacker, uint defender, uint weapon, int damage, SkillType skillType, CombatDamageType damageType)
+        private static void PublishDamageDealtEvent(uint attacker, uint defender, uint weapon, int damage, SkillType skillType, CombatDamageType damageType,
+            Action<Action> weaponImpactScheduler)
         {
-            Combat.ApplyDamageDealtEffects(attacker, defender, damage, skillType, damageType);
+            Combat.ApplyDamageDealtEffects(attacker, defender, damage, skillType, damageType,
+                weaponImpactScheduler: weaponImpactScheduler);
 
             EventsPlugin.PushEventData("DEFENDER", ObjectToString(defender));
             EventsPlugin.PushEventData("WEAPON", ObjectToString(weapon));

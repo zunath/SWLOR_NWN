@@ -230,7 +230,7 @@ public class StatServiceDefaultSeamsTests
     private sealed class DefaultDeflectionSeams : CombatDeflectionReactionService
     {
         public DefaultDeflectionSeams(ICombatRecorderService combatRecorder, IRecastService recast, IStatService stat)
-            : base(combatRecorder, recast, FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatAttackTimingService>(),
+            : base(combatRecorder, recast, FacadeForwarder.For<ICombatDamageTakenEffectsService>(), FacadeForwarder.For<ICombatAttackTimingService>(),
                 FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ITemporaryStatModifierService>(), stat)
         {
         }

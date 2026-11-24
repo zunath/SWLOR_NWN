@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Native
                 isLandedAttack);
             if (isLandedAttack && damage > 0 && attackType == (uint)AttackType.Melee)
             {
-                GameServices.CombatDamageTaken.ApplyMeleeDamageTakenEffects(target.m_idSelf, attacker.m_idSelf);
+                GameServices.CombatDamageTakenEffects.ApplyMeleeDamageTakenEffects(target.m_idSelf, attacker.m_idSelf);
             }
 
             damage = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(

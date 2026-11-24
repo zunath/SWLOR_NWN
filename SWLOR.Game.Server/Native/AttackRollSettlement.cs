@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Native
             if (wasSuccessfulBeforeDefensiveEffects &&
                 !IsSuccessfulAttackResult(pAttackData.m_nAttackResult))
             {
-                GameServices.CombatDamageTaken.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
+                GameServices.CombatDamageTakenEffects.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
             }
 
             using (CombatRecorder.BeginStatTriggerAttribution(attacker.m_idSelf, StatType.StanceHostileAutoAttackFPCost))

@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var damageBonus = Stat.GetStatAdjustment(Source, StatType.GuardedAllyHitNextSkillAbilityDamageBonus);
             var window = Stat.GetStatAdjustment(Source, StatType.GuardedAllyHitNextSkillAbilityWindowSeconds);
             GameServices.CombatAttackTiming.GrantNextSkillAbilityBonuses(Source, SkillType.Katar, damageBonus, 0, window);
-            GameServices.CombatDamageTaken.ApplyLowHPGuardEffectFromProtectedTarget(Source, defender, damage);
+            GameServices.CombatDamageTakenEffects.ApplyLowHPGuardEffectFromProtectedTarget(Source, defender, damage);
         }
 
         public void OnGuardedHitEffect(uint defender, uint attacker, int preventedDamage)

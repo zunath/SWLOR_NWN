@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly ICombatDamageModifiersService _damageModifiers;
         private readonly ICombatRepeatedTargetService _repeatedTarget;
         private readonly ICombatDamageTakenService _damageTaken;
+        private readonly ICombatDamageReflectionService _damageReflection;
         private readonly ICombatAbilityMagnitudeService _magnitude;
         private readonly IResistanceService _resistance;
 
@@ -46,6 +47,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             ICombatDamageModifiersService damageModifiers,
             ICombatRepeatedTargetService repeatedTarget,
             ICombatDamageTakenService damageTaken,
+            ICombatDamageReflectionService damageReflection,
             ICombatAbilityMagnitudeService magnitude,
             IResistanceService resistance)
         {
@@ -59,6 +61,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _damageModifiers = damageModifiers;
             _repeatedTarget = repeatedTarget;
             _damageTaken = damageTaken;
+            _damageReflection = damageReflection;
             _magnitude = magnitude;
             _resistance = resistance;
         }
@@ -471,7 +474,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _damageModifiers.ApplyDamageDealtModifiers(attacker, defender, damage, skillType, damageType, isAbilityDamage, canApplyRandomFlatBonuses, isLandedAttack, ability, out targetStatusDamagePercentAdjustment, abilityDamagePercentAdjustment, lowHPAbilityDamagePercentAdjustment);
 
         protected virtual int ApplyIncomingPhysicalToForceConversion(uint attacker, uint defender, CombatDamageType damageType, ref int physicalDamage, int targetStatusDamagePercentAdjustment) =>
-            _damageTaken.ApplyIncomingPhysicalToForceConversion(attacker, defender, damageType, ref physicalDamage, targetStatusDamagePercentAdjustment);
+            _damageReflection.ApplyIncomingPhysicalToForceConversion(attacker, defender, damageType, ref physicalDamage, targetStatusDamagePercentAdjustment);
 
         protected virtual int ApplyTypedLeadershipDamageTakenModifier(uint defender, int damage, CombatDamageType damageType) => _damageTaken.ApplyTypedLeadershipDamageTakenModifier(defender, damage, damageType);
 

@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            GameServices.CombatDamageTaken.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());
+            GameServices.CombatDamageTakenEffects.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
 

@@ -408,7 +408,7 @@ public class CombatDamageTests
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"StoreQueuedWeaponAbilityCriticalRateBonus\(\s*attacker.m_idSelf,\s*abilitySkillType,").Should().BeTrue();
         attackSource.Should().Contain("GameServices.CombatRateModifiers.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)");
-        attackSource.Should().Contain("GameServices.CombatDamageTaken.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
+        attackSource.Should().Contain("GameServices.CombatDamageReflection.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
         var accuracy = ExtractMethod(statSource, "public int GetAccuracyNative");
         accuracy.Should().Contain("skillOverride != SkillType.Invalid ? skillOverride :");
         accuracy.Should().Contain("GetWeaponSkill(creature.m_idSelf, weapon.m_idSelf)",

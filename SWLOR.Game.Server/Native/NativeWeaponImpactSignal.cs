@@ -5,6 +5,7 @@ using NWNX.NET.Native;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 
@@ -83,6 +84,7 @@ namespace SWLOR.Game.Server.Native
             var attacker = OBJECT_INVALID;
             var targetId = OBJECT_INVALID;
             var firstAttack = 0;
+            int[][] slotDamage = null;
             ulong effectIdBefore = 0;
             if (!NativeWeaponImpactQueue.IsEmpty && creature != null && target != null && attacks > 0)
             {
@@ -95,6 +97,15 @@ namespace SWLOR.Game.Server.Native
                         firstAttack = (byte)(round.m_nCurrentAttack - attacks);
                         if (NativeWeaponImpactQueue.HasQueued(nativeAttacker.m_idSelf, firstAttack, attacks))
                         {
+                            // Each slot's rolled damage identifies which of the signal's effects is its own.
+                            slotDamage = new int[attacks][];
+                            for (var offset = 0; offset < attacks; offset++)
+                            {
+                                var data = round.GetAttack((byte)(firstAttack + offset));
+                                slotDamage[offset] = new int[CombatRecordDamageBreakdown.NativeDamageTypeCount];
+                                for (var index = 0; index < slotDamage[offset].Length; index++)
+                                    slotDamage[offset][index] = data.m_nDamage[index];
+                            }
                             attacker = nativeAttacker.m_idSelf;
                             targetId = CNWSObject.FromPointer(target).m_idSelf;
                             effectIdBefore = NextEffectId();
@@ -115,7 +126,7 @@ namespace SWLOR.Game.Server.Native
             try
             {
                 // The signal created this roll's damage effects: their IDs lie between the two probes.
-                NativeWeaponImpactQueue.Bind(attacker, targetId, firstAttack, attacks,
+                NativeWeaponImpactQueue.Bind(attacker, targetId, firstAttack, slotDamage,
                     effectIdBefore, NextEffectId(), DateTime.UtcNow);
             }
             catch (Exception ex)
@@ -134,6 +145,7 @@ namespace SWLOR.Game.Server.Native
             var attacker = OBJECT_INVALID;
             var targetId = OBJECT_INVALID;
             ulong effectId = 0;
+            int[] effectDamage = null;
             try
             {
                 var effect = CGameEffect.FromPointer(pEffect);
@@ -142,6 +154,9 @@ namespace SWLOR.Game.Server.Native
                     attacker = effect.m_oidCreator;
                     targetId = CNWSObject.FromPointer(pObject).m_idSelf;
                     effectId = effect.m_nID;
+                    effectDamage = new int[CombatRecordDamageBreakdown.NativeDamageTypeCount];
+                    for (var index = 0; index < effectDamage.Length; index++)
+                        effectDamage[index] = effect.GetInteger(index);
                 }
             }
             catch (Exception ex)
@@ -156,7 +171,7 @@ namespace SWLOR.Game.Server.Native
 
             try
             {
-                var impacts = NativeWeaponImpactQueue.TakeApplied(attacker, targetId, effectId, DateTime.UtcNow);
+                var impacts = NativeWeaponImpactQueue.TakeApplied(attacker, targetId, effectId, effectDamage, DateTime.UtcNow);
                 if (impacts.Count > 0)
                 {
                     ServerManager.Executor.ExecuteInScriptContext(() =>

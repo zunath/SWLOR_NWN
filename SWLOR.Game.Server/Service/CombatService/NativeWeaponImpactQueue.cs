@@ -20,8 +20,10 @@ namespace SWLOR.Game.Server.Service.CombatService
 
         private sealed record QueuedImpact(long Roll, int AttackIndex, uint Target, DateTime ExpiresAt, Action Action);
 
+        private sealed record SignalledSlot(int[] Damage, List<Action> Actions);
+
         private sealed record SignalledImpact(uint Target, ulong FirstEffectId, ulong LastEffectId, DateTime ExpiresAt,
-            List<Action> Actions);
+            List<SignalledSlot> Slots);
 
         private static readonly Dictionary<uint, List<QueuedImpact>> _queued = new();
         private static readonly Dictionary<uint, List<SignalledImpact>> _signalled = new();
@@ -78,16 +80,22 @@ namespace SWLOR.Game.Server.Service.CombatService
 
         /// <summary>
         /// Binds the work queued in a signal's slots to the damage effects that signal created, whose IDs lie
-        /// strictly between <paramref name="effectIdBefore"/> and <paramref name="effectIdAfter"/>. Work for
+        /// strictly between <paramref name="effectIdBefore"/> and <paramref name="effectIdAfter"/>.
+        /// <paramref name="slotDamage"/> holds each signalled slot's rolled damage by native damage type, starting
+        /// at <paramref name="firstAttack"/>; an effect is matched to the slot whose damage it carries. Work for
         /// those slots queued against another target is dropped.
         /// </summary>
-        public static void Bind(uint attacker, uint target, int firstAttack, int attacks,
+        public static void Bind(uint attacker, uint target, int firstAttack, IReadOnlyList<int[]> slotDamage,
             ulong effectIdBefore, ulong effectIdAfter, DateTime now)
         {
+            var attacks = slotDamage?.Count ?? 0;
             if (attacks <= 0 || !_queued.TryGetValue(attacker, out var impacts))
                 return;
 
-            List<Action> actions = null;
+            var slots = new SignalledSlot[attacks];
+            for (var offset = 0; offset < attacks; offset++)
+                slots[offset] = new SignalledSlot(slotDamage[offset], new List<Action>());
+            var hasWork = false;
             var kept = new List<QueuedImpact>(impacts.Count);
             foreach (var impact in impacts)
             {
@@ -98,8 +106,10 @@ namespace SWLOR.Game.Server.Service.CombatService
                     kept.Add(impact);
                     continue;
                 }
-                if (impact.Target == target)
-                    (actions ??= new List<Action>()).Add(impact.Action);
+                if (impact.Target != target)
+                    continue;
+                slots[(impact.AttackIndex - firstAttack) & 0xFF].Actions.Add(impact.Action);
+                hasWork = true;
             }
 
             if (kept.Count == 0)
@@ -107,36 +117,57 @@ namespace SWLOR.Game.Server.Service.CombatService
             else
                 _queued[attacker] = kept;
 
-            if (actions == null || effectIdAfter <= effectIdBefore + 1)
+            if (!hasWork || effectIdAfter <= effectIdBefore + 1)
                 return;
             if (!_signalled.TryGetValue(attacker, out var signalled))
                 _signalled[attacker] = signalled = new List<SignalledImpact>();
             signalled.RemoveAll(impact => impact.ExpiresAt <= now);
-            signalled.Add(new SignalledImpact(target, effectIdBefore + 1, effectIdAfter - 1, now + Lifetime, actions));
+            // Slots without work stay as placeholders so their effects cannot release another slot's work.
+            signalled.Add(new SignalledImpact(target, effectIdBefore + 1, effectIdAfter - 1, now + Lifetime, slots.ToList()));
         }
 
         /// <summary>
-        /// Removes and returns, in queue order, the work bound to an applied damage effect. One signal's work
-        /// runs once, with the first of its effects to land.
+        /// Removes and returns, in queue order, the work of the slot an applied damage effect belongs to: the first
+        /// remaining slot of that effect's signal whose rolled damage the effect carries, or the signal's first
+        /// remaining slot when none does.
         /// </summary>
-        public static IReadOnlyList<Action> TakeApplied(uint attacker, uint target, ulong effectId, DateTime now)
+        public static IReadOnlyList<Action> TakeApplied(uint attacker, uint target, ulong effectId, int[] effectDamage,
+            DateTime now)
         {
             if (!_signalled.TryGetValue(attacker, out var signalled))
                 return Array.Empty<Action>();
 
-            List<Action> due = null;
-            signalled.RemoveAll(impact =>
+            IReadOnlyList<Action> due = Array.Empty<Action>();
+            signalled.RemoveAll(impact => impact.ExpiresAt <= now);
+            var signal = signalled.FirstOrDefault(impact => impact.Target == target &&
+                                                            effectId >= impact.FirstEffectId && effectId <= impact.LastEffectId);
+            if (signal != null)
             {
-                if (impact.ExpiresAt <= now)
-                    return true;
-                if (impact.Target != target || effectId < impact.FirstEffectId || effectId > impact.LastEffectId)
-                    return false;
-                (due ??= new List<Action>()).AddRange(impact.Actions);
-                return true;
-            });
+                var slot = signal.Slots.FirstOrDefault(candidate => CarriesDamage(effectDamage, candidate.Damage)) ??
+                           signal.Slots[0];
+                signal.Slots.Remove(slot);
+                due = slot.Actions;
+                if (signal.Slots.All(remaining => remaining.Actions.Count == 0))
+                    signalled.Remove(signal);
+            }
+
             if (signalled.Count == 0)
                 _signalled.Remove(attacker);
-            return due ?? (IReadOnlyList<Action>)Array.Empty<Action>();
+            return due;
+        }
+
+        /// <summary>Whether an effect's damage by native type equals a slot's rolled damage (no damage is 0 or -1).</summary>
+        private static bool CarriesDamage(int[] effectDamage, int[] slotDamage)
+        {
+            var length = Math.Max(effectDamage?.Length ?? 0, slotDamage?.Length ?? 0);
+            for (var index = 0; index < length; index++)
+            {
+                var effectAmount = effectDamage != null && index < effectDamage.Length ? Math.Max(0, effectDamage[index]) : 0;
+                var slotAmount = slotDamage != null && index < slotDamage.Length ? Math.Max(0, slotDamage[index]) : 0;
+                if (effectAmount != slotAmount)
+                    return false;
+            }
+            return true;
         }
 
         public static void Clear()

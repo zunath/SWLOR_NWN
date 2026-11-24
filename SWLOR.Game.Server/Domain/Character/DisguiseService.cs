@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IDMActorResolver _dmPresence;
         private readonly IPlayerNameService _playerName;
         private readonly IPlayerKnownNameService _playerKnownName;
+        private readonly IPlayerNameOverrideService _playerNameOverride;
         private readonly IPlayerDescriptorService _playerDescriptor;
         private readonly IStatService _stat;
 
@@ -49,6 +50,7 @@ namespace SWLOR.Game.Server.Domain.Character
             IDMActorResolver dmPresence,
             IPlayerNameService playerName,
             IPlayerKnownNameService playerKnownName,
+            IPlayerNameOverrideService playerNameOverride,
             IPlayerDescriptorService playerDescriptor,
             IStatService stat)
         {
@@ -58,6 +60,7 @@ namespace SWLOR.Game.Server.Domain.Character
             _dmPresence = dmPresence;
             _playerName = playerName;
             _playerKnownName = playerKnownName;
+            _playerNameOverride = playerNameOverride;
             _playerDescriptor = playerDescriptor;
             _stat = stat;
         }
@@ -843,7 +846,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
         private void RefreshDisguiseDisplay(uint player)
         {
-            _playerName.RefreshNameOverridesForPlayer(player);
+            _playerNameOverride.RefreshNameOverridesForPlayer(player);
             _gui.PublishRefreshEvent(player, new DisguiseChangedRefreshEvent());
         }
 

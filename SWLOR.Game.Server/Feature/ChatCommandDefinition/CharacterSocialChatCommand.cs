@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     : string.Empty)
                 .Action((user, target, location, args) =>
                 {
-                    var isAfk = PlayerName.ToggleAfk(user);
+                    var isAfk = PlayerNameOverride.ToggleAfk(user);
                     SendMessageToPC(user, isAfk
                         ? ColorToken.Purple("You are now AFK. Move or use /afk again when you return.")
                         : "You are no longer AFK.");

@@ -365,12 +365,12 @@ SWLOR.Game.Server.Service.Activity.WipeStatusOnDeath SWLOR.Game.Server.Domain.Ch
 SWLOR.Game.Server.Service.EspionageInfiltration.OnPlayerDeath SWLOR.Game.Server.Domain.Character.EspionageInfiltrationService.OnPlayerDeath
 SWLOR.Game.Server.Service.Activity.WipeStatusOnEntry SWLOR.Game.Server.Domain.Character.ActivityService.WipeStatusOnEntry
 SWLOR.Game.Server.Service.Disguise.ApplyActiveDisguiseOnEnter SWLOR.Game.Server.Domain.Character.DisguiseService.ApplyActiveDisguiseOnEnter
-SWLOR.Game.Server.Service.PlayerName.ApplyNameOverridesOnEnter SWLOR.Game.Server.Domain.Character.PlayerNameService.ApplyNameOverridesOnEnter
+SWLOR.Game.Server.Service.PlayerName.ApplyNameOverridesOnEnter SWLOR.Game.Server.Domain.Character.PlayerNameOverrideService.ApplyNameOverridesOnEnter
 SWLOR.Game.Server.Service.Race.ApplyWookieeScaling SWLOR.Game.Server.Domain.Character.RaceService.ApplyWookieeScaling
 SWLOR.Game.Server.Service.PlayerIntroduction.ClearOnExit SWLOR.Game.Server.Domain.Character.PlayerIntroductionService.ClearOnExit
 SWLOR.Game.Server.Service.PlayerName.ReleaseKnownNamesOnExit SWLOR.Game.Server.Domain.Character.PlayerNameService.ReleaseKnownNamesOnExit
-SWLOR.Game.Server.Service.PlayerName.ClearAfkOnExit SWLOR.Game.Server.Domain.Character.PlayerNameService.ClearAfkOnExit
-SWLOR.Game.Server.Service.PlayerName.PreventAmbiguousTellTargets SWLOR.Game.Server.Domain.Character.PlayerNameService.PreventAmbiguousTellTargets
+SWLOR.Game.Server.Service.PlayerName.ClearAfkOnExit SWLOR.Game.Server.Domain.Character.PlayerNameOverrideService.ClearAfkOnExit
+SWLOR.Game.Server.Service.PlayerName.PreventAmbiguousTellTargets SWLOR.Game.Server.Domain.Character.PlayerNameOverrideService.PreventAmbiguousTellTargets
 SWLOR.Game.Server.Service.Space.LoadSpaceSystem SWLOR.Game.Server.Domain.Space.SpaceService.LoadSpaceSystem
 SWLOR.Game.Server.Service.Space.EnterServer SWLOR.Game.Server.Domain.Space.SpaceService.EnterServer
 SWLOR.Game.Server.Service.Space.ExitServer SWLOR.Game.Server.Domain.Space.SpaceService.ExitServer

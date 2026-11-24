@@ -93,6 +93,7 @@
     { "name": "PlayerList", "domain": "Social" },
     { "name": "PlayerMarket", "domain": "Economy" },
     { "name": "PlayerName", "domain": "Character" },
+    { "name": "PlayerNameOverride", "domain": "Character" },
     { "name": "Poisons", "domain": "Combat" },
     { "name": "PowerGloveEquipment", "domain": "Combat" },
     { "name": "ProgFxCoat", "domain": "Companions" },

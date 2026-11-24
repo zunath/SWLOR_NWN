@@ -59,7 +59,7 @@ public class PlayerTellTranscriptTests
         _db = new QueryableDBService();
         _bench = new CombatTranscriptBench(Leaves, (services, _) => services.Replace(ServiceDescriptor.Singleton<IDBService>(_db)));
         _scopes.Add(_bench);
-        var names = _bench.Facades.Get<IPlayerNameService>();
+        var names = _bench.Facades.Get<IPlayerNameOverrideService>();
         _chat = new FakeChatPlugin();
         _scopes.Add(ChatPluginRuntime.Override(EngineProxy.Wrap<IChatPlugin>(_chat, _bench)));
         _scopes.Add(RenamePluginRuntime.Override(EngineProxy.Wrap<IRenamePlugin>(new FakeRenamePlugin(), _bench)));

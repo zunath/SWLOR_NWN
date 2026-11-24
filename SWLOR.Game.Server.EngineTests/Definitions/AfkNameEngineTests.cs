@@ -37,17 +37,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(string.Empty, command.ValidateArguments(target.Creature), "command validation");
 
                 await ToggleAsync();
-                ctx.Assert(PlayerName.IsAfk(target.Creature), "first /afk enables status");
+                ctx.Assert(PlayerNameOverride.IsAfk(target.Creature), "first /afk enables status");
                 AssertOverride("unknown", ColorToken.Gray("A quiet traveler") + suffix);
                 AssertOverride("self", canonicalName + suffix, target.Creature);
                 targetRecord = DB.Get<Player>(target.Id);
                 targetRecord.Settings.ShowOwnDescriptor = true;
                 DB.Set(targetRecord);
-                PlayerName.RefreshNameOverridesForPlayer(target.Creature);
+                PlayerNameOverride.RefreshNameOverridesForPlayer(target.Creature);
                 AssertOverride("self-with-descriptor", canonicalName + " [" + ColorToken.Gray("A quiet traveler") + "]" + suffix, target.Creature);
                 targetRecord.Settings.ShowOwnDescriptor = false;
                 DB.Set(targetRecord);
-                PlayerName.RefreshNameOverridesForPlayer(target.Creature);
+                PlayerNameOverride.RefreshNameOverridesForPlayer(target.Creature);
                 ctx.AssertEqual(PlayerName.GetDisplayName(observer.Creature, bystander.Creature),
                     PlayerName.GetDisplayName(observer.Creature, target.Creature), "AFK cannot disambiguate identical tell identities");
                 ctx.AssertEqual(identityKey, Disguise.GetIdentityKey(target.Creature), "AFK cannot change identity");
@@ -57,19 +57,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var observerRecord = DB.Get<Player>(observer.Id);
                 observerRecord.Settings.ShowDescriptorsForNamedPlayers = false;
                 DB.Set(observerRecord);
-                PlayerName.RefreshNameOverridesForObserver(observer.Creature);
+                PlayerNameOverride.RefreshNameOverridesForObserver(observer.Creature);
                 AssertOverride("known-without-descriptor", "Vessa Tal" + suffix);
                 observerRecord.Settings.ShowDescriptorsForNamedPlayers = true;
                 DB.Set(observerRecord);
-                PlayerName.RefreshNameOverridesForObserver(observer.Creature);
+                PlayerNameOverride.RefreshNameOverridesForObserver(observer.Creature);
                 ctx.Assert(!string.IsNullOrEmpty(GameServices.PlayerKnownName.ValidateKnownNameAssignment(observer.Creature, bystander.Creature, "Vessa Tal")),
                     "AFK cannot bypass private-label uniqueness");
                 PlayerDescriptor.SetUnknownDisplayName(target.Creature, "A seasoned traveler");
                 AssertOverride("renamed", PlayerName.GetDisplayName(observer.Creature, target.Creature) + suffix);
-                PlayerName.SendChatMessageWithChatNameOverride(observer.Creature, target.Creature, () =>
+                PlayerNameOverride.SendChatMessageWithChatNameOverride(observer.Creature, target.Creature, () =>
                     ctx.AssertEqual("Vessa Tal" + suffix, RenamePlugin.GetPCNameOverride(target.Creature, observer.Creature), "temporary chat override"));
                 AssertOverride("chat-restored", PlayerName.GetDisplayName(observer.Creature, target.Creature) + suffix);
-                PlayerName.SendChatMessageWithChatNameOverride(target.Creature, target.Creature, () =>
+                PlayerNameOverride.SendChatMessageWithChatNameOverride(target.Creature, target.Creature, () =>
                     ctx.AssertEqual(canonicalName + suffix, RenamePlugin.GetPCNameOverride(target.Creature, target.Creature), "self chat override"));
                 ctx.AssertEqual(canonicalName + suffix, RenamePlugin.GetPCNameOverride(target.Creature, target.Creature), "self chat restore");
 
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 GameServices.PlayerKnownName.SetKnownName(observer.Creature, target.Creature, "Masked Courier");
                 AssertOverride("disguised-known", PlayerName.GetDisplayName(observer.Creature, target.Creature) + suffix);
                 await ToggleAsync();
-                ctx.Assert(!PlayerName.IsAfk(target.Creature), "second /afk disables status");
+                ctx.Assert(!PlayerNameOverride.IsAfk(target.Creature), "second /afk disables status");
                 AssertOverride("disguised-returned", PlayerName.GetDisplayName(observer.Creature, target.Creature));
                 await ToggleAsync();
                 await ctx.ExecuteInCreatureContextAsync(target.Creature, () =>
@@ -111,8 +111,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                if (PlayerName.IsAfk(target.Creature))
-                    PlayerName.ToggleAfk(target.Creature);
+                if (PlayerNameOverride.IsAfk(target.Creature))
+                    PlayerNameOverride.ToggleAfk(target.Creature);
                 if (disguise != null)
                     DB.Delete<PlayerDisguise>(disguise.Id);
                 foreach (var names in DB.Search(new DBQuery<PlayerKnownName>()
@@ -146,24 +146,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ToggleAsync(target.Creature);
                 await ToggleAsync(stationary.Creature);
                 await ctx.DelaySecondsAsync(1.25f);
-                ctx.Assert(PlayerName.IsAfk(target.Creature), "standing still keeps AFK across the scheduled check");
+                ctx.Assert(PlayerNameOverride.IsAfk(target.Creature), "standing still keeps AFK across the scheduled check");
                 await ctx.ExecuteInCreatureContextAsync(target.Creature, () => SetFacing(90f));
                 await ctx.DelaySecondsAsync(1.25f);
-                ctx.Assert(PlayerName.IsAfk(target.Creature), "turning in place does not clear AFK");
+                ctx.Assert(PlayerNameOverride.IsAfk(target.Creature), "turning in place does not clear AFK");
 
                 ObjectPlugin.SetPosition(target.Creature, GetPosition(target.Creature) + new Vector3(1f, 0f, 0f));
                 await AssertMovementClearsAsync();
-                ctx.Assert(PlayerName.IsAfk(stationary.Creature), "another stationary AFK player is unaffected");
+                ctx.Assert(PlayerNameOverride.IsAfk(stationary.Creature), "another stationary AFK player is unaffected");
                 ctx.Assert(PlayerName.TryGetKnownName(observer.Creature, target.Creature, out var knownName), "private label retained after movement");
                 ctx.AssertEqual("Vessa Tal", knownName, "movement does not rename the identity");
 
                 await ToggleAsync(target.Creature);
                 await ctx.DelaySecondsAsync(1.25f);
-                ctx.Assert(PlayerName.IsAfk(target.Creature), "re-enabling AFK captures the new position");
+                ctx.Assert(PlayerNameOverride.IsAfk(target.Creature), "re-enabling AFK captures the new position");
                 await ToggleAsync(target.Creature);
                 await ToggleAsync(target.Creature);
                 await ctx.DelaySecondsAsync(1.25f);
-                ctx.Assert(PlayerName.IsAfk(target.Creature), "rapid off/on keeps the current AFK session");
+                ctx.Assert(PlayerNameOverride.IsAfk(target.Creature), "rapid off/on keeps the current AFK session");
                 await ctx.ExecuteInCreatureContextAsync(target.Creature, () =>
                 {
                     disguise = Disguise.CreateDisguise(target.Creature);
@@ -182,15 +182,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ToggleAsync(stationary.Creature);
                 await ToggleAsync(target.Creature);
                 await ctx.DelaySecondsAsync(1.25f);
-                ctx.Assert(PlayerName.IsAfk(target.Creature), "checking restarts after the last AFK session ends");
+                ctx.Assert(PlayerNameOverride.IsAfk(target.Creature), "checking restarts after the last AFK session ends");
                 ObjectPlugin.SetPosition(target.Creature, GetPosition(target.Creature) + new Vector3(1f, 0f, 0f));
                 await AssertMovementClearsAsync();
             }
             finally
             {
                 foreach (var player in new[] { target.Creature, stationary.Creature })
-                    if (PlayerName.IsAfk(player))
-                        PlayerName.ToggleAfk(player);
+                    if (PlayerNameOverride.IsAfk(player))
+                        PlayerNameOverride.ToggleAfk(player);
                 if (disguise != null)
                     DB.Delete<PlayerDisguise>(disguise.Id);
                 foreach (var names in DB.Search(new DBQuery<PlayerKnownName>()
@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             async Task AssertMovementClearsAsync()
             {
-                await ctx.WaitUntilAsync(() => !PlayerName.IsAfk(target.Creature), 3f, "movement to clear AFK through the real scheduler");
+                await ctx.WaitUntilAsync(() => !PlayerNameOverride.IsAfk(target.Creature), 3f, "movement to clear AFK through the real scheduler");
                 ctx.AssertEqual(PlayerName.GetDisplayName(observer.Creature, target.Creature),
                     RenamePlugin.GetPCNameOverride(target.Creature, observer.Creature), "native name override has no AFK suffix after moving");
             }

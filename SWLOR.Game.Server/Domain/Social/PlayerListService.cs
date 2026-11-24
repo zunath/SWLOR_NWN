@@ -36,7 +36,8 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly Lazy<IDisguiseService> _disguise;
         private readonly IGuiService _gui;
         private readonly Lazy<IHoloComService> _holoCom;
-        private readonly Lazy<IPlayerNameService> _playerName;
+        private readonly IPlayerNameService _playerName;
+        private readonly Lazy<IPlayerNameOverrideService> _playerNameOverride;
         private readonly PlayerListFlagType[] _knownFlags = Enum.GetValues<PlayerListFlagType>();
         private readonly HashSet<uint> _exitingPlayers = new();
         private bool _isRefreshQueued;
@@ -50,7 +51,8 @@ namespace SWLOR.Game.Server.Domain.Social
             Lazy<IDisguiseService> disguise,
             IGuiService gui,
             Lazy<IHoloComService> holoCom,
-            Lazy<IPlayerNameService> playerName,
+            IPlayerNameService playerName,
+            Lazy<IPlayerNameOverrideService> playerNameOverride,
             Lazy<ISpaceService> space)
         {
             _db = db;
@@ -60,6 +62,7 @@ namespace SWLOR.Game.Server.Domain.Social
             _gui = gui;
             _holoCom = holoCom;
             _playerName = playerName;
+            _playerNameOverride = playerNameOverride;
             _space = space;
         }
 
@@ -114,7 +117,7 @@ namespace SWLOR.Game.Server.Domain.Social
                 {
                     Player = player,
                     CanonicalName = GetName(player),
-                    IsAfk = _playerName.Value.IsAfk(player),
+                    IsAfk = _playerNameOverride.Value.IsAfk(player),
                 };
 
                 if (_dmPresence.IsControlledByDM(player))
@@ -148,8 +151,8 @@ namespace SWLOR.Game.Server.Domain.Social
             viewer = _dmPresence.GetDM(viewer);
             var viewerIsDM = _dmPresence.IsControlledByDM(viewer);
             var viewerSubject = subjects.FirstOrDefault(subject => subject.Player == viewer);
-            var showOwnDescriptor = viewerIsDM || _playerName.Value.ShouldShowOwnDescriptor(viewer);
-            var showNamedDescriptors = viewerIsDM || _playerName.Value.ShouldShowDescriptorForNamedPlayers(viewer);
+            var showOwnDescriptor = viewerIsDM || _playerName.ShouldShowOwnDescriptor(viewer);
+            var showNamedDescriptors = viewerIsDM || _playerName.ShouldShowDescriptorForNamedPlayers(viewer);
             var entries = new List<PlayerListEntry>();
 
             foreach (var subject in subjects)
@@ -483,8 +486,8 @@ namespace SWLOR.Game.Server.Domain.Social
             if (viewerIsDM || subject.Player == viewer)
                 return subject.CanonicalName;
 
-            return _playerName.Value.TryGetKnownName(viewer, subject.Player, out var knownName)
-                ? _playerName.Value.SanitizeKnownName(knownName)
+            return _playerName.TryGetKnownName(viewer, subject.Player, out var knownName)
+                ? _playerName.SanitizeKnownName(knownName)
                 : string.Empty;
         }
 

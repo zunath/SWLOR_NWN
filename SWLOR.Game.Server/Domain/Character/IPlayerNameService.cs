@@ -7,25 +7,11 @@ namespace SWLOR.Game.Server.Domain.Character
     {
         void ReleaseKnownNamesOnExit();
 
-        void ApplyNameOverridesOnEnter();
-
-        void ClearAfkOnExit();
-
-        bool IsAfk(uint player);
-
-        bool ToggleAfk(uint player);
-
-        void PreventAmbiguousTellTargets();
-
-        string GetChatDisplayName(uint observer, uint target);
-
         /// <summary>Canonical name and current public descriptor for server audit records.</summary>
         string GetAuditName(uint target);
 
         /// <summary>Server-only identity snapshot for correlating messages with disguise history.</summary>
         string GetAuditIdentity(uint target);
-
-        void SendChatMessageWithChatNameOverride(uint observer, uint target, Action sendMessage);
 
         string GetDisplayNameByPlayerId(uint observer, string targetPlayerId, string fallbackName);
 
@@ -50,13 +36,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
         string GetColoredDisplayName(uint observer, uint target);
 
-        string GetColoredChatDisplayName(uint observer, uint target);
-
         string SanitizeKnownName(string name);
-
-        void RefreshNameOverridesForObserver(uint observer);
-
-        void RefreshNameOverridesForPlayer(uint player);
 
         bool ShouldShowDescriptorForNamedPlayers(uint observer);
 
@@ -70,8 +50,29 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>Drops the cached known names of an observer, after another service rewrote the stored record.</summary>
         void ForgetKnownNames(string observerId);
 
-        /// <summary>Sets the name <paramref name="observer"/> sees for <paramref name="target"/> to the one it resolves now.</summary>
-        void ApplyNameOverride(uint observer, uint target);
+        /// <summary>Drops the cached descriptor setting of an observer, so the next read comes from the player record.</summary>
+        void ForgetDescriptorSetting(string observerId);
+
+        /// <summary>The name <paramref name="observer"/> sees for <paramref name="target"/>; <paramref name="isUnknown"/> is true when it is the public descriptor.</summary>
+        string ResolveDisplayName(uint observer, uint target, out bool isUnknown);
+
+        /// <summary>The primary name followed by the gray bracketed descriptor.</summary>
+        string BuildDisplayNameWithDescriptor(string primaryName, string descriptor);
+
+        /// <summary>The true name of a target with the gray bracketed descriptor, as staff see it.</summary>
+        string BuildStaffDisplayName(uint target);
+
+        /// <summary>The active disguise of a player, or null.</summary>
+        PlayerDisguise GetActiveDisguise(uint player);
+
+        /// <summary>The descriptor others see for the player.</summary>
+        string GetDisplayDescriptor(uint player);
+
+        /// <summary>Whether the account name is scrambled for the player.</summary>
+        bool ShouldScrambleAccountName(uint player);
+
+        /// <summary>Generates a missing base descriptor; true when one was generated.</summary>
+        bool EnsureUnknownDisplayName(uint player);
 
         /// <summary>The identity key of the player's active identity.</summary>
         string GetIdentityKey(uint player);

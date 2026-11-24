@@ -46,11 +46,14 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>Player introductions and the offers a player has pending (the static facade <c>PlayerIntroduction</c> until it was removed).</summary>
         public static IPlayerIntroductionService PlayerIntroduction => FacadeAccessor.Resolve<IPlayerIntroductionService>();
 
-        /// <summary>Player names, known names and the AFK flag (the static facade <c>PlayerName</c> until it was removed).</summary>
+        /// <summary>Player names and the known-name and descriptor reads (the static facade <c>PlayerName</c> until it was removed).</summary>
         public static IPlayerNameService PlayerName => FacadeAccessor.Resolve<IPlayerNameService>();
 
         /// <summary>The names a player gives other characters: validation, setting, forgetting and searching them.</summary>
         public static IPlayerKnownNameService PlayerKnownName => FacadeAccessor.Resolve<IPlayerKnownNameService>();
+
+        /// <summary>The name overrides, the chat display names, the AFK flag and the tell handler.</summary>
+        public static IPlayerNameOverrideService PlayerNameOverride => FacadeAccessor.Resolve<IPlayerNameOverrideService>();
 
         /// <summary>Racial appearances and race rules (the static facade <c>Race</c> until it was removed).</summary>
         public static IRaceService Race => FacadeAccessor.Resolve<IRaceService>();

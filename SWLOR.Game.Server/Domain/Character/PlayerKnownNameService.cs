@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Domain.Character
     /// <summary>
     /// The names a player gives other characters with <c>/name</c>: the validation, the writes that set and forget a known name, the search by
     /// known name and the cleanup when a disguise is deleted. They moved here from <see cref="PlayerNameService"/> unchanged; the caches, the
-    /// descriptors and the name overrides stay there.
+    /// descriptors stay there and the name overrides are on <see cref="IPlayerNameOverrideService"/>.
     /// </summary>
     public class PlayerKnownNameService : IPlayerKnownNameService
     {
@@ -18,12 +18,14 @@ namespace SWLOR.Game.Server.Domain.Character
 
         private readonly IDBService _db;
         private readonly IPlayerNameService _playerName;
+        private readonly IPlayerNameOverrideService _playerNameOverride;
         private readonly IPlayerListRefresh _playerList;
 
-        public PlayerKnownNameService(IDBService db, IPlayerNameService playerName, IPlayerListRefresh playerList)
+        public PlayerKnownNameService(IDBService db, IPlayerNameService playerName, IPlayerNameOverrideService playerNameOverride, IPlayerListRefresh playerList)
         {
             _db = db;
             _playerName = playerName;
+            _playerNameOverride = playerNameOverride;
             _playerList = playerList;
         }
 
@@ -107,7 +109,7 @@ namespace SWLOR.Game.Server.Domain.Character
             dbKnownNames.KnownNames[targetId] = sanitizedName;
             _db.Set(dbKnownNames);
 
-            _playerName.ApplyNameOverride(observer, target);
+            _playerNameOverride.ApplyNameOverride(observer, target);
             _playerList.QueueRefresh();
         }
 
@@ -161,14 +163,14 @@ namespace SWLOR.Game.Server.Domain.Character
             if (dbKnownNames?.KnownNames == null ||
                 !dbKnownNames.KnownNames.ContainsKey(targetId))
             {
-                _playerName.ApplyNameOverride(observer, target);
+                _playerNameOverride.ApplyNameOverride(observer, target);
                 return;
             }
 
             dbKnownNames.KnownNames.Remove(targetId);
             _db.Set(dbKnownNames);
 
-            _playerName.ApplyNameOverride(observer, target);
+            _playerNameOverride.ApplyNameOverride(observer, target);
             _playerList.QueueRefresh();
         }
 

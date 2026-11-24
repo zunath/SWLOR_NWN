@@ -27,13 +27,15 @@ namespace SWLOR.Game.Server.Domain.Character
 
         private readonly IDBService _db;
         private readonly IPlayerNameService _playerName;
+        private readonly IPlayerNameOverrideService _playerNameOverride;
         private readonly IPlayerKnownNameService _playerKnownName;
         private readonly Lazy<IDisguiseService> _disguise;
 
-        public PlayerDescriptorService(IDBService db, IPlayerNameService playerName, IPlayerKnownNameService playerKnownName, Lazy<IDisguiseService> disguise)
+        public PlayerDescriptorService(IDBService db, IPlayerNameService playerName, IPlayerNameOverrideService playerNameOverride, IPlayerKnownNameService playerKnownName, Lazy<IDisguiseService> disguise)
         {
             _db = db;
             _playerName = playerName;
+            _playerNameOverride = playerNameOverride;
             _playerKnownName = playerKnownName;
             _disguise = disguise;
         }
@@ -115,7 +117,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 "Base descriptor changed: PlayerId={PlayerId} PlayerName={PlayerName} IdentityKey={IdentityKey} ActiveIdentityKey={ActiveIdentityKey} PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor}",
                 playerId, GetName(player), playerId, GetDisguiseIdentityKey(player), previousDescriptor, sanitizedName);
 
-            _playerName.RefreshNameOverridesForPlayer(player);
+            _playerNameOverride.RefreshNameOverridesForPlayer(player);
         }
 
         public bool EnsureUnknownDisplayName(uint player)

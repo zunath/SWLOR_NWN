@@ -14,6 +14,7 @@ SWLOR.Game.Server.Domain.Abilities.ReviveHistoryService._deathAt
 SWLOR.Game.Server.Domain.Abilities.ReviveHistoryService._lastMidFightReviveAt
 SWLOR.Game.Server.Domain.Administration.DMPresenceService._windowTargets
 SWLOR.Game.Server.Domain.Character.PlayerIntroductionService._inbox
+SWLOR.Game.Server.Domain.Character.PlayerNameOverrideService.AfkPlayers
 SWLOR.Game.Server.Domain.Character.PlayerNameService.AfkPlayers
 SWLOR.Game.Server.Domain.Character.StatusEffectService._creatureEffects
 SWLOR.Game.Server.Domain.Character.StatusEffectService._loggedOutPlayerEffects

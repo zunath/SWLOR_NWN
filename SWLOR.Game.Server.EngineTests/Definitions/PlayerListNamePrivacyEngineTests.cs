@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 PlayerDescriptor.SetUnknownDisplayName(target.Creature, Descriptor);
                 GameServices.PlayerKnownName.SetKnownName(first.Creature, target.Creature, FirstLabel);
                 GameServices.PlayerKnownName.SetKnownName(second.Creature, target.Creature, SecondLabel);
-                PlayerName.RefreshNameOverridesForPlayer(target.Creature);
+                PlayerNameOverride.RefreshNameOverridesForPlayer(target.Creature);
                 var canonicalName = GetName(target.Creature);
                 var expected = new Dictionary<uint, string>
                 {

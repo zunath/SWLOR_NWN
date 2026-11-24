@@ -37,7 +37,7 @@ public sealed class TestCommunicationService : CommunicationService
         IDMPreferenceService dmPreference,
         IHoloComService holoCom,
         TestCommunicationAudienceService audience)
-        : base(db, dmPresence, dmPreference, holoCom, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ILanguageService>(), FacadeForwarder.For<IPlayerNameService>(), audience, new CommunicationMessageSplitService())
+        : base(db, dmPresence, dmPreference, holoCom, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ILanguageService>(), FacadeForwarder.For<IPlayerNameOverrideService>(), audience, new CommunicationMessageSplitService())
     {
         _audience = audience;
     }

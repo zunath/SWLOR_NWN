@@ -454,11 +454,11 @@ public class PlayerNameRecognitionTests
 
         var initializationMethod = ExtractMethod(initializationSource, "public static void InitializePlayer()");
         initializationMethod.Should().Contain("if (PlayerDescriptor.EnsureUnknownDisplayName(player))");
-        initializationMethod.Should().Contain("PlayerName.RefreshNameOverridesForPlayer(player);");
+        initializationMethod.Should().Contain("PlayerNameOverride.RefreshNameOverridesForPlayer(player);");
         var versionGateIndex = initializationMethod.IndexOf("if (!dbPlayer.CharacterInitializationPending && (dbPlayer.Version >= 1 || dbPlayer.Version == -1))", StringComparison.Ordinal);
         versionGateIndex.Should().BeGreaterThanOrEqualTo(0);
         var firstDescriptorEnsureIndex = initializationMethod.IndexOf("if (PlayerDescriptor.EnsureUnknownDisplayName(player))", StringComparison.Ordinal);
-        var firstRefreshIndex = initializationMethod.IndexOf("PlayerName.RefreshNameOverridesForPlayer(player);", firstDescriptorEnsureIndex, StringComparison.Ordinal);
+        var firstRefreshIndex = initializationMethod.IndexOf("PlayerNameOverride.RefreshNameOverridesForPlayer(player);", firstDescriptorEnsureIndex, StringComparison.Ordinal);
         var firstReturnIndex = initializationMethod.IndexOf("return;", versionGateIndex, StringComparison.Ordinal);
         firstDescriptorEnsureIndex.Should().BeGreaterThan(versionGateIndex);
         firstDescriptorEnsureIndex.Should().BeLessThan(firstReturnIndex);
@@ -513,11 +513,11 @@ public class PlayerNameRecognitionTests
         viewModelSource.Should().Contain("dbPlayer.Settings.ShowDescriptorsForNamedPlayers = ShowDescriptorsForNamedPlayers;");
         viewModelSource.Should().Contain("dbPlayer.Settings.ShowOwnDescriptor = ShowOwnDescriptor;");
         viewModelSource.Should().Contain("dbPlayer.Settings.ScrambleAccountName = ScrambleAccountName;");
-        viewModelSource.Should().Contain("PlayerName.RefreshNameOverridesForObserver(Player);");
-        viewModelSource.Should().Contain("PlayerName.RefreshNameOverridesForPlayer(Player);");
+        viewModelSource.Should().Contain("PlayerNameOverride.RefreshNameOverridesForObserver(Player);");
+        viewModelSource.Should().Contain("PlayerNameOverride.RefreshNameOverridesForPlayer(Player);");
 
         playerNameSource.Should().Contain("public void RefreshNameOverridesForObserver(uint observer)");
-        playerNameSource.Should().Contain("ShowDescriptorsForNamedPlayersByObserverId.Remove(observerId);");
+        playerNameSource.Should().Contain("_playerName.ForgetDescriptorSetting(observerId);");
         playerNameSource.Should().Contain("public bool ShouldShowOwnDescriptor(uint player)");
         playerNameSource.Should().Contain("ShouldScrambleAccountName(player)");
         playerNameSource.Should().Contain("GetIsDM(observer) ||");

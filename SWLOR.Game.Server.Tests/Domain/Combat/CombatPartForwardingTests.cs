@@ -26,6 +26,8 @@ public class CombatPartForwardingTests
     {
         typeof(ICombatAbilityActivationService),
         typeof(ICombatAbilityBonusService),
+        typeof(ICombatAbilityCostEffectsService),
+        typeof(ICombatAbilityDefenseEffectsService),
         typeof(ICombatAbilityHitService),
         typeof(ICombatAbilityImpactService),
         typeof(ICombatActivityService),
@@ -37,6 +39,9 @@ public class CombatPartForwardingTests
         typeof(ICombatDamageTakenService),
         typeof(ICombatDamageTakenEffectsService),
         typeof(ICombatDamageReflectionService),
+        typeof(ICombatGuardedHitService),
+        typeof(ICombatGuardedHitEffectsService),
+        typeof(ICombatGuardRetaliationService),
         typeof(ICombatDefenseMemoryService),
         typeof(ICombatFeedbackService),
         typeof(ICombatHitEffectsService),
@@ -114,11 +119,11 @@ public class CombatPartForwardingTests
     public void TheMovedDamageTakenDefaultsKeepTheirValues(Type part, string expected) =>
         AssertMovedDefaults(part, expected, 3, typeof(ICombatDamageTakenService), typeof(ICombatDamageTakenEffectsService), typeof(ICombatDamageReflectionService));
 
-    // The one member of the ability activation part that has a default argument, with the default it had as a static member
+    // The one member of the ability activation cost part that has a default argument, with the default it had as a static member
     // of Combat, on the interface and the instance class alike.
-    [TestCase(typeof(ICombatAbilityActivationService), "ApplyHitPointSpendAbilityEffects(hitPointCost=0)")]
+    [TestCase(typeof(ICombatAbilityCostEffectsService), "ApplyHitPointSpendAbilityEffects(hitPointCost=0)")]
     public void TheMovedActivationDefaultsKeepTheirValues(Type part, string expected) =>
-        AssertMovedDefaults(part, expected, 1, typeof(ICombatAbilityActivationService));
+        AssertMovedDefaults(part, expected, 1, typeof(ICombatAbilityCostEffectsService));
 
     // The members of the ability impact part that have default arguments, with the defaults they had as static members of
     // Combat, on the interface and the instance class alike.

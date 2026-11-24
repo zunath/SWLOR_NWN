@@ -1,8 +1,9 @@
-using System.Collections.Generic;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Domain.Character
 {
-    public interface IPlayerNameService
+    public interface IPlayerNameService : IDisplayNameLookup
     {
         void ReleaseKnownNamesOnExit();
 
@@ -15,8 +16,6 @@ namespace SWLOR.Game.Server.Domain.Character
         bool ToggleAfk(uint player);
 
         void PreventAmbiguousTellTargets();
-
-        string GetDisplayName(uint observer, uint target);
 
         string GetChatDisplayName(uint observer, uint target);
 
@@ -49,25 +48,11 @@ namespace SWLOR.Game.Server.Domain.Character
         /// </summary>
         string GetKnownNameOrFallbackByPlayerId(uint observer, string targetPlayerId, string fallbackName);
 
-        List<string> SearchKnownPlayerIdsByName(uint observer, string searchText, int maxResults);
-
         string GetColoredDisplayName(uint observer, uint target);
 
         string GetColoredChatDisplayName(uint observer, uint target);
 
         string SanitizeKnownName(string name);
-
-        string ValidateKnownName(string name);
-
-        string ValidateKnownNameInput(string name);
-
-        string ValidateKnownNameAssignment(uint observer, uint target, string name);
-
-        void SetKnownName(uint observer, uint target, string name);
-
-        void ForgetKnownName(uint observer, uint target);
-
-        int DeleteKnownNameReferences(string targetIdentityKey);
 
         void RefreshNameOverridesForObserver(uint observer);
 
@@ -78,5 +63,20 @@ namespace SWLOR.Game.Server.Domain.Character
         bool ShouldShowOwnDescriptor(uint player);
 
         bool TryGetKnownName(uint observer, uint target, out string knownName);
+
+        /// <summary>The observer's stored known names, cached; null when none are stored and <paramref name="createIfMissing"/> is false.</summary>
+        PlayerKnownName GetKnownNames(uint observer, bool createIfMissing);
+
+        /// <summary>Drops the cached known names of an observer, after another service rewrote the stored record.</summary>
+        void ForgetKnownNames(string observerId);
+
+        /// <summary>Sets the name <paramref name="observer"/> sees for <paramref name="target"/> to the one it resolves now.</summary>
+        void ApplyNameOverride(uint observer, uint target);
+
+        /// <summary>The identity key of the player's active identity.</summary>
+        string GetIdentityKey(uint player);
+
+        /// <summary>Whether an identity key names a disguise.</summary>
+        bool IsDisguiseIdentityKey(string identityKey);
     }
 }

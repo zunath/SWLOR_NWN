@@ -75,7 +75,7 @@ public class CombatAbilityTranscriptTests
             bench.Step("activate with no ability" + tag, () =>
                 activation.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.Invalid, null, null));
             bench.Step("track a queued weapon ability" + tag, () => activation.TrackQueuedWeaponAbilityUse(Attacker, Ability(SkillType.Pistol)));
-            bench.Step("spend hit points on an ability" + tag, () => activation.ApplyHitPointSpendAbilityEffects(Attacker, 30, 30));
+            bench.Step("spend hit points on an ability" + tag, () => bench.Get<ICombatAbilityCostEffectsService>().ApplyHitPointSpendAbilityEffects(Attacker, 30, 30));
             bench.Step("forget the activator" + tag, () => activation.ForgetActivationState(Attacker));
         }
 
@@ -159,6 +159,7 @@ public class CombatAbilityTranscriptTests
         var rate = bench.Get<ICombatRateModifiersService>();
         var repeated = bench.Get<ICombatRepeatedTargetService>();
         var hit = bench.Get<ICombatAbilityHitService>();
+        var guardedEffects = bench.Get<ICombatGuardedHitEffectsService>();
         var bonus = bench.Get<ICombatAbilityBonusService>();
 
         foreach (var stat in new[] { 0, 5 })
@@ -240,7 +241,7 @@ public class CombatAbilityTranscriptTests
                 hit.GetHitChanceAgainstSunderedTargetAdjustment(Attacker, Defender);
                 hit.GetCriticalRateAgainstSunderedTargetAdjustment(Attacker, Defender);
                 hit.ApplyRangedAbilityTargetDefenseReduction(Attacker, Defender, SkillType.Rifle);
-                hit.ApplyGuardedHitNextAttackEffects(Attacker);
+                guardedEffects.ApplyGuardedHitNextAttackEffects(Attacker);
             });
             bench.Step("ability bonus reads" + tag, () =>
             {

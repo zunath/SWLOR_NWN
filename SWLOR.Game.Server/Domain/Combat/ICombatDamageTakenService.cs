@@ -5,8 +5,8 @@ using SWLOR.Game.Server.Domain.Foundation;
 namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
-    /// The damage taken part of combat: the modifiers of an incoming hit, Guard and its riders, and the physical-to-Force
-    /// defense conversion.
+    /// The damage taken part of combat: the modifiers of an incoming hit, the Guard damage reduction read and the
+    /// physical-to-Force defense conversion.
     /// </summary>
     public interface ICombatDamageTakenService
     {
@@ -38,15 +38,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             int damage,
             bool restoreToOneHP);
 
-        void TrackGuardedHit(uint creature);
-
-        int ApplyGuardedHitModifiers(
-            uint defender,
-            uint attacker,
-            int damage,
-            CombatDamageType damageType,
-            bool isLandedAttack);
-
         bool IsHostileAttackSource(uint defender, uint attacker);
 
         /// <summary>
@@ -56,8 +47,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <param name="defender">The creature to check.</param>
         /// <returns>The damage reduction percentage applied on a guarded hit.</returns>
         int GetGuardDamageReductionPercent(uint defender);
-
-        int ConsumeGuardedHitNextSkillAbilityExposedDamageBonus(uint creature, SkillType skillType);
 
         /// <summary>
         /// First half of Saber Ward / Aegis Eternal conversion: give the converted share its Force Defense

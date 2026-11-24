@@ -22,6 +22,12 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The ability and attack bonuses of combat, a part of combat.</summary>
         public static ICombatAbilityBonusService CombatAbilityBonus => FacadeAccessor.Resolve<ICombatAbilityBonusService>();
 
+        /// <summary>The cost riders of an ability activation (recast reduction, next skill bonuses, HP spend, Force FP cost), a part of combat.</summary>
+        public static ICombatAbilityCostEffectsService CombatAbilityCostEffects => FacadeAccessor.Resolve<ICombatAbilityCostEffectsService>();
+
+        /// <summary>The defense riders of an ability activation (evasion, deflection, ally defense), a part of combat.</summary>
+        public static ICombatAbilityDefenseEffectsService CombatAbilityDefenseEffects => FacadeAccessor.Resolve<ICombatAbilityDefenseEffectsService>();
+
         /// <summary>The ability hit roll of combat, a part of combat.</summary>
         public static ICombatAbilityHitService CombatAbilityHit => FacadeAccessor.Resolve<ICombatAbilityHitService>();
 
@@ -62,6 +68,15 @@ namespace SWLOR.Game.Server.Composition
 
         /// <summary>Damage reflection, the physical-to-Force conversion and Deflecting Return, a part of combat.</summary>
         public static ICombatDamageReflectionService CombatDamageReflection => FacadeAccessor.Resolve<ICombatDamageReflectionService>();
+
+        /// <summary>A guarded hit: the reduction, the stamina recovery, the retaliation and the guard enmity, a part of combat.</summary>
+        public static ICombatGuardedHitService CombatGuardedHit => FacadeAccessor.Resolve<ICombatGuardedHitService>();
+
+        /// <summary>The effects a guarded hit grants the guard, a part of combat.</summary>
+        public static ICombatGuardedHitEffectsService CombatGuardedHitEffects => FacadeAccessor.Resolve<ICombatGuardedHitEffectsService>();
+
+        /// <summary>The damage a guard returns on a guarded hit, a part of combat.</summary>
+        public static ICombatGuardRetaliationService CombatGuardRetaliation => FacadeAccessor.Resolve<ICombatGuardRetaliationService>();
 
         /// <summary>The random damage roll, a part of combat.</summary>
         public static ICombatDamageRollService CombatDamageRoll => FacadeAccessor.Resolve<ICombatDamageRollService>();

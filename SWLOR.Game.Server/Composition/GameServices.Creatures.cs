@@ -7,6 +7,12 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>Creature AI profiles, flags and the creature event handlers (the static class <c>AI</c> until it was removed).</summary>
         public static IAIService AI => FacadeAccessor.Resolve<IAIService>();
 
+        /// <summary>The creature event handlers (heartbeat, combat round, damaged, death, spawn and the others).</summary>
+        public static IAICreatureEventService AICreatureEvent => FacadeAccessor.Resolve<IAICreatureEventService>();
+
+        /// <summary>The aggro aura handlers, proximity enmity and the stealth detection listener.</summary>
+        public static IAIAggroService AIAggro => FacadeAccessor.Resolve<IAIAggroService>();
+
         /// <summary>The mode, orders and abilities of a controlled companion (the static class <c>CompanionControl</c> until it was removed).</summary>
         public static ICompanionControlService CompanionControl => FacadeAccessor.Resolve<ICompanionControlService>();
 

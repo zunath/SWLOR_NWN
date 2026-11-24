@@ -99,21 +99,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/PlayerIntroductionService.cs",
-    "Line": 66,
+    "Line": 68,
     "Member": "Introduce",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(presenter, ColorToken.Red(error))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/PlayerIntroductionService.cs",
-    "Line": 88,
+    "Line": 90,
     "Member": "Introduce",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(observer,\n                        $\"{_playerName.GetColoredDisplayName(observer, presenter)} introduces themselves as '{name}'. \" +\n                        \"Use /introductions to remember or dismiss this name. Your private label stays unchanged until you accept.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/PlayerIntroductionService.cs",
-    "Line": 93,
+    "Line": 95,
     "Member": "Introduce",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(presenter, ColorToken.Green(\n                $\"You introduced yourself as '{name}' to nearby players. They choose whether to remember this name.\"))"
@@ -294,13 +294,6 @@
     "Call": "SendMessageToPC(creature, BuildWornOffMessage(creature))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Combat/CombatAbilityHitService.cs",
-    "Line": 134,
-    "Member": "ApplyGuardedHitNextAttackEffects",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{dmgBonus} DMG{criticalText}{enmityText}\"),\n                    creature,\n                    false)"
-  },
-  {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs",
     "Line": 1460,
     "Member": "ApplyStatusAppliedTargetStaminaDrain",
@@ -392,20 +385,6 @@
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), guardRecipient, false)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 654,
-    "Member": "ApplyGuardedHitRetaliationPulse",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Retaliation Pulse\"), defender, false)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 772,
-    "Member": "ApplyGuardedHitNextSkillAbilityEffects",
-    "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{selected.DamageBonus} DMG{criticalText}\"),\n                    creature,\n                    false)"
-  },
-  {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatFeedbackService.cs",
     "Line": 31,
     "Member": "SendGuardedHitFeedback",
@@ -460,6 +439,27 @@
     "Member": "SendTemporaryHitPointDamageFeedback",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(\n                defender,\n                receiver => BuildTemporaryHitPointDamageCombatLogMessage(receiver, attacker, defender, damage),\n                60f)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatGuardedHitEffectsService.cs",
+    "Line": 105,
+    "Member": "ApplyGuardedHitNextAttackEffects",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{dmgBonus} DMG{criticalText}{enmityText}\"),\n                    creature,\n                    false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatGuardedHitEffectsService.cs",
+    "Line": 167,
+    "Member": "ApplyGuardedHitNextSkillAbilityEffects",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{selected.DamageBonus} DMG{criticalText}\"),\n                    creature,\n                    false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatGuardRetaliationService.cs",
+    "Line": 149,
+    "Member": "ApplyGuardedHitRetaliationPulse",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Retaliation Pulse\"), defender, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs",
@@ -932,7 +932,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Creatures/AIService.cs",
-    "Line": 1561,
+    "Line": 1130,
     "Member": "ExecuteAction",
     "Delivery": "Retained",
     "Call": "SpeakString(action.Text)"

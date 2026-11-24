@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -53,7 +54,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(observer.Creature, () =>
-                    PlayerName.SetKnownName(observer.Creature, target.Creature, "Tessar"));
+                    GameServices.PlayerKnownName.SetKnownName(observer.Creature, target.Creature, "Tessar"));
                 await ctx.WaitFrameAsync();
                 await ctx.WaitFrameAsync();
 
@@ -62,7 +63,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual("Tessar", knownName, "Known name read in a later frame");
 
                 foreach (var record in DB.Search(new DBQuery<PlayerKnownName>()
-                             .AddFieldSearch(nameof(PlayerKnownName.ObserverPlayerId), observer.Id, false)).ToList())
+                             .AddFieldSearch(nameof(Entity.PlayerKnownName.ObserverPlayerId), observer.Id, false)).ToList())
                     DB.Delete<PlayerKnownName>(record.Id);
                 await ctx.WaitFrameAsync();
 
@@ -72,7 +73,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally
             {
                 foreach (var record in DB.Search(new DBQuery<PlayerKnownName>()
-                             .AddFieldSearch(nameof(PlayerKnownName.ObserverPlayerId), observer.Id, false)).ToList())
+                             .AddFieldSearch(nameof(Entity.PlayerKnownName.ObserverPlayerId), observer.Id, false)).ToList())
                     DB.Delete<PlayerKnownName>(record.Id);
             }
         }

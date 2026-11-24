@@ -369,34 +369,6 @@ namespace SWLOR.Game.Server.Domain.Character
                 : fallbackName;
         }
 
-        public List<string> SearchKnownPlayerIdsByName(uint observer, string searchText, int maxResults)
-        {
-            if (!GetIsObjectValid(observer) ||
-                !GetIsPC(observer) ||
-                GetIsDM(observer) ||
-                string.IsNullOrWhiteSpace(searchText) ||
-                maxResults <= 0)
-            {
-                return new List<string>();
-            }
-
-            var sanitizedSearch = SanitizeKnownName(searchText).ToLower();
-            if (string.IsNullOrWhiteSpace(sanitizedSearch))
-                return new List<string>();
-
-            var dbKnownNames = GetKnownNames(observer, false);
-            if (dbKnownNames?.KnownNames == null)
-                return new List<string>();
-
-            return dbKnownNames.KnownNames
-                .Where(x => !string.IsNullOrWhiteSpace(x.Value) &&
-                            !_disguise.Value.IsDisguiseIdentityKey(x.Key) &&
-                            x.Value.ToLower().Contains(sanitizedSearch))
-                .Select(x => x.Key)
-                .Take(maxResults)
-                .ToList();
-        }
-
         public string GetColoredDisplayName(uint observer, uint target)
         {
             if (!GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target))
@@ -457,160 +429,6 @@ namespace SWLOR.Game.Server.Domain.Character
             return sanitizedName;
         }
 
-        public string ValidateKnownName(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return "Please enter a name.";
-
-            if (name.Length > MaxKnownNameLength)
-                return $"Names may be no longer than {MaxKnownNameLength} characters.";
-
-            return string.Empty;
-        }
-
-        public string ValidateKnownNameInput(string name)
-        {
-            if (ContainsColorToken(name))
-                return "Names may not contain color codes.";
-
-            return ValidateKnownName(SanitizeKnownName(name));
-        }
-
-        public string ValidateKnownNameAssignment(uint observer, uint target, string name)
-        {
-            var targetValidationError = ValidateKnownNameTarget(observer, target);
-            if (!string.IsNullOrWhiteSpace(targetValidationError))
-                return targetValidationError;
-
-            var validationError = ValidateKnownNameInput(name);
-            if (!string.IsNullOrWhiteSpace(validationError))
-                return validationError;
-
-            var sanitizedName = SanitizeKnownName(name);
-            var targetId = GetIdentityKey(target);
-            if (string.IsNullOrWhiteSpace(targetId))
-                return "Unable to identify that player.";
-
-            return ValidateKnownNameIsUnique(observer, target, sanitizedName);
-        }
-
-        public void SetKnownName(uint observer, uint target, string name)
-        {
-            var validationError = ValidateKnownNameAssignment(observer, target, name);
-
-            if (!string.IsNullOrWhiteSpace(validationError))
-                throw new ArgumentException(validationError);
-
-            var sanitizedName = SanitizeKnownName(name);
-            var targetId = GetIdentityKey(target);
-
-            var dbKnownNames = GetKnownNames(observer, true);
-
-            dbKnownNames.KnownNames[targetId] = sanitizedName;
-            _db.Set(dbKnownNames);
-
-            ApplyNameOverride(observer, target);
-            _playerList.QueueRefresh();
-        }
-
-        private string ValidateKnownNameTarget(uint observer, uint target)
-        {
-            if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target))
-                return "Known names may only target player characters.";
-
-            if (target == observer)
-                return "Known names cannot target the observer.";
-
-            return string.Empty;
-        }
-
-        private bool ContainsColorToken(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return false;
-
-            return !string.Equals(name, UtilPlugin.StripColors(name), StringComparison.Ordinal);
-        }
-
-        // Online identities only: stored labels include absent disguises, and any key-type rule would reveal them.
-        private string ValidateKnownNameIsUnique(uint observer, uint target, string sanitizedName)
-        {
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
-            {
-                if (!GetIsPC(player) ||
-                    GetIsDM(player) ||
-                    player == observer ||
-                    player == target)
-                {
-                    continue;
-                }
-
-                if (TryGetKnownName(observer, player, out var knownName) &&
-                    string.Equals(SanitizeKnownName(knownName), sanitizedName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return "You already use that name for another character who is online.";
-                }
-            }
-
-            return string.Empty;
-        }
-
-        public void ForgetKnownName(uint observer, uint target)
-        {
-            var targetId = GetIdentityKey(target);
-            var dbKnownNames = GetKnownNames(observer, false);
-
-            if (dbKnownNames?.KnownNames == null ||
-                !dbKnownNames.KnownNames.ContainsKey(targetId))
-            {
-                ApplyNameOverride(observer, target);
-                return;
-            }
-
-            dbKnownNames.KnownNames.Remove(targetId);
-            _db.Set(dbKnownNames);
-
-            ApplyNameOverride(observer, target);
-            _playerList.QueueRefresh();
-        }
-
-        public int DeleteKnownNameReferences(string targetIdentityKey)
-        {
-            if (string.IsNullOrWhiteSpace(targetIdentityKey))
-                return 0;
-
-            var removed = 0;
-            var offset = 0;
-            const int PageSize = 50;
-
-            while (true)
-            {
-                var page = _db.Search(new DBQuery<PlayerKnownName>()
-                        .AddPaging(PageSize, offset))
-                    .ToList();
-
-                foreach (var dbKnownNames in page)
-                {
-                    if (dbKnownNames.KnownNames == null ||
-                        !dbKnownNames.KnownNames.Remove(targetIdentityKey))
-                    {
-                        continue;
-                    }
-
-                    removed++;
-                    _db.Set(dbKnownNames);
-                    KnownNamesByObserverId.Remove(dbKnownNames.ObserverPlayerId);
-                }
-
-                if (page.Count < PageSize)
-                    break;
-
-                offset += PageSize;
-            }
-
-            return removed;
-        }
-
         public void RefreshNameOverridesForObserver(uint observer)
         {
             if (!GetIsObjectValid(observer) ||
@@ -645,7 +463,7 @@ namespace SWLOR.Game.Server.Domain.Character
             _playerList.QueueRefresh();
         }
 
-        private PlayerKnownName GetKnownNames(uint observer, bool createIfMissing)
+        public PlayerKnownName GetKnownNames(uint observer, bool createIfMissing)
         {
             var observerId = GetObjectUUID(observer);
             var dbKnownNames = FindKnownNames(observerId);
@@ -662,6 +480,12 @@ namespace SWLOR.Game.Server.Domain.Character
 
             KnownNamesByObserverId[observerId] = dbKnownNames;
             return dbKnownNames;
+        }
+
+        /// <summary>Drops the cached known names of an observer, after another service rewrote the stored record.</summary>
+        public void ForgetKnownNames(string observerId)
+        {
+            KnownNamesByObserverId.Remove(observerId);
         }
 
         private PlayerKnownName FindKnownNames(string observerId)
@@ -753,7 +577,7 @@ namespace SWLOR.Game.Server.Domain.Character
             RenamePlugin.SetPCNameOverride(target, BuildStaffDisplayName(target), string.Empty, GetStaffNameOverrideSuffix(target), PlayerNameOverrideType.Default, observer);
         }
 
-        private void ApplyNameOverride(uint observer, uint target)
+        public void ApplyNameOverride(uint observer, uint target)
         {
             // Possessed NPCs can be player-controlled. NWNX Rename restores their blueprint
             // name after an override, discarding the display name set by the DM's rename tool.
@@ -1001,37 +825,43 @@ namespace SWLOR.Game.Server.Domain.Character
         }
 
         /// <summary>The active disguise of a player: <c>Disguise.GetActiveDisguise</c>.</summary>
-        protected virtual PlayerDisguise GetActiveDisguise(uint player)
+        public virtual PlayerDisguise GetActiveDisguise(uint player)
         {
             return _disguise.Value.GetActiveDisguise(player);
         }
 
         /// <summary>The descriptor others see: <c>Disguise.GetDisplayDescriptor</c>.</summary>
-        protected virtual string GetDisplayDescriptor(uint player)
+        public virtual string GetDisplayDescriptor(uint player)
         {
             return _disguise.Value.GetDisplayDescriptor(player);
         }
 
         /// <summary>The identity key of the player's active identity: <c>Disguise.GetIdentityKey</c>.</summary>
-        protected virtual string GetIdentityKey(uint player)
+        public virtual string GetIdentityKey(uint player)
         {
             return _disguise.Value.GetIdentityKey(player);
         }
 
+        /// <summary>Whether an identity key names a disguise: <c>Disguise.IsDisguiseIdentityKey</c>.</summary>
+        public virtual bool IsDisguiseIdentityKey(string identityKey)
+        {
+            return _disguise.Value.IsDisguiseIdentityKey(identityKey);
+        }
+
         /// <summary>Whether the account name is scrambled: <c>Disguise.ShouldScrambleAccountName</c>.</summary>
-        protected virtual bool ShouldScrambleAccountName(uint player)
+        public virtual bool ShouldScrambleAccountName(uint player)
         {
             return _disguise.Value.ShouldScrambleAccountName(player);
         }
 
         /// <summary>Generates a missing base descriptor: <c>PlayerDescriptor.EnsureUnknownDisplayName</c>.</summary>
-        protected virtual bool EnsureUnknownDisplayName(uint player)
+        public virtual bool EnsureUnknownDisplayName(uint player)
         {
             return _playerDescriptor.Value.EnsureUnknownDisplayName(player);
         }
 
         /// <summary>The base descriptor of a stored player: <c>PlayerDescriptor.GetUnknownDisplayNameByPlayerId</c>.</summary>
-        protected virtual string GetUnknownDisplayNameByPlayerId(string targetPlayerId)
+        public virtual string GetUnknownDisplayNameByPlayerId(string targetPlayerId)
         {
             return _playerDescriptor.Value.GetUnknownDisplayNameByPlayerId(targetPlayerId);
         }

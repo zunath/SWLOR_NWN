@@ -745,7 +745,7 @@ public class CombatDamageTests
             "var damage = CalculateTargetSpecificDamage",
             StringComparison.Ordinal);
         var guardedHitIndex = damageRollSource.IndexOf(
-            "GameServices.CombatDamageTaken.ApplyGuardedHitModifiers(",
+            "GameServices.CombatGuardedHit.ApplyGuardedHitModifiers(",
             StringComparison.Ordinal);
 
         queuedAbilitySuppressionIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -900,7 +900,7 @@ public class CombatDamageTests
             "StatusEffectDefinition",
             "WhirlingGuardStatusEffect.cs"));
 
-        var retaliation = ExtractMethod(combatSource, "private static void ApplyGuardedHitRetaliation");
+        var retaliation = ExtractMethod(combatSource, "public static void ApplyGuardedHitRetaliation");
         retaliation.Should().Contain("StatType.GuardRetaliationDMG");
         retaliation.Should().Contain("ResolveGuardRetaliationDamage(");
         retaliation.Should().NotContain("AbilityEffectScaling.ScaleDirectEffect");

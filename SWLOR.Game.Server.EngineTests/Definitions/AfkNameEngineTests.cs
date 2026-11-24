@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text.Json;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
@@ -51,7 +52,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     PlayerName.GetDisplayName(observer.Creature, target.Creature), "AFK cannot disambiguate identical tell identities");
                 ctx.AssertEqual(identityKey, Disguise.GetIdentityKey(target.Creature), "AFK cannot change identity");
 
-                PlayerName.SetKnownName(observer.Creature, target.Creature, "Vessa Tal");
+                GameServices.PlayerKnownName.SetKnownName(observer.Creature, target.Creature, "Vessa Tal");
                 AssertOverride("known", PlayerName.GetDisplayName(observer.Creature, target.Creature) + suffix);
                 var observerRecord = DB.Get<Player>(observer.Id);
                 observerRecord.Settings.ShowDescriptorsForNamedPlayers = false;
@@ -61,7 +62,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 observerRecord.Settings.ShowDescriptorsForNamedPlayers = true;
                 DB.Set(observerRecord);
                 PlayerName.RefreshNameOverridesForObserver(observer.Creature);
-                ctx.Assert(!string.IsNullOrEmpty(PlayerName.ValidateKnownNameAssignment(observer.Creature, bystander.Creature, "Vessa Tal")),
+                ctx.Assert(!string.IsNullOrEmpty(GameServices.PlayerKnownName.ValidateKnownNameAssignment(observer.Creature, bystander.Creature, "Vessa Tal")),
                     "AFK cannot bypass private-label uniqueness");
                 PlayerDescriptor.SetUnknownDisplayName(target.Creature, "A seasoned traveler");
                 AssertOverride("renamed", PlayerName.GetDisplayName(observer.Creature, target.Creature) + suffix);
@@ -83,7 +84,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
                 AssertOverride("disguised-unknown", ColorToken.Gray("A hooded courier") + suffix);
                 ctx.Assert(!PlayerName.TryGetKnownName(observer.Creature, target.Creature, out _), "owner label must not leak through disguise");
-                PlayerName.SetKnownName(observer.Creature, target.Creature, "Masked Courier");
+                GameServices.PlayerKnownName.SetKnownName(observer.Creature, target.Creature, "Masked Courier");
                 AssertOverride("disguised-known", PlayerName.GetDisplayName(observer.Creature, target.Creature) + suffix);
                 await ToggleAsync();
                 ctx.Assert(!PlayerName.IsAfk(target.Creature), "second /afk disables status");
@@ -96,7 +97,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual("Vessa Tal", knownName, "AFK is never saved in a label");
                 ctx.AssertEqual("A seasoned traveler", DB.Get<Player>(target.Id).UnknownDisplayName, "AFK is never saved in a descriptor");
                 ctx.AssertEqual(canonicalName, GetName(target.Creature), "canonical name retained");
-                PlayerName.ForgetKnownName(observer.Creature, target.Creature);
+                GameServices.PlayerKnownName.ForgetKnownName(observer.Creature, target.Creature);
                 AssertOverride("forgotten", ColorToken.Gray("A seasoned traveler") + suffix);
                 await ToggleAsync();
                 AssertOverride("returned", ColorToken.Gray("A seasoned traveler"));
@@ -115,7 +116,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 if (disguise != null)
                     DB.Delete<PlayerDisguise>(disguise.Id);
                 foreach (var names in DB.Search(new DBQuery<PlayerKnownName>()
-                             .AddFieldSearch(nameof(PlayerKnownName.ObserverPlayerId), observer.Id, false)
+                             .AddFieldSearch(nameof(Entity.PlayerKnownName.ObserverPlayerId), observer.Id, false)
                              .AddPaging(50, 0)).ToList())
                     DB.Delete<PlayerKnownName>(names.Id);
             }
@@ -141,7 +142,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 PlayerDescriptor.SetUnknownDisplayName(target.Creature, "A quiet traveler");
-                PlayerName.SetKnownName(observer.Creature, target.Creature, "Vessa Tal");
+                GameServices.PlayerKnownName.SetKnownName(observer.Creature, target.Creature, "Vessa Tal");
                 await ToggleAsync(target.Creature);
                 await ToggleAsync(stationary.Creature);
                 await ctx.DelaySecondsAsync(1.25f);
@@ -171,7 +172,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     DB.Set(disguise);
                     ctx.AssertEqual(string.Empty, Disguise.Activate(target.Creature, disguise.Id).ErrorMessage, "activate disguise");
                 });
-                PlayerName.SetKnownName(observer.Creature, target.Creature, "Masked Courier");
+                GameServices.PlayerKnownName.SetKnownName(observer.Creature, target.Creature, "Masked Courier");
                 ObjectPlugin.SetPosition(target.Creature, GetPosition(target.Creature) + new Vector3(0f, 1f, 0f));
                 await AssertMovementClearsAsync();
                 ctx.AssertEqual(Disguise.BuildIdentityKey(disguise.Id), Disguise.GetIdentityKey(target.Creature), "movement keeps the disguise identity");
@@ -193,7 +194,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 if (disguise != null)
                     DB.Delete<PlayerDisguise>(disguise.Id);
                 foreach (var names in DB.Search(new DBQuery<PlayerKnownName>()
-                             .AddFieldSearch(nameof(PlayerKnownName.ObserverPlayerId), observer.Id, false)
+                             .AddFieldSearch(nameof(Entity.PlayerKnownName.ObserverPlayerId), observer.Id, false)
                              .AddPaging(50, 0)).ToList())
                     DB.Delete<PlayerKnownName>(names.Id);
             }

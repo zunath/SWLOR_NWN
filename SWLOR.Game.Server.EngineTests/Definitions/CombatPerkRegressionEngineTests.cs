@@ -206,7 +206,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(defense, Stat.GetStatAdjustment(caster, StatType.PhysicalDefensePercentAdjustment),
                 "without its Daze Guard Counter III is not a Control ability for Guard Training");
 
-            GameServices.CombatDamageTaken.TrackGuardedHit(caster);
+            GameServices.CombatGuardedHitEffects.TrackGuardedHit(caster);
             await ApplyGuardCounter(guardedTarget);
             ctx.Assert(StatusEffect.HasStatusEffect<DazedStatusEffect>(guardedTarget),
                 "after a guarded hit Guard Counter III inflicts Daze");
@@ -231,7 +231,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(baseline, QueuedHitChance(FeatType.GuardCounter3),
                 "without a guarded hit Guard Counter III is not a control ability for Scrapper Control");
 
-            GameServices.CombatDamageTaken.TrackGuardedHit(caster);
+            GameServices.CombatGuardedHitEffects.TrackGuardedHit(caster);
             ctx.AssertEqual(baseline + 3, QueuedHitChance(FeatType.GuardCounter3),
                 "after a guarded hit Scrapper Control adds +3% Ability Accuracy to Guard Counter III's queued roll");
             ctx.AssertEqual(baseline, QueuedHitChance(FeatType.GuardCounter1),
@@ -406,7 +406,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "the bonus is spent once");
 
             GameServices.CombatDamageTakenEffects.ApplyDamageTakenEffects(defender, attacker, 5);
-            GameServices.CombatDamageTaken.TrackGuardedHit(defender);
+            GameServices.CombatGuardedHitEffects.TrackGuardedHit(defender);
             ctx.AssertEqual((20, 0, 0), GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter3)),
                 "Guard Counter III after a guarded hit is a control ability for Breaker Reversal");
         }

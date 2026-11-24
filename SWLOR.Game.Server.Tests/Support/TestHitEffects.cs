@@ -48,7 +48,7 @@ internal sealed partial class TestHitEffects : CombatHitEffectsService
         IResistanceService resistance,
         IPartyService party)
         : base(queries, resources, attackTiming, suppression, combatActivity, damageModifiers, repeatedTarget, abilityHit, stat, statusEffect, statusApplication,
-            statusCombat, statusDuration, temporaryStatModifier, ability, pairedRangedTraits, combatRecorder, capstoneProof, resistance, party, FacadeForwarder.LazyFor<ICombatDamageTakenService>())
+            statusCombat, statusDuration, temporaryStatModifier, ability, pairedRangedTraits, combatRecorder, capstoneProof, resistance, party, FacadeForwarder.For<ICombatDamageTakenService>())
     {
         _log = log;
         _taken = taken;

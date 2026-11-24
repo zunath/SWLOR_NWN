@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Native
                 damage = target.DoDamageReduction(attacker, damage, damagePower, 0, 1, bRangedAttack);
             }
 
-            damage = GameServices.CombatDamageTaken.ApplyGuardedHitModifiers(
+            damage = GameServices.CombatGuardedHit.ApplyGuardedHitModifiers(
                 target.m_idSelf,
                 attacker.m_idSelf,
                 damage,

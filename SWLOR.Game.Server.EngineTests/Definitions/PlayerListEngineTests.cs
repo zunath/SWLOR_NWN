@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using NWN.Native.API;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
@@ -94,7 +95,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             try
             {
-                PlayerName.SetKnownName(viewer.Creature, other.Creature, "Engine Testname");
+                GameServices.PlayerKnownName.SetKnownName(viewer.Creature, other.Creature, "Engine Testname");
                 var named = FindEntry(ctx, viewer.Creature, other.Creature);
                 ctx.AssertEqual("Engine Testname", named.Name, "an assigned name is shown");
                 ctx.Assert(PlayerListRules.MatchesSearch("testn", named.Name, named.Descriptor), "the assigned name is searchable");
@@ -126,7 +127,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                PlayerName.ForgetKnownName(viewer.Creature, other.Creature);
+                GameServices.PlayerKnownName.ForgetKnownName(viewer.Creature, other.Creature);
             }
 
             ctx.AssertEqual(string.Empty, FindEntry(ctx, viewer.Creature, other.Creature).Name, "forgetting the name returns the player to Unassigned");

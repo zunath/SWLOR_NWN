@@ -1646,7 +1646,7 @@ namespace SWLOR.Game.Server.Service
                 var targetPlayerId = GetObjectUUID(creature);
                 var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
 
-                if (dbTargetPlayer.ActiveShipId == Guid.Empty.ToString())
+                if (string.IsNullOrEmpty(dbTargetPlayer?.ActiveShipId) || dbTargetPlayer.ActiveShipId == Guid.Empty.ToString())
                     return null;
 
                 var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);

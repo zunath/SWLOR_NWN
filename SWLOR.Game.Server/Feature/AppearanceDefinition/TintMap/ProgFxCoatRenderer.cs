@@ -34,9 +34,44 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             "vdu_tex_ice",
         };
 
+        private const string CoatOnlyMaterials2DA = "progfxcoat";
+
         private static readonly ConcurrentDictionary<int, int> VisualEffectCoats = new();
         private static readonly ConcurrentDictionary<int, int> ProgFxCoats = new();
         private static volatile HashSet<int> _coatingVisualEffects = new();
+        private static volatile IReadOnlyDictionary<string, string[]> _coatOnlyMaterialsByModel =
+            new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Loads progfxcoat.2da: materials that take no dyes, such as the Havoc chest lamp box, but
+        /// still need the coat, listed by each model that binds them.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        public static void LoadCoatOnlyMaterials()
+        {
+            var materials = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+            var count = Get2DARowCount(CoatOnlyMaterials2DA);
+            for (var row = 0; row < count; row++)
+            {
+                var model = Get2DAString(CoatOnlyMaterials2DA, "MODEL", row);
+                var material = Get2DAString(CoatOnlyMaterials2DA, "MATERIAL", row);
+                if (string.IsNullOrWhiteSpace(model) || string.IsNullOrWhiteSpace(material))
+                    continue;
+
+                if (!materials.TryGetValue(model, out var modelMaterials))
+                {
+                    modelMaterials = new List<string>();
+                    materials[model] = modelMaterials;
+                }
+
+                modelMaterials.Add(material);
+            }
+
+            _coatOnlyMaterialsByModel = materials.ToDictionary(
+                pair => pair.Key,
+                pair => pair.Value.ToArray(),
+                StringComparer.OrdinalIgnoreCase);
+        }
 
         /// <summary>
         /// Native visual-effect hooks read this without a script context, so every coating
@@ -182,13 +217,31 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return coat + ((refreshSequence & 1) == 0 ? 0f : 0.0001f);
         }
 
-        private static void WriteCoat(uint creature, IReadOnlyList<TintMapMaterialSelection> selections, float coat)
+        /// <summary>
+        /// The materials that take the coat: every tint material the creature renders, plus the
+        /// coat-only materials its models bind.
+        /// </summary>
+        public static IReadOnlyList<string> GetCoatedMaterials(
+            IReadOnlyList<TintMapMaterialSelection> selections,
+            IReadOnlyDictionary<string, string[]> coatOnlyMaterialsByModel)
         {
             // Worn helmets are separate attachments that never receive creature parameters.
-            foreach (var material in selections
-                         .Where(selection => !selection.IsWornHelmet)
-                         .Select(selection => selection.Material.Resref)
-                         .Distinct(StringComparer.OrdinalIgnoreCase))
+            var rendered = selections.Where(selection => !selection.IsWornHelmet).ToList();
+            return rendered
+                .Select(selection => selection.Material.Resref)
+                .Concat(rendered
+                    .Select(selection => selection.ModelResref)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .SelectMany(model => coatOnlyMaterialsByModel.TryGetValue(model, out var materials)
+                        ? materials
+                        : Array.Empty<string>()))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+
+        private static void WriteCoat(uint creature, IReadOnlyList<TintMapMaterialSelection> selections, float coat)
+        {
+            foreach (var material in GetCoatedMaterials(selections, _coatOnlyMaterialsByModel))
             {
                 // The scalar MTR declaration uploads the first component with glUniform1f.
                 SetMaterialShaderUniformVec4(creature, material, UniformName, coat);

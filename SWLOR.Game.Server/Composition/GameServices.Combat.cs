@@ -22,6 +22,12 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The ability and attack bonuses of combat, a part of combat.</summary>
         public static ICombatAbilityBonusService CombatAbilityBonus => FacadeAccessor.Resolve<ICombatAbilityBonusService>();
 
+        /// <summary>The cost riders of an ability activation (recast reduction, next skill bonuses, HP spend, Force FP cost), a part of combat.</summary>
+        public static ICombatAbilityCostEffectsService CombatAbilityCostEffects => FacadeAccessor.Resolve<ICombatAbilityCostEffectsService>();
+
+        /// <summary>The defense riders of an ability activation (evasion, deflection, ally defense), a part of combat.</summary>
+        public static ICombatAbilityDefenseEffectsService CombatAbilityDefenseEffects => FacadeAccessor.Resolve<ICombatAbilityDefenseEffectsService>();
+
         /// <summary>The ability hit roll of combat, a part of combat.</summary>
         public static ICombatAbilityHitService CombatAbilityHit => FacadeAccessor.Resolve<ICombatAbilityHitService>();
 

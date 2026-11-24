@@ -8,9 +8,9 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
 | 1. Static service lookup | `StaticLookups.txt` | 1,074 | 12,794 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 15 | 23,121 lines | none over 1,000 lines |
+| 2. Large types | `LargeTypes.txt` | 14 | 21,713 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 8 | 2,419 lines | none over 150 lines (400 for layout) |
-| 4. Services per type | `ServicesPerType.txt` | 16 | 237 services | none over 10 services |
+| 4. Services per type | `ServicesPerType.txt` | 15 | 225 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 29 | 35 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 110 | 224 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 26 | 88 edges | none |
@@ -58,11 +58,11 @@ Largest 15 of 1,074 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 15 types over 1,000 lines, 23,121 lines in all.
+- 14 types over 1,000 lines, 21,713 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 2, fluent builder 1, owner exception 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
-Largest 15 of 15 (all in `LargeTypes.txt`):
+Largest 14 of 14 (all in `LargeTypes.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
@@ -74,7 +74,6 @@ Largest 15 of 15 (all in `LargeTypes.txt`):
 | `SWLOR.Game.Server.Domain.Items.ItemService` | 1,605 | ItemService.cs |
 | `SWLOR.Game.Server.Domain.Character.PerkService` | 1,486 | PerkService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatRecorderService` | 1,417 | CombatRecorderService.cs |
-| `SWLOR.Game.Server.Domain.Creatures.AIService` | 1,408 | AIService.cs |
 | `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 1,307 | MimicryService.cs |
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 1,243 | EnmityService.cs |
 | `SWLOR.Game.Server.Domain.Companions.BeastMasteryService` | 1,240 | BeastMasteryService.cs |
@@ -102,10 +101,10 @@ Largest 8 of 8 (all in `LongMethods.txt`):
 
 ## 4. Services per type
 
-- 16 types use more than 10 services: 13 through the constructor only, 3 through the lookup only, 0 through both.
+- 15 types use more than 10 services: 12 through the constructor only, 3 through the lookup only, 0 through both.
 - Exempt and over the limit: 0 (none).
 
-Largest 15 of 16 (all in `ServicesPerType.txt`):
+Largest 15 of 15 (all in `ServicesPerType.txt`):
 
 | Entry | Services | Detail |
 |---|---:|---|
@@ -120,10 +119,10 @@ Largest 15 of 16 (all in `ServicesPerType.txt`):
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityHitService` | 13 | constructor 13, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatService` | 13 | constructor 13, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 12 | constructor 12, lookup 0 |
-| `SWLOR.Game.Server.Domain.Creatures.AIService` | 12 | constructor 12, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.AbilityDamageStageService` | 11 | constructor 11, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 11 | constructor 11, lookup 0 |
 | `SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade.HeavyVibrobladeActiveAbilityDefinitionBase` | 11 | constructor 0, lookup 11 |
+| `SWLOR.Game.Server.Native.ResolveAttackRoll` | 11 | constructor 0, lookup 11 |
 
 ## 5. Deferred resolution
 

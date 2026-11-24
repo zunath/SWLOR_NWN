@@ -32,6 +32,8 @@ public class CompanionControlServiceTests
 
     private AIBench _bench = null!;
     private ScriptedProxy _aiScript = null!;
+    private ScriptedProxy _decisionScript = null!;
+    private ScriptedProxy _actionScript = null!;
     private TestCompanionControl _service = null!;
     private FakePlayerPlugin _player = null!;
     private IDisposable _playerScope = null!;
@@ -92,18 +94,20 @@ public class CompanionControlServiceTests
 
         var ai = ScriptedProxy.Create<IAIService>(out _aiScript);
         _aiScript.On("ClearAIState", arguments => { _cleared.Add((uint)arguments[0]!); return null; });
-        _aiScript.On("ProcessTrigger", arguments =>
+        var decision = ScriptedProxy.Create<IAIDecisionService>(out _decisionScript);
+        _decisionScript.On("ProcessTrigger", arguments =>
         {
             _triggers.Add(((AITriggerType)arguments[1]!, (uint)arguments[2]!, (bool)arguments[3]!, (uint)arguments[0]!));
             return _actionIssued;
         });
-        _aiScript.On("TryUseBestTargetedSupportAbility", arguments =>
+        var action = ScriptedProxy.Create<IAIActionService>(out _actionScript);
+        _actionScript.On("TryUseBestTargetedSupportAbility", arguments =>
         {
             arguments[2] = _supportAbility ?? string.Empty;
             return _supportAbility != null;
         });
 
-        _service = new TestCompanionControl(ai, _bench.BeastMastery);
+        _service = new TestCompanionControl(ai, decision, action, _bench.BeastMastery);
         _service.Droids.Add(_companion.Id);
         _bench.Creatures.SetReturnHandler("GetFeatCount", arguments =>
             _service.Feats.TryGetValue((uint)arguments[0]!, out var feats) ? feats.Count : 0);

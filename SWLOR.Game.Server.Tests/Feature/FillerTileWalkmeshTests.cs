@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.Tests.Feature;
 // pushed out of furniture or a wall lands in the black void around the rooms and can walk around in it.
 public class FillerTileWalkmeshTests
 {
+    // The Service Ducts tileset (nac01.set) was removed as unused in SWLOR_Haks #690; no area uses it.
     [TestCase("sw_t_bunker", "fifi")]
-    [TestCase("sw_t_duct", "nac01")]
     public void EveryTileModelShipsAWalkmesh(string hakFolder, string tileset)
     {
         var folder = Path.Combine(FindRoot(), "SWLOR_Haks", hakFolder);

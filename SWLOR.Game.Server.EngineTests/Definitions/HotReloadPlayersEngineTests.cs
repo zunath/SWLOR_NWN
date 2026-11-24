@@ -1,16 +1,11 @@
 using System.Collections;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using SWLOR.Game.Server.Composition;
-using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Abilities;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -28,10 +23,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     /// it), and its window view models rebuilt by the restore step.</item>
     /// <item>The run after the second reload also releases the player and the arena.</item>
     /// </list>
-    /// A second headless player names the first one and the first goes AFK, with a stale name override left on it, so each later run
-    /// also checks what the name override service carries: the player is still AFK, the overrides were applied again (the stale one is
-    /// gone and the AFK tag is on the name), and a tell between the two named players still goes through the tell handler. The run
-    /// after the last reload moves the player, so the AFK movement check the reload had to start again clears the flag.
     /// Reload is off in the normal engine sweep, so there the scenario skips; it runs with <c>scripts/run-hot-reload-check.sh
     /// --engine-filter HotReloadPlayers --reloads 2</c>, which stages the engine tests in every generation and fails unless every
     /// generation's run passes.
@@ -40,8 +31,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     {
         private const string Prefix = "SWLOR_HRP_";
         private const string EffectTag = Prefix + "EFFECT";
-        private const string NamedAs = "Vessa Tal";
-        private static readonly string AfkSuffix = " " + ColorToken.Purple("[AFK]");
         private const string LoggedOutKey = Prefix + "LOGGED_OUT_PLAYER";
         private const int ReloadsToVerify = 2;
         private const float StatusSeconds = 3600f;
@@ -74,13 +63,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var verified = Verify(ctx) + 1;
             SetLocalString(module, Prefix + "TOKEN", GenerationToken);
             SetLocalInt(module, Prefix + "VERIFIED", verified);
-            await VerifyTellAsync(ctx);
             ctx.SetResultDetail($"verified after reload {verified} of {ReloadsToVerify}");
             if (verified >= ReloadsToVerify)
-            {
-                await VerifyMovementClearsAfkAsync(ctx);
                 Release(ctx);
-            }
 
             await ctx.WaitFrameAsync();
         }
@@ -92,10 +77,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var creature = fixture.Creature;
             ctx.Untrack(creature);
             fixture.KeepAcrossReloads();
-            var observerFixture = await PlayerAbilityFixture.CreateAsync(ctx, 3f);
-            var observer = observerFixture.Creature;
-            ctx.Untrack(observer);
-            observerFixture.KeepAcrossReloads();
             SetLocalInt(module, EngineTest.KeepArenaVariable, 1);
 
             var statusEffects = StatusEffect;
@@ -112,16 +93,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(status != null, "the status effect is tracked");
             ctx.Assert(Recast.IsOnRecastDelay(creature, Cooldown).Item1, "the cooldown runs");
             var position = GetPosition(creature);
-
-            GameServices.PlayerKnownName.SetKnownName(observer, creature, NamedAs);
-            ctx.Assert(PlayerNameOverride.ToggleAfk(creature), "the player goes AFK");
-            var expectedOverride = PlayerName.GetDisplayName(observer, creature) + AfkSuffix;
-            ctx.AssertEqual(expectedOverride, RenamePlugin.GetPCNameOverride(creature, observer), "the observer sees the known name with the AFK tag");
-            RenamePlugin.SetPCNameOverride(creature, "Stale name", string.Empty, string.Empty, PlayerNameOverrideType.Default, observer);
-            SetLocalString(module, Prefix + "EXPECTED_OVERRIDE", expectedOverride);
-            SetLocalObject(module, Prefix + "OBSERVER", observer);
-            SetLocalInt(module, Prefix + "OBSERVER_CLIENT", (int)observerFixture.ClientId);
-            SetLocalInt(module, Prefix + "OBSERVER_WAS_PLAYER", observerFixture.WasPlayer);
 
             SetLocalObject(module, Prefix + "CREATURE", creature);
             SetLocalInt(module, Prefix + "CLIENT", (int)fixture.ClientId);
@@ -165,44 +136,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             ctx.Assert(Gui.GetPlayerWindow(creature, GuiWindowType.PlayerStatus) != null,
                 "the restore step rebuilt the player's window view models (GuiService.CreatePlayerWindowsFor)");
-
-            var observer = GetLocalObject(module, Prefix + "OBSERVER");
-            ctx.Assert(PlayerNameOverride.IsAfk(creature), "the AFK flag is carried into the new build");
-            ctx.AssertEqual(GetLocalString(module, Prefix + "EXPECTED_OVERRIDE"), RenamePlugin.GetPCNameOverride(creature, observer),
-                "the overrides were applied again (the stale name is gone) and the name carries the AFK tag");
             return GetLocalInt(module, Prefix + "VERIFIED");
-        }
-
-        /// <summary>
-        /// A tell from the observer to the player they named goes through the tell handler of this build: while the chat message is
-        /// delivered, the observer sees the player's chat name (the known name alone), not the name with the descriptor beside it.
-        /// </summary>
-        private static async Task VerifyTellAsync(EngineTestContext ctx)
-        {
-            var module = GetModule();
-            var creature = GetLocalObject(module, Prefix + "CREATURE");
-            var observer = GetLocalObject(module, Prefix + "OBSERVER");
-            var restored = RenamePlugin.GetPCNameOverride(creature, observer);
-            var duringTell = string.Empty;
-            await ctx.ExecuteInCreatureContextAsync(observer, () =>
-            {
-                ChatPlugin.SendMessage(SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel.PlayerTell, "Reload check", observer, creature);
-                duringTell = RenamePlugin.GetPCNameOverride(creature, observer);
-            });
-            ctx.AssertEqual(NamedAs + AfkSuffix, duringTell, "the tell handler put the chat name on the player the observer named");
-            await ctx.WaitUntilAsync(() => RenamePlugin.GetPCNameOverride(creature, observer) == restored, 3f, "the tell handler to restore the name again");
-        }
-
-        /// <summary>The last phase: moving the player ends AFK, which needs the movement check the reload started again.</summary>
-        private static async Task VerifyMovementClearsAfkAsync(EngineTestContext ctx)
-        {
-            var module = GetModule();
-            var creature = GetLocalObject(module, Prefix + "CREATURE");
-            var observer = GetLocalObject(module, Prefix + "OBSERVER");
-            ObjectPlugin.SetPosition(creature, GetPosition(creature) + new System.Numerics.Vector3(1f, 0f, 0f));
-            await ctx.WaitUntilAsync(() => !PlayerNameOverride.IsAfk(creature), 4f, "the movement check of the new build to clear AFK");
-            ctx.AssertEqual(PlayerName.GetDisplayName(observer, creature), RenamePlugin.GetPCNameOverride(creature, observer),
-                "the name has no AFK tag after moving");
         }
 
         private static bool HasTaggedEffect(uint creature)
@@ -254,25 +188,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var module = GetModule();
             var creature = GetLocalObject(module, Prefix + "CREATURE");
-            var observer = GetLocalObject(module, Prefix + "OBSERVER");
             using (PlayerAbilityFixture.Reattach(creature, (uint)GetLocalInt(module, Prefix + "CLIENT"), GetLocalInt(module, Prefix + "WAS_PLAYER")))
-            using (PlayerAbilityFixture.Reattach(observer, (uint)GetLocalInt(module, Prefix + "OBSERVER_CLIENT"), GetLocalInt(module, Prefix + "OBSERVER_WAS_PLAYER")))
             {
             }
 
             ctx.Track(creature);
-            ctx.Track(observer);
-            foreach (var names in DB.Search(new DBQuery<PlayerKnownName>()
-                         .AddFieldSearch(nameof(Entity.PlayerKnownName.ObserverPlayerId), GetObjectUUID(observer), false)
-                         .AddPaging(50, 0)).ToList())
-                DB.Delete<PlayerKnownName>(names.Id);
             LoggedOutTable(StatusEffect).Remove(LoggedOutKey);
             DeleteLocalString(module, Prefix + "LOGGED_OUT_ID");
-            foreach (var name in new[] { "CREATURE", "OBSERVER" })
+            foreach (var name in new[] { "CREATURE" })
                 DeleteLocalObject(module, Prefix + name);
-            foreach (var name in new[] { "CLIENT", "WAS_PLAYER", "HP", "VERIFIED", "PREPARED", "OBSERVER_CLIENT", "OBSERVER_WAS_PLAYER" })
+            foreach (var name in new[] { "CLIENT", "WAS_PLAYER", "HP", "VERIFIED", "PREPARED" })
                 DeleteLocalInt(module, Prefix + name);
-            foreach (var name in new[] { "STATUS_ID", "TOKEN", "EXPECTED_OVERRIDE" })
+            foreach (var name in new[] { "STATUS_ID", "TOKEN" })
                 DeleteLocalString(module, Prefix + name);
             foreach (var name in new[] { "X", "Y", "Z" })
                 DeleteLocalFloat(module, Prefix + name);

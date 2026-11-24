@@ -517,7 +517,7 @@ public class PlayerNameRecognitionTests
         viewModelSource.Should().Contain("PlayerNameOverride.RefreshNameOverridesForPlayer(Player);");
 
         playerNameSource.Should().Contain("public void RefreshNameOverridesForObserver(uint observer)");
-        playerNameSource.Should().Contain("_playerName.ForgetDescriptorSetting(observerId);");
+        playerNameSource.Should().Contain("ForgetDescriptorSetting(observerId);");
         playerNameSource.Should().Contain("public bool ShouldShowOwnDescriptor(uint player)");
         playerNameSource.Should().Contain("ShouldScrambleAccountName(player)");
         playerNameSource.Should().Contain("GetIsDM(observer) ||");

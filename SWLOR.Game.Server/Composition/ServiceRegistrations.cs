@@ -243,6 +243,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IDroidEquipmentDiagnosticsService, DroidEquipmentDiagnosticsService>();
             services.AddSingleton<IIncubationFieldNoteService, IncubationFieldNoteService>();
             services.AddSingleton<ITintMapDroidOverrideService, TintMapDroidOverrideService>();
+            services.AddSingleton<IProgFxCoatService, ProgFxCoatService>();
             services.AddSingleton<ITintMapApplyService, TintMapApplyService>();
             services.AddSingleton<ITintMapItemColorService, TintMapItemColorService>();
             services.AddSingleton<ITintMapCarryService, TintMapCarryService>();
@@ -269,7 +270,9 @@ namespace SWLOR.Game.Server.Composition
             // Creatures
             services.AddSingleton<IAIService, AIService>();
             services.AddSingleton<IAIProfileDescription>(provider => provider.GetRequiredService<IAIService>());
+            services.AddSingleton<ICombatLeash>(provider => provider.GetRequiredService<IAIService>());
             services.AddSingleton<ICompanionControlService, CompanionControlService>();
+            services.AddSingleton<ICompanionTargetQuery>(provider => provider.GetRequiredService<ICompanionControlService>());
             services.AddSingleton<INPCGroupService, NPCGroupService>();
             services.AddSingleton<ISpawnRegistryService, SpawnRegistryService>();
             services.AddSingleton<ISpawnObjectService, SpawnObjectService>();

@@ -161,6 +161,8 @@ public class ConvertedServiceContainerTests
                 "IPlayerListRefresh", "IItemCacheInfo", "IPropertyIdLookup", "IDMActorResolver", "IDMWindowPresence", "IAIProfileDescription", "IDMSpawnPreparation" })
             // The inversions: the Espionage, recast, beast corpse reads a higher service implements, and the achievement window UI draws.
             .Concat(new[] { "IEspionageEnmityQuery", "IEspionageStealthQuery", "IRecastDelays", "IBeastCorpseInfo", "IAchievementNotification" })
+            // The creature split: the leash and the companion target reads Combat owns, which Creatures answers.
+            .Concat(new[] { "ICombatLeash", "ICompanionTargetQuery" })
             // The status effect split: the resistance reads the status effects own, which Combat answers.
             .Concat(new[] { "IStatusResistance" })
             // The recorder split: the state and queue of a recording, a store with no services.

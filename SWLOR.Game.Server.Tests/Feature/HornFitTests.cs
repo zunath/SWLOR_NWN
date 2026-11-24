@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
@@ -110,6 +111,118 @@ public class HornFitTests
             else
                 fit.Should().NotBe(default(HornFitOffset), appearance.ToString());
         }
+    }
+
+    // Centreline points measured from the two horn models (wmgfs_m_211 is the Jessoon, wmgfs_m_201 the kloo horn).
+    private static readonly (double X, double Y, double Z) JessoonMouthpiece = (-.060d, .318d, .035d);
+    private static readonly (double X, double Y, double Z) JessoonShaftLow = (.077d, -.26d, -.025d);
+    private static readonly (double X, double Y, double Z) JessoonShaftHigh = (-.055d, .14d, -.001d);
+    private static readonly (double X, double Y, double Z) KlooMouthpiece = (-.155d, .367d, -.007d);
+    private static readonly (double X, double Y, double Z) KlooShaftLow = (.159d, -.55d, -.021d);
+    private static readonly (double X, double Y, double Z) KlooShaftHigh = (-.067d, .21d, -.011d);
+
+    [Test]
+    public void TheJessoonLiesInTheKlooHornsHandsWithItsMouthpieceAtTheKlooHornsMouthpiece()
+    {
+        var fit = HornFit.JessoonOnKlooHorn;
+        Distance(Apply(fit, JessoonMouthpiece), KlooMouthpiece).Should().BeLessThan(.01d);
+
+        // Both hands close on the kloo horn's shaft from the grip to 14 cm above it.
+        var low = Apply(fit, JessoonShaftLow);
+        var high = Apply(fit, JessoonShaftHigh);
+        var klooDirection = Unit(Minus(KlooShaftHigh, KlooShaftLow));
+        var grip = Plus(KlooShaftLow, Scale(klooDirection, -Dot(KlooShaftLow, klooDirection)));
+        foreach (var along in new[] { -.03d, 0d, .03d, .08d, .11d, .14d })
+            DistanceToLine(Plus(grip, Scale(klooDirection, along)), low, high).Should().BeLessThan(.01d, along.ToString());
+    }
+
+    [Test]
+    public void TheJessoonFitsOnlyWhilePlaying()
+    {
+        foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
+        foreach (var gender in new[] { Gender.Male, Gender.Female })
+        {
+            Fit("jessoon", appearance, 0, gender, false).Should().Be(default(HornFitOffset));
+            Fit("JESSOON", appearance, 0, gender, true).Should().NotBe(default(HornFitOffset));
+        }
+    }
+
+    [Test]
+    public void TheJessoonHoldSlidesTheAlignedJessoonSixCentimetresUpThroughTheHand()
+    {
+        // The Jessoon clips move the right hand 6 cm down the body (tools/DeriveJessoonPerformanceMotion.py).
+        var up = Scale(Unit(Minus(JessoonShaftHigh, JessoonShaftLow)), .06d);
+        foreach (var point in new[] { JessoonMouthpiece, JessoonShaftLow, JessoonShaftHigh })
+            Distance(Apply(HornFit.JessoonHold, point), Apply(HornFit.JessoonOnKlooHorn, Plus(point, up))).Should().BeLessThan(.001d);
+    }
+
+    [TestCase(AppearanceType.Human)]
+    [TestCase(AppearanceType.Chiss)]
+    [TestCase(AppearanceType.Twilek)]
+    public void MaleHumanBodiesHoldTheJessoonWhereItsReferenceClipsWereSolved(AppearanceType appearance) =>
+        Fit("jessoon", appearance, 0, Gender.Male, true).Should().Be(HornFit.JessoonHold);
+
+    [TestCase(AppearanceType.Human, Gender.Female)]
+    [TestCase(AppearanceType.Trandoshan, Gender.Male)]
+    [TestCase(AppearanceType.MonCalamari, Gender.Female)]
+    [TestCase(AppearanceType.Wookiee, Gender.Male)]
+    [TestCase(AppearanceType.Cathar, Gender.Female)]
+    [TestCase(AppearanceType.Ewok, Gender.Male)]
+    public void EveryJessoonSetHoldsTheInstrumentTurnedTheSameWayInTheRightHand(AppearanceType appearance, Gender gender)
+    {
+        // tools/DeriveJessoonPerformanceMotion.py turns each hand on the instrument as the reference does, so a body
+        // playing its own set only moves the Jessoon in its hand.
+        var fit = Fit("jessoon", appearance, 0, gender, true);
+        (fit.RotateX, fit.RotateY, fit.RotateZ).Should().Be((HornFit.JessoonHold.RotateX, HornFit.JessoonHold.RotateY,
+            HornFit.JessoonHold.RotateZ));
+        fit.Should().NotBe(HornFit.JessoonHold);
+    }
+
+    [Test]
+    public void EveryBodyHoldsTheJessoonsStraightBodyInTheRightHand()
+    {
+        // Every set puts the right hand's mesh centre at the same place low on the straight body, so the hand node sits
+        // there too, a few centimetres off the tube (up to 5 on the large Rodian and Wookiee hands), with the mouthpiece
+        // the same reach above it.
+        foreach (var appearance in RacialAppearanceRegistry.GetAppearanceTypes())
+        foreach (var gender in new[] { Gender.Male, Gender.Female })
+        {
+            var fit = Fit("jessoon", appearance, 0, gender, true);
+            var low = Apply(fit, JessoonShaftLow);
+            var high = Apply(fit, JessoonShaftHigh);
+            var hand = (0d, 0d, 0d);
+            DistanceToLine(hand, low, high).Should().BeLessThan(.055d, $"{appearance} {gender}");
+            Dot(Minus(hand, low), Unit(Minus(high, low))).Should().BeInRange(.10d, .17d, $"{appearance} {gender}");
+            Distance(Apply(fit, JessoonMouthpiece), hand).Should().BeInRange(.43d, .50d, $"{appearance} {gender}");
+        }
+    }
+
+    private static (double X, double Y, double Z) Apply(HornFitOffset fit, (double X, double Y, double Z) point) =>
+        HornFitTransform.Apply(fit, point.X, point.Y, point.Z);
+
+    private static (double X, double Y, double Z) Minus((double X, double Y, double Z) a, (double X, double Y, double Z) b) =>
+        (a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+
+    private static (double X, double Y, double Z) Plus((double X, double Y, double Z) a, (double X, double Y, double Z) b) =>
+        (a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+
+    private static (double X, double Y, double Z) Scale((double X, double Y, double Z) a, double by) =>
+        (a.X * by, a.Y * by, a.Z * by);
+
+    private static double Dot((double X, double Y, double Z) a, (double X, double Y, double Z) b) =>
+        a.X * b.X + a.Y * b.Y + a.Z * b.Z;
+
+    private static (double X, double Y, double Z) Unit((double X, double Y, double Z) a) => Scale(a, 1d / Math.Sqrt(Dot(a, a)));
+
+    private static double Distance((double X, double Y, double Z) a, (double X, double Y, double Z) b) =>
+        Math.Sqrt(Dot(Minus(a, b), Minus(a, b)));
+
+    private static double DistanceToLine((double X, double Y, double Z) point, (double X, double Y, double Z) a,
+        (double X, double Y, double Z) b)
+    {
+        var direction = Unit(Minus(b, a));
+        var offset = Minus(point, a);
+        return Distance(offset, Scale(direction, Dot(offset, direction)));
     }
 
     [TestCase(.013f)]

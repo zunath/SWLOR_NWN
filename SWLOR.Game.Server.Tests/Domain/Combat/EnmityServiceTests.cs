@@ -62,6 +62,7 @@ public class EnmityServiceTests
     private readonly HashSet<uint> _evading = new();
     private readonly HashSet<(uint, uint)> _evadeStarts = new();
     private readonly HashSet<(uint, uint)> _aggroRange = new();
+    private readonly HashSet<(uint, uint)> _beyondAggroRange = new();
     private readonly HashSet<uint> _busy = new();
     private readonly HashSet<(uint, uint)> _partyPairs = new();
     private readonly HashSet<uint> _holograms = new();
@@ -93,6 +94,7 @@ public class EnmityServiceTests
         _evading.Clear();
         _evadeStarts.Clear();
         _aggroRange.Clear();
+        _beyondAggroRange.Clear();
         _busy.Clear();
         _partyPairs.Clear();
         _holograms.Clear();
@@ -115,7 +117,16 @@ public class EnmityServiceTests
         _engine.SetReturnHandler("GetMaster", args => _masters.GetValueOrDefault((uint)args[0]!, ObjectInvalid));
         _engine.SetReturnHandler("GetAttackTarget", args => _attackTargets.GetValueOrDefault((uint)args[0]!, ObjectInvalid));
         _engine.SetReturnHandler("GetCurrentAction", args => _actions.GetValueOrDefault((uint)args[0]!, ActionType.Invalid));
-        _engine.SetReturnHandler("GetDistanceBetween", args => _distances.GetValueOrDefault(((uint)args[0]!, (uint)args[1]!), 5f));
+        _engine.SetReturnHandler("GetLocalBool", args => (string)args[1]! == CreatureAIRules.LeashEvadeActiveVariable && _evading.Contains((uint)args[0]!));
+        _engine.SetReturnHandler("GetDistanceBetween", args =>
+        {
+            var pair = ((uint)args[0]!, (uint)args[1]!);
+            if (_aggroRange.Contains(pair))
+                return 1f;
+            if (_distances.TryGetValue(pair, out var distance))
+                return distance;
+            return _beyondAggroRange.Contains(pair) ? CreatureAIRules.AggroRadius + 1f : 5f;
+        });
         _engine.SetReturnHandler("GetName", args => $"name-{(uint)args[0]!}");
         _engine.SetReturnHandler("GetIsReactionTypeHostile", _ => true);
         _engine.SetReturnHandler("LineOfSightObject", _ => true);
@@ -918,6 +929,7 @@ public class EnmityServiceTests
     [Test]
     public void AttackHighestEnmityTarget_DropsAStaleProximityTargetAndStopsCombatWhenNothingIsLeft()
     {
+        _beyondAggroRange.Add((Enemy, Player));
         _enmity.ModifyProximityEnmity(Player, Enemy, 5);
         _engine.ClearCalls();
 

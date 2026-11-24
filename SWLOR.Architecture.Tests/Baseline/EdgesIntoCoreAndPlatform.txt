@@ -110,7 +110,7 @@ Domain/Foundation -> Platform/Root | 4
 Feature/DialogDefinition -> Platform/Core | 4
 Feature/MigrationDefinition -> Platform/Composition | 64
 Feature/MigrationDefinition -> Platform/Core | 10
-Feature/MigrationDefinition -> Platform/Native | 1
+Feature/MigrationDefinition -> Platform/Extension | 1
 Feature/SnippetDefinition -> Platform/Composition | 20
 Feature/SnippetDefinition -> Platform/Core | 26
 Platform/Entity -> Platform/Core | 1

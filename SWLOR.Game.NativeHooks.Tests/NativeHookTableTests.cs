@@ -73,8 +73,8 @@ public class NativeHookTableTests
     [Test]
     public void The_17_hook_files_hook_the_36_engine_functions()
     {
-        Enum.GetValues<NativeHookId>().Should().HaveCount(17);
-        HookedFunctions.All.Should().HaveCount(36);
+        Enum.GetValues<NativeHookId>().Should().HaveCount(18);
+        HookedFunctions.All.Should().HaveCount(41);
         HookedFunctions.All.Select(function => function.Hook).Distinct().Should().BeEquivalentTo(Enum.GetValues<NativeHookId>());
     }
 

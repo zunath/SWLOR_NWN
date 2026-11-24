@@ -16,7 +16,7 @@ SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerAttack
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerDamaged SWLOR.Game.Server.Domain.Creatures.CompanionControlService.OnOwnerDamaged
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerCombatRound SWLOR.Game.Server.Domain.Creatures.CompanionControlService.OnOwnerCombatRound
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnHostileSpellCastAtOwner SWLOR.Game.Server.Domain.Creatures.CompanionControlService.OnHostileSpellCastAtOwner
-SWLOR.Game.Server.Service.AI.CacheAIData SWLOR.Game.Server.Domain.Creatures.AIService.CacheAIData
+SWLOR.Game.Server.Service.AI.CacheAIData SWLOR.Game.Server.Domain.Creatures.AIService.CacheAIData SWLOR.Game.Server.Domain.Creatures.AIService.RegisterStealthAggroListener
 SWLOR.Game.Server.Service.AI.CreatureAggroEnter SWLOR.Game.Server.Domain.Creatures.AIService.CreatureAggroEnter
 SWLOR.Game.Server.Service.AI.CreatureAggroExit SWLOR.Game.Server.Domain.Creatures.AIService.CreatureAggroExit
 SWLOR.Game.Server.Service.AI.CreatureBlocked SWLOR.Game.Server.Domain.Creatures.AIService.CreatureBlocked
@@ -418,3 +418,4 @@ SWLOR.Game.Server.Service.Skill.ResetLimitWarningsOnEnter SWLOR.Game.Server.Doma
 SWLOR.Game.Server.Service.Skill.ResetLimitWarningsOnExit SWLOR.Game.Server.Domain.Character.SkillService.ResetLimitWarningsOnExit
 SWLOR.Game.Server.Service.HostedEvents.LoadEvents SWLOR.Game.Server.Domain.Social.HostedEventsService.LoadEvents
 SWLOR.Game.Server.Native.PlayerFileCheckpoint.ApplyLoadedCraftSequence SWLOR.Game.Server.Domain.Crafting.CraftService.ApplyLoadedCraftSequence
+SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.ProgFxCoatRenderer.LoadCoatingVisualEffects SWLOR.Game.Server.Domain.Companions.ProgFxCoatService.LoadCoatingVisualEffects

@@ -346,7 +346,7 @@ public class ForceSensitiveEspionageTests
         start[..start.IndexOf("var master = GetMaster(npc);", StringComparison.Ordinal)]
             .Should().Contain("!IsBypassXpEligible(HasGrantedStealth(player), IsStealthDetectionBlocked(npc))");
         var record = source[source.IndexOf("public void RecordDetection", StringComparison.Ordinal)..];
-        record = record[..record.IndexOf("if (!_ai.IsInAggroRange(observer, target))", StringComparison.Ordinal)];
+        record = record[..record.IndexOf("if (!CreatureAIRules.IsInAggroRange(observer, target))", StringComparison.Ordinal)];
         record.Should().Contain("if (IsStealthDetectionBlocked(observer))",
             "an attempt a clouded observer let through never pays, even after the cloud lifts");
         record.Should().Contain("TryMarkResolved(target, observer);");

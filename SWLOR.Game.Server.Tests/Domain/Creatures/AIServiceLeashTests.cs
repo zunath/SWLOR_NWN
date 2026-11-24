@@ -2,6 +2,7 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Tests.Support;
@@ -527,8 +528,8 @@ public class AIServiceLeashTests : AIServiceTestBase
     [Test]
     public void IsLeashEvading_is_false_for_a_creature_that_is_not_evading_and_for_an_invalid_object()
     {
-        Service.IsLeashEvading(Npc.Id).Should().BeFalse();
-        Service.IsLeashEvading(Invalid).Should().BeFalse();
+        CreatureAIRules.IsLeashEvading(Npc.Id).Should().BeFalse();
+        CreatureAIRules.IsLeashEvading(Invalid).Should().BeFalse();
     }
 
     [Test]

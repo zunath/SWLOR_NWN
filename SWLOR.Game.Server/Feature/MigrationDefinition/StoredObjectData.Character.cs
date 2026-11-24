@@ -30,16 +30,6 @@ internal sealed partial class StoredObjectData
         return new StoredObjectData(ItemHeader.ToArray(), root).Serialize();
     }
 
-    /// <summary>The root structure of a saved item (UTI, base64), to insert into an inventory.</summary>
-    internal static Node ParseItem(string data) => new StoredObjectData(Convert.FromBase64String(data))._root;
-
-    /// <summary>The string reference of an item's localized name; 0xFFFFFFFF when it has none.</summary>
-    internal static uint ReadLocalizedNameReference(Node item)
-    {
-        var field = item.Fields.SingleOrDefault(x => x.Name == "LocalizedName" && x.Type == 12);
-        return field == null || field.Data.Length < 8 ? uint.MaxValue : BinaryPrimitives.ReadUInt32LittleEndian(field.Data.AsSpan(4));
-    }
-
     /// <summary>The first saved string of an item's localized name, or empty when it uses only a string reference.</summary>
     internal static string ReadLocalizedName(Node item)
     {

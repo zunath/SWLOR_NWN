@@ -42,7 +42,7 @@ public class InvertedInterfaceRegistrationTests
         (typeof(IAIProfileDescription), typeof(IAIService)),
         (typeof(IDMSpawnPreparation), typeof(ISpawnObjectService)),
         (typeof(ICombatLeash), typeof(IAIService)),
-        (typeof(ICompanionTargetQuery), typeof(ICompanionControlService)),
+        (typeof(ICompanionTargetQuery), typeof(ICompanionTargetAuthorityService)),
     };
 
     private static ContainerHost Build()

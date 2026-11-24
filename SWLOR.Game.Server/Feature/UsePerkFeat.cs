@@ -47,8 +47,8 @@ namespace SWLOR.Game.Server.Feature
 
         private static uint GetResumeAttackTarget(uint activator, uint target, AbilityDetail ability)
         {
-            if (CompanionControl.IsRegisteredCompanion(activator))
-                return CompanionControl.PeekAuthorizedTarget(activator);
+            if (CompanionTargetAuthority.IsRegisteredCompanion(activator))
+                return CompanionTargetAuthority.PeekAuthorizedTarget(activator);
 
             // Check the queue before activation clears it; a canceled attack can retain its target.
             var attackTarget = ActionInterruption.GetQueuedAttackTarget(activator);
@@ -100,9 +100,9 @@ namespace SWLOR.Game.Server.Feature
             if (CompanionControl.TryProcessPendingDefensiveReaction(activator))
                 return;
 
-            if (CompanionControl.IsRegisteredCompanion(activator) &&
+            if (CompanionTargetAuthority.IsRegisteredCompanion(activator) &&
                 (!GetIsObjectValid(target) ||
-                 CompanionControl.PeekAuthorizedTarget(activator) != target))
+                 CompanionTargetAuthority.PeekAuthorizedTarget(activator) != target))
             {
                 CompanionControl.ResumeModePosition(activator);
                 return;
@@ -279,8 +279,8 @@ namespace SWLOR.Game.Server.Feature
             }
 
             if (ability.IsHostileAbility &&
-                CompanionControl.IsRegisteredCompanion(activator) &&
-                !CompanionControl.IsHostileAbilityTargetAuthorized(activator, ability, target))
+                CompanionTargetAuthority.IsRegisteredCompanion(activator) &&
+                !CompanionTargetAuthority.IsHostileAbilityTargetAuthorized(activator, ability, target))
             {
                 return false;
             }
@@ -295,7 +295,7 @@ namespace SWLOR.Game.Server.Feature
             var isPlayerControlled = GetIsPC(activator) || GetIsPC(GetMaster(activator));
             if (!GetIsObjectValid(target) &&
                 isPlayerControlled &&
-                !CompanionControl.IsRegisteredCompanion(activator))
+                !CompanionTargetAuthority.IsRegisteredCompanion(activator))
             {
                 return;
             }
@@ -842,8 +842,8 @@ namespace SWLOR.Game.Server.Feature
                 }
 
                 if (ability.IsHostileAbility &&
-                    CompanionControl.IsRegisteredCompanion(activator) &&
-                    !CompanionControl.IsHostileAbilityTargetAuthorized(activator, ability, target))
+                    CompanionTargetAuthority.IsRegisteredCompanion(activator) &&
+                    !CompanionTargetAuthority.IsHostileAbilityTargetAuthorized(activator, ability, target))
                 {
                     if (CombatRecorder.IsRecording)
                         CombatRecorder.RecordAbilityInterrupted(activator, ability, CombatRecordInterruptCause.Other);

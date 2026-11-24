@@ -12,7 +12,7 @@ CHAIN = [("P5-3", r"Domain\.Abilities\.I?Ability(Service|Requirement\w*|ImpactSe
          ("P5-5", r"Domain\.Character\.I?(StatusEffect\w*|CreatureStatusEffect)$"),
          ("P5-4", r"Domain\.Character\.I?Stat(?!usEffect)\w*$"),
          ("P5-7", r"Domain\.Combat\.I?(Combat\w*Service|EnmityService|CombatRules)$"),
-         ("P5-8", r"Domain\.Creatures\.I?(AI|Spawn|CompanionControl)\w*$"),
+         ("P5-8", r"Domain\.Creatures\.I?(AI|Spawn|CompanionControl|CompanionPositioning|CompanionTargetAuthority)\w*$"),
          ("P5-9", r"Domain\.(Items|World|Crafting)\.I?(Item|Property|Shuttle|Craft|BlueprintBonus)\w*$"),
          ("P5-10", r"Domain\.(Character|Abilities|Companions)\.I?(Perk|Skill|PlayerName|Mimicry|Droid|BeastMastery)\w*$"),
          ("P5-11", r"Domain\.(Foundation|Social|UI)\.I?(Communication|Performance\w*|ExtraHotbars|GuiWindowBuilder)\w*$"),

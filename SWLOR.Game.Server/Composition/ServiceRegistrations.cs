@@ -272,8 +272,11 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IAIService, AIService>();
             services.AddSingleton<IAIProfileDescription>(provider => provider.GetRequiredService<IAIService>());
             services.AddSingleton<ICombatLeash>(provider => provider.GetRequiredService<IAIService>());
+            services.AddSingleton<ICompanionControlStoreService, CompanionControlStoreService>();
+            services.AddSingleton<ICompanionPositioningService, CompanionPositioningService>();
+            services.AddSingleton<ICompanionTargetAuthorityService, CompanionTargetAuthorityService>();
+            services.AddSingleton<ICompanionTargetQuery>(provider => provider.GetRequiredService<ICompanionTargetAuthorityService>());
             services.AddSingleton<ICompanionControlService, CompanionControlService>();
-            services.AddSingleton<ICompanionTargetQuery>(provider => provider.GetRequiredService<ICompanionControlService>());
             services.AddSingleton<INPCGroupService, NPCGroupService>();
             services.AddSingleton<ISpawnRegistryService, SpawnRegistryService>();
             services.AddSingleton<ISpawnObjectService, SpawnObjectService>();

@@ -34,7 +34,7 @@ public class AIServiceStealthListenerTests
             FacadeForwarder.For<IPartyRoster>(), FacadeForwarder.For<ICompanionLookup>(),
             FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IAbilityActivationService>(),
             FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IActivityService>(),
-            FacadeForwarder.LazyFor<ICompanionControlService>(), FacadeForwarder.For<IConversationMenuService>(),
+            FacadeForwarder.For<ICompanionControlStoreService>(), FacadeForwarder.For<ICompanionTargetAuthorityService>(), FacadeForwarder.For<IConversationMenuService>(),
             FacadeForwarder.For<IConversationService>(), FacadeForwarder.LazyFor<IEnmityService>(),
             FacadeForwarder.LazyFor<IEspionageInfiltrationService>(), FacadeForwarder.For<IPerkService>(),
             FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatusEffectService>(), stealth);

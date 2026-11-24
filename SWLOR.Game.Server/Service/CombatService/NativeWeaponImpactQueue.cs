@@ -6,31 +6,29 @@ namespace SWLOR.Game.Server.Service.CombatService
     /// <summary>
     /// Holds work that must wait until the engine applies a native weapon roll's damage.
     /// GetDamageRoll resolves a roll when the swing or shot starts. SignalMeleeDamage or
-    /// SignalRangedDamage then creates the roll's damage effect and schedules it for the moment
-    /// the swing connects or the projectile arrives. Work is queued per attack slot at the roll,
-    /// bound to the effects its signal creates, and released when one of those effects is applied.
+    /// SignalRangedDamage then creates each landed slot's damage effect, in slot order, and
+    /// schedules it for the moment the swing connects or the projectile arrives. Work is queued
+    /// per attack slot at the roll, bound to its own slot's damage effect when the signal runs,
+    /// and released when exactly that effect is applied.
     /// </summary>
     public static class NativeWeaponImpactQueue
     {
         /// <summary>Work whose roll or effect never lands is dropped after this long.</summary>
         public static readonly TimeSpan Lifetime = TimeSpan.FromSeconds(6);
 
-        // Destroyed attackers never take their work, so sweep expired work once this many attackers wait.
+        // Destroyed attackers never take their work, so sweep expired work once this much waits.
         private const int SweepThreshold = 128;
 
         private sealed record QueuedImpact(long Roll, int AttackIndex, uint Target, DateTime ExpiresAt, Action Action);
 
-        private sealed record SignalledSlot(int[] Damage, List<Action> Actions);
-
-        private sealed record SignalledImpact(uint Target, ulong FirstEffectId, ulong LastEffectId, DateTime ExpiresAt,
-            List<SignalledSlot> Slots);
+        private sealed record BoundImpact(uint Attacker, uint Target, DateTime ExpiresAt, List<Action> Actions);
 
         private static readonly Dictionary<uint, List<QueuedImpact>> _queued = new();
-        private static readonly Dictionary<uint, List<SignalledImpact>> _signalled = new();
+        private static readonly Dictionary<ulong, BoundImpact> _bound = new();
         private static long _nextRoll;
 
-        public static bool IsEmpty => _queued.Count == 0 && _signalled.Count == 0;
-        public static bool HasSignalled => _signalled.Count > 0;
+        public static bool IsEmpty => _queued.Count == 0 && _bound.Count == 0;
+        public static bool HasBound => _bound.Count > 0;
 
         /// <summary>Returns a scheduler that queues work for one native roll's damage application.</summary>
         public static Action<Action> CreateScheduler(uint attacker, int attackIndex, uint target)
@@ -43,7 +41,7 @@ namespace SWLOR.Game.Server.Service.CombatService
         {
             if (action == null)
                 return;
-            if (_queued.Count + _signalled.Count >= SweepThreshold)
+            if (_queued.Count + _bound.Count >= SweepThreshold)
                 Sweep(now);
 
             if (!_queued.TryGetValue(attacker, out var impacts))
@@ -79,23 +77,22 @@ namespace SWLOR.Game.Server.Service.CombatService
         }
 
         /// <summary>
-        /// Binds the work queued in a signal's slots to the damage effects that signal created, whose IDs lie
-        /// strictly between <paramref name="effectIdBefore"/> and <paramref name="effectIdAfter"/>.
-        /// <paramref name="slotDamage"/> holds each signalled slot's rolled damage by native damage type, starting
-        /// at <paramref name="firstAttack"/>; an effect is matched to the slot whose damage it carries. Work for
-        /// those slots queued against another target is dropped.
+        /// Binds the work queued in a signal's slots to the damage effects that signal scheduled against
+        /// <paramref name="target"/>. <paramref name="slotDamage"/> holds each signalled slot's rolled damage by
+        /// native damage type, starting at <paramref name="firstAttack"/>; <paramref name="scheduledEffects"/> holds
+        /// the signal's combat damage effects. The engine creates them in slot order, skipping slots that deal no
+        /// damage, so effects are matched to slots in ID order, each to the next slot whose damage it carries.
+        /// Work for those slots queued against another target is dropped. Returns work whose slot got no effect,
+        /// which the caller runs at once rather than lose.
         /// </summary>
-        public static void Bind(uint attacker, uint target, int firstAttack, IReadOnlyList<int[]> slotDamage,
-            ulong effectIdBefore, ulong effectIdAfter, DateTime now)
+        public static IReadOnlyList<Action> Bind(uint attacker, uint target, int firstAttack, IReadOnlyList<int[]> slotDamage,
+            IEnumerable<(ulong Id, int[] Damage)> scheduledEffects, DateTime now)
         {
             var attacks = slotDamage?.Count ?? 0;
             if (attacks <= 0 || !_queued.TryGetValue(attacker, out var impacts))
-                return;
+                return Array.Empty<Action>();
 
-            var slots = new SignalledSlot[attacks];
-            for (var offset = 0; offset < attacks; offset++)
-                slots[offset] = new SignalledSlot(slotDamage[offset], new List<Action>());
-            var hasWork = false;
+            var slotWork = new List<Action>[attacks];
             var kept = new List<QueuedImpact>(impacts.Count);
             foreach (var impact in impacts)
             {
@@ -108,8 +105,7 @@ namespace SWLOR.Game.Server.Service.CombatService
                 }
                 if (impact.Target != target)
                     continue;
-                slots[(impact.AttackIndex - firstAttack) & 0xFF].Actions.Add(impact.Action);
-                hasWork = true;
+                (slotWork[(impact.AttackIndex - firstAttack) & 0xFF] ??= new List<Action>()).Add(impact.Action);
             }
 
             if (kept.Count == 0)
@@ -117,43 +113,60 @@ namespace SWLOR.Game.Server.Service.CombatService
             else
                 _queued[attacker] = kept;
 
-            if (!hasWork || effectIdAfter <= effectIdBefore + 1)
-                return;
-            if (!_signalled.TryGetValue(attacker, out var signalled))
-                _signalled[attacker] = signalled = new List<SignalledImpact>();
-            signalled.RemoveAll(impact => impact.ExpiresAt <= now);
-            // Slots without work stay as placeholders so their effects cannot release another slot's work.
-            signalled.Add(new SignalledImpact(target, effectIdBefore + 1, effectIdAfter - 1, now + Lifetime, slots.ToList()));
+            var slotEffects = AssignEffectsToSlots(slotDamage, scheduledEffects);
+            List<Action> unbound = null;
+            for (var slot = 0; slot < attacks; slot++)
+            {
+                if (slotWork[slot] == null)
+                    continue;
+                if (slotEffects[slot] is { } effectId)
+                    _bound[effectId] = new BoundImpact(attacker, target, now + Lifetime, slotWork[slot]);
+                else
+                    (unbound ??= new List<Action>()).AddRange(slotWork[slot]);
+            }
+
+            return unbound ?? (IReadOnlyList<Action>)Array.Empty<Action>();
         }
 
         /// <summary>
-        /// Removes and returns, in queue order, the work of the slot an applied damage effect belongs to: the first
-        /// remaining slot of that effect's signal whose rolled damage the effect carries, or the signal's first
-        /// remaining slot when none does.
+        /// Matches a signal's damage effects to its slots: in ID order, each effect goes to the next slot whose
+        /// rolled damage it carries, or to the next slot when none of the remaining slots matches.
         /// </summary>
-        public static IReadOnlyList<Action> TakeApplied(uint attacker, uint target, ulong effectId, int[] effectDamage,
-            DateTime now)
+        public static ulong?[] AssignEffectsToSlots(IReadOnlyList<int[]> slotDamage,
+            IEnumerable<(ulong Id, int[] Damage)> scheduledEffects)
         {
-            if (!_signalled.TryGetValue(attacker, out var signalled))
-                return Array.Empty<Action>();
-
-            IReadOnlyList<Action> due = Array.Empty<Action>();
-            signalled.RemoveAll(impact => impact.ExpiresAt <= now);
-            var signal = signalled.FirstOrDefault(impact => impact.Target == target &&
-                                                            effectId >= impact.FirstEffectId && effectId <= impact.LastEffectId);
-            if (signal != null)
+            var slots = new ulong?[slotDamage?.Count ?? 0];
+            var next = 0;
+            foreach (var effect in (scheduledEffects ?? Enumerable.Empty<(ulong Id, int[] Damage)>()).OrderBy(effect => effect.Id))
             {
-                var slot = signal.Slots.FirstOrDefault(candidate => CarriesDamage(effectDamage, candidate.Damage)) ??
-                           signal.Slots[0];
-                signal.Slots.Remove(slot);
-                due = slot.Actions;
-                if (signal.Slots.All(remaining => remaining.Actions.Count == 0))
-                    signalled.Remove(signal);
+                if (next >= slots.Length)
+                    break;
+                var slot = next;
+                while (slot < slots.Length && !CarriesDamage(effect.Damage, slotDamage[slot]))
+                    slot++;
+                if (slot == slots.Length)
+                    slot = next;
+                slots[slot] = effect.Id;
+                next = slot + 1;
             }
 
-            if (signalled.Count == 0)
-                _signalled.Remove(attacker);
-            return due;
+            return slots;
+        }
+
+        /// <summary>Removes and returns the work bound to exactly this applied damage effect.</summary>
+        public static IReadOnlyList<Action> TakeApplied(uint attacker, uint target, ulong effectId, DateTime now)
+        {
+            if (!_bound.TryGetValue(effectId, out var impact) || impact.Attacker != attacker || impact.Target != target)
+                return Array.Empty<Action>();
+
+            _bound.Remove(effectId);
+            return impact.ExpiresAt <= now ? Array.Empty<Action>() : impact.Actions;
+        }
+
+        public static void Clear()
+        {
+            _queued.Clear();
+            _bound.Clear();
         }
 
         /// <summary>Whether an effect's damage by native type equals a slot's rolled damage (no damage is 0 or -1).</summary>
@@ -168,12 +181,6 @@ namespace SWLOR.Game.Server.Service.CombatService
                     return false;
             }
             return true;
-        }
-
-        public static void Clear()
-        {
-            _queued.Clear();
-            _signalled.Clear();
         }
 
         private static bool IsSignalledSlot(int attackIndex, int firstAttack, int attacks)
@@ -191,13 +198,8 @@ namespace SWLOR.Game.Server.Service.CombatService
                     _queued.Remove(attacker);
             }
 
-            foreach (var attacker in _signalled.Keys.ToList())
-            {
-                var impacts = _signalled[attacker];
-                impacts.RemoveAll(impact => impact.ExpiresAt <= now);
-                if (impacts.Count == 0)
-                    _signalled.Remove(attacker);
-            }
+            foreach (var effectId in _bound.Where(pair => pair.Value.ExpiresAt <= now).Select(pair => pair.Key).ToList())
+                _bound.Remove(effectId);
         }
     }
 }

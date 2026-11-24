@@ -41,7 +41,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly IAbilityActivationService _activation;
         private readonly IAbilityCatalog _catalog;
         private readonly IActivityService _activity;
-        private readonly Lazy<ICompanionControlService> _companionControl;
+        private readonly ICompanionControlStoreService _companionControlStore;
+        private readonly ICompanionTargetAuthorityService _companionTargetAuthority;
         private readonly IConversationMenuService _conversationMenu;
         private readonly IConversationService _conversation;
         private readonly Lazy<IEnmityService> _enmity;
@@ -65,7 +66,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
             IAbilityActivationService activation,
             IAbilityCatalog catalog,
             IActivityService activity,
-            Lazy<ICompanionControlService> companionControl,
+            ICompanionControlStoreService companionControlStore,
+            ICompanionTargetAuthorityService companionTargetAuthority,
             IConversationMenuService conversationMenu,
             IConversationService conversation,
             Lazy<IEnmityService> enmity,
@@ -81,7 +83,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
             _activation = activation;
             _catalog = catalog;
             _activity = activity;
-            _companionControl = companionControl;
+            _companionControlStore = companionControlStore;
+            _companionTargetAuthority = companionTargetAuthority;
             _conversationMenu = conversationMenu;
             _conversation = conversation;
             _enmity = enmity;
@@ -1827,12 +1830,12 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         protected virtual bool CanAcquireAggro(uint observer, uint target) => _stealth.CanAcquireAggro(observer, target);
 
-        protected virtual bool IsControlledCompanion(uint creature) => _companionControl.Value.IsControlledCompanion(creature);
+        protected virtual bool IsControlledCompanion(uint creature) => _companionControlStore.IsControlledCompanion(creature);
 
-        protected virtual bool AreCompanionAbilitiesEnabled(uint companion) => _companionControl.Value.AreAbilitiesEnabled(companion);
+        protected virtual bool AreCompanionAbilitiesEnabled(uint companion) => _companionControlStore.AreAbilitiesEnabled(companion);
 
         protected virtual uint ResolveHostileAbilityTarget(uint companion, AbilityDetail ability, uint authorizedTarget, uint selectedTarget) =>
-            _companionControl.Value.ResolveHostileAbilityTarget(companion, ability, authorizedTarget, selectedTarget);
+            _companionTargetAuthority.ResolveHostileAbilityTarget(companion, ability, authorizedTarget, selectedTarget);
 
         protected virtual int GetPerkLevel(uint creature, PerkType perkType) => _perk.GetPerkLevel(creature, perkType);
 

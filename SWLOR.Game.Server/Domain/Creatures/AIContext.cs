@@ -49,8 +49,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
                     return _currentEnmityTarget;
 
                 _currentEnmityTargetLoaded = true;
-                _currentEnmityTarget = CompanionControl.IsRegisteredCompanion(Self)
-                    ? CompanionControl.PeekAuthorizedTarget(Self)
+                _currentEnmityTarget = CompanionTargetAuthority.IsRegisteredCompanion(Self)
+                    ? CompanionTargetAuthority.PeekAuthorizedTarget(Self)
                     : Enmity.GetHighestEnmityTarget(Self);
 
                 return _currentEnmityTarget;
@@ -65,8 +65,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
         public void UseAttackableEnmityTarget()
         {
             _currentEnmityTargetLoaded = true;
-            _currentEnmityTarget = CompanionControl.IsRegisteredCompanion(Self)
-                ? CompanionControl.PeekAuthorizedTarget(Self)
+            _currentEnmityTarget = CompanionTargetAuthority.IsRegisteredCompanion(Self)
+                ? CompanionTargetAuthority.PeekAuthorizedTarget(Self)
                 : Enmity.GetHighestEnmityAttackTarget(Self);
         }
 

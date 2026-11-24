@@ -34,8 +34,20 @@ public static class CreaturesSource
             new HashSet<string>(StringComparer.Ordinal) { "IAIService" }),
         new Group(
             "CompanionControlService",
-            new[] { "SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs" },
-            new HashSet<string>(StringComparer.Ordinal) { "ICompanionControlService" }),
+            new[]
+            {
+                "SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs",
+                "SWLOR.Game.Server/Domain/Creatures/CompanionControlStoreService.cs",
+                "SWLOR.Game.Server/Domain/Creatures/CompanionPositioningService.cs",
+                "SWLOR.Game.Server/Domain/Creatures/CompanionTargetAuthorityService.cs",
+            },
+            new HashSet<string>(StringComparer.Ordinal)
+            {
+                "ICompanionControlService",
+                "ICompanionControlStoreService",
+                "ICompanionPositioningService",
+                "ICompanionTargetAuthorityService",
+            }),
         new Group(
             "SpawnService",
             new[] { "SWLOR.Game.Server/Domain/Creatures/SpawnService.cs" },

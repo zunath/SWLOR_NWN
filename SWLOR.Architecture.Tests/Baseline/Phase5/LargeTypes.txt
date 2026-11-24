@@ -22,8 +22,7 @@ SWLOR.Game.Server.Domain.Combat.CombatRecorderService | 1417
 SWLOR.Game.Server.Domain.Combat.EnmityService | 1243
 SWLOR.Game.Server.Domain.Companions.BeastMasteryService | 1240
 SWLOR.Game.Server.Domain.Companions.DroidService | 1194
-SWLOR.Game.Server.Domain.Creatures.AIService | 1854
-SWLOR.Game.Server.Domain.Creatures.CompanionControlService | 1090
+SWLOR.Game.Server.Domain.Creatures.AIService | 1857
 SWLOR.Game.Server.Domain.Items.ItemService | 1605
 SWLOR.Game.Server.Domain.Space.SpaceService | 2768
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel | 2081

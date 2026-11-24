@@ -1379,6 +1379,13 @@
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starport is still loading. Please try again shortly.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
+    "Line": 271,
+    "Member": "MainPageInit",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Your active ship is no longer available for docking.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StationBuildingDialog.cs",
     "Line": 118,
     "Member": "ShipyardPage",
@@ -1730,42 +1737,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 627,
+    "Line": 636,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Stats cannot be upgraded in this area.\", _target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 641,
+    "Line": 652,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxRacialAttributeScore} with a racial bonus.\", _target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 651,
+    "Line": 662,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxPurchasedAttributeScore} with AP.\", _target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 657,
+    "Line": 668,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxRacialAttributeScore}.\", _target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 663,
+    "Line": 674,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have enough AP to purchase this upgrade.\", _target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 674,
+    "Line": 685,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Your {abilityName} attribute has increased!\", _target, false)"
@@ -2591,63 +2598,63 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 180,
+    "Line": 184,
     "Member": "AddItem",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Item must be in your inventory.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 186,
+    "Line": 190,
     "Member": "AddItem",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Containers cannot be listed.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 192,
+    "Line": 196,
     "Member": "AddItem",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You cannot list any more items.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 200,
+    "Line": 204,
     "Member": "AddItem",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"This item cannot be sold on the market.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 206,
+    "Line": 210,
     "Member": "AddItem",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Legacy items cannot be sold on the market.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 212,
+    "Line": 216,
     "Member": "AddItem",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"A lockbox with a failed slicing attempt cannot be sold on the market.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 278,
+    "Line": 283,
     "Member": "RemoveListing",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 286,
+    "Line": 291,
     "Member": "RemoveListing",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"Your listing for '' has been removed or sold already.\", Player, false)"
+    "Call": "FloatingTextStringOnCreature(\"This listing has already been removed or sold.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 340,
+    "Line": 349,
     "Member": "OnClickSaveChanges",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"{dbListing.Name}: {ShipTransferRules.GetRefusalMessage(refusal)}\", Player, false)"
@@ -2934,21 +2941,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RenameTargetViewModel.cs",
-    "Line": 138,
+    "Line": 144,
     "Member": "OnClickSubmit",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Target renamed to '{newFullName}'.\", Player)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RenameTargetViewModel.cs",
-    "Line": 144,
+    "Line": 150,
     "Member": "OnClickSubmit",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Target renamed to '{NewName}'.\", Player)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RenameTargetViewModel.cs",
-    "Line": 158,
+    "Line": 164,
     "Member": "OnClickReset",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Target reset to original name.\", Player)"
@@ -4138,42 +4145,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/SnippetDefinition/QuestSnippetDefinition.cs",
-    "Line": 103,
+    "Line": 104,
     "Member": "ConditionOnQuestState",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, Error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/SnippetDefinition/QuestSnippetDefinition.cs",
-    "Line": 129,
+    "Line": 130,
     "Member": "ConditionOnQuestState",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/SnippetDefinition/QuestSnippetDefinition.cs",
-    "Line": 153,
+    "Line": 154,
     "Member": "ConditionCanAcceptQuest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, Error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/SnippetDefinition/QuestSnippetDefinition.cs",
-    "Line": 174,
+    "Line": 175,
     "Member": "ActionAcceptQuest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, Error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/SnippetDefinition/QuestSnippetDefinition.cs",
-    "Line": 195,
+    "Line": 196,
     "Member": "ActionAdvanceQuest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, Error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/SnippetDefinition/QuestSnippetDefinition.cs",
-    "Line": 218,
+    "Line": 219,
     "Member": "ActionRequestItemsFromPlayer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, Error)"
@@ -5097,28 +5104,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1104,
+    "Line": 1107,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(1)} is required to use research terminals.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1112,
+    "Line": 1115,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"This research terminal cannot be used.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1135,
+    "Line": 1138,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job will complete in: {completionTime}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Craft.cs",
-    "Line": 1139,
+    "Line": 1142,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job has completed.\")"
@@ -7295,56 +7302,56 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
-    "Line": 105,
+    "Line": 108,
     "Member": "CanAccept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have already completed this quest.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
-    "Line": 113,
+    "Line": 116,
     "Member": "CanAccept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have already accepted this quest.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
-    "Line": 124,
+    "Line": 127,
     "Member": "CanAccept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You do not meet the prerequisites necessary to accept this quest.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
-    "Line": 244,
+    "Line": 247,
     "Member": "Abandon",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Quest '{Name}' has been abandoned!\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
-    "Line": 311,
+    "Line": 314,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Quest '\" + Name + \"' accepted. Refer to your journal for more information on this quest.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
-    "Line": 346,
+    "Line": 349,
     "Member": "Advance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have not accepted this quest yet.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
-    "Line": 397,
+    "Line": 400,
     "Member": "Advance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Objective for quest '\" + Name + \"' complete! Check your journal for information on the next objective.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/QuestService/QuestDetail.cs",
-    "Line": 544,
+    "Line": 547,
     "Member": "Complete",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Quest '\" + Name + \"' complete!\")"
@@ -8772,42 +8779,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 273,
+    "Line": 274,
     "Member": "OpenRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan(\n                        $\"{(spentKey ? GetName(user) : \"A DM\")} opens a tier {key.TierLabel} rift pocket. Clear its three chambers within \" +\n                        $\"{RiftRunTuning.TimerSeconds / 60} minutes, or it collapses with you inside.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 306,
+    "Line": 307,
     "Member": "RefuseLeavingLastRiftRunShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, ColorToken.Red(\"You are the last ship in this Rift Run. Leaving the controls now would abandon the run, \" +\n                                                  \"and the collapsing pocket would wreck your ship.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 346,
+    "Line": 347,
     "Member": "RejoinRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, ColorToken.Cyan(\n                $\"You rejoin the Rift Run in chamber {run.Room + 1} of {RiftRunTuning.Rooms.Count}, the {RiftRunTuning.Rooms[run.Room].Name}: {left} left.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 507,
+    "Line": 509,
     "Member": "PayRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"The Rift Key that opened this pocket could not be saved as spent, so the run pays no spoils and the key goes back to its user.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 534,
+    "Line": 535,
     "Member": "PayRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                        $\"The pocket is cleared with {RiftRunRules.FormatTimer(secondsLeft)} to spare. The rift returns you in {RiftRunTuning.ReturnDelaySeconds:0} seconds.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 762,
+    "Line": 763,
     "Member": "MessageRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"

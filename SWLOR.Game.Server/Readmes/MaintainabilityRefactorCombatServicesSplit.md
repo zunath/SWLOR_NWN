@@ -1568,3 +1568,7 @@ Branch `claude/mr-p5-7f2`, base `d76899ff0` (the P5-7f1 record).
     driver lines are in `C:/Temp/mr-p5-7f2/evidence/{base,head}/` (kept outside the repository). The "Critical Hit" combat text line is in neither chat log (zero lines each); the critical riders' effects (haste,
     evasion, stamina) show in the driver lines. Each scene ran once per side.
   - *Not run:* the `-Check` scripts (content, facade, clock), `ExportPlayerMessageAudit.ps1` and the hot reload check (no handler or `[ReloadState]` field moved).
+- **After the feature merge** (P5-7i2 and P5-7g landed first): the critical part takes `ICombatAbilityHitAdjustmentService` in place of `ICombatAbilityHitService`, because
+  `GetCriticalRateAgainstSunderedTargetAdjustment` moved there in P5-7g (still 10 services). `ConvertedServices.json` lists 36 Combat parts, the moved hit defaults count 9 (P5-7g made one more public),
+  the stale `ICombatDamageReflectionService` cref names `ICombatTriggeredDamageService.ApplyTriggeredDamage`, and `PlayerMessageAudit.json` was regenerated (the two rows above move to
+  `CombatCriticalHitEffectsService.cs`; one `CombatAbilityImpactService.cs` line moves by 3).

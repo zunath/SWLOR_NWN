@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Katarn")
                 .Appearance(AppearanceType.SWLORKatarn)
                 .AppearanceScale(1f)
-                .SoundSetId(60)
+                .SoundSetId(325)
                 .PortraitId(601)
                 .CombatStats(AbilityType.Might, AbilityType.Agility)
                 .Role(BeastRoleType.Balanced)

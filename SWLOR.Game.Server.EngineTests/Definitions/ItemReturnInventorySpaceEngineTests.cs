@@ -70,12 +70,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 MarketId = PlayerMarket.GetMarketRegion(MarketRegionType.Global).MarketId, PlayerId = fixture.Id,
                 SellerName = "Fixture", Name = "Claim space listing", Resref = LargeItemResref, Quantity = 1, Price = 100
             };
+            var other = new MarketItem
+            {
+                MarketId = listing.MarketId, PlayerId = fixture.Id,
+                SellerName = "Fixture", Name = "Other listing", Resref = LargeItemResref, Quantity = 1, Price = 150
+            };
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
                     listing.Data = SerializeNewItem(ctx, LargeItemResref);
                     DB.Set(listing);
+                    other.Data = listing.Data;
+                    DB.Set(other);
                     var fillers = Fill(ctx, player);
                     var carried = Snapshot(player);
                     var model = OpenWindow<MarketListingViewModel>(fixture, GuiWindowType.MarketListing, new MarketPayload(MarketRegionType.Global));
@@ -91,16 +98,29 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     var carried = Snapshot(player);
                     var model = (MarketListingViewModel)Gui.GetPlayerWindow(player, GuiWindowType.MarketListing).ViewModel;
-                    RemoveListing(ctx, model, listing.Id);
+                    var index = ListingIds(model).IndexOf(listing.Id);
+                    ctx.Assert(index >= 0, "The listing is visible when its confirmation opens");
+                    Call(model, "RemoveListing", index);
+
+                    model.SearchText = other.Name;
+                    model.OnClickSearch()();
+                    ctx.AssertEqual(other.Id, ListingIds(model).Single(), "The search hides the row while confirmation is pending");
+                    model.ItemListed[0] = true;
+
+                    model.OnModalConfirmClick()();
                     AssertCarriedIntact(ctx, player, carried);
                     ctx.Assert(DB.Get<MarketItem>(listing.Id) == null, "The removed listing leaves the market");
                     ctx.AssertEqual(1, CountCarried(player, LargeItemResref), "The listed item returns to the inventory");
+                    ctx.AssertEqual(other.Id, ListingIds(model).Single(), "The other posting stays in the list");
+                    ctx.Assert(model.ItemListed[0], "The other posting keeps its unsaved change");
+                    ctx.Assert(!DB.Get<MarketItem>(other.Id).IsListed, "Confirming removal does not save other edits");
                 });
             }
             finally
             {
                 CloseWindows(fixture);
                 DB.Delete<MarketItem>(listing.Id);
+                DB.Delete<MarketItem>(other.Id);
             }
         }
 

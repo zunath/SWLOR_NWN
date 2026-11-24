@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Garu Bear Ripper")
                 .Appearance(AppearanceType.BeastmanBear2bloodsong)
                 .AppearanceScale(1f)
-                .SoundSetId(12)
+                .SoundSetId(8)
                 .PortraitId(3479)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)
                 .Role(BeastRoleType.Damage)

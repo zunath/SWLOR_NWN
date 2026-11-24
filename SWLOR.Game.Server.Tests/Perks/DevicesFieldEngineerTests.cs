@@ -241,6 +241,7 @@ public class DevicesFieldEngineerTests
         pulse.Should().Contain("FireFieldEngineerShot(emitter, shotTarget, applyImpact)");
         source.Should().Contain("var createBatch = AbilityImpactLifecycle.CaptureRepeatedAbilityImpactBatch<uint>");
         source.Should().Contain("emitter.CreateAreaImpactBatch = count =>");
+        source.Should().Contain("var applyShot = createBatch(count);");
     }
 
     [Test]

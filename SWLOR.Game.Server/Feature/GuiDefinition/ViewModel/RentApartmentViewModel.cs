@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         private int SelectedLayout { get; set; }
+        private bool HasSelectedLayout => SelectedLayout >= 0 && SelectedLayout < _layoutTypes.Count;
 
         public string Name
         {
@@ -123,10 +124,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSelectLayout() => () =>
         {
-            if (SelectedLayout > -1)
+            var index = NuiGetEventArrayIndex();
+            if (index < 0 || index >= _layoutTypes.Count)
+                return;
+
+            if (HasSelectedLayout)
                 LayoutToggles[SelectedLayout] = false;
 
-            SelectedLayout = NuiGetEventArrayIndex();
+            SelectedLayout = index;
             LayoutToggles[SelectedLayout] = true;
 
             LoadLayout();
@@ -134,6 +139,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnBuyApartment() => () =>
         {
+            if (!HasSelectedLayout)
+                return;
+
             var layoutType = _layoutTypes[SelectedLayout];
             var layout = Property.GetLayoutByType(layoutType);
 
@@ -180,6 +188,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnPreviewApartment() => () =>
         {
+            if (!HasSelectedLayout)
+                return;
+
             var layoutType = _layoutTypes[SelectedLayout];
 
             PropertyAccess.PreviewProperty(Player, layoutType);

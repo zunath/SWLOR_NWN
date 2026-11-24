@@ -272,12 +272,12 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 {
                     position = new Vector3(detail.X, detail.Y, detail.Z);
                 }
-                // Randomly placed placeables (resource nodes, terminals) keep their distance from each other
-                // so that several of them cannot block a narrow path together.
+                // Randomly placed placeables (resource nodes, terminals) only use points with room to walk around
+                // them, and keep their distance from each other so that several of them cannot block a path together.
                 else if (spawnObject.Type == ObjectType.Placeable)
                 {
                     position = SpawnSpacing.PickSpacedPosition(
-                        () => GetPositionFromLocation(_walkmesh.GetRandomLocation(detail.Area)),
+                        () => GetPositionFromLocation(_walkmesh.GetRandomPlaceableLocation(detail.Area)),
                         GetActivePlaceableSpawnPositions(detail.Area));
                 }
                 else

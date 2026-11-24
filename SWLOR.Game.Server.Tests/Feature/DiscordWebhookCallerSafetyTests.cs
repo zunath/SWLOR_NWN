@@ -46,6 +46,18 @@ public class DiscordWebhookCallerSafetyTests
     }
 
     [Test]
+    public void HostedEventPostContinuationsOnlyUseManagedLogging()
+    {
+        var method = FindMethod(ReadSource("Domain/Social/HostedEventsService.cs"), "PostToDiscordAsync");
+        var enqueue = method.DescendantNodes().OfType<AwaitExpressionSyntax>().Single();
+        var callsAfterEnqueue = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Where(call => call.SpanStart > enqueue.Span.End)
+            .Select(call => call.Expression.ToString());
+        callsAfterEnqueue.Should().OnlyContain(name => name == "Log.Write" || name == "Log.WriteError",
+            "the event start post runs fire-and-forget and must never touch the engine after queuing");
+    }
+
+    [Test]
     public void PropertyBroadcastDoesNotMoveItsCallerOntoAnAsyncContinuation()
     {
         var method = FindMethod(ReadSource("Domain/World/PropertyCityGovernanceService.cs"), "BroadcastPropertyEvent");

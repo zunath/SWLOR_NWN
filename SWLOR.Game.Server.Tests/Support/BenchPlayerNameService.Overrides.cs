@@ -13,7 +13,7 @@ public sealed partial class BenchPlayerNameService
         return new Handle(this);
     }
 
-    protected override bool EnsureUnknownDisplayName(uint player)
+    public override bool EnsureUnknownDisplayName(uint player)
     {
         EnsuredDescriptors.Add(player);
         return true;

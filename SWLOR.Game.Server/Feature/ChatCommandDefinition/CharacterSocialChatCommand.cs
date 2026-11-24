@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Validate((user, args) =>
                 {
                     var rawName = string.Join(" ", args);
-                    return PlayerName.ValidateKnownNameInput(rawName);
+                    return PlayerKnownName.ValidateKnownNameInput(rawName);
                 })
                 .RequiresTarget(ObjectType.Creature)
                 .Action((user, target, location, args) =>
@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     var rawName = string.Join(" ", args);
-                    var validationError = PlayerName.ValidateKnownNameInput(rawName);
+                    var validationError = PlayerKnownName.ValidateKnownNameInput(rawName);
                     if (!string.IsNullOrWhiteSpace(validationError))
                     {
                         SendMessageToPC(user, ColorToken.Red(validationError));
@@ -230,7 +230,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
-                    validationError = PlayerName.ValidateKnownNameAssignment(user, target, name);
+                    validationError = PlayerKnownName.ValidateKnownNameAssignment(user, target, name);
                     if (!string.IsNullOrWhiteSpace(validationError))
                     {
                         SendMessageToPC(user, ColorToken.Red(validationError));
@@ -241,7 +241,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         ? knownName
                         : string.Empty;
                     var identityKey = Disguise.GetIdentityKey(target);
-                    PlayerName.SetKnownName(user, target, name);
+                    PlayerKnownName.SetKnownName(user, target, name);
 
                     Log.WriteStructured(
                         LogGroup.PrivateNames,
@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         ? knownName
                         : string.Empty;
                     var identityKey = Disguise.GetIdentityKey(target);
-                    PlayerName.ForgetKnownName(user, target);
+                    PlayerKnownName.ForgetKnownName(user, target);
                     Log.WriteStructured(
                         LogGroup.PrivateNames,
                         "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} ObserverName={ObserverName} TargetPlayerId={TargetPlayerId} TargetName={TargetName} IdentityKey={IdentityKey} PreviousName={PreviousName} Name={Name}",

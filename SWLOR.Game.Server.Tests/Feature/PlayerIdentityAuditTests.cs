@@ -85,17 +85,20 @@ public class PlayerIdentityAuditTests
                 {
                     public string BuildIdentityKey(string disguiseId) => Disguise.BuildIdentityKey(disguiseId);
                 }
-                public static string InputError => AuditWorld.ValidationError;
-                public static string ValidateKnownNameInput(string name) => InputError;
-                public static string ValidateKnownNameAssignment(uint observer, uint target, string name) => InputError;
                 public static string SanitizeKnownName(string name) => name.Trim();
                 public static bool TryGetKnownName(uint observer, uint target, out string name)
                     => AuditWorld.KnownNames.TryGetValue((observer, target), out name);
+                public static void RefreshNameOverridesForPlayer(uint player) { }
+            }
+            public static class PlayerKnownName
+            {
+                public static string InputError => AuditWorld.ValidationError;
+                public static string ValidateKnownNameInput(string name) => InputError;
+                public static string ValidateKnownNameAssignment(uint observer, uint target, string name) => InputError;
                 public static void SetKnownName(uint observer, uint target, string name)
                     => AuditWorld.KnownNames[(observer, target)] = name;
                 public static void ForgetKnownName(uint observer, uint target)
                     => AuditWorld.KnownNames.Remove((observer, target));
-                public static void RefreshNameOverridesForPlayer(uint player) { }
             }
             public sealed class Player
             {
@@ -111,6 +114,7 @@ public class PlayerIdentityAuditTests
             {
                 private static readonly DbShim _db = new();
                 private static readonly NameShim _playerName = new();
+                private static readonly KnownNameShim _playerKnownName = new();
                 private sealed class DbShim
                 {
                     public T Get<T>(string id) where T : class => DB.Get<T>(id);
@@ -119,8 +123,11 @@ public class PlayerIdentityAuditTests
                 private sealed class NameShim
                 {
                     public string SanitizeKnownName(string name) => PlayerName.SanitizeKnownName(name);
-                    public string ValidateKnownNameInput(string name) => PlayerName.ValidateKnownNameInput(name);
                     public void RefreshNameOverridesForPlayer(uint player) => PlayerName.RefreshNameOverridesForPlayer(player);
+                }
+                private sealed class KnownNameShim
+                {
+                    public string ValidateKnownNameInput(string name) => PlayerKnownName.ValidateKnownNameInput(name);
                 }
                 private static string GetDisguiseIdentityKey(uint player) => Disguise.GetIdentityKey(player);
                 private static void WriteStructuredLog(LogGroup group, string message, params object[] values) => Log.WriteStructured(group, message, values);
@@ -215,12 +222,16 @@ public class PlayerIdentityAuditTests
             {
                 private static readonly IntroductionInbox _inbox = new();
                 private static readonly NameShim _playerName = new();
+                private static readonly KnownNameShim _playerKnownName = new();
                 private sealed class NameShim
                 {
                     public bool TryGetKnownName(uint observer, uint target, out string name) => PlayerName.TryGetKnownName(observer, target, out name);
-                    public string ValidateKnownNameAssignment(uint observer, uint target, string name) => PlayerName.ValidateKnownNameAssignment(observer, target, name);
-                    public void SetKnownName(uint observer, uint target, string name) => PlayerName.SetKnownName(observer, target, name);
                     public string GetAuditName(uint target) => PlayerName.GetAuditName(target);
+                }
+                private sealed class KnownNameShim
+                {
+                    public string ValidateKnownNameAssignment(uint observer, uint target, string name) => PlayerKnownName.ValidateKnownNameAssignment(observer, target, name);
+                    public void SetKnownName(uint observer, uint target, string name) => PlayerKnownName.SetKnownName(observer, target, name);
                 }
                 private static DateTime UtcNow() => DateTime.UtcNow;
                 private static string GetDisguiseIdentityKey(uint player) => Disguise.GetIdentityKey(player);

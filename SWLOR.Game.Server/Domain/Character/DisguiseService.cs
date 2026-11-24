@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IGuiRefreshPublisher _gui;
         private readonly IDMActorResolver _dmPresence;
         private readonly IPlayerNameService _playerName;
+        private readonly IPlayerKnownNameService _playerKnownName;
         private readonly IPlayerDescriptorService _playerDescriptor;
         private readonly IStatService _stat;
 
@@ -47,6 +48,7 @@ namespace SWLOR.Game.Server.Domain.Character
             IGuiRefreshPublisher gui,
             IDMActorResolver dmPresence,
             IPlayerNameService playerName,
+            IPlayerKnownNameService playerKnownName,
             IPlayerDescriptorService playerDescriptor,
             IStatService stat)
         {
@@ -55,6 +57,7 @@ namespace SWLOR.Game.Server.Domain.Character
             _gui = gui;
             _dmPresence = dmPresence;
             _playerName = playerName;
+            _playerKnownName = playerKnownName;
             _playerDescriptor = playerDescriptor;
             _stat = stat;
         }
@@ -299,7 +302,7 @@ namespace SWLOR.Game.Server.Domain.Character
             if (!string.IsNullOrWhiteSpace(privateNameError))
                 return Reject(privateNameError);
 
-            var descriptorError = _playerName.ValidateKnownNameInput(descriptor);
+            var descriptorError = _playerKnownName.ValidateKnownNameInput(descriptor);
             if (!string.IsNullOrWhiteSpace(descriptorError))
                 return Reject(descriptorError);
 
@@ -608,7 +611,7 @@ namespace SWLOR.Game.Server.Domain.Character
             }
 
             var identityKey = BuildIdentityKey(disguise.Id);
-            var removedKnownNames = _playerName.DeleteKnownNameReferences(identityKey);
+            var removedKnownNames = _playerKnownName.DeleteKnownNameReferences(identityKey);
 
             WriteStructuredLog(
                 LogGroup.PlayerName,

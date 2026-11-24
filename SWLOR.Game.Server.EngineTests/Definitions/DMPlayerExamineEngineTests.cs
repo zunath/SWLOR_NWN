@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             record.UnallocatedXP = 12000;
             record.UnknownDisplayName = "Grumpy old man";
             DB.Set(record);
-            PlayerName.SetKnownName(observer.Creature, target.Creature, "Examine Test Character");
+            GameServices.PlayerKnownName.SetKnownName(observer.Creature, target.Creature, "Examine Test Character");
             var coloredName = PlayerName.GetDisplayName(observer.Creature, target.Creature);
             var plainName = UtilPlugin.StripColors(coloredName);
             ctx.Assert(coloredName != plainName, "fixture must exercise an inline-colored descriptor");
@@ -159,7 +160,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                              .AddFieldSearch(nameof(PlayerNote.PlayerId), target.Id, false).AddPaging(50, 0)))
                     DB.Delete<PlayerNote>(note.Id);
                 foreach (var names in DB.Search(new DBQuery<PlayerKnownName>()
-                             .AddFieldSearch(nameof(PlayerKnownName.ObserverPlayerId), observer.Id, false).AddPaging(50, 0)))
+                             .AddFieldSearch(nameof(Entity.PlayerKnownName.ObserverPlayerId), observer.Id, false).AddPaging(50, 0)))
                     DB.Delete<PlayerKnownName>(names.Id);
                 await ctx.WaitFrameAsync();
             }

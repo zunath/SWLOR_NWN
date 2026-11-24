@@ -254,7 +254,7 @@ public class PlayerNameRecognitionTests
 
         assignmentValidationMethod.Should().Contain("ValidateKnownNameInput(name)");
         setMethod.Should().Contain("ValidateKnownNameAssignment(observer, target, name);");
-        unknownDisplayMethod.Should().Contain("_playerName.ValidateKnownNameInput(name)");
+        unknownDisplayMethod.Should().Contain("_playerKnownName.ValidateKnownNameInput(name)");
     }
 
     [Test]
@@ -678,7 +678,7 @@ public class PlayerNameRecognitionTests
 
         disguiseSource.Should().Contain("public const string IdentityKeyPrefix = \"disguise:\";");
         disguiseSource.Should().Contain("BuildIdentityKey(activeDisguise.Id)");
-        disguiseSource.Should().Contain("_playerName.DeleteKnownNameReferences(identityKey)");
+        disguiseSource.Should().Contain("_playerKnownName.DeleteKnownNameReferences(identityKey)");
         disguiseSource.Should().Contain("_db.Delete<PlayerDisguise>(disguise.Id)");
         disguiseSource.Should().Contain("public const int ActivationDelayMinutes = 30;");
         disguiseSource.Should().Contain("public const int MinimumActivationDelayMinutes = 5;");

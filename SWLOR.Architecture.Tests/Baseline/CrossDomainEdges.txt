@@ -230,8 +230,7 @@ Domain/Economy -> Domain/UI | 12
 # Economy -> World (1 edge)
 Domain/Economy -> Domain/World | 7
 
-# Foundation -> Character (4 edges)
-Domain/Foundation -> Domain/Character | 6
+# Foundation -> Character (3 edges)
 Feature/DialogDefinition -> Domain/Character | 19
 Feature/MigrationDefinition -> Domain/Character | 38
 Feature/MigrationDefinition -> Feature/AppearanceDefinition | 6

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
@@ -42,10 +44,40 @@ public sealed class SkillXPAwardDecayEngineTests
 
     private static readonly List<(uint Player, SkillType Skill)> Decays = new();
 
-    [NWNEventHandler(ScriptName.OnSWLORSkillLostByDecay)]
-    public static void ObserveDecay()
+    /// <summary>
+    /// Counts the signal without a script handler: the events plugin is wrapped around the award inside the creature context (the override is per async flow, and the engine runs that context in its own), every call goes on to the
+    /// real plugin, and the signal is recorded with the skill id pushed just before it.
+    /// </summary>
+    public class SignalSpy : DispatchProxy
     {
-        Decays.Add((OBJECT_SELF, (SkillType)int.Parse(EventsPlugin.GetEventData("SKILL_TYPE_ID"))));
+        public IEventsPlugin Target { get; set; }
+
+        private string _pendingSkill;
+
+        public static IDisposable Install()
+        {
+            var spy = DispatchProxy.Create<IEventsPlugin, SignalSpy>();
+            ((SignalSpy)(object)spy).Target = EventsPluginRuntime.Current;
+            return EventsPluginRuntime.Override(spy);
+        }
+
+        protected override object Invoke(MethodInfo targetMethod, object[] args)
+        {
+            if (targetMethod.Name == nameof(IEventsPlugin.PushEventData) && (string)args[0] == "SKILL_TYPE_ID")
+                _pendingSkill = (string)args[1];
+            else if (targetMethod.Name == nameof(IEventsPlugin.SignalEvent) && (string)args[0] == "SWLOR_SKILL_LOST_BY_DECAY")
+                Decays.Add(((uint)args[1], (SkillType)int.Parse(_pendingSkill)));
+
+            try
+            {
+                return targetMethod.Invoke(Target, args);
+            }
+            catch (TargetInvocationException exception)
+            {
+                ExceptionDispatchInfo.Capture(exception.InnerException!).Throw();
+                throw;
+            }
+        }
     }
 
     [EngineTest("A decayed skill that gates a purchased perk refunds the perk level", Category = Category, TimeoutSeconds = 60f)]
@@ -68,7 +100,10 @@ public sealed class SkillXPAwardDecayEngineTests
 
         var awarded = 0;
         await ctx.ExecuteInCreatureContextAsync(player, () =>
-            awarded = Skill.GiveSkillXP(player, GainedSkill, Skill.GetRequiredXP(0), true, false));
+        {
+            using var spy = SignalSpy.Install();
+            awarded = Skill.GiveSkillXP(player, GainedSkill, Skill.GetRequiredXP(0), true, false);
+        });
         await ctx.WaitFrameAsync();
 
         var record = DB.Get<Player>(fixture.Id);
@@ -101,7 +136,10 @@ public sealed class SkillXPAwardDecayEngineTests
         Decays.Clear();
 
         await ctx.ExecuteInCreatureContextAsync(player, () =>
-            Skill.GiveSkillXP(player, GainedSkill, Skill.GetRequiredXP(0), true, false));
+        {
+            using var spy = SignalSpy.Install();
+            Skill.GiveSkillXP(player, GainedSkill, Skill.GetRequiredXP(0), true, false);
+        });
         await ctx.WaitFrameAsync();
 
         var record = DB.Get<Player>(fixture.Id);

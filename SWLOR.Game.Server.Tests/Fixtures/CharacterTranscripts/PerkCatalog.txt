@@ -1062,15 +1062,15 @@ perk 283 FocusAttention levels=1,2,3 active=True group=Beast affinity=none
   level 1 granted=[1183] current=[]
   level 2 granted=[1183] current=[]
   level 3 granted=[1183] current=[]
-  level 1 stat EnmityPercentAdjustment bonus=15 source=perk:283=15
   level 1 stat AbilityRecastDelayFlatAdjustmentPerkType bonus=0
   level 1 stat AbilityRecastDelayFlatAdjustment bonus=0
-  level 2 stat EnmityPercentAdjustment bonus=30 source=perk:283=30
+  level 1 stat DamageEnmityPercentAdjustment bonus=15 source=perk:283=15
   level 2 stat AbilityRecastDelayFlatAdjustmentPerkType bonus=0
   level 2 stat AbilityRecastDelayFlatAdjustment bonus=0
-  level 3 stat EnmityPercentAdjustment bonus=45 source=perk:283=45
+  level 2 stat DamageEnmityPercentAdjustment bonus=30 source=perk:283=30
   level 3 stat AbilityRecastDelayFlatAdjustmentPerkType bonus=282 source=perk:283=282
   level 3 stat AbilityRecastDelayFlatAdjustment bonus=-3 source=perk:283=-3
+  level 3 stat DamageEnmityPercentAdjustment bonus=50 source=perk:283=50
   affinity none: multiplier=1
 perk 284 Claw levels=1,2,3 active=True group=Beast affinity=none
   recast=Claw allActive=[2528,2531,2539]

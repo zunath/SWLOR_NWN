@@ -12,9 +12,9 @@
 
 SWLOR.Game.Server.Domain.Abilities.AbilityDamageInputService | 13
 SWLOR.Game.Server.Domain.Abilities.AbilityDamageStageService | 11
+SWLOR.Game.Server.Domain.Abilities.AbilityImpactLifecycleService | 11
 SWLOR.Game.Server.Domain.Abilities.MimicryService | 11
 SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService | 14
-SWLOR.Game.Server.Domain.Combat.CombatAbilityHitService | 13
 SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService | 17
 SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService | 21
 SWLOR.Game.Server.Domain.Combat.CombatService | 13
@@ -24,5 +24,7 @@ SWLOR.Game.Server.Domain.Companions.DroidService | 14
 SWLOR.Game.Server.Domain.Creatures.AIService | 12
 SWLOR.Game.Server.Domain.Space.SpaceService | 18
 SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade.HeavyVibrobladeActiveAbilityDefinitionBase | 11
-SWLOR.Game.Server.Feature.UsePerkFeat | 32
+SWLOR.Game.Server.Feature.UsePerkFeat | 33
+SWLOR.Game.Server.Native.AttackRollCritical | 11
+SWLOR.Game.Server.Native.DamageRollCreature | 11
 SWLOR.Game.Server.Native.ResolveAttackRoll | 11

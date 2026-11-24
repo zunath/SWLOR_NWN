@@ -34,7 +34,7 @@ internal sealed partial class TestHitEffects : CombatHitEffectsService
         ICombatActivityService combatActivity,
         ICombatDamageModifiersService damageModifiers,
         ICombatRepeatedTargetService repeatedTarget,
-        ICombatAbilityHitService abilityHit,
+        ICombatAbilityHitAdjustmentService abilityHit,
         IStatService stat,
         IStatusEffectService statusEffect,
         IStatusEffectApplicationService statusApplication,

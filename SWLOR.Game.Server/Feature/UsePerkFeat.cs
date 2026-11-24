@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Feature
         private static void ClearAbilityActivationIdleSnapshots(uint activator)
         {
             GameServices.CombatActivity.ClearAbilityActivationIdleBonuses(activator);
-            GameServices.CombatAbilityBonus.ClearWeaponAbilityActivationIdleBonuses(activator);
+            GameServices.CombatQueuedAbilityBonus.ClearWeaponAbilityActivationIdleBonuses(activator);
         }
 
         private static void ClearActiveAbilityActivation(uint activator, string activationId)
@@ -410,7 +410,7 @@ namespace SWLOR.Game.Server.Feature
                     if (HoldForHostileAbilityDelay(activator, target, feat, targetLocation, ability))
                         return true;
 
-                    GameServices.CombatAbilityBonus.ClearQueuedWeaponAbilityActivationBonuses(activator);
+                    GameServices.CombatQueuedAbilityBonus.ClearQueuedWeaponAbilityActivationBonuses(activator);
                     var executeQueue = ability.ActivationAction == null ||
                                        ability.ActivationAction.Invoke(
                                            activator,
@@ -419,8 +419,8 @@ namespace SWLOR.Game.Server.Feature
                                            targetLocation);
                     if (!executeQueue)
                     {
-                        GameServices.CombatAbilityBonus.ClearQueuedWeaponAbilityActivationBonuses(activator);
-                        GameServices.CombatAbilityBonus.ClearQueuedWeaponAbilityAttemptBonuses(activator);
+                        GameServices.CombatQueuedAbilityBonus.ClearQueuedWeaponAbilityActivationBonuses(activator);
+                        GameServices.CombatQueuedAbilityBonus.ClearQueuedWeaponAbilityAttemptBonuses(activator);
                         ClearAbilityActivationIdleSnapshots(activator);
                         return true;
                     }
@@ -1637,8 +1637,8 @@ namespace SWLOR.Game.Server.Feature
             AbilityActivationState.RemoveQueuedWeaponAttack(player);
             AbilityActivationState.RemoveQueuedWeaponTraits(player);
             QueuedAttackAnimation.Stop(player);
-            GameServices.CombatAbilityBonus.ClearQueuedWeaponAbilityActivationBonuses(player);
-            GameServices.CombatAbilityBonus.ClearQueuedWeaponAbilityAttemptBonuses(player);
+            GameServices.CombatQueuedAbilityBonus.ClearQueuedWeaponAbilityActivationBonuses(player);
+            GameServices.CombatQueuedAbilityBonus.ClearQueuedWeaponAbilityAttemptBonuses(player);
             var featType = (FeatType)GetLocalInt(player, ActiveAbilityFeatIdName);
             if (AbilityCatalog.IsFeatRegistered(featType))
             {

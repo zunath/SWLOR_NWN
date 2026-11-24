@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
     /// </summary>
     public class WeaponAbilityDamageModifiers
     {
-        private ICombatAbilityBonusService CombatAbilityBonus { get; }
+        private ICombatQueuedAbilityBonusService CombatQueuedAbilityBonus { get; }
         private ICombatActivityService CombatActivity { get; }
         private ICombatDefenseMemoryService CombatDefenseMemory { get; }
         private ICombatQueriesService CombatQueries { get; }
@@ -29,9 +29,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
         private IStatusEffectService StatusEffect { get; }
         private WeaponAbilityStatusRiders WeaponAbilityStatusRiders { get; }
 
-        public WeaponAbilityDamageModifiers(ICombatAbilityBonusService combatAbilityBonus, ICombatActivityService combatActivity, ICombatDefenseMemoryService combatDefenseMemory, ICombatQueriesService combatQueries, ICombatResourcesService combatResources, IPlayerFeedbackService playerFeedback, IStatService stat, IStatusEffectService statusEffect, WeaponAbilityStatusRiders weaponAbilityStatusRiders)
+        public WeaponAbilityDamageModifiers(ICombatQueuedAbilityBonusService combatQueuedAbilityBonus, ICombatActivityService combatActivity, ICombatDefenseMemoryService combatDefenseMemory, ICombatQueriesService combatQueries, ICombatResourcesService combatResources, IPlayerFeedbackService playerFeedback, IStatService stat, IStatusEffectService statusEffect, WeaponAbilityStatusRiders weaponAbilityStatusRiders)
         {
-            CombatAbilityBonus = combatAbilityBonus;
+            CombatQueuedAbilityBonus = combatQueuedAbilityBonus;
             CombatActivity = combatActivity;
             CombatDefenseMemory = combatDefenseMemory;
             CombatQueries = combatQueries;
@@ -78,9 +78,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
             }
 
             var idleSnapshot = activationIdleBonusSnapshot?.HasSnapshot ??
-                               CombatAbilityBonus.HasWeaponAbilityActivationIdleSnapshot(activator);
+                               CombatQueuedAbilityBonus.HasWeaponAbilityActivationIdleSnapshot(activator);
             var idleDamageBonus = activationIdleBonusSnapshot?.DamageBonus ??
-                                  CombatAbilityBonus.GetWeaponAbilityActivationIdleDamageBonus(activator);
+                                  CombatQueuedAbilityBonus.GetWeaponAbilityActivationIdleDamageBonus(activator);
             if (profile.ExtraDamageIfIdle != 0 &&
                 (idleSnapshot
                     ? idleDamageBonus > 0
@@ -176,9 +176,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
         {
             var adjustment = profile.CriticalRatePercentAdjustment;
             var idleSnapshot = activationIdleBonusSnapshot?.HasSnapshot ??
-                               CombatAbilityBonus.HasWeaponAbilityActivationIdleSnapshot(activator);
+                               CombatQueuedAbilityBonus.HasWeaponAbilityActivationIdleSnapshot(activator);
             var idleCriticalRate = activationIdleBonusSnapshot?.CriticalRatePercentAdjustment ??
-                                   CombatAbilityBonus.GetWeaponAbilityActivationIdleCriticalRateBonus(activator);
+                                   CombatQueuedAbilityBonus.GetWeaponAbilityActivationIdleCriticalRateBonus(activator);
             if (!profile.IsQueuedWeaponAbility && profile.CriticalRateIfIdle != 0 &&
                 (idleSnapshot
                     ? idleCriticalRate > 0
@@ -225,9 +225,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
         {
             var adjustment = profile.DefenseIgnorePercent;
             var idleSnapshot = activationIdleBonusSnapshot?.HasSnapshot ??
-                               CombatAbilityBonus.HasWeaponAbilityActivationIdleSnapshot(activator);
+                               CombatQueuedAbilityBonus.HasWeaponAbilityActivationIdleSnapshot(activator);
             var idleDefenseIgnore = activationIdleBonusSnapshot?.DefenseIgnorePercent ??
-                                    CombatAbilityBonus.GetWeaponAbilityActivationIdleDefenseIgnorePercent(activator);
+                                    CombatQueuedAbilityBonus.GetWeaponAbilityActivationIdleDefenseIgnorePercent(activator);
             if (profile.DefenseIgnoreIfIdle != 0 &&
                 (idleSnapshot
                     ? idleDefenseIgnore > 0
@@ -260,17 +260,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
         public void ClearActivationIdleBonusSnapshots(uint activator)
         {
             CombatActivity.ClearAbilityActivationIdleBonuses(activator);
-            CombatAbilityBonus.ClearWeaponAbilityActivationIdleBonuses(activator);
+            CombatQueuedAbilityBonus.ClearWeaponAbilityActivationIdleBonuses(activator);
         }
 
         public WeaponAbilityProfile.ActivationIdleBonusSnapshot CaptureActivationIdleBonusSnapshot(uint activator)
         {
             return new WeaponAbilityProfile.ActivationIdleBonusSnapshot
             {
-                HasSnapshot = CombatAbilityBonus.HasWeaponAbilityActivationIdleSnapshot(activator),
-                DamageBonus = CombatAbilityBonus.GetWeaponAbilityActivationIdleDamageBonus(activator),
-                CriticalRatePercentAdjustment = CombatAbilityBonus.GetWeaponAbilityActivationIdleCriticalRateBonus(activator),
-                DefenseIgnorePercent = CombatAbilityBonus.GetWeaponAbilityActivationIdleDefenseIgnorePercent(activator)
+                HasSnapshot = CombatQueuedAbilityBonus.HasWeaponAbilityActivationIdleSnapshot(activator),
+                DamageBonus = CombatQueuedAbilityBonus.GetWeaponAbilityActivationIdleDamageBonus(activator),
+                CriticalRatePercentAdjustment = CombatQueuedAbilityBonus.GetWeaponAbilityActivationIdleCriticalRateBonus(activator),
+                DefenseIgnorePercent = CombatQueuedAbilityBonus.GetWeaponAbilityActivationIdleDefenseIgnorePercent(activator)
             };
         }
 
@@ -279,10 +279,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
             if (!profile.IsQueuedWeaponAbility)
                 return;
 
-            CombatAbilityBonus.StoreQueuedWeaponAbilityActivationIdleBonuses(activator, skillType);
+            CombatQueuedAbilityBonus.StoreQueuedWeaponAbilityActivationIdleBonuses(activator, skillType);
             if (profile.CriticalRateIfIdle > 0 && IsIdle(profile, activator))
             {
-                CombatAbilityBonus.StoreQueuedWeaponAbilityActivationCriticalRateBonus(
+                CombatQueuedAbilityBonus.StoreQueuedWeaponAbilityActivationCriticalRateBonus(
                     activator,
                     skillType,
                     profile.CriticalRateIfIdle);
@@ -298,12 +298,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
 
         public void PrepareActivationIdleBonuses(WeaponAbilityProfile profile, uint activator)
         {
-            CombatAbilityBonus.ClearWeaponAbilityActivationIdleBonuses(activator);
+            CombatQueuedAbilityBonus.ClearWeaponAbilityActivationIdleBonuses(activator);
             if (profile.IsQueuedWeaponAbility || profile.IdleWindowSeconds <= 0f ||
                 (profile.ExtraDamageIfIdle == 0 && profile.CriticalRateIfIdle == 0 && profile.DefenseIgnoreIfIdle == 0))
                 return;
 
-            CombatAbilityBonus.StoreWeaponAbilityActivationIdleBonuses(
+            CombatQueuedAbilityBonus.StoreWeaponAbilityActivationIdleBonuses(
                 activator,
                 IsIdle(profile, activator),
                 profile.ExtraDamageIfIdle,

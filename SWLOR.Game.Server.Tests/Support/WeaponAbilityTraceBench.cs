@@ -24,8 +24,8 @@ public sealed class WeaponAbilityTraceBench : IDisposable
     public static readonly Type[] Leaves =
     {
         typeof(IAbilityService), typeof(IAbilityDamageInputService), typeof(IAbilityImmunityService), typeof(IAbilityImpactState),
-        typeof(IAbilityStatusApplicationService), typeof(ICombatAbilityActivationService), typeof(ICombatAbilityBonusService), typeof(ICombatAbilityCostEffectsService), typeof(ICombatAbilityDefenseEffectsService),
-        typeof(ICombatAbilityHitService), typeof(ICombatActivityService), typeof(ICombatDamageTakenService),
+        typeof(IAbilityStatusApplicationService), typeof(ICombatAbilityActivationService), typeof(ICombatAbilityBonusService), typeof(ICombatQueuedAbilityBonusService), typeof(ICombatAbilityCostEffectsService), typeof(ICombatAbilityDefenseEffectsService),
+        typeof(ICombatAbilityHitService), typeof(ICombatAbilityHitAdjustmentService), typeof(ICombatActivityService), typeof(ICombatDamageTakenService),
         typeof(ICombatDamageTakenEffectsService), typeof(ICombatDamageReflectionService), typeof(ICombatGuardedHitService), typeof(ICombatGuardedHitEffectsService), typeof(ICombatGuardRetaliationService), typeof(ICombatDefenseMemoryService), typeof(ICombatQueriesService), typeof(ICombatRecorderService),
         typeof(ICombatResourcesService), typeof(ICombatSuppressionService), typeof(IEnmityService), typeof(IPartyService),
         typeof(IPlayerFeedbackService), typeof(IStatService), typeof(IStatusEffectService), typeof(IStatusEffectApplicationService),

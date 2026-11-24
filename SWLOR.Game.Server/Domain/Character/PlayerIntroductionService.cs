@@ -20,12 +20,14 @@ namespace SWLOR.Game.Server.Domain.Character
         [ReloadState(ReloadStateKind.Carried)]
         private readonly PlayerIntroductionInbox _inbox = new();
         private readonly IPlayerNameService _playerName;
+        private readonly IPlayerKnownNameService _playerKnownName;
         private readonly IDisguiseService _disguise;
         private readonly IRecastDelays _recast;
 
-        public PlayerIntroductionService(IPlayerNameService playerName, IDisguiseService disguise, IRecastDelays recast)
+        public PlayerIntroductionService(IPlayerNameService playerName, IPlayerKnownNameService playerKnownName, IDisguiseService disguise, IRecastDelays recast)
         {
             _playerName = playerName;
+            _playerKnownName = playerKnownName;
             _disguise = disguise;
             _recast = recast;
         }
@@ -47,7 +49,7 @@ namespace SWLOR.Game.Server.Domain.Character
             if (!GetIsObjectValid(presenter) || !GetIsPC(presenter) || GetIsDM(presenter))
                 return "Only player characters can introduce themselves.";
 
-            var error = _playerName.ValidateKnownNameInput(name);
+            var error = _playerKnownName.ValidateKnownNameInput(name);
             if (!string.IsNullOrEmpty(error))
                 return error;
 
@@ -115,14 +117,14 @@ namespace SWLOR.Game.Server.Domain.Character
                 var error = offer.ValidateIdentityAndConsent(GetObjectUUID(offer.Presenter),
                     GetDisguiseIdentityKey(offer.Presenter), currentKnownName, approvedKnownName);
                 return string.IsNullOrEmpty(error)
-                    ? _playerName.ValidateKnownNameAssignment(observer, offer.Presenter, offer.Name)
+                    ? _playerKnownName.ValidateKnownNameAssignment(observer, offer.Presenter, offer.Name)
                     : error;
             }, offer =>
             {
                 var previousName = _playerName.TryGetKnownName(observer, offer.Presenter, out var knownName)
                     ? knownName
                     : string.Empty;
-                _playerName.SetKnownName(observer, offer.Presenter, offer.Name);
+                _playerKnownName.SetKnownName(observer, offer.Presenter, offer.Name);
                 WriteStructuredLog(LogGroup.PrivateNames,
                     "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} ObserverName={ObserverName} TargetPlayerId={TargetPlayerId} TargetName={TargetName} IdentityKey={IdentityKey} PreviousName={PreviousName} Name={Name}",
                     "introduction-accepted", GetObjectUUID(observer), _playerName.GetAuditName(observer),

@@ -243,7 +243,7 @@ public class PlayerFacingNameBroadcastTests
             "GuiDefinition",
             "ViewModel",
             "PropertyPermissionsViewModel.cs"));
-        propertyPermissionsSource.Should().Contain("GameServices.PlayerName.SearchKnownPlayerIdsByName(Player, SearchText, int.MaxValue)");
+        propertyPermissionsSource.Should().Contain("GameServices.PlayerKnownName.SearchKnownPlayerIdsByName(Player, SearchText, int.MaxValue)");
         propertyPermissionsSource.Should().Contain("GameServices.PlayerName.GetKnownNameOrFallbackByPlayerId");
         propertyPermissionsSource.Should().Contain("AddFieldSearch(nameof(Entity.Player.Name), sanitizedSearch, true)");
         propertyPermissionsSource.Should().NotContain("GameServices.PlayerName.GetDisplayNameByPlayerId");

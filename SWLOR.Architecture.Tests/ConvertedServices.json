@@ -88,6 +88,7 @@
     { "name": "PlayerDescriptor", "domain": "Character" },
     { "name": "PlayerFeedback", "domain": "Foundation" },
     { "name": "PlayerIntroduction", "domain": "Character" },
+    { "name": "PlayerKnownName", "domain": "Character" },
     { "name": "PlayerList", "domain": "Social" },
     { "name": "PlayerMarket", "domain": "Economy" },
     { "name": "PlayerName", "domain": "Character" },

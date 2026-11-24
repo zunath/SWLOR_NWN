@@ -99,21 +99,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/PlayerIntroductionService.cs",
-    "Line": 66,
+    "Line": 68,
     "Member": "Introduce",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(presenter, ColorToken.Red(error))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/PlayerIntroductionService.cs",
-    "Line": 88,
+    "Line": 90,
     "Member": "Introduce",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(observer,\n                        $\"{_playerName.GetColoredDisplayName(observer, presenter)} introduces themselves as '{name}'. \" +\n                        \"Use /introductions to remember or dismiss this name. Your private label stays unchanged until you accept.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/PlayerIntroductionService.cs",
-    "Line": 93,
+    "Line": 95,
     "Member": "Introduce",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(presenter, ColorToken.Green(\n                $\"You introduced yourself as '{name}' to nearby players. They choose whether to remember this name.\"))"

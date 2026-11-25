@@ -48,6 +48,9 @@ public class CombatPartForwardingTests
         typeof(ICombatDefenseMemoryService),
         typeof(ICombatFeedbackService),
         typeof(ICombatDealtEffectsService),
+        typeof(ICombatAutoAttackEffectsService),
+        typeof(ICombatCriticalHitEffectsService),
+        typeof(ICombatDefeatedEnemyEffectsService),
         typeof(ICombatHitEffectsService),
         typeof(ICombatTriggeredDamageService),
         typeof(ICombatQueriesService),
@@ -110,13 +113,14 @@ public class CombatPartForwardingTests
     [TestCase(typeof(ICombatAbilityHitAdjustmentService), "CalculateAbilityCriticalRating(criticalRateAdjustment=0, defender=2130706432)")]
     [TestCase(typeof(ICombatAbilityHitAdjustmentService), "GetAbilityCriticalRate(criticalRateAdjustment=0, defender=2130706432)")]
     [TestCase(typeof(ICombatAbilityHitService), "TryResolveAbilityHit(hitChancePercentAdjustment=0, skillLevelOverride=-1, statOverride=Invalid, accuracyFlatAdjustment=0)")]
-    [TestCase(typeof(ICombatHitEffectsService), "ApplyAutoAttackDamageModifiers(skillType=Invalid)")]
+    [TestCase(typeof(ICombatAutoAttackEffectsService), "ApplyAutoAttackDamageModifiers(skillType=Invalid)")]
     [TestCase(typeof(ICombatHitEffectsService), "ApplyDamageDealtEffects(skillType=Invalid, damageType=Physical, deliveryType=Direct, isAbilityDamage=False, allowsHitProcs=True)")]
-    [TestCase(typeof(ICombatHitEffectsService), "ApplyCriticalHitEffects(isSingleTargetImpact=False, skillType=Invalid)")]
-    [TestCase(typeof(ICombatHitEffectsService), "ApplyDefeatedEnemyEffects(defeated=2130706432)")]
+    [TestCase(typeof(ICombatCriticalHitEffectsService), "ApplyCriticalHitEffects(isSingleTargetImpact=False, skillType=Invalid)")]
+    [TestCase(typeof(ICombatDefeatedEnemyEffectsService), "ApplyDefeatedEnemyEffects(defeated=2130706432)")]
     [TestCase(typeof(ICombatTriggeredDamageService), "ApplyTriggeredDamage(skillType=Invalid, typedLeadershipReductionAlreadyApplied=False, targetStatusDamagePercentAdjustment=null, outgoingModifiersAlreadyApplied=False)")]
     public void TheMovedHitDefaultsKeepTheirValues(Type part, string expected) =>
-        AssertMovedDefaults(part, expected, 9, typeof(ICombatAbilityHitService), typeof(ICombatAbilityHitAdjustmentService), typeof(ICombatHitEffectsService), typeof(ICombatTriggeredDamageService));
+        AssertMovedDefaults(part, expected, 9, typeof(ICombatAbilityHitService), typeof(ICombatAbilityHitAdjustmentService), typeof(ICombatHitEffectsService), typeof(ICombatAutoAttackEffectsService),
+            typeof(ICombatCriticalHitEffectsService), typeof(ICombatDefeatedEnemyEffectsService), typeof(ICombatTriggeredDamageService));
 
     // The members of the damage taken part that have default arguments, with the defaults they had as static members of
     // Combat, on the interface and the instance class alike.
@@ -186,7 +190,8 @@ public class CombatPartForwardingTests
     [Test]
     public void TheRecentDamageTargetsTheHitEffectsAndDamageTakenPartsReadAreTheActivityPartsOwnTable()
     {
-        // Both readers of the table take the activity part.
+        // The readers of the table take the activity part: the damage taken effects part and the defeated enemy part, which took
+        // the read from the hit effects part (that part still holds the activity part).
         using var facades = new FacadeContainer();
         using var installed = facades.Install();
         var activity = facades.Get<ICombatActivityService>();
@@ -196,6 +201,8 @@ public class CombatPartForwardingTests
         table.Should().BeSameAs(typeof(CombatActivityService).GetField("_recentDamageTargets", Instance)!.GetValue(activity));
         ((object)activity.RecentDamageTargets).Should().BeSameAs(table, "every read returns the same table, so a prune is seen by the next read");
         typeof(CombatHitEffectsService).GetField("_combatActivity", Instance)!.GetValue(facades.Get<ICombatHitEffectsService>())
+            .Should().BeSameAs(activity);
+        typeof(CombatDefeatedEnemyEffectsService).GetField("_combatActivity", Instance)!.GetValue(facades.Get<ICombatDefeatedEnemyEffectsService>())
             .Should().BeSameAs(activity);
         typeof(CombatDamageTakenEffectsService).GetField("_combatActivity", Instance)!.GetValue(facades.Get<ICombatDamageTakenEffectsService>())
             .Should().BeSameAs(activity);

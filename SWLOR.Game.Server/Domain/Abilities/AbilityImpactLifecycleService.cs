@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly ICombatQueuedAbilityBonusService _queuedAbilityBonus;
         private readonly ICombatAbilityImpactService _abilityImpact;
         private readonly ICombatResourcesService _resources;
-        private readonly ICombatHitEffectsService _hitEffects;
+        private readonly ICombatCriticalHitEffectsService _criticalHitEffects;
 
         public AbilityImpactLifecycleService(
             IAbilityImpactState impactState,
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             ICombatQueuedAbilityBonusService queuedAbilityBonus,
             ICombatAbilityImpactService abilityImpact,
             ICombatResourcesService resources,
-            ICombatHitEffectsService hitEffects)
+            ICombatCriticalHitEffectsService criticalHitEffects)
         {
             _impactState = impactState;
             _meleeTechnique = meleeTechnique;
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _queuedAbilityBonus = queuedAbilityBonus;
             _abilityImpact = abilityImpact;
             _resources = resources;
-            _hitEffects = hitEffects;
+            _criticalHitEffects = criticalHitEffects;
         }
 
         /// <summary>
@@ -450,6 +450,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         protected virtual int ConsumePersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType) => _abilityBonus.ConsumePersistentNextSkillAbilityCriticalRateBonus(creature, skillType);
 
-        protected virtual void ApplyNonCriticalAbilityEffects(uint activator, uint target, SkillType skillType) => _hitEffects.ApplyNonCriticalAbilityEffects(activator, target, skillType);
+        protected virtual void ApplyNonCriticalAbilityEffects(uint activator, uint target, SkillType skillType) => _criticalHitEffects.ApplyNonCriticalAbilityEffects(activator, target, skillType);
     }
 }

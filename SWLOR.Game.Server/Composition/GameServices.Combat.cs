@@ -40,6 +40,15 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The ability impact part of combat, a part of combat.</summary>
         public static ICombatAbilityImpactService CombatAbilityImpact => FacadeAccessor.Resolve<ICombatAbilityImpactService>();
 
+        /// <summary>The damage bonuses an ability hit reads before its damage, a part of combat.</summary>
+        public static ICombatAbilityDamageBonusService CombatAbilityDamageBonus => FacadeAccessor.Resolve<ICombatAbilityDamageBonusService>();
+
+        /// <summary>What an ability hit sets off at hit time, and the effects of a finished impact, a part of combat.</summary>
+        public static ICombatAbilityHitRidersService CombatAbilityHitRiders => FacadeAccessor.Resolve<ICombatAbilityHitRidersService>();
+
+        /// <summary>The area abilities and the damage riders of an ability hit, a part of combat.</summary>
+        public static ICombatAbilityAreaImpactService CombatAbilityAreaImpact => FacadeAccessor.Resolve<ICombatAbilityAreaImpactService>();
+
         /// <summary>How Force affinity and combat readiness scale an ability's magnitude, a part of combat.</summary>
         public static ICombatAbilityMagnitudeService CombatAbilityMagnitude => FacadeAccessor.Resolve<ICombatAbilityMagnitudeService>();
 

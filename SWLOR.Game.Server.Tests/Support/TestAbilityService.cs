@@ -26,7 +26,7 @@ public sealed class TestAbilityService : AbilityService
         ITelegraphService telegraph,
         INamedAnimationService namedAnimation)
         : base(impactState, lifecycle, targetImpact, impactMessage, impactVisual, geometry, telegraph, namedAnimation,
-            FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatAbilityImpactService>())
+            FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatAbilityHitRidersService>())
     {
         _bench = bench;
     }

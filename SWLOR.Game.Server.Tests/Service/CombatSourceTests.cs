@@ -421,8 +421,9 @@ public class CombatSourceTests
     [TestCase("_areaAbilityTargetHitSequences")]
     public void ReflectionReachesTheImpactTablesOfTheInstalledContainer(string name)
     {
-        // The same-target hit counts and the area ability hit sequences moved from static fields of Combat to the instance; a
-        // test that reads one by name gets the installed container's table, which Combat's forget forwarder clears.
+        // The same-target hit counts and the area ability hit sequences moved from static fields of Combat to the instance (the hit
+        // riders part and the area impact part); a test that reads one by name gets the installed container's table, which the impact
+        // part's forget step clears through them.
         using var facades = new FacadeContainer();
         using var installed = facades.Install();
 
@@ -430,14 +431,17 @@ public class CombatSourceTests
         field.Should().NotBeNull();
         field!.IsStatic.Should().BeFalse();
         field.IsInitOnly.Should().BeTrue();
-        field.DeclaringType.Should().Be(typeof(CombatAbilityImpactService));
+        var isCounts = name == "_sameTargetHostileAbilityHitCounts";
+        field.DeclaringType.Should().Be(isCounts ? typeof(CombatAbilityHitRidersService) : typeof(CombatAbilityAreaImpactService));
         var table = CombatMembers.FieldValue<System.Collections.IDictionary>(name);
-        table.Should().BeSameAs(field.GetValue(facades.Get<ICombatAbilityImpactService>()));
+        table.Should().BeSameAs(isCounts
+            ? field.GetValue(facades.Get<ICombatAbilityHitRidersService>())
+            : field.GetValue(facades.Get<ICombatAbilityAreaImpactService>()));
 
         // The hit sequence state moved with its table; Combat keeps no copy of the type either.
         var value = name == "_sameTargetHostileAbilityHitCounts"
             ? (object)1
-            : Activator.CreateInstance(typeof(CombatAbilityImpactService).GetNestedType("TargetHitSequenceState", BindingFlags.NonPublic)!)!;
+            : Activator.CreateInstance(typeof(CombatAbilityAreaImpactService).GetNestedType("TargetHitSequenceState", BindingFlags.NonPublic)!)!;
 
         // A record put into the reflected table is the one the part's forget step clears.
         const uint creature = 0xFFFFFFF3;
@@ -453,16 +457,17 @@ public class CombatSourceTests
     [TestCase("ApplyAreaAbilityPulse")]
     public void ReflectionReachesTheImpactPartsPrivateHelpersOnTheInstalledContainer(string name)
     {
-        // AreaAbilityFragmentationTests and StatAdjustmentSourceTests call these by name; they are private members of the
-        // impact part now, with no forwarder on Combat, and CombatMembers calls them on the installed container's instance.
+        // AreaAbilityFragmentationTests and StatAdjustmentSourceTests call these by name; they are members of the area impact
+        // part now (the pulse is public, since the impact part calls it), and CombatMembers calls them on the installed container's instance.
         using var facades = new FacadeContainer();
         using var installed = facades.Install();
 
         var method = CombatMembers.FindMethod(name);
         method.Should().NotBeNull();
-        method!.IsStatic.Should().BeFalse("only the impact part has it");
-        method.IsPrivate.Should().BeTrue();
-        method.DeclaringType.Should().Be(typeof(CombatAbilityImpactService));
+        method!.IsStatic.Should().BeFalse("only the area impact part has it");
+        if (name != "ApplyAreaAbilityPulse")
+            method.IsPrivate.Should().BeTrue();
+        method.DeclaringType.Should().Be(typeof(CombatAbilityAreaImpactService));
     }
 
     [Test]

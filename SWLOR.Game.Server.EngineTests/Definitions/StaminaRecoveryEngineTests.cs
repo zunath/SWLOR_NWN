@@ -205,7 +205,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
                 try
                 {
                     ctx.AssertEqual(3, summary.ImpactedTargetCount, "the real area hits three enemies");
-                    GameServices.CombatAbilityImpact.ApplyAbilityImpactEffects(player, summary);
+                    GameServices.CombatAbilityHitRiders.ApplyAbilityImpactEffects(player, summary);
                     ctx.AssertEqual(24, Stat.GetCurrentStamina(player), "nine paid, six authored plus six passive requested, eight refunded");
                 }
                 finally { GameServices.CombatResources.CompleteAbilityStaminaCostContext(player, ability); }

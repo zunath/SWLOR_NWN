@@ -67,6 +67,21 @@ public class AppearanceEditorLayoutTests
     // ------------------------------------------------------------------ whole window
 
     [Test]
+    public void SettingsExposeFourHeadRowsWithMinusPlusAndReadout()
+    {
+        var widgets = Walk(_partials[AppearanceEditorViewModel.SettingsPartial]).ToArray();
+        foreach (var id in new[] { "ae_head", "ae_head_x", "ae_head_y", "ae_head_z" })
+        {
+            widgets.Should().ContainSingle(w => w.Id == id + "_decrease");
+            widgets.Should().ContainSingle(w => w.Id == id + "_increase");
+            widgets.Should().ContainSingle(w => w.Id == id + "_value");
+        }
+        var reset = widgets.Single(w => w.Id == "ae_head_reset");
+        reset.Events.Values.Should().ContainSingle(e => e.Method.Name == nameof(AppearanceEditorViewModel.OnResetHead));
+        _window.LayoutFindings.Should().BeEmpty();
+    }
+
+    [Test]
     public void EveryPartialIsDefinedAndHasNoLayoutFindings()
     {
         _partials.Keys.Should().Contain(AllPanels.Append(WindowMain));
@@ -171,8 +186,9 @@ public class AppearanceEditorLayoutTests
         column.Should().BeOfType<GuiColumn<AppearanceEditorViewModel>>();
 
         var rows = column.Elements.ToList();
-        Walk(partial).OfType<GuiComboBox<AppearanceEditorViewModel>>().Where(combo => combo.Id != "ae_quick_outfit")
-            .Should().BeEmpty("the equipment slots are tabs, not a list");
+        Walk(partial).OfType<GuiComboBox<AppearanceEditorViewModel>>()
+            .Where(combo => combo.Id != "ae_quick_outfit")
+            .Should().BeEmpty("equipment slots stay tabs; only outfit and head-color choices use combos");
         if (partialName == AppearanceEditorViewModel.EditorMainPartial)
         {
             // No hidden rows above the editors: a hidden row still takes up height.
@@ -570,18 +586,29 @@ public class AppearanceEditorLayoutTests
     public void AppearanceSwatchesBindRegionTintCustomAndSelected()
     {
         var main = _partials[AppearanceEditorViewModel.EditorMainPartial];
-        var expected = new[]
+        foreach (var side in new[] { "Left", "Right" })
         {
-            ("Skin", "gui_pal_skin"), ("Hair", "gui_pal_hair01"), ("Tattoo1", "gui_pal_tattoo"), ("Tattoo2", "gui_pal_tattoo")
-        };
-        for (var index = 0; index < expected.Length; index++)
-        {
-            var (name, texture) = expected[index];
-            var swatch = Walk(main).Single(widget => widget.Id == $"ae_body_swatch_{name}");
-            AssertSwatch(main, swatch, $"Body{name}", texture);
-            AssertSingleHandler(swatch, "click", nameof(AppearanceEditorViewModel.OnClickBodySwatch), (typeof(int), index));
+            var swatch = Walk(main).Single(widget => widget.Id == "ae_body_swatch_" + side.ToLowerInvariant());
+            var name = "HeadSwatch" + side;
+            ReadProperty<string>(swatch, "IsVisibleBindName").Should().Be(name + "Visible");
+            ReadProperty<string>(swatch, "VisibilityOverrideBindName").Should().Be(name + "Visible",
+                "each column needs its own final visibility vector for an odd channel count");
+            ReadProperty<string>(swatch, "IsEncouragedBindName").Should().Be(name + "Selected");
+            var items = DrawItems(swatch).ToArray();
+            items.Should().HaveCount(4);
+            ReadProperty<string>(items[0], "TextBindName").Should().Be(name + "Label");
+            ReadProperty<string>(items[1], "ResrefBindName").Should().Be(name + "Texture");
+            ReadProperty<string>(items[1], "DrawTextureRegionBindName").Should().Be(name + "Region");
+            ReadProperty<string>(items[2], "IsEnabledBindName").Should().Be(name + "Custom");
+            ReadProperty<string>(items[2], "ColorBindName").Should().Be(name + "Tint");
+            ReadProperty<string>(items[3], "IsEnabledBindName").Should().Be(name + "Selected");
+            swatch.Events.Keys.Should().BeEquivalentTo("click", "mousedown");
+            AssertHandler(swatch.Events["mousedown"], nameof(AppearanceEditorViewModel.OnMouseDownHeadColorSwatch),
+                (typeof(int), side == "Left" ? 0 : 1));
+            AssertHandler(swatch.Events["click"], nameof(AppearanceEditorViewModel.OnClickHeadColorSwatch),
+                (typeof(int), side == "Left" ? 0 : 1));
         }
-        Walk(main).Where(widget => widget.Id?.Contains("_swatch_") == true).Should().HaveCount(4);
+        Walk(main).Where(widget => widget.Id?.Contains("_swatch_") == true).Should().HaveCount(2);
     }
 
     [Test]
@@ -711,7 +738,8 @@ public class AppearanceEditorLayoutTests
         {
             foreach (var (suffix, type) in new[]
                      {
-                         ("Image", typeof(string)), ("Visible", typeof(bool)), ("Selected", typeof(bool)), ("Label", typeof(string))
+                         ("Image", typeof(string)), ("Visible", typeof(bool)), ("Selected", typeof(bool)),
+                         ("Label", typeof(string)), ("Detail", typeof(string))
                      })
                 typeof(AppearancePartBrowserViewModel).GetProperty($"Tile{tile}{suffix}")!.PropertyType.Should().Be(type);
 
@@ -795,6 +823,12 @@ public class AppearanceEditorLayoutTests
         Walk(settings).OfType<GuiRow<AppearanceEditorViewModel>>()
             .Should().OnlyContain(row => Width(row) == 0f && NaturalWidth(row) <= 256f,
                 "fixed controls must leave the surrounding spacers free to follow the client width");
+        foreach (var id in new[] { "ae_head_value", "ae_head_x_value", "ae_head_y_value", "ae_head_z_value" })
+        {
+            var value = Walk(settings).Single(widget => widget.Id == id);
+            NaturalWidth(PathTo(settings, value).OfType<GuiRow<AppearanceEditorViewModel>>().Last())
+                .Should().BeLessThanOrEqualTo(208f, "head values must leave room for native margins and the scrollbar in a 300px client window");
+        }
     }
 
     [Test]
@@ -817,6 +851,19 @@ public class AppearanceEditorLayoutTests
         _window.LayoutFindings.Should().BeEmpty();
     }
 
+    [Test]
+    public void HeadAccessoryColorsRemainSelectableInTheBodyMapLayout()
+    {
+        var panel = _partials[AppearanceEditorViewModel.EditorMainPartial];
+        var picker = Walk(panel).Single(widget => widget.Id == "ae_head_color_swatches");
+        picker.Should().BeOfType<GuiList<AppearanceEditorViewModel>>();
+        ReadProperty<string>(picker, "RowCountBindName").Should().Be(nameof(AppearanceEditorViewModel.HeadSwatchLeftLabel) + "_RowCount");
+        ReadProperty<float>(picker, "RowHeight").Should().Be(24f);
+        ReadProperty<float>(picker, "Height").Should().Be(150f, "five compact rows fit all ten head channels without moving the palette");
+        Walk(panel).Should().NotContain(widget => widget.Id == "ae_head_color_channel");
+        _window.LayoutFindings.Should().BeEmpty();
+    }
+
     // ------------------------------------------------------------------ helpers
 
     private static void AssertBrowserHandler(IGuiWidget widget, string method, params (Type Type, object Value)[] arguments)
@@ -829,54 +876,7 @@ public class AppearanceEditorLayoutTests
             .Should().Equal(arguments.Select(argument => (argument.Type, argument.Value)));
     }
 
-    private static void AssertSwatch(IGuiWidget root, IGuiWidget swatch, string name, string texture)
-    {
-        foreach (var (suffix, type) in new[]
-                 {
-                     ("Region", typeof(GuiRectangle)), ("Tint", typeof(GuiColor)), ("Custom", typeof(bool)),
-                     ("Selected", typeof(bool))
-                 })
-            typeof(AppearanceEditorViewModel).GetProperty(name + suffix)!.PropertyType.Should().Be(type, name + suffix);
 
-        swatch.Should().BeOfType<GuiButton<AppearanceEditorViewModel>>();
-        ReadProperty<string>(swatch, "IsEncouragedBindName").Should().Be(name + "Selected");
-        var items = DrawItems(swatch).ToArray();
-        items.Should().HaveCount(3, $"{name}: palette crop, custom RGB fill and selection outline");
-
-        var image = items[0].Should().BeOfType<GuiDrawListItemImage<AppearanceEditorViewModel>>().Which;
-        ReadProperty<string>(image, "Resref").Should().Be(texture);
-        ReadProperty<string>(image, "DrawTextureRegionBindName").Should().Be(name + "Region");
-
-        var fill = items[1].Should().BeOfType<GuiDrawListItemPolyLine<AppearanceEditorViewModel>>().Which;
-        ReadProperty<string>(fill, "ColorBindName").Should().Be(name + "Tint");
-        ReadProperty<string>(fill, "IsEnabledBindName").Should().Be(name + "Custom");
-        ReadProperty<bool>(fill, "IsFilled").Should().BeTrue();
-
-        var outline = items[2].Should().BeOfType<GuiDrawListItemPolyLine<AppearanceEditorViewModel>>().Which;
-        ReadProperty<string>(outline, "IsEnabledBindName").Should().Be(name + "Selected");
-        ReadProperty<bool>(outline, "IsFilled").Should().BeFalse();
-
-        var row = PathTo(root, swatch).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
-        row.Elements.OfType<GuiLabel<AppearanceEditorViewModel>>()
-            .Should().NotContain(label => ReadProperty<string>(label, "TextBindName") != null, "codes sit over the swatches, not beside them");
-        if (!name.StartsWith("SelectedPart", StringComparison.Ordinal))
-        {
-            typeof(AppearanceEditorViewModel).GetProperty(name + "Code").Should().BeNull(
-                "only part swatches show codes; the item and body rows stay compact");
-            return;
-        }
-
-        // The palette code (P4) or "RGB" is in the row over the swatch, in the swatch's column.
-        typeof(AppearanceEditorViewModel).GetProperty(name + "Code")!.PropertyType.Should().Be(typeof(string));
-        var column = PathTo(root, row).OfType<GuiColumn<AppearanceEditorViewModel>>().Last();
-        var codeRow = column.Elements[column.Elements.IndexOf(row) - 1];
-        var codes = codeRow.Elements.OfType<GuiLabel<AppearanceEditorViewModel>>().ToArray();
-        var position = row.Elements.OfType<GuiButton<AppearanceEditorViewModel>>().ToList().IndexOf((GuiButton<AppearanceEditorViewModel>)swatch);
-        ReadProperty<string>(codes[position], "TextBindName").Should().Be(name + "Code");
-        Width(codes[position]).Should().Be(Width(swatch) + 4f, "the code is centred over its swatch");
-        ReadProperty<string>(codeRow, "IsVisibleBindName").Should().Be(ReadProperty<string>(row, "IsVisibleBindName"),
-            "a code row shows and hides with its swatch row");
-    }
 
     private static string[] OutlineBindings(IGuiWidget widget) => DrawItems(widget)
         .Where(item => item.GetType().Name.StartsWith("GuiDrawListItemPolyLine", StringComparison.Ordinal))
@@ -1007,5 +1007,53 @@ public class AppearanceEditorLayoutTests
                 return (T)property.GetValue(target)!;
         }
         throw new InvalidOperationException($"Missing widget metadata {target.GetType().Name}.{name}");
+    }
+    private static void AssertSwatch(IGuiWidget root, IGuiWidget swatch, string name, string texture)
+    {
+        foreach (var (suffix, type) in new[]
+                 {
+                     ("Region", typeof(GuiRectangle)), ("Tint", typeof(GuiColor)), ("Custom", typeof(bool)),
+                     ("Selected", typeof(bool))
+                 })
+            typeof(AppearanceEditorViewModel).GetProperty(name + suffix)!.PropertyType.Should().Be(type, name + suffix);
+
+        swatch.Should().BeOfType<GuiButton<AppearanceEditorViewModel>>();
+        ReadProperty<string>(swatch, "IsEncouragedBindName").Should().Be(name + "Selected");
+        var items = DrawItems(swatch).ToArray();
+        items.Should().HaveCount(3, $"{name}: palette crop, custom RGB fill and selection outline");
+
+        var image = items[0].Should().BeOfType<GuiDrawListItemImage<AppearanceEditorViewModel>>().Which;
+        ReadProperty<string>(image, "Resref").Should().Be(texture);
+        ReadProperty<string>(image, "DrawTextureRegionBindName").Should().Be(name + "Region");
+
+        var fill = items[1].Should().BeOfType<GuiDrawListItemPolyLine<AppearanceEditorViewModel>>().Which;
+        ReadProperty<string>(fill, "ColorBindName").Should().Be(name + "Tint");
+        ReadProperty<string>(fill, "IsEnabledBindName").Should().Be(name + "Custom");
+        ReadProperty<bool>(fill, "IsFilled").Should().BeTrue();
+
+        var outline = items[2].Should().BeOfType<GuiDrawListItemPolyLine<AppearanceEditorViewModel>>().Which;
+        ReadProperty<string>(outline, "IsEnabledBindName").Should().Be(name + "Selected");
+        ReadProperty<bool>(outline, "IsFilled").Should().BeFalse();
+
+        var row = PathTo(root, swatch).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
+        row.Elements.OfType<GuiLabel<AppearanceEditorViewModel>>()
+            .Should().NotContain(label => ReadProperty<string>(label, "TextBindName") != null, "codes sit over the swatches, not beside them");
+        if (!name.StartsWith("SelectedPart", StringComparison.Ordinal))
+        {
+            typeof(AppearanceEditorViewModel).GetProperty(name + "Code").Should().BeNull(
+                "only part swatches show codes; the item and body rows stay compact");
+            return;
+        }
+
+        // The palette code (P4) or "RGB" is in the row over the swatch, in the swatch's column.
+        typeof(AppearanceEditorViewModel).GetProperty(name + "Code")!.PropertyType.Should().Be(typeof(string));
+        var column = PathTo(root, row).OfType<GuiColumn<AppearanceEditorViewModel>>().Last();
+        var codeRow = column.Elements[column.Elements.IndexOf(row) - 1];
+        var codes = codeRow.Elements.OfType<GuiLabel<AppearanceEditorViewModel>>().ToArray();
+        var position = row.Elements.OfType<GuiButton<AppearanceEditorViewModel>>().ToList().IndexOf((GuiButton<AppearanceEditorViewModel>)swatch);
+        ReadProperty<string>(codes[position], "TextBindName").Should().Be(name + "Code");
+        Width(codes[position]).Should().Be(Width(swatch) + 4f, "the code is centred over its swatch");
+        ReadProperty<string>(codeRow, "IsVisibleBindName").Should().Be(ReadProperty<string>(row, "IsVisibleBindName"),
+            "a code row shows and hides with its swatch row");
     }
 }

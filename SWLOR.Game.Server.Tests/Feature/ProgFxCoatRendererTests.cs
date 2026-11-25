@@ -72,6 +72,23 @@ public class ProgFxCoatRendererTests
         ProgFxCoatRenderer.GetCoatForProgFxRow(type, texture).Should().Be(expected);
     }
 
+    [TestCase(0)]
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    [TestCase(4)]
+    [TestCase(5)]
+    public void LodRefreshChangesTheUniformWithoutChangingTheCoatingCell(int coat)
+    {
+        var first = ProgFxCoatRenderer.GetShaderCoat(coat, 0);
+        var next = ProgFxCoatRenderer.GetShaderCoat(coat, 1);
+        first.Should().Be(coat);
+        next.Should().NotBe(first);
+        ((int)MathF.Floor(next + 0.5f)).Should().Be(coat);
+        (next > 0.5f).Should().Be(coat > 0);
+        ProgFxCoatRenderer.GetShaderCoat(coat, 2).Should().Be(first);
+    }
+
     [Test]
     public void GetCoatedMaterials_AddsTheCoatOnlyMaterialsOfRenderedModels()
     {

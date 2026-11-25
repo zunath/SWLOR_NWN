@@ -29,7 +29,8 @@ import numpy as np
 from PIL import Image
 
 from . import VIEWS, preview_resref
-from .jobs import CLOAK_ATLAS_PREFIX, REPO, build
+from .jobs import CLOAK_ATLAS_PREFIX, REPO, build, two_da
+from .heads import bake_head, resources as head_resources
 from .resources import HakIndex
 from .tint import PREVIEW_DYES, bake, cloak_tile, plain_texture, read_tint_map, save_for_blender
 
@@ -176,12 +177,14 @@ def prepare_textures(index: HakIndex, materials, work: Path, palette: Path) -> d
             result[material] = {"color": str(color), "metal": str(metal), "sources": atlas_names + [palette.name]}
     materials = [m for m in materials if not m.startswith(CLOAK_ATLAS_PREFIX)]
     index.extract([m + ".mtr" for m in materials] + [m + ".txi" for m in materials], raw)
-    sources, cutouts = {}, set()
+    sources, cutouts, heads = {}, set(), {}
     for material in materials:
         mtr = raw / f"{material}.mtr"
         tint = None
         if mtr.exists():
             text = mtr.read_text(errors="ignore")
+            if re.search(r"(?im)^\s*customshaderFS\s+fs_head_", text):
+                heads[material] = text
             found = re.search(r"^\s*texture7\s+(\S+)", text, re.M)
             tint = found[1].lower() if found else None
             if is_see_through(text):
@@ -192,21 +195,43 @@ def prepare_textures(index: HakIndex, materials, work: Path, palette: Path) -> d
         sources[material] = [f"{tint}.dds", f"{tint}.tga"] if tint else []
         sources[material] += [f"{material}.plt", f"{material}.dds", f"{material}.tga"]
     index.extract([name for names in sources.values() for name in names], raw)
+    defaults = {}
+    if heads:
+        index.extract(["headtintdefs.2da"], raw)
+        table = raw / "headtintdefs.2da"
+        if table.is_file():
+            for row in two_da(table):
+                material, channel, value = row["MATERIAL"].lower(), int(row["LAYER"]), int(row["COLOR"])
+                values = defaults.setdefault(material, {})
+                if channel in values and values[channel] != value:
+                    raise ValueError(f"Conflicting head preview defaults for {material}, layer {channel}")
+                values[channel] = value
+        index.extract([f"{name}.{ext}" for text in heads.values()
+                       for name in head_resources(text).values() for ext in ("dds", "tga")], raw)
     for material, names in sources.items():
         source = next((raw / n for n in names if (raw / n).exists()), None)
         if source is None:
             continue
-        tinted = source.name.startswith("tm_") or source.suffix == ".plt"
-        cutout = material in cutouts and not tinted
+        tinted = material in heads or source.name.startswith("tm_") or source.suffix == ".plt"
+        cutout = material in heads or material in cutouts and not tinted
         color = baked / f"{material}_{'a' if cutout else 'c'}.png"
         metal = baked / f"{material}_m.png"
         used = [f"{material}.mtr", f"{material}.txi", source.name, palette.name]
+        inputs = {}
+        if material in heads:
+            for slot, name in head_resources(heads[material]).items():
+                path = next((raw / f"{name}.{ext}" for ext in ("dds", "tga") if (raw / f"{name}.{ext}").exists()), None)
+                if path:
+                    inputs[slot] = path
+            used += ["headtintdefs.2da", *(path.name for path in inputs.values())]
         entry = {"color": str(color), "metal": str(metal) if tinted else None, "cutout": cutout, "sources": used}
         if color.exists():
             result[material] = entry
             continue
         try:
-            if tinted:
+            if tinted and material in heads:
+                save_for_blender(*bake_head(source, palette, heads[material], inputs, defaults.get(material, {})), color, metal)
+            elif tinted:
                 save_for_blender(*bake(*read_tint_map(source), palette), color, metal)
             else:
                 plain_texture(source, color, keep_alpha=cutout)

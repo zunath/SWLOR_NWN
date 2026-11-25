@@ -115,11 +115,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         public static void Apply(
             uint creature,
             IReadOnlyList<TintMapMaterialSelection> selections,
-            bool shaderOverridesReset)
+            bool shaderOverridesReset,
+            int refreshSequence = 0)
         {
             var coat = GetCoat(creature);
             if (coat != 0 || !shaderOverridesReset)
-                WriteCoat(creature, selections, coat);
+                WriteCoat(creature, selections, GetShaderCoat(coat, refreshSequence));
         }
 
         /// <summary>
@@ -208,6 +209,15 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         }
 
         /// <summary>
+        /// Force replay to a newly loaded LOD without changing the shader's rounded atlas cell.
+        /// Zero stays below the coating threshold and ordinary refreshes retain exact integers.
+        /// </summary>
+        public static float GetShaderCoat(int coat, int refreshSequence)
+        {
+            return coat + ((refreshSequence & 1) == 0 ? 0f : 0.0001f);
+        }
+
+        /// <summary>
         /// The materials that take the coat: every tint material the creature renders, plus the
         /// coat-only materials its models bind.
         /// </summary>
@@ -229,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 .ToList();
         }
 
-        private static void WriteCoat(uint creature, IReadOnlyList<TintMapMaterialSelection> selections, int coat)
+        private static void WriteCoat(uint creature, IReadOnlyList<TintMapMaterialSelection> selections, float coat)
         {
             foreach (var material in GetCoatedMaterials(selections, _coatOnlyMaterialsByModel))
             {

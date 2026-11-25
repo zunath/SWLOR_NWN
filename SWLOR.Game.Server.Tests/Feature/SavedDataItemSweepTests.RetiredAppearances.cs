@@ -107,6 +107,19 @@ public partial class SavedDataItemSweepTests
         EnzymeBaseItemMigration.MigrateSavedObject(creature, out _).Should().BeFalse();
     }
 
+    [TestCase(AppearanceType.Human, 258)]
+    [TestCase(AppearanceType.Cathar, 21)]
+    [TestCase(AppearanceType.Cathar, 22)]
+    [TestCase(AppearanceType.Cathar, 23)]
+    public void RetiredAppearances_PreserveApprovedCuHeads(AppearanceType appearance, int head)
+    {
+        var creature = Encode(Node(0, Parts(("Appearance_Head", head)).Concat(new[]
+            { Scalar(2, "Appearance_Type", (int)appearance), Scalar(0, "Gender", 1) }).ToArray()), "BIC ");
+        EnzymeBaseItemMigration.MigrateSavedObject(creature, out _).Should().BeFalse();
+        RacialAppearanceRegistry.TryGet(appearance, out var definition).Should().BeTrue();
+        definition.FemaleHeads.Should().Contain(head);
+    }
+
     [Test]
     public void RetiredAppearances_UseTheRecordedSpeciesForACharacterSavedInSpace()
     {

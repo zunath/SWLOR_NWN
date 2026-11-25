@@ -57,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // ---------------- selected part bindings ----------------
         public string PartPreviewImage { get => Get<string>(); set => Set(value); }
         public string PartPreviewLabel { get => Get<string>(); set => Set(value); }
+        public string PartPreviewDetail { get => Get<string>(); set => Set(value); }
         /// <summary>The worn part's number, drawn in the corner of its picture.</summary>
         public string PartPreviewNumber { get => Get<string>(); set => Set(value); }
         public bool IsPartPreviewEnabled { get => Get<bool>(); set => Set(value); }
@@ -288,6 +289,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PreviewViewText = _previewView.ToString();
             PartPreviewImage = string.Empty;
             PartPreviewLabel = string.Empty;
+            PartPreviewDetail = string.Empty;
             PartPreviewNumber = string.Empty;
             IsPartPreviewEnabled = false;
             foreach (AppearanceEditorSlot slot in Enum.GetValues(typeof(AppearanceEditorSlot)))
@@ -347,7 +349,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var view = _browserFrontOnly ? AppearancePreviewView.Front : _previewView;
             var current = _browserIds.Contains(_browserCurrent) ? _browserCurrent : -1;
             SetIfChanged(nameof(PartPreviewImage), current >= 0 ? AppearancePreview.Picture(_browserKey(current), view) : string.Empty);
-            SetIfChanged(nameof(PartPreviewLabel), current >= 0 ? _browserLabel(current) : string.Empty);
+            var caption = AppearancePartNames.CaptionLines(current >= 0 ? _browserLabel(current) : string.Empty);
+            SetIfChanged(nameof(PartPreviewLabel), caption.First);
+            SetIfChanged(nameof(PartPreviewDetail), caption.Second);
             SetIfChanged(nameof(PartPreviewNumber), current > 0 ? current.ToString() : string.Empty);
             SetIfChanged(nameof(IsPartPreviewEnabled), _browserIds.Count > 0 && _browserApply != null);
             SetIfChanged(nameof(PreviewViewText), view.ToString());
@@ -728,6 +732,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SetIfChanged($"Body{name}Custom", hasCustom);
                 SetIfChanged($"Body{name}Selected", SelectedColorCategoryIndex == index);
             }
+            RefreshHeadColorSwatches();
             RefreshPaletteSelection();
         }
 
@@ -780,7 +785,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickBodySwatch(int index) => () =>
         {
-            if (!IsAppearanceSelected || index < 0 || index >= BodyColorSwatches.Length)
+            if (!IsAppearanceSelected || index < 0 || index >= _appearanceColorLayers.Count)
                 return;
             if (ColorCategorySelected != null && SelectedColorCategoryIndex < ColorCategorySelected.Count)
                 ColorCategorySelected[SelectedColorCategoryIndex] = false;
@@ -804,8 +809,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RefreshPaletteSelection()
         {
             string source = null;
-            if (IsAppearanceSelected && SelectedColorCategoryIndex >= 0 && SelectedColorCategoryIndex < BodyColorSwatches.Length)
-                source = $"Body{BodyColorSwatches[SelectedColorCategoryIndex].Name}";
+            if (IsAppearanceSelected)
+                source = "HeadSelected";
             else if (IsEquipmentSelected && SelectedItemTypeIndex is 0 or 1 or 2)
                 source = $"{(SelectedItemTypeIndex == 0 ? _colorTarget : ColorTarget.Global)}{_selectedColorChannel}";
 

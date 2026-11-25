@@ -97,18 +97,33 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(ReferenceEquals(own[0].Action.Target, Incubation), $"the {script} handler is bound to this build's instance");
             }
 
-            var job = new IncubationJob
+            DeleteScenarioJobs();
+            try
             {
-                ParentPropertyId = PropertyId,
-                PlayerId = TesterId,
-                BeastDNAType = BeastType.Aradile,
-                DateCompleted = DateTime.UtcNow.AddHours(1),
-            };
-            DB.Set(job);
-            ctx.AssertEqual(1, CountJobs(), "the job is stored");
-            EventsPlugin.PushEventData("PROPERTY_ID", PropertyId);
-            EventsPlugin.SignalEvent("SWLOR_DELETE_PROPERTY", GetModule());
-            ctx.AssertEqual(0, CountJobs(), "the property deletion event removes the jobs of the property through this build's handler");
+                var job = new IncubationJob
+                {
+                    ParentPropertyId = PropertyId,
+                    PlayerId = TesterId,
+                    BeastDNAType = BeastType.Aradile,
+                    DateCompleted = DateTime.UtcNow.AddHours(1),
+                };
+                DB.Set(job);
+                ctx.AssertEqual(1, CountJobs(), "the job is stored");
+                EventsPlugin.PushEventData("PROPERTY_ID", PropertyId);
+                EventsPlugin.SignalEvent("SWLOR_DELETE_PROPERTY", GetModule());
+                ctx.AssertEqual(0, CountJobs(), "the property deletion event removes the jobs of the property through this build's handler");
+            }
+            finally
+            {
+                DeleteScenarioJobs();
+            }
+        }
+
+        private void DeleteScenarioJobs()
+        {
+            foreach (var stale in DB.Search(new DBQuery<IncubationJob>()
+                         .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), PropertyId, false)).ToList())
+                DB.Delete<IncubationJob>(stale.Id);
         }
 
         private int CountJobs() => DB.Search(new DBQuery<IncubationJob>()

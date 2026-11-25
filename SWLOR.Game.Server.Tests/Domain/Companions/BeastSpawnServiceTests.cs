@@ -139,19 +139,23 @@ public class BeastSpawnServiceTests : BeastTestBase
         _service.Spawn.SpawnBeast(Player, BeastId, 100);
 
         var beast = FirstCreatedObject;
-        var scripts = _engine.CallsTo("SetEventScript").Select(call => (EventScript)call.Arguments[1]!).ToList();
+        var scripts = _engine.CallsTo("SetEventScript")
+            .Select(call => ((EventScript)call.Arguments[1]!, (string)call.Arguments[2]!))
+            .ToList();
         scripts.Should().BeEquivalentTo(new[]
         {
-            EventScript.Creature_OnBlockedByDoor, EventScript.Creature_OnEndCombatRound, EventScript.Creature_OnDialogue,
-            EventScript.Creature_OnDamaged, EventScript.Creature_OnDeath, EventScript.Creature_OnDisturbed,
-            EventScript.Creature_OnHeartbeat, EventScript.Creature_OnMeleeAttacked, EventScript.Creature_OnRested,
-            EventScript.Creature_OnSpawnIn, EventScript.Creature_OnSpellCastAt, EventScript.Creature_OnUserDefined
-        });
-        _engine.CallsTo("SetEventScript").Select(call => (string)call.Arguments[2]!).Should().Contain(new[]
-        {
-            ScriptName.OnBeastBlocked, ScriptName.OnBeastRoundEnd, ScriptName.OnBeastConversation, ScriptName.OnBeastDamaged,
-            ScriptName.OnBeastDeath, ScriptName.OnBeastDisturbed, ScriptName.OnBeastHeartbeat, ScriptName.OnBeastAttacked,
-            ScriptName.OnBeastRest, ScriptName.OnBeastSpawn, ScriptName.OnBeastSpellCast, ScriptName.OnBeastUserDefined
+            (EventScript.Creature_OnBlockedByDoor, ScriptName.OnBeastBlocked),
+            (EventScript.Creature_OnEndCombatRound, ScriptName.OnBeastRoundEnd),
+            (EventScript.Creature_OnDialogue, ScriptName.OnBeastConversation),
+            (EventScript.Creature_OnDamaged, ScriptName.OnBeastDamaged),
+            (EventScript.Creature_OnDeath, ScriptName.OnBeastDeath),
+            (EventScript.Creature_OnDisturbed, ScriptName.OnBeastDisturbed),
+            (EventScript.Creature_OnHeartbeat, ScriptName.OnBeastHeartbeat),
+            (EventScript.Creature_OnMeleeAttacked, ScriptName.OnBeastAttacked),
+            (EventScript.Creature_OnRested, ScriptName.OnBeastRest),
+            (EventScript.Creature_OnSpawnIn, ScriptName.OnBeastSpawn),
+            (EventScript.Creature_OnSpellCastAt, ScriptName.OnBeastSpellCast),
+            (EventScript.Creature_OnUserDefined, ScriptName.OnBeastUserDefined),
         });
         _engine.CallsTo("ExecuteScript").Single().Arguments.Should().Equal("beast_spawn_script", beast);
     }

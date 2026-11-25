@@ -38,7 +38,6 @@ namespace SWLOR.Game.Server.Domain.Companions
         private readonly Dictionary<int, float> _incubationPercentages = new();
         private int _highestDelta;
 
-        private const string BeastResref = "pc_beast";
         public const int MaxLevel = 50;
         public const string DNAResref = "beast_dna";
         public const string BeastEggResref = "beast_egg";
@@ -53,12 +52,6 @@ namespace SWLOR.Game.Server.Domain.Companions
         public const string BeastLevelVariable = IBeastCorpseInfo.BeastLevelVariable;
 
         private readonly IDBService _db;
-        [ReloadState(ReloadStateKind.Runtime)]
-        private readonly ConcurrentDictionary<string, DayOfWeek> _incubationDayOverrides = new();
-        private readonly IIncubationFieldNoteService _incubationFieldNotes;
-        private readonly IPropertyService _property;
-        private readonly IAIService _ai;
-        private readonly ICombatRecorderService _combatRecorder;
         private readonly ICompanionControlService _companionControl;
         private readonly IGuiService _gui;
         private readonly IItemService _item;
@@ -71,10 +64,6 @@ namespace SWLOR.Game.Server.Domain.Companions
 
         public BeastMasteryService(
             IDBService db,
-            IIncubationFieldNoteService incubationFieldNotes,
-            IPropertyService property,
-            IAIService ai,
-            ICombatRecorderService combatRecorder,
             ICompanionControlService companionControl,
             IGuiService gui,
             IItemService item,
@@ -86,10 +75,6 @@ namespace SWLOR.Game.Server.Domain.Companions
             ICombatDamageCatalogService damageCatalog)
         {
             _db = db;
-            _incubationFieldNotes = incubationFieldNotes;
-            _property = property;
-            _ai = ai;
-            _combatRecorder = combatRecorder;
             _companionControl = companionControl;
             _gui = gui;
             _item = item;
@@ -394,107 +379,8 @@ namespace SWLOR.Game.Server.Domain.Companions
             return _beastXPRequirements[level] + (int)(_beastXPRequirements[level] * (xpPenalty * 0.01f));
         }
 
-        /// <summary>
-        /// Determines whether a player is free to spawn a new companion (beast or droid).
-        /// The game engine only permits one henchman-type associate at a time, so beast and
-        /// droid activation must share this check to prevent an orphaned, master-less companion.
-        /// </summary>
-        /// <param name="player">The player attempting to spawn a companion.</param>
-        /// <returns>An error message if a companion is already active, otherwise an empty string.</returns>
-        public string GetCompanionSlotValidationError(uint player)
-        {
-            if (GetIsObjectValid(GetAssociate(AssociateType.Henchman, player)))
-            {
-                return "Only one companion may be active at a time.";
-            }
 
-            return string.Empty;
-        }
-
-        public void SpawnBeast(uint player, string beastId, int percentHeal)
-        {
-            var companionSlotError = GetCompanionSlotValidationError(player);
-            if (!string.IsNullOrEmpty(companionSlotError))
-            {
-                SendMessageToPC(player, companionSlotError);
-                return;
-            }
-
-            var dbBeast = _db.Get<Beast>(beastId);
-
-            if (dbBeast == null)
-            {
-                SendMessageToPC(player, "Unable to locate beast in DB. Notify an admin.");
-                return;
-            }
-
-            var beastDetail = GetBeastDetail(dbBeast.Type);
-            var beast = CreateObject(ObjectType.Creature, BeastResref, GetLocation(player));
-
-            SetName(beast, dbBeast.Name);
-            SetBeastId(beast, beastId);
-            SetBeastType(beast, dbBeast.Type);
-
-            SetCreatureAppearanceType(beast, beastDetail.Appearance);
-            SetObjectVisualTransform(beast, ObjectVisualTransform.Scale, beastDetail.AppearanceScale);
-            SetPortraitId(beast, dbBeast.PortraitId > -1 ? dbBeast.PortraitId : beastDetail.PortraitId);
-            SetSoundset(beast, dbBeast.SoundSetId > -1 ? dbBeast.SoundSetId : beastDetail.SoundSetId);
-
-            ApplyStats(beast);
-            _ai.SetAIProfile(beast, AIProfileType.BeastCompanion);
-
-            AddHenchman(player, beast);
-
-
-            // Perks
-            foreach (var (perk, level) in dbBeast.Perks)
-            {
-                SyncGrantedFeats(beast, perk, level, false);
-            }
-
-            // Scripts
-            SetEventScript(beast, EventScript.Creature_OnBlockedByDoor, ScriptName.OnBeastBlocked);
-            SetEventScript(beast, EventScript.Creature_OnEndCombatRound, ScriptName.OnBeastRoundEnd);
-            SetEventScript(beast, EventScript.Creature_OnDialogue, ScriptName.OnBeastConversation);
-            SetEventScript(beast, EventScript.Creature_OnDamaged, ScriptName.OnBeastDamaged);
-            SetEventScript(beast, EventScript.Creature_OnDeath, ScriptName.OnBeastDeath);
-            SetEventScript(beast, EventScript.Creature_OnDisturbed, ScriptName.OnBeastDisturbed);
-            SetEventScript(beast, EventScript.Creature_OnHeartbeat, ScriptName.OnBeastHeartbeat);
-            SetEventScript(beast, EventScript.Creature_OnMeleeAttacked, ScriptName.OnBeastAttacked);
-            SetEventScript(beast, EventScript.Creature_OnRested, ScriptName.OnBeastRest);
-            SetEventScript(beast, EventScript.Creature_OnSpawnIn, ScriptName.OnBeastSpawn);
-            SetEventScript(beast, EventScript.Creature_OnSpellCastAt, ScriptName.OnBeastSpellCast);
-            SetEventScript(beast, EventScript.Creature_OnUserDefined, ScriptName.OnBeastUserDefined);
-
-            // Ensure the spawn script gets called as it normally gets skipped
-            // because it doesn't exist at the time of the beast being created.
-            ExecuteScript(GetEventScript(beast, EventScript.Creature_OnSpawnIn), beast);
-
-            // A normal Call Beast spawn requests 100% health. Restore it immediately so the
-            // companion does not appear near death while waiting for the delayed HP correction.
-            if (percentHeal >= 100)
-            {
-                SetCurrentHitPoints(beast, GetMaxHitPoints(beast));
-            }
-
-            AssignCommand(GetModule(), () =>
-            {
-                DelayCommand(4f, () =>
-                {
-                    SetCurrentHitPoints(beast, 1);
-
-                    if (percentHeal > 0)
-                    {
-                        var healHP = (int)(GetMaxHitPoints(beast) * (percentHeal * 0.01f));
-                        using var recorderAttribution = _combatRecorder.BeginSetupAttribution(beast);
-                        ApplyEffectToObject(DurationType.Instant, EffectHeal(healHP), beast);
-                    }
-
-                });
-            });
-        }
-
-        private void ApplyStats(uint beast)
+        public void ApplyStats(uint beast)
         {
             var beastId = GetBeastId(beast);
             var dbBeast = _db.Get<Beast>(beastId);
@@ -551,15 +437,6 @@ namespace SWLOR.Game.Server.Domain.Companions
                     false,
                     false);
             }
-        }
-
-        /// <summary>
-        /// Grants the feats a perk level gives to a creature. <c>Perk.SyncGrantedFeats</c> reads the perk catalog and
-        /// the native feat lists, which a unit test does not load, so a test overrides this.
-        /// </summary>
-        protected virtual void SyncGrantedFeats(uint creature, PerkType perkType, int perkLevel, bool addByLevel)
-        {
-            _perk.SyncGrantedFeats(creature, perkType, perkLevel, addByLevel);
         }
 
         /// <summary>
@@ -996,194 +873,6 @@ namespace SWLOR.Game.Server.Domain.Companions
                 : _incubationPercentages[itemPropertyId];
         }
 
-        [NWNEventHandler(ScriptName.OnIncubatorTerminal)]
-        public void UseIncubator()
-        {
-            var player = GetLastUsedBy();
-            var playerId = GetObjectUUID(player);
-            var incubator = OBJECT_SELF;
-            var dnaManipulationLevel = GetPerkLevel(player, PerkType.DNAManipulation);
-
-            if (dnaManipulationLevel <= 0)
-            {
-                SendMessageToPC(player, $"Perk 'DNA Manipulation I' is required to use incubators.");
-                return;
-            }
-
-            var incubatorPropertyId = _property.GetPropertyId(incubator);
-
-            if (string.IsNullOrWhiteSpace(incubatorPropertyId))
-            {
-                SendMessageToPC(player, $"This incubator cannot be used.");
-                return;
-            }
-
-            var dbQuery = new DBQuery<IncubationJob>()
-                .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), incubatorPropertyId, false);
-            var incubatorJob = _db.Search(dbQuery).FirstOrDefault();
-
-            if (incubatorJob != null && incubatorJob.PlayerId != playerId)
-            {
-                var now = DateTime.UtcNow;
-                if (incubatorJob.DateCompleted > now)
-                {
-                    var delta = incubatorJob.DateCompleted - now;
-                    var completionTime = Time.GetTimeLongIntervals(delta, false);
-                    SendMessageToPC(player, $"Another player's incubation job is active. This job will complete in: {completionTime}.");
-                }
-                else
-                {
-                    SendMessageToPC(player, $"Another player's incubation job is active. This job has completed.");
-                }
-
-                return;
-            }
-
-            var payload = new IncubatorPayload(incubatorPropertyId, incubatorJob?.Id ?? string.Empty);
-            TogglePlayerWindow(player, GuiWindowType.Incubator, payload, player);
-        }
-
-        private BeastType DetermineMutation(BeastType beastType, IncubationJob job)
-        {
-            if (job.IsMutationSuppressed)
-                return BeastType.Invalid;
-
-            var beast = GetBeastDetail(beastType);
-
-            // Random.Next(1000) returns 0-999, so a chance of N (tenths of a percent) succeeds N times in 1000.
-            if (Random.Next(1000) < job.MutationChance)
-            {
-                var possibleMutations = IncubationProjection.GetEligibleMutations(beast, job);
-
-                if (possibleMutations.Count > 0)
-                {
-                    var weights = possibleMutations.Select(x => x.Weight);
-                    var index = Random.GetRandomWeightedIndex(weights.ToArray());
-
-                    return possibleMutations.ElementAt(index).Type;
-                }
-            }
-
-            return BeastType.Invalid;
-        }
-
-        public DayOfWeek GetIncubationServerDay(string playerId)
-        {
-            return !string.IsNullOrWhiteSpace(playerId) && _incubationDayOverrides.TryGetValue(playerId, out var day)
-                ? day
-                : DateTime.UtcNow.DayOfWeek;
-        }
-
-        public bool HasIncubationDayOverride(string playerId)
-        {
-            return !string.IsNullOrWhiteSpace(playerId) && _incubationDayOverrides.ContainsKey(playerId);
-        }
-
-        public void SetIncubationDayOverride(string playerId, DayOfWeek day)
-        {
-            _incubationDayOverrides[playerId] = day;
-        }
-
-        public void ClearIncubationDayOverride(string playerId)
-        {
-            _incubationDayOverrides.TryRemove(playerId, out _);
-        }
-
-        public void CreateBeastEgg(IncubationJob job, uint player)
-        {
-            var mutation = DetermineMutation(job.BeastDNAType, job);
-            var beastType = mutation == BeastType.Invalid ? job.BeastDNAType : mutation;
-
-            // A successful mutation reveals the field note for the beast the player just produced,
-            // documenting every way to incubate it. No-op if already owned.
-            if (mutation != BeastType.Invalid)
-            {
-                _incubationFieldNotes.GrantDiscoveredNote(player, mutation);
-            }
-
-            var egg = CreateBeastEgg(beastType, player);
-            var itemProperties = new List<ItemProperty>
-            {
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AttackPurity, job.AttackPurity),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AccuracyPurity, job.AccuracyPurity),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.EvasionPurity, job.EvasionPurity),
-                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.LearningPurity, job.LearningPurity),
-            };
-
-            foreach (var damageType in _damageCatalog.GetDefenseDamageTypes())
-            {
-                if (!BeastResistanceCalculator.TryGetDefensePurityIncubationStatType(damageType, out var statType))
-                    continue;
-
-                itemProperties.Add(ItemPropertyCustom(ItemPropertyType.Incubation, (int)statType, BeastResistanceCalculator.GetDefensePurity(job, damageType)));
-            }
-
-            foreach (var resistanceType in _resistance.GetAllResistanceTypes())
-            {
-                if (!BeastResistanceCalculator.TryGetResistancePurityIncubationStatType(resistanceType, out var statType))
-                    continue;
-
-                itemProperties.Add(ItemPropertyCustom(ItemPropertyType.Incubation, (int)statType, GetResistancePurity(job, resistanceType)));
-            }
-
-            itemProperties.Add(ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.XPPenalty, job.XPPenalty));
-
-            foreach (var ip in itemProperties)
-            {
-                BiowareXP2.IPSafeAddItemProperty(egg, ip, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            }
-
-            var addGoldPiece = CalculateEggVendorBonus(job);
-            ItemPlugin.SetAddGoldPieceValue(egg, addGoldPiece);
-
-            _db.Delete<IncubationJob>(job.Id);
-        }
-
-        public uint CreateBeastEgg(BeastType beastType, uint player)
-        {
-            var egg = CreateItemOnObject(BeastEggResref, player);
-            var dnaType = ItemPropertyCustom(ItemPropertyType.DNAType, (int)beastType);
-            BiowareXP2.IPSafeAddItemProperty(egg, dnaType, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-
-            var beastDetail = GetBeastDetail(beastType);
-            SetName(egg, $"Beast Egg: {beastDetail.Name}");
-
-            return egg;
-        }
-
-        private int CalculateEggVendorBonus(IncubationJob job)
-        {
-            const float maxPurityValue = 1000f;
-            var purities = new List<int>
-            {
-                job.AttackPurity,
-                job.AccuracyPurity,
-                job.EvasionPurity,
-                job.LearningPurity,
-            };
-
-            purities.AddRange(_damageCatalog.GetDefenseDamageTypes().Select(type => BeastResistanceCalculator.GetDefensePurity(job, type)));
-            purities.AddRange(_resistance.GetAllResistanceTypes().Select(type => GetResistancePurity(job, type)));
-
-            var averagePurity = purities.Average();
-            var qualityPercent = averagePurity / maxPurityValue;
-            var xpPenaltyAdjustment = 1f - (job.XPPenalty / maxPurityValue);
-
-            const int baseVendorBonus = 180;
-            const int qualityVendorRange = 1170;
-            var addGoldPiece = (int)Math.Round(baseVendorBonus + (qualityVendorRange * qualityPercent * xpPenaltyAdjustment));
-
-            return Math.Max(baseVendorBonus, addGoldPiece);
-        }
-
-        private int GetResistancePurity(IncubationJob job, ResistanceType type)
-        {
-            return job.ResistancePurities != null &&
-                   job.ResistancePurities.TryGetValue(type, out var purity)
-                ? purity
-                : 0;
-        }
-
         /// <summary>
         /// Determines if the specified item is an incubation crafting item.
         /// This includes enzymes and DNA but excludes beast eggs.
@@ -1208,33 +897,5 @@ namespace SWLOR.Game.Server.Domain.Companions
             return GetResRef(item) == BeastEggResref;
         }
 
-        /// <summary>
-        /// When a property is removed, also remove any associated incubation jobs.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnSwlorDeleteProperty)]
-        public void OnRemoveProperty()
-        {
-            var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
-            var dbQuery = new DBQuery<IncubationJob>()
-                .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), propertyId, false);
-            var dbJobs = _db.Search(dbQuery).ToList();
-
-            foreach (var dbJob in dbJobs)
-            {
-                _db.Delete<IncubationJob>(dbJob.Id);
-            }
-        }
-
-        /// <summary>
-        /// When a player clicks a "DNA Extract" object, they get a message stating to use the extractor item on it.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnDNAExtractUsed)]
-        public void UseExtractDNAObject()
-        {
-            var player = GetLastUsedBy();
-            SendMessageToPC(player, ColorToken.Red("Use a DNA Extractor on this corpse to retrieve its DNA."));
-        }
-
-    
     }
 }

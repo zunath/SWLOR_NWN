@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Domain.Companions
 
         public string CheckRequirements(IncubationJob job)
         {
-            var today = BeastMastery.GetIncubationServerDay(job?.PlayerId);
+            var today = BeastIncubation.GetIncubationServerDay(job?.PlayerId);
 
             if (!IsMetOn(today))
             {

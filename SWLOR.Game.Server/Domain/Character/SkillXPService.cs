@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <param name="skill">The type of skill to give XP towards.</param>
         /// <param name="xp">The amount of XP to give.</param>
         /// <param name="ignoreBonuses">If true, bonuses from food and other sources will NOT be applied.</param>
-        /// <param name="applyHenchmanPenalty">If true, a penalty will apply if the player has a henchman active (droid, pet, etc.)</param>
+        /// <param name="applyHenchmanPenalty">If true, the 30% henchman penalty is applied to the award. It is applied unconditionally: nothing checks whether the player has a henchman active (droid, pet, etc.), so callers pass false to skip it.</param>
         /// <param name="xpMessageSource">Combines XP feedback for the same player, skill, and source until the next frame.</param>
         /// <returns>
         /// The XP the award used: XP debt repaid plus XP applied to the skill, after bonuses and penalties.
@@ -375,7 +375,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// A new login shows each limited skill's warning again.
         /// </summary>
         [PlayerSession(PlayerReload.LoginOnly,
-            "Forgets the login's rank limit warnings; a player who stays online keeps the ones already shown.")]
+            "Forgets the login's rank limit warnings; a reload skips this login handler and the set starts empty, so a player online through a reload can see the warning again.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ResetLimitWarningsOnEnter()
         {

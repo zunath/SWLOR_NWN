@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -387,5 +388,8 @@ public class SkillXPServiceTests : SkillTestBase
 
         // The experience bonus is read from the stat service, and an award with a message source hands the combined message to the scheduler.
         plain.GiveSkillXP(Creature, SkillType.Armor, 100, false, false, MessageSource).Should().BeGreaterThan(100);
+
+        // The deferred message sits on the static scheduler; drain it while this test's engine is installed.
+        Scheduler.Process();
     }
 }

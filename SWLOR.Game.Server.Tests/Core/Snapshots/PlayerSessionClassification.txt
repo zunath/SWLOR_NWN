@@ -59,7 +59,7 @@ mod_enter (59)
   LoginOnly   SWLOR.Game.Server.Domain.Character.SkillService.AddMissingSkills
               Adds missing skills in Redis; the login already did.
   LoginOnly   SWLOR.Game.Server.Domain.Character.SkillXPService.ResetLimitWarningsOnEnter
-              Forgets the login's rank limit warnings; a player who stays online keeps the ones already shown.
+              Forgets the login's rank limit warnings; a reload skips this login handler and the set starts empty, so a player online through a reload can see the warning again.
   LoginOnly   SWLOR.Game.Server.Domain.Space.SpaceService.EnterServer
               Takes a pilot out of space at login; the players in space and the ship clones are carried.
   LoginOnly   SWLOR.Game.Server.Domain.Character.CreatureStatService.ApplyPlayerStats

@@ -7,8 +7,8 @@ using SWLOR.Game.Server.Domain.Foundation;
 namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
-    /// The ability impact part of combat: the riders of a successful ability hit on its target, the Spear Disabler suppression
-    /// riders and the status-applied stamina drain.
+    /// The ability impact part of combat: the orchestrator of a successful ability hit (the riders of the hit on its target, in order)
+    /// and the attacking ally check the hostile impact reads.
     /// </summary>
     public interface ICombatAbilityImpactService
     {
@@ -28,10 +28,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             bool allowsHitProcs = true,
             bool targetWasAttackingAlly = false);
 
-        void ApplyHostileAbilityPartyBuff(uint activator, AbilityDetail ability, int damage, bool statusApplied);
-
-        void ApplySpearDisablerSuppressionRiders(uint activator, uint target);
-
         /// <summary>
         /// Whether the target is attacking one of the activator's allies, checked only when the activator
         /// has a rider that needs it.
@@ -44,11 +40,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// enmity table has it attacking.
         /// </summary>
         bool IsAttackingAllyOf(uint attacker, uint creature);
-
-        void ApplyStatusAppliedTargetStaminaDrain(
-            uint activator,
-            uint target,
-            StatusEffectCategory appliedCategories);
 
         void ForgetImpactState(uint creature);
     }

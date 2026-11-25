@@ -183,14 +183,28 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             RequireSessionListeners();
             foreach (var listener in _sessionListeners)
-                listener.OnRecordingStarted();
+                NotifyListener(listener, "started", listener.OnRecordingStarted);
         }
 
         private void NotifyRecordingStopped()
         {
             RequireSessionListeners();
             foreach (var listener in _sessionListeners)
-                listener.OnRecordingStopped();
+                NotifyListener(listener, "stopped", listener.OnRecordingStopped);
+        }
+
+        // A listener that fails is reported and skipped, so the other listeners still hear the notice and Start or Stop still
+        // returns the result of the recording change it has already made.
+        private void NotifyListener(ICombatRecordingSessionListener listener, string change, Action notice)
+        {
+            try
+            {
+                notice();
+            }
+            catch (Exception ex)
+            {
+                _session.WriteLog(LogGroup.Error, $"Combat recording session listener {listener.GetType().Name} failed when the recording {change}: {ex}", true);
+            }
         }
 
         private void RequireSessionListeners()

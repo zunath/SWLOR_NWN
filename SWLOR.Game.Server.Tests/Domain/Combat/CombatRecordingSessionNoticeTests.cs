@@ -48,6 +48,13 @@ public class CombatRecordingSessionNoticeTests
                      $"writer={(_recorder.Core.Writer == _recorder.LastWriter ? "last" : "other")}");
     }
 
+    private sealed class FailingListener : ICombatRecordingSessionListener
+    {
+        public void OnRecordingStarted() => throw new InvalidOperationException("start notice failed");
+
+        public void OnRecordingStopped() => throw new InvalidOperationException("stop notice failed");
+    }
+
     private readonly List<IDisposable> _scopes = new();
     private string _directory = null!;
     private RecorderProbe _recorder = null!;
@@ -157,6 +164,21 @@ public class CombatRecordingSessionNoticeTests
         _recorder.Stop("x", out _).Should().BeTrue();
 
         log.Select(line => line.Split(' ')[0]).Should().Equal("started", "started", "stopped", "stopped");
+    }
+
+    [Test]
+    public void AListenerThatFailsDoesNotStopTheOthersOrTheRecordingChange()
+    {
+        var log = new List<string>();
+        _recorder.RegisterSessionListener(new FailingListener());
+        _recorder.RegisterSessionListener(new Listener(_recorder, log));
+
+        _recorder.Start(AreaOne, "x", out _).Should().BeTrue();
+        _recorder.IsRecording.Should().BeTrue();
+        _recorder.Stop("x", out _).Should().BeTrue("the stop has already happened when the failing listener hears of it");
+
+        _recorder.IsRecording.Should().BeFalse();
+        log.Select(line => line.Split(' ')[0]).Should().Equal("started", "stopped");
     }
 
     [Test]

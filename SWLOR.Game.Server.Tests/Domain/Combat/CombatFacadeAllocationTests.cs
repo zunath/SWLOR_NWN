@@ -1114,8 +1114,9 @@ public class CombatFacadeAllocationTests
     {
         // Bytes per call in this setup, each the same as the base assembly's in the same sequence with tiered compilation on and
         // off, and the same whether the test runs alone or after the rest of the fixture: the ally check asks the party service,
-        // the base damage bonus reads the guarded-hit bonus's temporary modifiers, and the forget query builds its LINQ iterators
-        // and lists, as before the move. No closure of a moved method captures the part.
+        // the base damage bonus reads the guarded-hit bonus's temporary modifiers, and the forget queries build their LINQ iterators
+        // and lists, as before the move; the two tables are in two parts now, so the two queries hold two closures over the creature
+        // where they held one (24 bytes more, 368 for 344). No closure of a moved method captures the part.
         var scopes = new List<IDisposable>();
         try
         {
@@ -1128,7 +1129,7 @@ public class CombatFacadeAllocationTests
             {
                 ("IsAttackingAllyOf", 72, () => sink += impact.IsAttackingAllyOf(Attacker, Defender) ? 1 : 0, () => sink += GameServices.CombatAbilityImpact.IsAttackingAllyOf(Attacker, Defender) ? 1 : 0),
                 ("GetAbilityImpactBaseDamageBonus(Rifle)", 56, () => sink += bonus.GetAbilityImpactBaseDamageBonus(Attacker, Defender, rifle, SkillType.Rifle), () => sink += GameServices.CombatAbilityDamageBonus.GetAbilityImpactBaseDamageBonus(Attacker, Defender, rifle, SkillType.Rifle)),
-                ("ForgetImpactState", 344, () => impact.ForgetImpactState(Defender), () => GameServices.CombatAbilityImpact.ForgetImpactState(Defender)),
+                ("ForgetImpactState", 368, () => impact.ForgetImpactState(Defender), () => GameServices.CombatAbilityImpact.ForgetImpactState(Defender)),
             };
 
             foreach (var (name, bytes, part, forwarder) in reads)

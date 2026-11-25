@@ -735,8 +735,8 @@ public class CombatAbilityImpactServiceTests : CombatAbilityImpactTestBase
         Stat(Other, StatType.AreaAbilityTargetHitSequenceWindowSeconds, 6);
         Stat(Other, StatType.AreaAbilityTargetHitSequenceExposedDurationSeconds, 5);
         var ability = Hostile(SkillType.Throwing, area: true);
-        Private("ApplyAreaAbilityTargetHitSequenceEffects", Attacker, Defender, ability, SkillType.Throwing);
-        Private("ApplyAreaAbilityTargetHitSequenceEffects", Other, Third, ability, SkillType.Throwing);
+        _areaImpactPart.ApplyAreaAbilityTargetHitSequenceEffects(Attacker, Defender, ability, SkillType.Throwing);
+        _areaImpactPart.ApplyAreaAbilityTargetHitSequenceEffects(Other, Third, ability, SkillType.Throwing);
 
         _service.ForgetImpactState(Defender);
 

@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Giant Garu Bear")
                 .Appearance(AppearanceType.BeastmanBear1bloodsong)
                 .AppearanceScale(1f)
-                .SoundSetId(12)
+                .SoundSetId(8)
                 .PortraitId(3479)
                 .CombatStats(AbilityType.Might, AbilityType.Agility)
                 .Role(BeastRoleType.Bruiser)

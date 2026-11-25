@@ -1189,6 +1189,15 @@ duration such as `##dm_visualeffect 14 60`. The tint shaders then use the coat a
 alpha as the environment coverage, and the coat as the vertex-lit environment
 map, like the client's legacy path. At zero the palette path is unchanged.
 
+The coat reaches only the materials the server writes. Those are the tint
+selections from `tintmap.2da`, plus the undyed materials that
+`progfxcoat.2da` lists for a model that binds them: the Havoc lamp box
+`havoc_box` on chest 316. Such a material binds the same `progfx_coat` texture
+and `progFxCoat` parameter, and its shader (`fs_hav_static`) replaces only the
+authored diffuse; the lamp's emission still lights. `HavocGlowAssets.py`
+validates the 2DA against its model bindings. The `troopbracer` overlay on
+forearm 282 draws only glow pixels, which stay lit, so it binds no coat.
+
 `SWLOR_Haks/tools/ProgFxCoatAtlas.py` builds `sw_vfx/progfx_coat.tga` (4 x 2
 cells of 256 texels; hak overrides such as SWLOR's `vdu_tex_grstone` win over
 stock). Its cell order must match `ProgFxCoatService.CoatTextures`; a new

@@ -1394,56 +1394,56 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestDetail.cs",
-    "Line": 108,
+    "Line": 111,
     "Member": "CanAccept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have already completed this quest.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestDetail.cs",
-    "Line": 116,
+    "Line": 119,
     "Member": "CanAccept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have already accepted this quest.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestDetail.cs",
-    "Line": 127,
+    "Line": 130,
     "Member": "CanAccept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You do not meet the prerequisites necessary to accept this quest.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestDetail.cs",
-    "Line": 247,
+    "Line": 250,
     "Member": "Abandon",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Quest '{Name}' has been abandoned!\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestDetail.cs",
-    "Line": 314,
+    "Line": 317,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Quest '\" + Name + \"' accepted. Refer to your journal for more information on this quest.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestDetail.cs",
-    "Line": 349,
+    "Line": 352,
     "Member": "Advance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have not accepted this quest yet.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestDetail.cs",
-    "Line": 400,
+    "Line": 403,
     "Member": "Advance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Objective for quest '\" + Name + \"' complete! Check your journal for information on the next objective.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestDetail.cs",
-    "Line": 547,
+    "Line": 550,
     "Member": "Complete",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Quest '\" + Name + \"' complete!\")"
@@ -3927,6 +3927,13 @@
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starport is still loading. Please try again shortly.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportDockDialog.cs",
+    "Line": 205,
+    "Member": "MainPageInit",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Your active ship is no longer available for docking.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/StarportFlightsDialog.cs",
     "Line": 208,
     "Member": "ConfirmPageInit",
@@ -4019,42 +4026,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/CharacterSheetWindow/CharacterSheetAttributesTab.cs",
-    "Line": 62,
+    "Line": 71,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Stats cannot be upgraded in this area.\", host.Target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/CharacterSheetWindow/CharacterSheetAttributesTab.cs",
-    "Line": 76,
+    "Line": 87,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxRacialAttributeScore} with a racial bonus.\", host.Target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/CharacterSheetWindow/CharacterSheetAttributesTab.cs",
-    "Line": 86,
+    "Line": 97,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxPurchasedAttributeScore} with AP.\", host.Target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/CharacterSheetWindow/CharacterSheetAttributesTab.cs",
-    "Line": 92,
+    "Line": 103,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxRacialAttributeScore}.\", host.Target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/CharacterSheetWindow/CharacterSheetAttributesTab.cs",
-    "Line": 98,
+    "Line": 109,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have enough AP to purchase this upgrade.\", host.Target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/CharacterSheetWindow/CharacterSheetAttributesTab.cs",
-    "Line": 109,
+    "Line": 120,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Your {abilityName} attribute has increased!\", host.Target, false)"
@@ -5027,59 +5034,59 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 180,
+    "Line": 184,
     "Member": "AddItem",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Item must be in your inventory.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 186,
+    "Line": 190,
     "Member": "AddItem",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Containers cannot be listed.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 192,
+    "Line": 196,
     "Member": "AddItem",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You cannot list any more items.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 200,
+    "Line": 204,
     "Member": "AddItem",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"This item cannot be sold on the market.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 206,
+    "Line": 210,
     "Member": "AddItem",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Legacy items cannot be sold on the market.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 212,
+    "Line": 216,
     "Member": "AddItem",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"A lockbox with a failed slicing attempt cannot be sold on the market.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 269,
+    "Line": 274,
     "Member": "RemoveListing",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs",
-    "Line": 277,
+    "Line": 282,
     "Member": "RemoveListing",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(\"Your listing for '' has been removed or sold already.\", Player, false)"
+    "Call": "FloatingTextStringOnCreature(\"This listing has already been removed or sold.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MusicPickerViewModel.cs",
@@ -5307,21 +5314,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RenameTargetViewModel.cs",
-    "Line": 139,
+    "Line": 145,
     "Member": "OnClickSubmit",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Target renamed to '{newFullName}'.\", Player)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RenameTargetViewModel.cs",
-    "Line": 145,
+    "Line": 151,
     "Member": "OnClickSubmit",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Target renamed to '{NewName}'.\", Player)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/RenameTargetViewModel.cs",
-    "Line": 159,
+    "Line": 165,
     "Member": "OnClickReset",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Target reset to original name.\", Player)"
@@ -6336,42 +6343,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/SnippetDefinition/QuestSnippetDefinition.cs",
-    "Line": 103,
+    "Line": 104,
     "Member": "ConditionOnQuestState",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, Error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/SnippetDefinition/QuestSnippetDefinition.cs",
-    "Line": 129,
+    "Line": 130,
     "Member": "ConditionOnQuestState",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/SnippetDefinition/QuestSnippetDefinition.cs",
-    "Line": 153,
+    "Line": 154,
     "Member": "ConditionCanAcceptQuest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, Error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/SnippetDefinition/QuestSnippetDefinition.cs",
-    "Line": 174,
+    "Line": 175,
     "Member": "ActionAcceptQuest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, Error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/SnippetDefinition/QuestSnippetDefinition.cs",
-    "Line": 195,
+    "Line": 196,
     "Member": "ActionAdvanceQuest",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, Error)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/SnippetDefinition/QuestSnippetDefinition.cs",
-    "Line": 218,
+    "Line": 219,
     "Member": "ActionRequestItemsFromPlayer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, Error)"

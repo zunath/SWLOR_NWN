@@ -329,7 +329,7 @@ public class WalkmeshServiceTests
     [Test]
     public void Retrieving_the_walkmeshes_loads_the_stored_bake_when_this_run_did_not_bake()
     {
-        var cache = new ModuleCache();
+        var cache = new ModuleCache { WalkmeshBakeVersion = WalkmeshService.BakeVersion };
         cache.WalkmeshesByArea[AreaResRef] = new List<Vector3> { new(3f, 4f, 5f) };
         _db.With(cache);
 
@@ -337,6 +337,19 @@ public class WalkmeshServiceTests
         var location = _service.GetRandomLocation(Area);
 
         _locations[location.Handle].Position.Should().Be(new Vector3(3f, 4f, 5f));
+    }
+
+    [Test]
+    public void Retrieving_the_walkmeshes_bakes_again_when_the_stored_bake_comes_from_an_older_version()
+    {
+        var cache = new ModuleCache { WalkmeshBakeVersion = WalkmeshService.BakeVersion - 1 };
+        cache.WalkmeshesByArea[AreaResRef] = new List<Vector3> { new(3f, 4f, 5f) };
+        _db.With(cache);
+
+        _service.RetrieveWalkmeshes();
+
+        cache.WalkmeshBakeVersion.Should().Be(WalkmeshService.BakeVersion);
+        cache.WalkmeshesByArea[AreaResRef].Should().HaveCount(16);
     }
 
     [Test]
@@ -363,6 +376,15 @@ public class WalkmeshServiceTests
         var location = _service.GetRandomLocation(Area);
 
         _locations[location.Handle].Should().Be((Area, expected));
+    }
+
+    [Test]
+    public void A_random_placeable_location_in_an_area_with_no_baked_points_is_the_origin()
+    {
+        var location = _service.GetRandomPlaceableLocation(Area);
+
+        _locations[location.Handle].Should().Be((Area, Vector3.Zero));
+        _service.GetPlaceableSpawnPoints(Area).Should().BeEmpty();
     }
 
     [Test]

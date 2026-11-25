@@ -1840,7 +1840,7 @@ namespace SWLOR.Game.Server.Domain.Space
                 var targetPlayerId = GetObjectUUID(creature);
                 var dbTargetPlayer = _db.Get<Player>(targetPlayerId);
 
-                if (dbTargetPlayer.ActiveShipId == Guid.Empty.ToString())
+                if (string.IsNullOrEmpty(dbTargetPlayer?.ActiveShipId) || dbTargetPlayer.ActiveShipId == Guid.Empty.ToString())
                     return null;
 
                 var dbPlayerShip = _db.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);

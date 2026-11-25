@@ -9,9 +9,12 @@ namespace SWLOR.Game.Server.Entity
         {
             Id = "SWLOR_CACHE";
             WalkmeshesByArea = new Dictionary<string, List<Vector3>>();
+            PlaceableSpawnPointsByArea = new Dictionary<string, List<Vector3>>();
         }
 
         public int LastModuleMTime { get; set; }
         public Dictionary<string, List<Vector3>> WalkmeshesByArea { get; set; }
+        public Dictionary<string, List<Vector3>> PlaceableSpawnPointsByArea { get; set; }
+        public int WalkmeshBakeVersion { get; set; }
     }
 }

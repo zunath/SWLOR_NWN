@@ -65,6 +65,7 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Feature.UnarmedMastery.Register
   action      SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadNeckCatalog
   action      SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadPartSkinCatalog
+  action      SWLOR.Game.Server.Domain.Companions.ProgFxCoatService.LoadCoatOnlyMaterials
   action      SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadRobeCatalog
   action      SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadShoulderCatalog
   action      SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadMaterials

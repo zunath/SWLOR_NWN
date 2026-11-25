@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Graymire Amalgam")
                 .Appearance(AppearanceType.OozeGrayOoze)
                 .AppearanceScale(1f)
-                .SoundSetId(83)
+                .SoundSetId(852)
                 .PortraitId(736)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)
                 .Role(BeastRoleType.Balanced)

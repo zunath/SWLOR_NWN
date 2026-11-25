@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Graniteback Ursavar")
                 .Appearance(AppearanceType.BearGrizzly)
                 .AppearanceScale(1f)
-                .SoundSetId(23)
+                .SoundSetId(7)
                 .PortraitId(712)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Tank)

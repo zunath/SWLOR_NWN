@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Numerics;
 using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Domain.Foundation
@@ -26,5 +28,21 @@ namespace SWLOR.Game.Server.Domain.Foundation
         /// <param name="area">The area to retrieve a random location for.</param>
         /// <returns>A random location within an area.</returns>
         Location GetRandomLocation(uint area);
+
+        /// <summary>
+        /// Retrieves a random location for a randomly placed placeable (resource node, terminal). These points also
+        /// leave room to walk around the placeable. An area without such points falls back to
+        /// <see cref="GetRandomLocation"/>.
+        /// </summary>
+        /// <param name="area">The area to retrieve a random location for.</param>
+        /// <returns>A random location within an area.</returns>
+        Location GetRandomPlaceableLocation(uint area);
+
+        /// <summary>
+        /// Returns the baked points of an area where a placeable leaves room to be walked around.
+        /// </summary>
+        /// <param name="area">The area to retrieve the points for.</param>
+        /// <returns>The subset of the area's random spawn points that suit placeables.</returns>
+        IReadOnlyList<Vector3> GetPlaceableSpawnPoints(uint area);
     }
 }

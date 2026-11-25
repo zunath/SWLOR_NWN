@@ -24,11 +24,19 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ReducesItemCharge()
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
+                    if (!GetIsObjectValid(item))
+                        return "This key item is no longer available.";
+
                     var keyItemId = GetLocalInt(item, "KEY_ITEM_ID");
+                    if (keyItemId == 0 && GetResRef(item) == "map_075")
+                    {
+                        keyItemId = (int)KeyItemType.DantooineMountainJunglesMap;
+                        SetLocalInt(item, "KEY_ITEM_ID", keyItemId);
+                    }
 
                     if (keyItemId <= 0)
                     {
-                        Log.Write(LogGroup.Error, $"KEY_ITEM_ID for item '{GetName(item)}' is not set properly.");
+                        Log.Write(LogGroup.Error, $"KEY_ITEM_ID for item '{GetName(item)}' ({GetResRef(item)}) is not set properly.");
                         return "KEY_ITEM_ID is not configured properly on the item. Notify an admin.";
                     }
 

@@ -419,3 +419,4 @@ SWLOR.Game.Server.Service.Skill.ResetLimitWarningsOnExit SWLOR.Game.Server.Domai
 SWLOR.Game.Server.Service.HostedEvents.LoadEvents SWLOR.Game.Server.Domain.Social.HostedEventsService.LoadEvents
 SWLOR.Game.Server.Native.PlayerFileCheckpoint.ApplyLoadedCraftSequence SWLOR.Game.Server.Domain.Crafting.CraftService.ApplyLoadedCraftSequence
 SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.ProgFxCoatRenderer.LoadCoatingVisualEffects SWLOR.Game.Server.Domain.Companions.ProgFxCoatService.LoadCoatingVisualEffects
+SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.ProgFxCoatRenderer.LoadCoatOnlyMaterials SWLOR.Game.Server.Domain.Companions.ProgFxCoatService.LoadCoatOnlyMaterials

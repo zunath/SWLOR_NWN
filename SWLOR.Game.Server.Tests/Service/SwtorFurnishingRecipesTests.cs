@@ -13,15 +13,8 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class SwtorFurnishingRecipesTests
 {
-    private static readonly HashSet<string> MapScenery = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "aswtor_090", "aswtor_091", "aswtor_111", "aswtor_112",
-        "daf_sw011", "daf_sw012", "daf_sw015", "daf_sw021", "daf_sw022", "daf_sw023", "daf_sw101",
-        "daf_sw231", "daf_sw232",
-    };
-
     [Test]
-    public void CataloguedSwtorDecorationModels_HaveExactlyOneFabricationRecipe()
+    public void CataloguedSwtorBeds_HaveExactlyOneFabricationRecipe()
     {
         var root = FindRoot();
         var placeables = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
@@ -31,9 +24,8 @@ public class SwtorFurnishingRecipesTests
                 ReadAppearance,
                 StringComparer.OrdinalIgnoreCase);
         var expected = appearances.Values
-            .Where(row => placeables.GetValue(row, "Label")?.StartsWith("[SWTOR] ", StringComparison.Ordinal) == true)
+            .Where(row => placeables.GetValue(row, "Label")?.StartsWith("[SWTOR] Bed -", StringComparison.Ordinal) == true)
             .Select(row => placeables.GetValue(row, "ModelName")!)
-            .Where(model => !model.StartsWith("daf_planet", StringComparison.OrdinalIgnoreCase) && !MapScenery.Contains(model))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         var actual = RecipeDefinitionLoader.LoadGame().Values
@@ -45,8 +37,28 @@ public class SwtorFurnishingRecipesTests
             .Where(model => model != null && expected.Contains(model))
             .ToList();
 
-        expected.Should().Contain("daf_sw378");
+        expected.Should().HaveCount(14);
         actual.Should().BeEquivalentTo(expected, "each model should have one output even when several blueprints share it");
+    }
+
+    [TestCase("Flower")]
+    [TestCase("Elevator")]
+    [TestCase("Vehicle")]
+    public void HouseholdFurnishingRecipes_ExcludeNonFurnishings(string placeableName)
+    {
+        var root = FindRoot();
+        var placeables = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
+        var excludedModels = Enumerable.Range(0, placeables.RowCount)
+            .Where(row => placeables.GetValue(row, "Label")?.StartsWith($"[SWTOR] {placeableName}", StringComparison.Ordinal) == true)
+            .Select(row => placeables.GetValue(row, "ModelName"))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        excludedModels.Should().NotBeEmpty();
+
+        var householdModels = new SwtorFurnishingRecipes().BuildRecipes().Values
+            .Select(recipe => GetStructure(recipe.Resref)!.Resref)
+            .Select(resref => ReadAppearance(Path.Combine(root, "Module", "utp", resref + ".utp.json")))
+            .Select(row => placeables.GetValue(row, "ModelName"));
+        householdModels.Should().NotIntersectWith(excludedModels);
     }
 
     [Test]

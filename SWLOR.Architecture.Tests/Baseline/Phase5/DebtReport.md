@@ -7,7 +7,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,081 | 12,812 uses | none: GameServices and FacadeAccessor deleted |
+| 1. Static service lookup | `StaticLookups.txt` | 1,081 | 12,814 uses | none: GameServices and FacadeAccessor deleted |
 | 2. Large types | `LargeTypes.txt` | 8 | 13,371 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 7 | 2,187 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 15 | 212 services | none over 10 services |
@@ -20,10 +20,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 ## 1. Static service lookup
 
-- 1,081 files, 12,812 uses: 824 using directives and 11,988 uses in code (7,257 in a static context).
+- 1,081 files, 12,814 uses: 824 using directives and 11,990 uses in code (7,257 in a static context).
 - SWLOR.Game.Server: 635 file(s), 5,354 use(s) (Feature/ 524, Domain/ 86, Native/ 16, NativeSinks/ 7, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 232 file(s), 5,242 use(s).
-- SWLOR.Game.Server.Tests: 185 file(s), 2,058 use(s).
+- SWLOR.Game.Server.Tests: 185 file(s), 2,060 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
 - SWLOR.CraftSim.Tests: 5 file(s), 15 use(s).
 - SWLOR.Game.Server.IntegrationTests: 4 file(s), 20 use(s).
@@ -174,7 +174,7 @@ Largest 15 of 117 (all in `LogicToContent.txt`):
 
 - 24 pairs of domains depend on each other: 20 between logic (6 of them with Foundation or Platform), 4 between content.
 - Foundation's logic is in a pair with 2 domains, Platform with 5.
-- Members both ways: 3,474.
+- Members both ways: 3,477.
 
 Largest 15 of 24 (all in `DomainCycles.txt`):
 

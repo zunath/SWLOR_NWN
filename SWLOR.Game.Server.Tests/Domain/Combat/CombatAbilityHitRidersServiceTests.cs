@@ -49,22 +49,30 @@ public class CombatAbilityHitRidersServiceTests : CombatAbilityImpactTestBase
     public void TheSameTargetHitsCountPerTargetAndRestoreStaminaAtTheRequiredCount()
     {
         var ability = Hostile();
-        Private("ApplySameTargetHostileAbilityHitEffects", Attacker, Defender, new AbilityDetail());
-        Private("ApplySameTargetHostileAbilityHitEffects", Attacker, Defender, ability);
-        SameTargetCounts().Should().BeEmpty("nothing is configured");
+        string Refund(uint target) => $"HitStamina {Attacker} {StatType.SameTargetHostileAbilityStaminaRestore} 4 Rifle";
+        _hitRiders.ApplySameTargetHostileAbilityHitEffects(Attacker, Defender, new AbilityDetail());
+        _hitRiders.ApplySameTargetHostileAbilityHitEffects(Attacker, Defender, ability);
+        _log.Should().BeEmpty("nothing is configured");
 
         Stat(StatType.SameTargetHostileAbilityHitCountRequired, 3);
         Stat(StatType.SameTargetHostileAbilityStaminaRestore, 4);
-        Private("ApplySameTargetHostileAbilityHitEffects", Attacker, Defender, ability);
-        Private("ApplySameTargetHostileAbilityHitEffects", Attacker, Defender, ability);
-        Private("ApplySameTargetHostileAbilityHitEffects", Attacker, Other, ability);
-        SameTargetCounts()[(Attacker, Defender)].Should().Be(2);
-        SameTargetCounts()[(Attacker, Other)].Should().Be(1);
-        Lines("HitStamina").Should().BeEmpty();
+        _hitRiders.ApplySameTargetHostileAbilityHitEffects(Attacker, Defender, ability);
+        _hitRiders.ApplySameTargetHostileAbilityHitEffects(Attacker, Other, ability);
+        _hitRiders.ApplySameTargetHostileAbilityHitEffects(Attacker, Defender, ability);
+        _hitRiders.ApplySameTargetHostileAbilityHitEffects(Attacker, Other, ability);
+        Lines("HitStamina").Should().BeEmpty("neither target has been hit three times");
 
-        Private("ApplySameTargetHostileAbilityHitEffects", Attacker, Defender, ability);
-        SameTargetCounts()[(Attacker, Defender)].Should().Be(0);
-        Lines("HitStamina").Should().Equal($"HitStamina {Attacker} {StatType.SameTargetHostileAbilityStaminaRestore} 4 Rifle");
+        _hitRiders.ApplySameTargetHostileAbilityHitEffects(Attacker, Defender, ability);
+        Lines("HitStamina").Should().Equal(Refund(Defender));
+        _hitRiders.ApplySameTargetHostileAbilityHitEffects(Attacker, Defender, ability);
+        _hitRiders.ApplySameTargetHostileAbilityHitEffects(Attacker, Defender, ability);
+        Lines("HitStamina").Should().HaveCount(1, "the count started again after the refund");
+
+        _hitRiders.ApplySameTargetHostileAbilityHitEffects(Attacker, Other, ability);
+        Lines("HitStamina").Should().Equal(Refund(Defender), Refund(Other));
+
+        _hitRiders.ApplySameTargetHostileAbilityHitEffects(Attacker, Defender, ability);
+        Lines("HitStamina").Should().HaveCount(3, "the next cycle of the first target refunds at its third hit");
     }
 
     [TestCase(StatType.RangedAbilityHitNearTargetRangeMeters, 0)]

@@ -386,13 +386,22 @@ public class CombatAbilityAreaImpactServiceTests : CombatAbilityImpactTestBase
         _now = _now.AddSeconds(6);
         Private("ApplyAreaAbilityTargetHitSequenceEffects", Attacker, Defender, ability, SkillType.Throwing);
         HitSequences().Count.Should().Be(1);
-        _now = _now.AddSeconds(7);
+        Lines("Apply").Should().BeEmpty();
         Private("ApplyAreaAbilityTargetHitSequenceEffects", Attacker, Defender, ability, SkillType.Throwing);
+        Lines("Apply").Should().ContainSingle().Which.Should().Be($"Apply {Attacker}>{Defender} ExposedStatusEffect 5 {CombatDamageType.Physical}",
+            "a hit at exactly six seconds is inside the window, so the count reached two and the next hit made three");
+        HitSequences().Count.Should().Be(0, "the sequence is spent");
+
+        // A fresh sequence: the window lapses between the first two hits, so the count starts again at one.
+        _log.Clear();
+        Private("ApplyAreaAbilityTargetHitSequenceEffects", Attacker, Other, ability, SkillType.Throwing);
+        _now = _now.AddSeconds(7);
+        Private("ApplyAreaAbilityTargetHitSequenceEffects", Attacker, Other, ability, SkillType.Throwing);
         Lines("Apply").Should().BeEmpty("the window lapsed, so the count started again at one");
 
-        Private("ApplyAreaAbilityTargetHitSequenceEffects", Attacker, Defender, ability, SkillType.Throwing);
-        Private("ApplyAreaAbilityTargetHitSequenceEffects", Attacker, Defender, ability, SkillType.Throwing);
-        Lines("Apply").Should().Equal($"Apply {Attacker}>{Defender} ExposedStatusEffect 5 {CombatDamageType.Physical}");
+        Private("ApplyAreaAbilityTargetHitSequenceEffects", Attacker, Other, ability, SkillType.Throwing);
+        Private("ApplyAreaAbilityTargetHitSequenceEffects", Attacker, Other, ability, SkillType.Throwing);
+        Lines("Apply").Should().Equal($"Apply {Attacker}>{Other} ExposedStatusEffect 5 {CombatDamageType.Physical}");
         HitSequences().Count.Should().Be(0, "the sequence is spent");
     }
 

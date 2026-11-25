@@ -6,7 +6,9 @@ namespace SWLOR.Game.Server.Composition
     {
         /// <summary>Beast companions: the catalog, taming and the beast event handlers, with the spawn and incubation parts below (the static class <c>BeastMastery</c> until it was removed).</summary>
         public static IBeastMasteryService BeastMastery => FacadeAccessor.Resolve<IBeastMasteryService>();
+        /// <summary>Calling a beast and the companion slot check, a part of beast mastery.</summary>
         public static IBeastSpawnService BeastSpawn => FacadeAccessor.Resolve<IBeastSpawnService>();
+        /// <summary>Incubators, mutations, eggs, DNA extraction and the incubator property cleanup, a part of beast mastery.</summary>
         public static IBeastIncubationService BeastIncubation => FacadeAccessor.Resolve<IBeastIncubationService>();
 
         /// <summary>Player droids: spawning, the saved equipment snapshot and the droid event handlers (the static class <c>Droid</c> until it was converted).</summary>

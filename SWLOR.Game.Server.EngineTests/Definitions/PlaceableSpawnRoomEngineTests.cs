@@ -77,11 +77,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Log($"Refused points in the reported tunnel: {controlResults.Count} walks, {controlBlocked.Count} blocked: " +
                     string.Join("; ", controlBlocked.Select(r => r.Describe())));
 
+            var walked = samples.Where(p => acceptedResults.Any(r => r.Node == p)).ToList();
+            var unwalked = samples.Where(p => !walked.Contains(p)).ToList();
+            ctx.Log($"Sampled accepted points with no straight walk pair around them, not walked: {unwalked.Count}: " +
+                    string.Join(", ", unwalked.Select(Format)));
+            ctx.Assert(walked.Count > 0, "At least one sampled accepted point is walked around, so the movement check is not empty");
             ctx.Assert(acceptedBlocked.Count == 0,
                 "Walks blocked by a vein on an accepted point: " + string.Join("; ", acceptedBlocked.Take(15).Select(r => r.Describe())));
             ctx.Assert(controlBlocked.Count > 0, "A vein on a refused point in the reported tunnel blocks it");
             ctx.SetResultDetail($"{accepted.Count} of {baked.Count} Shattervein points accept a resource node, none in the reported tunnel; " +
-                                $"{acceptedResults.Count} walks around veins on {samples.Count} sampled accepted points all arrived; " +
+                                $"{acceptedResults.Count} walks around veins on {walked.Count} of {samples.Count} sampled accepted points all arrived ({unwalked.Count} had no straight walk pair); " +
                                 $"{controlBlocked.Count} of {controlResults.Count} walks past veins on refused tunnel points were blocked.");
         }
 

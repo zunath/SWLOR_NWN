@@ -347,7 +347,7 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
     public bool AwardPendingXp(uint player, Player dbPlayer, SkillType skill, int xp)
     {
-        // The same guards Skill.GiveSkillXP returns on before it loads the record: the entitlement stays until an award can run.
+        // The same guards SkillXP.GiveSkillXP returns on before it loads the record: the entitlement stays until an award can run.
         if (!GetIsPC(player) || GetIsDM(player) || GetIsDead(player) || GetCurrentHitPoints(player) <= 0)
             return false;
 
@@ -359,7 +359,7 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
             dbPlayer.PendingCraftXp?.Remove(skill);
 
         if (xp > 0)
-            Skill.GiveSkillXP(player, skill, xp, false, false);
+            SkillXP.GiveSkillXP(player, skill, xp, false, false);
 
         // GiveSkillXP does not save when the XP changed nothing (a capped skill with no debt); this save then records the removal.
         DB.Set(record);

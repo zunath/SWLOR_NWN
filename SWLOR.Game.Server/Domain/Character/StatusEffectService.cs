@@ -740,7 +740,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
             if (HasStatAdjustment(statusEffect))
             {
-                DelayCommand(0.1f, () => ApplyCreatureMovementRate(creature));
+                AssignCommand(GetModule(), () => DelayCommand(0.1f, () => ApplyCreatureMovementRate(creature)));
             }
 
             ScheduleTemporaryHitPointLimitCheckForVitality(creature, statusEffect);

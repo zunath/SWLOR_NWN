@@ -28,6 +28,7 @@ public class SkillFacadeAllocationTests
     private FacadeContainer _container = null!;
     private IDisposable _installed = null!;
     private ISkillService _instance = null!;
+    private ISkillXPService _xpInstance = null!;
 
     [OneTimeSetUp]
     public void BuildContainer()
@@ -35,6 +36,7 @@ public class SkillFacadeAllocationTests
         // Caching the catalog signals an event on the module, so it runs once under the engine fakes.
         _container = new FacadeContainer();
         _instance = _container.Get<ISkillService>();
+        _xpInstance = _container.Get<ISkillXPService>();
         using (_container.Install())
         using (new PlayerEngine())
         using (EventsPluginRuntime.Override(new FakeEventsPlugin()))
@@ -89,7 +91,7 @@ public class SkillFacadeAllocationTests
                      ("GetAttackSkillTypeByBaseItem", () => sink += (int)Skill.GetAttackSkillTypeByBaseItem(BaseItem.Gloves), () => sink += (int)_instance.GetAttackSkillTypeByBaseItem(BaseItem.Gloves)),
                      ("GetRequiredXP", () => sink += Skill.GetRequiredXP(10), () => sink += _instance.GetRequiredXP(10)),
                      ("GetTotalRequiredXP", () => sink += Skill.GetTotalRequiredXP(10), () => sink += _instance.GetTotalRequiredXP(10)),
-                     ("GetDeltaXP", () => sink += Skill.GetDeltaXP(2), () => sink += _instance.GetDeltaXP(2)),
+                     ("GetDeltaXP", () => sink += SkillXP.GetDeltaXP(2), () => sink += _xpInstance.GetDeltaXP(2)),
                      ("APCap", () => sink += Skill.APCap, () => sink += _instance.APCap),
                  })
         {

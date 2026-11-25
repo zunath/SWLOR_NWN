@@ -841,7 +841,7 @@ public class PerformanceAudienceServiceTests
             IPerformanceInspiredService inspired,
             IPerformanceRegistryService registry,
             IPerformanceWatchingService watching)
-            : base(db, venue, windows, music, songs, snapshots, inspired, registry, watching, FacadeForwarder.For<ISkillService>())
+            : base(db, venue, windows, music, songs, snapshots, inspired, registry, watching, FacadeForwarder.For<ISkillXPService>())
         {
             _bench = bench;
         }

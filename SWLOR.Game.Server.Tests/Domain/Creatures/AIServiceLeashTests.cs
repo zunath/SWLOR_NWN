@@ -264,10 +264,12 @@ public class AIServiceLeashTests : AIServiceTestBase
     [Test]
     public void The_fast_return_is_reapplied_shortly_after_the_evade_starts_only_while_it_lasts()
     {
+        Bench.Engine.SetReturn("GetModule", 1u);
         Threat(_respawner, 90);
         TryStart(_respawner);
         Bench.Creatures.ClearCalls();
 
+        Bench.RunAssigned(1u);
         var delayed = Bench.Delayed().Single();
         delayed.Seconds.Should().Be(0.2f);
         delayed.Action();

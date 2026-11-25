@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     amount = Math.Min(amount, maxDistributableXP);
 
                     // Debit only the XP the award used, so a blocked award keeps the player's RP XP.
-                    var acceptedXP = Skill.GiveSkillXP(Player, _skillType, amount, true, false);
+                    var acceptedXP = SkillXP.GiveSkillXP(Player, _skillType, amount, true, false);
                     if (acceptedXP > 0)
                     {
                         dbPlayer = DB.Get<Player>(playerId);

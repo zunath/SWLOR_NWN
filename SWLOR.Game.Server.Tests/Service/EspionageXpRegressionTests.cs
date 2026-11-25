@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 /// <summary>
 /// Crafting revamp workstream 11 changes how fast the four crafting skills level and leaves Espionage alone. Infiltration, slicing, poison and
-/// trap crafting and the practice XP of Espionage recipes share <c>Skill.GetDeltaXP</c> and <c>Craft.GetBaseRecipeXP</c> with the crafting skills, so
+/// trap crafting and the practice XP of Espionage recipes share <c>SkillXP.GetDeltaXP</c> and <c>Craft.GetBaseRecipeXP</c> with the crafting skills, so
 /// their XP is pinned here: a change to the shared XP code that moves any of these numbers fails this class.
 /// </summary>
 public class EspionageXpRegressionTests
@@ -78,7 +78,7 @@ public class EspionageXpRegressionTests
     [TestCase(PerkType.Slicing, 5, new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 600, 0 })]
     public void EspionageTierXp_IsUnchanged(PerkType profession, int tier, int[] expected)
     {
-        Ranks.Select(rank => Skill.CalculateEspionageXP(profession, tier, rank)).Should().Equal(expected);
+        Ranks.Select(rank => SkillXP.CalculateEspionageXP(profession, tier, rank)).Should().Equal(expected);
     }
 
     // Craft.GetBaseRecipeXP sends practice-limited recipes (Espionage's) through GetPracticeXP: the XP chart with a 150 floor until the limit.
@@ -89,13 +89,13 @@ public class EspionageXpRegressionTests
     [TestCase(30, 40, 35, 0)]
     public void PracticeXp_IsUnchanged(int activityLevel, int rank, int rankLimit, int expected)
     {
-        Skill.GetPracticeXP(activityLevel, rank, rankLimit).Should().Be(expected);
+        SkillXP.GetPracticeXP(activityLevel, rank, rankLimit).Should().Be(expected);
     }
 
     [Test]
     public void TheXpChartTheyShareIsUnchanged()
     {
-        Enumerable.Range(-6, 15).Select(delta => Skill.GetDeltaXP(delta))
+        Enumerable.Range(-6, 15).Select(delta => SkillXP.GetDeltaXP(delta))
             .Should().Equal(0, 0, 76, 150, 300, 450, 600, 676, 750, 900, 976, 1050, 1200, 1200, 1200);
         Enumerable.Range(0, 50).Sum(level => Skill.GetRequiredXP(level)).Should().Be(411_125);
     }

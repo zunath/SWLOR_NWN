@@ -85,7 +85,7 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "[SWTOR] Bed - Jedi, Stone"
+      "0": "Bed, Jedi Stone"
     }
   },
   "OnClick": {

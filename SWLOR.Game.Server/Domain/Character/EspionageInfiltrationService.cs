@@ -41,9 +41,9 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IEspionageStealthQuery _stealth;
         private readonly IEspionageEnmityQuery _enmity;
         private readonly IStatService _stat;
-        private readonly ISkillService _skill;
+        private readonly ISkillXPService _skill;
 
-        public EspionageInfiltrationService(IDBService db, IEspionageStealthQuery stealth, IEspionageEnmityQuery enmity, IStatService stat, ISkillService skill)
+        public EspionageInfiltrationService(IDBService db, IEspionageStealthQuery stealth, IEspionageEnmityQuery enmity, IStatService stat, ISkillXPService skill)
         {
             _db = db;
             _stealth = stealth;
@@ -333,7 +333,9 @@ namespace SWLOR.Game.Server.Domain.Character
 
             var samplerId = ++_nextMovementSamplerId;
             _movementSamplerIdsByPlayer[player] = samplerId;
-            DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId));
+            // Detection can begin an attempt from attack hooks with no OBJECT_SELF; a dropped first sample would
+            // leave this registered sampler idle, so the module owns it.
+            AssignCommand(GetModule(), () => DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId)));
         }
 
         private bool HasCombatEnmity(uint player, uint npc)

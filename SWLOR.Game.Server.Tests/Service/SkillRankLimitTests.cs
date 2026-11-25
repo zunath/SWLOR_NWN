@@ -313,11 +313,11 @@ public class SkillRankLimitTests
         WarningKeys.Should().BeEmpty();
     }
 
-    [TestCase(nameof(SkillService.ResetLimitWarningsOnEnter), ScriptName.OnModuleEnter, "GetEnteringObject()")]
-    [TestCase(nameof(SkillService.ResetLimitWarningsOnExit), ScriptName.OnModuleExit, "GetExitingObject()")]
+    [TestCase(nameof(SkillXPService.ResetLimitWarningsOnEnter), ScriptName.OnModuleEnter, "GetEnteringObject()")]
+    [TestCase(nameof(SkillXPService.ResetLimitWarningsOnExit), ScriptName.OnModuleExit, "GetExitingObject()")]
     public void LimitWarning_IsForgottenWhenThePlayerEntersOrLeaves(string handler, string script, string playerSource)
     {
-        typeof(SkillService).GetMethod(handler)!.GetCustomAttributes<NWNEventHandler>()
+        typeof(SkillXPService).GetMethod(handler)!.GetCustomAttributes<NWNEventHandler>()
             .Should().ContainSingle(attribute => attribute.Script == script);
 
         CharacterCompanionsSource.Skill.Member(handler)
@@ -687,7 +687,7 @@ public class SkillRankLimitTests
 
         var refuse = confirm.IndexOf("Skill.GetMaxDistributableXP(dbPlayer, _skillType)", StringComparison.Ordinal);
         var cap = confirm.IndexOf("amount = Math.Min(amount, maxDistributableXP);", StringComparison.Ordinal);
-        var award = confirm.IndexOf("var acceptedXP = Skill.GiveSkillXP(Player, _skillType, amount, true, false);", StringComparison.Ordinal);
+        var award = confirm.IndexOf("var acceptedXP = SkillXP.GiveSkillXP(Player, _skillType, amount, true, false);", StringComparison.Ordinal);
         var guard = confirm.IndexOf("if (acceptedXP > 0)", StringComparison.Ordinal);
         var debit = confirm.IndexOf("dbPlayer.UnallocatedXP -=", StringComparison.Ordinal);
 
@@ -782,9 +782,7 @@ public class SkillRankLimitTests
 
     private List<SkillType> DecayCandidates(Player player, SkillType skill)
     {
-        var service = _facades.Get<ISkillService>();
-        return (List<SkillType>)service.GetType().GetMethod("GetDecayCandidates", BindingFlags.NonPublic | BindingFlags.Instance)!
-            .Invoke(service, new object[] { player, skill })!;
+        return _facades.Get<ISkillService>().GetDecayCandidates(player, skill);
     }
 
     private void Relog() => _harness.GetMethod("Relog")!.Invoke(null, null);

@@ -66,7 +66,7 @@ public class CraftServiceTests
         _db = new InMemoryDBService();
         var cache = ScriptedProxy.Create<ICacheService>(out _cacheScript);
         var item = ScriptedProxy.Create<IItemService>(out _itemScript);
-        _service = new CraftService(cache, _db, item, new CraftEnhancementPropertyService(FacadeForwarder.For<IResistanceService>()), FacadeForwarder.For<ISkillService>());
+        _service = new CraftService(cache, _db, item, new CraftEnhancementPropertyService(FacadeForwarder.For<IResistanceService>()), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ISkillXPService>());
     }
 
     [TearDown]
@@ -120,7 +120,7 @@ public class CraftServiceTests
             ScriptedProxy.Create<ICacheService>(out _),
             _db,
             ScriptedProxy.Create<IItemService>(out _),
-            new CraftEnhancementPropertyService(FacadeForwarder.For<IResistanceService>()), FacadeForwarder.For<ISkillService>());
+            new CraftEnhancementPropertyService(FacadeForwarder.For<IResistanceService>()), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ISkillXPService>());
 
         other.RecipeExists(RecipeType.VenomCoating1).Should().BeFalse();
         _service.RecipeExists(RecipeType.VenomCoating1).Should().BeTrue();
@@ -133,7 +133,7 @@ public class CraftServiceTests
             ScriptedProxy.Create<ICacheService>(out _),
             _db,
             ScriptedProxy.Create<IItemService>(out _),
-            new CraftEnhancementPropertyService(FacadeForwarder.For<IResistanceService>()), FacadeForwarder.For<ISkillService>());
+            new CraftEnhancementPropertyService(FacadeForwarder.For<IResistanceService>()), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ISkillXPService>());
 
         _service.SessionWorld.Should().NotBeNull().And.BeSameAs(_service.SessionWorld).And.NotBeSameAs(other.SessionWorld);
         _service.QuickCraftWorld.Should().NotBeNull().And.BeSameAs(_service.QuickCraftWorld).And.NotBeSameAs(other.QuickCraftWorld);
@@ -271,7 +271,7 @@ public class CraftServiceTests
         var recipe = new RecipeDetail { Level = 12 };
 
         for (var rank = 0; rank <= 30; rank += 5)
-            _service.GetBaseRecipeXP(recipe, rank).Should().Be(Skill.GetDeltaXP(recipe.Level - rank));
+            _service.GetBaseRecipeXP(recipe, rank).Should().Be(SkillXP.GetDeltaXP(recipe.Level - rank));
     }
 
     [Test]
@@ -280,7 +280,7 @@ public class CraftServiceTests
         var recipe = new RecipeDetail { Level = 12, PracticeRankLimit = 15 };
 
         for (var rank = 0; rank <= 20; rank += 5)
-            _service.GetBaseRecipeXP(recipe, rank).Should().Be(Skill.GetPracticeXP(recipe.Level, rank, 15));
+            _service.GetBaseRecipeXP(recipe, rank).Should().Be(SkillXP.GetPracticeXP(recipe.Level, rank, 15));
     }
 
     // ---- requirements

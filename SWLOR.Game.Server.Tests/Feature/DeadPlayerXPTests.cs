@@ -11,7 +11,7 @@ public class DeadPlayerXPTests
     {
         var method = CharacterCompanionsSource.Skill.Member("GiveSkillXP");
 
-        AssertDeadPlayerGuardExitsBefore(method, "player", "return 0;", "var modifiedSkills");
+        AssertDeadPlayerGuardExitsBefore(method, "player", "return 0;", "var playerId");
     }
 
     [Test]
@@ -46,7 +46,7 @@ public class DeadPlayerXPTests
         var confirm = ExtractMethod(distributeSource, "public Action OnClickConfirm() => () =>");
 
         AssertDeadPlayerGuardExitsBefore(openWindow, "Player", "return;", "var playerId = GetObjectUUID(Player);");
-        AssertDeadPlayerGuardExitsBefore(confirm, "Player", "return;", "Skill.GiveSkillXP(Player, _skillType, amount");
+        AssertDeadPlayerGuardExitsBefore(confirm, "Player", "return;", "SkillXP.GiveSkillXP(Player, _skillType, amount");
     }
 
     [Test]

@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature
                 lootTableName,
                 Loot.GetLootTableByName(lootTableName),
                 rank,
-                Skill.GetDeltaXP(10 * requiredLevel - rank),
+                SkillXP.GetDeltaXP(10 * requiredLevel - rank),
                 Perk.GetPerkLevel(user, PerkType.TreasureHunter),
                 Perk.GetPerkLevel(user, PerkType.CreditFinder),
                 SearchEffects.FromStats(stat => Stat.GetStatAdjustment(user, stat)));

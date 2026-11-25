@@ -58,8 +58,8 @@ mod_enter (59)
               Resumes a ticket or a flight at login with messages and a jump; the ticket holders and flights are adopted and the boarding times carried.
   LoginOnly   SWLOR.Game.Server.Domain.Character.SkillService.AddMissingSkills
               Adds missing skills in Redis; the login already did.
-  LoginOnly   SWLOR.Game.Server.Domain.Character.SkillService.ResetLimitWarningsOnEnter
-              Forgets the login's rank limit warnings; a player who stays online keeps the ones already shown.
+  LoginOnly   SWLOR.Game.Server.Domain.Character.SkillXPService.ResetLimitWarningsOnEnter
+              Forgets the login's rank limit warnings; a reload skips this login handler and the set starts empty, so a player online through a reload can see the warning again.
   LoginOnly   SWLOR.Game.Server.Domain.Space.SpaceService.EnterServer
               Takes a pilot out of space at login; the players in space and the ship clones are carried.
   LoginOnly   SWLOR.Game.Server.Domain.Character.CreatureStatService.ApplyPlayerStats
@@ -172,7 +172,7 @@ mod_exit (46)
               Forgets the player's PvP state; it is carried.
   LogoutOnly  SWLOR.Game.Server.Domain.World.ShuttleService.ExitServer
               Forgets the boarding time; the boarding times are carried.
-  LogoutOnly  SWLOR.Game.Server.Domain.Character.SkillService.ResetLimitWarningsOnExit
+  LogoutOnly  SWLOR.Game.Server.Domain.Character.SkillXPService.ResetLimitWarningsOnExit
               Forgets the player's rank limit warnings in the old build's memory.
   LogoutOnly  SWLOR.Game.Server.Domain.Space.SpaceService.ExitServer
               Leaves the ship clone at logout; the players in space and the clones are carried.

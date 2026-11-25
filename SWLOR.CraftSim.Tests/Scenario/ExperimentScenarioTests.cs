@@ -256,7 +256,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
         {
             Skill.CacheXPChartData();
             // 15 actions at 6 s, 0% quality, no blueprint, chart XP 600 at level: the low end of at-level crafting.
-            var crafting = CraftOutcomeRules.CalculateXp(Skill.GetDeltaXP(0), 0, false, 0f) / (15 * 6.0) * 3600;
+            var crafting = CraftOutcomeRules.CalculateXp(SkillXP.GetDeltaXP(0), 0, false, 0f) / (15 * 6.0) * 3600;
             var worst = 0.0;
             foreach (var rank in new[] { 10, 20, 30, 40, 50 })
             {
@@ -265,7 +265,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
                 for (var researchLevel = 1; researchLevel <= 10; researchLevel++)
                 {
                     // Generous inputs: 6 actions, the 25% cap always reached, a 0 s overhead.
-                    var row = ExperimentStudy.XpRow(rank, recipeLevel, researchLevel, concurrent, 6, 25, 100, 6, 0, delta => Skill.GetDeltaXP(delta));
+                    var row = ExperimentStudy.XpRow(rank, recipeLevel, researchLevel, concurrent, 6, 25, 100, 6, 0, delta => SkillXP.GetDeltaXP(delta));
                     worst = Math.Max(worst, row.XpPerHour);
                 }
             }

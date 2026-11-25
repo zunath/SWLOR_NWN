@@ -86,7 +86,7 @@ public class SkillXPChartCharacterizationTests : FacadeFixture
             new[] { "xp" });
 
         foreach (var delta in Enumerable.Range(-10, 21).Prepend(int.MinValue).Append(int.MaxValue))
-            table.Add(delta, Skill.GetDeltaXP(delta));
+            table.Add(delta, SkillXP.GetDeltaXP(delta));
 
         Snapshot.Verify("Skill", "GetDeltaXP", table);
     }
@@ -106,7 +106,7 @@ public class SkillXPChartCharacterizationTests : FacadeFixture
                      new[] { 0, 1, 9, 10, 24, 25, 26, 39, 40, 49, 50, 60 },
                      new[] { 1, 10, 26, 50 }))
         {
-            table.Add(row[0], row[1], row[2], Skill.GetPracticeXP(row[0], row[1], row[2]));
+            table.Add(row[0], row[1], row[2], SkillXP.GetPracticeXP(row[0], row[1], row[2]));
         }
 
         Snapshot.Verify("Skill", "GetPracticeXP", table);
@@ -156,7 +156,7 @@ public class SkillXPChartCharacterizationTests : FacadeFixture
             for (var tier = 1; tier <= 5; tier++)
             {
                 foreach (var rank in ranks)
-                    table.Add(profession, tier, rank, Skill.CalculateEspionageXP(profession, tier, rank));
+                    table.Add(profession, tier, rank, SkillXP.CalculateEspionageXP(profession, tier, rank));
             }
         }
 

@@ -49,19 +49,22 @@ namespace SWLOR.Game.Server.Domain.Crafting
         private readonly IItemService _item;
         private readonly ICraftEnhancementPropertyService _enhancement;
         private readonly ISkillService _skill;
+        private readonly ISkillXPService _skillXP;
 
         public CraftService(
             ICacheService cache,
             IDBService db,
             IItemService item,
             ICraftEnhancementPropertyService enhancement,
-            ISkillService skill)
+            ISkillService skill,
+            ISkillXPService skillXP)
         {
             _cache = cache;
             _db = db;
             _item = item;
             _enhancement = enhancement;
             _skill = skill;
+            _skillXP = skillXP;
         }
 
         /// <inheritdoc />
@@ -374,8 +377,8 @@ namespace SWLOR.Game.Server.Domain.Crafting
         public int GetBaseRecipeXP(RecipeDetail recipe, int skillRank)
         {
             return recipe.PracticeRankLimit.HasValue
-                ? _skill.GetPracticeXP(recipe.Level, skillRank, recipe.PracticeRankLimit.Value)
-                : _skill.GetDeltaXP(recipe.Level - skillRank);
+                ? _skillXP.GetPracticeXP(recipe.Level, skillRank, recipe.PracticeRankLimit.Value)
+                : _skillXP.GetDeltaXP(recipe.Level - skillRank);
         }
 
         private string CheckRecipeSkillRequirement(Player dbPlayer, RecipeDetail recipe)

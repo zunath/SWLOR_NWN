@@ -44,7 +44,7 @@ public class MimicryWitnessTranscriptTests
     private static readonly Type[] Leaves =
     {
         typeof(IQuickCastService), typeof(IDMPresenceService), typeof(IPlayerFeedbackService), typeof(IGuiService),
-        typeof(IAbilityCatalog), typeof(IPerkService), typeof(IStatService), typeof(ISkillService), typeof(IStatusEffectService),
+        typeof(IAbilityCatalog), typeof(IPerkService), typeof(IStatService), typeof(ISkillXPService), typeof(IStatusEffectService),
         typeof(ICombatPointService)
     };
 
@@ -93,7 +93,7 @@ public class MimicryWitnessTranscriptTests
             Bench.Leaf<IPerkService>().Script(nameof(IPerkService.GetPerkLevel), args => Perks.GetValueOrDefault((uint)args[0]!, new Dictionary<PerkType, int>()).GetValueOrDefault((PerkType)args[1]!));
             Bench.Leaf<IDMPresenceService>().Script(nameof(IDMPresenceService.IsControlledByDM), args => DmControlled.Contains((uint)args[0]!));
             Bench.Leaf<ICombatPointService>().Script(nameof(ICombatPointService.HasCombatPoints), _ => HasCombatPoints);
-            Bench.Leaf<ISkillService>().Script(nameof(ISkillService.GiveSkillXP), args => (int)args[2]!);
+            Bench.Leaf<ISkillXPService>().Script(nameof(ISkillXPService.GiveSkillXP), args => (int)args[2]!);
         }
 
         public CombatTranscriptBench Bench { get; }

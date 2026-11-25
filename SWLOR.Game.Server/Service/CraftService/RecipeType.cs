@@ -4569,5 +4569,6 @@ namespace SWLOR.Game.Server.Service.CraftService
         SwtorCabinetDisplayNarrow = 7497,
         SwtorCabinetDisplayWide = 7498,
         SwtorCabinetDisplayStocked = 7499,
+        StatueDarthFomoire = 7500,
     }
 }

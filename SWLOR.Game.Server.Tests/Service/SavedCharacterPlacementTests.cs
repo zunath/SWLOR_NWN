@@ -21,7 +21,7 @@ public class SavedCharacterPlacementTests
     private static readonly Type NodeType = Document.GetNestedType("Node", BindingFlags.NonPublic)!;
     private static readonly Type DataType = Game.GetType("SWLOR.Game.Server.Service.MigrationService.SavedCharacterData")!;
     private static readonly Type CharacterType = Game.GetType("SWLOR.Game.Server.Service.MigrationService.SavedCharacter")!;
-    private static readonly string[] DataFields = { "_inventorySizes", "_propertyDefinitions", "_blueprints" };
+    private static readonly string[] DataFields = { "_inventorySizes", "_propertyDefinitions" };
     private object?[] _savedData = Array.Empty<object?>();
 
     [SetUp]
@@ -38,8 +38,7 @@ public class SavedCharacterPlacementTests
         {
             typeof(IReadOnlyDictionary<int, (int Width, int Height)>),
             typeof(IReadOnlyDictionary<int, (int CostTable, int Param1Table)>),
-            typeof(IReadOnlyDictionary<string, string>),
-        })!.Invoke(null, new object[] { sizes, new Dictionary<int, (int, int)>(), new Dictionary<string, string>() });
+        })!.Invoke(null, new object[] { sizes, new Dictionary<int, (int, int)>() });
     }
 
     [TearDown]

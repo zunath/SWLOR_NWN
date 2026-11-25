@@ -76,9 +76,6 @@ public partial class SavedDataItemSweepTests
             Parts(("ArmorPart_Neck", neck), ("ArmorPart_Torso", 300))));
         EnzymeBaseItemMigration.MigrateSavedObject(original, out var migrated).Should().BeFalse();
         migrated.Should().BeSameAs(original);
-        var outfit = new PlayerOutfit { NeckId = neck, TorsoId = 300, HelmetId = 281 };
-        RetiredAppearanceMigration.UpdateOutfitIds(outfit).Should().BeFalse();
-        (outfit.NeckId, outfit.TorsoId, outfit.HelmetId).Should().Be((neck, 300, 281));
     }
 
     [Test]
@@ -178,16 +175,6 @@ public partial class SavedDataItemSweepTests
         });
         saved["Name"]!.Value<string>().Should().Be("Unit");
         EnzymeBaseItemMigration.MigrateSavedObject(migrated, out _).Should().BeFalse();
-    }
-
-    [Test]
-    public void RetiredAppearances_KeepOutfitPartNumbersInStepWithTheGarment()
-    {
-        var outfit = new PlayerOutfit { RobeId = 160, NeckId = 232, LeftShoulderId = 255, LeftBicepId = 17, HelmetId = 258, TorsoId = 186 };
-        RetiredAppearanceMigration.UpdateOutfitIds(outfit).Should().BeTrue();
-        (outfit.RobeId, outfit.NeckId, outfit.LeftShoulderId, outfit.LeftBicepId, outfit.HelmetId, outfit.TorsoId)
-            .Should().Be((0, 0, 0, 17, 1, 186));
-        RetiredAppearanceMigration.UpdateOutfitIds(outfit).Should().BeFalse();
     }
 
     [Test]

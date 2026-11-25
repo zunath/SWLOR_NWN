@@ -1634,7 +1634,8 @@ namespace SWLOR.Game.Server.Service
                     defender, source[StatType.AutoAttackSplashMaximumTargets]);
                 // Auto-attack riders run inside GetDamageRoll. Dispatching another damage event
                 // here would re-enter the native attack and overwrite its shared combat context.
-                DelayCommand(0.0f, () =>
+                // That hook has no OBJECT_SELF, so a bare DelayCommand is dropped; the module owns it.
+                AssignCommand(GetModule(), () => DelayCommand(0.0f, () =>
                 {
                     if (!GetIsObjectValid(attacker))
                         return;
@@ -1648,7 +1649,7 @@ namespace SWLOR.Game.Server.Service
                         if (GetIsObjectValid(target) && !GetIsDead(target))
                             ApplyTriggeredDamage(attacker, target, damage, CombatDamageType.Physical, skillType);
                     }
-                });
+                }));
             }
         }
 

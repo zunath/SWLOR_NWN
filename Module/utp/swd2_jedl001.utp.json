@@ -85,7 +85,7 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "[SWTOR] Jedi Library 001"
+      "0": "Bookshelf, Jedi Archive (Red)"
     }
   },
   "OnClick": {

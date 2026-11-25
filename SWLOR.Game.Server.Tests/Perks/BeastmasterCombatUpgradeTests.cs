@@ -70,9 +70,9 @@ public class BeastmasterCombatUpgradeTests
         var tank = BuildPerksWithout2daLookup(new BeastTankPerkDefinition(), "FocusAttention", "LastGuardian");
         AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[3], StatType.AbilityRecastDelayFlatAdjustmentPerkType, (int)PerkType.Anger);
         AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[3], StatType.AbilityRecastDelayFlatAdjustment, -3);
-        AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[1], StatType.EnmityPercentAdjustment, 15);
-        AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[2], StatType.EnmityPercentAdjustment, 30);
-        AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[3], StatType.EnmityPercentAdjustment, 45);
+        AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[1], StatType.DamageEnmityPercentAdjustment, 15);
+        AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[2], StatType.DamageEnmityPercentAdjustment, 30);
+        AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[3], StatType.DamageEnmityPercentAdjustment, 50);
         AssertStatBonus(tank[PerkType.LastGuardian].PerkLevels[1], StatType.FatalDamageTemporaryHPPercent, 20);
         AssertStatBonus(tank[PerkType.LastGuardian].PerkLevels[1], StatType.FatalDamageTemporaryHPCooldownSeconds, 180);
 
@@ -93,18 +93,21 @@ public class BeastmasterCombatUpgradeTests
     }
 
     [Test]
-    public void TankBeastEnmityBonuses_DoNotExceedEnmityCapIndividually()
+    public void TankBeastEnmityBonuses_AreNotLostToTheEnmityCap()
     {
-        // Any enmity bonus above the shared cap is silently discarded, so no single source may
-        // advertise more than the cap can deliver.
+        // Guarding Bond already fills the capped general Enmity bonus, so Focus Attention adds to the
+        // uncapped damage Enmity stat instead. Together they match a player tank stance.
         var tank = BuildPerksWithout2daLookup(new BeastTankPerkDefinition(), "FocusAttention", "LastGuardian");
-        var focusAttention = tank[PerkType.FocusAttention].PerkLevels[3].StatBonuses
-            .Single(x => x.Stat == StatType.EnmityPercentAdjustment)
+        var focusAttentionLevel = tank[PerkType.FocusAttention].PerkLevels[3];
+        var focusAttention = focusAttentionLevel.StatBonuses
+            .Single(x => x.Stat == StatType.DamageEnmityPercentAdjustment)
             .Calculate(0);
-        var guardingBond = new GuardingBondStanceBeastStatusEffect().StatGroup.Stats[StatType.EnmityPercentAdjustment];
+        var guardingBond = new GuardingBondStanceBeastStatusEffect().StatGroup.Stats;
 
-        focusAttention.Should().BeLessThanOrEqualTo(Enmity.MaximumEnmityPercentAdjustment);
-        guardingBond.Should().BeLessThanOrEqualTo(Enmity.MaximumEnmityPercentAdjustment);
+        focusAttentionLevel.StatBonuses.Should().NotContain(x => x.Stat == StatType.EnmityPercentAdjustment);
+        guardingBond[StatType.EnmityPercentAdjustment].Should().Be(Enmity.MaximumEnmityPercentAdjustment);
+        // Player tank stances grant +100% damage Enmity.
+        (guardingBond[StatType.DamageEnmityPercentAdjustment] + focusAttention).Should().Be(100);
     }
 
     [Test]

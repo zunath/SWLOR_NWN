@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Enumeration
         public bool IsActive { get; set; }
 
         /// <summary>
-        /// When true, a task the player completes goes back on the guild's task board at once, so the player can take it
-        /// again. When false, a completed task stays off the board until the next server start.
+        /// When true, a task the player completes is replaced on their guild task board by a different task of the same rank,
+        /// so they can keep taking tasks of that tier. When false, a completed task stays off the board until the next server start.
         /// </summary>
         public bool TasksRefreshAfterCompletion { get; set; }
 

@@ -513,7 +513,7 @@ public class EspionageSystemTests
                 aiSource.IndexOf("TryAcquireAggro(self, entering);", StringComparison.Ordinal),
                 "an undetected stealthed player must not enter the hostile's enmity table");
         infiltrationSource.Should().Contain("private const float MovementSampleIntervalSeconds = 1f;");
-        infiltrationSource.Should().Contain("DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId));");
+        infiltrationSource.Should().Contain("AssignCommand(GetModule(), () => DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId)));");
         infiltrationSource.Should().Contain("CreaturePlugin.GetFaction(npc) != HostileFactionId");
         infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmity(npc)");
         infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmity(target, observer)");

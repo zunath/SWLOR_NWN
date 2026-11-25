@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Service
         public static DateTime? DateTasksLoaded { get; private set; }
         private static readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _activeGuildTasksByRank = new();
         private static readonly Dictionary<GuildType, Dictionary<string, QuestDetail>> _activeGuildTasks = new();
+        private static readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _guildTaskRotationByRank = new();
 
         /// <summary>
         /// When the module caches, cache relevant data and load guild tasks.
@@ -134,21 +135,23 @@ namespace SWLOR.Game.Server.Service
                 foreach (var (type, _) in _activeGuilds)
                 {
                     var potentialTasks = Quest.GetQuestsByGuild(type, rank);
-                    List<QuestDetail> tasks;
+                    List<QuestDetail> rotation;
 
                     // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.
                     if (potentialTasks.Count <= 10)
                     {
-                        tasks = potentialTasks;
+                        rotation = potentialTasks;
                     }
-                    // Pick 10 tasks randomly out of the potential list.
+                    // Shuffle the whole list. The first 10 go on the board; on a guild marked TasksRefreshAfterCompletion
+                    // the rest replace the tasks a player completes.
                     else
                     {
-                        tasks = potentialTasks
+                        rotation = potentialTasks
                             .OrderBy(o => Random.Next())
-                            .Take(10)
                             .ToList();
                     }
+
+                    var tasks = rotation.Take(10).ToList();
 
                     if(!_activeGuildTasks.ContainsKey(type))
                         _activeGuildTasks[type] = new Dictionary<string, QuestDetail>();
@@ -162,6 +165,11 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     _activeGuildTasksByRank[type][rank] = tasks;
+
+                    if (!_guildTaskRotationByRank.ContainsKey(type))
+                        _guildTaskRotationByRank[type] = new Dictionary<int, List<QuestDetail>>();
+
+                    _guildTaskRotationByRank[type][rank] = rotation;
                 }
             }
 
@@ -170,8 +178,8 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Whether a guild's board hides a task the player completed since the tasks were loaded. Most guilds keep a completed
-        /// task off the board until the next server start; a guild marked <see cref="GuildAttribute.TasksRefreshAfterCompletion"/>
-        /// puts it back at once, so the player can take another task of the same tier.
+        /// task off the board until the next server start. A guild marked <see cref="GuildAttribute.TasksRefreshAfterCompletion"/>
+        /// does not hide it here, because <see cref="GetGuildTasksForPlayer"/> already swaps it for a different task of the same rank.
         /// </summary>
         /// <param name="guild">The guild whose board is being built.</param>
         /// <param name="dateLastCompleted">When the player last completed the task, or null if they have not.</param>
@@ -209,6 +217,91 @@ namespace SWLOR.Game.Server.Service
                 return new Dictionary<string, QuestDetail>();
 
             return _activeGuildTasks[guild].ToDictionary(x => x.Key, y => y.Value);
+        }
+
+        /// <summary>
+        /// Retrieves the tasks a guild's board offers this player. Most guilds offer the shared list from <see cref="GetAllActiveGuildTasks"/>.
+        /// A guild marked <see cref="GuildAttribute.TasksRefreshAfterCompletion"/> replaces each task the player completed since the
+        /// tasks were loaded with a different task of the same rank (<see cref="SelectPlayerTaskIds"/>).
+        /// </summary>
+        /// <param name="guild">The guild whose board is being built.</param>
+        /// <param name="playerQuests">The player's quests.</param>
+        /// <returns>The tasks keyed by quest ID, in board order.</returns>
+        public static Dictionary<string, QuestDetail> GetGuildTasksForPlayer(GuildType guild, IReadOnlyDictionary<string, PlayerQuest> playerQuests)
+        {
+            if (!guild.GetAttribute<GuildType, GuildAttribute>().TasksRefreshAfterCompletion ||
+                DateTasksLoaded == null ||
+                !_guildTaskRotationByRank.ContainsKey(guild))
+                return GetAllActiveGuildTasks(guild);
+
+            var result = new Dictionary<string, QuestDetail>();
+            foreach (var (rank, rotation) in _guildTaskRotationByRank[guild])
+            {
+                var tasksById = rotation.ToDictionary(x => x.QuestId, x => x);
+                var boardSize = _activeGuildTasksByRank[guild][rank].Count;
+                var questIds = SelectPlayerTaskIds(rotation.Select(x => x.QuestId).ToList(), boardSize, playerQuests, DateTasksLoaded.Value);
+
+                foreach (var questId in questIds)
+                {
+                    result[questId] = tasksById[questId];
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Picks the tasks of one guild rank a player is offered when completed tasks rotate out. Every task the player has in
+        /// progress stays on the board. The rest of the board is filled in rotation order with tasks the player has not completed
+        /// since the tasks were loaded, so a completed task gives way to the next one in the rotation. Once the player has completed
+        /// every task of the rank, the tasks they completed longest ago come back, so the task they just completed does not return
+        /// straight away while the rank has more tasks than the board holds.
+        /// </summary>
+        /// <param name="rotation">Every task of the guild rank, in rotation order. The first <paramref name="boardSize"/> are the shared board.</param>
+        /// <param name="boardSize">How many tasks the board offers.</param>
+        /// <param name="playerQuests">The player's quests.</param>
+        /// <param name="dateTasksLoaded">When the guild's tasks were loaded.</param>
+        /// <returns>The quest IDs to offer: the in-progress and not yet completed tasks in rotation order, then any that came back, oldest first.</returns>
+        public static List<string> SelectPlayerTaskIds(
+            IReadOnlyList<string> rotation,
+            int boardSize,
+            IReadOnlyDictionary<string, PlayerQuest> playerQuests,
+            DateTime dateTasksLoaded)
+        {
+            var selected = new HashSet<string>();
+
+            bool IsInProgress(string questId) =>
+                playerQuests.TryGetValue(questId, out var quest) && quest.DateLastCompleted == null;
+
+            bool IsCompletedSinceLoad(string questId) =>
+                playerQuests.TryGetValue(questId, out var quest) && quest.DateLastCompleted >= dateTasksLoaded;
+
+            foreach (var questId in rotation.Where(IsInProgress))
+                selected.Add(questId);
+
+            foreach (var questId in rotation.Where(x => !IsCompletedSinceLoad(x)))
+            {
+                if (selected.Count >= boardSize)
+                    break;
+
+                selected.Add(questId);
+            }
+
+            var board = rotation.Where(selected.Contains).ToList();
+
+            var completedOldestFirst = rotation
+                .Where(IsCompletedSinceLoad)
+                .OrderBy(x => playerQuests[x].DateLastCompleted)
+                .ToList();
+            foreach (var questId in completedOldestFirst)
+            {
+                if (board.Count >= boardSize)
+                    break;
+
+                board.Add(questId);
+            }
+
+            return board;
         }
 
         /// <summary>

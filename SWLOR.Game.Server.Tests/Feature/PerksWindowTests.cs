@@ -127,8 +127,8 @@ public class PerksWindowTests
         viewModelSource.Should().Contain("detail.ForceAffinityType.Value == ForceAffinityType.Light ? \"LIGHT\" : \"DARK\"");
         viewModelSource.Should().Contain("{alignment}-ALIGNED FORCE POWER");
         viewModelSource.Should().Contain("UNIVERSAL FORCE POWER");
-        viewModelSource.Should().Contain("Perk.GetForceAffinityMagnitudeMultiplier(host.Player, detail.Type)");
-        viewModelSource.Should().Contain("Perk.GetForceAffinityHitChanceAdjustment(host.Player, detail.Type)");
+        viewModelSource.Should().Contain("PerkForceAffinity.GetForceAffinityMagnitudeMultiplier(host.Player, detail.Type)");
+        viewModelSource.Should().Contain("PerkForceAffinity.GetForceAffinityHitChanceAdjustment(host.Player, detail.Type)");
         viewModelSource.Should().Contain("additional ranks do not add more affinity");
     }
 

@@ -31,24 +31,24 @@ public class CombatAbilityMagnitudeServiceTests
         _log.Clear();
         _readiness = 0;
         _engine = SWLOR.NWN.API.NWScript.NWScriptRuntime.Override(new FakeNWScript());
-        var perk = ScriptedProxy.Create<IPerkService>(out var perkCalls);
+        var perk = ScriptedProxy.Create<IPerkForceAffinityService>(out var perkCalls);
         perkCalls
-            .On(nameof(IPerkService.GetForceAffinityMagnitudeMultiplier), args =>
+            .On(nameof(IPerkForceAffinityService.GetForceAffinityMagnitudeMultiplier), args =>
             {
                 _log.Add($"Multiplier {args[0]} {args[1]}");
                 return 1.5f;
             })
-            .On(nameof(IPerkService.GetForceAffinityRestorativeMagnitudeMultiplier), args =>
+            .On(nameof(IPerkForceAffinityService.GetForceAffinityRestorativeMagnitudeMultiplier), args =>
             {
                 _log.Add($"RestorativeMultiplier {args[0]} {args[1]}");
                 return 1.25f;
             })
-            .On(nameof(IPerkService.ApplyForceAffinityRestorativeMagnitude), args =>
+            .On(nameof(IPerkForceAffinityService.ApplyForceAffinityRestorativeMagnitude), args =>
             {
                 _log.Add($"Restorative {args[0]} {args[1]} {args[2]}");
                 return (int)args[2]! + 1;
             })
-            .On(nameof(IPerkService.ApplyForceAffinityMagnitude), args =>
+            .On(nameof(IPerkForceAffinityService.ApplyForceAffinityMagnitude), args =>
             {
                 _log.Add($"Magnitude {args[0]} {args[1]} {args[2]}");
                 return args[2] is float value ? (object)(value + 0.5f) : (int)args[2]! + 2;

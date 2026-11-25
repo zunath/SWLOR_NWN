@@ -40,6 +40,7 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Domain.Creatures.NPCGroupService.CacheData
   action      SWLOR.Game.Server.Domain.Foundation.ObjectVisibilityService.LoadVisibilityObjects
   action      SWLOR.Game.Server.Domain.Character.PerkService.CacheData
+  action      SWLOR.Game.Server.Domain.Character.PerkStatBonusService.CachePerkStatBonuses
   action      SWLOR.Game.Server.Domain.World.PlanetService.CacheData
   action      SWLOR.Game.Server.Domain.Economy.PlayerMarketService.CacheData
   action      SWLOR.Game.Server.Domain.World.PropertyService.CacheData

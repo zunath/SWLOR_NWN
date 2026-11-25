@@ -77,8 +77,8 @@ public class StatServiceDefaultSeamsTests
     [Test]
     public void ThePerkReads_ReachThePerkCatalog()
     {
-        _seams.PerkBonus(Creature, StatType.Attack).Should().Be(Perk.GetStatBonus(Creature, StatType.Attack));
-        _seams.PerkSources(Creature, StatType.Attack).Should().BeEquivalentTo(Perk.GetStatSources(Creature, StatType.Attack));
+        _seams.PerkBonus(Creature, StatType.Attack).Should().Be(GameServices.PerkStatBonus.GetStatBonus(Creature, StatType.Attack));
+        _seams.PerkSources(Creature, StatType.Attack).Should().BeEquivalentTo(GameServices.PerkStatBonus.GetStatSources(Creature, StatType.Attack));
     }
 
     [Test]
@@ -177,7 +177,7 @@ public class StatServiceDefaultSeamsTests
             ICompanionLookup beastMastery,
             IResourceRestoredListener resourceRestored)
             : base(db, combatRecorder, playerFeedback, statusEffect, mimicryTraitStats, beastMastery,
-                FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(),
+                FacadeForwarder.For<IPerkStatBonusService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(),
                 resourceRestored)
         {
         }

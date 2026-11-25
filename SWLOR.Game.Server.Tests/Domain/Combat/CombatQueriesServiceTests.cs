@@ -133,10 +133,12 @@ public class CombatQueriesServiceTests
         skillCalls
             .On(nameof(ISkillService.GetWeaponSkill), args => _weaponSkills.GetValueOrDefault((uint)args[1]!, SkillType.Invalid))
             .On(nameof(ISkillService.GetSkillTypeByBaseItem), args => _baseItemSkills.GetValueOrDefault((BaseItem)args[0]!, SkillType.Invalid));
-        var perk = ScriptedProxy.Create<IPerkService>(out _perkCalls);
+        var perk = ScriptedProxy.Create<IPerkService>(out var perkCalls);
+        perkCalls
+            .On(nameof(IPerkService.IsPerkInCategory), args => _perkCategories.Contains(((PerkType)args[0]!, (int)args[1]!)));
+        var perkStatBonus = ScriptedProxy.Create<IPerkStatBonusService>(out _perkCalls);
         _perkCalls
-            .On(nameof(IPerkService.IsPerkInCategory), args => _perkCategories.Contains(((PerkType)args[0]!, (int)args[1]!)))
-            .On(nameof(IPerkService.GetTargetedStatBonus), _ => _targetedPerkBonus);
+            .On(nameof(IPerkStatBonusService.GetTargetedStatBonus), _ => _targetedPerkBonus);
         var item = ScriptedProxy.Create<IItemService>(out var itemCalls);
         itemCalls
             .On("get_StaffBaseItemTypes", _ => new List<BaseItem> { BaseItem.QuarterStaff })
@@ -145,7 +147,7 @@ public class CombatQueriesServiceTests
         var twinPistol = ScriptedProxy.Create<ITwinPistolEquipmentService>(out var twinCalls);
         twinCalls.On(nameof(ITwinPistolEquipmentService.GetCompanionWeapon), _ => _companionWeapon);
 
-        _service = new CombatQueriesService(stat, statusEffect, party, skill, perk, item, twinPistol);
+        _service = new CombatQueriesService(stat, statusEffect, party, skill, perk, perkStatBonus, item, twinPistol);
     }
 
     [TearDown]

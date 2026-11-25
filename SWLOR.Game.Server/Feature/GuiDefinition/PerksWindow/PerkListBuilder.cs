@@ -28,13 +28,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow
         private ICurrencyService Currency { get; }
         private IDBService DB { get; }
         private IPerkService Perk { get; }
+        private IPerkForceAffinityService PerkForceAffinity { get; }
         private ISkillService Skill { get; }
 
-        public PerkListBuilder(ICurrencyService currency, IDBService db, IPerkService perk, ISkillService skill)
+        public PerkListBuilder(ICurrencyService currency, IDBService db, IPerkService perk, IPerkForceAffinityService perkForceAffinity, ISkillService skill)
         {
             Currency = currency;
             DB = db;
             Perk = perk;
+            PerkForceAffinity = perkForceAffinity;
             Skill = skill;
         }
 
@@ -144,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow
                 return;
             }
 
-            var affinity = Perk.GetForceAffinity(host.Player);
+            var affinity = PerkForceAffinity.GetForceAffinity(host.Player);
             var affinityLabel = PerkDetailText.FormatForceAffinity(affinity);
             host.ForceAffinityHeading = $"FORCE AFFINITY: {affinityLabel}";
             host.ForceAffinityColor = affinity > 0

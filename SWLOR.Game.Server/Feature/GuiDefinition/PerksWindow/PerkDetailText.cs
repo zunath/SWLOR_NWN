@@ -29,12 +29,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow
     {
         private IAbilityCatalogService AbilityCatalog { get; }
         private IPerkService Perk { get; }
+        private IPerkForceAffinityService PerkForceAffinity { get; }
         private IRecastService Recast { get; }
 
-        public PerkDetailText(IAbilityCatalogService abilityCatalog, IPerkService perk, IRecastService recast)
+        public PerkDetailText(IAbilityCatalogService abilityCatalog, IPerkService perk, IPerkForceAffinityService perkForceAffinity, IRecastService recast)
         {
             AbilityCatalog = abilityCatalog;
             Perk = perk;
+            PerkForceAffinity = perkForceAffinity;
             Recast = recast;
         }
 
@@ -140,16 +142,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow
                        "Does not change Force Affinity and receives no affinity magnitude or hit-chance adjustment.";
             }
 
-            var affinity = Perk.GetForceAffinity(host.Player);
+            var affinity = PerkForceAffinity.GetForceAffinity(host.Player);
             var alignment = detail.ForceAffinityType.Value == ForceAffinityType.Light ? "LIGHT" : "DARK";
             var contribution = detail.ForceAffinityType.Value == ForceAffinityType.Light ? "+1 Light" : "-1 Dark";
             var magnitudeAdjustment = (int)Math.Round(
-                (Perk.GetForceAffinityMagnitudeMultiplier(host.Player, detail.Type) - 1f) * 100f,
+                (PerkForceAffinity.GetForceAffinityMagnitudeMultiplier(host.Player, detail.Type) - 1f) * 100f,
                 MidpointRounding.AwayFromZero);
             var restorativeAdjustment = (int)Math.Round(
-                (Perk.GetForceAffinityRestorativeMagnitudeMultiplier(host.Player, detail.Type) - 1f) * 100f,
+                (PerkForceAffinity.GetForceAffinityRestorativeMagnitudeMultiplier(host.Player, detail.Type) - 1f) * 100f,
                 MidpointRounding.AwayFromZero);
-            var hitChanceAdjustment = Perk.GetForceAffinityHitChanceAdjustment(host.Player, detail.Type);
+            var hitChanceAdjustment = PerkForceAffinity.GetForceAffinityHitChanceAdjustment(host.Player, detail.Type);
             var restorativeNote = restorativeAdjustment != magnitudeAdjustment
                 ? $" ({FormatSignedPercent(restorativeAdjustment)} for heals and shields)"
                 : string.Empty;

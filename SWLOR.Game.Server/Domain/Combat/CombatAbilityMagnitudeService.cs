@@ -13,10 +13,10 @@ namespace SWLOR.Game.Server.Domain.Combat
     public class CombatAbilityMagnitudeService : ICombatAbilityMagnitudeService
     {
         private readonly IAbilityImpactState _impactState;
-        private readonly IPerkService _perk;
+        private readonly IPerkForceAffinityService _perk;
         private readonly IStatService _stat;
 
-        public CombatAbilityMagnitudeService(IAbilityImpactState impactState, IPerkService perk, IStatService stat)
+        public CombatAbilityMagnitudeService(IAbilityImpactState impactState, IPerkForceAffinityService perk, IStatService stat)
         {
             _impactState = impactState;
             _perk = perk;

@@ -134,6 +134,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ILanguageService, LanguageService>();
             services.AddSingleton<IMimicryTraitStatsService, MimicryTraitStatsService>();
             services.AddSingleton<IPerkService, PerkService>();
+            services.AddSingleton<IPerkStatBonusService, PerkStatBonusService>();
+            services.AddSingleton<IPerkForceAffinityService, PerkForceAffinityService>();
             services.AddSingleton<IPlayerDescriptorService, PlayerDescriptorService>();
             services.AddSingleton<IPlayerIntroductionService, PlayerIntroductionService>();
             services.AddSingleton<IPlayerNameService, PlayerNameService>();

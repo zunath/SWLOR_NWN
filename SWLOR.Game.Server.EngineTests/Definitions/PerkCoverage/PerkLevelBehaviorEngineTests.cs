@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                             detail.StatBonuses.Where(b => b.Stat == stat).Sum(b => b.Calculate(npc)) +
                             perkLevel.StatBonuses.Where(b => b.Stat == stat).Sum(b => b.Calculate(npc));
 
-                        var actual = Perk.GetStatBonus(npc, stat);
+                        var actual = SWLOR.Game.Server.Composition.GameServices.PerkStatBonus.GetStatBonus(npc, stat);
                         if (actual != expected)
                         {
                             failures.Add($"{perkType} L{level} {stat}: expected {expected}, got {actual}");

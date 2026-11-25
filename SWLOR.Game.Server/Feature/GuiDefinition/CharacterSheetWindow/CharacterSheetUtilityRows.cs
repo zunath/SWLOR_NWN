@@ -20,13 +20,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow
     public class CharacterSheetUtilityRows
     {
         private ICreatureStatService CreatureStat { get; }
-        private IPerkService Perk { get; }
+        private IPerkForceAffinityService PerkForceAffinity { get; }
         private IStatService Stat { get; }
 
-        public CharacterSheetUtilityRows(ICreatureStatService creatureStat, IPerkService perk, IStatService stat)
+        public CharacterSheetUtilityRows(ICreatureStatService creatureStat, IPerkForceAffinityService perkForceAffinity, IStatService stat)
         {
             CreatureStat = creatureStat;
-            Perk = perk;
+            PerkForceAffinity = perkForceAffinity;
             Stat = stat;
         }
 
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow
             addStat("Paralysis", GetEffectStateLabel(host, EffectTypeScript.Paralyze), "Prevents auto attacks and other actions.");
             addStat("Movement Speed", FormatMultiplier(CreatureStat.GetMovementSpeedMultiplier(host.Target)), "Increases or decreases your movement speed.");
             addStat("Force Evasion", FormatPercent(GetForceEvasion(host)), "Percent chance to completely evade a detrimental force ability.");
-            addStat("Force Affinity", Perk.GetForceAffinity(host.Target).ToString(), "-10 Dark to +10 Light. Strengthens matching powers; weakens opposing powers.");
+            addStat("Force Affinity", PerkForceAffinity.GetForceAffinity(host.Target).ToString(), "-10 Dark to +10 Light. Strengthens matching powers; weakens opposing powers.");
             addStat("Detection", Stat.GetDetection(host.Target).ToString(), "PER + WIL plus equipment, perk, and status-effect bonuses; Detect mode adds +5.");
             addStat("Stealth", Stat.GetStealth(host.Target).ToString(), "Twice AGI plus equipment, perk, and status-effect bonuses.");
             addStat("Experience", FormatPercent(Stat.GetStatAdjustment(host.Target, StatType.ExperiencePercentAdjustment)), "Bonus or penalty applied to experience gained from skill use.");

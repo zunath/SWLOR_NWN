@@ -25,7 +25,7 @@ public sealed partial class TestStatService : StatService
         IMimicryTraitStatsService mimicryTraitStats,
         ICompanionLookup beastMastery)
         : base(db, combatRecorder, playerFeedback, statusEffect, mimicryTraitStats, beastMastery,
-            FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(),
+            FacadeForwarder.For<IPerkStatBonusService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(),
             FacadeForwarder.For<IResourceRestoredListener>())
     {
         _bench = bench;

@@ -12,6 +12,10 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public class NativeHookDeferralTests
 {
+    [TestCase("Service/Combat.cs", "ApplyAutoAttackSplashEffects",
+        TestName = "AutoAttackSplash_LandsOnARealAutoAttack")]
+    [TestCase("Service/CombatService/TemporaryStatModifier.cs", "PublishRefresh",
+        TestName = "StatWindow_RefreshesAfterOnHitModifiers")]
     [TestCase("Feature/StatusEffectDefinition/InspiredStatusEffect.cs", "TryStandingOvation",
         TestName = "StandingOvation_HealsAfterANativeWeaponHit")]
     [TestCase("Service/AI.cs", "StartLeashEvade",

@@ -264,58 +264,6 @@ public class DamageOverTimeStatusEffectTests
                     "splash hits must not re-enter GetDamageRoll or overwrite the original attack's damage source");
     }
 
-    [Test]
-    public void AutoAttackSplash_GivesItsDeferralAnOwnerBecauseNativeSwingsHaveNoObjectSelf()
-    {
-        var file = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "Combat.cs");
-        var method = CSharpSyntaxTree.ParseText(File.ReadAllText(file)).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Single(node => node.Identifier.Text == "ApplyAutoAttackSplashEffects");
-        var delays = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
-            .Where(call => call.Expression.ToString() == "DelayCommand").ToArray();
-        delays.Should().NotBeEmpty();
-        // GetDamageRoll runs in a script context whose OBJECT_SELF is invalid. A bare DelayCommand
-        // there has no owner, NWNX refuses to queue it, and the splash silently never lands.
-        foreach (var delay in delays)
-            delay.Ancestors().OfType<InvocationExpressionSyntax>()
-                .Should().Contain(call => call.Expression.ToString() == "AssignCommand" &&
-                                          call.ArgumentList.Arguments.First().ToString() == "GetModule()",
-                    "a real auto-attack must queue the splash on the module, an object that always exists");
-    }
-
-    [Test]
-    public void AutoAttackSplash_LandsWhenTheEngineAppliesTheWeaponDamage()
-    {
-        var root = FindRepositoryRoot().FullName;
-        var combat = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Combat.cs"));
-        var method = CSharpSyntaxTree.ParseText(combat).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Single(node => node.Identifier.Text == "ApplyAutoAttackSplashEffects");
-        var dispatches = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
-            .Where(call => call.Expression.ToString() == "weaponImpactScheduler").ToArray();
-        dispatches.Should().ContainSingle("a native roll's splash waits for the engine to apply that roll's damage");
-        dispatches[0].ArgumentList.Arguments.Single().ToString().Should().Be("Dispatch");
-
-        // GetDamageRoll resolves a native roll when the swing starts; the damage effect that
-        // SignalMeleeDamage or SignalRangedDamage schedules lands later. Only that native path
-        // gets the impact queue.
-        var damageRoll = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
-        damageRoll.Should().Contain("NativeWeaponImpactQueue.CreateScheduler(attackerId, pCombatRound.m_nCurrentAttack, defenderId)");
-        damageRoll.Should().Contain("weaponImpactScheduler: weaponImpactScheduler");
-        var signal = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "NativeWeaponImpactSignal.cs"));
-        signal.Should().Contain("_ZN12CNWSCreature17SignalMeleeDamageEP10CNWSObjecti")
-            .And.Contain("_ZN12CNWSCreature18SignalRangedDamageEP10CNWSObjecti")
-            .And.Contain("_ZN21CNWSEffectListHandler13OnApplyDamageEP10CNWSObjectP11CGameEffecti");
-        // Every engine roll, hit or miss, clears its slot so an interrupted swing's splash cannot ride a later roll.
-        var attackRoll = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs")))
-            .GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Single(node => node.Identifier.Text == "OnResolveAttackRoll");
-        attackRoll.Body!.Statements.First().ToString().Should().Be("NativeWeaponImpactSignal.BeginRoll(thisPtr);");
-        var symbols = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "Symbols", "8193.37.15.txt"));
-        symbols.Should().Contain("_ZN12CNWSCreature17SignalMeleeDamageEP10CNWSObjecti")
-            .And.Contain("_ZN12CNWSCreature18SignalRangedDamageEP10CNWSObjecti");
-    }
-
     [TestCase("BleedStatusEffect.cs", "EffectDamage(damageAmount, CombatDamageType.Physical.GetNWScriptDamageType())")]
     [TestCase("FragmentationStatusEffect.cs", "EffectDamage(amount, CombatDamageType.Physical.GetNWScriptDamageType())")]
     [TestCase("DiseaseStatusEffect.cs", "EffectDamage(damage, CombatDamageType.Poison.GetNWScriptDamageType())")]

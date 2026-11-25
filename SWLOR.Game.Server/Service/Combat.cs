@@ -1616,8 +1616,7 @@ namespace SWLOR.Game.Server.Service
             return damage;
         }
 
-        private static void ApplyAutoAttackSplashEffects(uint attacker, uint defender, SkillType skillType,
-            Action<Action> weaponImpactScheduler)
+        private static void ApplyAutoAttackSplashEffects(uint attacker, uint defender, SkillType skillType)
         {
             if (!GetIsObjectValid(defender) || !GetIsReactionTypeHostile(defender, attacker))
                 return;
@@ -1627,41 +1626,30 @@ namespace SWLOR.Game.Server.Service
                 if (!CanTriggerAutoAttackSplash(source, skillType) || Random.D100(1) > source[StatType.AutoAttackSplashChance])
                     continue;
 
-                var rolledOrigin = GetLocation(defender);
+                var origin = GetLocation(defender);
                 var damage = source[StatType.AutoAttackSplashDamage];
-                var radius = source[StatType.AutoAttackSplashRadiusMeters];
-                var maximumTargets = source[StatType.AutoAttackSplashMaximumTargets];
+                var targets = SelectAutoAttackSplashSecondaryTargets(
+                    AbilityTargeting.GetHostileTargetsNearLocation(attacker, origin,
+                        source[StatType.AutoAttackSplashRadiusMeters], maxTargets: 0),
+                    defender, source[StatType.AutoAttackSplashMaximumTargets]);
                 // Auto-attack riders run inside GetDamageRoll. Dispatching another damage event
                 // here would re-enter the native attack and overwrite its shared combat context.
                 // That hook has no OBJECT_SELF, so a bare DelayCommand is dropped; the module owns it.
-                void Dispatch()
+                AssignCommand(GetModule(), () => DelayCommand(0.0f, () =>
                 {
-                    // Measure from where the primary target stands when the hit lands.
-                    var origin = GetIsObjectValid(defender) ? GetLocation(defender) : rolledOrigin;
-                    AssignCommand(GetModule(), () => DelayCommand(0.0f, () =>
+                    if (!GetIsObjectValid(attacker))
+                        return;
+
+                    using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(attacker, StatType.AutoAttackSplashDamage);
+                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Smoke_Puff), origin);
+                    if (GetIsObjectValid(defender) && !GetIsDead(defender))
+                        ApplyTriggeredDamage(attacker, defender, damage, CombatDamageType.Physical, skillType);
+                    foreach (var target in targets)
                     {
-                        if (!GetIsObjectValid(attacker))
-                            return;
-
-                        var targets = SelectAutoAttackSplashSecondaryTargets(
-                            AbilityTargeting.GetHostileTargetsNearLocation(attacker, origin, radius, maxTargets: 0),
-                            defender, maximumTargets);
-                        using var recorderAttribution = CombatRecorder.BeginStatTriggerAttribution(attacker, StatType.AutoAttackSplashDamage);
-                        ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Smoke_Puff), origin);
-                        if (GetIsObjectValid(defender) && !GetIsDead(defender))
-                            ApplyTriggeredDamage(attacker, defender, damage, CombatDamageType.Physical, skillType);
-                        foreach (var target in targets)
-                        {
-                            if (GetIsObjectValid(target) && !GetIsDead(target))
-                                ApplyTriggeredDamage(attacker, target, damage, CombatDamageType.Physical, skillType);
-                        }
-                    }));
-                }
-
-                // A native swing or shot rolls when it starts and lands later, when the engine
-                // applies its damage; the splash lands with that hit.
-                if (weaponImpactScheduler == null) Dispatch();
-                else weaponImpactScheduler(Dispatch);
+                        if (GetIsObjectValid(target) && !GetIsDead(target))
+                            ApplyTriggeredDamage(attacker, target, damage, CombatDamageType.Physical, skillType);
+                    }
+                }));
             }
         }
 
@@ -1692,8 +1680,7 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType = CombatDamageType.Physical,
             CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct,
             bool isAbilityDamage = false,
-            bool allowsHitProcs = true,
-            Action<Action> weaponImpactScheduler = null)
+            bool allowsHitProcs = true)
         {
             if (damage <= 0)
                 return;
@@ -1717,7 +1704,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             if (!isAbilityDamage)
-                ApplyAutoAttackSplashEffects(attacker, defender, skillType, weaponImpactScheduler);
+                ApplyAutoAttackSplashEffects(attacker, defender, skillType);
 
             // The combat-entry tracker resets this rider's consumed state before the first landed
             // direct attack. Missed casts and incoming hostile actions keep that state alive without

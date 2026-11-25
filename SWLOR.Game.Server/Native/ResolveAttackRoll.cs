@@ -78,8 +78,6 @@ namespace SWLOR.Game.Server.Native
         [UnmanagedCallersOnly]
         private static void OnResolveAttackRoll(void* thisPtr, void* pTarget)
         {
-            // Only engine rolls own a slot's next damage signal; companion shots borrow the slot.
-            NativeWeaponImpactSignal.BeginRoll(thisPtr);
             ResolveWeaponRoll(thisPtr, pTarget);
         }
 

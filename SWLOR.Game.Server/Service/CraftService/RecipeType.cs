@@ -4373,6 +4373,16 @@ namespace SWLOR.Game.Server.Service.CraftService
         ShipComponentCapitalStructure = 7793,
         ShipComponentCapitalReactor = 7794,
         ShipComponentCapitalThrusters = 7795,
+        ShipComponentLifeSupportSystem1Redundant = 8185,
+        ShipComponentLifeSupportSystem1Compact = 8186,
+        ShipComponentLifeSupportSystem2Redundant = 8187,
+        ShipComponentLifeSupportSystem2Compact = 8188,
+        ShipComponentLifeSupportSystem3Redundant = 8189,
+        ShipComponentLifeSupportSystem3Compact = 8190,
+        ShipComponentLifeSupportSystem4Redundant = 8191,
+        ShipComponentLifeSupportSystem4Compact = 8192,
+        ShipComponentLifeSupportSystem5Redundant = 8193,
+        ShipComponentLifeSupportSystem5Compact = 8194,
         // END space revamp catalog
 
         // Industrial droids (tools/SpaceRevampBalance/droids.py): parts 7700-7724, protocol discs 7725-7732.

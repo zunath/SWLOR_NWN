@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A hydroponic air and water system for freighters, cruisers and command ships. Crafted by Agriculture."
+      "0": "A hydroponic air and water system for freighters, cruisers and command ships. Crafted by Agriculture; also salvaged from wrecks."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A hydroponic air and water system for freighters, cruisers and command ships. Crafted by Agriculture."
+      "0": "A hydroponic air and water system for freighters, cruisers and command ships. Crafted by Agriculture; also salvaged from wrecks."
     }
   },
   "Identified": {

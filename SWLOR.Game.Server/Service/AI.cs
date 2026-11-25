@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -16,6 +17,12 @@ namespace SWLOR.Game.Server.Service
         private const float AggroRadius = 8.5f;
         private const float ReturnHomeRadius = 15f;
         private const float CombatLeashRadius = 45f;
+
+        /// <summary>
+        /// An NPC ship's combat leash: the ground's times the space radius factor (180 m). Ships fight at 40-50 m and
+        /// snipers hold at 90% of their weapon range, so the ground's 45 m reset ships a pilot was still chasing.
+        /// </summary>
+        private const float SpaceCombatLeashRadius = CombatLeashRadius * SpaceRadii.GroundToSpaceFactor;
         private const float LeashEvadeMovementRateFactor = 3.0f;
         private const int ProximityEnmityAmount = 1;
         private const string LeashEvadeActiveVariable = "AI_LEASH_EVADE_ACTIVE";
@@ -615,7 +622,8 @@ namespace SWLOR.Game.Server.Service
 
         private static float GetCombatLeashRadius(uint creature, uint target)
         {
-            return CombatLeashRadius + GetHitDistance(creature) + GetHitDistance(target);
+            var radius = Space.IsShipInSpace(creature) ? SpaceCombatLeashRadius : CombatLeashRadius;
+            return radius + GetHitDistance(creature) + GetHitDistance(target);
         }
 
         private static float GetHitDistance(uint creature)

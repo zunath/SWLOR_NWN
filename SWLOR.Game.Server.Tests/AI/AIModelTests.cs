@@ -1177,7 +1177,10 @@ public class AIModelTests
             aiSource.IndexOf("private static float GetHitDistance", StringComparison.Ordinal));
 
         combatLeashRadius.Should().BeGreaterThan(35f);
-        combatRadiusBody.Should().Contain("CombatLeashRadius + GetHitDistance(creature) + GetHitDistance(target)");
+        combatRadiusBody.Should().Contain("var radius = Space.IsShipInSpace(creature) ? SpaceCombatLeashRadius : CombatLeashRadius;")
+            .And.Contain("return radius + GetHitDistance(creature) + GetHitDistance(target);");
+        aiSource.Should().Contain("private const float SpaceCombatLeashRadius = CombatLeashRadius * SpaceRadii.GroundToSpaceFactor;",
+            "a ship's leash scales with the space radius factor, so pilots chasing a ship at weapon range don't reset it");
         hitDistanceBody.Should().Contain("CreaturePlugin.GetHitDistance(creature)");
         aiSource.Should().NotContain("ActiveCombatLeashRadius");
         aiSource.Should().NotContain("IsWithinCombatEngagementRange");

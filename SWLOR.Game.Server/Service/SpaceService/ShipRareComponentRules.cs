@@ -66,11 +66,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
             if (deedResref == null || !_advancedHulls.TryGetValue(deedResref, out var hull))
                 return new List<ShipComponentFamily>();
 
+            // Only a family with rare traits can carry one (life support has none).
+            var rareFamilies = RevampComponentCatalog.SalvageFamilies.Where(x => ShipTraitRules.Pool(x, ShipTraitKind.Rare).Count > 0);
             if (hull.Size == ShipSize.Capital)
-                return RevampComponentCatalog.SalvageFamilies.ToList();
+                return rareFamilies.ToList();
 
             var families = hull.Components.Select(x => ShipTraitRules.FamilyOf(x.Resref)).ToHashSet();
-            return RevampComponentCatalog.SalvageFamilies.Where(families.Contains).ToList();
+            return rareFamilies.Where(families.Contains).ToList();
         }
 
         /// <summary>The rare component the deed recipe takes, or null.</summary>

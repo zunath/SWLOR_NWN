@@ -232,7 +232,8 @@ namespace SWLOR.Game.Server.Service.SlicingService
 
         private static SpaceSlicingReward RollComponent(SpaceSlicingRewardKind kind, SpaceSlicingRewardKind picked, int tier, Func<int, int> next)
         {
-            var families = RevampComponentCatalog.SalvageFamilies;
+            // A sliced component always carries a trait, so families with none (life support) are left out.
+            var families = RevampComponentCatalog.SalvageFamilies.Where(x => ShipTraitRules.Pool(x, ShipTraitKind.Common).Count > 0).ToList();
             var family = families[next(families.Count)];
             var traits = ShipTraitRules.Pool(family, kind == SpaceSlicingRewardKind.RareComponent ? ShipTraitKind.Rare : ShipTraitKind.Common);
             if (traits.Count == 0)

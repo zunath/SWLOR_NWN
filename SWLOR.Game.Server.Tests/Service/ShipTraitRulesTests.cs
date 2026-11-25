@@ -41,10 +41,17 @@ public class ShipTraitRulesTests
     }
 
     [Test]
-    public void EverySalvageFamily_HasCommonAndRareTraits_AndLifeSupportIsNeverSalvaged()
+    public void EverySalvageFamily_HasCommonAndRareTraits_ExceptLifeSupport_WhichCraftingAloneVaries()
     {
-        RevampComponentCatalog.SalvageFamilies.Should().HaveCount(8).And.NotContain(ShipComponentFamily.LifeSupportSystem);
-        foreach (var family in RevampComponentCatalog.SalvageFamilies)
+        RevampComponentCatalog.SalvageFamilies.Should().HaveCount(9).And.Contain(ShipComponentFamily.LifeSupportSystem,
+            "an engineer without a farmer can salvage life support for the big hulls");
+        ShipTraitRules.Pool(ShipComponentFamily.LifeSupportSystem, ShipTraitKind.Common).Should().BeEmpty();
+        ShipTraitRules.Pool(ShipComponentFamily.LifeSupportSystem, ShipTraitKind.Rare).Should().BeEmpty();
+        ShipTraitRules.Pool(ShipComponentFamily.LifeSupportSystem, ShipTraitKind.Crafted).Select(x => x.Type)
+            .Should().BeEquivalentTo(new[] { ShipComponentTraitType.Redundant, ShipComponentTraitType.Compact }, "crafting picks the variant");
+        RevampComponentCatalog.Recipes.Where(x => x.Family == ShipComponentFamily.LifeSupportSystem && x.Trait != ShipComponentTraitType.None)
+            .Should().HaveCount(10).And.OnlyContain(x => x.Skill == SWLOR.Game.Server.Service.SkillService.SkillType.Agriculture && (int)x.RecipeType >= 8185);
+        foreach (var family in RevampComponentCatalog.SalvageFamilies.Where(x => x != ShipComponentFamily.LifeSupportSystem))
         {
             ShipTraitRules.Pool(family, ShipTraitKind.Common).Should().NotBeEmpty(family.ToString());
             ShipTraitRules.Pool(family, ShipTraitKind.Rare).Should().NotBeEmpty(family.ToString());
@@ -346,6 +353,22 @@ public class ShipTraitRulesTests
     }
 
     [Test]
+    public void SalvagedLifeSupport_ComesPlain_SoOnlyCraftingGivesAVariant()
+    {
+        var family = RevampComponentCatalog.SalvageFamilies.IndexOf(ShipComponentFamily.LifeSupportSystem);
+
+        var result = ShipTraitRules.RollSalvagedComponent(4, WreckDifficulty.Boss, 0, Rolls(0, family, 0, 0));
+        result.Should().NotBeNull();
+        result!.Value.Resref.Should().Be("sc_lifesup_4");
+        result.Value.Trait.Should().Be(ShipComponentTraitType.None, "even a rare roll gives a plain unit");
+        var root = new System.IO.DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (root != null && !System.IO.File.Exists(System.IO.Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
+            root = root.Parent;
+        System.IO.File.ReadAllText(System.IO.Path.Combine(root!.FullName, "SWLOR.Game.Server", "Service", "SlicingService", "SlicingReward.cs"))
+            .Should().Contain(".Where(x => ShipTraitRules.Pool(x, ShipTraitKind.Common).Count > 0)", "a sliced component always carries a trait");
+    }
+
+    [Test]
     public void TierSixWrecks_YieldTierFiveComponents()
     {
         ShipTraitRules.RollSalvagedComponent(6, WreckDifficulty.Boss, 0, Rolls(0, 1, 99, 0))!.Value.Resref.Should().EndWith("_5");
@@ -356,6 +379,8 @@ public class ShipTraitRulesTests
     {
         var random = new System.Random(7);
         var components = 0;
+        var traited = 0;
+        var plain = 0;
         var rare = 0;
         const int Cycles = 200000;
         for (var i = 0; i < Cycles; i++)
@@ -363,11 +388,19 @@ public class ShipTraitRulesTests
             var result = ShipTraitRules.RollSalvagedComponent(2, WreckDifficulty.Elite, 20, random.Next);
             if (result == null) continue;
             components++;
+            if (result.Value.Trait == ShipComponentTraitType.None)
+            {
+                plain++;
+                continue;
+            }
+
+            traited++;
             if (ShipTraitRules.Get(result.Value.Trait).Kind == ShipTraitKind.Rare) rare++;
         }
 
         (components / (double)Cycles).Should().BeApproximately(0.20, 0.01);
-        (rare / (double)components).Should().BeApproximately(0.30, 0.01, "elite 10% + Trait Hunter II 20");
+        (plain / (double)components).Should().BeApproximately(1.0 / 9, 0.01, "life support, one family in nine, comes plain");
+        (rare / (double)traited).Should().BeApproximately(0.30, 0.01, "elite 10% + Trait Hunter II 20");
     }
 }
 

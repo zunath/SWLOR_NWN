@@ -301,8 +301,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>
         /// Rolls one salvage cycle's salvaged component. <paramref name="next"/> returns a number from 0 to its
         /// argument minus 1. Returns null when the cycle yields none. The component is of the wreck's tier (tier 6
-        /// wrecks give tier 5) and a random salvage family, and always carries a trait: a rare one at
-        /// <see cref="RareTraitPercent"/>, otherwise one of the family's common traits.
+        /// wrecks give tier 5) and a random salvage family, and carries a trait: a rare one at
+        /// <see cref="RareTraitPercent"/>, otherwise one of the family's common traits. A family with neither (life
+        /// support, whose variants only crafting makes) comes plain.
         /// </summary>
         public static (string Resref, ShipComponentTraitType Trait)? RollSalvagedComponent(
             int wreckTier,
@@ -320,7 +321,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
             if (pool.Count == 0)
                 pool = Pool(family, ShipTraitKind.Common);
 
-            return (ComponentResref(family, wreckTier), pool[next(pool.Count)].Type);
+            return (ComponentResref(family, wreckTier), pool.Count == 0 ? ShipComponentTraitType.None : pool[next(pool.Count)].Type);
         }
     }
 }

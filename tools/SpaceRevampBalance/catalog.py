@@ -299,17 +299,38 @@ def hull_bill(role, adv, maker=None):
     return bill + [(res, q) for res, q in ((refined, ore), (elec, wires)) if q > 0]
 
 
+# Crafted variants added after the component block (life support, 2026-11-25). Their recipe IDs follow the highest
+# RecipeType in use (Starship Enhancement - Cargo V, 8184), so no earlier value moves.
+LATE_VARIANT_TRAITS = {"Redundant", "Compact"}
+LATE_VARIANT_RECIPE_START = 8185
+
+
 def component_recipes(recipe_start):
     """Every component recipe: per family and tier the plain component, then one recipe per crafted variant trait."""
     out, recipe = [], recipe_start
     for (short, enum, name, skill, model, _base, _sig, _desc) in comp.FAMILIES:
         for t in comp.TIERS:
-            variants = [(None, "", "")] + [(tr[1], tr[1], tr[2]) for tr in comp.traits_for(enum, "Crafted")]
+            variants = [(None, "", "")] + [(tr[1], tr[1], tr[2]) for tr in comp.traits_for(enum, "Crafted")
+                                           if tr[1] not in LATE_VARIANT_TRAITS]
             for trait, suffix, trait_name in variants:
                 label = f"{name} (Tier {t})" + (f": {trait_name}" if trait else "")
                 out.append(dict(RecipeName=f"ShipComponent{enum}{t}{suffix}", RecipeType=recipe, Family=enum, Tier=t,
                                 Resref=comp.resref(short, t), Skill=skill, RecipeLevel=comp.recipe_level(t),
                                 Trait=trait or "None", Name=label, Components=comp.components_for_recipe(enum, t)))
+                recipe += 1
+    return out
+
+
+def late_variant_recipes():
+    """The crafted variants added after the component block (LATE_VARIANT_TRAITS), from LATE_VARIANT_RECIPE_START."""
+    out, recipe = [], LATE_VARIANT_RECIPE_START
+    for (short, enum, name, skill, model, _base, _sig, _desc) in comp.FAMILIES:
+        variants = [tr for tr in comp.traits_for(enum, "Crafted") if tr[1] in LATE_VARIANT_TRAITS]
+        for t in comp.TIERS:
+            for tr in variants:
+                out.append(dict(RecipeName=f"ShipComponent{enum}{t}{tr[1]}", RecipeType=recipe, Family=enum, Tier=t,
+                                Resref=comp.resref(short, t), Skill=skill, RecipeLevel=comp.recipe_level(t),
+                                Trait=tr[1], Name=f"{name} (Tier {t}): {tr[2]}", Components=comp.components_for_recipe(enum, t)))
                 recipe += 1
     return out
 
@@ -567,10 +588,10 @@ def stand_in_families(hull):
     """The salvage families whose rare-traited component fills an Advanced hull's rare slot or stands in for its rare
     component: on a Capital hull any family; otherwise a family the recipe already takes."""
     if hull["Size"] in comp.RARE_COMPONENT_SIZES:
-        return list(comp.SALVAGE_FAMILIES)
+        return list(comp.RARE_TRAIT_FAMILIES)
     resrefs = {res for res, _q in hull["Components"]}
     families = {f[1] for f in comp.FAMILIES for t in comp.TIERS if comp.resref(f[0], t) in resrefs}
-    return [f for f in comp.SALVAGE_FAMILIES if f in families]
+    return [f for f in comp.RARE_TRAIT_FAMILIES if f in families]
 
 
 def advanced_cost_rows(hulls):
@@ -774,7 +795,11 @@ def full_catalog():
     assert CARGO_RECIPE_START > max(others), "CARGO_RECIPE_START must follow every other generated recipe"
     cargo = [x["RecipeType"] for x in steps if x.get("Family") in CARGO_LATE_FAMILIES]
     assert EWAR_RECIPE_START > max(cargo), "EWAR_RECIPE_START must follow the Cargo Expander recipes"
-    return steps + named, hulls, recipes + rare + capital_part_recipes()
+    late_variants = late_variant_recipes()
+    assert LATE_VARIANT_RECIPE_START > max(x["RecipeType"] for x in steps + named + hulls + recipes + rare + capital_part_recipes()
+                                           + ammo_recipes() if x["RecipeType"] is not None), \
+        "LATE_VARIANT_RECIPE_START must follow every other generated recipe"
+    return steps + named, hulls, recipes + late_variants + rare + capital_part_recipes()
 
 
 def catalog():

@@ -146,7 +146,7 @@ MINIMUM_CREDITS = 25
 
 def component_value(tier):
     """A salvage-family component of the tier at the store markdown (traits do not change its price)."""
-    costs = [trade.item_cost(comp.resref(comp.family(f)[0], tier)) for f in comp.SALVAGE_FAMILIES]
+    costs = [trade.item_cost(comp.resref(comp.family(f)[0], tier)) for f in comp.COMMON_TRAIT_FAMILIES]
     return sum(costs) / len(costs) * MARKDOWN
 
 

@@ -25,6 +25,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
         LowPower = 15,
         Bulk = 16,
         Precision = 17,
+        Redundant = 18,
+        Compact = 19,
         Tuned = 21,
         Aligned = 22,
         Insulated = 23,

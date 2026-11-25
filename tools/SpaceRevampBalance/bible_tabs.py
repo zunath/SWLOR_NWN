@@ -696,7 +696,7 @@ def components_tab():
     s.title("Components: one item per family and tier (resref sc_<family>_<tier>, ESS9, one per inventory slot)")
     s.note("Each component costs two material units (one base, one signature material) and stands in for two units of the "
            "module or hull bill it joins. Recipe levels 2 / 10 / 20 / 30 / 40 for tiers 1-5 (required rank = level - 3). "
-           "Each family except Life Support also comes from salvage.")
+           "Every family also comes from salvage; a salvaged Life Support System comes plain, since only crafting makes its variants.")
     used_by = {}
     for fam, target in comp.MODULE_COMPONENT.items():
         used_by.setdefault(target, []).append(fam)
@@ -798,8 +798,9 @@ def components_tab():
 
     s.title("Salvaged components (Salvager on a wreck)")
     s.note("Each salvage cycle rolls once for a salvaged component of the wreck's tier (tier 6 gives tier 5) and a random "
-           "family other than Life Support. It always carries a trait: rare at the rare-trait chance, else one of the "
-           "family's common traits. Trait Hunter I / II (Gathering 20 / 40) add 10 / 20 points to the rare-trait chance.")
+           "generic family. It carries a trait: rare at the rare-trait chance, else one of the family's common traits; a "
+           "Life Support System has neither and comes plain. Trait Hunter I / II (Gathering 20 / 40) add 10 / 20 points to "
+           "the rare-trait chance. Data sites give only components with a trait, so never life support.")
     s.table(["Wreck", "Component per cycle", "Rare trait", "With Trait Hunter I", "With Trait Hunter II", "", "", ""],
             [[d, f"{comp.SALVAGED_COMPONENT_PERCENT[d]}%", f"{comp.RARE_TRAIT_PERCENT[d]}%",
               f"{comp.RARE_TRAIT_PERCENT[d] + comp.TRAIT_HUNTER[0]}%", f"{comp.RARE_TRAIT_PERCENT[d] + comp.TRAIT_HUNTER[1]}%",

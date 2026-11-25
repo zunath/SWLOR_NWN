@@ -619,10 +619,20 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition
             [RecipeType.ShipComponentThrusterAssembly5Boosted] = new ForgeParameters(rangeCenter: 63, rangeWidth: 26, coolingRate: 4, startingThermal: 63, shapeShare: 50),
             [RecipeType.ShipComponentThrusterAssembly5Vectored] = new ForgeParameters(rangeCenter: 60, rangeWidth: 24, coolingRate: 4, startingThermal: 62, shapeShare: 50),
             [RecipeType.ShipComponentLifeSupportSystem1] = new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 14, targetSweet: 0, targetSpice: 21, innerRadius: 8, outerRadius: 19, freshness: 85),
+            [RecipeType.ShipComponentLifeSupportSystem1Compact] = new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 17, targetSweet: 0, targetSpice: 18, innerRadius: 11, outerRadius: 22, freshness: 82),
+            [RecipeType.ShipComponentLifeSupportSystem1Redundant] = new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 19, targetSweet: 3, targetSpice: 19, innerRadius: 8, outerRadius: 21, freshness: 88),
             [RecipeType.ShipComponentLifeSupportSystem2] = new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 17, targetSweet: 8, targetSpice: 14, innerRadius: 8, outerRadius: 21, freshness: 85),
+            [RecipeType.ShipComponentLifeSupportSystem2Compact] = new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 17, targetSweet: 3, targetSpice: 17, innerRadius: 9, outerRadius: 23, freshness: 83),
+            [RecipeType.ShipComponentLifeSupportSystem2Redundant] = new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 11, targetSweet: 6, targetSpice: 14, innerRadius: 7, outerRadius: 18, freshness: 84),
             [RecipeType.ShipComponentLifeSupportSystem3] = new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 26, targetSweet: 3, targetSpice: 8, innerRadius: 10, outerRadius: 18, freshness: 89),
+            [RecipeType.ShipComponentLifeSupportSystem3Compact] = new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 15, targetSweet: 6, targetSpice: 17, innerRadius: 8, outerRadius: 22, freshness: 85),
+            [RecipeType.ShipComponentLifeSupportSystem3Redundant] = new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 17, targetSweet: 0, targetSpice: 16, innerRadius: 10, outerRadius: 22, freshness: 89),
             [RecipeType.ShipComponentLifeSupportSystem4] = new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 7, targetSweet: 4, targetSpice: 19, innerRadius: 6, outerRadius: 20, freshness: 89),
+            [RecipeType.ShipComponentLifeSupportSystem4Compact] = new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 14, targetSweet: 2, targetSpice: 20, innerRadius: 7, outerRadius: 23, freshness: 83),
+            [RecipeType.ShipComponentLifeSupportSystem4Redundant] = new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 8, targetSweet: 0, targetSpice: 24, innerRadius: 7, outerRadius: 21, freshness: 83),
             [RecipeType.ShipComponentLifeSupportSystem5] = new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 19, targetSweet: 5, targetSpice: 15, innerRadius: 4, outerRadius: 19, freshness: 86),
+            [RecipeType.ShipComponentLifeSupportSystem5Compact] = new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 17, targetSweet: 3, targetSpice: 15, innerRadius: 7, outerRadius: 22, freshness: 83),
+            [RecipeType.ShipComponentLifeSupportSystem5Redundant] = new KitchenParameters(dish: KitchenDish.Roast, targetSavory: 18, targetSweet: 0, targetSpice: 26, innerRadius: 6, outerRadius: 24, freshness: 86),
         };
     }
 }

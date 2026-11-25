@@ -64,7 +64,10 @@ FAMILIES = [
     ("lifesup", "LifeSupportSystem", "Life Support System", "Agriculture", 237, FIBERPLAST.get, HERB.get,
      "A hydroponic air and water system for freighters, cruisers and command ships."),
 ]
-SALVAGE_FAMILIES = [f[1] for f in FAMILIES if f[1] != "LifeSupportSystem"]  # Appendix D: life support has no salvage
+# Every generic family comes from salvage. Life support joined on 2026-11-25 (player feedback, owner decision) so an
+# engineer without a farmer can still build the big hulls; a salvaged one comes plain, since its family has no common
+# or rare traits, so crafting it is how you choose a variant.
+SALVAGE_FAMILIES = [f[1] for f in FAMILIES]
 
 
 def resref(short, tier):
@@ -141,6 +144,10 @@ TRAITS = [
     (15, "LowPower", "Low-Power", "Crafted", ["SensorSuite"], [("CapacitorCost", -25), ("Accuracy", -3)]),
     (16, "Bulk", "Bulk", "Crafted", ["ExtractionHead"], [("Yield", 2), ("CapacitorCost", 25)]),
     (17, "Precision", "Precision", "Crafted", ["ExtractionHead"], [("RareFind", 5), ("Yield", -1)]),
+    # Life support variants (2026-11-25): crafting picks one, salvage never yields one. Backup systems add mass and
+    # survivability; a compact unit is lighter and more fragile (the Hull Frame pair's sizes).
+    (18, "Redundant", "Redundant", "Crafted", ["LifeSupportSystem"], [("Hull", 6), ("Speed", -2)]),
+    (19, "Compact", "Compact", "Crafted", ["LifeSupportSystem"], [("Speed", 2), ("Hull", -5)]),
     (21, "Tuned", "Tuned", "Common", ["EnergyEmitter", "OrdnanceAssembly"], [("Damage", 3)]),
     (22, "Aligned", "Aligned", "Common", ["EnergyEmitter", "OrdnanceAssembly", "SensorSuite"], [("Accuracy", 3)]),
     (23, "Insulated", "Insulated", "Common", ["EnergyEmitter", "ShipReactor", "ShieldProjector", "SensorSuite", "ExtractionHead"], [("CapacitorCost", -20)]),
@@ -338,6 +345,12 @@ def effect_text(effects):
 
 def traits_for(family, kind):
     return [t for t in TRAITS if family in t[4] and t[3] == kind]
+
+
+# The salvage families with rare traits (a rare-traited one can fill an Advanced hull's rare slot) and with common
+# traits (data sites give only traited components): every family but life support.
+RARE_TRAIT_FAMILIES = [f for f in SALVAGE_FAMILIES if traits_for(f, "Rare")]
+COMMON_TRAIT_FAMILIES = [f for f in SALVAGE_FAMILIES if traits_for(f, "Common")]
 
 
 def components_for_recipe(family, tier):

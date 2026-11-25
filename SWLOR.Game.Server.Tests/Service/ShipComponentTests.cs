@@ -125,7 +125,11 @@ public class ShipComponentTests
     [Test]
     public void ComponentRecipes_FollowTheHullsAndSalvageFamiliesWithoutMovingAnyEarlierNumber()
     {
-        var recipes = GenericRecipes.ToList();
+        var late = GenericRecipes.Where(x => (int)x.RecipeType >= 8185).ToList();
+        late.Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(8185, 10),
+            "the life support variants (2026-11-25) follow the highest RecipeType in use, so no earlier number moves");
+        late.Should().OnlyContain(x => x.Family == ShipComponentFamily.LifeSupportSystem);
+        var recipes = GenericRecipes.Where(x => (int)x.RecipeType < 8185).ToList();
         recipes.Should().HaveCount(130, "9 families x 5 tiers, plain plus 17 crafted variants per tier");
         var first = RevampModuleCatalog.Steps.Where(x => x.Family is not (ShipModuleFamily.ProbeLauncher or ShipModuleFamily.DataAnalyzer or ShipModuleFamily.CloakingDevice or ShipModuleFamily.CargoExpander or ShipModuleFamily.IonWeb or ShipModuleFamily.Interdictor or ShipModuleFamily.Jammer or ShipModuleFamily.TargetPainter or ShipModuleFamily.Afterburner) && !x.Named).Select(x => (int)x.RecipeType)
             .Concat(RevampShipCatalog.Hulls.Select(x => (int)x.RecipeType)).Max() + 1;
@@ -224,7 +228,7 @@ public class ShipComponentTests
     public void ComponentRecipeDefinition_RegistersEveryRecipeInTheShipComponentCategory()
     {
         var recipes = new ShipComponentRecipes().BuildRecipes();
-        recipes.Should().HaveCount(136, "130 generic component recipes, the three rare components (W9b) and the three capital parts (W11o)");
+        recipes.Should().HaveCount(146, "140 generic component recipes (the 10 life support variants included), the three rare components (W9b) and the three capital parts (W11o)");
 
         foreach (var row in RevampComponentCatalog.Recipes)
         {
@@ -524,7 +528,7 @@ public class ShipComponentTests
         {
             ShipComponentFamily.HullFrame, ShipComponentFamily.ShipReactor, ShipComponentFamily.ThrusterAssembly, ShipComponentFamily.EnergyEmitter,
         });
-        ShipRareComponentRules.StandInFamilies(Centurion).Should().BeEquivalentTo(RevampComponentCatalog.SalvageFamilies);
+        ShipRareComponentRules.StandInFamilies(Centurion).Should().BeEquivalentTo(RevampComponentCatalog.SalvageFamilies.Where(x => x != ShipComponentFamily.LifeSupportSystem));
         ShipRareComponentRules.StandInFamilies(Striker).Should().BeEmpty();
     }
 

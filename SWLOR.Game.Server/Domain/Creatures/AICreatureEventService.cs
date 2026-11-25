@@ -11,13 +11,14 @@ namespace SWLOR.Game.Server.Domain.Creatures
 {
     /// <summary>
     /// The creature event entry points: heartbeat, combat round end, conversation, attacked, damaged, death, disturbed,
-    /// spawn, blocked and the DM AI toggle. Moved here unchanged from <see cref="AIService"/>; each calls the core, the leash
-    /// and the decision engine through <see cref="IAIService"/>.
+    /// spawn, blocked and the DM AI toggle. Moved here unchanged from <see cref="AIService"/>; each calls the core and the leash
+    /// through <see cref="IAIService"/> and the decision engine through <see cref="IAIDecisionService"/>.
     /// </summary>
     public class AICreatureEventService : IAICreatureEventService
     {
         private readonly IActivityService _activity;
         private readonly IAIService _ai;
+        private readonly IAIDecisionService _decision;
         private readonly IConversationMenuService _conversationMenu;
         private readonly IConversationService _conversation;
         private readonly IEnmityService _enmity;
@@ -26,6 +27,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         public AICreatureEventService(
             IActivityService activity,
             IAIService ai,
+            IAIDecisionService decision,
             IConversationMenuService conversationMenu,
             IConversationService conversation,
             IEnmityService enmity,
@@ -33,6 +35,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         {
             _activity = activity;
             _ai = ai;
+            _decision = decision;
             _conversationMenu = conversationMenu;
             _conversation = conversation;
             _enmity = enmity;
@@ -85,7 +88,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 if (_ai.TryStartLeashEvade(creature, GetHighestEnmityTarget(creature)))
                     return;
 
-                handled = _ai.ProcessTrigger(creature, AITriggerType.CombatRound);
+                handled = _decision.ProcessTrigger(creature, AITriggerType.CombatRound);
             }
 
             if (!handled)
@@ -126,7 +129,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             if (_ai.TryStartLeashEvade(creature, GetHighestOrEventTarget(creature, GetLastAttacker(creature))))
                 return;
 
-            if (!_ai.ProcessTrigger(creature, AITriggerType.Attacked, GetLastAttacker(creature)))
+            if (!_decision.ProcessTrigger(creature, AITriggerType.Attacked, GetLastAttacker(creature)))
                 AttackHighestEnmityTarget(creature);
         }
 
@@ -146,7 +149,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             if (_ai.TryStartLeashEvade(creature, GetHighestOrEventTarget(creature, GetLastDamager(creature))))
                 return;
 
-            if (!_ai.ProcessTrigger(creature, AITriggerType.Damaged, GetLastDamager(creature)))
+            if (!_decision.ProcessTrigger(creature, AITriggerType.Damaged, GetLastDamager(creature)))
                 AttackHighestEnmityTarget(creature);
         }
 
@@ -156,7 +159,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
         public void CreatureDeath()
         {
-            _ai.ProcessTrigger(OBJECT_SELF, AITriggerType.Death);
+            _decision.ProcessTrigger(OBJECT_SELF, AITriggerType.Death);
             _ai.RemoveFromAlliesCache();
         }
 
@@ -170,7 +173,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             if (!CreatureAIRules.IsCreatureAIEnabled(creature))
                 return;
 
-            if (!_ai.ProcessTrigger(creature, AITriggerType.Disturbed))
+            if (!_decision.ProcessTrigger(creature, AITriggerType.Disturbed))
                 AttackHighestEnmityTarget(creature);
         }
 
@@ -188,7 +191,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             LoadAggroEffect();
             DoVFX();
             SetLocalLocation(creature, "HOME_LOCATION", GetLocation(creature));
-            _ai.ProcessTrigger(creature, AITriggerType.Spawn);
+            _decision.ProcessTrigger(creature, AITriggerType.Spawn);
         }
 
         /// <summary>

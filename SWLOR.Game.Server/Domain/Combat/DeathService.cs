@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatusEffectService _statusEffect;
         private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly ICombatRecorderService _combatRecorder;
+        private readonly ICombatRecordDamageService _combatRecordDamage;
         private readonly ICreatureRevivedListener[] _revivedListeners;
         private readonly ICombatDamageTakenService _damageTaken;
 
@@ -47,6 +48,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatusEffectService statusEffect,
             IStatusEffectApplicationService statusEffectApplication,
             ICombatRecorderService combatRecorder,
+            ICombatRecordDamageService combatRecordDamage,
             IEnumerable<ICreatureRevivedListener> revivedListeners,
             ICombatDamageTakenService damageTaken)
         {
@@ -59,6 +61,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _statusEffect = statusEffect;
             _statusEffectApplication = statusEffectApplication;
             _combatRecorder = combatRecorder;
+            _combatRecordDamage = combatRecordDamage;
             _revivedListeners = revivedListeners.ToArray();
             _damageTaken = damageTaken;
         }
@@ -376,9 +379,9 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         protected virtual bool IsRecording() => _combatRecorder.IsRecording;
 
-        protected virtual void RecordSubdual(uint subdued, uint subduedBy) => _combatRecorder.RecordSubdual(subdued, subduedBy);
+        protected virtual void RecordSubdual(uint subdued, uint subduedBy) => _combatRecordDamage.RecordSubdual(subdued, subduedBy);
 
-        protected virtual void RecordRespawn(uint player) => _combatRecorder.RecordRespawn(player);
+        protected virtual void RecordRespawn(uint player) => _combatRecordDamage.RecordRespawn(player);
 
         protected virtual IDisposable BeginRespawnAttribution() => _combatRecorder.BeginRespawnAttribution();
 

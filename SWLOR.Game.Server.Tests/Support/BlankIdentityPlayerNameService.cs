@@ -7,9 +7,9 @@ namespace SWLOR.Game.Server.Tests.Support;
 public sealed class BlankIdentityPlayerNameService : PlayerNameService
 {
     public BlankIdentityPlayerNameService(IDBService db)
-        : base(db, null!, null!, FacadeForwarder.LazyFor<IDisguiseService>(), FacadeForwarder.LazyFor<IPlayerDescriptorService>())
+        : base(db, FacadeForwarder.LazyFor<IDisguiseService>(), FacadeForwarder.LazyFor<IPlayerDescriptorService>())
     {
-        KnownNames = new PlayerKnownNameService(db, this, null!);
+        KnownNames = new PlayerKnownNameService(db, this, null!, null!);
     }
 
     /// <summary>The part that validates a known name, over this instance.</summary>

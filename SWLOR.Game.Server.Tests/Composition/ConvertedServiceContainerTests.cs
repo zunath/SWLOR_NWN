@@ -169,8 +169,8 @@ public class ConvertedServiceContainerTests
             .Concat(new[] { "IStatusResistance" })
             // The recorder split: the state and queue of a recording, a store with no services.
             .Concat(new[] { "ICombatRecordSession" })
-            // The player name split: the display name read Foundation owns, which the name service answers.
-            .Concat(new[] { "IDisplayNameLookup" })
+            // The player name split: the display name read Foundation owns, which the name service answers, and the stale portrait tell refusal Character owns, which the chat portrait service answers.
+            .Concat(new[] { "IDisplayNameLookup", "IPortraitTellGuard" })
             .ToArray();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);
@@ -197,12 +197,12 @@ public class ConvertedServiceContainerTests
     }
 
     [Test]
-    public void Combat_lists_its_thirty_three_parts_and_each_part_has_a_GameServices_property()
+    public void Combat_lists_its_thirty_six_parts_and_each_part_has_a_GameServices_property()
     {
         // The cases above would pass vacuously if the list lost its parts. The ability split added the impact
-        // geometry and the ability magnitude; the combat split added the damage roll, the defense memory, the rate modifiers, the repeated-target stacks, the damage taken effects, the damage reflection, the ability activation cost, defense, offense and weapon parts, the dealt effects, the triggered damage, the guarded hit, its effects and the guard retaliation, the queued ability bonuses and the ability hit adjustments.
+        // geometry and the ability magnitude; the combat split added the damage roll, the defense memory, the rate modifiers, the repeated-target stacks, the damage taken effects, the damage reflection, the ability activation cost, defense, offense and weapon parts, the dealt effects, the triggered damage, the auto-attack, critical hit and defeated enemy effects, the guarded hit, its effects and the guard retaliation, the queued ability bonuses and the ability hit adjustments.
         var combat = ConvertedServiceFixtures.Load().Single(service => service.Name == "Combat");
-        combat.Parts.Should().HaveCount(33);
+        combat.Parts.Should().HaveCount(36);
         Rules(combat).Should().NotBeNull();
         combat.Parts.Should().OnlyContain(part => typeof(GameServices).GetProperty(part.Name.Substring(1, part.Name.Length - 1 - "Service".Length), BindingFlags.Public | BindingFlags.Static) != null);
     }

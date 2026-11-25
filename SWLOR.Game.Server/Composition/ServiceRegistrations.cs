@@ -139,6 +139,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPlayerNameService, PlayerNameService>();
             services.AddSingleton<IDisplayNameLookup>(provider => provider.GetRequiredService<IPlayerNameService>());
             services.AddSingleton<IPlayerKnownNameService, PlayerKnownNameService>();
+            services.AddSingleton<IPlayerNameOverrideService, PlayerNameOverrideService>();
             services.AddSingleton<IRaceService, RaceService>();
             services.AddSingleton<IRoleplayXPDetectionService, RoleplayXPDetectionService>();
             services.AddSingleton<ISkillService, SkillService>();
@@ -198,6 +199,9 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatFeedbackService, CombatFeedbackService>();
             services.AddSingleton<ICombatDealtEffectsService, CombatDealtEffectsService>();
             services.AddSingleton<ICombatTriggeredDamageService, CombatTriggeredDamageService>();
+            services.AddSingleton<ICombatAutoAttackEffectsService, CombatAutoAttackEffectsService>();
+            services.AddSingleton<ICombatCriticalHitEffectsService, CombatCriticalHitEffectsService>();
+            services.AddSingleton<ICombatDefeatedEnemyEffectsService, CombatDefeatedEnemyEffectsService>();
             services.AddSingleton<ICombatHitEffectsService, CombatHitEffectsService>();
             services.AddSingleton<ICombatImpactGeometryService, CombatImpactGeometryService>();
             services.AddSingleton<ICombatPointService, CombatPointService>();
@@ -206,6 +210,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatRecordAbilityService, CombatRecordAbilityService>();
             services.AddSingleton<ICombatRecordSession, CombatRecordSessionCore>();
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
+            services.AddSingleton<ICombatRecordDamageService, CombatRecordDamageService>();
             // The same instance, seen through the interfaces the lower domains and the platform own.
             services.AddSingleton<ICombatRecording>(provider => provider.GetRequiredService<ICombatRecorderService>());
             services.AddSingleton<ICharacterRecording>(provider => provider.GetRequiredService<ICombatRecorderService>());
@@ -287,6 +292,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IAIService, AIService>();
             services.AddSingleton<IAICreatureEventService, AICreatureEventService>();
             services.AddSingleton<IAIAggroService, AIAggroService>();
+            services.AddSingleton<IAIDecisionService, AIDecisionService>();
+            services.AddSingleton<IAIActionService, AIActionService>();
             services.AddSingleton<IAIProfileDescription>(provider => provider.GetRequiredService<IAIService>());
             services.AddSingleton<ICombatLeash>(provider => provider.GetRequiredService<IAIService>());
             services.AddSingleton<ICompanionControlStoreService, CompanionControlStoreService>();
@@ -355,6 +362,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IExtraHotbarsStatusService, ExtraHotbarsStatusService>();
             services.AddSingleton<IExtraHotbarsWindowService, ExtraHotbarsWindowService>();
             services.AddSingleton<IChatPortraitTellsService, ChatPortraitTellsService>();
+            // The same instance, seen through the refusal of a stale portrait tell that Character owns.
+            services.AddSingleton<IPortraitTellGuard>(provider => provider.GetRequiredService<IChatPortraitTellsService>());
             services.AddSingleton<IPartyService, PartyService>();
             services.AddSingleton<IPartyRosterService, PartyRosterService>();
             // The same instance, seen through the interface Combat owns for the domains below Social.

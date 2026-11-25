@@ -12,8 +12,8 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// </summary>
 public sealed class DefaultSeamsAIAggroService : AIAggroService
 {
-    public DefaultSeamsAIAggroService(IAIService ai)
-        : base(ai, FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IEspionageInfiltrationService>(), FacadeForwarder.For<IStealthService>())
+    public DefaultSeamsAIAggroService(IAIService ai, IAIDecisionService decision)
+        : base(ai, decision, FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IEspionageInfiltrationService>(), FacadeForwarder.For<IStealthService>())
     {
     }
 

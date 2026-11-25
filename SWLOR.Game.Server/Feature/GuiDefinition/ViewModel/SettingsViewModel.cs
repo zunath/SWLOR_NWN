@@ -473,8 +473,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Apply the vitals display preference immediately (portrait overlay vs. docked window).
             PlayerStatusWindow.ApplyStatusDisplay(Player);
 
-            PlayerName.RefreshNameOverridesForObserver(Player);
-            PlayerName.RefreshNameOverridesForPlayer(Player);
+            PlayerNameOverride.RefreshNameOverridesForObserver(Player);
+            PlayerNameOverride.RefreshNameOverridesForPlayer(Player);
 
             if (timeZoneChanged)
                 HostedEvents.RefreshWindows(Player);

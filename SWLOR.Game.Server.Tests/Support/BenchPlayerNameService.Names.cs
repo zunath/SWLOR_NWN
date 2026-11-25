@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
-/// <summary>The seams the display name and known name code calls: the script-context hook and the disguise and descriptor reads.</summary>
+/// <summary>The seams the display name and known name code calls, and the name override part through the stay-part: the script-context hook and the disguise and descriptor reads.</summary>
 public sealed partial class BenchPlayerNameService
 {
     public Action? ScriptContextEnd { get; private set; }
@@ -12,6 +12,7 @@ public sealed partial class BenchPlayerNameService
     public Dictionary<uint, string> Descriptors { get; } = new();
     public HashSet<uint> ScrambledAccounts { get; } = new();
     public Dictionary<string, string> DescriptorsById { get; } = new();
+    public List<uint> EnsuredDescriptors { get; } = new();
 
     protected override void SubscribeScriptContextEnd(Action handler)
     {
@@ -30,4 +31,10 @@ public sealed partial class BenchPlayerNameService
 
     public override string GetUnknownDisplayNameByPlayerId(string targetPlayerId) =>
         DescriptorsById.GetValueOrDefault(targetPlayerId, "Someone");
+
+    public override bool EnsureUnknownDisplayName(uint player)
+    {
+        EnsuredDescriptors.Add(player);
+        return true;
+    }
 }

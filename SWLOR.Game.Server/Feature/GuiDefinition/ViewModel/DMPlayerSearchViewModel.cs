@@ -373,7 +373,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!result.IsOnline)
                 return "Offline";
 
-            return GetIsObjectValid(onlinePlayer) && PlayerName.IsAfk(onlinePlayer) ? "Online (AFK)" : "Online";
+            return GetIsObjectValid(onlinePlayer) && PlayerNameOverride.IsAfk(onlinePlayer) ? "Online (AFK)" : "Online";
         }
 
         private static string ValueOrNotRecorded(string value)

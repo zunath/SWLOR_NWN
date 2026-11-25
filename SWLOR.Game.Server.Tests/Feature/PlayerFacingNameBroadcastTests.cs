@@ -61,7 +61,7 @@ public class PlayerFacingNameBroadcastTests
             "GuiDefinition",
             "ViewModel",
             "HoloNetViewModel.cs"));
-        holoNetSource.Should().Contain("PlayerName.GetChatDisplayName(receiver, player)");
+        holoNetSource.Should().Contain("PlayerNameOverride.GetChatDisplayName(receiver, player)");
         holoNetSource.Should().Contain("\"HoloNet Broadcast\"");
         holoNetSource.Should().NotContain("authorName + \" broadcasts a new HoloNet message");
 

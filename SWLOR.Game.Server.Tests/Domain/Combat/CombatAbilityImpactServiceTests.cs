@@ -236,10 +236,10 @@ public class CombatAbilityImpactServiceTests
                 _log.Add($"DirectBonus {args[0]} {args[1]}");
                 return _directBonus;
             });
-        var hitEffects = ScriptedProxy.Create<ICombatHitEffectsService>(out var hitEffectCalls);
-        hitEffectCalls
-            .On(nameof(ICombatHitEffectsService.ApplySourceStatusStackEffects), args => Log($"SourceStack {args[0]} {args[1]}"))
-            .On(nameof(ICombatHitEffectsService.SpreadPoisonFromTarget), args => Log($"SpreadPoison {args[0]} {args[1]}"));
+        var autoAttackEffects = ScriptedProxy.Create<ICombatAutoAttackEffectsService>(out var autoAttackEffectCalls);
+        autoAttackEffectCalls.On(nameof(ICombatAutoAttackEffectsService.ApplySourceStatusStackEffects), args => Log($"SourceStack {args[0]} {args[1]}"));
+        var defeatedEnemyEffects = ScriptedProxy.Create<ICombatDefeatedEnemyEffectsService>(out var defeatedEnemyEffectCalls);
+        defeatedEnemyEffectCalls.On(nameof(ICombatDefeatedEnemyEffectsService.SpreadPoisonFromTarget), args => Log($"SpreadPoison {args[0]} {args[1]}"));
         var triggeredDamage = ScriptedProxy.Create<ICombatTriggeredDamageService>(out var triggeredDamageCalls);
         triggeredDamageCalls.On(nameof(ICombatTriggeredDamageService.ApplyTriggeredDamage), args =>
         {
@@ -362,7 +362,7 @@ public class CombatAbilityImpactServiceTests
             return default(CombatRecordAttributionScope);
         });
 
-        return new CombatAbilityImpactService(queries, resources, timing, activity, hitEffects, triggeredDamage, guardedHitEffects, damageTakenEffects, stat, statusEffect,
+        return new CombatAbilityImpactService(queries, resources, timing, activity, autoAttackEffects, defeatedEnemyEffects, triggeredDamage, guardedHitEffects, damageTakenEffects, stat, statusEffect,
             statusApplication, statusDuration, temporary, ability, enmity, _partyProxy, recorder, pairedRangedTraits);
     }
 

@@ -26,11 +26,13 @@ public sealed partial class TestAIService : AIService
     private readonly AIBench _bench;
 
     public TestAIService(AIBench bench, IPartyRoster party, ICompanionLookup beastMastery, IDMPresenceService dmPresence)
-        : base(party, beastMastery, dmPresence, FacadeForwarder.For<IAbilityActivationService>(), FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICompanionControlStoreService>(), FacadeForwarder.For<ICompanionTargetAuthorityService>(), FacadeForwarder.LazyFor<IEnmityService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatusEffectService>())
+        : base(party, beastMastery, dmPresence, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.LazyFor<IEnmityService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatusEffectService>())
     {
         _bench = bench;
-        Events = new TestAICreatureEventService(bench, this);
-        Aggro = new TestAIAggroService(bench, this);
+        Action = new TestAIActionService(bench, this);
+        Decision = new TestAIDecisionService(this, Action);
+        Events = new TestAICreatureEventService(bench, this, Decision);
+        Aggro = new TestAIAggroService(bench, this, Decision);
     }
 
     /// <summary>The enmity tables: enemy, then each creature on its table with the amount.</summary>
@@ -100,9 +102,9 @@ public sealed partial class TestAIService : AIService
     /// <summary>The aggro-aura handlers and proximity enmity (part AI-3); it reaches the core and the enmity model through this instance.</summary>
     public TestAIAggroService Aggro { get; }
 
-    /// <summary>The trigger throttle, phase and boss timer (part AI-4).</summary>
-    public TestAIService Decision => this;
+    /// <summary>The trigger throttle, phase and boss timer (part AI-4); it reaches the core and the enmity model through this instance.</summary>
+    public TestAIDecisionService Decision { get; }
 
-    /// <summary>The action scoring, targeting and execution (part AI-5).</summary>
-    public TestAIService Action => this;
+    /// <summary>The action scoring, targeting and execution (part AI-5); it reaches the core and the enmity model through this instance.</summary>
+    public TestAIActionService Action { get; }
 }

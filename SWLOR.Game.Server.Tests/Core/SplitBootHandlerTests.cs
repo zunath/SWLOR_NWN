@@ -39,6 +39,8 @@ public class SplitBootHandlerTests
         "SWLOR.Game.Server.Service.StatusEffect.CacheData",
         // Creatures split: the stealth aggro listener's registration splits out of AI.CacheAIData.
         "SWLOR.Game.Server.Service.AI.CacheAIData",
+        // Combat services split: the recorder damage part's session listener registers out of Combat.LoadDamageTypes.
+        "SWLOR.Game.Server.Service.Combat.LoadDamageTypes",
     };
 
     private static IReadOnlyList<string[]> Splits()

@@ -156,7 +156,7 @@ public class DisguiseServiceTests
         pages.Enqueue(Enumerable.Range(0, 50).Select(i => new PlayerDisguise { Id = "a" + i, PrivateName = "n" + (99 - i) }).ToList());
         pages.Enqueue(new List<PlayerDisguise> { new() { Id = "last", PrivateName = "n00" } });
         script.On("Search", _ => pages.Dequeue());
-        var service = new DisguiseWorld.BenchDisguises(db, _world.Cache, _world.Gui, _world.DmPresence, _world.PlayerName, _world.PlayerKnownName,
+        var service = new DisguiseWorld.BenchDisguises(db, _world.Cache, _world.Gui, _world.DmPresence, _world.PlayerName, _world.PlayerNameOverride, _world.PlayerKnownName,
             _world.Descriptors, _world.Logs);
 
         var all = service.GetDisguises("p", false);
@@ -674,7 +674,7 @@ public class DisguiseServiceTests
         pages.Enqueue(Enumerable.Range(0, 50).Select(i => new PlayerDisguise { Id = "a" + i, DateLastActivated = DateTime.UtcNow }).ToList());
         pages.Enqueue(new List<PlayerDisguise> { new() { Id = "last", DateLastActivated = DateTime.UtcNow } });
         script.On("Search", _ => pages.Dequeue()).On("Set", _ => null);
-        var service = new DisguiseWorld.BenchDisguises(db, _world.Cache, _world.Gui, _world.DmPresence, _world.PlayerName, _world.PlayerKnownName,
+        var service = new DisguiseWorld.BenchDisguises(db, _world.Cache, _world.Gui, _world.DmPresence, _world.PlayerName, _world.PlayerNameOverride, _world.PlayerKnownName,
             _world.Descriptors, _world.Logs);
 
         service.ResetActivationCooldowns(Owner, DisguiseWorld.Staff).Should().Be(51);

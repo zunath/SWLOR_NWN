@@ -41,9 +41,10 @@ public static class CharacterCompanionsSource
         new[]
         {
             "SWLOR.Game.Server/Domain/Character/PlayerNameService.cs",
-            "SWLOR.Game.Server/Domain/Character/PlayerKnownNameService.cs"
+            "SWLOR.Game.Server/Domain/Character/PlayerKnownNameService.cs",
+            "SWLOR.Game.Server/Domain/Character/PlayerNameOverrideService.cs"
         },
-        new HashSet<string>(StringComparer.Ordinal) { "IPlayerNameService", "IPlayerKnownNameService" });
+        new HashSet<string>(StringComparer.Ordinal) { "IPlayerNameService", "IPlayerKnownNameService", "IPlayerNameOverrideService" });
 
     /// <summary>The services this reader covers, in the order the map lists them.</summary>
     public static IReadOnlyList<ServiceSource> Services => new[] { Perk, Skill, PlayerName };

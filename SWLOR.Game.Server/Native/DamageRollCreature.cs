@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Native
 
             if (isLandedAttack)
             {
-                damage = GameServices.CombatHitEffects.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
+                damage = GameServices.CombatAutoAttackEffects.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
             }
             var canApplyRandomFlatBonusesThisDamage = damage > 0;
             var pairedShot = RangedWeaponAttackContext.GetRoll(attacker.m_idSelf, target.m_idSelf,

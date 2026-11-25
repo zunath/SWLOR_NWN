@@ -48,7 +48,7 @@ public class DMPossessionBroadcastTests
                 {{Method("Core/ObjectSnapshot.cs", "Capture")}}
             }
 
-            public static class PlayerName
+            public static class PlayerNameOverride
             {
                 public static string GetChatDisplayName(uint observer, uint target) => $"[{target} as seen by {observer}]";
             }

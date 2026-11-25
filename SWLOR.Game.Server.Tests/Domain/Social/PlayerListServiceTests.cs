@@ -161,7 +161,7 @@ public class PlayerListServiceTests
     private class TestableService : PlayerListService
     {
         public TestableService(IDBService db, IPartyService party)
-            : base(db, party, FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.LazyFor<IDisguiseService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IHoloComService>(), FacadeForwarder.LazyFor<IPlayerNameService>(), FacadeForwarder.LazyFor<ISpaceService>())
+            : base(db, party, FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.LazyFor<IDisguiseService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IHoloComService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.LazyFor<IPlayerNameOverrideService>(), FacadeForwarder.LazyFor<ISpaceService>())
         {
         }
 

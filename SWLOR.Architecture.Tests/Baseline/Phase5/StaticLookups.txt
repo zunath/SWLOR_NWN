@@ -274,7 +274,7 @@ SWLOR.Game.Server.Tests/AI/AbilityAISettingsSnapshotTests.cs | 2
 SWLOR.Game.Server.Tests/AI/CompanionControlPolicyTests.cs | 2
 SWLOR.Game.Server.Tests/Composition/ConvertedServiceContainerTests.cs | 5
 SWLOR.Game.Server.Tests/Composition/FacadeCacheTests.cs | 3
-SWLOR.Game.Server.Tests/Composition/GameServicesAllocationTests.cs | 17
+SWLOR.Game.Server.Tests/Composition/GameServicesAllocationTests.cs | 19
 SWLOR.Game.Server.Tests/Core/HostedEntryDepthTests.cs | 2
 SWLOR.Game.Server.Tests/Domain/Abilities/AbilityActivationPathTests.cs | 19
 SWLOR.Game.Server.Tests/Domain/Abilities/AbilityActivationStateTests.cs | 23
@@ -300,6 +300,7 @@ SWLOR.Game.Server.Tests/Domain/Combat/CombatFacadeAllocationTests.cs | 307
 SWLOR.Game.Server.Tests/Domain/Combat/CombatGuardRetaliationServiceTests.cs | 1
 SWLOR.Game.Server.Tests/Domain/Combat/CombatHelperFacadeAllocationTests.cs | 12
 SWLOR.Game.Server.Tests/Domain/Combat/CombatRecordAbilityServiceTests.cs | 1
+SWLOR.Game.Server.Tests/Domain/Combat/CombatRecordDamageServiceTests.cs | 1
 SWLOR.Game.Server.Tests/Domain/Combat/CombatServiceTests.cs | 1
 SWLOR.Game.Server.Tests/Domain/Combat/MeleeTechniqueServiceTests.cs | 3
 SWLOR.Game.Server.Tests/Domain/Combat/OrdinaryAttackTraitsServiceTests.cs | 8

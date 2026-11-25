@@ -26,6 +26,9 @@ public class CombatHitEffectsTranscriptTests
         using var bench = new CombatTranscriptBench();
         var hitEffects = bench.Get<ICombatHitEffectsService>();
         var triggeredDamage = bench.Get<ICombatTriggeredDamageService>();
+        var autoAttack = bench.Get<ICombatAutoAttackEffectsService>();
+        var critical = bench.Get<ICombatCriticalHitEffectsService>();
+        var defeated = bench.Get<ICombatDefeatedEnemyEffectsService>();
 
         foreach (var stat in new[] { 0, 5 })
         {
@@ -45,17 +48,17 @@ public class CombatHitEffectsTranscriptTests
             bench.Step("triggered force damage" + tag, () =>
                 triggeredDamage.ApplyTriggeredDamage(Attacker, Defender, 30, CombatDamageType.Force, SkillType.Force));
             bench.Step("critical hit" + tag, () =>
-                hitEffects.ApplyCriticalHitEffects(Attacker, Defender, 50, 120, true, SkillType.Vibroblade));
+                critical.ApplyCriticalHitEffects(Attacker, Defender, 50, 120, true, SkillType.Vibroblade));
             bench.Step("critical hit of an auto-attack" + tag, () =>
-                hitEffects.ApplyCriticalHitEffects(Attacker, Defender, 50, 120));
+                critical.ApplyCriticalHitEffects(Attacker, Defender, 50, 120));
             bench.Step("non-critical ability" + tag, () =>
-                hitEffects.ApplyNonCriticalAbilityEffects(Attacker, Defender, SkillType.Force));
+                critical.ApplyNonCriticalAbilityEffects(Attacker, Defender, SkillType.Force));
             bench.Step("auto-attack damage modifiers" + tag, () =>
-                hitEffects.ApplyAutoAttackDamageModifiers(Attacker, Defender, 40, SkillType.Vibroblade));
+                autoAttack.ApplyAutoAttackDamageModifiers(Attacker, Defender, 40, SkillType.Vibroblade));
             bench.Step("auto-attack cycle bonus" + tag, () =>
                 hitEffects.ConsumeAutoAttackCycleDamageBonus(Attacker, SkillType.Vibroblade));
-            bench.Step("defeated enemy" + tag, () => hitEffects.ApplyDefeatedEnemyEffects(Attacker, Defender));
-            bench.Step("recent damagers of a defeated enemy" + tag, () => hitEffects.ApplyRecentDamagerDefeatedEnemyEffects(Defender));
+            bench.Step("defeated enemy" + tag, () => defeated.ApplyDefeatedEnemyEffects(Attacker, Defender));
+            bench.Step("recent damagers of a defeated enemy" + tag, () => defeated.ApplyRecentDamagerDefeatedEnemyEffects(Defender));
             bench.Step("forget the attacker" + tag, () => hitEffects.ForgetHitEffectState(Attacker));
         }
 

@@ -91,8 +91,7 @@ Feature/PerkDefinition -> Domain/Items | 4
 # Character -> Quests (1 edge)
 Domain/Character -> Domain/Quests | 2
 
-# Character -> Social (3 edges)
-Domain/Character -> Domain/Social | 4
+# Character -> Social (2 edges)
 Feature/AppearanceDefinition -> Domain/Social | 1
 Feature/StatusEffectDefinition -> Domain/Social | 4
 

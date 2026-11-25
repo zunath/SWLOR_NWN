@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature
             if (!dbPlayer.CharacterInitializationPending && (dbPlayer.Version >= 1 || dbPlayer.Version == -1)) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
             {
                 if (PlayerDescriptor.EnsureUnknownDisplayName(player))
-                    PlayerName.RefreshNameOverridesForPlayer(player);
+                    PlayerNameOverride.RefreshNameOverridesForPlayer(player);
 
                 InitializeNativeCombatStats(player);
                 ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             if (PlayerDescriptor.EnsureUnknownDisplayName(player))
-                PlayerName.RefreshNameOverridesForPlayer(player);
+                PlayerNameOverride.RefreshNameOverridesForPlayer(player);
 
             ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
         }

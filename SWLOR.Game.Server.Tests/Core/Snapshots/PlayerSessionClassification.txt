@@ -44,7 +44,7 @@ mod_enter (59)
               Refreshes other players' lists for an arrival; nobody arrives.
   LoginOnly   SWLOR.Game.Server.Domain.Economy.PlayerMarketService.CheckMarketTill
               A login message.
-  LoginOnly   SWLOR.Game.Server.Domain.Character.PlayerNameService.ApplyNameOverridesOnEnter
+  LoginOnly   SWLOR.Game.Server.Domain.Character.PlayerNameOverrideService.ApplyNameOverridesOnEnter
               The name overrides stay in the engine, the name caches refill from Redis on use, and the AFK flags are carried.
   LoginOnly   SWLOR.Game.Server.Domain.Quests.QuestService.LoadPlayerQuests
               The journal entries stay in the engine.
@@ -166,7 +166,7 @@ mod_exit (46)
               Refreshes other players' lists for a departure; nobody leaves.
   LogoutOnly  SWLOR.Game.Server.Domain.Character.PlayerNameService.ReleaseKnownNamesOnExit
               Drops the player's name cache, which goes with the old build.
-  LogoutOnly  SWLOR.Game.Server.Domain.Character.PlayerNameService.ClearAfkOnExit
+  LogoutOnly  SWLOR.Game.Server.Domain.Character.PlayerNameOverrideService.ClearAfkOnExit
               Clears the AFK flag; the flags are carried.
   LogoutOnly  SWLOR.Game.Server.Domain.Combat.PvpCombatService.ForgetExitingPlayer
               Forgets the player's PvP state; it is carried.

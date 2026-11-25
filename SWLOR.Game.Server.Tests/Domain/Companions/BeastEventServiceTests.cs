@@ -292,6 +292,72 @@ public class BeastEventServiceTests : BeastTestBase
         _service.Calls.Should().BeEmpty();
     }
 
+    // ---- the seams
+
+    private BeastEventService PlainEvents(List<string> calls) => new(
+        _db,
+        RecordingServiceProxy.For<ICompanionControlService>("Control", calls),
+        RecordingServiceProxy.For<ICreatureStatService>("CreatureStat", calls),
+        RecordingServiceProxy.For<IStatusEffectApplicationService>("StatusEffect", calls),
+        RecordingServiceProxy.For<IItemService>("Item", calls),
+        RecordingServiceProxy.For<IGuiService>("Gui", calls),
+        _service);
+
+    [Test]
+    public void The_beast_event_seams_forward_to_the_companion_control_the_stat_service_and_the_status_effects()
+    {
+        ActiveBeast();
+        var calls = new List<string>();
+        var events = PlainEvents(calls);
+        _engine.SetReturn("OBJECT_SELF", BeastObject);
+        _engine.SetReturnHandler("GetLastDamager", _ => Damager);
+        _engine.SetReturnHandler("GetMaster", _ => ObjectInvalid);
+
+        events.BeastOnSpawn();
+        events.BeastOnEndCombatRound();
+        events.BeastOnHeartbeat();
+        events.BeastOnConversation();
+        events.BeastOnDamaged();
+        events.BeastOnRested();
+        events.BeastOnDeath();
+
+        calls.Should().Equal(
+            "CreatureStat.LoadNPCStats()",
+            $"CreatureStat.ApplyCreatureMovementRate({BeastObject})",
+            $"Control.Initialize({BeastObject}, False)",
+            $"Control.ProcessCombatRound({BeastObject}, False)",
+            "CreatureStat.RestoreBeastStats()",
+            $"Control.ProcessHeartbeat({BeastObject})",
+            $"Control.HandleConversation({BeastObject})",
+            $"Control.RegisterDefensiveThreat({BeastObject}, {Damager})",
+            $"StatusEffect.ApplyStatusEffect({BeastObject}, {BeastObject}, RestStatusEffect, 0, Invalid)",
+            $"Control.Clear({BeastObject})");
+    }
+
+    [Test]
+    public void The_beast_event_seams_forward_the_despawn_the_returned_item_and_the_window()
+    {
+        ActiveBeast();
+        var calls = new List<string>();
+        var events = PlainEvents(calls);
+        _engine.SetReturn("OBJECT_SELF", Player);
+        events.RemoveAssociate();
+
+        _engine.SetReturn("GetModuleItemAcquiredBy", BeastObject);
+        _engine.SetReturn("GetModuleItemAcquired", ItemObject);
+        _engine.SetReturn("GetBaseItemType", BaseItem.Longsword);
+        events.OnAcquireItem();
+
+        _engine.SetReturn("GetLastUsedBy", Player);
+        _engine.SetReturn("OBJECT_SELF", ItemObject);
+        events.OpenStablesMenu();
+
+        calls.Should().Equal(
+            $"Control.Clear({BeastObject})",
+            $"Item.ReturnItem({Player}, {ItemObject})",
+            $"Gui.TogglePlayerWindow({Player}, Stables, , {ItemObject}, {ObjectInvalid})");
+    }
+
     // ---- the container
 
     [Test]

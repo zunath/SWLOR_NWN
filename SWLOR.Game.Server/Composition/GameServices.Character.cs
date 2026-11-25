@@ -35,8 +35,8 @@ namespace SWLOR.Game.Server.Composition
         public static ILanguageService Language => FacadeAccessor.Resolve<ILanguageService>();
 
         /// <summary>
-        /// Perks: the definition caches, a creature's perk levels, the stat bonuses and granted feats that follow from
-        /// them, and refunds (the static facade <c>Perk</c> until it was removed).
+        /// Perks: the definition caches, a creature's perk levels, the granted feats that follow from them, and refunds
+        /// (the static facade <c>Perk</c> until it was removed). The stat bonuses and the Force affinity are the two parts below.
         /// </summary>
         public static IPerkService Perk => FacadeAccessor.Resolve<IPerkService>();
 

@@ -87,6 +87,8 @@ public class CombatAbilityTranscriptTests
     {
         using var bench = new CombatTranscriptBench();
         var impact = bench.Get<ICombatAbilityImpactService>();
+        var bonus = bench.Get<ICombatAbilityDamageBonusService>();
+        var riders = bench.Get<ICombatAbilityHitRidersService>();
         var listeners = new List<IStatusEffectAppliedListener>();
         bench.Leaf<IStatusEffectService>().Script(nameof(IStatusEffectService.RegisterAppliedListener), args =>
         {
@@ -112,17 +114,17 @@ public class CombatAbilityTranscriptTests
                     null, null, false, false, StatusEffectCategory.None, false, true));
             bench.Step("damage bonus before the hit" + tag, () =>
             {
-                impact.GetAbilityImpactBaseDamageBonus(Attacker, Defender, Ability(SkillType.Lightsaber), SkillType.Lightsaber);
-                impact.GetHighResourceAbilityDamageBonus(Attacker, Ability(SkillType.Force));
-                impact.GetCostlyAbilityDamageBonus(Attacker, Ability(SkillType.Pistol), SkillType.Pistol);
+                bonus.GetAbilityImpactBaseDamageBonus(Attacker, Defender, Ability(SkillType.Lightsaber), SkillType.Lightsaber);
+                bonus.GetHighResourceAbilityDamageBonus(Attacker, Ability(SkillType.Force));
+                bonus.GetCostlyAbilityDamageBonus(Attacker, Ability(SkillType.Pistol), SkillType.Pistol);
             });
             foreach (var skill in new[] { SkillType.Rifle, SkillType.Spear, SkillType.Throwing })
             {
                 var ability = Ability(skill, area: skill != SkillType.Spear);
-                bench.Step($"impact effects of a {skill} ability" + tag, () => impact.ApplyAbilityImpactEffects(Attacker, Summary(ability, 3)));
+                bench.Step($"impact effects of a {skill} ability" + tag, () => riders.ApplyAbilityImpactEffects(Attacker, Summary(ability, 3)));
             }
 
-            bench.Step("area hit haste" + tag, () => impact.ApplyAreaHitHaste(Attacker, 3));
+            bench.Step("area hit haste" + tag, () => riders.ApplyAreaHitHaste(Attacker, 3));
             bench.Step("spear disabler suppression" + tag, () => impact.ApplySpearDisablerSuppressionRiders(Attacker, Defender));
             bench.Step("is the target attacking an ally" + tag, () => impact.IsTargetAttackingAllyForStatusAppliedRiders(Attacker, Defender));
             bench.Step("hostile ability party buff" + tag, () => impact.ApplyHostileAbilityPartyBuff(Attacker, Ability(SkillType.Force), 30, true));

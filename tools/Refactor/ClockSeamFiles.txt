@@ -12,7 +12,7 @@ Domain/Combat/CombatSuppressionService.cs
 Domain/Combat/CombatActivityService.cs
 Domain/Combat/CombatQueuedAbilityBonusService.cs
 Domain/Combat/CombatRecordWriter.cs
-Domain/Combat/CombatAbilityImpactService.cs
+Domain/Combat/CombatAbilityAreaImpactService.cs
 Domain/Combat/CombatDamageModifiersService.cs
 Domain/Combat/CombatCriticalHitEffectsService.cs
 Domain/Combat/CombatDefeatedEnemyEffectsService.cs

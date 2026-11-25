@@ -269,7 +269,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         damageEffects.Should().NotContain("ApplyBleedingTargetAbilityBleedRefresh(");
         damageEffects.Should().NotContain("ApplyBleedingTargetAbilityBleedSpread(");
 
-        var abilityDamageRiders = ExtractMethod(combat, "private static void ApplyAbilityDamageRiders(");
+        var abilityDamageRiders = ExtractMethod(combat, "public static void ApplyAbilityDamageRiders(");
         abilityDamageRiders.Should().Contain(
             "ApplyBleedingTargetAbilityBleedRefresh(activator, target, skillType);");
         abilityDamageRiders.Should().Contain(
@@ -680,7 +680,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
 
         combat.Should().Contain("Dictionary<(uint Creature, AbilityDetail Ability), CombatAbilityStaminaCostState>",
             "cost-gated riders must bind the paid STM to the exact ability instead of a later ability");
-        var costlyHitEffects = ExtractMethod(combat, "private static void ApplyCostlyAbilityHitEffects(");
+        var costlyHitEffects = ExtractMethod(combat, "public static void ApplyCostlyAbilityHitEffects(");
         costlyHitEffects.Should().Contain("StatType.CostlyAbilityHitStaminaRestoreMinimumStaminaCost");
         costlyHitEffects.Should().Contain("StatType.CostlyAbilityStatusMinimumStaminaCost");
         costlyHitEffects.Should().Contain("!costState.StaminaRestoreApplied",

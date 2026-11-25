@@ -584,7 +584,7 @@ namespace SWLOR.Game.Server.Feature
                     CombatRecordAbility.RecordAbilityImpact(activator, target, targetLocation, ability, feat, summary);
 
                 GameServices.CombatAbilityActivation.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);
-                GameServices.CombatAbilityImpact.ApplyAbilityImpactEffects(activator, summary);
+                GameServices.CombatAbilityHitRiders.ApplyAbilityImpactEffects(activator, summary);
 
                 if (!GetIsPC(activator))
                 {
@@ -1550,7 +1550,7 @@ namespace SWLOR.Game.Server.Feature
                 if (CombatRecorder.IsRecording)
                     CombatRecordAbility.RecordAbilityImpact(activator, target, targetLocation, abilityDetail, activeWeaponAbility, summary);
                 GameServices.CombatAbilityActivation.ApplyAbilityActivatedEffects(activator, target, activeWeaponAbility, abilityDetail, summary);
-                GameServices.CombatAbilityImpact.ApplyAbilityImpactEffects(activator, summary);
+                GameServices.CombatAbilityHitRiders.ApplyAbilityImpactEffects(activator, summary);
 
                 if (!GetIsPC(activator))
                 {

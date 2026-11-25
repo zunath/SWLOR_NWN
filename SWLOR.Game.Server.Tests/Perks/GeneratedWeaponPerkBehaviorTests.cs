@@ -1717,7 +1717,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "public static void ApplyStatusAppliedTargetStaminaDrain(",
             StringComparison.Ordinal);
         var staminaDrainMethodEnd = combatSource.IndexOf(
-            "private static void ApplyAreaAbilityTargetHitSequenceEffects(",
+            "public static void ForgetImpactState(",
             staminaDrainMethodStart,
             StringComparison.Ordinal);
         staminaDrainMethodEnd.Should().BeGreaterThan(staminaDrainMethodStart);

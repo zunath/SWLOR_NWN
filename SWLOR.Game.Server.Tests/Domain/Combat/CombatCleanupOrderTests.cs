@@ -55,7 +55,7 @@ public class CombatCleanupOrderTests
         {
             bench.Get<ICombatResourcesService>(), bench.Get<ICombatActivityService>(), bench.Get<ICombatDefenseMemoryService>(),
             bench.Get<ICombatSuppressionService>(), bench.Get<ICombatAbilityOffenseEffectsService>(), bench.Get<ICombatHitEffectsService>(), bench.Get<ICombatCriticalHitEffectsService>(),
-            bench.Get<ICombatAbilityImpactService>(), bench.Get<ICombatAttackTimingService>(), bench.Get<ICombatRateModifiersService>(), bench.Get<ICombatRepeatedTargetService>(),
+            bench.Get<ICombatAbilityImpactService>(), bench.Get<ICombatAbilityHitRidersService>(), bench.Get<ICombatAbilityAreaImpactService>(), bench.Get<ICombatAttackTimingService>(), bench.Get<ICombatRateModifiersService>(), bench.Get<ICombatRepeatedTargetService>(),
             bench.Get<ITemporaryStatModifierService>()
         }.Select(ForwardingRecorder.Unwrap).ToArray();
         var temporary = bench.Get<ITemporaryStatModifierService>();

@@ -588,7 +588,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     stat.ReduceFP(caster, stat.GetCurrentFP(caster) - resource);
                     stat.ReduceStamina(caster, stat.GetCurrentStamina(caster) - resource);
-                    ctx.AssertEqual(expected, GameServices.CombatAbilityImpact.GetHighResourceAbilityDamageBonus(caster), $"flat ability bonus at {resource}% FP and STM");
+                    ctx.AssertEqual(expected, GameServices.CombatAbilityDamageBonus.GetHighResourceAbilityDamageBonus(caster), $"flat ability bonus at {resource}% FP and STM");
                     ctx.Assert(ReferenceEquals(sources, AbilityImpactState.GetAbilityImpactStatSources(caster, StatType.HighFPAndStaminaAbilityDamageBonus, stat)),
                         "resource thresholds are evaluated per target while source descriptions are reused");
                 }
@@ -731,18 +731,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(caster, StatType.AreaAbilityUsedEvasionDurationSeconds, 30, 45f);
             Stat.ReduceStamina(caster, 50);
             var before = Stat.GetCurrentStamina(caster);
-            GameServices.CombatAbilityImpact.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
+            GameServices.CombatAbilityHitRiders.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
                 { SkillType = SkillType.Force, IsAreaAbility = true, ImpactedTargetCount = 4 });
             ctx.AssertEqual(17, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "four targets grant one Momentum stack and three independent Spinning Rhythm stacks");
             ctx.AssertEqual(before + 6, Stat.GetCurrentStamina(caster), "Sweeping Advance caps four targets at six STM");
-            GameServices.CombatAbilityImpact.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
+            GameServices.CombatAbilityHitRiders.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
                 { SkillType = SkillType.Mimicry, IsAreaAbility = true, ImpactedTargetCount = 1 });
             ctx.AssertEqual(17, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "one struck enemy grants no haste stack");
             ctx.AssertEqual(before + 8, Stat.GetCurrentStamina(caster), "one target restores two STM across skills");
-            GameServices.CombatAbilityImpact.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
+            GameServices.CombatAbilityHitRiders.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
                 { SkillType = SkillType.Mimicry, IsAreaAbility = true, ImpactedTargetCount = 2 });
             ctx.AssertEqual(22, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "Momentum gains its second stack while Spinning Rhythm remains capped");
-            GameServices.CombatAbilityImpact.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
+            GameServices.CombatAbilityHitRiders.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
                 { SkillType = SkillType.Force, IsAreaAbility = true, ImpactedTargetCount = 6 });
             ctx.AssertEqual(27, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "both perks reach their own caps");
             GameServices.CombatAbilityActivation.ApplyAbilityActivatedEffects(caster, OBJECT_INVALID, FeatType.Invalid,

@@ -185,7 +185,7 @@ SETS = [
                  text="A trough of nutrient gel where station crews grow their greens."),
             dict(enum="SpacerCargoStack", name="Cargo Crate Stack", placeable="aswtor_102", copies="StorageCargoContainer",
                  text="A stack of cargo crates strapped down for transit."),
-            dict(enum="SpacerCrewLocker", name="Crew Locker", placeable="swlor_1197", copies="LockerMetalTrapezoid",
+            dict(enum="SpacerCrewLocker", name="Crew Locker", placeable="swlor_0733", copies="LockerMetalTrapezoid",
                  text="A steel locker, standard issue for a station crew."),
         ]),
 ]

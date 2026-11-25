@@ -3547,7 +3547,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         SpacerCargoStack = 5188,
 
         [Structure("Crew Locker",
-            "swlor_1197",
+            "swlor_0733",
             "A steel locker, standard issue for a station crew.",
             true,
             1)]

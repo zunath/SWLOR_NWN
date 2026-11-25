@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Cast in bronze, Darth Fomoire looks out over the pedestal. Four tentacles curl below the sweeping cheek fins. A brass plate bears the Darth's name."
+    }
   },
   "Description": {
     "type": "cexolocstring",

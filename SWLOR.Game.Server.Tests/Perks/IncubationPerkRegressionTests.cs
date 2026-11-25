@@ -69,7 +69,7 @@ public class IncubationPerkRegressionTests
         extractor.Should().Contain("if (level > maxLevel)");
         extractor.Should().Contain("Insufficient 'DNA Manipulation' perk level.");
 
-        // The incubator's own gate (no DNA Manipulation perk, no incubator) is pinned by BeastMasteryServiceTests.
+        // The incubator's own gate (no DNA Manipulation perk, no incubator) is pinned by BeastIncubationServiceTests.
     }
 
     [TestCase(0, 10, 129600)]

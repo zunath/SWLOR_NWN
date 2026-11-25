@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             return "Only one droid may be activated at a time.";
                         }
 
-                        var companionSlotError = BeastMastery.GetCompanionSlotValidationError(user);
+                        var companionSlotError = BeastSpawn.GetCompanionSlotValidationError(user);
                         if (!string.IsNullOrEmpty(companionSlotError))
                         {
                             return companionSlotError;

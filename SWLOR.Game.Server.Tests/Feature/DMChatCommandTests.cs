@@ -72,7 +72,7 @@ public class DMChatCommandTests
             .And.Contain("[NWNEventHandler(ScriptName.OnModuleCacheAfter)]")
             .And.Contain("_spawnBeastEggHelpMessages = messages.ToArray()")
             .And.Contain("foreach (var message in _spawnBeastEggHelpMessages)")
-            .And.Contain("BeastMastery.CreateBeastEgg(beastType, user)");
+            .And.Contain("BeastIncubation.CreateBeastEgg(beastType, user)");
     }
 
     [Test]

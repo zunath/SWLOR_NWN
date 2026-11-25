@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     var dbPlayer = DB.Get<Player>(playerId);
 
                     var previousBeast = GetAssociate(AssociateType.Henchman, activator);
-                    BeastMastery.SpawnBeast(activator, dbPlayer.ActiveBeastId, 100);
+                    BeastSpawn.SpawnBeast(activator, dbPlayer.ActiveBeastId, 100);
                     var summonedBeast = GetAssociate(AssociateType.Henchman, activator);
                     if (summonedBeast != previousBeast && BeastMastery.IsPlayerBeast(summonedBeast))
                         Ability.PlaySuccessfulImpactVisualEffect(activator, summonedBeast);

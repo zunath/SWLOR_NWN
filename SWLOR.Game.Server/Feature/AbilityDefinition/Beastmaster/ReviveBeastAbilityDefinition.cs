@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     DB.Set(dbBeast);
 
                     var previousBeast = GetAssociate(AssociateType.Henchman, activator);
-                    BeastMastery.SpawnBeast(activator, dbBeast.Id, 0);
+                    BeastSpawn.SpawnBeast(activator, dbBeast.Id, 0);
                     var summonedBeast = GetAssociate(AssociateType.Henchman, activator);
                     if (summonedBeast != previousBeast && BeastMastery.IsPlayerBeast(summonedBeast))
                     {
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     var hpPercentage = Math.Min(100, 10 + GetAbilityScore(activator, AbilityType.Social));
                     var previousBeast = GetAssociate(AssociateType.Henchman, activator);
-                    BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
+                    BeastSpawn.SpawnBeast(activator, dbBeast.Id, hpPercentage);
                     var summonedBeast = GetAssociate(AssociateType.Henchman, activator);
                     if (summonedBeast != previousBeast && BeastMastery.IsPlayerBeast(summonedBeast))
                     {
@@ -161,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     var hpPercentage = Math.Min(100, 45 + GetAbilityScore(activator, AbilityType.Social));
                     var previousBeast = GetAssociate(AssociateType.Henchman, activator);
-                    BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
+                    BeastSpawn.SpawnBeast(activator, dbBeast.Id, hpPercentage);
                     var summonedBeast = GetAssociate(AssociateType.Henchman, activator);
                     if (summonedBeast != previousBeast && BeastMastery.IsPlayerBeast(summonedBeast))
                     {

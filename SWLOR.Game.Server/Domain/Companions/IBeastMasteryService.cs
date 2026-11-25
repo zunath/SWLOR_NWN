@@ -8,10 +8,10 @@ using SWLOR.Game.Server.Domain.Items;
 namespace SWLOR.Game.Server.Domain.Companions
 {
     /// <summary>
-    /// Beast companions: the beast catalog, taming and leveling, spawning a beast for its master, the creature event
-    /// handlers of a spawned beast, and the incubation of DNA into beast eggs.
-    /// Static callers reach the container's instance through <c>GameServices.BeastMastery</c>; the event handlers are on
-    /// <see cref="BeastMasteryService"/>.
+    /// Beast companions: the beast catalog, taming and leveling, the creature event handlers of a spawned beast, and
+    /// the incubation items. Spawning a beast is <see cref="IBeastSpawnService"/> and incubating DNA is
+    /// <see cref="IBeastIncubationService"/>. Static callers reach the container's instance through
+    /// <c>GameServices.BeastMastery</c>; the event handlers are on <see cref="BeastMasteryService"/>.
     /// </summary>
     public interface IBeastMasteryService : IBeastCorpseInfo
     {
@@ -110,21 +110,11 @@ namespace SWLOR.Game.Server.Domain.Companions
         int GetRequiredXP(int level, int xpPenalty);
 
         /// <summary>
-        /// Determines whether a player is free to spawn a new companion (beast or droid).
-        /// The game engine only permits one henchman-type associate at a time, so beast and
-        /// droid activation must share this check to prevent an orphaned, master-less companion.
+        /// Writes the stats of a beast's level and purities onto its skin, claw and ability scores. Called when a beast
+        /// is spawned and when it gains a level.
         /// </summary>
-        /// <param name="player">The player attempting to spawn a companion.</param>
-        /// <returns>An error message if a companion is already active, otherwise an empty string.</returns>
-        string GetCompanionSlotValidationError(uint player);
-
-        /// <summary>
-        /// Spawns a player's beast next to them and makes it their henchman.
-        /// </summary>
-        /// <param name="player">The beast's owner</param>
-        /// <param name="beastId">The id of the beast entity</param>
-        /// <param name="percentHeal">The percent of its hit points the beast is healed to after it spawns</param>
-        void SpawnBeast(uint player, string beastId, int percentHeal);
+        /// <param name="beast">The beast creature</param>
+        void ApplyStats(uint beast);
 
         /// <summary>
         /// Picks two different foods at random: the one a beast likes and the one it hates.
@@ -219,43 +209,6 @@ namespace SWLOR.Game.Server.Domain.Companions
         float GetIncubationPercentageById(int itemPropertyId);
 
         /// <summary>
-        /// When a player uses an incubator terminal, the incubator window opens, unless the player lacks the perk or
-        /// another player's job is running there.
-        /// </summary>
-        void UseIncubator();
-
-        /// <summary>
-        /// Finishes an incubation job: rolls for a mutation, creates the beast egg with the job's purities and
-        /// deletes the job.
-        /// </summary>
-        /// <param name="job">The incubation job</param>
-        /// <param name="player">The player who receives the egg</param>
-        void CreateBeastEgg(IncubationJob job, uint player);
-
-        /// <summary>
-        /// The weekday incubation checks for this player: the tester chosen day when set, otherwise the server day (UTC).
-        /// The overrides are test-server shortcuts, kept in memory only.
-        /// </summary>
-        DayOfWeek GetIncubationServerDay(string playerId);
-
-        /// <summary>Whether a tester chose a weekday for this player.</summary>
-        bool HasIncubationDayOverride(string playerId);
-
-        /// <summary>Makes incubation treat the given weekday as today for this player (test servers only).</summary>
-        void SetIncubationDayOverride(string playerId, DayOfWeek day);
-
-        /// <summary>Goes back to the server day for this player.</summary>
-        void ClearIncubationDayOverride(string playerId);
-
-        /// <summary>
-        /// Creates a beast egg of a beast type on a player.
-        /// </summary>
-        /// <param name="beastType">The type of beast the egg holds</param>
-        /// <param name="player">The player who receives the egg</param>
-        /// <returns>The egg</returns>
-        uint CreateBeastEgg(BeastType beastType, uint player);
-
-        /// <summary>
         /// Determines if the specified item is an incubation crafting item.
         /// This includes enzymes and DNA but excludes beast eggs.
         /// </summary>
@@ -269,15 +222,5 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// <param name="item">The item to check</param>
         /// <returns>true if beast egg, false otherwise</returns>
         bool IsBeastEgg(uint item);
-
-        /// <summary>
-        /// When a property is removed, also remove any associated incubation jobs.
-        /// </summary>
-        void OnRemoveProperty();
-
-        /// <summary>
-        /// When a player clicks a "DNA Extract" object, they get a message stating to use the extractor item on it.
-        /// </summary>
-        void UseExtractDNAObject();
     }
 }

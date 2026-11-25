@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     fixture.Update(db => db.ActiveBeastId = beastId);
                     if (!isCall && !isRevive)
                     {
-                        await ctx.ExecuteInCreatureContextAsync(player, () => BeastMastery.SpawnBeast(player, beastId, 100));
+                        await ctx.ExecuteInCreatureContextAsync(player, () => BeastSpawn.SpawnBeast(player, beastId, 100));
                         await ctx.WaitUntilAsync(() => BeastMastery.IsPlayerBeast(GetAssociate(AssociateType.Henchman, player)), 5f, "owned companion to spawn");
                         pet = GetAssociate(AssociateType.Henchman, player);
                         ctx.Track(pet);

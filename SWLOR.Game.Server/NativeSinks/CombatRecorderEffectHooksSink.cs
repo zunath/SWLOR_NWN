@@ -78,7 +78,7 @@ public sealed unsafe class CombatRecorderEffectHooksSink : ICombatRecorderEffect
             var hitPointsAfter = target.GetCurrentHitPoints(1);
             var poolsAfter = CombatRecorderEffectHooks.CaptureTemporaryHitPointPools(target);
             ServerManager.Executor.ExecuteInScriptContext(() =>
-                CombatRecorder.RecordDamageApplied(
+                CombatRecordDamage.RecordDamageApplied(
                     applicationIndex, isEngineApplied, creator, targetId, damage, hitPointsBefore, hitPointsAfter,
                     maxHitPoints, poolsBefore, poolsAfter));
         }
@@ -148,7 +148,7 @@ public sealed unsafe class CombatRecorderEffectHooksSink : ICombatRecorderEffect
         {
             var hitPointsAfter = target.GetCurrentHitPoints(1);
             ServerManager.Executor.ExecuteInScriptContext(() =>
-                CombatRecorder.RecordHealingApplied(
+                CombatRecordDamage.RecordHealingApplied(
                     creator, targetId, requested, hitPointsBefore, hitPointsAfter, GetMaxHitPoints(targetId), pvpReduced));
         }
         catch (Exception ex)

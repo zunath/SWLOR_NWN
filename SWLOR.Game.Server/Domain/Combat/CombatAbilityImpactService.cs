@@ -38,7 +38,8 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatResourcesService _resources;
         private readonly ICombatAttackTimingService _attackTiming;
         private readonly ICombatActivityService _combatActivity;
-        private readonly ICombatHitEffectsService _hitEffects;
+        private readonly ICombatAutoAttackEffectsService _autoAttackEffects;
+        private readonly ICombatDefeatedEnemyEffectsService _defeatedEnemyEffects;
         private readonly ICombatTriggeredDamageService _triggeredDamage;
         private readonly ICombatGuardedHitEffectsService _guardedHitEffects;
         private readonly ICombatDamageTakenEffectsService _damageTakenEffects;
@@ -58,7 +59,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatResourcesService resources,
             ICombatAttackTimingService attackTiming,
             ICombatActivityService combatActivity,
-            ICombatHitEffectsService hitEffects,
+            ICombatAutoAttackEffectsService autoAttackEffects,
+            ICombatDefeatedEnemyEffectsService defeatedEnemyEffects,
             ICombatTriggeredDamageService triggeredDamage,
             ICombatGuardedHitEffectsService guardedHitEffects,
             ICombatDamageTakenEffectsService damageTakenEffects,
@@ -77,7 +79,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             _resources = resources;
             _attackTiming = attackTiming;
             _combatActivity = combatActivity;
-            _hitEffects = hitEffects;
+            _autoAttackEffects = autoAttackEffects;
+            _defeatedEnemyEffects = defeatedEnemyEffects;
             _triggeredDamage = triggeredDamage;
             _guardedHitEffects = guardedHitEffects;
             _damageTakenEffects = damageTakenEffects;
@@ -238,7 +241,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 _combatActivity.ApplyFirstHostileAbilityHitCount(activator, ability);
             if (allowsHitProcs && ability.IsHostileAbility && !ability.SuppressesSourceStatusStackRiders)
             {
-                _hitEffects.ApplySourceStatusStackEffects(activator, target);
+                _autoAttackEffects.ApplySourceStatusStackEffects(activator, target);
             }
 
             ApplyHostileAbilityHitNextAutoAttackNoDelay(activator, ability);
@@ -959,7 +962,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             if (_statusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect)))
             {
-                _hitEffects.SpreadPoisonFromTarget(activator, target);
+                _defeatedEnemyEffects.SpreadPoisonFromTarget(activator, target);
             }
         }
 

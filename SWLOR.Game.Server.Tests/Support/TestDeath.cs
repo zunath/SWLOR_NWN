@@ -17,7 +17,7 @@ internal sealed partial class TestDeath : DeathService
         IPlayerNameService names,
         ICityUpgradeLookup property,
         IAreaLookup areas)
-        : base(db, animation, messaging, names, property, areas, FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>(), FacadeForwarder.For<ICombatRecorderService>(),
+        : base(db, animation, messaging, names, property, areas, FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICombatRecordDamageService>(),
             Array.Empty<ICreatureRevivedListener>(), FacadeForwarder.For<ICombatDamageTakenService>())
     {
     }

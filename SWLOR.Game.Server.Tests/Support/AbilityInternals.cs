@@ -38,13 +38,13 @@ public static class AbilityInternals
         var statusApplication = new AbilityStatusApplicationService(null!, null!, null!, impactState, FacadeForwarder.For<ICombatAbilityBonusService>());
         var damageStage = new AbilityDamageStageService(damageInput, impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ICombatAbilityHitAdjustmentService>(),
             FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatDamageReflectionService>(), FacadeForwarder.For<ICombatFeedbackService>(),
-            FacadeForwarder.For<ICombatHitEffectsService>(), magnitude, null!);
+            FacadeForwarder.For<ICombatCriticalHitEffectsService>(), magnitude, null!);
         var impactMessage = new AbilityImpactMessageService(null!, null!, FacadeForwarder.For<ICombatFeedbackService>());
         var impactVisual = new AbilityImpactVisualService(null!);
         var observers = Array.Empty<IAbilityImpactObserver>();
         var lifecycle = new AbilityImpactLifecycleService(impactState, null!, null!, damageDelivery, null!, FacadeForwarder.For<ICombatQueriesService>(),
             FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatQueuedAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatResourcesService>(),
-            FacadeForwarder.For<ICombatHitEffectsService>());
+            FacadeForwarder.For<ICombatCriticalHitEffectsService>());
         var hostileImpact = new AbilityHostileImpactService(impactState, observers, null!, null!, FacadeForwarder.For<ICombatResourcesService>(),
             FacadeForwarder.For<ICombatAbilityImpactService>(), damageDelivery, statusApplication, darkForce, impactVisual);
         var hitRoll = new AbilityHitRollService(observers, null!, damageInput, statusApplication, impactMessage, null!, null!,

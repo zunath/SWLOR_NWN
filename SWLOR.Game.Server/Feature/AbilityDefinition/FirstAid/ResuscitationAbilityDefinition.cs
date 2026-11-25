@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
             PlayerTemporaryEffects.RestoreGhostAfterRevive(target);
             if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordResurrection(target);
+                CombatRecordDamage.RecordResurrection(target);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             DelayCommand(0.1f, () =>
             {
@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
             PlayerTemporaryEffects.RestoreGhostAfterRevive(target);
             if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordResurrection(target);
+                CombatRecordDamage.RecordResurrection(target);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             // Resurrection is not settled until after the current engine command finishes.
             // Healing in the same tick is silently discarded because the target is still dead.

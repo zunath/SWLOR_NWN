@@ -326,7 +326,6 @@ public abstract class CombatDamageTakenTestBase
         recorderCalls
             .On("get_" + nameof(ICombatRecorderService.IsRecording), _ => _recording)
             .On(nameof(ICombatRecorderService.ExpectDeferredDamage), args => Log($"Expect {args[0]} {args[1]} {args[2]} {args[3]}"))
-            .On(nameof(ICombatRecorderService.KeepLethalHitPoints), args => Log($"KeepLethal {args[0]}"))
             .On(nameof(ICombatRecorderService.CaptureAttackAttribution), args =>
             {
                 _log.Add($"Capture {args[0]}");
@@ -342,6 +341,8 @@ public abstract class CombatDamageTakenTestBase
                 _log.Add("AttributeCaptured");
                 return default(CombatRecordAttributionScope);
             });
+        var recordDamage = ScriptedProxy.Create<ICombatRecordDamageService>(out var recordDamageCalls);
+        recordDamageCalls.On(nameof(ICombatRecordDamageService.KeepLethalHitPoints), args => Log($"KeepLethal {args[0]}"));
         var pvp = ScriptedProxy.Create<IPvpCombatService>(out var pvpCalls);
         pvpCalls
             .On(nameof(IPvpCombatService.ApplyDamageIncrease), args =>
@@ -364,7 +365,7 @@ public abstract class CombatDamageTakenTestBase
 
         _effects = new CombatDamageTakenEffectsService(resources, timing, activity, triggeredDamage, stat, statusEffect, statusApplication, temporary, recorder, _defenseMemory);
         _reflection = new CombatDamageReflectionService(queries, resources, triggeredDamage, stat, statusApplication, recorder, messaging, playerName);
-        var taken = new CombatDamageTakenService(queries, resources, stat, statusEffect, recorder, pvp, enmity);
+        var taken = new CombatDamageTakenService(queries, resources, stat, statusEffect, recorder, recordDamage, pvp, enmity);
         _guardedEffects = new CombatGuardedHitEffectsService(queries, timing, stat, temporary, _defenseMemory);
         _retaliation = new TestGuardRetaliation(_log, () => _calculated, queries, modifiers, triggeredDamage, stat, rating, recorder, enmity, taken);
         _guardedHit = new CombatGuardedHitService(feedback, rating, statusCombat, taken, _guardedEffects, _retaliation, stat, resources, enmity);

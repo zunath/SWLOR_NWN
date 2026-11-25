@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// the converted share from <paramref name="physicalDamage"/> (so it is not also dealt as physical) and
         /// deals it as Force damage, so it is reduced by the defender's Force resistance and shown as Force in
         /// the combat log. Runs before the physical-resistance stage; the Force portion is routed through
-        /// <see cref="ICombatHitEffectsService.ApplyTriggeredDamage"/>, which applies Force resistance, the Force-specific Leadership
+        /// <see cref="ICombatTriggeredDamageService.ApplyTriggeredDamage"/>, which applies Force resistance, the Force-specific Leadership
         /// channel, and the remaining damage-taken pipeline.
         /// Returns the pre-resistance Force amount split off (0 when nothing converts).
         /// </summary>

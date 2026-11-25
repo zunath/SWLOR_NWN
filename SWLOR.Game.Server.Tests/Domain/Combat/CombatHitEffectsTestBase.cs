@@ -19,9 +19,9 @@ using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// The shared bench of the hit effects parts of <c>Combat</c> (the stay-part, the dealt effects part and the triggered damage part):
+/// The shared bench of the hit effects parts of <c>Combat</c> (the stay-part and the dealt effects, triggered damage, auto-attack, critical hit and defeated enemy parts):
 /// stats come from a table, every other part and service is scripted and writes what it was asked into one log (so a test sees the
-/// order), the clock is held still and the shared <c>Random</c> is seeded where a chance is rolled. The three parts are real and
+/// order), the clock is held still and the shared <c>Random</c> is seeded where a chance is rolled. The parts are real and
 /// run each other; the damage taken part behind the triggered damage is overridden on the triggered part.
 /// </summary>
 public abstract class CombatHitEffectsTestBase
@@ -39,6 +39,9 @@ public abstract class CombatHitEffectsTestBase
     protected FakeNWScript _engine = null!;
     protected TestHitEffects _service = null!;
     protected CombatDealtEffectsService _dealt = null!;
+    protected CombatAutoAttackEffectsService _autoAttack = null!;
+    protected CombatCriticalHitEffectsService _critical = null!;
+    protected CombatDefeatedEnemyEffectsService _defeated = null!;
     protected TestTriggeredDamage _triggered = null!;
     protected DateTime _now;
     protected Dictionary<(uint, StatType), int> _stats = null!;
@@ -294,8 +297,14 @@ public abstract class CombatHitEffectsTestBase
 
         _dealt = new CombatDealtEffectsService(queries, resources, activity, capstone, stat, statusEffect, statusApplication, temporary, traits);
         _triggered = new TestTriggeredDamage(_log, () => _taken, modifiers, _dealt, stat, statusCombat, ability, recorder, resistance);
-        return new TestHitEffects(queries, resources, timing, suppression, activity, repeatedTarget, abilityHit, stat, statusEffect,
-            statusApplication, statusDuration, temporary, ability, recorder, party, _dealt, _triggered);
+        _critical = new CombatCriticalHitEffectsService(queries, resources, timing, abilityHit, stat, statusEffect, statusApplication,
+            statusDuration, temporary, ability);
+        var service = new TestHitEffects(queries, suppression, activity, repeatedTarget, stat, recorder, _dealt, _triggered, _critical);
+        _autoAttack = new CombatAutoAttackEffectsService(queries, resources, activity, stat, statusEffect, statusApplication, statusDuration,
+            temporary, service);
+        _defeated = new CombatDefeatedEnemyEffectsService(queries, resources, activity, stat, statusEffect, statusApplication, temporary,
+            recorder, party);
+        return service;
     }
 
     [TearDown]
@@ -331,7 +340,7 @@ public abstract class CombatHitEffectsTestBase
 
     protected object? Private(string name, params object[] arguments)
     {
-        foreach (var part in new object[] { _service, _dealt, _triggered })
+        foreach (var part in new object[] { _service, _dealt, _triggered, _autoAttack, _critical, _defeated })
         {
             var type = part is TestHitEffects ? typeof(CombatHitEffectsService) : part.GetType();
             var method = type.GetMethod(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
@@ -358,7 +367,7 @@ public abstract class CombatHitEffectsTestBase
     }
 
     protected void Critical(int damage = 20, int rating = 2, bool singleTarget = false, SkillType skill = SkillType.Invalid) =>
-        _service.ApplyCriticalHitEffects(Attacker, Defender, damage, rating, singleTarget, skill);
+        _critical.ApplyCriticalHitEffects(Attacker, Defender, damage, rating, singleTarget, skill);
 
     protected void Hit(int damage, SkillType skill = SkillType.Invalid, CombatDamageType type = CombatDamageType.Physical,
         CombatDamageDeliveryType delivery = CombatDamageDeliveryType.Direct, bool ability = false, bool procs = true) =>

@@ -230,7 +230,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             var effectTag = EffectTagPrefix + effectKey;
             var generation = AdvanceGeneration(target, effectKey);
             if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordTemporaryHitPointPoolRemoving(target);
+                CombatRecordDamage.RecordTemporaryHitPointPoolRemoving(target);
             RemoveEffectByTag(target, effectTag);
 
             // Immediate room counts pools the engine has not released yet; released room is what
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             SetLocalInt(target, GetGrantedVariable(effectKey), grantedAmount);
             if (recordGrant && CombatRecorder.IsRecording)
-                CombatRecorder.RecordTemporaryHitPointsGranted(source, target, effectKey, grantedAmount, durationSeconds);
+                CombatRecordDamage.RecordTemporaryHitPointsGranted(source, target, effectKey, grantedAmount, durationSeconds);
             if (deferredAmount <= 0)
                 return grantedAmount;
 
@@ -313,7 +313,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     SetLocalInt(target, GetGrantedVariable(effectKey),
                         Math.Max(0, GetLocalInt(target, GetGrantedVariable(effectKey)) - (amount - allowedAmount)));
                     if (CombatRecorder.IsRecording)
-                        CombatRecorder.RecordTemporaryHitPointsTrimmed(target, effectKey, amount - allowedAmount, kept);
+                        CombatRecordDamage.RecordTemporaryHitPointsTrimmed(target, effectKey, amount - allowedAmount, kept);
                     NotifyPoolTrimmed(target, effectKey, kept);
                     if (kept <= 0)
                     {
@@ -433,7 +433,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 var (effectKey, amount, durationSeconds) = pools[index];
                 var kept = ApplyFlatInternal(target, effectKey, amount, durationSeconds, recordGrant: false);
                 if (kept < amount && CombatRecorder.IsRecording)
-                    CombatRecorder.RecordTemporaryHitPointsTrimmed(target, effectKey, amount - kept, kept);
+                    CombatRecordDamage.RecordTemporaryHitPointsTrimmed(target, effectKey, amount - kept, kept);
                 if (kept <= 0)
                     Remove(target, effectKey);
             }
@@ -458,7 +458,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     continue;
 
                 if (CombatRecorder.IsRecording)
-                    CombatRecorder.RecordTemporaryHitPointsTrimmed(target, effectKey, amount - kept[index], kept[index]);
+                    CombatRecordDamage.RecordTemporaryHitPointsTrimmed(target, effectKey, amount - kept[index], kept[index]);
                 if (kept[index] <= 0)
                     Remove(target, effectKey);
                 else
@@ -563,7 +563,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             var effectTag = EffectTagPrefix + effectKey;
             if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordTemporaryHitPointPoolRemoving(target);
+                CombatRecordDamage.RecordTemporaryHitPointPoolRemoving(target);
             RemoveEffectByTag(target, effectTag);
             RemoveEffectByTag(target, effectTag + BarrierVisualEffectTagSuffix);
         }

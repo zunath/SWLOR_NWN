@@ -109,7 +109,7 @@ public class IncubationFieldNoteServiceTests
     [Test]
     public void TheConstructorDoesNoWork()
     {
-        var create = () => new IncubationFieldNoteService(null!, FacadeForwarder.LazyFor<IBeastMasteryService>());
+        var create = () => new IncubationFieldNoteService(null!, FacadeForwarder.For<IBeastMasteryService>());
 
         create.Should().NotThrow();
     }
@@ -362,7 +362,7 @@ public class IncubationFieldNoteServiceTests
     private sealed class CatalogService : IncubationFieldNoteService
     {
         public CatalogService(IKeyItemService keyItem)
-            : base(keyItem, FacadeForwarder.LazyFor<IBeastMasteryService>())
+            : base(keyItem, FacadeForwarder.For<IBeastMasteryService>())
         {
         }
 

@@ -9,7 +9,7 @@ public class BeastSpawnHealthTests
     public void CallBeast_SpawnsAtFullHealthWithoutWaitingForTheDelayedCorrection()
     {
         // The spawn itself (the immediate restore before the delayed correction) is pinned by
-        // BeastMasteryServiceTests; this test pins what Call Beast asks for.
+        // BeastSpawnServiceTests; this test pins what Call Beast asks for.
         var root = FindRepositoryRoot();
         var callBeast = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -20,7 +20,7 @@ public class BeastSpawnHealthTests
             "CallBeastAbilityDefinition.cs"));
 
         callBeast.Should().Contain(
-            "BeastMastery.SpawnBeast(activator, dbPlayer.ActiveBeastId, 100);",
+            "BeastSpawn.SpawnBeast(activator, dbPlayer.ActiveBeastId, 100);",
             "Call Beast should request a full-health companion");
     }
 

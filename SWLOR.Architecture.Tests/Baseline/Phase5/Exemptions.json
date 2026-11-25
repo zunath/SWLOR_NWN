@@ -168,6 +168,12 @@
       "measures": ["typeSize"],
       "category": "owner exception",
       "reason": "owner decision 2026-11-18: real moves exhausted; the rest is declared bindings (P5-16e PR 3). Its services and methods are still measured."
+    },
+    {
+      "match": "type", "value": "SWLOR.Game.Server.Composition.GameServices",
+      "measures": ["typeSize"],
+      "category": "owner exception",
+      "reason": "owner-delegated decision 2026-11-25: the static service lookup, one documented property per service and nothing else, across its partial files; P5-14 deletes the type, and the static lookup measure tracks every use until then. Trimming its summaries to stay under the limit would only hide what each property is. Its services and methods are still measured."
     }
   ],
   "approvedStaticEntryPoints": [

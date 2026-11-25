@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     Enum.TryParse(args[0], true, out BeastType beastType);
-                    var egg = BeastMastery.CreateBeastEgg(beastType, user);
+                    var egg = BeastIncubation.CreateBeastEgg(beastType, user);
                     var beastDetail = BeastMastery.GetBeastDetail(beastType);
 
                     SendMessageToPC(user, $"Spawned '{GetName(egg)}' for beast type {beastType} ({beastDetail.Name}).");

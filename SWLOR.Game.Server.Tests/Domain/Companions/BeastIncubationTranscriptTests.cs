@@ -76,8 +76,8 @@ public class BeastIncubationTranscriptTests
         /// <summary>The beast catalog (the stay-part).</summary>
         public IBeastMasteryService Beasts => Bench.Get<IBeastMasteryService>();
 
-        /// <summary>The incubator and egg code: the service that holds it, so a split changes this one line.</summary>
-        public IBeastMasteryService Incubation => Bench.Get<IBeastMasteryService>();
+        /// <summary>The incubator and egg code (BM-4).</summary>
+        public IBeastIncubationService Incubation => Bench.Get<IBeastIncubationService>();
 
         public void Dispose()
         {

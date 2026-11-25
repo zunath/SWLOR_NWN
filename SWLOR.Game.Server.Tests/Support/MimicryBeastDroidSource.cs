@@ -25,7 +25,12 @@ public static class MimicryBeastDroidSource
     public static readonly IReadOnlyDictionary<string, IReadOnlyList<string>> Files = new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal)
     {
         [Mimicry] = new[] { "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs" },
-        [Beast] = new[] { "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs" },
+        [Beast] = new[]
+        {
+            "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
+            "SWLOR.Game.Server/Domain/Companions/BeastSpawnService.cs",
+            "SWLOR.Game.Server/Domain/Companions/BeastIncubationService.cs",
+        },
         [Droid] = new[] { "SWLOR.Game.Server/Domain/Companions/DroidService.cs" },
     };
 
@@ -33,7 +38,7 @@ public static class MimicryBeastDroidSource
     public static readonly IReadOnlyDictionary<string, IReadOnlySet<string>> Interfaces = new Dictionary<string, IReadOnlySet<string>>(StringComparer.Ordinal)
     {
         [Mimicry] = new HashSet<string>(StringComparer.Ordinal) { "IMimicryService" },
-        [Beast] = new HashSet<string>(StringComparer.Ordinal) { "IBeastMasteryService" },
+        [Beast] = new HashSet<string>(StringComparer.Ordinal) { "IBeastMasteryService", "IBeastSpawnService", "IBeastIncubationService" },
         [Droid] = new HashSet<string>(StringComparer.Ordinal) { "IDroidService" },
     };
 

@@ -21,14 +21,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow
     public class IncubatorJobService
     {
         private IBeastMasteryService BeastMastery { get; }
+        private IBeastIncubationService BeastIncubation { get; }
         private IDBService DB { get; }
         private IGuiService Gui { get; }
         private IncubatorJobCalculator IncubatorJobCalculator { get; }
         private IPerkService Perk { get; }
 
-        public IncubatorJobService(IBeastMasteryService beastMastery, IDBService db, IGuiService gui, IncubatorJobCalculator incubatorJobCalculator, IPerkService perk)
+        public IncubatorJobService(IBeastMasteryService beastMastery, IBeastIncubationService beastIncubation, IDBService db, IGuiService gui, IncubatorJobCalculator incubatorJobCalculator, IPerkService perk)
         {
             BeastMastery = beastMastery;
+            BeastIncubation = beastIncubation;
             DB = db;
             Gui = gui;
             IncubatorJobCalculator = incubatorJobCalculator;
@@ -196,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow
                     return;
                 }
 
-                BeastMastery.CreateBeastEgg(current, host.Player);
+                BeastIncubation.CreateBeastEgg(current, host.Player);
                 Gui.CloseWindow(host.Player, GuiWindowType.Incubator, host.Player);
 
                 host.SwitchViews();

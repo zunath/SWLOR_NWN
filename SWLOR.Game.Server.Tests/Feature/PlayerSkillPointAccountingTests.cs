@@ -67,12 +67,7 @@ public class PlayerSkillPointAccountingTests : SkillFacadeFixture
         bool expected)
     {
         var service = SkillFacades.Get<ISkillService>();
-        var method = service.GetType().GetMethod(
-            "ShouldDecaySkillRank",
-            BindingFlags.NonPublic | BindingFlags.Instance);
-
-        method.Should().NotBeNull();
-        var result = (bool)method!.Invoke(service, new object[] { contributesToSkillCap, totalRanks })!;
+        var result = service.ShouldDecaySkillRank(contributesToSkillCap, totalRanks);
 
         result.Should().Be(expected);
     }

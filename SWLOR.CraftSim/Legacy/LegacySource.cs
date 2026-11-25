@@ -97,7 +97,7 @@ namespace SWLOR.CraftSim.Legacy
 
         public static readonly SourceReference HarvestXp = new(
             "Harvest XP", GatheringLevels, 21, 24,
-            "LevelsPerTier * (Math.Max(1, tier) - 1) + FirstTierLevel", "Skill.GetDeltaXP(ForTier(tier) - gatheringRank)");
+            "LevelsPerTier * (Math.Max(1, tier) - 1) + FirstTierLevel", "SkillXP.GetDeltaXP(ForTier(tier) - gatheringRank)");
 
         // The scavenge rules live in Quick Search now, which plays today's search at the parity reference (Perception modifier 0). The
         // legacy model still takes the modifier as a parameter, so the old baseline stays reproducible; the rules it ports are checked here.
@@ -118,7 +118,7 @@ namespace SWLOR.CraftSim.Legacy
 
         public static readonly SourceReference ScavengeXp = new(
             "Scavenge XP level", ScavengeSite, 109, 109,
-            "Skill.GetDeltaXP(10 * requiredLevel - rank),");
+            "SkillXP.GetDeltaXP(10 * requiredLevel - rank),");
 
         public static readonly SourceReference RefineryOres = new(
             "Ore tiers and XP per unit", Refinery, 37, 53,
@@ -138,11 +138,11 @@ namespace SWLOR.CraftSim.Legacy
         public static readonly SourceReference RefineryXp = new(
             "Refining XP", Refinery, 366, 370,
             "xp += GatheringLevels.RefiningXp(refinedItem.XPGranted, refinedItem.RequiredLevel, gatheringRank, stackSize);",
-            "Skill.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);");
+            "SkillXP.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);");
 
         public static readonly SourceReference FishingXp = new(
             "Fishing XP per bite", FishingFight, 62, 72,
-            "Skill.GetDeltaXP(bite.Fish.Level - bite.Rank)");
+            "SkillXP.GetDeltaXP(bite.Fish.Level - bite.Rank)");
 
         public static readonly IReadOnlyList<SourceReference> All = new[]
         {

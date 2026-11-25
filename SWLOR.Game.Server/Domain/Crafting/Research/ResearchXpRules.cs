@@ -3,7 +3,7 @@ namespace SWLOR.Game.Server.Domain.Crafting.Research;
 
 /// <summary>
 /// The Fabrication XP research gives. Both amounts start from the chart's XP for the blueprint's recipe level against the
-/// researcher's Fabrication rank (<c>Skill.GetDeltaXP</c>), so research the researcher has outgrown gives nothing. Research gave no
+/// researcher's Fabrication rank (<c>SkillXP.GetDeltaXP</c>), so research the researcher has outgrown gives nothing. Research gave no
 /// XP before experiments. The two percents began at 100 and 50 and were scaled to 62 and 31 for the progression pace: the
 /// largest whole percents, in that two-to-one proportion, that keep research XP per real hour under at-level Fabrication crafting XP
 /// per hour, as <c>SWLOR.CraftSim progression</c> measures it with the crafting pace multiplier. Every value is a
@@ -21,7 +21,7 @@ public static class ResearchXpRules
     public const int LevelBonusPercentPerLevel = 10;
 
     /// <summary>The chart XP for researching a recipe at a Fabrication rank. Needs the XP chart loaded, as at module start.</summary>
-    public static int BaseXp(int recipeLevel, int fabricationRank) => Skill.GetDeltaXP(recipeLevel - fabricationRank);
+    public static int BaseXp(int recipeLevel, int fabricationRank) => SkillXP.GetDeltaXP(recipeLevel - fabricationRank);
 
     /// <summary>The XP for an experiment: the share of the trials the player used (<paramref name="effortPercent"/>) of the full amount.</summary>
     public static int ExperimentXp(int baseXp, int targetLevel, int effortPercent) =>

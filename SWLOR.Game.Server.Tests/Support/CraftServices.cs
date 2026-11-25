@@ -19,7 +19,8 @@ public static class CraftServices
         db ?? new InMemoryDBService(),
         ScriptedProxy.Create<IItemService>(out _),
         new CraftEnhancementPropertyService(FacadeForwarder.For<IResistanceService>()),
-        FacadeForwarder.For<ISkillService>());
+        FacadeForwarder.For<ISkillService>(),
+        FacadeForwarder.For<ISkillXPService>());
 
     /// <summary>The enhancement item property builders, whose resistance encoding reaches the installed container.</summary>
     public static CraftEnhancementPropertyService CreateEnhancementProperties() => new(FacadeForwarder.For<IResistanceService>());

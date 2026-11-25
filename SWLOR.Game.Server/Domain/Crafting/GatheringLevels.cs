@@ -2,7 +2,7 @@ using static SWLOR.Game.Server.Composition.GameServices;
 namespace SWLOR.Game.Server.Domain.Crafting;
 
 /// <summary>
-/// The activity levels Gathering XP is measured at. Harvesting, Prospecting and refining all pay <c>Skill.GetDeltaXP(level - rank)</c>,
+/// The activity levels Gathering XP is measured at. Harvesting, Prospecting and refining all pay <c>SkillXP.GetDeltaXP(level - rank)</c>,
 /// and they share one ladder of levels so that a unit of ore pays the same wherever it is worked: a vein of tier 1 to 5 is level 5, 15,
 /// 25, 35 and 45, which are the ranks at which each harvester tier unlocks (0, 10, 20, 30, 40) plus five.
 /// </summary>
@@ -21,7 +21,7 @@ public static class GatheringLevels
     public static int ForTier(int tier) => LevelsPerTier * (Math.Max(1, tier) - 1) + FirstTierLevel;
 
     /// <summary>The XP one unit of a tier pays a Gathering rank: <c>GetDeltaXP(ForTier(tier) - rank)</c>.</summary>
-    public static int XpPerUnit(int tier, int gatheringRank) => Skill.GetDeltaXP(ForTier(tier) - gatheringRank);
+    public static int XpPerUnit(int tier, int gatheringRank) => SkillXP.GetDeltaXP(ForTier(tier) - gatheringRank);
 
     /// <summary>
     /// The XP refining pays for units of an ore. Each unit pays the ore's flat XP (25 to 150 by ore, what refining always paid) to a
@@ -35,6 +35,6 @@ public static class GatheringLevels
     /// <param name="units">The units refined.</param>
     public static int RefiningXp(int flatXpPerUnit, int oreTier, int gatheringRank, int units) =>
         (int)Math.Round(
-            (double)flatXpPerUnit * Math.Max(0, units) * Skill.GetDeltaXP(ForTier(oreTier) - gatheringRank) / Skill.GetDeltaXP(0),
+            (double)flatXpPerUnit * Math.Max(0, units) * SkillXP.GetDeltaXP(ForTier(oreTier) - gatheringRank) / SkillXP.GetDeltaXP(0),
             MidpointRounding.AwayFromZero);
 }

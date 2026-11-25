@@ -19,7 +19,7 @@ SWLOR.Game.Server/Domain/Character/PerkService.cs -> Character (inside) | 1
 SWLOR.Game.Server/Domain/Character/PerkService.cs -> Combat (up) | 1
 SWLOR.Game.Server/Domain/Character/PlayerDescriptorService.cs -> Character (inside) | 1
 SWLOR.Game.Server/Domain/Character/PlayerNameService.cs -> Character (inside) | 2
-SWLOR.Game.Server/Domain/Character/SkillService.cs -> Character (inside) | 1
+SWLOR.Game.Server/Domain/Character/SkillXPService.cs -> Character (inside) | 1
 SWLOR.Game.Server/Domain/Character/StatusEffectCombatEventService.cs -> Character (inside) | 1
 SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs -> Character (inside) | 1
 SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Character (down) | 1

@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Domain.World
             // The fight pays today's XP for the bite times the multiplier of the fish's level band, which keeps the XP per hour at
             // today's (the CraftSim XP-rate gate). Today's XP is paid now, caught or not. The rest is paid when the fight ends on its own, in proportion
             // to how long it lasted, so a fight abandoned at once to cast again earns no more than the old catch roll did.
-            var baseXp = Skill.GetDeltaXP(bite.Fish.Level - bite.Rank);
+            var baseXp = SkillXP.GetDeltaXP(bite.Fish.Level - bite.Rank);
             var fightXp = CraftMinigameXp.ScaleBaseXp(baseXp, CraftMinigameXp.MultiplierFor(CraftMinigameType.Line, bite.Fish.Level));
             var xp = Math.Min(baseXp, fightXp);
 

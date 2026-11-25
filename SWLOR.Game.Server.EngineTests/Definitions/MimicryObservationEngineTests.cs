@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task KillProducesOneMimicryXPMessage(EngineTestContext ctx)
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
-            var queue = ServiceInternals.Field<ISkillService, SkillXPMessageQueue>("_xpMessages");
+            var queue = ServiceInternals.Field<ISkillXPService, SkillXPMessageQueue>("_xpMessages");
             var sendField = typeof(SkillXPMessageQueue).GetField("_send", BindingFlags.NonPublic | BindingFlags.Instance);
             var originalSend = (Action<uint, SkillType, int>)sendField.GetValue(queue);
             var messages = new List<int>();
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             var forceXP = Experience(baseline, SkillType.Force);
             var activeMimicryXP = Experience(baseline, SkillType.Mimicry) - StartingExperience(4);
-            ctx.Assert(forceXP > 0 && forceXP < Skill.GetDeltaXP(0) / 2,
+            ctx.Assert(forceXP > 0 && forceXP < SkillXP.GetDeltaXP(0) / 2,
                 "the higher actively used Mimicry rank still reduces and shares the utility pool");
             ctx.AssertEqual(forceXP, activeMimicryXP, "equal active credits still receive equal shares");
             ctx.AssertEqual(forceXP, Experience(observer, SkillType.Force), "observation does not alter active sharing");

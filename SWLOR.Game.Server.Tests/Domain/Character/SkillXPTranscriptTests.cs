@@ -36,6 +36,7 @@ public class SkillXPTranscriptTests
 
     private CombatTranscriptBench _bench = null!;
     private ISkillService _skill = null!;
+    private ISkillXPService _skillXP = null!;
 
     [Test]
     public void GiveSkillXPProducesTheCapturedTranscript()
@@ -44,6 +45,7 @@ public class SkillXPTranscriptTests
             services.Replace(ServiceDescriptor.Singleton<IDBService>(new LoggingDB(bench.Db, step => bench.Lines.Add("Db." + step)))));
         using var _ = _bench;
         _skill = _bench.Get<ISkillService>();
+        _skillXP = _bench.Get<ISkillXPService>();
         _skill.CacheData();
         _skill.CacheXPChartData();
         _skill.LoadMappings();
@@ -388,7 +390,7 @@ public class SkillXPTranscriptTests
     {
         var before = Snapshot();
         _bench.Lines.Add($"-> GiveSkillXP({_bench.Name(target)}, {skill}, {xp}, ignoreBonuses: {ignoreBonuses}, henchmanPenalty: {penalty}, source: {(source == 0x7F000000 ? "none" : _bench.Name(source))})");
-        var used = _skill.GiveSkillXP(target, skill, xp, ignoreBonuses, penalty, source);
+        var used = _skillXP.GiveSkillXP(target, skill, xp, ignoreBonuses, penalty, source);
         _bench.Lines.Add($"<- {used}");
         var after = Snapshot();
         foreach (var line in Difference(before, after))

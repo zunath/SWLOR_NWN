@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
         private readonly ISpawnService _spawn;
         private readonly ICacheService _cache;
         private readonly IPerkService _perk;
-        private readonly ISkillService _skill;
+        private readonly ISkillXPService _skill;
         private readonly IStatService _stat;
 
         public SlicingSessionService(
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
             ISpawnService spawn,
             ICacheService cache,
             IPerkService perk,
-            ISkillService skill,
+            ISkillXPService skill,
             IStatService stat)
         {
             _db = db;

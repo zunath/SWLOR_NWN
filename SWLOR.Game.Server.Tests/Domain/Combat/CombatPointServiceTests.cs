@@ -537,7 +537,7 @@ public class CombatPointServiceTests
     private sealed class TestCombatPoint : CombatPointService
     {
         public TestCombatPoint(IDBService db, IEnmityService enmity, IPartyRoster party, ICompanionLookup beastMastery)
-            : base(db, enmity, party, beastMastery, FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ISpaceModeQuery>())
+            : base(db, enmity, party, beastMastery, FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ISkillXPService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ISpaceModeQuery>())
         {
         }
 

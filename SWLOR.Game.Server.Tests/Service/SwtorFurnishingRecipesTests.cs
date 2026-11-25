@@ -67,6 +67,7 @@ public class SwtorFurnishingRecipesTests
         var root = FindRoot();
         var recipes = new SwtorFurnishingRecipes().BuildRecipes();
         recipes.Should().NotBeEmpty();
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var (type, recipe) in recipes)
         {
             var structure = GetStructure(recipe.Resref);
@@ -76,7 +77,11 @@ public class SwtorFurnishingRecipesTests
             structure.LayoutType.Should().Be(PropertyLayoutType.Invalid);
             recipe.IsActive.Should().BeTrue();
             recipe.Requirements.Should().BeEmpty();
-            File.Exists(Path.Combine(root, "Module", "utp", structure.Resref + ".utp.json")).Should().BeTrue();
+            names.Add(structure.Name).Should().BeTrue($"the furnishing name must be unique for {type}");
+
+            using var placeable = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "utp", structure.Resref + ".utp.json")));
+            placeable.RootElement.GetProperty("LocName").GetProperty("value").GetProperty("0").GetString()
+                .Should().Be(structure.Name, "the first placement uses the blueprint's name");
 
             using var item = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Module", "uti", recipe.Resref + ".uti.json")));
             var blueprint = item.RootElement;

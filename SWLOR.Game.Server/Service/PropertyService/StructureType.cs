@@ -2725,188 +2725,188 @@ namespace SWLOR.Game.Server.Service.PropertyService
             0)]
         EspionageWorkbench = 436,
 
-        [Structure("Bed - Bunk, Cream", "daf_sw378", "", true, 1)]
+        [Structure("Bed, Bunk (Cream)", "daf_sw378", "", true, 1)]
         SwtorBedBunkCream = 437,
 
-        [Structure("Bed - Bunk, Open", "daf_sw367", "", true, 1)]
-        SwtorBedBunkOpen = 438,
+        [Structure("Bed, Bunk, Open Frame", "daf_sw367", "", true, 1)]
+        SwtorBedBunkOpenFrame = 438,
 
-        [Structure("Bed - Bunk, Ship (Dark)", "daf_sw374", "", true, 1)]
-        SwtorBedBunkShipDark = 439,
+        [Structure("Bed, Ship Bunk (Dark)", "daf_sw374", "", true, 1)]
+        SwtorBedShipBunkDark = 439,
 
-        [Structure("Bed - Bunk, Ship (Light)", "daf_sw375", "", true, 1)]
-        SwtorBedBunkShipLight = 440,
+        [Structure("Bed, Ship Bunk (Light)", "daf_sw375", "", true, 1)]
+        SwtorBedShipBunkLight = 440,
 
-        [Structure("Bed - Cream (Single)", "daf_sw379", "", true, 1)]
-        SwtorBedCreamSingle = 441,
+        [Structure("Bed, Single (Cream)", "daf_sw379", "", true, 1)]
+        SwtorBedSingleCream = 441,
 
-        [Structure("Bed - Double (Blue)", "daf_sw371", "", true, 1)]
-        SwtorBedDoubleBlue = 442,
+        [Structure("Bed, Double (Navy)", "daf_sw371", "", true, 1)]
+        SwtorBedDoubleNavy = 442,
 
-        [Structure("Bed - Double (Bronze)", "daf_sw370", "", true, 1)]
-        SwtorBedDoubleBronze = 443,
+        [Structure("Bed, Double, Bronze Frame", "daf_sw370", "", true, 1)]
+        SwtorBedDoubleBronzeFrame = 443,
 
-        [Structure("Bed - Double (Orange)", "daf_sw372", "", true, 1)]
+        [Structure("Bed, Double (Orange)", "daf_sw372", "", true, 1)]
         SwtorBedDoubleOrange = 444,
 
-        [Structure("Bed - Double (Purple)", "daf_sw369", "", true, 1)]
+        [Structure("Bed, Double (Purple)", "daf_sw369", "", true, 1)]
         SwtorBedDoublePurple = 445,
 
-        [Structure("Bed - Grey Stripe (Double)", "daf_sw377", "", true, 1)]
-        SwtorBedGreyStripeDouble = 446,
+        [Structure("Bed, Double (Grey Stripe)", "daf_sw377", "", true, 1)]
+        SwtorBedDoubleGreyStripe = 446,
 
-        [Structure("Bed - Jedi, Stone", "daf_sw366", "", true, 1)]
+        [Structure("Bed, Jedi Stone", "daf_sw366", "", true, 1)]
         SwtorBedJediStone = 447,
 
-        [Structure("Bed - Mandalorian", "daf_sw368", "", true, 1)]
-        SwtorBedMandalorian = 448,
+        [Structure("Bed, Mandalorian (Olive)", "daf_sw368", "", true, 1)]
+        SwtorBedMandalorianOlive = 448,
 
-        [Structure("Bed - Metal Post", "daf_sw380", "", true, 1)]
-        SwtorBedMetalPost = 449,
+        [Structure("Bed, Four-Poster (Blue Metal)", "daf_sw380", "", true, 1)]
+        SwtorBedFourPosterBlueMetal = 449,
 
-        [Structure("Bed - Wood", "daf_sw373", "", true, 1)]
-        SwtorBedWood = 450,
+        [Structure("Bed, Wooden Frame (Teal)", "daf_sw373", "", true, 1)]
+        SwtorBedWoodenFrameTeal = 450,
 
-        [Structure("Bench 001", "swd_bench01", "", true, 1)]
-        SwtorBench001 = 483,
+        [Structure("Bench, Angled (Tan)", "swd_bench01", "", true, 1)]
+        SwtorBenchAngledTan = 483,
 
-        [Structure("Bench 002", "swd3_bench02", "", true, 1)]
-        SwtorBench002 = 484,
+        [Structure("Bench, Segmented (Dark Grey)", "swd3_bench02", "", true, 1)]
+        SwtorBenchSegmentedDarkGrey = 484,
 
-        [Structure("Bench 003", "swd3_bench003", "", true, 1)]
-        SwtorBench003 = 485,
+        [Structure("Bench, Segmented (Blue Grey)", "swd3_bench003", "", true, 1)]
+        SwtorBenchSegmentedBlueGrey = 485,
 
-        [Structure("Chair - Leather, Round", "aswtor_139", "", true, 1)]
-        SwtorChairLeatherRound = 506,
+        [Structure("Chair, Leather, Rounded Back", "aswtor_139", "", true, 1)]
+        SwtorChairLeatherRoundedBack = 506,
 
-        [Structure("Chair - Leather, Simple", "aswtor_140", "", true, 1)]
-        SwtorChairLeatherSimple = 507,
+        [Structure("Chair, Leather, Straight Back", "aswtor_140", "", true, 1)]
+        SwtorChairLeatherStraightBack = 507,
 
-        [Structure("Chair - Plasteel, Republic", "aswtor_137", "", true, 1)]
+        [Structure("Chair, Plasteel (Republic)", "aswtor_137", "", true, 1)]
         SwtorChairPlasteelRepublic = 508,
 
-        [Structure("Chair - Plasteel, Tan", "aswtor_138", "", true, 1)]
-        SwtorChairPlasteelTan = 509,
+        [Structure("Chair, Plasteel Cantilever (Tan)", "aswtor_138", "", true, 1)]
+        SwtorChairPlasteelCantileverTan = 509,
 
-        [Structure("Chair 001", "swd_chair001", "", true, 1)]
-        SwtorChair001 = 510,
+        [Structure("Chair, Ring Back (Olive)", "swd_chair001", "", true, 1)]
+        SwtorChairRingBackOlive = 510,
 
-        [Structure("Chair 002", "swd_chair002", "", true, 1)]
-        SwtorChair002 = 511,
+        [Structure("Chair, Shell (Rose)", "swd_chair002", "", true, 1)]
+        SwtorChairShellRose = 511,
 
-        [Structure("Couch 01", "aswtor_125", "", true, 1)]
-        SwtorCouch01 = 544,
+        [Structure("Couch, Steel Frame (Black)", "aswtor_125", "", true, 1)]
+        SwtorCouchSteelFrameBlack = 544,
 
-        [Structure("Crate 03", "daf_sw320", "", true, 1)]
-        SwtorCrate03 = 546,
+        [Structure("Crate, Reinforced (Yellow Trim)", "daf_sw320", "", true, 1)]
+        SwtorCrateReinforcedYellowTrim = 546,
 
-        [Structure("Jedi Library 001", "swd2_jedl001", "", true, 1)]
-        SwtorJediLibrary001 = 653,
+        [Structure("Bookshelf, Jedi Archive (Red)", "swd2_jedl001", "", true, 1)]
+        SwtorBookshelfJediArchiveRed = 653,
 
-        [Structure("Jedi Library 002", "swd2_jedl002", "", true, 1)]
-        SwtorJediLibrary002 = 654,
+        [Structure("Bookshelf, Jedi Archive (Green)", "swd2_jedl002", "", true, 1)]
+        SwtorBookshelfJediArchiveGreen = 654,
 
-        [Structure("Jukebox 001", "swd3_jukeb01", "", true, 1)]
-        SwtorJukebox001 = 659,
+        [Structure("Jukebox, Twin Horn (Red)", "swd3_jukeb01", "", true, 1)]
+        SwtorJukeboxTwinHornRed = 659,
 
-        [Structure("Jukebox 002", "swd3_jukeb002", "", true, 1)]
-        SwtorJukebox002 = 660,
+        [Structure("Jukebox, Twin Horn (Blue)", "swd3_jukeb002", "", true, 1)]
+        SwtorJukeboxTwinHornBlue = 660,
 
-        [Structure("Jukebox 003", "swd3_jukeb003", "", true, 1)]
-        SwtorJukebox003 = 661,
+        [Structure("Jukebox, Arched (Silver)", "swd3_jukeb003", "", true, 1)]
+        SwtorJukeboxArchedSilver = 661,
 
-        [Structure("Jukebox 004", "swd3_jukeb004", "", true, 1)]
-        SwtorJukebox004 = 662,
+        [Structure("Jukebox, Arched (Blue and Gold)", "swd3_jukeb004", "", true, 1)]
+        SwtorJukeboxArchedBlueGold = 662,
 
-        [Structure("Jukebox 005", "swd3_jukeb005", "", true, 1)]
-        SwtorJukebox005 = 663,
+        [Structure("Jukebox, Arched (Silver and Green)", "swd3_jukeb005", "", true, 1)]
+        SwtorJukeboxArchedSilverGreen = 663,
 
-        [Structure("Lamp 001", "swd_lamp01", "", true, 1)]
-        SwtorLamp001 = 673,
+        [Structure("Lamp, Angled Desk", "swd_lamp01", "", true, 1)]
+        SwtorLampAngledDesk = 673,
 
-        [Structure("Locker - Green", "aswtor_126", "", true, 1)]
-        SwtorLockerGreen = 675,
+        [Structure("Locker, Metal (Green)", "aswtor_126", "", true, 1)]
+        SwtorLockerMetalGreen = 675,
 
-        [Structure("Locker - Grey", "aswtor_128", "", true, 1)]
-        SwtorLockerGrey = 676,
+        [Structure("Locker, Metal (Grey)", "aswtor_128", "", true, 1)]
+        SwtorLockerMetalGrey = 676,
 
-        [Structure("Locker - Orange", "aswtor_127", "", true, 1)]
-        SwtorLockerOrange = 677,
+        [Structure("Locker, Metal (Orange)", "aswtor_127", "", true, 1)]
+        SwtorLockerMetalOrange = 677,
 
-        [Structure("Poster 1", "swd_postr01", "", true, 1)]
-        SwtorPoster1 = 761,
+        [Structure("Poster, Sandwich Ad (Brown)", "swd_postr01", "", true, 1)]
+        SwtorPosterSandwichAdBrown = 761,
 
-        [Structure("Poster 2", "swd_postr02", "", true, 1)]
-        SwtorPoster2 = 762,
+        [Structure("Poster, Sandwich Ad (Purple)", "swd_postr02", "", true, 1)]
+        SwtorPosterSandwichAdPurple = 762,
 
-        [Structure("Rug - Blue Geometry (Small)", "aswtor_161", "", true, 1)]
-        SwtorRugBlueGeometrySmall = 781,
+        [Structure("Rug, Octagonal (Blue)", "aswtor_161", "", true, 1)]
+        SwtorRugOctagonalBlue = 781,
 
-        [Structure("Rug 1", "swd_rug01", "", true, 1)]
-        SwtorRug1 = 789,
+        [Structure("Rug, Ornate Border (Red)", "swd_rug01", "", true, 1)]
+        SwtorRugOrnateBorderRed = 789,
 
-        [Structure("Rug 2", "swd_rug02", "", true, 1)]
-        SwtorRug2 = 790,
+        [Structure("Rug, Floral Border (Teal)", "swd_rug02", "", true, 1)]
+        SwtorRugFloralBorderTeal = 790,
 
-        [Structure("Rug 3", "swd_rug03", "", true, 1)]
-        SwtorRug3 = 791,
+        [Structure("Rug, Angular Stripe (Red)", "swd_rug03", "", true, 1)]
+        SwtorRugAngularStripeRed = 791,
 
-        [Structure("Rug 4", "swd_rug04", "", true, 1)]
-        SwtorRug4 = 792,
+        [Structure("Rug, Angular Stripe (Blue)", "swd_rug04", "", true, 1)]
+        SwtorRugAngularStripeBlue = 792,
 
-        [Structure("Rug 5", "swd_rug05", "", true, 1)]
-        SwtorRug5 = 793,
+        [Structure("Rug, Gold Filigree", "swd_rug05", "", true, 1)]
+        SwtorRugGoldFiligree = 793,
 
-        [Structure("Safe Box", "swd_sbox01", "", true, 1)]
-        SwtorSafeBox = 795,
+        [Structure("Safe, Compact Metal", "swd_sbox01", "", true, 1)]
+        SwtorSafeCompactMetal = 795,
 
-        [Structure("Sofa", "swd_sofa01", "", true, 1)]
-        SwtorSofa = 816,
+        [Structure("Couch, Curved (Red)", "swd_sofa01", "", true, 1)]
+        SwtorCouchCurvedRed = 816,
 
-        [Structure("Sofa 2", "swd2_sofa002", "", true, 1)]
-        SwtorSofa2 = 817,
+        [Structure("Couch, Sectional (Blue)", "swd2_sofa002", "", true, 1)]
+        SwtorCouchSectionalBlue = 817,
 
-        [Structure("Sofa 3", "swd2_sofa003", "", true, 1)]
-        SwtorSofa3 = 818,
+        [Structure("Couch, Long (Red and Cream)", "swd2_sofa003", "", true, 1)]
+        SwtorCouchLongRedCream = 818,
 
-        [Structure("Table - Cantina, Large", "aswtor_148", "", true, 1)]
+        [Structure("Table, Cantina (Large)", "aswtor_148", "", true, 1)]
         SwtorTableCantinaLarge = 826,
 
-        [Structure("Table - Cantina, Large (Full)", "aswtor_147", "", true, 1)]
-        SwtorTableCantinaLargeFull = 827,
+        [Structure("Table, Cantina Set (Four Seats)", "aswtor_147", "", true, 1)]
+        SwtorTableCantinaSetFourSeats = 827,
 
-        [Structure("Table - Cantina, Small", "aswtor_151", "", true, 1)]
+        [Structure("Table, Cantina (Small)", "aswtor_151", "", true, 1)]
         SwtorTableCantinaSmall = 828,
 
-        [Structure("Table - Cantina, Small (Full)", "aswtor_150", "", true, 1)]
-        SwtorTableCantinaSmallFull = 829,
+        [Structure("Table, Cantina Set (Two Seats)", "aswtor_150", "", true, 1)]
+        SwtorTableCantinaSetTwoSeats = 829,
 
-        [Structure("Table 1", "swd_table01", "", true, 1)]
-        SwtorTable1 = 837,
+        [Structure("Table, Illuminated, Round", "swd_table01", "", true, 1)]
+        SwtorTableIlluminatedRound = 837,
 
-        [Structure("Table 2", "swd_table02", "", true, 1)]
-        SwtorTable2 = 838,
+        [Structure("Table, Illuminated, Stools (With Drinks)", "swd_table02", "", true, 1)]
+        SwtorTableIlluminatedStoolsWithDrinks = 838,
 
-        [Structure("Table 3", "swd_table03", "", true, 1)]
-        SwtorTable3 = 839,
+        [Structure("Table, Illuminated, Stools", "swd_table03", "", true, 1)]
+        SwtorTableIlluminatedStools = 839,
 
-        [Structure("Table 5", "swd_table05", "", true, 1)]
-        SwtorTable5 = 840,
+        [Structure("Table, Rectangular (With Drinks)", "swd_table05", "", true, 1)]
+        SwtorTableRectangularWithDrinks = 840,
 
-        [Structure("Trash Can (SWTOR)", "swd_trash01", "", true, 1)]
-        SwtorTrashCan = 862,
+        [Structure("Trash Can, Round (Teal Lights)", "swd_trash01", "", true, 1)]
+        SwtorTrashCanRoundTealLights = 862,
 
-        [Structure("Trash Can 02", "aswtor_049", "", true, 1)]
-        SwtorTrashCan02 = 863,
+        [Structure("Trash Can, Metal (Chute)", "aswtor_049", "", true, 1)]
+        SwtorTrashCanMetalChute = 863,
 
-        [Structure("Wardrobe 2", "swd_ward02", "", true, 1)]
-        SwtorWardrobe2 = 934,
+        [Structure("Cabinet, Display (Narrow)", "swd_ward02", "", true, 1)]
+        SwtorCabinetDisplayNarrow = 934,
 
-        [Structure("Wardrobe 3", "swd_ward03", "", true, 1)]
-        SwtorWardrobe3 = 935,
+        [Structure("Cabinet, Display (Wide)", "swd_ward03", "", true, 1)]
+        SwtorCabinetDisplayWide = 935,
 
-        [Structure("Wardrobe 4", "swd_ward04", "", true, 1)]
-        SwtorWardrobe4 = 936,
+        [Structure("Cabinet, Display (Stocked)", "swd_ward04", "", true, 1)]
+        SwtorCabinetDisplayStocked = 936,
 
         // Buildings start here (5000+)
         [Structure("City Hall - Style 1",

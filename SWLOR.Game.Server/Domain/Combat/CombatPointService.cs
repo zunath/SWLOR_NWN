@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IPartyRoster _party;
         private readonly ICompanionLookup _companions;
         private readonly ISkillService _skill;
+        private readonly ISkillXPService _skillXP;
         private readonly IStatService _stat;
 
         private readonly ISpaceModeQuery _space;
@@ -36,6 +37,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IPartyRoster party,
             ICompanionLookup companions,
             ISkillService skill,
+            ISkillXPService skillXP,
             IStatService stat,
             ISpaceModeQuery space)
         {
@@ -44,6 +46,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _party = party;
             _companions = companions;
             _skill = skill;
+            _skillXP = skillXP;
             _stat = stat;
             _space = space;
         }
@@ -517,11 +520,11 @@ namespace SWLOR.Game.Server.Domain.Combat
         protected virtual SkillAttribute GetSkillDetails(SkillType skillType) => _skill.GetSkillDetails(skillType);
 
         /// <summary>The unconverted <c>Skill</c> service.</summary>
-        protected virtual int GetDeltaXP(int delta) => _skill.GetDeltaXP(delta);
+        protected virtual int GetDeltaXP(int delta) => _skillXP.GetDeltaXP(delta);
 
         /// <summary>The unconverted <c>Skill</c> service.</summary>
         protected virtual int GiveSkillXP(uint player, SkillType skill, int xp, uint xpMessageSource = OBJECT_INVALID) =>
-            _skill.GiveSkillXP(player, skill, xp, xpMessageSource: xpMessageSource);
+            _skillXP.GiveSkillXP(player, skill, xp, xpMessageSource: xpMessageSource);
 
         /// <summary>The unconverted <c>Stat</c> pipeline.</summary>
         protected virtual NPCStats GetNPCStats(uint npc) => _stat.GetNPCStats(npc);

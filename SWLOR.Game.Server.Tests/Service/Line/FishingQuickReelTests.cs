@@ -181,7 +181,7 @@ public class FishingQuickReelTests : SkillFacadeFixture
     {
         var lifecycle = Lifecycle();
         var fight = lifecycle.Bite(Bite(level: 20, rank: 20));
-        var expected = Skill.GetDeltaXP(0);
+        var expected = SkillXP.GetDeltaXP(0);
         _world.Xp.Should().Equal(new[] { expected }, "the bite pays today's XP at once");
         _world.UtcNow = _world.UtcNow.AddSeconds(LineRules.XpFullTurns * LineRules.TurnSeconds * 10);
         _random.Roll = 1;

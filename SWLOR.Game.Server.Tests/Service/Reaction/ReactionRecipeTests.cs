@@ -142,7 +142,7 @@ public class ReactionRecipeTests
         foreach (var rank in new[] { 0, recipe.Level, recipe.PracticeRankLimit!.Value - 1, recipe.PracticeRankLimit.Value })
         {
             Craft.GetBaseRecipeXP(recipe, rank).Should().Be(
-                Skill.GetPracticeXP(recipe.Level, rank, recipe.PracticeRankLimit.Value), $"rank {rank}");
+                SkillXP.GetPracticeXP(recipe.Level, rank, recipe.PracticeRankLimit.Value), $"rank {rank}");
         }
 
         Craft.GetBaseRecipeXP(recipe, recipe.PracticeRankLimit.Value).Should().Be(0, "a mastered tier trains nothing");
@@ -230,7 +230,7 @@ public class ReactionRecipeTests
         success.Should().NotBeNull();
         success!.Outcome.QualityPercent.Should().Be(engine.Meters.Quality.Percent);
         var baseXp = CraftMinigameXp.ScaleBaseXp(
-            Skill.GetPracticeXP(recipe.Level, rank, recipe.PracticeRankLimit!.Value), ReactionRules.XpMultiplier(recipe.Level));
+            SkillXP.GetPracticeXP(recipe.Level, rank, recipe.PracticeRankLimit!.Value), ReactionRules.XpMultiplier(recipe.Level));
         success.Outcome.Xp.Should().Be(CraftOutcomeRules.CalculateXp(baseXp, 0, true, engine.Meters.Quality.Fraction));
         world.XpGiven.Should().ContainSingle().Which.Skill.Should().Be(SkillType.Espionage);
         world.Events.Should().Contain($"create:{recipe.Resref}");

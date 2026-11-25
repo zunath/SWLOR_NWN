@@ -30,7 +30,7 @@ public class SlicingSessionServiceTests
     private sealed class TestSlicing : SlicingSessionService
     {
         public TestSlicing(IDBService db, ISlicingService slicing, IItemService item, IGuiService gui, ISpawnService spawn, ICacheService cache)
-            : base(db, slicing, item, gui, spawn, cache, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>())
+            : base(db, slicing, item, gui, spawn, cache, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillXPService>(), FacadeForwarder.For<IStatService>())
         {
         }
 

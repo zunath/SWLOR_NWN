@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    Skill.GiveSkillXP(player, SkillType.Mimicry, 400);
+                    SkillXP.GiveSkillXP(player, SkillType.Mimicry, 400);
                     SendMessageToPC(player,
                         "Renna calibrates the prototype and copies its schematics for you. Invest in the Combat Analyzer perk to record techniques from enemies you defeat, then review, equip, and manage them with the /techniques window.");
                 });

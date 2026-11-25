@@ -168,7 +168,7 @@ public class CraftMinigameXpTests
 
         foreach (var rank in new[] { 0, 10, 15, 19, 20, 30 })
         {
-            var practice = Skill.GetPracticeXP(10, rank, 20);
+            var practice = SkillXP.GetPracticeXP(10, rank, 20);
             Craft.GetBaseRecipeXP(recipe, rank).Should().Be(practice, $"rank {rank}");
             CraftMinigameXp.BaseXp(recipe, rank).Should().Be(CraftMinigameXp.ScaleBaseXp(practice, reaction), $"rank {rank}: the Reaction band, nothing more");
         }

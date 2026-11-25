@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.Quests;
 
@@ -71,6 +72,8 @@ namespace SWLOR.Game.Server.Domain.Economy
         /// <param name="guild">The guild type to retrieve for</param>
         /// <returns>A list of active guild tasks</returns>
         Dictionary<string, QuestDetail> GetAllActiveGuildTasks(GuildType guild);
+
+        Dictionary<string, QuestDetail> GetGuildTasksForPlayer(GuildType guild, IReadOnlyDictionary<string, PlayerQuest> playerQuests);
 
         /// <summary>
         /// Retrieves the GP required to reach next rank.

@@ -36,7 +36,7 @@ public class SkillRankUpTests : IntegrationTestBase
     [Test]
     public void AnAwardBelowTheRankCost_IsSavedAsProgress()
     {
-        var applied = Skill.GiveSkillXP(Hero, _skill, RequiredXP(0) - 1, ignoreBonuses: true, applyHenchmanPenalty: false);
+        var applied = SkillXP.GiveSkillXP(Hero, _skill, RequiredXP(0) - 1, ignoreBonuses: true, applyHenchmanPenalty: false);
 
         applied.Should().Be(RequiredXP(0) - 1);
         Db.EndFrame();
@@ -50,10 +50,10 @@ public class SkillRankUpTests : IntegrationTestBase
     public void ProgressAcrossFrames_ReachesTheRankAndGrantsASkillPoint()
     {
         var cost = RequiredXP(0);
-        Skill.GiveSkillXP(Hero, _skill, cost - 1, ignoreBonuses: true, applyHenchmanPenalty: false);
+        SkillXP.GiveSkillXP(Hero, _skill, cost - 1, ignoreBonuses: true, applyHenchmanPenalty: false);
         Db.EndFrame();
 
-        Skill.GiveSkillXP(Hero, _skill, 1, ignoreBonuses: true, applyHenchmanPenalty: false);
+        SkillXP.GiveSkillXP(Hero, _skill, 1, ignoreBonuses: true, applyHenchmanPenalty: false);
 
         Db.EndFrame();
         var record = Db.Get<Player>(HeroId);
@@ -72,7 +72,7 @@ public class SkillRankUpTests : IntegrationTestBase
     {
         var cost = RequiredXP(0) + RequiredXP(1) + RequiredXP(2) + 5;
 
-        var applied = Skill.GiveSkillXP(Hero, _skill, cost, ignoreBonuses: true, applyHenchmanPenalty: false);
+        var applied = SkillXP.GiveSkillXP(Hero, _skill, cost, ignoreBonuses: true, applyHenchmanPenalty: false);
 
         applied.Should().Be(cost);
         Db.EndFrame();
@@ -90,7 +90,7 @@ public class SkillRankUpTests : IntegrationTestBase
         Db.Set(record);
         Db.EndFrame();
 
-        var applied = Skill.GiveSkillXP(Hero, _skill, 25, ignoreBonuses: true, applyHenchmanPenalty: false);
+        var applied = SkillXP.GiveSkillXP(Hero, _skill, 25, ignoreBonuses: true, applyHenchmanPenalty: false);
 
         applied.Should().Be(25);
         Db.EndFrame();
@@ -105,7 +105,7 @@ public class SkillRankUpTests : IntegrationTestBase
         Engine.SetReturn("GetIsDead", true);
         var before = Db.GetRawJson<Player>(HeroId);
 
-        Skill.GiveSkillXP(Hero, _skill, 100).Should().Be(0);
+        SkillXP.GiveSkillXP(Hero, _skill, 100).Should().Be(0);
 
         Db.GetRawJson<Player>(HeroId).Should().Be(before);
     }

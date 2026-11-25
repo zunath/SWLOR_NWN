@@ -53,7 +53,7 @@ namespace SWLOR.CraftSim.Tests.Progression
             var rows = ResearchCohort.Rows(ProgressionFixture.RealRecipes, ProgressionFixture.Gear, Assumptions);
 
             rows.Should().OnlyContain(r => Math.Min(r.RecipeLevel / 10 + 1, 5) <= r.Tier);
-            rows.Should().OnlyContain(r => r.BaseXp == Skill.GetDeltaXP(r.RecipeLevel - r.FabricationRank));
+            rows.Should().OnlyContain(r => r.BaseXp == SkillXP.GetDeltaXP(r.RecipeLevel - r.FabricationRank));
             rows.Single(r => r.FabricationRank == 10).RecipeLevel.Should().Be(9, "tier 1 allows recipes up to level 9");
             rows.Single(r => r.FabricationRank == 10).BaseXp.Should().Be(450);
         }

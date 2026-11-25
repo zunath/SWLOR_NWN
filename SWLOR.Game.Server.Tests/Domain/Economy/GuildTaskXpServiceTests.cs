@@ -131,7 +131,7 @@ public class GuildTaskXpServiceTests
     private sealed class TestXp : GuildTaskXpService
     {
         public TestXp(IDBService db)
-            : base(db, FacadeForwarder.For<ICraftService>(), FacadeForwarder.For<ISkillService>())
+            : base(db, FacadeForwarder.For<ICraftService>(), FacadeForwarder.For<ISkillXPService>())
         {
         }
 

@@ -25,13 +25,15 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly TranslatorGeneric _genericTranslator = new TranslatorGeneric();
         private readonly IDBService _db;
         private readonly ISkillService _skill;
+        private readonly ISkillXPService _skillXP;
         private readonly IStatService _stat;
         private IEnumerable<LanguageCommand> _languages;
 
-        public LanguageService(IDBService db, ISkillService skill, IStatService stat)
+        public LanguageService(IDBService db, ISkillService skill, ISkillXPService skillXP, IStatService stat)
         {
             _db = db;
             _skill = skill;
+            _skillXP = skillXP;
             _stat = stat;
         }
 
@@ -354,7 +356,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>Awards skill XP: <c>Skill.GiveSkillXP</c>.</summary>
         protected virtual int GiveSkillXP(uint player, SkillType skill, int xp, bool ignoreBonuses, bool applyHenchmanPenalty)
         {
-            return _skill.GiveSkillXP(player, skill, xp, ignoreBonuses, applyHenchmanPenalty);
+            return _skillXP.GiveSkillXP(player, skill, xp, ignoreBonuses, applyHenchmanPenalty);
         }
 
         /// <summary>The XP needed for a rank: <c>Skill.GetRequiredXP</c>.</summary>

@@ -23,15 +23,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 /// </summary>
 public sealed class SkillXPAwardDecayEngineTests
 {
-    public SkillXPAwardDecayEngineTests(ISkillService skill, IPerkService perk, IAbilityCatalogService abilityCatalog, IDBService db)
+    public SkillXPAwardDecayEngineTests(ISkillService skill, ISkillXPService skillXP, IPerkService perk, IAbilityCatalogService abilityCatalog, IDBService db)
     {
         Skill = skill;
+        SkillXP = skillXP;
         Perk = perk;
         AbilityCatalog = abilityCatalog;
         DB = db;
     }
 
     private ISkillService Skill { get; }
+    private ISkillXPService SkillXP { get; }
     private IPerkService Perk { get; }
     private IAbilityCatalogService AbilityCatalog { get; }
     private IDBService DB { get; }
@@ -102,7 +104,7 @@ public sealed class SkillXPAwardDecayEngineTests
         await ctx.ExecuteInCreatureContextAsync(player, () =>
         {
             using var spy = SignalSpy.Install();
-            awarded = Skill.GiveSkillXP(player, GainedSkill, Skill.GetRequiredXP(0), true, false);
+            awarded = SkillXP.GiveSkillXP(player, GainedSkill, Skill.GetRequiredXP(0), true, false);
         });
         await ctx.WaitFrameAsync();
 
@@ -138,7 +140,7 @@ public sealed class SkillXPAwardDecayEngineTests
         await ctx.ExecuteInCreatureContextAsync(player, () =>
         {
             using var spy = SignalSpy.Install();
-            Skill.GiveSkillXP(player, GainedSkill, Skill.GetRequiredXP(0), true, false);
+            SkillXP.GiveSkillXP(player, GainedSkill, Skill.GetRequiredXP(0), true, false);
         });
         await ctx.WaitFrameAsync();
 

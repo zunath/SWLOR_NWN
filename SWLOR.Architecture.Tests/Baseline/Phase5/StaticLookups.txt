@@ -420,7 +420,7 @@ SWLOR.Game.Server.Tests/Service/ExtraHotbarsTests.cs | 19
 SWLOR.Game.Server.Tests/Service/Fabricator/FabricatorSessionTests.cs | 4
 SWLOR.Game.Server.Tests/Service/Fabricator/FabricatorWindowTests.cs | 5
 SWLOR.Game.Server.Tests/Service/FocusedBurstChannelTests.cs | 3
-SWLOR.Game.Server.Tests/Service/GuildTaskBoardTests.cs | 12
+SWLOR.Game.Server.Tests/Service/GuildTaskBoardTests.cs | 14
 SWLOR.Game.Server.Tests/Service/GuildTaskXpTests.cs | 25
 SWLOR.Game.Server.Tests/Service/IncubationTestToolsTests.cs | 6
 SWLOR.Game.Server.Tests/Service/Kitchen/KitchenSessionTests.cs | 2

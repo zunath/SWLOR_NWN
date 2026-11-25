@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
 
         public void GiveGatheringXp(uint player, int xp)
         {
-            Skill.GiveSkillXP(player, SkillType.Gathering, xp, false, false);
+            SkillXP.GiveSkillXP(player, SkillType.Gathering, xp, false, false);
         }
 
         public string CreateItem(uint site, string resref, int quantity, out int placed)

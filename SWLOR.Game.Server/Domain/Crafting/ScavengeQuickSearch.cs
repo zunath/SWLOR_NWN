@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
         /// </summary>
         /// <param name="random">The source of chance.</param>
         /// <param name="hardLookLevel">The Hard Look level the Gathering rank grants.</param>
-        /// <param name="deltaXp">The XP a success pays: <c>Skill.GetDeltaXP(10 x site level - Gathering rank)</c>. A failure pays a quarter.</param>
+        /// <param name="deltaXp">The XP a success pays: <c>SkillXP.GetDeltaXP(10 x site level - Gathering rank)</c>. A failure pays a quarter.</param>
         public static QuickSearchResult Resolve(IMinigameRandom random, int hardLookLevel, int deltaXp)
         {
             if (random == null)

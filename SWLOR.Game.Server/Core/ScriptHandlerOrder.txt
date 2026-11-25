@@ -770,7 +770,7 @@ mod_enter
   action      SWLOR.Game.Server.Domain.Character.RaceService.ApplyWookieeScaling
   action      SWLOR.Game.Server.Domain.World.ShuttleService.EnterServer
   action      SWLOR.Game.Server.Domain.Character.SkillService.AddMissingSkills
-  action      SWLOR.Game.Server.Domain.Character.SkillService.ResetLimitWarningsOnEnter
+  action      SWLOR.Game.Server.Domain.Character.SkillXPService.ResetLimitWarningsOnEnter
   action      SWLOR.Game.Server.Domain.Space.SpaceService.EnterServer
   action      SWLOR.Game.Server.Domain.Character.CreatureStatService.ApplyPlayerStats
   action      SWLOR.Game.Server.Domain.Character.StatusEffectSessionService.OnPlayerEnter
@@ -843,7 +843,7 @@ mod_exit
   action      SWLOR.Game.Server.Domain.Character.PlayerNameOverrideService.ClearAfkOnExit
   action      SWLOR.Game.Server.Domain.Combat.PvpCombatService.ForgetExitingPlayer
   action      SWLOR.Game.Server.Domain.World.ShuttleService.ExitServer
-  action      SWLOR.Game.Server.Domain.Character.SkillService.ResetLimitWarningsOnExit
+  action      SWLOR.Game.Server.Domain.Character.SkillXPService.ResetLimitWarningsOnExit
   action      SWLOR.Game.Server.Domain.Space.SpaceService.ExitServer
   action      SWLOR.Game.Server.Domain.Character.CreatureStatService.ForgetOutOfCombatMovementState
   action      SWLOR.Game.Server.Domain.Character.StatusEffectSessionService.OnPlayerExit

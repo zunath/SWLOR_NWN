@@ -85,7 +85,7 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "[SWTOR] Table - Cantina, Small"
+      "0": "Table, Cantina (Small)"
     }
   },
   "OnClick": {

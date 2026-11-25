@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Native
                 {
                     if (rolledDamage > 0)
                         GameServices.CombatFeedback.SendTemporaryHitPointDamageFeedback(attackerId, defenderId, rolledDamage);
-                    GameServices.CombatHitEffects.ApplyCriticalHitEffects(attackerId, defenderId, rolledDamage, effectiveCritical, true, weaponSkillType);
+                    GameServices.CombatCriticalHitEffects.ApplyCriticalHitEffects(attackerId, defenderId, rolledDamage, effectiveCritical, true, weaponSkillType);
                 }
                 if (rolledDamage > 0 && damageableTarget)
                 {

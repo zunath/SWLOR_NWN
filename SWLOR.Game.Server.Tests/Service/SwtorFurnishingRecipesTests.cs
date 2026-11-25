@@ -54,8 +54,8 @@ public class SwtorFurnishingRecipesTests
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
         excludedModels.Should().NotBeEmpty();
 
-        var householdModels = new SwtorFurnishingRecipes().BuildRecipes().Values
-            .Select(recipe => GetStructure(recipe.Resref)!.Resref)
+        var householdModels = GetSwtorFurnitureRecipes()
+            .Select(recipe => GetStructure(recipe.Value.Resref)!.Resref)
             .Select(resref => ReadAppearance(Path.Combine(root, "Module", "utp", resref + ".utp.json")))
             .Select(row => placeables.GetValue(row, "ModelName"));
         householdModels.Should().NotIntersectWith(excludedModels);
@@ -65,8 +65,8 @@ public class SwtorFurnishingRecipesTests
     public void NewRecipes_ProduceUsablePropertyItems()
     {
         var root = FindRoot();
-        var recipes = new SwtorFurnishingRecipes().BuildRecipes();
-        recipes.Should().NotBeEmpty();
+        var recipes = GetSwtorFurnitureRecipes().ToList();
+        recipes.Should().HaveCount(61);
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var (type, recipe) in recipes)
         {
@@ -92,6 +92,12 @@ public class SwtorFurnishingRecipesTests
             property.GetProperty("PropertyName").GetProperty("value").GetInt32().Should().Be(15);
             property.GetProperty("Subtype").GetProperty("value").GetInt32().Should().Be(329);
         }
+    }
+
+    private static IEnumerable<KeyValuePair<RecipeType, RecipeDetail>> GetSwtorFurnitureRecipes()
+    {
+        return new FurnitureRecipes().BuildRecipes()
+            .Where(recipe => recipe.Key.ToString().StartsWith("Swtor", StringComparison.Ordinal));
     }
 
     private static StructureAttribute? GetStructure(string itemResref)

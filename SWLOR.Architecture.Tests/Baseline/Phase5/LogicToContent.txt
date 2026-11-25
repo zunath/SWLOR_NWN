@@ -30,11 +30,13 @@ SWLOR.Game.Server/Domain/Combat/CombatAbilityCostEffectsService.cs -> Feature/St
 SWLOR.Game.Server/Domain/Combat/CombatAbilityDefenseEffectsService.cs -> Feature/StatusEffectDefinition | 4
 SWLOR.Game.Server/Domain/Combat/CombatAbilityHitAdjustmentService.cs -> Feature/StatusEffectDefinition | 2
 SWLOR.Game.Server/Domain/Combat/CombatAbilityHitRidersService.cs -> Feature/StatusEffectDefinition | 2
-SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs -> Feature/AbilityDefinition | 2
-SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs -> Feature/StatusEffectDefinition | 24
 SWLOR.Game.Server/Domain/Combat/CombatAbilityOffenseEffectsService.cs -> Feature/StatusEffectDefinition | 2
+SWLOR.Game.Server/Domain/Combat/CombatAbilityStatusAppliedService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Combat/CombatAbilityStatusAppliedService.cs -> Feature/StatusEffectDefinition | 2
 SWLOR.Game.Server/Domain/Combat/CombatAbilityWeaponActivationService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Combat/CombatAbilityWeaponActivationService.cs -> Feature/StatusEffectDefinition | 3
+SWLOR.Game.Server/Domain/Combat/CombatAbilityWeaponRidersService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Combat/CombatAbilityWeaponRidersService.cs -> Feature/StatusEffectDefinition | 22
 SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs -> Feature/StatusEffectDefinition | 2
 SWLOR.Game.Server/Domain/Combat/CombatAutoAttackEffectsService.cs -> Feature/StatusEffectDefinition | 3
 SWLOR.Game.Server/Domain/Combat/CombatCriticalHitEffectsService.cs -> Feature/StatusEffectDefinition | 7

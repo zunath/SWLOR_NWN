@@ -1717,7 +1717,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "public static void ApplyStatusAppliedTargetStaminaDrain(",
             StringComparison.Ordinal);
         var staminaDrainMethodEnd = combatSource.IndexOf(
-            "public static void ForgetImpactState(",
+            "namespace SWLOR.Game.Server.Domain.Combat",
             staminaDrainMethodStart,
             StringComparison.Ordinal);
         staminaDrainMethodEnd.Should().BeGreaterThan(staminaDrainMethodStart);

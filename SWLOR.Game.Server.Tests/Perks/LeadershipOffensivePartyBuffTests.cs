@@ -205,7 +205,7 @@ public class LeadershipOffensivePartyBuffTests
         impact = impact[..impact.IndexOf("private static void ApplyAbilityStatusRiders(", StringComparison.Ordinal)];
         impact.Should().Contain("ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied);");
         var buff = combat[combat.IndexOf("public static void ApplyHostileAbilityPartyBuff(", StringComparison.Ordinal)..];
-        buff = buff[..buff.IndexOf("private static void ApplyPistolSkirmisherImpactRiders(", StringComparison.Ordinal)];
+        buff = buff[..buff.IndexOf("public static void ApplyStatusAppliedEffects(", StringComparison.Ordinal)];
         buff.Should().NotContain("SkillType.").And.NotContain("PerkType.");
         buff.Should().Contain("IsSuccessfulHostileAbilityImpact(ability, damage, statusApplied)");
         buff.Should().Contain("TryUseStatTrigger(activator, StatType.HostileAbilityPartyBuffDamagePercent, cooldown)");

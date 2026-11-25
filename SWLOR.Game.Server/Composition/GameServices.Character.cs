@@ -67,11 +67,11 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The model the roleplay XP chat check loaded at server start (the static facade <c>RoleplayXPDetection</c> until it was removed).</summary>
         public static IRoleplayXPDetectionService RoleplayXPDetection => FacadeAccessor.Resolve<IRoleplayXPDetectionService>();
 
-        /// <summary>
-        /// The skill catalog, XP awards and rank rules (the static facade <c>Skill</c> until it was removed). Its constants are on
-        /// <see cref="SkillService"/>.
-        /// </summary>
+        /// <summary>The skill catalog and rank rules (the static facade <c>Skill</c> until it was removed). Its constants are on <see cref="SkillService"/>.</summary>
         public static ISkillService Skill => FacadeAccessor.Resolve<ISkillService>();
+
+        /// <summary>Skill XP awards and the formulas that size them: <c>GiveSkillXP</c>, the delta, practice and Espionage XP.</summary>
+        public static ISkillXPService SkillXP => FacadeAccessor.Resolve<ISkillXPService>();
 
         /// <summary>
         /// Stats: the stat adjustment read, the FP and Stamina pools, NPC stat skins and the Detection, Stealth and crafting reads

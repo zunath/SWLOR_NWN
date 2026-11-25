@@ -365,11 +365,11 @@ namespace SWLOR.Game.Server.Domain.Creatures
             ClearAIState(creature);
             ApplyLeashEvadeMovementRate(creature);
             ExecuteScript(ScriptName.OnCreatureLeashStarted, creature);
-            DelayCommand(0.2f, () =>
+            AssignCommand(GetModule(), () => DelayCommand(0.2f, () =>
             {
                 if (CreatureAIRules.IsLeashEvading(creature))
                     ApplyLeashEvadeMovementRate(creature);
-            });
+            }));
             ContinueLeashEvadeReturn(creature, homeLocation);
         }
 

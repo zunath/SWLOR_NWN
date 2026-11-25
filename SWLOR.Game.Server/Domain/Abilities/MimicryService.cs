@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly IAbilityCatalog _catalog;
         private readonly IPerkService _perk;
         private readonly Lazy<IStatService> _stat;
-        private readonly ISkillService _skill;
+        private readonly ISkillXPService _skill;
         private readonly IStatusEffectService _statusEffect;
         private readonly Lazy<ICombatPointService> _combatPoint;
 
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             IAbilityCatalog catalog,
             IPerkService perk,
             Lazy<IStatService> stat,
-            ISkillService skill,
+            ISkillXPService skill,
             IStatusEffectService statusEffect,
             Lazy<ICombatPointService> combatPoint)
         {

@@ -359,7 +359,9 @@ namespace SWLOR.Game.Server.Domain.Character
         {
             if (GetIsPC(creature))
             {
-                DelayCommand(0.0f, () => _gui.PublishRefreshEvent(creature, new StatAdjustmentRefreshEvent()));
+                // On-hit riders change modifiers inside GetDamageRoll, which has no OBJECT_SELF; a bare
+                // DelayCommand there is dropped, so the module owns the deferred refresh.
+                AssignCommand(GetModule(), () => DelayCommand(0.0f, () => _gui.PublishRefreshEvent(creature, new StatAdjustmentRefreshEvent())));
             }
         }
 

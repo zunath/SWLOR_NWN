@@ -198,6 +198,7 @@ public class CombatHitEffectsServiceTests : CombatHitEffectsTestBase
     [Test]
     public void AnAutoAttackSplashHitsTheTargetAndItsNeighboursOnTheNextFrame()
     {
+        _engine.SetReturn("GetModule", 1u);
         Sources(Attacker, StatType.AutoAttackSplashDamage,
             new Dictionary<StatType, int>
             {
@@ -211,6 +212,9 @@ public class CombatHitEffectsServiceTests : CombatHitEffectsTestBase
 
         Hit(10, SkillType.Vibroblade);
         Lines("Queue").Should().BeEmpty("the splash waits a frame");
+        var assignment = _engine.CallsTo("AssignCommand").Single();
+        assignment.Arguments[0].Should().Be(1u);
+        ((Action)assignment.Arguments[1]!)();
         _engine.CallsTo("DelayCommand").Should().ContainSingle().Which.Arguments[0].Should().Be(0f);
 
         _log.Clear();

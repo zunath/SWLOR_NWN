@@ -44,7 +44,7 @@ public class CraftTests : SkillFacadeFixture
     {
         var recipe = new RecipeDetail { Level = 10 };
         for (var rank = 0; rank <= 50; rank++)
-            Assert.That(_craft.GetBaseRecipeXP(recipe, rank), Is.EqualTo(Skill.GetDeltaXP(recipe.Level - rank)));
+            Assert.That(_craft.GetBaseRecipeXP(recipe, rank), Is.EqualTo(SkillXP.GetDeltaXP(recipe.Level - rank)));
     }
 
     [TestCase(40, 37)]

@@ -47,7 +47,7 @@ public class GatheringXpTests : SkillFacadeFixture
     public void AUnitPaysGetDeltaXpOfTheLevelAgainstTheRank_AsHarvestingAlwaysDid(int tier, int rank, int expected)
     {
         GatheringLevels.XpPerUnit(tier, rank).Should().Be(expected);
-        GatheringLevels.XpPerUnit(tier, rank).Should().Be(Skill.GetDeltaXP(10 * (tier - 1) + 5 - rank));
+        GatheringLevels.XpPerUnit(tier, rank).Should().Be(SkillXP.GetDeltaXP(10 * (tier - 1) + 5 - rank));
     }
 
     [Test]
@@ -100,7 +100,7 @@ public class GatheringXpTests : SkillFacadeFixture
         {
             for (var rank = 0; rank <= 50; rank++)
             {
-                var ratio = (double)Skill.GetDeltaXP(GatheringLevels.ForTier(tier) - rank) / Skill.GetDeltaXP(0);
+                var ratio = (double)SkillXP.GetDeltaXP(GatheringLevels.ForTier(tier) - rank) / SkillXP.GetDeltaXP(0);
                 GatheringLevels.RefiningXp(100, tier, rank, 1).Should().Be((int)Math.Round(100 * ratio, MidpointRounding.AwayFromZero));
                 GatheringLevels.RefiningXp(100, tier, rank, 1).Should().BeLessThanOrEqualTo(200);
             }

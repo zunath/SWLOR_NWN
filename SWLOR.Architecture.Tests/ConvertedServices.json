@@ -119,6 +119,7 @@
     { "name": "ServerTask", "domain": "Gameplay" },
     { "name": "Shuttle", "domain": "World", "extras": [ { "part": "ShuttleArrival" }, { "part": "ShuttleBoarding" }, { "part": "ShuttleClock" }, { "part": "ShuttleFlight" }, { "part": "ShuttlePassenger" }, { "part": "ShuttleState" }, { "part": "ShuttleTicket" } ] },
     { "name": "Skill", "domain": "Character" },
+    { "name": "SkillXP", "domain": "Character" },
     { "name": "Slicing", "domain": "Crafting", "extras": [ { "class": "SlicingSession" } ] },
     { "name": "Snippet", "domain": "Foundation" },
     { "name": "Space", "domain": "Space" },

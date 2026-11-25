@@ -85,7 +85,7 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "[SWTOR] Bed - Bunk, Ship (Light)"
+      "0": "Bed, Ship Bunk (Light)"
     }
   },
   "OnClick": {

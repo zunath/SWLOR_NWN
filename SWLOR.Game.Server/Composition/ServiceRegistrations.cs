@@ -145,6 +145,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IRaceService, RaceService>();
             services.AddSingleton<IRoleplayXPDetectionService, RoleplayXPDetectionService>();
             services.AddSingleton<ISkillService, SkillService>();
+            services.AddSingleton<ISkillXPService, SkillXPService>();
             services.AddSingleton<ICreatureStatService, CreatureStatService>();
             services.AddSingleton<IStatService, StatService>();
             services.AddSingleton<IStatRecordService, StatRecordService>();

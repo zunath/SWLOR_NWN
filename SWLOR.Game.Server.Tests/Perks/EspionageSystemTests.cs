@@ -514,7 +514,7 @@ public class EspionageSystemTests
         stealthSource.Should().Contain("RecordInfiltrationCombatInitiation(attacker);");
         stealthSource.Should().Contain("CancelInfiltration(creature);");
         infiltrationSource.Should().Contain("private const float MovementSampleIntervalSeconds = 1f;");
-        infiltrationSource.Should().Contain("DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId));");
+        infiltrationSource.Should().Contain("AssignCommand(GetModule(), () => DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId)));");
         infiltrationSource.Should().Contain("CreaturePlugin.GetFaction(npc) != HostileFactionId");
         infiltrationSource.Should().Contain("HasNonProximityEnmity(npc)");
         infiltrationSource.Should().Contain("HasNonProximityEnmity(target, observer)");

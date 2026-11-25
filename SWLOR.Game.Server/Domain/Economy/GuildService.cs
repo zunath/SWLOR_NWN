@@ -39,6 +39,8 @@ namespace SWLOR.Game.Server.Domain.Economy
         [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _activeGuildTasksByRank = new Dictionary<GuildType, Dictionary<int, List<QuestDetail>>>();
         [ReloadState(ReloadStateKind.Adopted)]
+        private readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _guildTaskRotationByRank = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<GuildType, Dictionary<string, QuestDetail>> _activeGuildTasks = new Dictionary<GuildType, Dictionary<string, QuestDetail>>();
 
         /// <summary>The key the guild tasks are carried under across a hot reload (<see cref="ReloadCarry"/>).</summary>
@@ -155,21 +157,23 @@ namespace SWLOR.Game.Server.Domain.Economy
                 foreach (var (type, _) in _activeGuilds)
                 {
                     var potentialTasks = _quest.GetQuestsByGuild(type, rank);
-                    List<QuestDetail> tasks;
+                    List<QuestDetail> rotation;
 
                     // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.
                     if (potentialTasks.Count <= 10)
                     {
-                        tasks = potentialTasks;
+                        rotation = potentialTasks;
                     }
-                    // Pick 10 tasks randomly out of the potential list.
+                    // Shuffle the whole list. The first 10 go on the board; on a guild marked TasksRefreshAfterCompletion
+                    // the rest replace the tasks a player completes.
                     else
                     {
-                        tasks = potentialTasks
+                        rotation = potentialTasks
                             .OrderBy(o => Random.Next())
-                            .Take(10)
                             .ToList();
                     }
+
+                    var tasks = rotation.Take(10).ToList();
 
                     if(!_activeGuildTasks.ContainsKey(type))
                         _activeGuildTasks[type] = new Dictionary<string, QuestDetail>();
@@ -183,6 +187,11 @@ namespace SWLOR.Game.Server.Domain.Economy
                     }
 
                     _activeGuildTasksByRank[type][rank] = tasks;
+
+                    if (!_guildTaskRotationByRank.ContainsKey(type))
+                        _guildTaskRotationByRank[type] = new Dictionary<int, List<QuestDetail>>();
+
+                    _guildTaskRotationByRank[type][rank] = rotation;
                 }
             }
 
@@ -206,6 +215,7 @@ namespace SWLOR.Game.Server.Domain.Economy
                     ["guild"] = (int)guild.Key,
                     ["rank"] = rank.Key,
                     ["quests"] = new JArray(rank.Value.Select(quest => quest.QuestId)),
+                    ["rotation"] = new JArray(_guildTaskRotationByRank[guild.Key][rank.Key].Select(quest => quest.QuestId)),
                 }))),
             };
 
@@ -241,10 +251,83 @@ namespace SWLOR.Game.Server.Domain.Economy
 
                 foreach (var task in tasks)
                     _activeGuildTasks[guild][task.QuestId] = task;
-                _activeGuildTasksByRank[guild][entry["rank"].Value<int>()] = tasks;
+                var rank = entry["rank"].Value<int>();
+                _activeGuildTasksByRank[guild][rank] = tasks;
+                if (!_guildTaskRotationByRank.TryGetValue(guild, out var rotations))
+                    _guildTaskRotationByRank[guild] = rotations = new();
+                var rolled = rotations.TryGetValue(rank, out var pool) ? pool : new List<QuestDetail>();
+                var ids = entry["rotation"]?.Values<string>() ?? tasks.Select(task => task.QuestId);
+                rotations[rank] = ids.Concat(rolled.Select(task => task.QuestId)).Distinct()
+                    .Select(id => _quest.GetQuestByIdOrDefault(id)).Where(task => task != null).ToList();
             }
 
             DateTasksLoaded = carry["loaded"].ToObject<DateTime>();
+        }
+
+        public Dictionary<string, QuestDetail> GetGuildTasksForPlayer(GuildType guild, IReadOnlyDictionary<string, PlayerQuest> playerQuests)
+        {
+            if (!guild.GetAttribute<GuildType, GuildAttribute>().TasksRefreshAfterCompletion ||
+                DateTasksLoaded == null ||
+                !_guildTaskRotationByRank.ContainsKey(guild))
+                return GetAllActiveGuildTasks(guild);
+
+            var result = new Dictionary<string, QuestDetail>();
+            foreach (var (rank, active) in _activeGuildTasksByRank[guild])
+            {
+                var rotation = _guildTaskRotationByRank[guild][rank];
+                var tasksById = rotation.ToDictionary(x => x.QuestId, x => x);
+                var boardSize = active.Count;
+                var questIds = SelectPlayerTaskIds(rotation.Select(x => x.QuestId).ToList(), boardSize, playerQuests, DateTasksLoaded.Value);
+
+                foreach (var questId in questIds)
+                {
+                    result[questId] = tasksById[questId];
+                }
+            }
+
+            return result;
+        }
+
+        public static List<string> SelectPlayerTaskIds(
+            IReadOnlyList<string> rotation,
+            int boardSize,
+            IReadOnlyDictionary<string, PlayerQuest> playerQuests,
+            DateTime dateTasksLoaded)
+        {
+            var selected = new HashSet<string>();
+
+            bool IsInProgress(string questId) =>
+                playerQuests.TryGetValue(questId, out var quest) && quest.DateLastCompleted == null;
+
+            bool IsCompletedSinceLoad(string questId) =>
+                playerQuests.TryGetValue(questId, out var quest) && quest.DateLastCompleted >= dateTasksLoaded;
+
+            foreach (var questId in rotation.Where(IsInProgress))
+                selected.Add(questId);
+
+            foreach (var questId in rotation.Where(x => !IsCompletedSinceLoad(x)))
+            {
+                if (selected.Count >= boardSize)
+                    break;
+
+                selected.Add(questId);
+            }
+
+            var board = rotation.Where(selected.Contains).ToList();
+
+            var completedOldestFirst = rotation
+                .Where(IsCompletedSinceLoad)
+                .OrderBy(x => playerQuests[x].DateLastCompleted)
+                .ToList();
+            foreach (var questId in completedOldestFirst)
+            {
+                if (board.Count >= boardSize)
+                    break;
+
+                board.Add(questId);
+            }
+
+            return board;
         }
 
         public bool IsCompletedTaskHidden(GuildType guild, DateTime? dateLastCompleted, DateTime? dateTasksLoaded)

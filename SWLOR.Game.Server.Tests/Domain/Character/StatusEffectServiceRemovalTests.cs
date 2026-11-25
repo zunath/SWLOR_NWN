@@ -120,6 +120,9 @@ public class StatusEffectServiceRemovalTests : StatusEffectServiceTestBase
         Service.HasEffect(typeof(HandlerProbeEffect), Target).Should().BeFalse();
         Bench.Engine.CallsTo("RemoveEffectByTag").Select(call => ((string[])call.Arguments[1]!).Single())
             .Should().Equal(effect.Id, "STATUS_EFFECT");
+        // Attack hooks remove effects with no OBJECT_SELF, so the module owns the deferred recompute.
+        Bench.Engine.CallsTo("AssignCommand").Single().Arguments[0].Should().Be(Bench.Engine.GetModule());
+        Bench.RunDeferred("AssignCommand");
         var delayed = Bench.Engine.CallsTo("DelayCommand").Single();
         delayed.Arguments[0].Should().Be(0.1f);
 

@@ -67,6 +67,7 @@ SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService._spawns
 SWLOR.Game.Server.Domain.Economy.GuildService.<DateTasksLoaded>k__BackingField
 SWLOR.Game.Server.Domain.Economy.GuildService._activeGuildTasks
 SWLOR.Game.Server.Domain.Economy.GuildService._activeGuildTasksByRank
+SWLOR.Game.Server.Domain.Economy.GuildService._guildTaskRotationByRank
 SWLOR.Game.Server.Domain.Space.SpaceService._dockPoints
 SWLOR.Game.Server.Domain.World.PropertyLoadRegistryService._completedInstanceSpawnActions
 SWLOR.Game.Server.Domain.World.PropertyLoadRegistryService._propertyInstances

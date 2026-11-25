@@ -638,7 +638,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",
-    "Line": 748,
+    "Line": 749,
     "Member": "ExitDetectedPlayerStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, ColorToken.Red(\"You have been detected and are forced out of stealth.\"))"
@@ -953,14 +953,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Economy/GuildService.cs",
-    "Line": 129,
+    "Line": 131,
     "Member": "GiveGuildPoints",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You earned {amount} {detail.Name} guild points\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Economy/GuildService.cs",
-    "Line": 140,
+    "Line": 142,
     "Member": "GiveGuildPoints",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\"You've reached rank \" + dbGuild.Rank + \" in the \" + detail.Name + \"!\"))"
@@ -6476,7 +6476,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/StatusEffectDefinition/InspiredStatusEffect.cs",
-    "Line": 174,
+    "Line": 175,
     "Member": "HealStandingOvation",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, \"A standing ovation lifts you, restoring your health.\")"

@@ -138,8 +138,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             RememberOvation(playerId, now);
 
-            // The heal lands after the hit, so it cannot be cancelled by the damage it answers.
-            DelayCommand(0f, () => HealStandingOvation(defender));
+            // The heal lands after the hit, so it cannot be cancelled by the damage it answers. Weapon hits
+            // reach this from GetDamageRoll, which has no OBJECT_SELF, so the module owns the deferral.
+            AssignCommand(GetModule(), () => DelayCommand(0f, () => HealStandingOvation(defender)));
         }
 
         private static void RememberOvation(string playerId, DateTime now)

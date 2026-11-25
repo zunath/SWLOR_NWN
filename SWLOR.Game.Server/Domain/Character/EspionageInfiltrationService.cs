@@ -333,7 +333,9 @@ namespace SWLOR.Game.Server.Domain.Character
 
             var samplerId = ++_nextMovementSamplerId;
             _movementSamplerIdsByPlayer[player] = samplerId;
-            DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId));
+            // Detection can begin an attempt from attack hooks with no OBJECT_SELF; a dropped first sample would
+            // leave this registered sampler idle, so the module owns it.
+            AssignCommand(GetModule(), () => DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId)));
         }
 
         private bool HasCombatEnmity(uint player, uint npc)

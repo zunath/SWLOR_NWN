@@ -40,6 +40,7 @@ public class TemporaryStatModifierServiceTests
     {
         _facadeScope = _facades.Install();
         _engine = new FakeNWScript();
+        _engine.SetReturn("GetModule", 1u);
         _engine.SetReturnHandler("GetIsPC", arguments => (uint)arguments[0]! == Player);
         _engine.SetReturnHandler("GetIsObjectValid", arguments => (uint)arguments[0]! != Other);
         _engineScope = NWScriptRuntime.Override(_engine);
@@ -56,7 +57,7 @@ public class TemporaryStatModifierServiceTests
         _facadeScope.Dispose();
     }
 
-    private int Refreshes => _engine.CountOf("DelayCommand");
+    private int Refreshes => _engine.CallsTo("AssignCommand").Count(call => (uint)call.Arguments[0]! == 1u);
 
     [Test]
     public void Add_sums_the_amounts_of_the_same_stat()
@@ -146,7 +147,8 @@ public class TemporaryStatModifierServiceTests
 
         _service.Add(Player, StatType.Attack, 5, 30f);
         Refreshes.Should().Be(1);
-        _engine.CallsTo("DelayCommand")[0].Arguments[0].Should().Be(0.0f);
+        ((Action)_engine.CallsTo("AssignCommand").Single().Arguments[1]!)();
+        _engine.CallsTo("DelayCommand").Single().Arguments[0].Should().Be(0.0f);
     }
 
     [Test]

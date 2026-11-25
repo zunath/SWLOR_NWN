@@ -43,4 +43,21 @@ public sealed partial class QuestConversationTests
         tasks.Select(task => task.GuildRank).Distinct().OrderBy(rank => rank)
             .Should().Equal(CraftingGuildTaskRewards.Keys.OrderBy(rank => rank));
     }
+
+    [TestCase(GuildType.SmitheryGuild)]
+    [TestCase(GuildType.EngineeringGuild)]
+    [TestCase(GuildType.FabricationGuild)]
+    [TestCase(GuildType.AgricultureGuild)]
+    public void CraftingGuildTasks_EveryRankHasSpareTasksToRotateInAfterACompletion(GuildType guild)
+    {
+        // The board offers 10 tasks per rank. A completed task gives way to a different task of the same rank, so every rank
+        // needs more than 10.
+        using var scope = new AssertionScope();
+        var tasksByRank = BuildQuests().Values
+            .Where(quest => quest.GuildType == guild)
+            .GroupBy(quest => quest.GuildRank);
+
+        foreach (var rank in tasksByRank)
+            rank.Count().Should().BeGreaterThan(10, $"{guild} rank {rank.Key}");
+    }
 }

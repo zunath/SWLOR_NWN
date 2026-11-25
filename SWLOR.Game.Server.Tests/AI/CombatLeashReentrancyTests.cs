@@ -63,6 +63,8 @@ public class CombatLeashReentrancyTests
                 public static bool TryKeepFightingWithinLeash(uint creature, Location home) => false;
                 public static void ApplyLeashEvadeMovementRate(uint creature) { }
                 public static void DelayCommand(float delay, Action callback) { }
+                public static uint GetModule() => 1;
+                public static void AssignCommand(uint owner, Action action) => action();
                 public static void ContinueLeashEvadeReturn(uint creature, Location home) => Returns++;
                 public static void ExecuteScript(string script, uint creature)
                 {

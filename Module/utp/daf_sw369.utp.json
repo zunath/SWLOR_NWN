@@ -85,7 +85,7 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "[SWTOR] Bed - Double (Purple)"
+      "0": "Bed, Double (Purple)"
     }
   },
   "OnClick": {

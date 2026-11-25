@@ -116,8 +116,8 @@ public class GuildServiceRotationTests
         var hunters = _service.GetAllActiveGuildTasks(GuildType.HuntersGuild);
         hunters.Should().HaveCount(BoardSize);
         hunters.Keys.Should().BeEquivalentTo(_service.GetActiveGuildTasksByRank(GuildType.HuntersGuild, Rank).Select(task => task.QuestId));
-        _service.GetGuildTasksForPlayer(GuildType.HuntersGuild, new Dictionary<string, PlayerQuest> { ["x"] = Completed(DateTime.UtcNow) })
-            .Keys.Should().BeEquivalentTo(hunters.Keys, "a completed task stays off a non-crafting board");
+        _service.GetGuildTasksForPlayer(GuildType.HuntersGuild, new Dictionary<string, PlayerQuest> { [hunters.Keys.First()] = Completed(DateTime.UtcNow) })
+            .Keys.Should().BeEquivalentTo(hunters.Keys, "a completed task is not replaced on a non-crafting board");
     }
 
     [Test]
@@ -129,6 +129,8 @@ public class GuildServiceRotationTests
         var loaded = _service.DateTasksLoaded!.Value;
 
         _service.CarryGuildTasks();
+        // The new build rolls only the board tasks, so only a carried rotation can supply a spare task.
+        _quests.ByGuild[(Crafting, Rank)] = board.Select(id => _quests.ById[id]).ToList();
         var reloaded = NewService();
         reloaded.LoadData();
         reloaded.RefreshGuildTasks();

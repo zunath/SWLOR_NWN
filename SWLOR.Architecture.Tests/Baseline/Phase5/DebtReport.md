@@ -178,7 +178,7 @@ Largest 15 of 115 (all in `LogicToContent.txt`):
 
 - 25 pairs of domains depend on each other: 21 between logic (6 of them with Foundation or Platform), 4 between content.
 - Foundation's logic is in a pair with 2 domains, Platform with 5.
-- Members both ways: 3,556.
+- Members both ways: 3,557.
 
 Largest 15 of 25 (all in `DomainCycles.txt`):
 
@@ -188,7 +188,7 @@ Largest 15 of 25 (all in `DomainCycles.txt`):
 | `Gameplay content <-> UI content` | 9 | Gameplay content -> UI content: 2 edge(s), 2 member(s); UI content -> Gameplay content: 7 edge(s), 9 member(s) |
 | `Abilities <-> Platform` | 6 | Abilities -> Platform: 5 edge(s), 75 member(s); Platform -> Abilities: 1 edge(s), 2 member(s) |
 | `Character <-> Platform` | 6 | Character -> Platform: 4 edge(s), 137 member(s); Platform -> Character: 2 edge(s), 27 member(s) |
-| `Combat <-> Platform` | 6 | Combat -> Platform: 5 edge(s), 245 member(s); Platform -> Combat: 1 edge(s), 52 member(s) |
+| `Combat <-> Platform` | 6 | Combat -> Platform: 5 edge(s), 246 member(s); Platform -> Combat: 1 edge(s), 52 member(s) |
 | `Foundation content <-> Gameplay content` | 5 | Foundation content -> Gameplay content: 2 edge(s), 4 member(s); Gameplay content -> Foundation content: 3 edge(s), 3 member(s) |
 | `Abilities content <-> Gameplay content` | 4 | Abilities content -> Gameplay content: 2 edge(s), 5 member(s); Gameplay content -> Abilities content: 2 edge(s), 2 member(s) |
 | `Foundation <-> UI` | 4 | Foundation -> UI: 1 edge(s), 6 member(s); UI -> Foundation: 3 edge(s), 127 member(s) |

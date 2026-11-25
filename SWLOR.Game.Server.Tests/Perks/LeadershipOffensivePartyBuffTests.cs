@@ -202,7 +202,7 @@ public class LeadershipOffensivePartyBuffTests
         root.Should().NotBeNull();
         var combat = CombatSource.Read();
         var impact = combat[combat.IndexOf("public static void ApplySuccessfulAbilityImpactRiders(", StringComparison.Ordinal)..];
-        impact = impact[..impact.IndexOf("private static void ApplyCostlyAbilityHitEffects(", StringComparison.Ordinal)];
+        impact = impact[..impact.IndexOf("private static void ApplyAbilityStatusRiders(", StringComparison.Ordinal)];
         impact.Should().Contain("ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied);");
         var buff = combat[combat.IndexOf("public static void ApplyHostileAbilityPartyBuff(", StringComparison.Ordinal)..];
         buff = buff[..buff.IndexOf("private static void ApplyPistolSkirmisherImpactRiders(", StringComparison.Ordinal)];

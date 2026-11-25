@@ -305,7 +305,10 @@ SWLOR.Game.Server.Tests/Domain/Combat/CombatServiceTests.cs | 1
 SWLOR.Game.Server.Tests/Domain/Combat/MeleeTechniqueServiceTests.cs | 3
 SWLOR.Game.Server.Tests/Domain/Combat/OrdinaryAttackTraitsServiceTests.cs | 8
 SWLOR.Game.Server.Tests/Domain/Combat/QueuedAttackAnimationServiceTests.cs | 10
-SWLOR.Game.Server.Tests/Domain/Companions/BeastMasteryServiceTests.cs | 10
+SWLOR.Game.Server.Tests/Domain/Companions/BeastIncubationServiceTests.cs | 8
+SWLOR.Game.Server.Tests/Domain/Companions/BeastMasteryServiceTests.cs | 3
+SWLOR.Game.Server.Tests/Domain/Companions/BeastSpawnServiceTests.cs | 1
+SWLOR.Game.Server.Tests/Domain/Companions/BeastTestBase.cs | 1
 SWLOR.Game.Server.Tests/Domain/Companions/DroidEquipmentDiagnosticsServiceTests.cs | 5
 SWLOR.Game.Server.Tests/Domain/Companions/IncubationFieldNoteServiceTests.cs | 5
 SWLOR.Game.Server.Tests/Domain/Core/CommunicationChatTests.cs | 3

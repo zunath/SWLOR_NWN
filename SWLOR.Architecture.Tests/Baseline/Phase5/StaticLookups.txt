@@ -118,8 +118,9 @@ SWLOR.Game.Server.EngineTests/Definitions/InvisibilityEngagementEngineTests.cs |
 SWLOR.Game.Server.EngineTests/Definitions/ItemAppearanceCatalogMigrationEngineTests.cs | 2
 SWLOR.Game.Server.EngineTests/Definitions/ItemClaimInventorySpaceEngineTests.cs | 20
 SWLOR.Game.Server.EngineTests/Definitions/ItemIconEngineTests.cs | 32
-SWLOR.Game.Server.EngineTests/Definitions/ItemReturnInventorySpaceEngineTests.cs | 59
+SWLOR.Game.Server.EngineTests/Definitions/ItemReturnInventorySpaceEngineTests.cs | 62
 SWLOR.Game.Server.EngineTests/Definitions/KatarAnimationRemapEngineTests.cs | 3
+SWLOR.Game.Server.EngineTests/Definitions/KeyItemActivationEngineTests.cs | 1
 SWLOR.Game.Server.EngineTests/Definitions/LanguageTokenEngineTests.cs | 8
 SWLOR.Game.Server.EngineTests/Definitions/LightsaberWorkbenchEngineTests.cs | 13
 SWLOR.Game.Server.EngineTests/Definitions/LoneTargetAreaAbilityEngineTests.cs | 4
@@ -155,6 +156,7 @@ SWLOR.Game.Server.EngineTests/Definitions/PerkEngineTests.cs | 2
 SWLOR.Game.Server.EngineTests/Definitions/PerkTrackerRegressionEngineTests.cs | 245
 SWLOR.Game.Server.EngineTests/Definitions/PiercingTossEngineTests.cs | 12
 SWLOR.Game.Server.EngineTests/Definitions/PistolPresentationEngineTests.cs | 2
+SWLOR.Game.Server.EngineTests/Definitions/PlaceableSpawnRoomEngineTests.cs | 2
 SWLOR.Game.Server.EngineTests/Definitions/PlayerBeastAbilityEngineTests.cs | 20
 SWLOR.Game.Server.EngineTests/Definitions/PlayerDataCacheEngineTests.cs | 15
 SWLOR.Game.Server.EngineTests/Definitions/PlayerFixtureCombatEngineTests.cs | 2
@@ -174,7 +176,7 @@ SWLOR.Game.Server.EngineTests/Definitions/PowerGlovePairEngineTests.cs | 70
 SWLOR.Game.Server.EngineTests/Definitions/ProjectileConversionProbeStatusEffect.cs | 1
 SWLOR.Game.Server.EngineTests/Definitions/PropertyDeletionEngineTests.cs | 22
 SWLOR.Game.Server.EngineTests/Definitions/PropertyInstancePlayersEngineTests.cs | 6
-SWLOR.Game.Server.EngineTests/Definitions/PropertyItemStorageSelectionEngineTests.cs | 13
+SWLOR.Game.Server.EngineTests/Definitions/PropertyItemStorageSelectionEngineTests.cs | 15
 SWLOR.Game.Server.EngineTests/Definitions/PvpCombatEngineTests.cs | 68
 SWLOR.Game.Server.EngineTests/Definitions/QuestCollectorEngineTests.cs | 58
 SWLOR.Game.Server.EngineTests/Definitions/QuestContractEscrowEngineTests.cs | 63
@@ -817,7 +819,7 @@ SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageCityViewModel.cs | 33
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageDMsViewModel.cs | 9
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageStructuresViewModel.cs | 44
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketBuyViewModel.cs | 18
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs | 23
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MarketListingViewModel.cs | 24
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/MusicPickerViewModel.cs | 27
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/NotesViewModel.cs | 21
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerformanceCueViewModelBase.cs | 5

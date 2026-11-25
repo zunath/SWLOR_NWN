@@ -332,6 +332,15 @@ public class CraftServiceTests
         var recipe = AddRecipe(RecipeType.VenomCoating1, level: 3);
         recipe.Requirements.Add(new FixedRequirement("ok", string.Empty));
         recipe.Requirements.Add(new FixedRequirement("no", "Missing."));
+        GivePlayerRank(recipe.Skill, 7);
+
+        _service.CanPlayerCraftRecipe(PlayerObject, RecipeType.VenomCoating1).Should().BeFalse();
+    }
+
+    [Test]
+    public void CanPlayerCraftRecipe_is_false_without_a_player_record()
+    {
+        AddRecipe(RecipeType.VenomCoating1, level: 3);
 
         _service.CanPlayerCraftRecipe(PlayerObject, RecipeType.VenomCoating1).Should().BeFalse();
     }
@@ -339,10 +348,10 @@ public class CraftServiceTests
     [Test]
     public void CanPlayerCraftRecipe_skips_the_rank_check_for_a_recipe_anyone_may_craft()
     {
-        AddRecipe(RecipeType.VenomCoating1, level: 3);
+        var recipe = AddRecipe(RecipeType.VenomCoating1, level: 3);
+        GivePlayerRank(recipe.Skill, 0);
 
         _service.CanPlayerCraftRecipe(PlayerObject, RecipeType.VenomCoating1).Should().BeTrue();
-        _db.Reads.Should().BeEmpty();
     }
 
     // ---- the recipe window

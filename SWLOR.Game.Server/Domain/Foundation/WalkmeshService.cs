@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Entity;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -45,7 +44,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         public const int BakeVersion = 2;
 
         // Areas with these spawn tables get random placeable spawns, which need the stricter placeable points.
-        private static readonly string[] _spawnTableVariables =
+        private readonly string[] _spawnTableVariables =
         {
             "RESOURCE_SPAWN_TABLE_ID", "SLICING_TERMINAL_SPAWN_TABLE_ID", "CREATURE_SPAWN_TABLE_ID",
         };
@@ -281,7 +280,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
             return points;
         }
 
-        private static bool HasSpawnTable(uint area)
+        private bool HasSpawnTable(uint area)
         {
             foreach (var variable in _spawnTableVariables)
             {
@@ -295,8 +294,11 @@ namespace SWLOR.Game.Server.Domain.Foundation
         private List<Vector3> BakePlaceablePoints(uint area)
         {
             var points = new List<Vector3>();
+            if (!_walkmeshesByArea.TryGetValue(GetResRef(area), out var baked))
+                return points;
+
             var nativeArea = GetNativeArea(area);
-            if (nativeArea == null || !_walkmeshesByArea.TryGetValue(GetResRef(area), out var baked))
+            if (nativeArea == null)
                 return points;
 
             var grid = new WalkableGrid(

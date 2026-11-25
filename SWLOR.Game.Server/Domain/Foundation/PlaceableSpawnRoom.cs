@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Domain.Creatures
+namespace SWLOR.Game.Server.Domain.Foundation
 {
     /// <summary>
     /// Decides whether a randomly placed placeable (resource node, terminal) can stand at a point without blocking

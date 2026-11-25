@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SWLOR.Game.Server.Domain.Creatures
+namespace SWLOR.Game.Server.Domain.Foundation
 {
     /// <summary>
     /// Answers whether a creature can walk a straight line over an area's tile walkmesh, from a grid of samples taken

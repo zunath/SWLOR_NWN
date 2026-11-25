@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using Vector3 = System.Numerics.Vector3;

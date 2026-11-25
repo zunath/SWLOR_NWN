@@ -85,7 +85,7 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "[SWTOR] Bed - Bunk, Open"
+      "0": "Bed, Bunk, Open Frame"
     }
   },
   "OnClick": {

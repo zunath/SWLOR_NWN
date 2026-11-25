@@ -2,6 +2,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -69,6 +70,48 @@ public class ProgFxCoatRendererTests
     public void GetCoatForProgFxRow_OnlyCoatsEnvironmentMapRows(string type, string texture, int expected)
     {
         ProgFxCoatRenderer.GetCoatForProgFxRow(type, texture).Should().Be(expected);
+    }
+
+    [Test]
+    public void GetCoatedMaterials_AddsTheCoatOnlyMaterialsOfRenderedModels()
+    {
+        var chest = new TintMapMaterialSelection(
+            "pmd0_chest316",
+            new TintMapMaterialDefinition("pmh0_chest316", "pmh0_chest316", TintMapLayerType.Metal1),
+            1, 1, true, AppearanceArmor.Torso);
+        var forearm = new TintMapMaterialSelection(
+            "pmd0_forer282",
+            new TintMapMaterialDefinition("troopbracer", "troopbracer", TintMapLayerType.Leather2),
+            1, 1, true, AppearanceArmor.RightForearm);
+        var coatOnly = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["PMD0_CHEST316"] = new[] { "havoc_box" },
+            ["pmh0_chest316"] = new[] { "unrendered" },
+        };
+
+        ProgFxCoatRenderer.GetCoatedMaterials(new[] { chest, forearm, chest }, coatOnly)
+            .Should().Equal("pmh0_chest316", "troopbracer", "havoc_box");
+    }
+
+    [Test]
+    public void CoatOnlyMaterials_AreTintedModelsAndCoatCapableMaterials()
+    {
+        var root = FindRepositoryRoot();
+        var tintModels = Test2daHelper.Read2da(new FileInfo(Path.Combine(root, "SWLOR_Haks", "sw_2da", "tintmap.2da"))).Values
+            .Select(row => row.GetValueOrDefault("MODEL"))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var rows = Test2daHelper.Read2da(new FileInfo(Path.Combine(root, "SWLOR_Haks", "sw_2da", "progfxcoat.2da"))).Values;
+
+        rows.Should().NotBeEmpty();
+        foreach (var row in rows)
+        {
+            // Only models with tint selections reach the coat writer.
+            tintModels.Should().Contain(row["MODEL"]);
+            var material = Directory.GetDirectories(Path.Combine(root, "SWLOR_Haks"), "sw_*")
+                .SelectMany(hak => Directory.GetFiles(hak, row["MATERIAL"] + ".mtr"))
+                .Should().ContainSingle().Subject;
+            File.ReadAllLines(material).Should().Contain(new[] { "texture8 progfx_coat", "parameter float progFxCoat 0.0" });
+        }
     }
 
     private static string FindRepositoryRoot()

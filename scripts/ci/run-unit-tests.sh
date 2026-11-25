@@ -86,6 +86,7 @@ exclusions_for() {
         # ---- sw_cr_creature, sw_plc*, sw_pt_*, sw_t_*. Add folders to HAKS_FOLDERS in the workflow and drop the
         # ---- matching lines to run them.
         echo "AbilityImpactVisualEffectTests.EveryActiveAbilityRank_BindsItsDeclaredImpactEffect"
+        echo "BeastSoundsetTests.BeastSoundsetsFromTheHaks_ShowNoChatText"
         echo "ArmorPartCoverageTests.EveryCatalogArmorPartHasAModelOnEveryPlayableBody"
         echo "CasinoSlotPresentationTests.CustomArtworkShipsAsAnOpaqueBottomLeftTga"
         echo "CustomShaderMobileCompatibilityTests.CustomShaders_KeepBitwiseOperatorsOutOfMobileCode"
@@ -93,6 +94,7 @@ exclusions_for() {
         echo "DevicesFieldEngineerTests.BeaconShotSounds_ExistInDeployedSoundResources"
         echo "DungeonEncounterWalkmeshTests"
         echo "FillerTileWalkmeshTests"
+        echo "FloorCoveringPlaceableTests.FloorCoverings_KeepTheirTopSurfaceAboveTheFloor"
         echo "HelmetTintTests.EveryTintableHelmetShipsRenderHeadsForEveryPlayableSpecies"
         echo "HutlarDroidFoundryAnimationTests"
         echo "ItemIconTests.EveryEssenceBlueprint_UsesReviewedOriginalArtwork"
@@ -107,6 +109,7 @@ exclusions_for() {
         echo "PowerGloveContentTests.EveryAppearanceHasACompiledModelAndNativeCompositeInventoryIcon"
         echo "PowerGloveContentTests.LeftHandModelsMirrorTheRightHandModelsAcrossTheHookXAxis"
         echo "PowerGloveContentTests.ReportedDesignsAreSeatedInTheFistAndTheRestKeepTheirAuthoredPlacement"
+        echo "ProgFxCoatServiceTests.CoatOnlyMaterials_AreTintedModelsAndCoatCapableMaterials"
         echo "RepublicBaseTileVisibilityTests"
         echo "RepublicBasePlacementTests.ModularWalls_KeepTheirWalkmeshWithinTheEngineCollisionTolerance"
         echo "ShipItemIconTests.ActionArtwork_CoversAllModuleDefinitionsAndAgreesWithInventoryRoles"

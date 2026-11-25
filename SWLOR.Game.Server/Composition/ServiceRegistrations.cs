@@ -143,6 +143,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IRaceService, RaceService>();
             services.AddSingleton<IRoleplayXPDetectionService, RoleplayXPDetectionService>();
             services.AddSingleton<ISkillService, SkillService>();
+            services.AddSingleton<ISkillRankService, SkillRankService>();
             services.AddSingleton<ISkillXPService, SkillXPService>();
             services.AddSingleton<ICreatureStatService, CreatureStatService>();
             services.AddSingleton<IStatService, StatService>();
@@ -251,6 +252,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ITargetingService, TargetingService>();
             services.AddSingleton<ITelegraphService, TelegraphService>();
             services.AddSingleton<ITwinPistolEquipmentService, TwinPistolEquipmentService>();
+            services.AddSingleton<ITwinPistolPairQuery>(provider => provider.GetRequiredService<ITwinPistolEquipmentService>());
             services.AddSingleton<ITwinPistolMasteryService, TwinPistolMasteryService>();
             services.AddSingleton<IWeaponAttackEligibilityService, WeaponAttackEligibilityService>();
             services.AddSingleton<IWeaponDelayService, WeaponDelayService>();

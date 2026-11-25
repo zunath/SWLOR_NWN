@@ -21,7 +21,6 @@ SWLOR.Game.Server/Domain/Character/PerkRequirementBeastRole.cs: Character -> Com
 SWLOR.Game.Server/Domain/Character/PerkRequirementQuest.cs: Character -> Quests | 2
 SWLOR.Game.Server/Domain/Character/PerkService.cs: Character -> Abilities | 4
 SWLOR.Game.Server/Domain/Character/PerkService.cs: Character -> Combat | 3
-SWLOR.Game.Server/Domain/Character/SkillService.cs: Character -> Combat | 3
 SWLOR.Game.Server/Domain/Combat/CombatAbilityCostEffectsService.cs: Combat -> Abilities | 1
 SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs: Combat -> Social | 3
 SWLOR.Game.Server/Domain/Combat/CombatAbilityOffenseEffectsService.cs: Combat -> Abilities | 1
@@ -31,7 +30,7 @@ SWLOR.Game.Server/Domain/Combat/EnmityService.cs: Combat -> World | 3
 SWLOR.Game.Server/Domain/Combat/RecastService.cs: Combat -> Abilities | 4
 SWLOR.Game.Server/Domain/Combat/ResistanceService.cs: Combat -> Abilities | 3
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> UI | 6
-SWLOR.Game.Server/Domain/Items/EquipmentPredicates.cs: Items -> Combat | 3
+SWLOR.Game.Server/Domain/Items/EquipmentPredicates.cs: Items -> Combat | 2
 SWLOR.Game.Server/Domain/Items/ItemService.cs: Items -> Combat | 6
 SWLOR.Game.Server/Domain/Items/ItemService.cs: Items -> Crafting | 3
 SWLOR.Game.Server/Domain/Items/KeyItemIcon.cs: Items -> Companions | 1
@@ -107,11 +106,11 @@ SWLOR.Game.Server/Native/GetDamageRoll.cs: Platform -> Combat | 4
 SWLOR.Game.Server/Native/GetDamageRoll.cs: Platform -> Foundation | 6
 SWLOR.Game.Server/Native/OnAIActionAttackObject.cs: Platform -> Combat | 2
 SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs: Platform -> Abilities | 1
-SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs: Platform -> Character | 4
+SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs: Platform -> Character | 5
 SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs: Platform -> Combat | 5
 SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs: Platform -> Foundation | 2
 SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs: Platform -> Items | 1
-SWLOR.Game.Server/Native/PairedRangedPresentation.cs: Platform -> Combat | 4
+SWLOR.Game.Server/Native/PairedRangedPresentation.cs: Platform -> Character | 4
 SWLOR.Game.Server/Native/RangedWeaponAttackContext.cs: Platform -> Combat | 10
 SWLOR.Game.Server/Native/RangedWeaponAttackContext.cs: Platform -> Foundation | 1
 SWLOR.Game.Server/Native/ResolveAttackRoll.cs: Platform -> Character | 2

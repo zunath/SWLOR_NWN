@@ -3,7 +3,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Domain.Character
 {
-    /// <summary>Skill XP awards and the formulas that size them. The catalog and the rank rules are on <see cref="ISkillService"/>.</summary>
+    /// <summary>Skill XP awards and the formulas that size them. The catalog is on <see cref="ISkillService"/> and the rank rules on <see cref="ISkillRankService"/>.</summary>
     public interface ISkillXPService
     {
         /// <summary>

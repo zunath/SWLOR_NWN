@@ -52,7 +52,7 @@
     },
     "Character": {
       "services": [
-        "Stat", "Skill", "SkillXP", "Perk", "StatusEffect", "StatusEffectApplication", "StatusEffectCatalog", "StatusEffectCombatEvent", "StatusEffectDuration", "StatusEffectNative", "StatusEffectSession", "Race", "Achievement", "Activity",
+        "Stat", "Skill", "SkillRank", "SkillXP", "Perk", "StatusEffect", "StatusEffectApplication", "StatusEffectCatalog", "StatusEffectCombatEvent", "StatusEffectDuration", "StatusEffectNative", "StatusEffectSession", "Race", "Achievement", "Activity",
         "PlayerDescriptor", "PlayerName", "PlayerKnownName", "PlayerNameOverride", "PlayerIntroduction", "Disguise",
         "EspionageInfiltration", "Language", "RoleplayXPDetection", "AppearanceRenderState", "TintMapState",
         "TemporaryStatModifier", "MimicryTraitStats", "CreatureStat", "StatRecord"

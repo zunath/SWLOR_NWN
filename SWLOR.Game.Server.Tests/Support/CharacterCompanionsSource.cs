@@ -35,9 +35,10 @@ public static class CharacterCompanionsSource
         new[]
         {
             "SWLOR.Game.Server/Domain/Character/SkillService.cs",
+            "SWLOR.Game.Server/Domain/Character/SkillRankService.cs",
             "SWLOR.Game.Server/Domain/Character/SkillXPService.cs"
         },
-        new HashSet<string>(StringComparer.Ordinal) { "ISkillService", "ISkillXPService" });
+        new HashSet<string>(StringComparer.Ordinal) { "ISkillService", "ISkillRankService", "ISkillXPService" });
 
     /// <summary>The player name service: <c>PlayerNameService</c> and each part the split moves out.</summary>
     public static readonly ServiceSource PlayerName = new(

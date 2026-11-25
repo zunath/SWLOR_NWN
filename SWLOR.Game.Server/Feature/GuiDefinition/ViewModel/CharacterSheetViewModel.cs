@@ -59,7 +59,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private IGuiService Gui { get; }
         private IPerkService Perk { get; }
         private ISkillService Skill { get; }
-        public CharacterSheetViewModel(IBeastMasteryService beastMastery, CharacterSheetAttributesTab characterSheetAttributesTab, CharacterSheetWeaponRatings characterSheetWeaponRatings, IDBService db, IGuiService gui, IPerkService perk, ISkillService skill, CharacterSheetTableTabs characterSheetTableTabs)
+        private ISkillRankService SkillRank { get; }
+        public CharacterSheetViewModel(IBeastMasteryService beastMastery, CharacterSheetAttributesTab characterSheetAttributesTab, CharacterSheetWeaponRatings characterSheetWeaponRatings, IDBService db, IGuiService gui, IPerkService perk, ISkillService skill, ISkillRankService skillRank, CharacterSheetTableTabs characterSheetTableTabs)
         {
             BeastMastery = beastMastery;
             CharacterSheetAttributesTab = characterSheetAttributesTab;
@@ -68,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui = gui;
             Perk = perk;
             Skill = skill;
+            SkillRank = skillRank;
             CharacterSheetTableTabs = characterSheetTableTabs;
         }
 
@@ -708,7 +710,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            SkillRanks = $"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {SkillService.SkillCap}";
+            SkillRanks = $"{SkillRank.GetTotalContributingSkillRanks(dbPlayer)} / {SkillService.SkillCap}";
             SP = $"{Skill.GetTotalSkillPoints(dbPlayer)} / {SkillService.TotalSkillPointCap} ({dbPlayer.UnallocatedSP})";
             APOrLevel = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
 

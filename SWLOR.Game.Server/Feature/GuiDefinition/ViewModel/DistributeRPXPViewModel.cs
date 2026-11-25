@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     // Refuse a skill at its max rank or rank limit, or one the skill cap blocks,
                     // and never send more than the skill can use.
-                    var maxDistributableXP = Skill.GetMaxDistributableXP(dbPlayer, _skillType);
+                    var maxDistributableXP = SkillRank.GetMaxDistributableXP(dbPlayer, _skillType);
                     if (maxDistributableXP <= 0)
                     {
                         FloatingTextStringOnCreature(GetRefusalReason(dbPlayer), Player, false);
@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int GetMaxDistributableXP()
         {
             if (!IsBeastTarget)
-                return Skill.GetMaxDistributableXP(Player, _skillType);
+                return SkillRank.GetMaxDistributableXP(Player, _skillType);
 
             var dbBeast = DB.Get<Beast>(_beastId);
             if (dbBeast == null || dbBeast.OwnerPlayerId != GetObjectUUID(Player))
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (pcSkill.Rank >= details.MaxRank)
                 return "Skill at max rank - no XP accepted";
 
-            var rankCeiling = Skill.GetRankCeiling(pcSkill, details);
+            var rankCeiling = SkillRank.GetRankCeiling(pcSkill, details);
             if (pcSkill.Rank >= rankCeiling)
                 return $"At your limit of {rankCeiling} - no XP accepted";
 

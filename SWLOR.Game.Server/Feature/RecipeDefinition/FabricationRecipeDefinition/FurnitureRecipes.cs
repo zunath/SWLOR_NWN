@@ -3466,7 +3466,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("hyphae_wood", 1)
                 .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 52, frameQualityPercent: 20, shellQualityPercent: 59, wearRate: 9);
 
-            // Statue of Darth Fomoire
+            // Statue of Darth Fomóíre
             _builder.Create(RecipeType.StatueDarthFomoire, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
                 .Resref("structure_0937")

@@ -35,7 +35,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Cast in bronze, Darth Fomoire looks out over the pedestal. Four tentacles curl below the sweeping cheek fins. A brass plate bears the Darth's name."
+      "0": "Cast in bronze, Darth Fomóíre looks out over the pedestal. Four tentacles curl below the sweeping cheek fins. A brass plate bears the Darth's name."
     }
   },
   "DisarmDC": {
@@ -85,7 +85,7 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Statue of Darth Fomoire"
+      "0": "Statue of Darth Fomóíre"
     }
   },
   "OnClick": {

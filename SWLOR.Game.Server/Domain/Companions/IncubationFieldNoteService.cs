@@ -25,9 +25,9 @@ namespace SWLOR.Game.Server.Domain.Companions
         private bool _registered;
 
         private readonly IKeyItemService _keyItem;
-        private readonly Lazy<IBeastMasteryService> _beastMastery;
+        private readonly IBeastMasteryService _beastMastery;
 
-        public IncubationFieldNoteService(IKeyItemService keyItem, Lazy<IBeastMasteryService> beastMastery)
+        public IncubationFieldNoteService(IKeyItemService keyItem, IBeastMasteryService beastMastery)
         {
             _keyItem = keyItem;
             _beastMastery = beastMastery;
@@ -189,13 +189,11 @@ namespace SWLOR.Game.Server.Domain.Companions
 
         /// <summary>
         /// Every beast type the beast catalog has loaded. The original call into <c>BeastMastery</c>, on its own so a
-        /// unit test can answer it. It goes through the static facade, not an injected <c>IBeastMasteryService</c>:
-        /// the beast service takes this one (it grants the field note of a mutation), so injecting it both ways would
-        /// be a construction cycle.
+        /// unit test can answer it.
         /// </summary>
         protected virtual IEnumerable<BeastType> GetAllBeastTypes()
         {
-            return _beastMastery.Value.GetAllBeastTypes();
+            return _beastMastery.GetAllBeastTypes();
         }
 
         /// <summary>
@@ -204,7 +202,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual BeastDetail GetBeastDetail(BeastType type)
         {
-            return _beastMastery.Value.GetBeastDetail(type);
+            return _beastMastery.GetBeastDetail(type);
         }
 
         /// <summary>

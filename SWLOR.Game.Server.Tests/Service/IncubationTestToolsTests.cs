@@ -34,7 +34,7 @@ public class IncubationTestToolsTests
     [TearDown]
     public void ClearOverride()
     {
-        BeastMastery.ClearIncubationDayOverride(PlayerId);
+        BeastIncubation.ClearIncubationDayOverride(PlayerId);
         _facadeScope.Dispose();
     }
 
@@ -63,14 +63,14 @@ public class IncubationTestToolsTests
 
         requirement.CheckRequirements(mine).Should().NotBeEmpty();
 
-        BeastMastery.SetIncubationDayOverride(PlayerId, day);
+        BeastIncubation.SetIncubationDayOverride(PlayerId, day);
 
-        BeastMastery.GetIncubationServerDay(PlayerId).Should().Be(day);
+        BeastIncubation.GetIncubationServerDay(PlayerId).Should().Be(day);
         requirement.CheckRequirements(mine).Should().BeEmpty();
         requirement.CheckRequirements(other).Should().NotBeEmpty();
 
-        BeastMastery.ClearIncubationDayOverride(PlayerId);
-        BeastMastery.GetIncubationServerDay(PlayerId).Should().Be(DateTime.UtcNow.DayOfWeek);
+        BeastIncubation.ClearIncubationDayOverride(PlayerId);
+        BeastIncubation.GetIncubationServerDay(PlayerId).Should().Be(DateTime.UtcNow.DayOfWeek);
     }
 
     [TestCase("monday", true, DayOfWeek.Monday)]

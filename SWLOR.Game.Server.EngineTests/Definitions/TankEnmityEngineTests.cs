@@ -276,7 +276,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var pet = OBJECT_INVALID;
             try
             {
-                await ctx.ExecuteInCreatureContextAsync(owner.Creature, () => BeastMastery.SpawnBeast(owner.Creature, record.Id, 100));
+                await ctx.ExecuteInCreatureContextAsync(owner.Creature, () => BeastSpawn.SpawnBeast(owner.Creature, record.Id, 100));
                 await ctx.WaitUntilAsync(() => BeastMastery.IsPlayerBeast(GetAssociate(AssociateType.Henchman, owner.Creature)),
                     5f, "owned tank beast to spawn");
                 pet = GetAssociate(AssociateType.Henchman, owner.Creature);

@@ -56,11 +56,11 @@ SWLOR.Game.Server.Service.BeastMastery.BeastOnUserDefined SWLOR.Game.Server.Doma
 SWLOR.Game.Server.Service.BeastMastery.CacheData SWLOR.Game.Server.Domain.Companions.BeastMasteryService.CacheData
 SWLOR.Game.Server.Service.BeastMastery.CombatPointXPDistributed SWLOR.Game.Server.Domain.Companions.BeastMasteryService.CombatPointXPDistributed
 SWLOR.Game.Server.Service.BeastMastery.OnAcquireItem SWLOR.Game.Server.Domain.Companions.BeastMasteryService.OnAcquireItem
-SWLOR.Game.Server.Service.BeastMastery.OnRemoveProperty SWLOR.Game.Server.Domain.Companions.BeastMasteryService.OnRemoveProperty
+SWLOR.Game.Server.Service.BeastMastery.OnRemoveProperty SWLOR.Game.Server.Domain.Companions.BeastIncubationService.OnRemoveProperty
 SWLOR.Game.Server.Service.BeastMastery.OpenStablesMenu SWLOR.Game.Server.Domain.Companions.BeastMasteryService.OpenStablesMenu
 SWLOR.Game.Server.Service.BeastMastery.RemoveAssociate SWLOR.Game.Server.Domain.Companions.BeastMasteryService.RemoveAssociate
-SWLOR.Game.Server.Service.BeastMastery.UseExtractDNAObject SWLOR.Game.Server.Domain.Companions.BeastMasteryService.UseExtractDNAObject
-SWLOR.Game.Server.Service.BeastMastery.UseIncubator SWLOR.Game.Server.Domain.Companions.BeastMasteryService.UseIncubator
+SWLOR.Game.Server.Service.BeastMastery.UseExtractDNAObject SWLOR.Game.Server.Domain.Companions.BeastIncubationService.UseExtractDNAObject
+SWLOR.Game.Server.Service.BeastMastery.UseIncubator SWLOR.Game.Server.Domain.Companions.BeastIncubationService.UseIncubator
 SWLOR.Game.Server.Service.Droid.CacheData SWLOR.Game.Server.Domain.Companions.DroidService.CacheData
 SWLOR.Game.Server.Service.Droid.EditDroidAppearance SWLOR.Game.Server.Domain.Companions.DroidService.EditDroidAppearance
 SWLOR.Game.Server.Service.Droid.RemoveAssociate SWLOR.Game.Server.Domain.Companions.DroidService.RemoveAssociate

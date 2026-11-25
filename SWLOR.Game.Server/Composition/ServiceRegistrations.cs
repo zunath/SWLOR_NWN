@@ -259,6 +259,8 @@ namespace SWLOR.Game.Server.Composition
             // The companion questions Character, Items, Creatures and Combat ask; the lookup takes no service.
             services.AddSingleton<ICompanionLookup, CompanionLookup>();
             services.AddSingleton<IBeastMasteryService, BeastMasteryService>();
+            services.AddSingleton<IBeastSpawnService, BeastSpawnService>();
+            services.AddSingleton<IBeastIncubationService, BeastIncubationService>();
             // The same instance, seen through the corpse reads the loot owns.
             services.AddSingleton<IBeastCorpseInfo>(provider => provider.GetRequiredService<IBeastMasteryService>());
             services.AddSingleton<IDroidService, DroidService>();

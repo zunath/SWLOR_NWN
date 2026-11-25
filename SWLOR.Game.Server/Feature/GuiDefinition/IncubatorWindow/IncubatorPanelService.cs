@@ -22,13 +22,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow
     public class IncubatorPanelService
     {
         private IBeastMasteryService BeastMastery { get; }
+        private IBeastIncubationService BeastIncubation { get; }
         private IIncubationFieldNoteService IncubationFieldNote { get; }
         private IncubatorJobCalculator IncubatorJobCalculator { get; }
         private IKeyItemService KeyItem { get; }
 
-        public IncubatorPanelService(IBeastMasteryService beastMastery, IIncubationFieldNoteService incubationFieldNote, IncubatorJobCalculator incubatorJobCalculator, IKeyItemService keyItem)
+        public IncubatorPanelService(IBeastMasteryService beastMastery, IBeastIncubationService beastIncubation, IIncubationFieldNoteService incubationFieldNote, IncubatorJobCalculator incubatorJobCalculator, IKeyItemService keyItem)
         {
             BeastMastery = beastMastery;
+            BeastIncubation = beastIncubation;
             IncubationFieldNote = incubationFieldNote;
             IncubatorJobCalculator = incubatorJobCalculator;
             KeyItem = keyItem;
@@ -68,8 +70,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow
         /// <summary>"Wednesday (UTC)", or "Sunday (test)" while a tester's /incubationday override is set.</summary>
         private string DescribeServerDay(string playerId)
         {
-            var suffix = BeastMastery.HasIncubationDayOverride(playerId) ? "test" : "UTC";
-            return $"{BeastMastery.GetIncubationServerDay(playerId)} ({suffix})";
+            var suffix = BeastIncubation.HasIncubationDayOverride(playerId) ? "test" : "UTC";
+            return $"{BeastIncubation.GetIncubationServerDay(playerId)} ({suffix})";
         }
 
         public void RefreshStageTracker(IIncubatorHost host, IncubationJob job, DateTime now)
@@ -261,7 +263,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow
                 hasPendingStage);
 
             var unknown = 0;
-            var today = BeastMastery.GetIncubationServerDay(GetObjectUUID(host.Player));
+            var today = BeastIncubation.GetIncubationServerDay(GetObjectUUID(host.Player));
             foreach (var mutation in beast.PossibleMutations)
             {
                 if (!IncubationFieldNote.TryGetNoteForTarget(mutation.Type, out var note) ||

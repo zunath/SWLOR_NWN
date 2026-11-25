@@ -437,14 +437,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var payload = new IncubatorPayload("engine-transcript-incubator/" + run.Fixture.Id, string.Empty);
             // The incubator reads the server day from the real clock unless the player has an override: a Wednesday in every run.
-            BeastMastery.SetIncubationDayOverride(run.Fixture.Id, DayOfWeek.Wednesday);
+            BeastIncubation.SetIncubationDayOverride(run.Fixture.Id, DayOfWeek.Wednesday);
             try
             {
                 await IncubatorPhasesAsync(run, payload);
             }
             finally
             {
-                BeastMastery.ClearIncubationDayOverride(run.Fixture.Id);
+                BeastIncubation.ClearIncubationDayOverride(run.Fixture.Id);
             }
         }
 

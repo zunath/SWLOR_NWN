@@ -481,7 +481,7 @@ dm_spwnobj_aft
   action      SWLOR.Game.Server.Feature.DMActions.OnDMSpawnObject
 
 dna_extract_used
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.UseExtractDNAObject
+  action      SWLOR.Game.Server.Domain.Companions.BeastIncubationService.UseExtractDNAObject
 
 door_relock_open
   action      SWLOR.Game.Server.Feature.DoorScripts.ScheduleCloseAndRelock
@@ -595,7 +595,7 @@ heal_bef
   action      SWLOR.Game.Server.Domain.Combat.PvpCombatService.ReduceHealing
 
 incubator_term
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.UseIncubator
+  action      SWLOR.Game.Server.Domain.Companions.BeastIncubationService.UseIncubator
 
 input_atk_bef
   action      SWLOR.Game.Server.Domain.Social.PerformanceService.EndOnAttack
@@ -1178,7 +1178,7 @@ swlor_damage
   action      SWLOR.Game.Server.Domain.Combat.StealthService.BreakStealthOnDamageDealt
 
 swlor_del_prop
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.OnRemoveProperty
+  action      SWLOR.Game.Server.Domain.Companions.BeastIncubationService.OnRemoveProperty
   action      SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.OnRemoveProperty
 
 swlor_gain_skill

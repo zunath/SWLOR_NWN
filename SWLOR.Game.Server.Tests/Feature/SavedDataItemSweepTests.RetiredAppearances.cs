@@ -29,7 +29,7 @@ public partial class SavedDataItemSweepTests
     public void RetiredAppearances_MoveArmorPartsToTheBodyPartOrNoneAndKeepTheRest()
     {
         var original = Encode(Item("custom_armor", BaseItem.Armor, null, Parts(
-                ("ArmorPart_Robe", 160), ("ArmorPart_Neck", 299), ("ArmorPart_Torso", 300), ("ArmorPart_LShoul", 255),
+                ("ArmorPart_Robe", 160), ("ArmorPart_Neck", 232), ("ArmorPart_Torso", 195), ("ArmorPart_LShoul", 255),
                 ("ArmorPart_RBicep", 18), ("ArmorPart_LBicep", 17), ("ArmorPart_Belt", 120), ("ArmorPart_RFoot", 13),
                 ("ArmorPart_LShin", 52), ("ArmorPart_Pelvis", 34))
             .Concat(new[] { Scalar(2, "StackSize", 1), Text("UUID", "retired-armor"), Scalar(0, "Cloth1Color", 23) }).ToArray()));
@@ -53,10 +53,35 @@ public partial class SavedDataItemSweepTests
         rerun.Should().BeSameAs(migrated);
     }
 
+    [TestCase(281)]
+    [TestCase(282)]
+    [TestCase(283)]
+    [TestCase(286)]
+    [TestCase(287)]
+    [TestCase(288)]
+    [TestCase(297)]
+    public void RetiredAppearances_PreserveRestoredDmHelmets(int model)
+    {
+        var original = Encode(Item("dm_helmet", BaseItem.Helmet, model));
+        EnzymeBaseItemMigration.MigrateSavedObject(original, out var migrated).Should().BeFalse();
+        migrated.Should().BeSameAs(original);
+        RetiredAppearanceMigration.ReplaceHelmet(model).Should().Be(model);
+    }
+
+    [TestCase(299)]
+    [TestCase(300)]
+    public void RetiredAppearances_PreserveRestoredDmArmor(int neck)
+    {
+        var original = Encode(Item("dm_armor", BaseItem.Armor, null,
+            Parts(("ArmorPart_Neck", neck), ("ArmorPart_Torso", 300))));
+        EnzymeBaseItemMigration.MigrateSavedObject(original, out var migrated).Should().BeFalse();
+        migrated.Should().BeSameAs(original);
+    }
+
     [Test]
     public void RetiredAppearances_MoveHelmetsAndCloaksAndLeaveOtherItemsAlone()
     {
-        EnzymeBaseItemMigration.MigrateSavedObject(Encode(Item("custom_helmet", BaseItem.Helmet, 297)), out var helmet).Should().BeTrue();
+        EnzymeBaseItemMigration.MigrateSavedObject(Encode(Item("custom_helmet", BaseItem.Helmet, 258)), out var helmet).Should().BeTrue();
         (Int(Read(helmet), "ModelPart1"), Int(Read(helmet), "xModelPart1")).Should().Be((1, 1));
         EnzymeBaseItemMigration.MigrateSavedObject(Encode(Item("custom_cloak", BaseItem.Cloak, 33)), out var cloak).Should().BeTrue();
         (Int(Read(cloak), "ModelPart1"), Int(Read(cloak), "xModelPart1")).Should().Be((1, 1));

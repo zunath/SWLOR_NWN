@@ -8,17 +8,20 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 /// </summary>
 public static class RetiredAppearances
 {
+    // DM-requested artwork is retained even when the production usage audit reports zero users:
+    // torso 300, necks 299/300, and helmets 281/282/283/286/287/288/297.
+    // Their source and texture repair provenance are recorded in SWLOR_Haks/tools/DmRequestedAssets.json.
     /// <summary>Retired armor part styles by part 2DA (parts_chest.2da is Torso, parts_legs.2da is Thigh).</summary>
     public static IReadOnlyDictionary<RetiredArmorPart, IReadOnlySet<int>> ArmorParts { get; } =
         new Dictionary<RetiredArmorPart, IReadOnlySet<int>>
         {
             [RetiredArmorPart.Torso] = new HashSet<int>
             {
-                80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 95, 97, 164, 165, 169, 174, 192, 194, 195, 300,
+                80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 95, 97, 164, 165, 169, 174, 192, 194, 195,
             },
             [RetiredArmorPart.Neck] = new HashSet<int>
             {
-                60, 120, 181, 182, 211, 212, 218, 219, 223, 232, 299, 300,
+                60, 120, 181, 182, 211, 212, 218, 219, 223, 232,
             },
             [RetiredArmorPart.Belt] = new HashSet<int>
             {
@@ -133,7 +136,7 @@ public static class RetiredAppearances
 
     public static IReadOnlySet<int> Helmets { get; } = new HashSet<int>
     {
-        144, 146, 149, 150, 151, 211, 256, 257, 258, 281, 282, 283, 286, 287, 288, 297,
+        144, 146, 149, 150, 151, 211, 256, 257, 258,
     };
 
     /// <summary>Retired cloakmodel.2da rows.</summary>

@@ -101,8 +101,8 @@ public class GuildTaskXpTests
             GuildTaskXp.Amount(level, level + 5, 1).Should().Be(0, $"level {level} at rank {level + 5}");
 
             // Crafting the recipe pays the chart's XP until the same rank, and quick craft opens at it.
-            Skill.GetDeltaXP(level - (level + 4)).Should().BeGreaterThan(0);
-            Skill.GetDeltaXP(level - (level + 5)).Should().Be(0);
+            SkillXP.GetDeltaXP(level - (level + 4)).Should().BeGreaterThan(0);
+            SkillXP.GetDeltaXP(level - (level + 5)).Should().Be(0);
             QuickCraftRules.GetRequiredRank(new RecipeDetail { Level = level }).Should().Be(level + 5);
         }
     }

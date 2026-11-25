@@ -92,11 +92,11 @@ public class FishingFightLifecycleTests : SkillFacadeFixture
     }
 
     /// <summary>What the bite itself pays: today's XP for the fish against the rank.</summary>
-    private static int BiteXp(int level, int rank) => Skill.GetDeltaXP(level - rank);
+    private static int BiteXp(int level, int rank) => SkillXP.GetDeltaXP(level - rank);
 
     /// <summary>What a played fight pays in all: today's XP times the multiplier of the fish's level band.</summary>
     private static int FightXp(int level, int rank) =>
-        CraftMinigameXp.ScaleBaseXp(Skill.GetDeltaXP(level - rank), LineRules.XpMultiplierForLevel(level));
+        CraftMinigameXp.ScaleBaseXp(SkillXP.GetDeltaXP(level - rank), LineRules.XpMultiplierForLevel(level));
 
     [Test]
     public void ABite_PaysTodaysDeltaXpOfTheFishAgainstTheRankAtOnce_AndTheFightTheRestOfTheMultipliedXpWhenItEnds()
@@ -112,7 +112,7 @@ public class FishingFightLifecycleTests : SkillFacadeFixture
         }
 
         FightXp(20, 20).Should().Be(
-            CraftMinigameXp.ScaleBaseXp(Skill.GetDeltaXP(0), LineRules.XpMultiplierLevels11To20),
+            CraftMinigameXp.ScaleBaseXp(SkillXP.GetDeltaXP(0), LineRules.XpMultiplierLevels11To20),
             "the multiplier is the one of the fish's level, not of the angler's rank");
     }
 

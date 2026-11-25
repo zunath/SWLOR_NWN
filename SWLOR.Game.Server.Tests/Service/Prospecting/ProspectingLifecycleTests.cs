@@ -74,7 +74,7 @@ public class ProspectingLifecycleTests : SkillFacadeFixture
         return report;
     }
 
-    private static int XpPerUnit(int tier, int rank) => Skill.GetDeltaXP(GatheringLevels.ForTier(tier) - rank);
+    private static int XpPerUnit(int tier, int rank) => SkillXP.GetDeltaXP(GatheringLevels.ForTier(tier) - rank);
 
     // Beginning a session.
 
@@ -456,10 +456,10 @@ public class ProspectingLifecycleTests : SkillFacadeFixture
         Do(lifecycle, session, ProspectingActionIds.Strike);
 
         var expected = CraftMinigameXp.ScaleBaseXp(
-            Skill.GetDeltaXP(15 - 12), CraftMinigameXp.MultiplierFor(CraftMinigameType.Prospecting, 15));
+            SkillXP.GetDeltaXP(15 - 12), CraftMinigameXp.MultiplierFor(CraftMinigameType.Prospecting, 15));
         _world.Xp.Should().Equal(expected);
         lifecycle.XpPerItem(session).Should().Be(expected);
-        expected.Should().Be(Skill.GetDeltaXP(3), "the multiplier is 1 until the XP-rate gate asks for more");
+        expected.Should().Be(SkillXP.GetDeltaXP(3), "the multiplier is 1 until the XP-rate gate asks for more");
     }
 
     [Test]
@@ -777,7 +777,7 @@ public class ProspectingLifecycleTests : SkillFacadeFixture
     [Test]
     public void QuickHarvestPaysExactlyWhatEachOfTodaysHarvestsPaid_AtTheAttributeReference()
     {
-        // Today a node held d4 harvests, each one item (a Might modifier of 0 adds none) and Skill.GetDeltaXP(vein level - rank) XP.
+        // Today a node held d4 harvests, each one item (a Might modifier of 0 adds none) and SkillXP.GetDeltaXP(vein level - rank) XP.
         var lifecycle = Lifecycle();
         _world.SaveNode(NodeId, Node(3, "r").Serialize());
         var session = lifecycle.Begin(Request(tier: 4, rank: 33)).Session;
@@ -788,7 +788,7 @@ public class ProspectingLifecycleTests : SkillFacadeFixture
             _world.RunNextWork((float)ProspectingRules.HarvestSeconds);
 
         _world.ItemsHarvested.Should().Be(3);
-        _world.Xp.Sum().Should().Be(3 * Skill.GetDeltaXP(10 * (4 - 1) + 5 - 33));
+        _world.Xp.Sum().Should().Be(3 * SkillXP.GetDeltaXP(10 * (4 - 1) + 5 - 33));
         ProspectingQuickHarvest.Seconds(3).Should().Be(3 * 5.0);
         ProspectingQuickHarvest.Charges(3).Should().Be(3);
     }

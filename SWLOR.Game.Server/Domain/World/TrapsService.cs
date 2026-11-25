@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly IDMPresenceService _dmPresence;
         private readonly IPerkService _perk;
         private readonly IPvpCombatService _pvpCombat;
-        private readonly ISkillService _skill;
+        private readonly ISkillXPService _skill;
         private readonly IStatService _stat;
         private readonly IStatusEffectApplicationService _statusEffect;
 
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Domain.World
             IDMPresenceService dmPresence,
             IPerkService perk,
             IPvpCombatService pvpCombat,
-            ISkillService skill,
+            ISkillXPService skill,
             IStatService stat,
             IStatusEffectApplicationService statusEffect)
         {

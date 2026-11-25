@@ -8,8 +8,8 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
 | 1. Static service lookup | `StaticLookups.txt` | 1,078 | 12,809 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 11 | 17,522 lines | none over 1,000 lines |
-| 3. Long methods | `LongMethods.txt` | 8 | 2,426 lines | none over 150 lines (400 for layout) |
+| 2. Large types | `LargeTypes.txt` | 10 | 16,340 lines | none over 1,000 lines |
+| 3. Long methods | `LongMethods.txt` | 7 | 2,187 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 16 | 228 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 28 | 34 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 115 | 231 types | none |
@@ -58,11 +58,11 @@ Largest 15 of 1,078 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 11 types over 1,000 lines, 17,522 lines in all.
+- 10 types over 1,000 lines, 16,340 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 2, fluent builder 1, owner exception 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
-Largest 11 of 11 (all in `LargeTypes.txt`):
+Largest 10 of 10 (all in `LargeTypes.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
@@ -76,14 +76,13 @@ Largest 11 of 11 (all in `LargeTypes.txt`):
 | `SWLOR.Game.Server.Domain.Combat.EnmityService` | 1,243 | EnmityService.cs |
 | `SWLOR.Game.Server.Domain.Companions.BeastMasteryService` | 1,240 | BeastMasteryService.cs |
 | `SWLOR.Game.Server.Domain.Companions.DroidService` | 1,194 | DroidService.cs |
-| `SWLOR.Game.Server.Domain.Character.SkillService` | 1,182 | SkillService.cs |
 
 ## 3. Long methods
 
-- 7 methods over 150 lines and 1 GUI layout methods over 400.
+- 6 methods over 150 lines and 1 GUI layout methods over 400.
 - Exempt and over the limit: 84 (content data 78, data catalog member 6).
 
-Largest 8 of 8 (all in `LongMethods.txt`):
+Largest 7 of 7 (all in `LongMethods.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
@@ -91,7 +90,6 @@ Largest 8 of 8 (all in `LongMethods.txt`):
 | `SWLOR.Game.Server.Feature.UsePerkFeat.ActivateAbility` | 432 | UsePerkFeat.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ShipManagementDefinition.BuildWindow` | 414 | layout, ShipManagementDefinition.cs |
 | `SWLOR.Game.Server.Domain.Companions.DroidService.SpawnDroid` | 272 | DroidService.cs |
-| `SWLOR.Game.Server.Domain.Character.SkillService.GiveSkillXP` | 239 | SkillService.cs |
 | `SWLOR.Game.Server.Feature.DialogDefinition.StarportDockDialog.MainPageInit` | 193 | StarportDockDialog.cs |
 | `SWLOR.Game.Server.Domain.Items.ItemService.UseItem` | 189 | ItemService.cs |
 | `SWLOR.Game.Server.Domain.Space.SpaceService.ActivateShipModule` | 155 | SpaceService.cs |
@@ -142,7 +140,7 @@ Largest 15 of 28 (all in `DeferredResolution.txt`):
 | `SWLOR.Game.Server/Domain/Character/PerkService.cs -> Character (inside)` | 1 | Character -> Character: Lazy 1 (IStatService) |
 | `SWLOR.Game.Server/Domain/Character/PerkService.cs -> Combat (up)` | 1 | Character -> Combat: Lazy 1 (ICombatService) |
 | `SWLOR.Game.Server/Domain/Character/PlayerDescriptorService.cs -> Character (inside)` | 1 | Character -> Character: Lazy 1 (IDisguiseService) |
-| `SWLOR.Game.Server/Domain/Character/SkillService.cs -> Character (inside)` | 1 | Character -> Character: Lazy 1 (IStatService) |
+| `SWLOR.Game.Server/Domain/Character/SkillXPService.cs -> Character (inside)` | 1 | Character -> Character: Lazy 1 (IStatService) |
 | `SWLOR.Game.Server/Domain/Character/StatusEffectCombatEventService.cs -> Character (inside)` | 1 | Character -> Character: Lazy 1 (IStatService) |
 | `SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs -> Character (inside)` | 1 | Character -> Character: Lazy 1 (IStatService) |
 | `SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Character (down)` | 1 | Combat -> Character: Lazy 1 (IStatService) |
@@ -178,7 +176,7 @@ Largest 15 of 115 (all in `LogicToContent.txt`):
 
 - 24 pairs of domains depend on each other: 20 between logic (6 of them with Foundation or Platform), 4 between content.
 - Foundation's logic is in a pair with 2 domains, Platform with 5.
-- Members both ways: 3,448.
+- Members both ways: 3,449.
 
 Largest 15 of 24 (all in `DomainCycles.txt`):
 
@@ -196,7 +194,7 @@ Largest 15 of 24 (all in `DomainCycles.txt`):
 | `Abilities content <-> Character content` | 3 | Abilities content -> Character content: 1 edge(s), 444 member(s); Character content -> Abilities content: 2 edge(s), 10 member(s) |
 | `Abilities <-> Character` | 2 | Abilities -> Character: 1 edge(s), 331 member(s); Character -> Abilities: 1 edge(s), 4 member(s) |
 | `Abilities <-> Combat` | 2 | Abilities -> Combat: 1 edge(s), 281 member(s); Combat -> Abilities: 1 edge(s), 10 member(s) |
-| `Character <-> Combat` | 2 | Character -> Combat: 1 edge(s), 7 member(s); Combat -> Character: 1 edge(s), 1074 member(s) |
+| `Character <-> Combat` | 2 | Character -> Combat: 1 edge(s), 7 member(s); Combat -> Character: 1 edge(s), 1075 member(s) |
 | `Character <-> Companions` | 2 | Character -> Companions: 1 edge(s), 2 member(s); Companions -> Character: 1 edge(s), 166 member(s) |
 | `Character <-> Items` | 2 | Character -> Items: 1 edge(s), 1 member(s); Items -> Character: 1 edge(s), 28 member(s) |
 

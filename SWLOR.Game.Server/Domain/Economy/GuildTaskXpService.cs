@@ -24,11 +24,11 @@ namespace SWLOR.Game.Server.Domain.Economy
 
         private readonly IDBService _db;
         private readonly ICraftService _craft;
-        private readonly ISkillService _skill;
+        private readonly ISkillXPService _skill;
         private Dictionary<(SkillType Skill, string Resref), int> _recipeLevels;
         private Dictionary<string, int> _fishLevels;
 
-        public GuildTaskXpService(IDBService db, ICraftService craft, ISkillService skill)
+        public GuildTaskXpService(IDBService db, ICraftService craft, ISkillXPService skill)
         {
             _db = db;
             _craft = craft;

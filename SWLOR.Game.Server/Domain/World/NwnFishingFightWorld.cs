@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Domain.World
 
         public void GiveAgricultureXp(uint player, int xp)
         {
-            Skill.GiveSkillXP(player, SkillType.Agriculture, xp, false, false);
+            SkillXP.GiveSkillXP(player, SkillType.Agriculture, xp, false, false);
         }
 
         public void Message(uint player, string text)

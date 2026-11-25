@@ -113,7 +113,7 @@ public class EspionageInfiltrationServiceTests
     private sealed class BenchEspionage : EspionageInfiltrationService
     {
         public BenchEspionage(IDBService db)
-            : base(db, FacadeForwarder.For<IStealthService>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ISkillService>())
+            : base(db, FacadeForwarder.For<IStealthService>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ISkillXPService>())
         {
         }
 

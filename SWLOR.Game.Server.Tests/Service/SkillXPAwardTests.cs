@@ -27,7 +27,8 @@ public class SkillXPAwardTests
     private static Type CompileProductionXPAwardWithControlledPlayerAndFeedback()
     {
         var methods = CharacterCompanionsSource.Skill.Trees().SelectMany(tree => tree.GetRoot().DescendantNodes()).OfType<MethodDeclarationSyntax>()
-            .Where(method => method.Identifier.ValueText is "GiveSkillXP" or "ShouldDecaySkillRank" or "ApplyAbilityPoint" or "GetRankLimit" or "GetRankCeiling"
+            .Where(method => method.Identifier.ValueText is "GiveSkillXP" or "ApplyXPBonuses" or "RepayXPDebt" or "ClearXPAtRankCeiling" or "AwardRanks"
+                or "ShouldDecaySkillRank" or "ApplyAbilityPoint" or "GetRankLimit" or "GetRankCeiling"
                 or "GetDecayCandidates" or "IsBlockedBySkillCap" or "GetTotalContributingSkillRanks" or "ForgetLimitWarnings")
             // The production methods are instance methods of the skill service; the harness is a static class.
             .Select(method => method.WithAttributeLists(default).Modifiers.Any(SyntaxKind.StaticKeyword)
@@ -40,6 +41,9 @@ public class SkillXPAwardTests
                     SyntaxFactory.Token(SyntaxKind.PrivateKeyword).WithTrailingTrivia(SyntaxFactory.Space),
                     SyntaxFactory.Token(SyntaxKind.StaticKeyword).WithTrailingTrivia(SyntaxFactory.Space),
                     SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword).WithTrailingTrivia(SyntaxFactory.Space))));
+
+        var outcomeTypes = CharacterCompanionsSource.Skill.Trees().SelectMany(tree => tree.GetRoot().DescendantNodes()).OfType<ClassDeclarationSyntax>()
+            .Where(type => type.Identifier.ValueText == "RankUpOutcome");
 
         // Run the production award flow, replacing native inputs, storage, and feedback only.
         var source = $$"""
@@ -73,6 +77,7 @@ public class SkillXPAwardTests
                 private static readonly XPQueue _xpMessages = new();
                 {{string.Join(Environment.NewLine, fields)}}
                 {{string.Join(Environment.NewLine, methods)}}
+                {{string.Join(Environment.NewLine, outcomeTypes)}}
                 private static bool IsSkillCapContributingSkill(SkillType skill) => GetSkillDetails(skill).ContributesToSkillCap;
                 private static bool GetIsPC(uint player) => true;
                 private static bool GetIsDM(uint player) => false;

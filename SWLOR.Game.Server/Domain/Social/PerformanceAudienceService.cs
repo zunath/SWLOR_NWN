@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly IPerformanceInspiredService _inspired;
         private readonly IPerformanceRegistryService _sessions;
         private readonly IPerformanceWatchingService _watching;
-        private readonly ISkillService _skill;
+        private readonly ISkillXPService _skill;
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly List<PerformerSnapshot> _scratchPartners = new();
         private IDisposable _tickSchedule;
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Domain.Social
             IPerformanceInspiredService inspired,
             IPerformanceRegistryService sessions,
             IPerformanceWatchingService watching,
-            ISkillService skill)
+            ISkillXPService skill)
         {
             _db = db;
             _venue = venue;

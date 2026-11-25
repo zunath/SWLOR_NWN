@@ -102,9 +102,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             var dbPlayer = DB.Get<Player>(playerId);
                             var rank = dbPlayer.Skills[SkillType.Piloting].Rank;
                             var delta = asteroidLevel - rank;
-                            var xp = Skill.GetDeltaXP(delta);
+                            var xp = SkillXP.GetDeltaXP(delta);
 
-                            Skill.GiveSkillXP(activator, SkillType.Piloting, xp);
+                            SkillXP.GiveSkillXP(activator, SkillType.Piloting, xp);
                         }
                     });
                     SetLocalBool(target, Mined, false);

@@ -23,7 +23,7 @@ public sealed partial class TestMimicry : MimicryService
 {
     public TestMimicry(IDBService db, IQuickCastService quickCast, IDMPresenceService presence, IPlayerFeedbackService feedback, IGuiService gui)
         : base(db, quickCast, presence, feedback, gui, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.LazyFor<IStatService>(),
-            FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatPointService>())
+            FacadeForwarder.For<ISkillXPService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatPointService>())
     {
     }
 

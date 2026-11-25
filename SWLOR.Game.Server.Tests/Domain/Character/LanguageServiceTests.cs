@@ -63,7 +63,7 @@ public class LanguageServiceTests
     private sealed class BenchLanguageService : LanguageService
     {
         public BenchLanguageService(IDBService db)
-            : base(db, FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>())
+            : base(db, FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ISkillXPService>(), FacadeForwarder.For<IStatService>())
         {
         }
 

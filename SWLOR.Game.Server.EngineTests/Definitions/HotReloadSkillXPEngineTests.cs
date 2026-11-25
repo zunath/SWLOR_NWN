@@ -29,13 +29,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         // One per loaded build: a run whose token differs from the module's is the first run of a new generation.
         private static readonly string GenerationToken = Guid.NewGuid().ToString("N");
 
-        public HotReloadSkillXPEngineTests(ISkillXPService skillXP, IDBService db)
+        public HotReloadSkillXPEngineTests(ISkillXPService skillXP, ISkillRankService skillRank, IDBService db)
         {
             SkillXP = skillXP;
+            SkillRank = skillRank;
             DB = db;
         }
 
         private ISkillXPService SkillXP { get; }
+        private ISkillRankService SkillRank { get; }
         private IDBService DB { get; }
 
         [EngineTest("A player at a rank limit keeps one warning and the XP message queue across hot reloads", Category = "HotReloadPlayers", TimeoutSeconds = 120f)]
@@ -60,6 +62,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var carried = Warned(player);
             await AwardAtTheLimitAsync(ctx, player);
             await VerifyMessageQueueAsync(ctx, player);
+            await VerifyRankRulesAsync(ctx, player);
 
             var verified = GetLocalInt(module, Prefix + "VERIFIED") + 1;
             SetLocalString(module, Prefix + "TOKEN", GenerationToken);
@@ -90,6 +93,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             ctx.Assert(!Warned(player), "no rank limit warning is recorded before the first award");
             await AwardAtTheLimitAsync(ctx, player);
+            await VerifyRankRulesAsync(ctx, player);
 
             SetLocalObject(module, Prefix + "PLAYER", player);
             SetLocalString(module, Prefix + "PLAYER_ID", fixture.Id);
@@ -142,6 +146,54 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally
             {
                 sendField.SetValue(queue, originalSend);
+            }
+        }
+
+        /// <summary>
+        /// The rank rules of the running build: the limit, the ceiling and the XP a limited skill can still take, the skill cap block, and a skill
+        /// decay at the cap, which picks the one unlocked candidate. The player's own skill records are put back afterwards.
+        /// </summary>
+        private async Task VerifyRankRulesAsync(EngineTestContext ctx, uint player)
+        {
+            var playerId = GetObjectUUID(player);
+            var record = DB.Get<Player>(playerId);
+            var limited = record.Skills[LimitedSkill];
+            var details = ServiceInternals.Field<ISkillService, Dictionary<SkillType, SkillAttribute>>("_allSkills")[LimitedSkill];
+            ctx.AssertEqual(5, SkillRank.GetRankLimit(limited, details) ?? -1, "the rank limit of the limited skill");
+            ctx.AssertEqual(5, SkillRank.GetRankCeiling(limited, details), "the rank ceiling is the limit");
+            ctx.AssertEqual(0, SkillRank.GetMaxDistributableXP(record, LimitedSkill), "a skill at its limit can take no RP XP");
+            ctx.Assert(SkillRank.GetMaxDistributableXP(record, FreeSkill) > 0, "a skill below its ceiling can take RP XP");
+
+            var backup = record.Skills.ToDictionary(entry => entry.Key, entry => new PlayerSkill
+            {
+                Rank = entry.Value.Rank, XP = entry.Value.XP, IsLocked = entry.Value.IsLocked, RankLimit = entry.Value.RankLimit
+            });
+            try
+            {
+                var fillers = new[] { SkillType.FirstAid, SkillType.Fabrication, SkillType.Gathering, SkillType.Leadership, SkillType.BeastMastery, SkillType.Force, SkillType.Armor, SkillType.Unarmed };
+                foreach (var key in record.Skills.Keys.ToList())
+                    record.Skills[key] = new PlayerSkill();
+                foreach (var filler in fillers)
+                    record.Skills[filler] = new PlayerSkill { Rank = 50, IsLocked = filler != SkillType.Leadership };
+                DB.Set(record);
+
+                ctx.AssertEqual(400, SkillRank.GetTotalContributingSkillRanks(record), "the cap total counts the contributing ranks");
+                ctx.Assert(!SkillRank.IsBlockedBySkillCap(record, LimitedSkill), "the unlocked skill can still give up a rank");
+                ctx.AssertEqual(SkillType.Leadership, SkillRank.GetDecayCandidates(record, LimitedSkill).Single(), "the one unlocked skill is the decay candidate");
+
+                await ctx.ExecuteInCreatureContextAsync(player, () => SkillXP.GiveSkillXP(player, LimitedSkill, SkillXPChart.GetRequiredXP(0), true, false));
+                var after = DB.Get<Player>(playerId);
+                ctx.AssertEqual(1, after.Skills[LimitedSkill].Rank, "the award raised the skill by a rank");
+                ctx.AssertEqual(49, after.Skills[SkillType.Leadership].Rank, "decay took a rank from the one unlocked candidate");
+                ctx.AssertEqual(400, SkillRank.GetTotalContributingSkillRanks(after), "the total stays at the cap");
+            }
+            finally
+            {
+                var restore = DB.Get<Player>(playerId);
+                restore.Skills.Clear();
+                foreach (var entry in backup)
+                    restore.Skills[entry.Key] = entry.Value;
+                DB.Set(restore);
             }
         }
 

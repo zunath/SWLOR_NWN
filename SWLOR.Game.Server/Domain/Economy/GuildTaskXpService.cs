@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Domain.Economy
 {
     /// <summary>
     /// The skill XP a crafting guild hand-in gives: the logic that used to be static in <c>Service.GuildTaskXp</c>, moved
-    /// here unchanged. The crafting guilds pay the XP percent of <c>Skill.GetDeltaXP(task level - rank)</c> for every item
+    /// here unchanged. The crafting guilds pay the XP percent of <c>SkillXP.GetDeltaXP(task level - rank)</c> for every item
     /// handed in, in the guild's skill, through the same path as crafting XP so Social and food bonuses apply. The hunting
     /// guild pays no XP, and neither does a task whose level is unknown. Static callers reach the container's
     /// instance through <c>GameServices.GuildTaskXp</c>.

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
     /// <param name="LootTableName">The site's loot table, for messages and reports.</param>
     /// <param name="Table">The site's loot table.</param>
     /// <param name="GatheringRank">The scavenger's Gathering rank when they opened the site.</param>
-    /// <param name="DeltaXp">The XP a successful attempt pays before the board's multiplier: <c>Skill.GetDeltaXP(10 x site level - rank)</c>.</param>
+    /// <param name="DeltaXp">The XP a successful attempt pays before the board's multiplier: <c>SkillXP.GetDeltaXP(10 x site level - rank)</c>.</param>
     /// <param name="TreasureHunterLevel">The scavenger's Treasure Hunter level, which weights rare-flagged entries.</param>
     /// <param name="CreditFinderLevel">The scavenger's Creditfinder level, which raises gold finds.</param>
     /// <param name="Effects">The scavenger's perks for the board, or null for none.</param>

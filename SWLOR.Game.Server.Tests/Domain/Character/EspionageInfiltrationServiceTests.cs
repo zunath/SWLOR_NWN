@@ -33,6 +33,7 @@ public class EspionageInfiltrationServiceTests
     private const uint ObjectInvalid = 0x7F000000;
 
     private FakeNWScript _engine = null!;
+    private int _assignmentsRun;
     private FakeCreaturePlugin _creature = null!;
     private InMemoryDBService _db = null!;
     private BenchEspionage _service = null!;
@@ -66,6 +67,7 @@ public class EspionageInfiltrationServiceTests
         _aiEnabled = true;
 
         _engine = new FakeNWScript();
+        _assignmentsRun = 0;
         _engine.SetReturnHandler("GetIsObjectValid", arguments => (uint)arguments[0]! != ObjectInvalid && !_invalid.Contains((uint)arguments[0]!));
         _engine.SetReturnHandler("GetIsPC", arguments => (uint)arguments[0]! is Player or Dm);
         _engine.SetReturnHandler("GetIsDM", arguments => (uint)arguments[0]! == Dm);
@@ -142,6 +144,24 @@ public class EspionageInfiltrationServiceTests
         }
     }
 
+    /// <summary>
+    /// The first sample is queued with AssignCommand(GetModule(), ...) because detection can begin an attempt from
+    /// native attack hooks that have no OBJECT_SELF. Runs each new module assignment once, as the engine would, then
+    /// returns the deferrals recorded so far.
+    /// </summary>
+    private IReadOnlyList<RecordedCall> Delays()
+    {
+        var assigned = _engine.CallsTo("AssignCommand");
+        while (_assignmentsRun < assigned.Count)
+        {
+            var call = assigned[_assignmentsRun++];
+            ((uint)call.Arguments[0]!).Should().Be(_engine.GetModule(), "the module owns the first sample");
+            ((Action)call.Arguments[1]!)();
+        }
+
+        return _engine.CallsTo("DelayCommand");
+    }
+
     // ---- beginning an attempt
 
     [Test]
@@ -149,9 +169,9 @@ public class EspionageInfiltrationServiceTests
     {
         _service.TryBegin(Player, Npc).Should().BeTrue();
 
-        _engine.CallsTo("DelayCommand").Should().ContainSingle().Which.Arguments[0].Should().Be(1f);
+        Delays().Should().ContainSingle().Which.Arguments[0].Should().Be(1f);
         _service.TryBegin(Player, Npc).Should().BeTrue("an attempt already running is reported as started");
-        _engine.CallsTo("DelayCommand").Should().ContainSingle("the sampler starts once per player");
+        Delays().Should().ContainSingle("the sampler starts once per player");
     }
 
     [Test]
@@ -160,7 +180,7 @@ public class EspionageInfiltrationServiceTests
         _service.TryBegin(Player, Npc).Should().BeTrue();
         _service.TryBegin(Player, OtherNpc).Should().BeTrue();
 
-        _engine.CallsTo("DelayCommand").Should().ContainSingle();
+        Delays().Should().ContainSingle();
     }
 
     [Test]
@@ -491,42 +511,42 @@ public class EspionageInfiltrationServiceTests
     public void The_sampler_repeats_while_attempts_exist_and_stops_when_they_end()
     {
         _service.TryBegin(Player, Npc);
-        var first = _engine.CallsTo("DelayCommand").Single();
+        var first = Delays().Single();
 
         ((Action)first.Arguments[1]!)();
-        _engine.CallsTo("DelayCommand").Should().HaveCount(2, "an active attempt schedules the next sample");
+        Delays().Should().HaveCount(2, "an active attempt schedules the next sample");
 
         _service.CancelPlayer(Player);
-        ((Action)_engine.CallsTo("DelayCommand")[1].Arguments[1]!)();
-        _engine.CallsTo("DelayCommand").Should().HaveCount(2, "a cancelled player stops the sampler");
+        ((Action)Delays()[1].Arguments[1]!)();
+        Delays().Should().HaveCount(2, "a cancelled player stops the sampler");
     }
 
     [Test]
     public void The_sampler_stops_when_the_player_is_gone_or_has_no_attempts()
     {
         _service.TryBegin(Player, Npc);
-        var first = _engine.CallsTo("DelayCommand").Single();
+        var first = Delays().Single();
         _invalid.Add(Player);
 
         ((Action)first.Arguments[1]!)();
 
-        _engine.CallsTo("DelayCommand").Should().HaveCount(1);
+        Delays().Should().HaveCount(1);
         _invalid.Clear();
 
         // A new attempt starts a new sampler, and a stale sampler id is ignored.
         _service.CancelPlayer(Player);
         _service.TryBegin(Player, Npc);
-        var second = _engine.CallsTo("DelayCommand")[1];
+        var second = Delays()[1];
         _service.CancelPlayer(Player);
         _service.TryBegin(Player, Npc);
         ((Action)second.Arguments[1]!)();
-        _engine.CallsTo("DelayCommand").Should().HaveCount(3, "only the newest sampler keeps running");
+        Delays().Should().HaveCount(3, "only the newest sampler keeps running");
 
         // With no attempts left the sampler ends on its own.
-        var third = _engine.CallsTo("DelayCommand")[2];
+        var third = Delays()[2];
         _service.ClearNpc(Npc);
         ((Action)third.Arguments[1]!)();
-        _engine.CallsTo("DelayCommand").Should().HaveCount(3);
+        Delays().Should().HaveCount(3);
     }
 
     // ---- cancelling and the handlers

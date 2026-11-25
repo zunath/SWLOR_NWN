@@ -1,5 +1,7 @@
 == step 1 populate: exit of the attacker
+Engine.AssignCommand(Invalid)
 Engine.DelayCommand(0)
+Engine.AssignCommand(Invalid)
 Engine.DelayCommand(0)
 filled _abilityStaminaCosts, _areaAbilityTargetHitSequences, _attackSwingDebts, _attackSwingDebtsWithoutLimitedReduction, _autoAttackCycleCounts, _autoAttackCycleCriticalCounts, _containmentNormalizationTargets, _criticalHitSequenceStates, _damageDerivedHealingStates, _defeatedEnemyHealingBudgets, _firstCombatAttackConsumed, _firstHostileAbilityHitCounts, _hostileAbilitySequenceStates, _lastAttackActivity, _lastCombatAbilityUse, _lastCombatActivity, _lastHostileAbilityAttemptActivity, _lastHostileIncomingActivity, _meleeAutoAttackCycleCounts, _meleeRepeatedTargetDamageStates, _modifiers, _passiveDamageHealingBudgets, _pendingSuppressionAbilityUses, _rangedRepeatedTargetDamageStates, _recentDamageTaken, _recentDamageTargets, _recentDeflections, _recentGuardedHits, _repeatedTargetDamageStates, _sameTargetHostileAbilityHitCounts, _sameTargetPressureStates, _sourceStatusAutoAttackCycleCounts, _statTriggerCooldowns, _stealthOpeningWindows
 delayed run
@@ -59,6 +61,7 @@ AttackTiming.ForgetAttackTimingState(Attacker)
 RepeatedTarget.ForgetDamageModifierState(Attacker)
 StatusEffect.RemoveStatusEffect(Attacker, SpottersRhythmStatusEffect, Attacker, False, True)
 TemporaryStatModifier.Clear(Attacker)
+Engine.AssignCommand(Invalid)
 Engine.DelayCommand(0)
 delayed run
 GuiRefreshPublisher.PublishRefreshEvent(Attacker, StatAdjustmentRefreshEvent, Invalid)
@@ -98,7 +101,9 @@ table _sourceStatusAutoAttackCycleCounts: [(22, 33, None), (33, 22, None), (33, 
 table _statTriggerCooldowns: [(22, Invalid), (33, Invalid), (66, Invalid)]
 table _stealthOpeningWindows: [Ally, Defender, Other]
 == step 5 populate: death of the defender
+Engine.AssignCommand(Invalid)
 Engine.DelayCommand(0)
+Engine.AssignCommand(Invalid)
 Engine.DelayCommand(0)
 filled _abilityStaminaCosts, _areaAbilityTargetHitSequences, _attackSwingDebts, _attackSwingDebtsWithoutLimitedReduction, _autoAttackCycleCounts, _autoAttackCycleCriticalCounts, _containmentNormalizationTargets, _criticalHitSequenceStates, _damageDerivedHealingStates, _defeatedEnemyHealingBudgets, _firstCombatAttackConsumed, _firstHostileAbilityHitCounts, _hostileAbilitySequenceStates, _lastAttackActivity, _lastCombatAbilityUse, _lastCombatActivity, _lastHostileAbilityAttemptActivity, _lastHostileIncomingActivity, _meleeAutoAttackCycleCounts, _meleeRepeatedTargetDamageStates, _modifiers, _passiveDamageHealingBudgets, _pendingSuppressionAbilityUses, _rangedRepeatedTargetDamageStates, _recentDamageTaken, _recentDamageTargets, _recentDeflections, _recentGuardedHits, _repeatedTargetDamageStates, _sameTargetHostileAbilityHitCounts, _sameTargetPressureStates, _sourceStatusAutoAttackCycleCounts, _statTriggerCooldowns, _stealthOpeningWindows
 delayed run
@@ -173,6 +178,7 @@ AttackTiming.ForgetAttackTimingState(Defender)
 RepeatedTarget.ForgetDamageModifierState(Defender)
 StatusEffect.RemoveStatusEffect(Defender, SpottersRhythmStatusEffect, Defender, False, True)
 TemporaryStatModifier.Clear(Defender)
+Engine.AssignCommand(Invalid)
 Engine.DelayCommand(0)
 delayed run
 GuiRefreshPublisher.PublishRefreshEvent(Defender, StatAdjustmentRefreshEvent, Invalid)

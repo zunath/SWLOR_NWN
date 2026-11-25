@@ -40,7 +40,7 @@ public class ReloadStateCarrierTests
         ReloadStateCarrier.CarriedClasses(Game).Select(entry => entry.Type.Name).Should().Contain(new[]
         {
             nameof(StatusEffectService), nameof(PartyRosterService), nameof(AbilityAuraService), "CombatActivityService", "CombatPointService",
-            "EnmityService", nameof(PlayerNameService), "PvpCombatService", "TemporaryStatModifierService", nameof(ShuttleStateService),
+            "EnmityService", nameof(PlayerNameOverrideService), "PvpCombatService", "TemporaryStatModifierService", nameof(ShuttleStateService),
         });
     }
 
@@ -314,16 +314,16 @@ public class ReloadStateCarrierTests
             }
         }
 
-        var names = owners[typeof(PlayerNameService)];
-        FieldOf(typeof(PlayerNameService), "AfkPlayers").SetValue(names,
+        var names = owners[typeof(PlayerNameOverrideService)];
+        FieldOf(typeof(PlayerNameOverrideService), "AfkPlayers").SetValue(names,
             new Dictionary<uint, (uint Area, System.Numerics.Vector3 Position)> { [5u] = (6u, new System.Numerics.Vector3(1, 2, 3)) });
 
         Carrier().CarryAll(Resolve, (key, text) => store[key] = text);
         store.Keys.Should().BeEquivalentTo(ReloadStateCarrier.CarriedClasses(Game).Select(entry => ReloadStateCarrier.KeyPrefix + entry.Type.FullName));
 
-        var fresh = ReloadCarrySamples.Owner(typeof(PlayerNameService), FieldsOf(typeof(PlayerNameService)));
-        FieldOf(typeof(PlayerNameService), "AfkPlayers").SetValue(fresh, new Dictionary<uint, (uint Area, System.Numerics.Vector3 Position)>());
-        owners[typeof(PlayerNameService)] = fresh;
+        var fresh = ReloadCarrySamples.Owner(typeof(PlayerNameOverrideService), FieldsOf(typeof(PlayerNameOverrideService)));
+        FieldOf(typeof(PlayerNameOverrideService), "AfkPlayers").SetValue(fresh, new Dictionary<uint, (uint Area, System.Numerics.Vector3 Position)>());
+        owners[typeof(PlayerNameOverrideService)] = fresh;
         var taken = new List<string>();
         Carrier().Invoking(carrier => carrier.AdoptAll(Resolve, key =>
         {
@@ -332,8 +332,8 @@ public class ReloadStateCarrierTests
         })).Should().NotThrow();
         taken.Should().BeEquivalentTo(store.Keys);
 
-        ((PlayerNameService)fresh).IsAfk(5u).Should().BeTrue("the AFK players are carried");
-        var timer = (IDisposable)FieldOf(typeof(PlayerNameService), "_afkMovementCheck").GetValue(fresh);
+        ((PlayerNameOverrideService)fresh).IsAfk(5u).Should().BeTrue("the AFK players are carried");
+        var timer = (IDisposable)FieldOf(typeof(PlayerNameOverrideService), "_afkMovementCheck").GetValue(fresh);
         timer.Should().NotBeNull("the adopter hook starts the movement check the old build's timer ran");
         timer!.Dispose();
     }

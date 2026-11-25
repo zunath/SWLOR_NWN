@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Domain.Social
 {
@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Domain.Social
     /// carried that portrait. Static callers reach the container's instance
     /// of this interface through <c>GameServices.ChatPortraitTells</c>; the event handlers are on <see cref="ChatPortraitTellsService"/>.
     /// </summary>
-    public interface IChatPortraitTellsService
+    public interface IChatPortraitTellsService : IPortraitTellGuard
     {
         /// <summary>
         /// When a player enters, forgets what the login object's previous client saw and remembers the character.
@@ -42,13 +42,6 @@ namespace SWLOR.Game.Server.Domain.Social
         /// Classifies a chat-log portrait click by the clicking player and the player the client resolved it to.
         /// </summary>
         ChatPortraitClick ClickPortrait(uint player, uint portraitOwner);
-
-        /// <summary>
-        /// Whether to refuse a tell because a portrait click that may belong to another player started it, telling
-        /// the sender why. A tell from the Player List names its target exactly and is never refused.
-        /// </summary>
-        /// <param name="confirmedTarget">True when the tell goes to the player the sender confirmed with a second portrait click.</param>
-        bool RefuseStalePortraitTell(uint sender, uint target, bool isDirectTell, out bool confirmedTarget);
 
         /// <summary>
         /// Classifies a chat-log portrait the way a click on it would, without counting as a click.

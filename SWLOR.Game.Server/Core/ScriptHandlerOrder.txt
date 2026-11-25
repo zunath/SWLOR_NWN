@@ -762,7 +762,7 @@ mod_enter
   action      SWLOR.Game.Server.Domain.Social.PerformanceService.RecoverOnLogin
   action      SWLOR.Game.Server.Domain.Social.PlayerListService.RefreshOnEnter
   action      SWLOR.Game.Server.Domain.Economy.PlayerMarketService.CheckMarketTill
-  action      SWLOR.Game.Server.Domain.Character.PlayerNameService.ApplyNameOverridesOnEnter
+  action      SWLOR.Game.Server.Domain.Character.PlayerNameOverrideService.ApplyNameOverridesOnEnter
   action      SWLOR.Game.Server.Domain.Quests.QuestService.LoadPlayerQuests
   action      SWLOR.Game.Server.Domain.Quests.QuestContractBoardService.NotifyPendingDeliveries
   action      SWLOR.Game.Server.Domain.Abilities.QuickCastService.ApplyOnEnter
@@ -839,7 +839,7 @@ mod_exit
   action      SWLOR.Game.Server.Domain.Character.PlayerIntroductionService.ClearOnExit
   action      SWLOR.Game.Server.Domain.Social.PlayerListService.RefreshOnExit
   action      SWLOR.Game.Server.Domain.Character.PlayerNameService.ReleaseKnownNamesOnExit
-  action      SWLOR.Game.Server.Domain.Character.PlayerNameService.ClearAfkOnExit
+  action      SWLOR.Game.Server.Domain.Character.PlayerNameOverrideService.ClearAfkOnExit
   action      SWLOR.Game.Server.Domain.Combat.PvpCombatService.ForgetExitingPlayer
   action      SWLOR.Game.Server.Domain.World.ShuttleService.ExitServer
   action      SWLOR.Game.Server.Domain.Character.SkillService.ResetLimitWarningsOnExit
@@ -942,7 +942,7 @@ on_nwnx_chat
   action      SWLOR.Game.Server.Domain.Social.ChatCommandService.HandleChatMessage
   action      SWLOR.Game.Server.Domain.Social.CommunicationService.ProcessChatMessage
   action      SWLOR.Game.Server.Domain.Social.PerformanceService.KeepRoleplayGoing
-  action      SWLOR.Game.Server.Domain.Character.PlayerNameService.PreventAmbiguousTellTargets
+  action      SWLOR.Game.Server.Domain.Character.PlayerNameOverrideService.PreventAmbiguousTellTargets
   action      SWLOR.Game.Server.Feature.Auditing.AuditChatMessages
   action      SWLOR.Game.Server.Feature.RoleplayXP.ProcessRPMessage
 

@@ -80,7 +80,7 @@ public class ChatPortraitTellsServiceTests
     private class TestableService : ChatPortraitTellsService
     {
         public TestableService()
-            : base(FacadeForwarder.LazyFor<IPlayerNameService>())
+            : base(FacadeForwarder.For<IPlayerNameService>())
         {
         }
 

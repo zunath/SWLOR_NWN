@@ -44,6 +44,7 @@ public class InvertedInterfaceRegistrationTests
         (typeof(ICombatLeash), typeof(IAIService)),
         (typeof(ICompanionTargetQuery), typeof(ICompanionTargetAuthorityService)),
         (typeof(IDisplayNameLookup), typeof(IPlayerNameService)),
+        (typeof(IPortraitTellGuard), typeof(IChatPortraitTellsService)),
     };
 
     private static ContainerHost Build()

@@ -114,6 +114,7 @@ public class PlayerIdentityAuditTests
             {
                 private static readonly DbShim _db = new();
                 private static readonly NameShim _playerName = new();
+                private static readonly NameOverrideShim _playerNameOverride = new();
                 private static readonly KnownNameShim _playerKnownName = new();
                 private sealed class DbShim
                 {
@@ -123,6 +124,9 @@ public class PlayerIdentityAuditTests
                 private sealed class NameShim
                 {
                     public string SanitizeKnownName(string name) => PlayerName.SanitizeKnownName(name);
+                }
+                private sealed class NameOverrideShim
+                {
                     public void RefreshNameOverridesForPlayer(uint player) => PlayerName.RefreshNameOverridesForPlayer(player);
                 }
                 private sealed class KnownNameShim

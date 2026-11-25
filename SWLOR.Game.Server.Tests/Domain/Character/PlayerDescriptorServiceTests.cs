@@ -25,6 +25,7 @@ public class PlayerDescriptorServiceTests
     private FakeNWScript _engine = null!;
     private InMemoryDBService _db = null!;
     private ScriptedProxy _nameScript = null!;
+    private ScriptedProxy _nameOverrideScript = null!;
     private BenchDescriptorService _service = null!;
     private IDisposable _scope = null!;
     private int _refreshes;
@@ -45,14 +46,15 @@ public class PlayerDescriptorServiceTests
         _refreshes = 0;
         var names = ScriptedProxy.Create<IPlayerNameService>(out _nameScript);
         _nameScript.On("SanitizeKnownName", arguments => ((string?)arguments[0])?.Trim() ?? string.Empty);
-        _nameScript.On("RefreshNameOverridesForPlayer", _ =>
+        var nameOverrides = ScriptedProxy.Create<IPlayerNameOverrideService>(out _nameOverrideScript);
+        _nameOverrideScript.On("RefreshNameOverridesForPlayer", _ =>
         {
             _refreshes++;
             return null;
         });
         var knownNames = ScriptedProxy.Create<IPlayerKnownNameService>(out var knownNameScript);
         knownNameScript.On("ValidateKnownNameInput", arguments => string.IsNullOrWhiteSpace((string?)arguments[0]) ? "Please enter a name." : string.Empty);
-        _service = new BenchDescriptorService(_db, names, knownNames);
+        _service = new BenchDescriptorService(_db, names, nameOverrides, knownNames);
     }
 
     [TearDown]
@@ -60,8 +62,8 @@ public class PlayerDescriptorServiceTests
 
     private sealed class BenchDescriptorService : PlayerDescriptorService
     {
-        public BenchDescriptorService(IDBService db, IPlayerNameService names, IPlayerKnownNameService knownNames)
-            : base(db, names, knownNames, FacadeForwarder.LazyFor<IDisguiseService>())
+        public BenchDescriptorService(IDBService db, IPlayerNameService names, IPlayerNameOverrideService nameOverrides, IPlayerKnownNameService knownNames)
+            : base(db, names, nameOverrides, knownNames, FacadeForwarder.LazyFor<IDisguiseService>())
         {
         }
 

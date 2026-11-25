@@ -139,6 +139,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPlayerNameService, PlayerNameService>();
             services.AddSingleton<IDisplayNameLookup>(provider => provider.GetRequiredService<IPlayerNameService>());
             services.AddSingleton<IPlayerKnownNameService, PlayerKnownNameService>();
+            services.AddSingleton<IPlayerNameOverrideService, PlayerNameOverrideService>();
             services.AddSingleton<IRaceService, RaceService>();
             services.AddSingleton<IRoleplayXPDetectionService, RoleplayXPDetectionService>();
             services.AddSingleton<ISkillService, SkillService>();
@@ -361,6 +362,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IExtraHotbarsStatusService, ExtraHotbarsStatusService>();
             services.AddSingleton<IExtraHotbarsWindowService, ExtraHotbarsWindowService>();
             services.AddSingleton<IChatPortraitTellsService, ChatPortraitTellsService>();
+            // The same instance, seen through the refusal of a stale portrait tell that Character owns.
+            services.AddSingleton<IPortraitTellGuard>(provider => provider.GetRequiredService<IChatPortraitTellsService>());
             services.AddSingleton<IPartyService, PartyService>();
             services.AddSingleton<IPartyRosterService, PartyRosterService>();
             // The same instance, seen through the interface Combat owns for the domains below Social.

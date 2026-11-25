@@ -11,11 +11,11 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | 2. Large types | `LargeTypes.txt` | 11 | 17,522 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 8 | 2,419 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 16 | 228 services | none over 10 services |
-| 5. Deferred resolution | `DeferredResolution.txt` | 29 | 35 parameters | none |
+| 5. Deferred resolution | `DeferredResolution.txt` | 28 | 34 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 115 | 231 types | none |
-| 7. Domain cycles | `DomainCycles.txt` | 25 | 86 edges | none |
+| 7. Domain cycles | `DomainCycles.txt` | 24 | 84 edges | none |
 | 8. Static entry points and static state | `StaticState.txt` | 122 | 220 members | each kept with an approved reason, or removed |
-| 9. References up the domain order | `UpwardEdges.txt` | 112 | 230 members | none: every reference follows the domain order |
+| 9. References up the domain order | `UpwardEdges.txt` | 111 | 226 members | none: every reference follows the domain order |
 | 10. Sink work | `SinkWork.txt` | 16 | 2,194 lines | none: a sink only forwards |
 
 ## 1. Static service lookup
@@ -123,18 +123,18 @@ Largest 15 of 16 (all in `ServicesPerType.txt`):
 
 ## 5. Deferred resolution
 
-- 35 deferred constructor parameters in 21 files (Lazy 35, Func 0), taken by 21 types, deferring 23 distinct services.
-- By direction in the domain order: up 2, down 19, inside one domain 14.
+- 34 deferred constructor parameters in 20 files (Lazy 34, Func 0), taken by 20 types, deferring 23 distinct services.
+- By direction in the domain order: up 2, down 18, inside one domain 14.
 - Up: Character -> Combat 1, Items -> Combat 1.
 - IServiceProvider outside Composition/: 0 uses.
 
-Largest 15 of 29 (all in `DeferredResolution.txt`):
+Largest 15 of 28 (all in `DeferredResolution.txt`):
 
 | Entry | Parameters | Detail |
 |---|---:|---|
 | `SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Character (down)` | 5 | Combat -> Character: Lazy 5 (IEspionageInfiltrationService, IPerkService, IStatService, IStatusEffectApplicationService, IStatusEffectService) |
 | `SWLOR.Game.Server/Domain/Character/PlayerNameService.cs -> Character (inside)` | 2 | Character -> Character: Lazy 2 (IDisguiseService, IPlayerDescriptorService) |
-| `SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> Character (down)` | 2 | Social -> Character: Lazy 2 (IDisguiseService, IPlayerNameService) |
+| `SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> Character (down)` | 2 | Social -> Character: Lazy 2 (IDisguiseService, IPlayerNameOverrideService) |
 | `SWLOR.Game.Server/Domain/Abilities/MimicryService.cs -> Character (down)` | 1 | Abilities -> Character: Lazy 1 (IStatService) |
 | `SWLOR.Game.Server/Domain/Abilities/MimicryService.cs -> Combat (down)` | 1 | Abilities -> Combat: Lazy 1 (ICombatPointService) |
 | `SWLOR.Game.Server/Domain/Administration/DMPresenceService.cs -> Administration (inside)` | 1 | Administration -> Administration: Lazy 1 (IDMObjectSearchService) |
@@ -176,11 +176,11 @@ Largest 15 of 115 (all in `LogicToContent.txt`):
 
 ## 7. Domain cycles
 
-- 25 pairs of domains depend on each other: 21 between logic (6 of them with Foundation or Platform), 4 between content.
+- 24 pairs of domains depend on each other: 20 between logic (6 of them with Foundation or Platform), 4 between content.
 - Foundation's logic is in a pair with 2 domains, Platform with 5.
-- Members both ways: 3,557.
+- Members both ways: 3,445.
 
-Largest 15 of 25 (all in `DomainCycles.txt`):
+Largest 15 of 24 (all in `DomainCycles.txt`):
 
 | Entry | Edges | Detail |
 |---|---:|---|
@@ -229,12 +229,12 @@ Largest 15 of 122 (all in `StaticState.txt`):
 
 ## 9. References up the domain order
 
-- 230 members in 76 files reference a domain above their own: 30 directions, 45 unit edges.
-- Logic: 187 members in 21 directions; content: 43 members in 9 directions.
+- 226 members in 75 files reference a domain above their own: 29 directions, 44 unit edges.
+- Logic: 183 members in 20 directions; content: 43 members in 9 directions.
 - From the hook logic in Platform/Native (P5-16b): 122 members in 51 lines.
-- By direction: Platform -> Combat 52, Platform -> Foundation 36, Platform -> Character 27, Character content -> Abilities content 10, Combat -> Abilities 10, Items -> Combat 9, UI content -> Gameplay content 9, Character -> Combat 7, Combat -> Social 6, Foundation -> UI 6, Platform -> Items 6, Foundation content -> UI content 5, Character -> Abilities 4, Character -> Social 4, Foundation content -> Character content 4, Foundation content -> Gameplay content 4, Quests -> Economy 4, UI content -> Abilities content 4, Combat -> World 3, Items -> Crafting 3, Items content -> Abilities content 3, Character -> Companions 2, Character -> Quests 2, Gameplay content -> Abilities content 2, Gameplay content -> Quests content 2, Platform -> Abilities 2, Character -> Items 1, Items -> Companions 1, Items -> World 1, World -> Space 1.
+- By direction: Platform -> Combat 52, Platform -> Foundation 36, Platform -> Character 27, Character content -> Abilities content 10, Combat -> Abilities 10, Items -> Combat 9, UI content -> Gameplay content 9, Character -> Combat 7, Combat -> Social 6, Foundation -> UI 6, Platform -> Items 6, Foundation content -> UI content 5, Character -> Abilities 4, Foundation content -> Character content 4, Foundation content -> Gameplay content 4, Quests -> Economy 4, UI content -> Abilities content 4, Combat -> World 3, Items -> Crafting 3, Items content -> Abilities content 3, Character -> Companions 2, Character -> Quests 2, Gameplay content -> Abilities content 2, Gameplay content -> Quests content 2, Platform -> Abilities 2, Character -> Items 1, Items -> Companions 1, Items -> World 1, World -> Space 1.
 
-Largest 15 of 112 (all in `UpwardEdges.txt`):
+Largest 15 of 111 (all in `UpwardEdges.txt`):
 
 | Entry | Members | Detail |
 |---|---:|---|
@@ -244,7 +244,6 @@ Largest 15 of 112 (all in `UpwardEdges.txt`):
 | `SWLOR.Game.Server/Native/GetDamageRoll.cs: Platform -> Foundation` | 6 | AttackType, CombatDamageType, CombatDamageTypeExtensions, SkillType |
 | `SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs: Platform -> Combat` | 5 | CombatRecordAttribution, CombatRules, ICombatPointService, ICombatRecorderService, ITwinPistolEquipmentService and 2 more |
 | `SWLOR.Game.Server/Domain/Character/PerkService.cs: Character -> Abilities` | 4 | IQuickCastService |
-| `SWLOR.Game.Server/Domain/Character/PlayerNameService.cs: Character -> Social` | 4 | IChatPortraitTellsService, IPlayerListService |
 | `SWLOR.Game.Server/Domain/Combat/RecastService.cs: Combat -> Abilities` | 4 | IAbilityCooldownVisualService |
 | `SWLOR.Game.Server/Native/GetDamageRoll.cs: Platform -> Character` | 4 | ISkillService, IStatService, IStatusEffectCombatEventService, StatType |
 | `SWLOR.Game.Server/Native/GetDamageRoll.cs: Platform -> Combat` | 4 | CombatRules, ICombatAutoAttackEffectsService, ICombatDamageReflectionService, ICombatDamageRollService, ICombatPointService and 6 more |
@@ -253,6 +252,7 @@ Largest 15 of 112 (all in `UpwardEdges.txt`):
 | `SWLOR.Game.Server/Native/WeaponAttackCycle.cs: Platform -> Character` | 4 | ISkillService, IStatusEffectCombatEventService |
 | `SWLOR.Game.Server/Domain/Character/PerkService.cs: Character -> Combat` | 3 | ICombatService |
 | `SWLOR.Game.Server/Domain/Character/SkillService.cs: Character -> Combat` | 3 | ITwinPistolEquipmentService |
+| `SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs: Combat -> Social` | 3 | IPartyService |
 
 ## 10. Sink work
 

@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly IHoloComService _holoCom;
         private readonly IActivityService _activity;
         private readonly ILanguageService _language;
-        private readonly IPlayerNameService _playerName;
+        private readonly IPlayerNameOverrideService _playerNameOverride;
         private readonly ICommunicationAudienceService _commsAudience;
         private readonly ICommunicationMessageSplitService _messageSplit;
 
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Domain.Social
             IHoloComService holoCom,
             IActivityService activity,
             ILanguageService language,
-            IPlayerNameService playerName,
+            IPlayerNameOverrideService playerNameOverride,
             ICommunicationAudienceService commsAudience,
             ICommunicationMessageSplitService messageSplit)
         {
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Domain.Social
             _holoCom = holoCom;
             _activity = activity;
             _language = language;
-            _playerName = playerName;
+            _playerNameOverride = playerNameOverride;
             _commsAudience = commsAudience;
             _messageSplit = messageSplit;
         }
@@ -636,13 +636,13 @@ namespace SWLOR.Game.Server.Domain.Social
         /// <summary>The colored chat name of <paramref name="target"/> as <paramref name="observer"/> sees it: <c>PlayerName.GetColoredChatDisplayName</c>.</summary>
         protected virtual string GetColoredChatDisplayName(uint observer, uint target)
         {
-            return _playerName.GetColoredChatDisplayName(observer, target);
+            return _playerNameOverride.GetColoredChatDisplayName(observer, target);
         }
 
         /// <summary>Runs <paramref name="sendMessage"/> with the per-observer chat name override in place: <c>PlayerName.SendChatMessageWithChatNameOverride</c>.</summary>
         protected virtual void SendChatMessageWithChatNameOverride(uint observer, uint target, Action sendMessage)
         {
-            _playerName.SendChatMessageWithChatNameOverride(observer, target, sendMessage);
+            _playerNameOverride.SendChatMessageWithChatNameOverride(observer, target, sendMessage);
         }
 
         public EmoteStyle GetEmoteStyle(uint player)

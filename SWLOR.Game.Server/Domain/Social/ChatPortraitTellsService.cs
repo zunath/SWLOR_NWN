@@ -19,9 +19,9 @@ namespace SWLOR.Game.Server.Domain.Social
     /// </remarks>
     public class ChatPortraitTellsService : IChatPortraitTellsService
     {
-        private readonly Lazy<IPlayerNameService> _playerName;
+        private readonly IPlayerNameService _playerName;
 
-        public ChatPortraitTellsService(Lazy<IPlayerNameService> playerName)
+        public ChatPortraitTellsService(IPlayerNameService playerName)
         {
             _playerName = playerName;
         }
@@ -151,11 +151,11 @@ namespace SWLOR.Game.Server.Domain.Social
 
         /// <summary>
         /// The colored name of <paramref name="target"/> as <paramref name="observer"/> sees it: <c>PlayerName.GetColoredDisplayName</c>.
-        /// A seam, because <c>PlayerNameService</c> takes this service (a constructor cycle otherwise).
+        /// A seam, so a unit test can answer it.
         /// </summary>
         protected virtual string GetColoredDisplayName(uint observer, uint target)
         {
-            return _playerName.Value.GetColoredDisplayName(observer, target);
+            return _playerName.GetColoredDisplayName(observer, target);
         }
 
         /// <summary>

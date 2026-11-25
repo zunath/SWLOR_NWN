@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var taskNames = new GuiBindingList<string>();
             var taskToggles = new GuiBindingList<bool>();
             var taskColors = new GuiBindingList<GuiColor>();
-            var currentTasks = Guild.GetAllActiveGuildTasks(_guildType);
+            var currentTasks = Guild.GetGuildTasksForPlayer(_guildType, dbPlayer.Quests);
             var rankHasTasks = new Dictionary<int, bool> {{1,false}, {2,false}, {3,false}, {4,false}, {5,false}};
 
             foreach (var (questId, pcQuest) in dbPlayer.Quests)
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var currentTasks = Guild.GetAllActiveGuildTasks(_guildType);
+            var currentTasks = Guild.GetGuildTasksForPlayer(_guildType, dbPlayer.Quests);
             var isExpired = pcQuest != null &&
                             pcQuest.DateLastCompleted == null &&
                             task.GuildType == _guildType &&

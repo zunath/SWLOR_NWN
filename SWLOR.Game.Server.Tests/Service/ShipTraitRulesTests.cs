@@ -50,7 +50,7 @@ public class ShipTraitRulesTests
         ShipTraitRules.Pool(ShipComponentFamily.LifeSupportSystem, ShipTraitKind.Crafted).Select(x => x.Type)
             .Should().BeEquivalentTo(new[] { ShipComponentTraitType.Redundant, ShipComponentTraitType.Compact }, "crafting picks the variant");
         RevampComponentCatalog.Recipes.Where(x => x.Family == ShipComponentFamily.LifeSupportSystem && x.Trait != ShipComponentTraitType.None)
-            .Should().HaveCount(10).And.OnlyContain(x => x.Skill == SWLOR.Game.Server.Service.SkillService.SkillType.Agriculture && (int)x.RecipeType >= 8185);
+            .Should().HaveCount(10).And.OnlyContain(x => x.Skill == SWLOR.Game.Server.Service.SkillService.SkillType.Agriculture && (int)x.RecipeType >= 10185);
         foreach (var family in RevampComponentCatalog.SalvageFamilies.Where(x => x != ShipComponentFamily.LifeSupportSystem))
         {
             ShipTraitRules.Pool(family, ShipTraitKind.Common).Should().NotBeEmpty(family.ToString());

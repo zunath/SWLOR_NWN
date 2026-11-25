@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 500
+    "value": 100
   },
   "BaseItem": {
     "type": "int",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 500
+    "value": 100
   },
   "Cursed": {
     "type": "byte",
@@ -26,14 +26,12 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": "A blue hull panel still faintly magnetized, cut from a sniper's ship near a magnetar. A trophy structure for a home, a city building or a starship interior."
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A blue hull panel still faintly magnetized, cut from a sniper's ship near a magnetar. A trophy structure for a home, a city building or a starship interior."
+      "0": ""
     }
   },
   "Identified": {
@@ -43,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Magnetized Hull Panel"
+      "0": "Table, Illuminated, Stools"
     }
   },
   "ModelPart1": {
@@ -104,11 +102,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "structure_0453"
+    "value": "structure_0839"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "structure_0453"
+    "value": "structure_0839"
   },
   "xModelPart1": {
     "type": "word",

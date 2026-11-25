@@ -156,23 +156,23 @@ public class RevampCatalogTests
         var all = steps.Select(x => x.RecipeType).Concat(hulls.Select(x => x.RecipeType)).ToList();
         all.Should().OnlyHaveUniqueItems();
         all.Select(x => x.ToString()).Should().OnlyHaveUniqueItems();
-        // The modules and hulls take 7000-7357; the Probe Launcher (W12a) follows the component recipes (7358-7487); the
-        // named modules (W9b) open the next block (7498-7531, with the rare components and ammo); the Data Analyzer (W12b)
-        // follows it, then the Cloaking Device ranks (7533-7542); the Cargo Expander ranks (W11d) follow the industrial
-        // droid recipes (7733-7742); the W11k E-War and Afterburner ranks follow them (7743-7790).
+        // The modules and hulls take 9000-9357; the Probe Launcher (W12a) follows the component recipes (9358-9487); the
+        // named modules (W9b) open the next block (9498-9531, with the rare components and ammo); the Data Analyzer (W12b)
+        // follows it, then the Cloaking Device ranks (9533-9542); the Cargo Expander ranks (W11d) follow the industrial
+        // droid recipes (9733-9742); the W11k E-War and Afterburner ranks follow them (9743-9790).
         all.Where(x => !steps.Any(s => s.Named && s.RecipeType == x) && x != RecipeType.ShipDataAnalyzer00 &&
                        steps.All(s => s.Family is not (ShipModuleFamily.CloakingDevice or ShipModuleFamily.CargoExpander or
                            ShipModuleFamily.IonWeb or ShipModuleFamily.Interdictor or ShipModuleFamily.Jammer or
                            ShipModuleFamily.TargetPainter or ShipModuleFamily.Afterburner) || s.RecipeType != x))
-            .Should().OnlyContain(x => ((int)x >= 7000 && (int)x < 7000 + 358) || ((int)x >= 7488 && (int)x < 7498));
-        steps.Where(x => x.Named).Select(x => (int)x.RecipeType).Should().OnlyContain(x => x >= 7498 && x < 7498 + 16);
-        ((int)RecipeType.ShipDataAnalyzer00).Should().Be(7532);
-        steps.Where(x => x.Family == ShipModuleFamily.CloakingDevice).Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(7533, 10));
-        steps.Where(x => x.Family == ShipModuleFamily.CargoExpander).Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(7733, 10));
+            .Should().OnlyContain(x => ((int)x >= 9000 && (int)x < 9000 + 358) || ((int)x >= 9488 && (int)x < 9498));
+        steps.Where(x => x.Named).Select(x => (int)x.RecipeType).Should().OnlyContain(x => x >= 9498 && x < 9498 + 16);
+        ((int)RecipeType.ShipDataAnalyzer00).Should().Be(9532);
+        steps.Where(x => x.Family == ShipModuleFamily.CloakingDevice).Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(9533, 10));
+        steps.Where(x => x.Family == ShipModuleFamily.CargoExpander).Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(9733, 10));
         // The Target Painter starts at rank 10, so the block holds 48 ranks.
         steps.Where(x => x.Family is ShipModuleFamily.IonWeb or ShipModuleFamily.Interdictor or ShipModuleFamily.Jammer or
                          ShipModuleFamily.TargetPainter or ShipModuleFamily.Afterburner)
-            .Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(7743, 48));
+            .Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(9743, 48));
     }
 
     [Test]

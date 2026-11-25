@@ -90,11 +90,11 @@ public class StationBuildingTests
             File.ReadAllText(Path.Combine(RepositoryRoot, "Module", "itp", "itempalcus.itp.json")).Should().Contain($"\"{building.ItemResref}\"");
         }
 
-        // The Fabrication range, straight after the Station Core and far from the droid parts (7700+).
+        // The Fabrication range, straight after the Station Core and far from the droid parts (9700+).
         ((int)RecipeType.Shipyard).Should().Be((int)RecipeType.StationCore + 1);
         ((int)RecipeType.AsteroidDrill).Should().Be((int)RecipeType.Shipyard + 1);
         ((int)RecipeType.JumpBeacon).Should().Be((int)RecipeType.AsteroidDrill + 1);
-        ((int)RecipeType.JumpBeacon).Should().BeLessThan((int)RecipeType.MynockMeatBall).And.BeLessThan(7700);
+        ((int)RecipeType.JumpBeacon).Should().BeLessThan((int)RecipeType.MynockMeatBall).And.BeLessThan(9700);
         ((int)StructureType.Shipyard).Should().Be((int)StructureType.StationCore + 1);
         ((int)StructureType.JumpBeacon).Should().Be((int)StructureType.StationCore + 3);
     }

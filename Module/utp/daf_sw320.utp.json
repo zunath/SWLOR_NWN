@@ -85,7 +85,7 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "[SWTOR] Crate 03"
+      "0": "Crate, Reinforced (Yellow Trim)"
     }
   },
   "OnClick": {

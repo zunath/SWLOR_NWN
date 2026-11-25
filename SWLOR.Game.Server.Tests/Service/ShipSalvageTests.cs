@@ -368,8 +368,8 @@ public class ShipSalvageTests
             step.RecipeType.Should().Be(firstRecipe + step.Rank / 5, "the new families' recipes follow the hulls'");
         }
 
-        ((int)RecipeType.ShipSalvager00).Should().Be(7328);
-        ((int)RecipeType.ShipGasHarvester45).Should().Be(7347);
+        ((int)RecipeType.ShipSalvager00).Should().Be(9328);
+        ((int)RecipeType.ShipGasHarvester45).Should().Be(9347);
     }
 
     [Test]

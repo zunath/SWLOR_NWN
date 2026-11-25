@@ -5,9 +5,9 @@ tab and bible_recipes.py the recipe rows. Draft numbers, tune in testing.
 """
 import components as comp
 
-# W9b's RecipeType block (named modules, rare components, ammo variants), after the component recipes (7358-7487)
+# W9b's RecipeType block (named modules, rare components, ammo variants), after the component recipes (9358-9487)
 # and the Probe Launcher (W12a, 7488-7497).
-RECIPE_START = 7498
+RECIPE_START = 9498
 
 # ---------------------------------------------------------------------------------------------------------------
 # Named rank-50 modules (plan sections 8 and 14): one per main family, the ground Chiro pattern (level-52 recipe
@@ -235,7 +235,8 @@ FACTION_NAMES = {1: "Septra Khanate", 2: "Krakenborne", 3: "Snowdrift Syndicate"
 
 # Trophies: one structure item per ace (structure_04NN, the property structure system's resref pattern, model 202 like
 # every structure item), placing an existing placeable no other structure uses. Named for the piece, not the pilot.
-TROPHY_START = 437
+# Moved from 437 to 457 on 2026-11-25: master's SWTOR furnishings (#3557) took StructureType 437-450.
+TROPHY_START = 457
 TROPHY_COST = 500
 
 # key, tag, pilot name, short name (achievement), area resref and text, spawn table, tier, role, Hull Design appearance,
@@ -454,10 +455,10 @@ CREWED_KILL_ACHIEVEMENT = ("SpaceCrewedKill", "Crewed Kill", "Destroyed a ship i
 # stations and starship interiors. Each places an existing static placeable no other structure uses, and copies the
 # bill, level and tier of the Electronics furniture recipe named last (FurnitureRecipes), so no number is new: one
 # item storage slot and two Structure enhancement slots like every crafted furniture piece.
-# StructureType after the station buildings (5018-5021), RecipeType after the capital parts (7793-7795).
+# StructureType after the station buildings (5018-5021), RecipeType after the capital parts (9793-9795).
 # ---------------------------------------------------------------------------------------------------------------
 DECOR_STRUCTURE_START = 5022
-DECOR_RECIPE_START = 7796
+DECOR_RECIPE_START = 9796
 DECOR_COST = 100   # like every crafted furniture item (structure_0162)
 DECOR_STORAGE = 1
 DECOR_ENHANCEMENT_SLOTS = 2

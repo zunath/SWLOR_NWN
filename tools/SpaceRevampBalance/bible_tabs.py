@@ -281,7 +281,12 @@ def modules():
     s.table(["Family", "Row", "Skill (seat)", "Use", "Cycle s", "Capacitor", "Size scaling", "", "", "", "", "", "", "Notes"],
             [[a, b, c, d, e, f, g, "", "", "", "", "", "", n] for a, b, c, d, e, f, g, n in fam])
     s.note("Every family has an item every 5 ranks (0-45; rank N needs rank N in the skill); capital families have ranks 40 and 45; rank 50 is reserved for named boss modules. Weapon scaling: Light (Small hull) x1.0, Medium x"
-           f"{m.T['weapon_size_mult']['Medium']}, Heavy (Large and Capital hulls) x{m.T['weapon_size_mult']['Large']}, capital weapons x{m.T['capital_weapon_mult']}. Module scaling (hull, shield, repair, capacitor): Small x1.0, Medium, Large and Capital x{m.T['module_size_mult']['Medium']}.")
+           f"{m.T['weapon_size_mult']['Medium']}, Heavy (Large and Capital hulls) x{m.T['weapon_size_mult']['Large']}, capital weapons x{m.T['capital_weapon_mult']}. Module scaling (hull, shield, repair, capacitor): Small x1.0, Medium, Large and Capital x{m.T['module_size_mult']['Medium']}. "
+           "Module Bonus: each point (a crafted Module Enhancement or an extraction head's Yield trait) adds 1% to every number "
+           "of the module's own (damage, Attack, accuracy, hull, shield, capacitor, regen, repair, Defense, resistances, auras, "
+           "Evasion, speed, web, interdict range, jam, paint, afterburner, probe strength and sweep, cargo share and customs cut; "
+           "a cloak's reveal range shrinks 1%; never capacitor use or penalties), added to its traits' percents, before the size "
+           "scaling.")
     s.blank()
     s.title("Weapon steps (Light DMG; multiply by the size scaling)")
     rows = []

@@ -2176,7 +2176,8 @@ namespace SWLOR.Game.Server.Service
 
             if (HasStatAdjustment(statusEffect))
             {
-                DelayCommand(0.1f, () => Stat.ApplyCreatureMovementRate(creature));
+                // Attack hooks remove effects with no OBJECT_SELF; the module owns the deferred recompute.
+                AssignCommand(GetModule(), () => DelayCommand(0.1f, () => Stat.ApplyCreatureMovementRate(creature)));
             }
 
             ScheduleTemporaryHitPointLimitCheckForVitality(creature, statusEffect);

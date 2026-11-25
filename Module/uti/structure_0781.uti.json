@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 500
+    "value": 100
   },
   "BaseItem": {
     "type": "int",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 500
+    "value": 100
   },
   "Cursed": {
     "type": "byte",
@@ -26,14 +26,12 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": "A turbine bent out of true by the pull of a black hole, salvaged from a raider bomber. A trophy structure for a home, a city building or a starship interior."
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A turbine bent out of true by the pull of a black hole, salvaged from a raider bomber. A trophy structure for a home, a city building or a starship interior."
+      "0": ""
     }
   },
   "Identified": {
@@ -43,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Gravity-Torn Turbine"
+      "0": "Rug, Octagonal (Blue)"
     }
   },
   "ModelPart1": {
@@ -104,11 +102,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "structure_0451"
+    "value": "structure_0781"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "structure_0451"
+    "value": "structure_0781"
   },
   "xModelPart1": {
     "type": "word",

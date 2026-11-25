@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Service.DroidService
         public const int MaximumIndustry = 100;
         public const int CpuHP = 50;
         public const int CombatCpuHP = 70;
-        public const int FirstRecipeType = 7700;
-        public const int LastRecipeType = 7732;
+        public const int FirstRecipeType = 9700;
+        public const int LastRecipeType = 9732;
 
         public const double NoIndustryEffectiveness = 0.25;
         public const double BestSupportEffectiveness = 0.75;

@@ -289,7 +289,7 @@ public class SpaceAceTests
             recipe.Components.Should().BeEquivalentTo(copied.Components, "and its bill");
         }
 
-        recipes.Keys.Select(x => (int)x).Should().Equal(7796, 7797, 7798);
+        recipes.Keys.Select(x => (int)x).Should().Equal(9796, 9797, 9798);
     }
 
     // Helpers

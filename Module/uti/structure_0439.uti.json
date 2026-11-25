@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 500
+    "value": 100
   },
   "BaseItem": {
     "type": "int",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 500
+    "value": 100
   },
   "Cursed": {
     "type": "byte",
@@ -26,14 +26,12 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": "A blackened thruster nozzle from a torpedo bomber, mounted as a wall piece. A trophy structure for a home, a city building or a starship interior."
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A blackened thruster nozzle from a torpedo bomber, mounted as a wall piece. A trophy structure for a home, a city building or a starship interior."
+      "0": ""
     }
   },
   "Identified": {
@@ -43,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Scorched Thruster Nozzle"
+      "0": "Bed, Ship Bunk (Dark)"
     }
   },
   "ModelPart1": {

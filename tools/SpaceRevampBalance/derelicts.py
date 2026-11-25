@@ -152,6 +152,12 @@ def ground_loot_tables():
         tables = {}
         for path in sorted((REPO / "SWLOR.Game.Server" / "Feature" / "LootTableDefinition").glob("*.cs")):
             text = path.read_text(encoding="utf-8")
+            # A weight may be a named constant of the file (HarvestingLootTableDefinition's SeedFrequency).
+            consts = dict(re.findall(r'const int (\w+) = (-?\d+);', text))
+
+            def number(value):
+                return int(consts.get(value, value))
+
             for block in re.split(r'_builder\.Create\(', text)[1:]:
                 match = re.match(r'"([^"]+)"', block)
                 if not match:
@@ -162,11 +168,11 @@ def ground_loot_tables():
                     named = {a.split(":")[0].strip(): a.split(":")[1].strip() for a in args if ":" in a}
                     args = [a for a in args if ":" not in a]
                     if m[1] == "Gold":
-                        rows.append(("gold", int(args[1]), int(args[0]), False))
+                        rows.append(("gold", number(args[1]), number(args[0]), False))
                     else:
-                        quantity = int(named.get("maxQuantity", args[2] if len(args) > 2 else 1))
+                        quantity = number(named.get("maxQuantity", args[2] if len(args) > 2 else 1))
                         rare = named.get("isRare", args[3] if len(args) > 3 else "false") == "true"
-                        rows.append((args[0], int(args[1]), quantity, rare))
+                        rows.append((args[0], number(args[1]), quantity, rare))
                 tables[match[1]] = rows
         _GROUND_TABLES = tables
     return _GROUND_TABLES

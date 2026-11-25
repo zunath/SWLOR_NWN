@@ -75,8 +75,8 @@ public class CloakingTests
     public void CloakingDevice_RecipesFollowTheDataAnalyzer_AndUseSensorSuites()
     {
         var steps = RevampModuleCatalog.Steps.Where(x => x.Family == ShipModuleFamily.CloakingDevice).ToList();
-        steps.Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(7533, 10));
-        ((int)RecipeType.ShipDataAnalyzer00).Should().Be(7532, "no earlier recipe moved");
+        steps.Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(9533, 10));
+        ((int)RecipeType.ShipDataAnalyzer00).Should().Be(9532, "no earlier recipe moved");
         foreach (var step in steps)
         {
             var tier = Math.Min(5, step.Rank / 10 + 1);

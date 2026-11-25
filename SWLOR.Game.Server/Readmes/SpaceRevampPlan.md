@@ -64,6 +64,8 @@ Before any work, read `AGENTS.md` and these guides, plus every guide named in th
 - `Readmes/Migrations.md`: one migration per release, server before player, saved-data item sweeps.
 - `Readmes/PullRequests.md`, `Readmes/AgentEnvironment.md`, `Readmes/InEngineVisualVerification.md`, `Readmes/EngineTesting.md`.
 
+**Renumbered IDs (2026-11-25):** master's SWTOR furnishings (#3557) took RecipeType 7000-7499 and StructureType 437-450, so every generator-assigned space revamp RecipeType moved up 2,000 (7000-7798 to 9000-9798, the life support variants 8185-8194 to 10185-10194) and the space trophies moved from StructureType 437-456 to 457-476 (`structure_0457`-`0476`). Build notes below keep the numbers of the day they were written; add 2,000 to any RecipeType from 7000 to 7798 they name. Hand-written RecipeTypes from 8000 (fertilizer, planet identity, the Cargo enhancements 8180-8184) did not move.
+
 **Reading the build notes:** each workstream's "Not built here" line records what that slice left out on the day it was built. Most of those items were built by later slices, and the line says so where it matters. The current open items are the ledger in section 19 (Open items), and the release gates beside it decide what must hold before the revamp merges.
 
 **Standing rules for this project:**

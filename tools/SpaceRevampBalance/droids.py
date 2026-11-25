@@ -79,7 +79,7 @@ RAW = {1: [("aluminum", 1), ("elec_ruined", 2), ("jade", 1), ("quadrenium", 1)],
        4: [("crystal", 4), ("elec_imperfect", 3), ("ruby", 4), ("katrium", 3)],
        5: [("diamond", 5), ("elec_high", 2), ("emerald", 4), ("zinsiam", 4)]}
 COMBAT_INTERMEDIATES = 3
-RECIPE_FIRST = 7700  # RecipeType: parts 7700-7724 (slot-major), protocol discs 7725-7732
+RECIPE_FIRST = 9700  # RecipeType: parts 9700-9724 (slot-major), protocol discs 9725-9732 (moved up 2,000 on 2026-11-25)
 
 
 def part_name(slot, t):

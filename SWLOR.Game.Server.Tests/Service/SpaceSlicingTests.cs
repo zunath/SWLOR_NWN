@@ -69,7 +69,7 @@ public class SpaceSlicingTests
         step.Capital.Should().BeFalse();
         step.Range.Should().Be((int)SpaceSlicingTuning.AnalyzerRange);
         step.RecipeType.Should().Be(RecipeType.ShipDataAnalyzer00);
-        ((int)step.RecipeType).Should().Be(7532, "after the blueprint update's block (7498-7531)");
+        ((int)step.RecipeType).Should().Be(9532, "after the blueprint update's block (9498-9531)");
         ((int)ShipModuleFamily.DataAnalyzer).Should().Be(44);
         step.Components.Should().Contain(x => x.Resref == "sc_sensor_1", "its recipe consumes a Sensor Suite");
 

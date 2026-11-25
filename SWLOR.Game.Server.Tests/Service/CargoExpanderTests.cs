@@ -45,7 +45,7 @@ public class CargoExpanderTests
     public void Recipes_FollowTheHighestEarlierRecipe_SoNoValueMoves()
     {
         var recipes = Steps().Select(x => (int)x.RecipeType).ToList();
-        recipes.Should().Equal(Enumerable.Range(7733, 10));
+        recipes.Should().Equal(Enumerable.Range(9733, 10));
         recipes.First().Should().BeGreaterThan(DroidIndustryTuning.LastRecipeType);
         Enum.GetValues<RecipeType>().Select(x => (int)x).Where(x => recipes.Contains(x)).Should().HaveCount(10, "no other recipe shares these values");
         Steps().Should().OnlyContain(x => x.RecipeLevel == Math.Max(2, x.Rank));

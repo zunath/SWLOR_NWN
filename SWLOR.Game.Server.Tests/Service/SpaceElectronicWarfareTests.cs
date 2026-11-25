@@ -76,9 +76,9 @@ public class SpaceElectronicWarfareTests
     {
         var recipes = Families.SelectMany(Steps).Select(x => (int)x.RecipeType).ToList();
         // The Target Painter starts at rank 10, so the block holds 48 ranks.
-        recipes.Should().Equal(Enumerable.Range(7743, 48));
+        recipes.Should().Equal(Enumerable.Range(9743, 48));
         Enum.GetValues<RecipeType>().Select(x => (int)x).Where(recipes.Contains).Should().HaveCount(48);
-        ((int)RecipeType.ShipCargoExpander45).Should().Be(7742);
+        ((int)RecipeType.ShipCargoExpander45).Should().Be(9742);
         Families.SelectMany(Steps).Should().OnlyContain(x => x.RecipeLevel == Math.Max(2, x.Rank));
         Steps(ShipModuleFamily.Jammer).First().Components.Should().Contain(("sc_sensor_1", 1));
         Steps(ShipModuleFamily.Afterburner).Last().Components.Should().Contain(("sc_thruster_5", 1));

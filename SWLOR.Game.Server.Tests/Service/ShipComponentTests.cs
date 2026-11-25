@@ -125,18 +125,18 @@ public class ShipComponentTests
     [Test]
     public void ComponentRecipes_FollowTheHullsAndSalvageFamiliesWithoutMovingAnyEarlierNumber()
     {
-        var late = GenericRecipes.Where(x => (int)x.RecipeType >= 8185).ToList();
-        late.Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(8185, 10),
+        var late = GenericRecipes.Where(x => (int)x.RecipeType >= 10185).ToList();
+        late.Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(10185, 10),
             "the life support variants (2026-11-25) follow the highest RecipeType in use, so no earlier number moves");
         late.Should().OnlyContain(x => x.Family == ShipComponentFamily.LifeSupportSystem);
-        var recipes = GenericRecipes.Where(x => (int)x.RecipeType < 8185).ToList();
+        var recipes = GenericRecipes.Where(x => (int)x.RecipeType < 10185).ToList();
         recipes.Should().HaveCount(130, "9 families x 5 tiers, plain plus 17 crafted variants per tier");
         var first = RevampModuleCatalog.Steps.Where(x => x.Family is not (ShipModuleFamily.ProbeLauncher or ShipModuleFamily.DataAnalyzer or ShipModuleFamily.CloakingDevice or ShipModuleFamily.CargoExpander or ShipModuleFamily.IonWeb or ShipModuleFamily.Interdictor or ShipModuleFamily.Jammer or ShipModuleFamily.TargetPainter or ShipModuleFamily.Afterburner) && !x.Named).Select(x => (int)x.RecipeType)
             .Concat(RevampShipCatalog.Hulls.Select(x => (int)x.RecipeType)).Max() + 1;
-        first.Should().BeGreaterThan(7347);
+        first.Should().BeGreaterThan(9347);
         recipes.Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(first, 130), "numbered after every module and hull");
-        ((int)RecipeType.ShipGasHarvester45).Should().Be(7347, "the W6a recipes keep their numbers");
-        ((int)RecipeType.ShipDeedRepublicCenturion).Should().Be(7327);
+        ((int)RecipeType.ShipGasHarvester45).Should().Be(9347, "the W6a recipes keep their numbers");
+        ((int)RecipeType.ShipDeedRepublicCenturion).Should().Be(9327);
 
         var all = RevampModuleCatalog.Steps.Select(x => x.RecipeType)
             .Concat(RevampShipCatalog.Hulls.Select(x => x.RecipeType))
@@ -473,7 +473,7 @@ public class ShipComponentTests
         parts["capc_react"].Skill.Should().Be(SkillType.Engineering);
         parts["capc_thrust"].Skill.Should().Be(SkillType.Smithery);
         parts.Values.Should().OnlyContain(x => x.RecipeLevel == 45 && x.Tier == 6);
-        parts.Values.Select(x => (int)x.RecipeType).Should().Equal(7793, 7794, 7795);
+        parts.Values.Select(x => (int)x.RecipeType).Should().Equal(9793, 9794, 9795);
 
         var built = new ShipComponentRecipes().BuildRecipes();
         foreach (var part in parts.Values)

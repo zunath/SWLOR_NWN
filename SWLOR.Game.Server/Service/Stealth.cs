@@ -657,17 +657,18 @@ namespace SWLOR.Game.Server.Service
             // Set the mode directly while the Spot hook is active, then retry after the native
             // detection call has unwound. Hostile AI can immediately start combat from a
             // successful verdict, and the deferred pass prevents that transition from leaving
-            // the player's native mode and tracked status out of sync.
+            // the player's native mode and tracked status out of sync. Detection also runs from attack
+            // hooks with no OBJECT_SELF, so the module owns the deferred pass.
             SetActionMode(target, ActionMode.Stealth, false);
             StatusEffect.RemoveStatusEffect<StealthStatusEffect>(target);
-            DelayCommand(0f, () =>
+            AssignCommand(GetModule(), () => DelayCommand(0f, () =>
             {
                 if (!GetIsObjectValid(target) || !GetActionMode(target, ActionMode.Stealth))
                     return;
 
                 SetActionMode(target, ActionMode.Stealth, false);
                 StatusEffect.RemoveStatusEffect<StealthStatusEffect>(target);
-            });
+            }));
             SendMessageToPC(target, ColorToken.Red("You have been detected and are forced out of stealth."));
         }
 

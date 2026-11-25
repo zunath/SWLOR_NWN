@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "A control block whose tubes were fused solid by an ion storm, pulled from a jamming ship. A trophy structure for a home, a city building or a starship interior."
+      "0": "A heavy engine coil pulled from a bounty hunter's fighter, still marked with Hutt cartel sigils. A trophy structure for a home, a city building or a starship interior."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A control block whose tubes were fused solid by an ion storm, pulled from a jamming ship. A trophy structure for a home, a city building or a starship interior."
+      "0": "A heavy engine coil pulled from a bounty hunter's fighter, still marked with Hutt cartel sigils. A trophy structure for a home, a city building or a starship interior."
     }
   },
   "Identified": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Ion-Fused Control Block"
+      "0": "Salvaged Engine Coil"
     }
   },
   "ModelPart1": {
@@ -104,11 +104,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "structure_0452"
+    "value": "structure_0458"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "structure_0452"
+    "value": "structure_0458"
   },
   "xModelPart1": {
     "type": "word",

@@ -28,7 +28,8 @@ ROOT = m.REPO
 ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
 CAPITAL_STEPS = [40, 45]
 SKILL = {"Piloting": "SkillType.Piloting", "Gathering": "SkillType.Gathering", "Espionage": "SkillType.Espionage"}
-RECIPE_TYPE_START = 7000
+# 2026-11-25: every generated space revamp RecipeType moved up 2,000, since master reserves 7000-7499 for the SWTOR furnishings (#3557).
+RECIPE_TYPE_START = 9000
 
 # Existing artwork each family reuses (ShipItemIconBindings.csv role): BaseItem, inventory model, action icon.
 ART = {
@@ -300,9 +301,10 @@ def hull_bill(role, adv, maker=None):
 
 
 # Crafted variants added after the component block (life support, 2026-11-25). Their recipe IDs follow the highest
-# RecipeType in use (Starship Enhancement - Cargo V, 8184), so no earlier value moves.
+# RecipeType this generator assigns (the capital parts and decor, 9793-9798, and every hand-written one), so no earlier
+# value moves.
 LATE_VARIANT_TRAITS = {"Redundant", "Compact"}
-LATE_VARIANT_RECIPE_START = 8185
+LATE_VARIANT_RECIPE_START = 10185
 
 
 def component_recipes(recipe_start):
@@ -361,7 +363,7 @@ def rare_items():
 # Capital parts (W11o, components.CAPITAL_PARTS): their recipes follow the highest RecipeType in use (the W11k E-War and
 # Afterburner ranks ended at 7792 before the Target Painter lost its rank 0 and 5 steps; they now end at 7790), so no
 # earlier value moves.
-CAPITAL_RECIPE_START = 7793
+CAPITAL_RECIPE_START = 9793
 
 
 def capital_part_value(resref):
@@ -440,12 +442,12 @@ CLOAK_LATE_FAMILIES = {"CloakingDevice"}
 # Families added by the gaps pass (W11d). Their recipe IDs follow the highest RecipeType in use (the industrial droid
 # parts and protocol discs of droids.py, 7700-7732), so no earlier value moves.
 CARGO_LATE_FAMILIES = {"CargoExpander"}
-CARGO_RECIPE_START = 7733
+CARGO_RECIPE_START = 9733
 
 # Families added by W11k (the E-War modules and the Afterburner). Their recipe IDs follow the Cargo Expander's (the
-# highest RecipeType in use, 7742), so no earlier value moves.
+# highest RecipeType in use, 9742), so no earlier value moves.
 EWAR_LATE_FAMILIES = {"IonWeb", "Interdictor", "Jammer", "TargetPainter", "Afterburner"}
-EWAR_RECIPE_START = 7743
+EWAR_RECIPE_START = 9743
 
 # Families with one item and no rank requirement: any hull fits it (the Data Analyzer, plan section 24).
 SINGLE_STEP_FAMILIES = {"DataAnalyzer"}

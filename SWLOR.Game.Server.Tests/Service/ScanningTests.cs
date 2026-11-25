@@ -52,8 +52,8 @@ public class ScanningTests
     public void ProbeLauncher_RecipesFollowTheComponentRecipes_AndUseSensorSuites()
     {
         var steps = RevampModuleCatalog.Steps.Where(x => x.Family == ShipModuleFamily.ProbeLauncher).ToList();
-        steps.Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(7488, 10));
-        ((int)RecipeType.ShipComponentLifeSupportSystem5).Should().Be(7487, "no earlier recipe moved");
+        steps.Select(x => (int)x.RecipeType).Should().Equal(Enumerable.Range(9488, 10));
+        ((int)RecipeType.ShipComponentLifeSupportSystem5).Should().Be(9487, "no earlier recipe moved");
         foreach (var step in steps)
         {
             var tier = Math.Min(5, step.Rank / 10 + 1);

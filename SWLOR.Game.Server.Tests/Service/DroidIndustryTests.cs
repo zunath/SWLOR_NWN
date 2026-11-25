@@ -127,21 +127,21 @@ public class DroidIndustryTests
     }
 
     [Test]
-    public void IndustrialRecipeTypes_TakeTheBlockFrom7700_InOrder_AfterEveryOtherRecipe()
+    public void IndustrialRecipeTypes_TakeTheBlockFrom9700_InOrder_AfterEveryOtherRecipe()
     {
         var industrial = new DroidIndustrialPartRecipes().BuildRecipes().Keys
             .Concat(new DroidInstructionRecipes().BuildRecipes().Keys.Where(x => x.ToString().EndsWith("Protocol1") || x.ToString().EndsWith("Protocol2")))
             .Select(x => (int)x).OrderBy(x => x).ToList();
         industrial.Should().Equal(Enumerable.Range(DroidIndustryTuning.FirstRecipeType, 33));
-        DroidIndustryTuning.FirstRecipeType.Should().Be(7700);
-        DroidIndustryTuning.LastRecipeType.Should().Be(7732);
+        DroidIndustryTuning.FirstRecipeType.Should().Be(9700);
+        DroidIndustryTuning.LastRecipeType.Should().Be(9732);
 
         var values = Enum.GetValues<RecipeType>().Select(x => (int)x).ToList();
         values.Should().OnlyHaveUniqueItems("no two recipes may share an ID");
         values.Where(x => x >= DroidIndustryTuning.FirstRecipeType && x <= DroidIndustryTuning.LastRecipeType)
             .Should().BeEquivalentTo(industrial, "the block belongs to the industrial droids alone");
-        ((int)RecipeType.InstructionProspectingProtocol2).Should().Be(7732);
-        ((int)RecipeType.IndustrialLogisticsCPU1).Should().Be(7700);
+        ((int)RecipeType.InstructionProspectingProtocol2).Should().Be(9732);
+        ((int)RecipeType.IndustrialLogisticsCPU1).Should().Be(9700);
     }
 
     // Industry and mixing

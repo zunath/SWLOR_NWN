@@ -647,11 +647,12 @@ namespace SWLOR.Game.Server.Service
             NPCAI.ClearState(creature);
             ApplyLeashEvadeMovementRate(creature);
             ExecuteScript(ScriptName.OnCreatureLeashStarted, creature);
-            DelayCommand(0.2f, () =>
+            // Attack and damage hooks start leash evasion with no OBJECT_SELF; the module owns the re-assert.
+            AssignCommand(GetModule(), () => DelayCommand(0.2f, () =>
             {
                 if (IsLeashEvading(creature))
                     ApplyLeashEvadeMovementRate(creature);
-            });
+            }));
             ContinueLeashEvadeReturn(creature, homeLocation);
         }
 

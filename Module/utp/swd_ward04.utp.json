@@ -83,7 +83,7 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "[SWTOR] Wardrobe 4"
+      "0": "Cabinet, Display (Stocked)"
     }
   },
   "OnClick": {

@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     {
                         Ability.PlaySuccessfulImpactVisualEffect(activator, summonedBeast);
                         if (CombatRecorder.IsRecording)
-                            CombatRecorder.RecordResurrection(summonedBeast);
+                            CombatRecordDamage.RecordResurrection(summonedBeast);
                     }
                     Enmity.ModifyEnmityOnAll(activator, 500);
                     CombatPoint.AddReviveSupportCombatPoint(activator, activator, SkillType.BeastMastery);
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     {
                         Ability.PlaySuccessfulImpactVisualEffect(activator, summonedBeast);
                         if (CombatRecorder.IsRecording)
-                            CombatRecorder.RecordResurrection(summonedBeast);
+                            CombatRecordDamage.RecordResurrection(summonedBeast);
                     }
                     Enmity.ModifyEnmityOnAll(activator, 500);
                     CombatPoint.AddReviveSupportCombatPoint(activator, activator, SkillType.BeastMastery);
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     {
                         Ability.PlaySuccessfulImpactVisualEffect(activator, summonedBeast);
                         if (CombatRecorder.IsRecording)
-                            CombatRecorder.RecordResurrection(summonedBeast);
+                            CombatRecordDamage.RecordResurrection(summonedBeast);
                     }
                     Enmity.ModifyEnmityOnAll(activator, 500);
                     CombatPoint.AddReviveSupportCombatPoint(activator, activator, SkillType.BeastMastery);

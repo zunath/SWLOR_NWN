@@ -144,6 +144,19 @@ public class GameServicesAllocationTests
     }
 
     [Test]
+    public void The_lethal_hit_note_the_damage_call_makes_allocates_nothing_while_no_recording_runs()
+    {
+        // CombatDamageTakenService notes the hit points a lethal hit left only while a recording runs; the part itself looks
+        // for an open damage application first, which an idle recorder never has: one read of the accessor's slot and one
+        // interface call.
+        var instance = _host.Provider.GetRequiredService<ICombatRecordDamageService>();
+
+        Allocated(() => GameServices.CombatRecordDamage.KeepLethalHitPoints(1)).Should().Be(0);
+        Allocated(() => instance.KeepLethalHitPoints(1)).Should().Be(0);
+        GameServices.CombatRecordDamage.Should().BeSameAs(instance);
+    }
+
+    [Test]
     public void A_call_through_GameServices_allocates_what_the_call_on_the_instance_allocates()
     {
         var instance = _host.Provider.GetRequiredService<IServerTaskService>();

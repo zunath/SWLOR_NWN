@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly ICombatRecorderService _combatRecorder;
+        private readonly ICombatRecordDamageService _combatRecordDamage;
         private readonly IPvpCombatService _pvpCombat;
         private readonly IEnmityService _enmity;
 
@@ -39,6 +40,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatService stat,
             IStatusEffectService statusEffect,
             ICombatRecorderService combatRecorder,
+            ICombatRecordDamageService combatRecordDamage,
             IPvpCombatService pvpCombat,
             IEnmityService enmity)
         {
@@ -47,6 +49,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _stat = stat;
             _statusEffect = statusEffect;
             _combatRecorder = combatRecorder;
+            _combatRecordDamage = combatRecordDamage;
             _pvpCombat = pvpCombat;
             _enmity = enmity;
         }
@@ -385,7 +388,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (restoreToOneHP && currentHP <= 0)
             {
                 if (_combatRecorder.IsRecording)
-                    _combatRecorder.KeepLethalHitPoints(defender);
+                    _combatRecordDamage.KeepLethalHitPoints(defender);
                 SetCurrentHitPoints(defender, 1);
             }
 

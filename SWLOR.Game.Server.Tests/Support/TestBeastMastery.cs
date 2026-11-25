@@ -12,23 +12,24 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// The beast mastery instance with the calls into services that are not converted yet answered by the test. The seams are in partial files by the
-/// part whose code calls them (<c>TestBeastMastery.Events.cs</c>; <c>.Shared.cs</c> holds the seams several parts call: the perk read and the
-/// window), so a part that leaves <see cref="BeastMasteryService"/> takes its file with it. This file is the stay-part: the catalog, the XP
-/// and the stat application.
+/// The beast mastery instance with the calls into services that are not converted yet answered by the test. The seams of a part that has left
+/// <see cref="BeastMasteryService"/> are on that part's double; <c>TestBeastMastery.Shared.cs</c> holds the recording list and the perk read the
+/// parts share. This file is the stay-part: the catalog, the XP and the stat application.
 /// <para>
 /// <see cref="Beasts"/>, <see cref="Spawn"/>, <see cref="Events"/> and <see cref="Incubation"/> are the part accessors of the split (BM-1 to BM-4):
 /// a test calls a member on the accessor of the part that owns it, so the pull request that moves a part changes what the accessor returns and
-/// no test. <see cref="Spawn"/> and <see cref="Incubation"/> are the real <see cref="BeastSpawnService"/> and <see cref="BeastIncubationService"/>
-/// (<see cref="TestBeastSpawnService"/>, <see cref="TestBeastIncubationService"/>), built over this instance and its recording list.
+/// no test. <see cref="Spawn"/>, <see cref="Events"/> and <see cref="Incubation"/> are the real <see cref="BeastSpawnService"/>,
+/// <see cref="BeastEventService"/> and <see cref="BeastIncubationService"/> (<see cref="TestBeastSpawnService"/>,
+/// <see cref="TestBeastEventService"/>, <see cref="TestBeastIncubationService"/>), built over this instance and its recording list.
 /// </para>
 /// </summary>
 public sealed partial class TestBeastMastery : BeastMasteryService
 {
     public TestBeastMastery(IDBService db, IIncubationFieldNoteService notes, IPropertyService property)
-        : base(db, FacadeForwarder.For<ICompanionControlService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatusEffectApplicationService>(), FacadeForwarder.For<ICombatDamageCatalogService>())
+        : base(db, FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<ICombatDamageCatalogService>())
     {
         Spawn = new TestBeastSpawnService(this, db);
+        Events = new TestBeastEventService(this, db);
         Incubation = new TestBeastIncubationService(this, db, property, notes);
     }
 
@@ -39,7 +40,7 @@ public sealed partial class TestBeastMastery : BeastMasteryService
     public TestBeastSpawnService Spawn { get; }
 
     /// <summary>BM-3: the beast event handlers, the acquire handler and the stables menu.</summary>
-    public TestBeastMastery Events => this;
+    public TestBeastEventService Events { get; }
 
     /// <summary>BM-4: the incubator, mutation, eggs and DNA.</summary>
     public TestBeastIncubationService Incubation { get; }

@@ -215,7 +215,7 @@ asso_add_bef
   action      SWLOR.Game.Server.Domain.Social.PartyService.AssociateJoinParty
 
 asso_rem_bef
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.RemoveAssociate
+  action      SWLOR.Game.Server.Domain.Companions.BeastEventService.RemoveAssociate
   action      SWLOR.Game.Server.Domain.Companions.DroidService.RemoveAssociate
   action      SWLOR.Game.Server.Domain.Social.PartyService.AssociateLeaveParty
 
@@ -235,43 +235,43 @@ bart_start_bef
   action      SWLOR.Game.Server.Feature.SaveCharacters.SetBarteringFlag
 
 beast_attacked
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.BeastOnPhysicalAttacked
+  action      SWLOR.Game.Server.Domain.Companions.BeastEventService.BeastOnPhysicalAttacked
 
 beast_blocked
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.BeastOnBlocked
+  action      SWLOR.Game.Server.Domain.Companions.BeastEventService.BeastOnBlocked
 
 beast_convers
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.BeastOnConversation
+  action      SWLOR.Game.Server.Domain.Companions.BeastEventService.BeastOnConversation
 
 beast_damaged
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.BeastOnDamaged
+  action      SWLOR.Game.Server.Domain.Companions.BeastEventService.BeastOnDamaged
 
 beast_death
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.BeastOnDeath
+  action      SWLOR.Game.Server.Domain.Companions.BeastEventService.BeastOnDeath
 
 beast_disturbed
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.BeastOnDisturbed
+  action      SWLOR.Game.Server.Domain.Companions.BeastEventService.BeastOnDisturbed
 
 beast_hb
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.BeastOnHeartbeat
+  action      SWLOR.Game.Server.Domain.Companions.BeastEventService.BeastOnHeartbeat
 
 beast_rest
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.BeastOnRested
+  action      SWLOR.Game.Server.Domain.Companions.BeastEventService.BeastOnRested
 
 beast_roundend
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.BeastOnEndCombatRound
+  action      SWLOR.Game.Server.Domain.Companions.BeastEventService.BeastOnEndCombatRound
 
 beast_spawn
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.BeastOnSpawn
+  action      SWLOR.Game.Server.Domain.Companions.BeastEventService.BeastOnSpawn
 
 beast_spellcast
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.BeastOnSpellCastAt
+  action      SWLOR.Game.Server.Domain.Companions.BeastEventService.BeastOnSpellCastAt
 
 beast_term
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.OpenStablesMenu
+  action      SWLOR.Game.Server.Domain.Companions.BeastEventService.OpenStablesMenu
 
 beast_userdef
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.BeastOnUserDefined
+  action      SWLOR.Game.Server.Domain.Companions.BeastEventService.BeastOnUserDefined
 
 brdcast_aoo_bef
   action      SWLOR.Game.Server.Feature.DisableAttackOfOpportunity.OnAttackOfOpportunity
@@ -699,7 +699,7 @@ mappin_rem_bef
   action      SWLOR.Game.Server.Feature.PersistentMapPin.DeleteMapPin
 
 mod_acquire
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.OnAcquireItem
+  action      SWLOR.Game.Server.Domain.Companions.BeastEventService.OnAcquireItem
   action      SWLOR.Game.Server.Domain.Companions.DroidService.OnAcquireItem
   action      SWLOR.Game.Server.Domain.Social.ExtraHotbarsStatusService.RefreshOnAcquire
   action      SWLOR.Game.Server.Domain.Items.ItemService.EnsureAcquiredItemActivation
@@ -1124,7 +1124,7 @@ slice_terminal
 
 space_enter
   action      SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.ClearAurasOnSpaceEntry
-  action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.RemoveAssociate
+  action      SWLOR.Game.Server.Domain.Companions.BeastEventService.RemoveAssociate
   action      SWLOR.Game.Server.Domain.Companions.DroidService.RemoveAssociate
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.RefreshStatusDisplayOnSpaceTransition
 

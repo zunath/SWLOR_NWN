@@ -119,7 +119,7 @@
     },
     "Companions": {
       "services": [
-        "BeastMastery", "BeastSpawn", "BeastIncubation", "IncubationFieldNote", "Droid", "DroidEquipmentDiagnostics", "ProgFxCoat", "TintMap"
+        "BeastMastery", "BeastSpawn", "BeastEvent", "BeastIncubation", "IncubationFieldNote", "Droid", "DroidEquipmentDiagnostics", "ProgFxCoat", "TintMap"
       ],
       "featureFolders": [
         "BeastDefinition"

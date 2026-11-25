@@ -262,6 +262,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICompanionLookup, CompanionLookup>();
             services.AddSingleton<IBeastMasteryService, BeastMasteryService>();
             services.AddSingleton<IBeastSpawnService, BeastSpawnService>();
+            services.AddSingleton<IBeastEventService, BeastEventService>();
             services.AddSingleton<IBeastIncubationService, BeastIncubationService>();
             // The same instance, seen through the corpse reads the loot owns.
             services.AddSingleton<IBeastCorpseInfo>(provider => provider.GetRequiredService<IBeastMasteryService>());

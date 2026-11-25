@@ -33,12 +33,14 @@ internal static class CraftCalc
         ? null
         : Build(InstanceType);
 
-    // Every constructor argument is null except the skill service, whose experience tables the calculations read.
+    // Every constructor argument is null except the skill services, whose experience tables and XP formulas the calculations read.
     private static object Build(Type type) =>
         Activator.CreateInstance(type, type.GetConstructors()[0].GetParameters()
             .Select(parameter => parameter.ParameterType.Name == "ISkillService"
                 ? Build(ServerAssembly.GetType("SWLOR.Game.Server.Domain.Character.SkillService"))
-                : null)
+                : parameter.ParameterType.Name == "ISkillXPService"
+                    ? Build(ServerAssembly.GetType("SWLOR.Game.Server.Domain.Character.SkillXPService"))
+                    : null)
             .ToArray());
 
     private static readonly Dictionary<Type, object> Instances = InstanceTypes

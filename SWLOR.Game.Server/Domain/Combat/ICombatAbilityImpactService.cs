@@ -7,25 +7,11 @@ using SWLOR.Game.Server.Domain.Foundation;
 namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
-    /// The ability impact part of combat: the base damage bonuses of an ability impact, the riders of a successful ability
-    /// hit on its target, the Spear Disabler suppression riders, the status-applied stamina drain, and the effects of a
-    /// finished impact by the number of targets it hit.
+    /// The ability impact part of combat: the riders of a successful ability hit on its target, the Spear Disabler suppression
+    /// riders and the status-applied stamina drain.
     /// </summary>
     public interface ICombatAbilityImpactService
     {
-        int GetAbilityImpactBaseDamageBonus(
-            uint activator,
-            uint target,
-            AbilityDetail ability,
-            SkillType skillType);
-
-        int GetHighResourceAbilityDamageBonus(uint activator, AbilityDetail ability = null);
-
-        int GetCostlyAbilityDamageBonus(
-            uint activator,
-            AbilityDetail ability,
-            SkillType skillType);
-
         void ApplySuccessfulAbilityImpactRiders(
             uint activator,
             uint target,
@@ -63,10 +49,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             uint activator,
             uint target,
             StatusEffectCategory appliedCategories);
-
-        void ApplyAbilityImpactEffects(uint activator, AbilityImpactSummary summary);
-
-        void ApplyAreaHitHaste(uint activator, int impactedTargetCount);
 
         void ForgetImpactState(uint creature);
     }

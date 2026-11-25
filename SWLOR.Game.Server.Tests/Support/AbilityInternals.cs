@@ -30,7 +30,7 @@ public static class AbilityInternals
         var magnitude = new CombatAbilityMagnitudeService(impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>());
         var darkForce = new AbilityDarkForceService(impactState, null!, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatResourcesService>());
         var damageInput = new AbilityDamageInputService(impactState, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatRatingService>(), FacadeForwarder.For<ICombatActivityService>(),
-            FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(),
+            FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityDamageBonusService>(),
             FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatRepeatedTargetService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatDamageReflectionService>(), magnitude, null!);
         var damageDelivery = new AbilityDamageDeliveryService(null!, null!, darkForce, FacadeForwarder.For<ICombatFeedbackService>(),
             FacadeForwarder.For<ICombatRepeatedTargetService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatDamageReflectionService>(),
@@ -43,16 +43,16 @@ public static class AbilityInternals
         var impactVisual = new AbilityImpactVisualService(null!);
         var observers = Array.Empty<IAbilityImpactObserver>();
         var lifecycle = new AbilityImpactLifecycleService(impactState, null!, null!, damageDelivery, null!, FacadeForwarder.For<ICombatQueriesService>(),
-            FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatQueuedAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatResourcesService>(),
+            FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatQueuedAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitRidersService>(), FacadeForwarder.For<ICombatResourcesService>(),
             FacadeForwarder.For<ICombatCriticalHitEffectsService>());
         var hostileImpact = new AbilityHostileImpactService(impactState, observers, null!, null!, FacadeForwarder.For<ICombatResourcesService>(),
             FacadeForwarder.For<ICombatAbilityImpactService>(), damageDelivery, statusApplication, darkForce, impactVisual);
         var hitRoll = new AbilityHitRollService(observers, null!, damageInput, statusApplication, impactMessage, null!, null!,
             FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitService>());
         var targetImpact = new AbilityTargetImpactService(impactState, hitRoll, hostileImpact, darkForce, damageInput, damageStage,
-            FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatAbilityBonusService>());
+            FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatAbilityDamageBonusService>(), FacadeForwarder.For<ICombatAbilityBonusService>());
         return new(impactState, lifecycle, targetImpact, impactMessage, impactVisual, Geometry(), null!, null!,
-            FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatAbilityImpactService>());
+            FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatAbilityHitRidersService>());
     }
 
     /// <summary>A geometry part with no telegraph service, for a test of the shape tests that resolve no marker.</summary>

@@ -23,7 +23,7 @@ public sealed class TestAbilityTargetImpactService : AbilityTargetImpactService
         IAbilityDamageInputService damageInput,
         IAbilityDamageStageService damageStage)
         : base(impactState, hitRoll, hostileImpact, darkForce, damageInput, damageStage, FacadeForwarder.For<ICombatResourcesService>(),
-            FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatAbilityBonusService>())
+            FacadeForwarder.For<ICombatAbilityDamageBonusService>(), FacadeForwarder.For<ICombatAbilityBonusService>())
     {
         _bench = bench;
     }

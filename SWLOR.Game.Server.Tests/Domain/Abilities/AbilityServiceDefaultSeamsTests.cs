@@ -80,7 +80,7 @@ public class AbilityServiceDefaultSeamsTests
     private static AbilityDamageInputService DamageInputPart() =>
         new(FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatRatingService>(),
             FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatAbilityBonusService>(),
-            FacadeForwarder.For<ICombatAbilityImpactService>(),
+            FacadeForwarder.For<ICombatAbilityDamageBonusService>(),
             FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatRepeatedTargetService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatDamageReflectionService>(),
             FacadeForwarder.For<ICombatAbilityMagnitudeService>(), FacadeForwarder.For<IResistanceService>());
 
@@ -94,7 +94,7 @@ public class AbilityServiceDefaultSeamsTests
     private static AbilityImpactLifecycleService LifecyclePart() =>
         new(FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<IMeleeTechniqueService>(), FacadeForwarder.For<ICombatRecorderService>(),
             FacadeForwarder.For<IAbilityDamageDeliveryService>(), FacadeForwarder.For<IStatusEffectCombatEventService>(), FacadeForwarder.For<ICombatQueriesService>(),
-            FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatQueuedAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatResourcesService>(),
+            FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatQueuedAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitRidersService>(), FacadeForwarder.For<ICombatResourcesService>(),
             FacadeForwarder.For<ICombatCriticalHitEffectsService>());
 
     private static AbilityHitRollService HitRollPart() =>
@@ -106,7 +106,7 @@ public class AbilityServiceDefaultSeamsTests
     private static AbilityTargetImpactService TargetImpactPart() =>
         new(FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<IAbilityHitRollService>(), FacadeForwarder.For<IAbilityHostileImpactService>(),
             FacadeForwarder.For<IAbilityDarkForceService>(), FacadeForwarder.For<IAbilityDamageInputService>(), FacadeForwarder.For<IAbilityDamageStageService>(),
-            FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatAbilityBonusService>());
+            FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatAbilityDamageBonusService>(), FacadeForwarder.For<ICombatAbilityBonusService>());
 
     private static AbilityHostileImpactService HostileImpactPart() =>
         new(FacadeForwarder.For<IAbilityImpactState>(), Array.Empty<IAbilityImpactObserver>(), FacadeForwarder.For<ICombatPointService>(),

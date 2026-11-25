@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly ITelegraphService _telegraph;
         private readonly INamedAnimationService _namedAnimation;
         private readonly ICombatResourcesService _resources;
-        private readonly ICombatAbilityImpactService _abilityImpact;
+        private readonly ICombatAbilityHitRidersService _hitRiders;
 
         public AbilityService(
             IAbilityImpactState impactState,
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             ITelegraphService telegraph,
             INamedAnimationService namedAnimation,
             ICombatResourcesService resources,
-            ICombatAbilityImpactService abilityImpact)
+            ICombatAbilityHitRidersService hitRiders)
         {
             _impactState = impactState;
             _lifecycle = lifecycle;
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _telegraph = telegraph;
             _namedAnimation = namedAnimation;
             _resources = resources;
-            _abilityImpact = abilityImpact;
+            _hitRiders = hitRiders;
         }
 
         /// <summary>
@@ -924,7 +924,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                     animation));
         }
 
-        protected virtual void ApplyAbilityImpactEffects(uint activator, AbilityImpactSummary summary) => _abilityImpact.ApplyAbilityImpactEffects(activator, summary);
+        protected virtual void ApplyAbilityImpactEffects(uint activator, AbilityImpactSummary summary) => _hitRiders.ApplyAbilityImpactEffects(activator, summary);
 
         protected virtual void DeferAbilityStaminaCostContext(uint creature, AbilityDetail ability) => _resources.DeferAbilityStaminaCostContext(creature, ability);
 

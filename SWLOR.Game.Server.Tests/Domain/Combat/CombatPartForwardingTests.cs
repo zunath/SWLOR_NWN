@@ -31,6 +31,9 @@ public class CombatPartForwardingTests
         typeof(ICombatAbilityHitService),
         typeof(ICombatAbilityHitAdjustmentService),
         typeof(ICombatAbilityImpactService),
+        typeof(ICombatAbilityDamageBonusService),
+        typeof(ICombatAbilityHitRidersService),
+        typeof(ICombatAbilityAreaImpactService),
         typeof(ICombatAbilityOffenseEffectsService),
         typeof(ICombatAbilityWeaponActivationService),
         typeof(ICombatActivityService),
@@ -138,10 +141,10 @@ public class CombatPartForwardingTests
 
     // The members of the ability impact part that have default arguments, with the defaults they had as static members of
     // Combat, on the interface and the instance class alike.
-    [TestCase(typeof(ICombatAbilityImpactService), "GetHighResourceAbilityDamageBonus(ability=null)")]
+    [TestCase(typeof(ICombatAbilityDamageBonusService), "GetHighResourceAbilityDamageBonus(ability=null)")]
     [TestCase(typeof(ICombatAbilityImpactService), "ApplySuccessfulAbilityImpactRiders(allowsHitProcs=True, targetWasAttackingAlly=False)")]
     public void TheMovedImpactDefaultsKeepTheirValues(Type part, string expected) =>
-        AssertMovedDefaults(part, expected, 2, typeof(ICombatAbilityImpactService));
+        AssertMovedDefaults(part, expected, 2, typeof(ICombatAbilityImpactService), typeof(ICombatAbilityDamageBonusService));
 
     // The one member of the damage roll part that has a default argument, with the default it had as a static member of
     // Combat, on the interface and the instance class alike.

@@ -1071,27 +1071,29 @@ public class CombatFacadeAllocationTests
         try
         {
             var impact = InstallImpactPart(scopes);
+            var bonus = FacadeContainer.Current.Get<ICombatAbilityDamageBonusService>();
+            var riders = FacadeContainer.Current.Get<ICombatAbilityHitRidersService>();
             var sink = 0;
             var rifle = ImpactAbility(SkillType.Rifle, false);
             var summaries = new[] { SkillType.Throwing, SkillType.Saberstaff, SkillType.Spear, SkillType.Rifle }.Select(ImpactSummary).ToArray();
             var empty = new AbilityImpactSummary { SkillType = SkillType.Rifle };
             var reads = new List<(string Name, Action Part, Action Forwarder)>
             {
-                ("GetAbilityImpactBaseDamageBonus(null)", () => sink += impact.GetAbilityImpactBaseDamageBonus(Attacker, Defender, null!, SkillType.Rifle), () => sink += GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(Attacker, Defender, null!, SkillType.Rifle)),
-                ("GetHighResourceAbilityDamageBonus", () => sink += impact.GetHighResourceAbilityDamageBonus(Attacker, rifle), () => sink += GameServices.CombatAbilityImpact.GetHighResourceAbilityDamageBonus(Attacker, rifle)),
-                ("GetHighResourceAbilityDamageBonus()", () => sink += impact.GetHighResourceAbilityDamageBonus(Attacker), () => sink += GameServices.CombatAbilityImpact.GetHighResourceAbilityDamageBonus(Attacker)),
-                ("GetCostlyAbilityDamageBonus", () => sink += impact.GetCostlyAbilityDamageBonus(Attacker, rifle, SkillType.Rifle), () => sink += GameServices.CombatAbilityImpact.GetCostlyAbilityDamageBonus(Attacker, rifle, SkillType.Rifle)),
+                ("GetAbilityImpactBaseDamageBonus(null)", () => sink += bonus.GetAbilityImpactBaseDamageBonus(Attacker, Defender, null!, SkillType.Rifle), () => sink += GameServices.CombatAbilityDamageBonus.GetAbilityImpactBaseDamageBonus(Attacker, Defender, null!, SkillType.Rifle)),
+                ("GetHighResourceAbilityDamageBonus", () => sink += bonus.GetHighResourceAbilityDamageBonus(Attacker, rifle), () => sink += GameServices.CombatAbilityDamageBonus.GetHighResourceAbilityDamageBonus(Attacker, rifle)),
+                ("GetHighResourceAbilityDamageBonus()", () => sink += bonus.GetHighResourceAbilityDamageBonus(Attacker), () => sink += GameServices.CombatAbilityDamageBonus.GetHighResourceAbilityDamageBonus(Attacker)),
+                ("GetCostlyAbilityDamageBonus", () => sink += bonus.GetCostlyAbilityDamageBonus(Attacker, rifle, SkillType.Rifle), () => sink += GameServices.CombatAbilityDamageBonus.GetCostlyAbilityDamageBonus(Attacker, rifle, SkillType.Rifle)),
                 ("ApplyHostileAbilityPartyBuff", () => impact.ApplyHostileAbilityPartyBuff(Attacker, rifle, 10, false), () => GameServices.CombatAbilityImpact.ApplyHostileAbilityPartyBuff(Attacker, rifle, 10, false)),
                 ("ApplyHostileAbilityPartyBuff(status)", () => impact.ApplyHostileAbilityPartyBuff(Attacker, rifle, 0, true), () => GameServices.CombatAbilityImpact.ApplyHostileAbilityPartyBuff(Attacker, rifle, 0, true)),
                 ("ApplyHostileAbilityPartyBuff(miss)", () => impact.ApplyHostileAbilityPartyBuff(Attacker, rifle, 0, false), () => GameServices.CombatAbilityImpact.ApplyHostileAbilityPartyBuff(Attacker, rifle, 0, false)),
                 ("ApplySpearDisablerSuppressionRiders", () => impact.ApplySpearDisablerSuppressionRiders(Attacker, Defender), () => GameServices.CombatAbilityImpact.ApplySpearDisablerSuppressionRiders(Attacker, Defender)),
                 ("IsTargetAttackingAllyForStatusAppliedRiders", () => sink += impact.IsTargetAttackingAllyForStatusAppliedRiders(Attacker, Defender) ? 1 : 0, () => sink += GameServices.CombatAbilityImpact.IsTargetAttackingAllyForStatusAppliedRiders(Attacker, Defender) ? 1 : 0),
                 ("ApplyStatusAppliedTargetStaminaDrain", () => impact.ApplyStatusAppliedTargetStaminaDrain(Attacker, Defender, StatusEffectCategory.Debuff), () => GameServices.CombatAbilityImpact.ApplyStatusAppliedTargetStaminaDrain(Attacker, Defender, StatusEffectCategory.Debuff)),
-                ("ApplyAreaHitHaste", () => impact.ApplyAreaHitHaste(Attacker, 3), () => GameServices.CombatAbilityImpact.ApplyAreaHitHaste(Attacker, 3)),
-                ("ApplyAbilityImpactEffects(empty)", () => impact.ApplyAbilityImpactEffects(Attacker, empty), () => GameServices.CombatAbilityImpact.ApplyAbilityImpactEffects(Attacker, empty)),
+                ("ApplyAreaHitHaste", () => riders.ApplyAreaHitHaste(Attacker, 3), () => GameServices.CombatAbilityHitRiders.ApplyAreaHitHaste(Attacker, 3)),
+                ("ApplyAbilityImpactEffects(empty)", () => riders.ApplyAbilityImpactEffects(Attacker, empty), () => GameServices.CombatAbilityHitRiders.ApplyAbilityImpactEffects(Attacker, empty)),
             };
             foreach (var summary in summaries)
-                reads.Add(($"ApplyAbilityImpactEffects({summary.SkillType})", () => impact.ApplyAbilityImpactEffects(Attacker, summary), () => GameServices.CombatAbilityImpact.ApplyAbilityImpactEffects(Attacker, summary)));
+                reads.Add(($"ApplyAbilityImpactEffects({summary.SkillType})", () => riders.ApplyAbilityImpactEffects(Attacker, summary), () => GameServices.CombatAbilityHitRiders.ApplyAbilityImpactEffects(Attacker, summary)));
 
             foreach (var (name, part, forwarder) in reads)
             {
@@ -1118,12 +1120,14 @@ public class CombatFacadeAllocationTests
         try
         {
             var impact = InstallImpactPart(scopes);
+            var bonus = FacadeContainer.Current.Get<ICombatAbilityDamageBonusService>();
+            var riders = FacadeContainer.Current.Get<ICombatAbilityHitRidersService>();
             var sink = 0;
             var rifle = ImpactAbility(SkillType.Rifle, false);
             var reads = new (string Name, long Bytes, Action Part, Action Forwarder)[]
             {
                 ("IsAttackingAllyOf", 72, () => sink += impact.IsAttackingAllyOf(Attacker, Defender) ? 1 : 0, () => sink += GameServices.CombatAbilityImpact.IsAttackingAllyOf(Attacker, Defender) ? 1 : 0),
-                ("GetAbilityImpactBaseDamageBonus(Rifle)", 56, () => sink += impact.GetAbilityImpactBaseDamageBonus(Attacker, Defender, rifle, SkillType.Rifle), () => sink += GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(Attacker, Defender, rifle, SkillType.Rifle)),
+                ("GetAbilityImpactBaseDamageBonus(Rifle)", 56, () => sink += bonus.GetAbilityImpactBaseDamageBonus(Attacker, Defender, rifle, SkillType.Rifle), () => sink += GameServices.CombatAbilityDamageBonus.GetAbilityImpactBaseDamageBonus(Attacker, Defender, rifle, SkillType.Rifle)),
                 ("ForgetImpactState", 344, () => impact.ForgetImpactState(Defender), () => GameServices.CombatAbilityImpact.ForgetImpactState(Defender)),
             };
 
@@ -1157,6 +1161,8 @@ public class CombatFacadeAllocationTests
         try
         {
             var impact = InstallImpactPart(scopes);
+            var bonus = FacadeContainer.Current.Get<ICombatAbilityDamageBonusService>();
+            var riders = FacadeContainer.Current.Get<ICombatAbilityHitRidersService>();
             var sink = 0;
             var applied = new[] { typeof(DazedStatusEffect) };
             var none = Array.Empty<Type>();
@@ -1165,8 +1171,8 @@ public class CombatFacadeAllocationTests
             var lightsaber = ImpactAbility(SkillType.Lightsaber, false);
             var reads = new List<(string Name, Action Part, Action Forwarder)>
             {
-                ("GetAbilityImpactBaseDamageBonus(TwinBlade)", () => sink += impact.GetAbilityImpactBaseDamageBonus(Attacker, Defender, twinBlade, SkillType.TwinBlade), () => sink += GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(Attacker, Defender, twinBlade, SkillType.TwinBlade)),
-                ("GetAbilityImpactBaseDamageBonus(Lightsaber)", () => sink += impact.GetAbilityImpactBaseDamageBonus(Attacker, Defender, lightsaber, SkillType.Lightsaber), () => sink += GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(Attacker, Defender, lightsaber, SkillType.Lightsaber)),
+                ("GetAbilityImpactBaseDamageBonus(TwinBlade)", () => sink += bonus.GetAbilityImpactBaseDamageBonus(Attacker, Defender, twinBlade, SkillType.TwinBlade), () => sink += GameServices.CombatAbilityDamageBonus.GetAbilityImpactBaseDamageBonus(Attacker, Defender, twinBlade, SkillType.TwinBlade)),
+                ("GetAbilityImpactBaseDamageBonus(Lightsaber)", () => sink += bonus.GetAbilityImpactBaseDamageBonus(Attacker, Defender, lightsaber, SkillType.Lightsaber), () => sink += GameServices.CombatAbilityDamageBonus.GetAbilityImpactBaseDamageBonus(Attacker, Defender, lightsaber, SkillType.Lightsaber)),
                 ("ApplySuccessfulAbilityImpactRiders(no damage)",
                     () => impact.ApplySuccessfulAbilityImpactRiders(Attacker, Defender, rifle, SkillType.Rifle, CombatDamageType.Physical, 0, false, null!, none, false, false, StatusEffectCategory.None, false, true),
                     () => GameServices.CombatAbilityImpact.ApplySuccessfulAbilityImpactRiders(Attacker, Defender, rifle, SkillType.Rifle, CombatDamageType.Physical, 0, false, null!, none, false, false, StatusEffectCategory.None, false, true)),

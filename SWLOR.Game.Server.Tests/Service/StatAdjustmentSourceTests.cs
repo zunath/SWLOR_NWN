@@ -111,12 +111,12 @@ public class StatAdjustmentSourceTests
             }
         }
         for (var index = 0; index < 100; index++)
-            GameServices.CombatAbilityImpact.GetHighResourceAbilityDamageBonus(Creature);
+            GameServices.CombatAbilityDamageBonus.GetHighResourceAbilityDamageBonus(Creature);
 
         var before = GC.GetAllocatedBytesForCurrentThread();
         var adjustment = 0;
         for (var index = 0; index < 1000; index++)
-            adjustment += GameServices.CombatAbilityImpact.GetHighResourceAbilityDamageBonus(Creature);
+            adjustment += GameServices.CombatAbilityDamageBonus.GetHighResourceAbilityDamageBonus(Creature);
         var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
 
         adjustment.Should().Be(0);

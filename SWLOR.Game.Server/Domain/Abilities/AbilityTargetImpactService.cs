@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly IAbilityDamageInputService _damageInput;
         private readonly IAbilityDamageStageService _damageStage;
         private readonly ICombatResourcesService _resources;
-        private readonly ICombatAbilityImpactService _abilityImpact;
+        private readonly ICombatAbilityDamageBonusService _damageBonus;
         private readonly ICombatAbilityBonusService _abilityBonus;
 
         public AbilityTargetImpactService(
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             IAbilityDamageInputService damageInput,
             IAbilityDamageStageService damageStage,
             ICombatResourcesService resources,
-            ICombatAbilityImpactService abilityImpact,
+            ICombatAbilityDamageBonusService damageBonus,
             ICombatAbilityBonusService abilityBonus)
         {
             _impactState = impactState;
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _damageInput = damageInput;
             _damageStage = damageStage;
             _resources = resources;
-            _abilityImpact = abilityImpact;
+            _damageBonus = damageBonus;
             _abilityBonus = abilityBonus;
         }
 
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         protected virtual IDisposable BeginDamageDerivedHealing(uint creature, uint target) => _resources.BeginDamageDerivedHealing(creature, target);
 
-        protected virtual int GetAbilityImpactBaseDamageBonus(uint activator, uint target, AbilityDetail ability, SkillType skillType) => _abilityImpact.GetAbilityImpactBaseDamageBonus(activator, target, ability, skillType);
+        protected virtual int GetAbilityImpactBaseDamageBonus(uint activator, uint target, AbilityDetail ability, SkillType skillType) => _damageBonus.GetAbilityImpactBaseDamageBonus(activator, target, ability, skillType);
 
         protected virtual int GetAbilityStatusCategoryDamageBonus(uint creature, SkillType skillType, StatusEffectCategory appliedCategories) => _abilityBonus.GetAbilityStatusCategoryDamageBonus(creature, skillType, appliedCategories);
     }

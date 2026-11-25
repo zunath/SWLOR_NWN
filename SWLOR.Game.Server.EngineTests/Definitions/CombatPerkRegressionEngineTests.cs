@@ -580,7 +580,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var attack = AbilityCatalog.GetAbilityDetail(FeatType.ApexBite1);
                 for (var stack = 0; stack < 3; stack++)
                 {
-                    ctx.AssertEqual(75, GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(caster, target, attack, SkillType.BeastMastery),
+                    ctx.AssertEqual(75, GameServices.CombatAbilityDamageBonus.GetAbilityImpactBaseDamageBonus(caster, target, attack, SkillType.BeastMastery),
                         "Control-only casts preserve every First Strike stack without starting recharge");
                     CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
                     AbilityImpactLifecycle.BeginAbilityImpact(caster, attack);
@@ -591,7 +591,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
                     finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
                 }
-                ctx.AssertEqual(0, GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(caster, target, attack, SkillType.BeastMastery),
+                ctx.AssertEqual(0, GameServices.CombatAbilityDamageBonus.GetAbilityImpactBaseDamageBonus(caster, target, attack, SkillType.BeastMastery),
                     "Damaging attacks consume all three stacks and enter recharge normally");
             }
             finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); }
@@ -708,7 +708,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 TemporaryStatModifier.Add(caster, StatType.FirstHostileAbilityHitCooldownSeconds, 90, 120f);
                 var choke = AbilityCatalog.GetAbilityDetail(FeatType.ForceChoke1);
                 ctx.Assert(choke.DealsDeferredDamage, "Choke declares its damaging status effect");
-                ctx.AssertEqual(75, GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(caster, targets[0], choke, SkillType.Force),
+                ctx.AssertEqual(75, GameServices.CombatAbilityDamageBonus.GetAbilityImpactBaseDamageBonus(caster, targets[0], choke, SkillType.Force),
                     "First Strike is initially available for Choke");
                 AbilityImpactLifecycle.BeginAbilityImpact(caster, choke);
                 try
@@ -719,7 +719,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
                 ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage > 0,
                     "Choke applies the hostile-hit damage bonus despite having no immediate base damage");
-                ctx.AssertEqual(0, GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(caster, targets[0], choke, SkillType.Force),
+                ctx.AssertEqual(0, GameServices.CombatAbilityDamageBonus.GetAbilityImpactBaseDamageBonus(caster, targets[0], choke, SkillType.Force),
                     "Choke consumes the applied First Strike stack");
                 GameServices.CombatAbilityBonus.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Force, 75, 0, 120);
                 AbilityImpactLifecycle.BeginAbilityImpact(caster, choke);

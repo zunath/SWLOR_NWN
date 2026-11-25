@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly ICombatActivityService _combatActivity;
         private readonly ICombatQueriesService _queries;
         private readonly ICombatAbilityBonusService _abilityBonus;
-        private readonly ICombatAbilityImpactService _abilityImpact;
+        private readonly ICombatAbilityDamageBonusService _damageBonus;
         private readonly ICombatDamageModifiersService _damageModifiers;
         private readonly ICombatRepeatedTargetService _repeatedTarget;
         private readonly ICombatDamageTakenService _damageTaken;
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             ICombatActivityService combatActivity,
             ICombatQueriesService queries,
             ICombatAbilityBonusService abilityBonus,
-            ICombatAbilityImpactService abilityImpact,
+            ICombatAbilityDamageBonusService damageBonus,
             ICombatDamageModifiersService damageModifiers,
             ICombatRepeatedTargetService repeatedTarget,
             ICombatDamageTakenService damageTaken,
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _combatActivity = combatActivity;
             _queries = queries;
             _abilityBonus = abilityBonus;
-            _abilityImpact = abilityImpact;
+            _damageBonus = damageBonus;
             _damageModifiers = damageModifiers;
             _repeatedTarget = repeatedTarget;
             _damageTaken = damageTaken;
@@ -488,7 +488,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         protected virtual int GetAbilityDamageFlatAdjustment(uint creature, PerkType perkType, SkillType skillType) => _abilityBonus.GetAbilityDamageFlatAdjustment(creature, perkType, skillType);
 
-        protected virtual int GetCostlyAbilityDamageBonus(uint activator, AbilityDetail ability, SkillType skillType) => _abilityImpact.GetCostlyAbilityDamageBonus(activator, ability, skillType);
+        protected virtual int GetCostlyAbilityDamageBonus(uint activator, AbilityDetail ability, SkillType skillType) => _damageBonus.GetCostlyAbilityDamageBonus(activator, ability, skillType);
 
         protected virtual int GetSameTargetPressureWeaponAbilityDamageBonus(uint attacker, uint target, SkillType skillType) => _repeatedTarget.GetSameTargetPressureWeaponAbilityDamageBonus(attacker, target, skillType);
 

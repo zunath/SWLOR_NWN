@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly ICombatQueriesService _queries;
         private readonly ICombatAbilityBonusService _abilityBonus;
         private readonly ICombatQueuedAbilityBonusService _queuedAbilityBonus;
-        private readonly ICombatAbilityImpactService _abilityImpact;
+        private readonly ICombatAbilityHitRidersService _hitRiders;
         private readonly ICombatResourcesService _resources;
         private readonly ICombatCriticalHitEffectsService _criticalHitEffects;
 
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             ICombatQueriesService queries,
             ICombatAbilityBonusService abilityBonus,
             ICombatQueuedAbilityBonusService queuedAbilityBonus,
-            ICombatAbilityImpactService abilityImpact,
+            ICombatAbilityHitRidersService hitRiders,
             ICombatResourcesService resources,
             ICombatCriticalHitEffectsService criticalHitEffects)
         {
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _queries = queries;
             _abilityBonus = abilityBonus;
             _queuedAbilityBonus = queuedAbilityBonus;
-            _abilityImpact = abilityImpact;
+            _hitRiders = hitRiders;
             _resources = resources;
             _criticalHitEffects = criticalHitEffects;
         }
@@ -444,7 +444,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         protected virtual CombatDamageType GetCombatImpactWeaponDamageType(uint activator, SkillType skillType, bool usesQueuedNaturalWeapon) =>
             _queries.GetCombatImpactWeaponDamageType(activator, skillType, usesQueuedNaturalWeapon);
 
-        protected virtual void ApplyAbilityImpactEffects(uint activator, AbilityImpactSummary summary) => _abilityImpact.ApplyAbilityImpactEffects(activator, summary);
+        protected virtual void ApplyAbilityImpactEffects(uint activator, AbilityImpactSummary summary) => _hitRiders.ApplyAbilityImpactEffects(activator, summary);
 
         protected virtual int RefundCriticalRangedAbilityStaminaCost(uint creature, AbilityDetail ability) => _resources.RefundCriticalRangedAbilityStaminaCost(creature, ability);
 

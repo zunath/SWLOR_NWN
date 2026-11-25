@@ -59,7 +59,7 @@ Largest 15 of 1,081 (all in `StaticLookups.txt`):
 ## 2. Large types
 
 - 10 types over 1,000 lines, 16,282 lines in all.
-- Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 2, fluent builder 1, owner exception 1).
+- Exempt and over the limit: 191 (generated code 174, content data 8, attribute-row enum 4, migration 2, owner exception 2, fluent builder 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
 Largest 10 of 10 (all in `LargeTypes.txt`):
@@ -312,6 +312,7 @@ Owner decision 1 (2026-11-14) exempts these from the size and services measures 
 | data catalog member | member `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CombatStyleGuideTopics.Create` | typeSize, methodSize | Lists the combat style guide topics (title, summary, style blocks, related topics) and nothing else; cutting the alphabetical list into numbered pieces would make it harder to read (P5-16g). |
 | fluent builder | type `SWLOR.Game.Server.Domain.Abilities.AbilityBuilder` | typeSize | Many short builder methods; its methods are still measured. |
 | owner exception | type `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel` | typeSize | owner decision 2026-11-18: real moves exhausted; the rest is declared bindings (P5-16e PR 3). Its services and methods are still measured. |
+| owner exception | type `SWLOR.Game.Server.Composition.GameServices` | typeSize | owner-delegated decision 2026-11-25: the static service lookup, one documented property per service and nothing else, across its partial files; P5-14 deletes the type, and the static lookup measure tracks every use until then. Trimming its summaries to stay under the limit would only hide what each property is. Its services and methods are still measured. |
 
 Owner decision 3 (2026-11-14) keeps these static entry points static:
 

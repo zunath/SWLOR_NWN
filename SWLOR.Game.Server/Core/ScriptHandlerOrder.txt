@@ -57,7 +57,7 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Domain.Character.CreatureStatService.RegisterStatEffectListener
   action      SWLOR.Game.Server.Domain.Character.StatusEffectCatalogService.CacheData
   action      SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.RegisterStatusEffectListener
-  action      SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService.RegisterStatusEffectListener
+  action      SWLOR.Game.Server.Domain.Combat.CombatAbilityStatusAppliedService.RegisterStatusEffectListener
   action      SWLOR.Game.Server.Domain.Quests.CapstoneProofService.RegisterStatusEffectListener
   action      SWLOR.Game.Server.Domain.Character.StatusEffectSessionService.RegisterLoggedOutSource
   action      SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations

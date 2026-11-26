@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Combat;
 /// The ability impact parts of <c>Combat</c> over one set of scripted leaves: the base damage bonuses, the riders of a successful hit,
 /// the area impacts and the finished impact effects. Stats come from tables, every other part and service is scripted and writes what it
 /// was asked into one log (so a test sees the order of the riders, the damage, the healing and the status calls), the clock is held
-/// still and the shared <c>Random</c> is seeded where a chance is rolled. The three parts and the stay-part are built for real over the
+/// still and the shared <c>Random</c> is seeded where a chance is rolled. The five parts and the stay-part are built for real over the
 /// same leaves.
 /// </summary>
 public abstract class CombatAbilityImpactTestBase
@@ -44,6 +44,8 @@ public abstract class CombatAbilityImpactTestBase
     protected CombatAbilityDamageBonusService _damageBonus = null!;
     protected CombatAbilityHitRidersService _hitRiders = null!;
     protected CombatAbilityAreaImpactService _areaImpactPart = null!;
+    protected CombatAbilityWeaponRidersService _weaponRiders = null!;
+    protected CombatAbilityStatusAppliedService _statusApplied = null!;
     protected DateTime _now;
     protected Dictionary<(uint, StatType), int> _stats = null!;
     protected Dictionary<(uint, StatType), int> _permanent = null!;
@@ -287,6 +289,7 @@ public abstract class CombatAbilityImpactTestBase
                 ? _sourceStatuses.Contains(((uint)args[0]!, (Type)args[1]!, source))
                 : _statuses.Contains(((uint)args[0]!, (Type)args[1]!)))
             .On(nameof(IStatusEffectService.HasStatusEffectCategory), args => _categories.Contains(((uint)args[0]!, (StatusEffectCategory)args[1]!)))
+            .On(nameof(IStatusEffectService.RegisterAppliedListener), args => Log($"Listener {args[0]!.GetType().Name}"))
             .On(nameof(IStatusEffectService.RemoveStatusEffect), args => Log($"Remove {args[0]} {((Type)args[1]!).Name} {args[2]} {args[3]}"))
             .On(nameof(IStatusEffectService.RemoveFirstBeneficialCombatStatusEffect), args =>
             {
@@ -367,8 +370,9 @@ public abstract class CombatAbilityImpactTestBase
         _damageBonus = new CombatAbilityDamageBonusService(queries, resources, activity, guardedHitEffects, stat, statusEffect, temporary);
         _hitRiders = new CombatAbilityHitRidersService(resources, timing, damageTakenEffects, stat, statusApplication, temporary);
         _areaImpactPart = new CombatAbilityAreaImpactService(queries, resources, triggeredDamage, stat, statusEffect, statusApplication, statusDuration, temporary, ability);
-        return new CombatAbilityImpactService(queries, resources, timing, activity, _hitRiders, _areaImpactPart, autoAttackEffects, defeatedEnemyEffects, stat, statusEffect,
-            statusApplication, temporary, ability, enmity, _partyProxy, recorder, pairedRangedTraits);
+        _weaponRiders = new CombatAbilityWeaponRidersService(queries, resources, defeatedEnemyEffects, stat, statusEffect, statusApplication, temporary, enmity);
+        _statusApplied = new CombatAbilityStatusAppliedService(resources, timing, stat, statusEffect, statusApplication, temporary, ability, recorder);
+        return new CombatAbilityImpactService(activity, _hitRiders, _areaImpactPart, autoAttackEffects, stat, enmity, _partyProxy, pairedRangedTraits, _weaponRiders, _statusApplied);
     }
 
     [TearDown]

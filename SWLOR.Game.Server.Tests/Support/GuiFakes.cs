@@ -84,8 +84,8 @@ public class FakeViewModel : IGuiViewModel, IGuiRefreshable<FakeRefreshEvent>
 /// <summary>A character sheet that is viewing a chosen target and counts the fake refreshes.</summary>
 public sealed class FakeCharacterSheet : CharacterSheetViewModel, IGuiRefreshable<FakeRefreshEvent>
 {
-    public FakeCharacterSheet(IBeastMasteryService beastMastery, CharacterSheetAttributesTab characterSheetAttributesTab, CharacterSheetWeaponRatings characterSheetWeaponRatings, IDBService db, IGuiService gui, IPerkService perk, ISkillService skill, CharacterSheetTableTabs characterSheetTableTabs)
-        : base(beastMastery, characterSheetAttributesTab, characterSheetWeaponRatings, db, gui, perk, skill, characterSheetTableTabs)
+    public FakeCharacterSheet(IBeastMasteryService beastMastery, CharacterSheetAttributesTab characterSheetAttributesTab, CharacterSheetWeaponRatings characterSheetWeaponRatings, IDBService db, IGuiService gui, IPerkService perk, ISkillService skill, ISkillRankService skillRank, CharacterSheetTableTabs characterSheetTableTabs)
+        : base(beastMastery, characterSheetAttributesTab, characterSheetWeaponRatings, db, gui, perk, skill, skillRank, characterSheetTableTabs)
     {
     }
 

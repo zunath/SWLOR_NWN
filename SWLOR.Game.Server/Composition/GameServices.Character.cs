@@ -70,6 +70,9 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The skill catalog and rank rules (the static facade <c>Skill</c> until it was removed). Its constants are on <see cref="SkillService"/>.</summary>
         public static ISkillService Skill => FacadeAccessor.Resolve<ISkillService>();
 
+        /// <summary>The skill rank rules: the cap total, rank limits and ceilings, decay and the XP a skill can still take.</summary>
+        public static ISkillRankService SkillRank => FacadeAccessor.Resolve<ISkillRankService>();
+
         /// <summary>Skill XP awards and the formulas that size them: <c>GiveSkillXP</c>, the delta, practice and Espionage XP.</summary>
         public static ISkillXPService SkillXP => FacadeAccessor.Resolve<ISkillXPService>();
 

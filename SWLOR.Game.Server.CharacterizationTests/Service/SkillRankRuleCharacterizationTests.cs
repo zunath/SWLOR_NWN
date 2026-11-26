@@ -120,7 +120,7 @@ public class SkillRankRuleCharacterizationTests : FacadeFixture
             {
                 var state = State(0, 0, false, limit);
                 var details = new SkillAttribute(SkillCategoryType.Combat, "Test", maxRank, true, "Test.", true, false, false);
-                table.Add(limit, maxRank, Skill.GetRankLimit(state, details), Skill.GetRankCeiling(state, details));
+                table.Add(limit, maxRank, SkillRank.GetRankLimit(state, details), SkillRank.GetRankCeiling(state, details));
             }
         }
 
@@ -155,7 +155,7 @@ public class SkillRankRuleCharacterizationTests : FacadeFixture
             foreach (var (skill, state) in skills)
                 player.Skills[skill] = state;
 
-            table.Add(name, Skill.GetTotalContributingSkillRanks(player));
+            table.Add(name, SkillRank.GetTotalContributingSkillRanks(player));
         }
 
         Snapshot.Verify("Skill", "GetTotalContributingSkillRanks", table);
@@ -188,9 +188,9 @@ public class SkillRankRuleCharacterizationTests : FacadeFixture
                 scenario.Target.Rank,
                 scenario.Target.XP,
                 scenario.Target.RankLimit,
-                Skill.GetTotalContributingSkillRanks(player),
-                Skill.IsBlockedBySkillCap(player, scenario.Skill),
-                Skill.GetMaxDistributableXP(player, scenario.Skill));
+                SkillRank.GetTotalContributingSkillRanks(player),
+                SkillRank.IsBlockedBySkillCap(player, scenario.Skill),
+                SkillRank.GetMaxDistributableXP(player, scenario.Skill));
         }
 
         Snapshot.Verify("Skill", "SkillCapRules", table);
@@ -200,7 +200,7 @@ public class SkillRankRuleCharacterizationTests : FacadeFixture
     public void GetMaxDistributableXP_ForInvalidSkill()
     {
         using var cache = new SkillCacheScope(Facades);
-        Assert.That(Skill.GetMaxDistributableXP(new Player(), SkillType.Invalid), Is.EqualTo(0));
+        Assert.That(SkillRank.GetMaxDistributableXP(new Player(), SkillType.Invalid), Is.EqualTo(0));
     }
 
     [Test]

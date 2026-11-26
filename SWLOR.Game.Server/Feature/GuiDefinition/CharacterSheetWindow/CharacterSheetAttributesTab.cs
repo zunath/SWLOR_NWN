@@ -18,15 +18,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow
         private IDBService DB { get; }
         private IPlayerNameService PlayerName { get; }
         private ISkillService Skill { get; }
+        private ISkillRankService SkillRank { get; }
         private IStatService Stat { get; }
 
-        public CharacterSheetAttributesTab(IBeastMasteryService beastMastery, ICreatureStatService creatureStat, IDBService db, IPlayerNameService playerName, ISkillService skill, IStatService stat)
+        public CharacterSheetAttributesTab(IBeastMasteryService beastMastery, ICreatureStatService creatureStat, IDBService db, IPlayerNameService playerName, ISkillService skill, ISkillRankService skillRank, IStatService stat)
         {
             BeastMastery = beastMastery;
             CreatureStat = creatureStat;
             DB = db;
             PlayerName = playerName;
             Skill = skill;
+            SkillRank = skillRank;
             Stat = stat;
         }
 
@@ -198,7 +200,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.CharacterSheetWindow
                 var playerId = GetObjectUUID(host.Target);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                host.SkillRanks = $"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {SkillService.SkillCap}";
+                host.SkillRanks = $"{SkillRank.GetTotalContributingSkillRanks(dbPlayer)} / {SkillService.SkillCap}";
                 host.SP = $"{Skill.GetTotalSkillPoints(dbPlayer)} / {SkillService.TotalSkillPointCap} ({dbPlayer.UnallocatedSP})";
                 host.APOrLevel = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
             }

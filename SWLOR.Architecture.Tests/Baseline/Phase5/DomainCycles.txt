@@ -12,7 +12,6 @@
 # SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
 # SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
 
-Abilities <-> Character | 2
 Abilities <-> Combat | 2
 Abilities <-> Platform | 6
 Abilities content <-> Character content | 3

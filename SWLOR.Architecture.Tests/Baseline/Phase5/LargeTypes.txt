@@ -11,7 +11,6 @@
 # SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
 
 SWLOR.Game.Server.Domain.Abilities.MimicryService | 1307
-SWLOR.Game.Server.Domain.Character.PerkService | 1148
 SWLOR.Game.Server.Domain.Combat.EnmityService | 1243
 SWLOR.Game.Server.Domain.Companions.DroidService | 1194
 SWLOR.Game.Server.Domain.Items.ItemService | 1605

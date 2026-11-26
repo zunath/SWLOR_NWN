@@ -23,11 +23,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 /// </summary>
 public sealed class SkillXPAwardDecayEngineTests
 {
-    public SkillXPAwardDecayEngineTests(ISkillService skill, ISkillXPService skillXP, IPerkService perk, IAbilityCatalogService abilityCatalog, IDBService db)
+    public SkillXPAwardDecayEngineTests(ISkillService skill, ISkillXPService skillXP, IPerkService perk, IPerkGrantedFeatService perkGrantedFeat, IAbilityCatalogService abilityCatalog, IDBService db)
     {
         Skill = skill;
         SkillXP = skillXP;
         Perk = perk;
+        PerkGrantedFeat = perkGrantedFeat;
         AbilityCatalog = abilityCatalog;
         DB = db;
     }
@@ -35,6 +36,7 @@ public sealed class SkillXPAwardDecayEngineTests
     private ISkillService Skill { get; }
     private ISkillXPService SkillXP { get; }
     private IPerkService Perk { get; }
+    private IPerkGrantedFeatService PerkGrantedFeat { get; }
     private IAbilityCatalogService AbilityCatalog { get; }
     private IDBService DB { get; }
 

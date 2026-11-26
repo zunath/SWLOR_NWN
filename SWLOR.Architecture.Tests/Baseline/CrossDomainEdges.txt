@@ -61,8 +61,7 @@ Domain/Administration -> Domain/Items | 5
 # Administration -> UI (1 edge)
 Domain/Administration -> Domain/UI | 8
 
-# Character -> Abilities (6 edges)
-Domain/Character -> Domain/Abilities | 4
+# Character -> Abilities (5 edges)
 Domain/Character -> Feature/AbilityDefinition | 2
 Feature/PerkDefinition -> Domain/Abilities | 3
 Feature/PerkDefinition -> Feature/AbilityDefinition | 2

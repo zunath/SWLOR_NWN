@@ -294,8 +294,8 @@
     "Call": "SendMessageToPC(creature, BuildWornOffMessage(creature))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs",
-    "Line": 882,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatAbilityStatusAppliedService.cs",
+    "Line": 326,
     "Member": "ApplyStatusAppliedTargetStaminaDrain",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                ColorToken.Combat($\"-{staminaDrained} STM\"),\n                target,\n                false)"

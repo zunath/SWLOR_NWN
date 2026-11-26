@@ -135,7 +135,7 @@ public class LeadershipCombatUpgradeTests
         var breakMorale = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Leadership" / "BreakMoraleAbilityDefinition.cs").FullName);
         (breakMorale.Split("LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus").Length - 1).Should().Be(2);
         var affectedTargetGuard = breakMorale.IndexOf("if (affected.Count <= 0)", StringComparison.Ordinal);
-        var markTargetRider = breakMorale.IndexOf("GameServices.CombatAbilityImpact.ApplyHostileAbilityPartyBuff(activator, AbilityImpactState.GetActiveAbilityImpactSummary(activator)?.Ability, 0, true);", StringComparison.Ordinal);
+        var markTargetRider = breakMorale.IndexOf("GameServices.CombatAbilityStatusApplied.ApplyHostileAbilityPartyBuff(activator, AbilityImpactState.GetActiveAbilityImpactSummary(activator)?.Ability, 0, true);", StringComparison.Ordinal);
         affectedTargetGuard.Should().BeGreaterThanOrEqualTo(0);
         markTargetRider.Should().BeGreaterThan(affectedTargetGuard,
             "Break Morale must grant Mark Target once after at least one direct status application succeeds");

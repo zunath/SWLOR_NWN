@@ -110,7 +110,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         getStatBonus.Should().Contain("AggregateStatAdjustment(stat, bonus, statBonus.Calculate(creature))");
 
         var combat = CombatSource.Read();
-        var statusApplied = ExtractMethod(combat, "private static void ApplyStatusAppliedEffects(");
+        var statusApplied = ExtractMethod(combat, "public static void ApplyStatusAppliedEffects(");
         statusApplied.Should().Contain("GrantStatusAppliedNextAttackDamageBonus");
 
         var ability = AbilitySource.Read();
@@ -168,7 +168,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         abilitySource.Should().Contain("_statusEffect.GetStatusEffect(target, type, activator)?.Categories");
 
         var combatSource = CombatSource.Read();
-        var applyStatusRider = ExtractMethod(combatSource, "private static void ApplyStatusAppliedEffects(");
+        var applyStatusRider = ExtractMethod(combatSource, "public static void ApplyStatusAppliedEffects(");
         applyStatusRider.Should().Contain("(appliedStatusCategories & requiredCategory) == 0");
         applyStatusRider.Should().NotContain("AbilityAppliedAnyStatusCategory",
             "declared-but-rejected status types must not satisfy a successful-application rider");

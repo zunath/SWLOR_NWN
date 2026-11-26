@@ -49,6 +49,12 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The area abilities and the damage riders of an ability hit, a part of combat.</summary>
         public static ICombatAbilityAreaImpactService CombatAbilityAreaImpact => FacadeAccessor.Resolve<ICombatAbilityAreaImpactService>();
 
+        /// <summary>The weapon family riders of a successful ability hit, a part of combat.</summary>
+        public static ICombatAbilityWeaponRidersService CombatAbilityWeaponRiders => FacadeAccessor.Resolve<ICombatAbilityWeaponRidersService>();
+
+        /// <summary>The status-applied riders, the target status effects and the hostile debuff party buff of an ability hit, a part of combat.</summary>
+        public static ICombatAbilityStatusAppliedService CombatAbilityStatusApplied => FacadeAccessor.Resolve<ICombatAbilityStatusAppliedService>();
+
         /// <summary>How Force affinity and combat readiness scale an ability's magnitude, a part of combat.</summary>
         public static ICombatAbilityMagnitudeService CombatAbilityMagnitude => FacadeAccessor.Resolve<ICombatAbilityMagnitudeService>();
 

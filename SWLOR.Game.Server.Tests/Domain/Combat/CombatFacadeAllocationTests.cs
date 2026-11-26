@@ -1073,6 +1073,8 @@ public class CombatFacadeAllocationTests
             var impact = InstallImpactPart(scopes);
             var bonus = FacadeContainer.Current.Get<ICombatAbilityDamageBonusService>();
             var riders = FacadeContainer.Current.Get<ICombatAbilityHitRidersService>();
+            var weaponRiders = FacadeContainer.Current.Get<ICombatAbilityWeaponRidersService>();
+            var statusApplied = FacadeContainer.Current.Get<ICombatAbilityStatusAppliedService>();
             var sink = 0;
             var rifle = ImpactAbility(SkillType.Rifle, false);
             var summaries = new[] { SkillType.Throwing, SkillType.Saberstaff, SkillType.Spear, SkillType.Rifle }.Select(ImpactSummary).ToArray();
@@ -1083,12 +1085,12 @@ public class CombatFacadeAllocationTests
                 ("GetHighResourceAbilityDamageBonus", () => sink += bonus.GetHighResourceAbilityDamageBonus(Attacker, rifle), () => sink += GameServices.CombatAbilityDamageBonus.GetHighResourceAbilityDamageBonus(Attacker, rifle)),
                 ("GetHighResourceAbilityDamageBonus()", () => sink += bonus.GetHighResourceAbilityDamageBonus(Attacker), () => sink += GameServices.CombatAbilityDamageBonus.GetHighResourceAbilityDamageBonus(Attacker)),
                 ("GetCostlyAbilityDamageBonus", () => sink += bonus.GetCostlyAbilityDamageBonus(Attacker, rifle, SkillType.Rifle), () => sink += GameServices.CombatAbilityDamageBonus.GetCostlyAbilityDamageBonus(Attacker, rifle, SkillType.Rifle)),
-                ("ApplyHostileAbilityPartyBuff", () => impact.ApplyHostileAbilityPartyBuff(Attacker, rifle, 10, false), () => GameServices.CombatAbilityImpact.ApplyHostileAbilityPartyBuff(Attacker, rifle, 10, false)),
-                ("ApplyHostileAbilityPartyBuff(status)", () => impact.ApplyHostileAbilityPartyBuff(Attacker, rifle, 0, true), () => GameServices.CombatAbilityImpact.ApplyHostileAbilityPartyBuff(Attacker, rifle, 0, true)),
-                ("ApplyHostileAbilityPartyBuff(miss)", () => impact.ApplyHostileAbilityPartyBuff(Attacker, rifle, 0, false), () => GameServices.CombatAbilityImpact.ApplyHostileAbilityPartyBuff(Attacker, rifle, 0, false)),
-                ("ApplySpearDisablerSuppressionRiders", () => impact.ApplySpearDisablerSuppressionRiders(Attacker, Defender), () => GameServices.CombatAbilityImpact.ApplySpearDisablerSuppressionRiders(Attacker, Defender)),
+                ("ApplyHostileAbilityPartyBuff", () => statusApplied.ApplyHostileAbilityPartyBuff(Attacker, rifle, 10, false), () => GameServices.CombatAbilityStatusApplied.ApplyHostileAbilityPartyBuff(Attacker, rifle, 10, false)),
+                ("ApplyHostileAbilityPartyBuff(status)", () => statusApplied.ApplyHostileAbilityPartyBuff(Attacker, rifle, 0, true), () => GameServices.CombatAbilityStatusApplied.ApplyHostileAbilityPartyBuff(Attacker, rifle, 0, true)),
+                ("ApplyHostileAbilityPartyBuff(miss)", () => statusApplied.ApplyHostileAbilityPartyBuff(Attacker, rifle, 0, false), () => GameServices.CombatAbilityStatusApplied.ApplyHostileAbilityPartyBuff(Attacker, rifle, 0, false)),
+                ("ApplySpearDisablerSuppressionRiders", () => weaponRiders.ApplySpearDisablerSuppressionRiders(Attacker, Defender), () => GameServices.CombatAbilityWeaponRiders.ApplySpearDisablerSuppressionRiders(Attacker, Defender)),
                 ("IsTargetAttackingAllyForStatusAppliedRiders", () => sink += impact.IsTargetAttackingAllyForStatusAppliedRiders(Attacker, Defender) ? 1 : 0, () => sink += GameServices.CombatAbilityImpact.IsTargetAttackingAllyForStatusAppliedRiders(Attacker, Defender) ? 1 : 0),
-                ("ApplyStatusAppliedTargetStaminaDrain", () => impact.ApplyStatusAppliedTargetStaminaDrain(Attacker, Defender, StatusEffectCategory.Debuff), () => GameServices.CombatAbilityImpact.ApplyStatusAppliedTargetStaminaDrain(Attacker, Defender, StatusEffectCategory.Debuff)),
+                ("ApplyStatusAppliedTargetStaminaDrain", () => statusApplied.ApplyStatusAppliedTargetStaminaDrain(Attacker, Defender, StatusEffectCategory.Debuff), () => GameServices.CombatAbilityStatusApplied.ApplyStatusAppliedTargetStaminaDrain(Attacker, Defender, StatusEffectCategory.Debuff)),
                 ("ApplyAreaHitHaste", () => riders.ApplyAreaHitHaste(Attacker, 3), () => GameServices.CombatAbilityHitRiders.ApplyAreaHitHaste(Attacker, 3)),
                 ("ApplyAbilityImpactEffects(empty)", () => riders.ApplyAbilityImpactEffects(Attacker, empty), () => GameServices.CombatAbilityHitRiders.ApplyAbilityImpactEffects(Attacker, empty)),
             };

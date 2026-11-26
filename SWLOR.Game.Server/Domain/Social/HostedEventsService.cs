@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly IEnmityService _enmity;
         private readonly ISpaceModeQuery _space;
         private readonly IBackgroundJobService _backgroundJob;
-        private readonly IDeathService _death;
+        private readonly IDeathRespawnService _death;
         private readonly IDMPreferenceService _dmPreference;
 
         public HostedEventsService(
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Domain.Social
             IEnmityService enmity,
             ISpaceModeQuery space,
             IBackgroundJobService backgroundJob,
-            IDeathService death,
+            IDeathRespawnService death,
             IDMPreferenceService dmPreference)
         {
             _db = db;

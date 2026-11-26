@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// auto-attack cycle critical tracker, and the side and back attack adjustments to damage, hit chance, critical rate
     /// and evasion.
     /// </summary>
-    public interface ICombatRateModifiersService
+    public interface ICombatRateModifiersService : ICombatCreatureStateOwner
     {
         int GetAutoAttackCriticalRateAdjustment(
             uint attacker,

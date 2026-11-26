@@ -216,5 +216,16 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             _autoAttackCycleCriticalCounts.Remove(creature);
         }
+
+        /// <inheritdoc/>
+        public void ForgetCreatureState(uint creature, CombatForgetPhase phase)
+        {
+            switch (phase)
+            {
+                case CombatForgetPhase.DamageModifiers:
+                    ForgetAutoAttackCycleCriticalRateCount(creature);
+                    break;
+            }
+        }
     }
 }

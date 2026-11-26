@@ -256,7 +256,7 @@ public class CombatCriticalHitEffectsServiceTests : CombatHitEffectsTestBase
         _now = _now.AddSeconds(6);
         Critical();
         Lines("HitStamina").Should().BeEmpty("the window lapsed, so the sequence started again");
-        _service.ForgetHitEffectState(Attacker);
+        ForgetHitEffects(Attacker);
         Critical();
         Critical();
         Lines("HitStamina").Should().BeEmpty("forgetting the attacker cleared its count");

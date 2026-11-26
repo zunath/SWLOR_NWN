@@ -292,5 +292,16 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             _hostileAbilitySequenceStates.Remove(creature);
         }
+
+        /// <inheritdoc/>
+        public void ForgetCreatureState(uint creature, CombatForgetPhase phase)
+        {
+            switch (phase)
+            {
+                case CombatForgetPhase.Activation:
+                    ForgetActivationState(creature);
+                    break;
+            }
+        }
     }
 }

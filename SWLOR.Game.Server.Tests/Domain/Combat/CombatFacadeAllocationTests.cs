@@ -1125,13 +1125,19 @@ public class CombatFacadeAllocationTests
             var impact = InstallImpactPart(scopes);
             var bonus = FacadeContainer.Current.Get<ICombatAbilityDamageBonusService>();
             var riders = FacadeContainer.Current.Get<ICombatAbilityHitRidersService>();
+            var areaImpact = FacadeContainer.Current.Get<ICombatAbilityAreaImpactService>();
+            static void ForgetImpactState(ICombatCreatureStateOwner first, ICombatCreatureStateOwner second)
+            {
+                first.ForgetCreatureState(Defender, CombatForgetPhase.AbilityImpact);
+                second.ForgetCreatureState(Defender, CombatForgetPhase.AbilityImpact);
+            }
             var sink = 0;
             var rifle = ImpactAbility(SkillType.Rifle, false);
             var reads = new (string Name, long Bytes, Action Part, Action Forwarder)[]
             {
                 ("IsAttackingAllyOf", 72, () => sink += impact.IsAttackingAllyOf(Attacker, Defender) ? 1 : 0, () => sink += GameServices.CombatAbilityImpact.IsAttackingAllyOf(Attacker, Defender) ? 1 : 0),
                 ("GetAbilityImpactBaseDamageBonus(Rifle)", 56, () => sink += bonus.GetAbilityImpactBaseDamageBonus(Attacker, Defender, rifle, SkillType.Rifle), () => sink += GameServices.CombatAbilityDamageBonus.GetAbilityImpactBaseDamageBonus(Attacker, Defender, rifle, SkillType.Rifle)),
-                ("ForgetImpactState", 368, () => impact.ForgetImpactState(Defender), () => GameServices.CombatAbilityImpact.ForgetImpactState(Defender)),
+                ("ForgetImpactState", 368, () => ForgetImpactState(riders, areaImpact), () => ForgetImpactState(GameServices.CombatAbilityHitRiders, GameServices.CombatAbilityAreaImpact)),
             };
 
             foreach (var (name, bytes, part, forwarder) in reads)

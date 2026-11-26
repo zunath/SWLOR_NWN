@@ -68,6 +68,7 @@ public class CombatPartForwardingTests
         typeof(IEnmityService),
         typeof(IEnmityChangeService),
         typeof(IEnmityAttackService),
+        typeof(IDeathRespawnService),
     };
 
     // The methods of a part; a property (the activity part's shared table) is checked by its own test below.

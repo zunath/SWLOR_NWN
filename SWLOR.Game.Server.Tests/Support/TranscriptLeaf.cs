@@ -32,6 +32,12 @@ public class TranscriptLeaf : DispatchProxy
     /// </summary>
     public Func<MethodInfo, object?[], (bool Handled, object? Value)>? Fallback { get; set; }
 
+    /// <summary>
+    /// Describes a call as the line to write instead of the default one: null leaves the default, an empty string writes nothing.
+    /// Receives the label, the member name and the arguments.
+    /// </summary>
+    public Func<string, string, object?[], string?>? Describe { get; set; }
+
     /// <summary>Answers calls to <paramref name="member"/> with the result of <paramref name="answer"/>.</summary>
     public TranscriptLeaf Script(string member, Func<object?[], object?> answer)
     {
@@ -50,7 +56,13 @@ public class TranscriptLeaf : DispatchProxy
     {
         var arguments = args ?? Array.Empty<object?>();
         var name = targetMethod!.Name;
-        if (!_silent.Contains(name))
+        var described = Describe?.Invoke(Label, name, arguments);
+        if (described != null)
+        {
+            if (described.Length > 0)
+                Lines.Add(described);
+        }
+        else if (!_silent.Contains(name))
             Lines.Add($"{Label}.{name}({string.Join(", ", arguments.Select(Format))})");
 
         if (_answers.TryGetValue(name, out var answer))

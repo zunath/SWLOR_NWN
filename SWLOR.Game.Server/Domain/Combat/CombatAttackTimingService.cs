@@ -891,5 +891,16 @@ namespace SWLOR.Game.Server.Domain.Combat
             _attackSwingDebts.Remove(creature);
             _attackSwingDebtsWithoutLimitedReduction.Remove(creature);
         }
+
+        /// <inheritdoc/>
+        public void ForgetCreatureState(uint creature, CombatForgetPhase phase)
+        {
+            switch (phase)
+            {
+                case CombatForgetPhase.AttackTiming:
+                    ForgetAttackTimingState(creature);
+                    break;
+            }
+        }
     }
 }

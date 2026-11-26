@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// Attack timing for combat: swing delays, the attacks each swing resolves and the debt carried between swings, and
     /// the one-shot no-delay, critical-rate and next-ability buffs.
     /// </summary>
-    public interface ICombatAttackTimingService
+    public interface ICombatAttackTimingService : ICombatCreatureStateOwner
     {
         /// <summary>
         /// Consumes the armed next-ability delay buff and combines it with active limited Haste,

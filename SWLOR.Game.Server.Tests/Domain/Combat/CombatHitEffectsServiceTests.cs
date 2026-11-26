@@ -319,9 +319,9 @@ public class CombatHitEffectsServiceTests : CombatHitEffectsTestBase
         Table("_criticalHitSequenceStates").Count.Should().Be(1);
         Table("_sourceStatusAutoAttackCycleCounts").Count.Should().Be(2);
 
-        _service.ForgetHitEffectState(Defender);
+        ForgetHitEffects(Defender);
         Table("_sourceStatusAutoAttackCycleCounts").Count.Should().Be(1, "the record naming the defender as the target goes");
-        _service.ForgetHitEffectState(Attacker);
+        ForgetHitEffects(Attacker);
         Table("_autoAttackCycleCounts").Count.Should().Be(0);
         Table("_meleeAutoAttackCycleCounts").Count.Should().Be(0);
         Table("_criticalHitSequenceStates").Count.Should().Be(0);

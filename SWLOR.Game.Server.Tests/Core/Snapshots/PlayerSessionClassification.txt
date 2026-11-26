@@ -22,7 +22,7 @@ mod_enter (59)
               The TLK override stays in the engine.
   LoginOnly   SWLOR.Game.Server.Domain.Social.CommunicationService.ApplyShoutChannelName
               The TLK override stays in the engine.
-  LoginOnly   SWLOR.Game.Server.Domain.Combat.DeathService.InitializeRespawnPoint
+  LoginOnly   SWLOR.Game.Server.Domain.Combat.DeathRespawnService.InitializeRespawnPoint
               Writes a missing respawn point to Redis; the login already did.
   LoginOnly   SWLOR.Game.Server.Domain.Character.DisguiseService.ApplyActiveDisguiseOnEnter
               The disguise's portrait, soundset and description stay in the engine.

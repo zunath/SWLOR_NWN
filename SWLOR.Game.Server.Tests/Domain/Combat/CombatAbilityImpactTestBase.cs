@@ -47,6 +47,13 @@ public abstract class CombatAbilityImpactTestBase
     protected CombatAbilityWeaponRidersService _weaponRiders = null!;
     protected CombatAbilityStatusAppliedService _statusApplied = null!;
     protected DateTime _now;
+    /// <summary>Forgets a creature the way the cleanup does in the ability impact step: the hit riders part, then the area impact part.</summary>
+    protected void ForgetImpactState(uint creature)
+    {
+        _hitRiders.ForgetCreatureState(creature, CombatForgetPhase.AbilityImpact);
+        _areaImpactPart.ForgetCreatureState(creature, CombatForgetPhase.AbilityImpact);
+    }
+
     protected Dictionary<(uint, StatType), int> _stats = null!;
     protected Dictionary<(uint, StatType), int> _permanent = null!;
     protected Dictionary<(uint, StatType), IReadOnlyList<StatAdjustmentSource>> _sources = null!;

@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 
@@ -5,53 +8,41 @@ namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// What is left of <c>Combat</c> once its parts are split out: the death, exit and six-second handlers, the cleanup that
-    /// forgets a creature's combat state in every part in a fixed order, and the refresh of the stat-driven trackers.
-    /// It holds no state; every table it clears belongs to a part.
+    /// walks the <see cref="CombatForgetPhase"/> steps over every <see cref="ICombatCreatureStateOwner"/> to forget a creature's
+    /// combat state, and the refresh of the stat-driven trackers. It holds no state; every table it clears belongs to a part.
     /// </summary>
     public class CombatService : ICombatService
     {
-        private readonly ICombatResourcesService _resources;
+        private readonly ICombatCreatureStateOwner[] _stateOwners;
         private readonly ICombatSuppressionService _suppression;
         private readonly ICombatActivityService _combatActivity;
-        private readonly ICombatAttackTimingService _attackTiming;
         private readonly ICombatRateModifiersService _rateModifiers;
         private readonly ICombatRepeatedTargetService _repeatedTarget;
-        private readonly ICombatHitEffectsService _hitEffects;
         private readonly ICombatDefeatedEnemyEffectsService _defeatedEnemyEffects;
-        private readonly ICombatDefenseMemoryService _defenseMemory;
-        private readonly ICombatAbilityOffenseEffectsService _abilityOffense;
-        private readonly ICombatAbilityImpactService _abilityImpact;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
 
         public CombatService(
-            ICombatResourcesService resources,
+            IEnumerable<ICombatCreatureStateOwner> stateOwners,
             ICombatSuppressionService suppression,
             ICombatActivityService combatActivity,
-            ICombatAttackTimingService attackTiming,
             ICombatRateModifiersService rateModifiers,
             ICombatRepeatedTargetService repeatedTarget,
-            ICombatHitEffectsService hitEffects,
             ICombatDefeatedEnemyEffectsService defeatedEnemyEffects,
-            ICombatDefenseMemoryService defenseMemory,
-            ICombatAbilityOffenseEffectsService abilityOffense,
-            ICombatAbilityImpactService abilityImpact,
             IStatService stat,
             IStatusEffectService statusEffect,
             ITemporaryStatModifierService temporaryStatModifier)
         {
-            _resources = resources;
+            _stateOwners = stateOwners.ToArray();
+            if (_stateOwners.Length == 0)
+                throw new InvalidOperationException("No combat creature state owner is registered with the combat service.");
+
             _suppression = suppression;
             _combatActivity = combatActivity;
-            _attackTiming = attackTiming;
             _rateModifiers = rateModifiers;
             _repeatedTarget = repeatedTarget;
-            _hitEffects = hitEffects;
             _defeatedEnemyEffects = defeatedEnemyEffects;
-            _defenseMemory = defenseMemory;
-            _abilityOffense = abilityOffense;
-            _abilityImpact = abilityImpact;
             _stat = stat;
             _statusEffect = statusEffect;
             _temporaryStatModifier = temporaryStatModifier;
@@ -86,17 +77,14 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private void RemoveStatTriggerCooldowns(uint creature)
         {
-            _resources.ForgetResourceTriggerState(creature);
-            _combatActivity.ForgetActivityState(creature);
-            _defenseMemory.ForgetDefenseMemory(creature);
-            _suppression.ForgetSuppressionState(creature);
-            _abilityOffense.ForgetActivationState(creature);
-            _hitEffects.ForgetHitEffectState(creature);
-            _abilityImpact.ForgetImpactState(creature);
-            _combatActivity.ForgetOpeningActivityState(creature);
-            _resources.ForgetAbilityStaminaCostState(creature);
-            _attackTiming.ForgetAttackTimingState(creature);
-            _repeatedTarget.ForgetDamageModifierState(creature);
+            for (var phase = CombatForgetPhase.ResourceTriggers; phase <= CombatForgetPhase.DamageModifiers; phase++)
+            {
+                foreach (var owner in _stateOwners)
+                {
+                    owner.ForgetCreatureState(creature, phase);
+                }
+            }
+
             _temporaryStatModifier.Clear(creature);
         }
 

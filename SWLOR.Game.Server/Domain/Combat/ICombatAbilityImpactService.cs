@@ -40,7 +40,5 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// enmity table has it attacking.
         /// </summary>
         bool IsAttackingAllyOf(uint attacker, uint creature);
-
-        void ForgetImpactState(uint creature);
     }
 }

@@ -761,5 +761,19 @@ namespace SWLOR.Game.Server.Domain.Combat
             _firstHostileAbilityHitCounts.Remove(creature);
             _stealthOpeningWindows.Remove(creature);
         }
+
+        /// <inheritdoc/>
+        public void ForgetCreatureState(uint creature, CombatForgetPhase phase)
+        {
+            switch (phase)
+            {
+                case CombatForgetPhase.Activity:
+                    ForgetActivityState(creature);
+                    break;
+                case CombatForgetPhase.OpeningActivity:
+                    ForgetOpeningActivityState(creature);
+                    break;
+            }
+        }
     }
 }

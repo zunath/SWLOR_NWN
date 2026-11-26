@@ -198,11 +198,5 @@ namespace SWLOR.Game.Server.Domain.Combat
                    attackTarget != creature &&
                    _party.IsInParty(creature, attackTarget);
         }
-
-        public void ForgetImpactState(uint creature)
-        {
-            _hitRiders.ForgetSameTargetHitState(creature);
-            _areaImpact.ForgetAreaAbilityTargetHitSequences(creature);
-        }
     }
 }

@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// Suppression stacks for combat: applying them, the Containment Net statuses they drive and the Overwatch window
     /// that a suppressed creature's ability use opens.
     /// </summary>
-    public interface ICombatSuppressionService
+    public interface ICombatSuppressionService : ICombatCreatureStateOwner
     {
         void ApplyAutoAttackSuppressionStack(
             uint attacker,

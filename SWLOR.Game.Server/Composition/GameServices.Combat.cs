@@ -168,8 +168,11 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The Suppression stacks, a part of combat.</summary>
         public static ICombatSuppressionService CombatSuppression => FacadeAccessor.Resolve<ICombatSuppressionService>();
 
-        /// <summary>Player death, respawn and the respawn point (the facade <c>Service.Death</c> until it was removed).</summary>
+        /// <summary>Player dying, death and respawn (the facade <c>Service.Death</c> until it was removed).</summary>
         public static IDeathService Death => FacadeAccessor.Resolve<IDeathService>();
+
+        /// <summary>The respawn point, the respawn location, the death penalties and the death audit lines, a part of death.</summary>
+        public static IDeathRespawnService DeathRespawn => FacadeAccessor.Resolve<IDeathRespawnService>();
 
         /// <summary>The enmity tables and the rules that feed them (the facade <c>Service.Enmity</c> until it was removed).</summary>
         public static IEnmityService Enmity => FacadeAccessor.Resolve<IEnmityService>();

@@ -189,7 +189,7 @@ public abstract class CombatModifierTestBase
         _modifiers = new TemporaryStatModifierService(FacadeForwarder.For<IGuiService>());
 
         _rate = new CombatRateModifiersService(queries, stat, _statusEffect, _statusApplication, _modifiers, feedback);
-        _repeated = new CombatRepeatedTargetService(stat, _statusEffect, _statusApplication, _rate);
+        _repeated = new CombatRepeatedTargetService(stat, _statusEffect, _statusApplication);
         _service = new TestDamageModifiers(queries, resources, stat, _statusEffect, _modifiers, ability, feedback, _rate, _repeated);
     }
 

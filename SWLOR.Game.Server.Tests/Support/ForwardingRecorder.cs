@@ -22,6 +22,12 @@ public class ForwardingRecorder : DispatchProxy
 
     public Func<string, bool> Records { get; set; } = _ => true;
 
+    /// <summary>
+    /// Describes a call as the line to write instead of the default one: null leaves the default, an empty string writes nothing.
+    /// Receives the label, the member name and the arguments.
+    /// </summary>
+    public Func<string, string, object?[], string?>? Describe { get; set; }
+
     /// <summary>The real instance behind a decorated service (or the service itself when it was not decorated).</summary>
     public static object Unwrap(object service) => service is ForwardingRecorder recorder ? recorder.Target : service;
 
@@ -29,7 +35,8 @@ public class ForwardingRecorder : DispatchProxy
     /// Replaces the registration of <typeparamref name="T"/> with a decorator over a real instance built from the same
     /// implementation type, so every holder in the container receives the decorator.
     /// </summary>
-    public static void Decorate<T>(IServiceCollection services, string label, List<string> lines, Func<object?, string> format, Func<string, bool> records)
+    public static void Decorate<T>(IServiceCollection services, string label, List<string> lines, Func<object?, string> format, Func<string, bool> records,
+        Func<string, string, object?[], string?>? describe = null)
         where T : class
     {
         var descriptor = services.Last(d => d.ServiceType == typeof(T));
@@ -44,6 +51,7 @@ public class ForwardingRecorder : DispatchProxy
             recorder.Lines = lines;
             recorder.Format = format;
             recorder.Records = records;
+            recorder.Describe = describe;
             return proxy;
         }));
     }
@@ -51,7 +59,13 @@ public class ForwardingRecorder : DispatchProxy
     protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
     {
         var arguments = args ?? Array.Empty<object?>();
-        if (Records(targetMethod!.Name))
+        var described = Describe?.Invoke(Label, targetMethod!.Name, arguments);
+        if (described != null)
+        {
+            if (described.Length > 0)
+                Lines.Add(described);
+        }
+        else if (Records(targetMethod!.Name))
             Lines.Add($"{Label}.{targetMethod.Name}({string.Join(", ", arguments.Select(Format))})");
 
         try

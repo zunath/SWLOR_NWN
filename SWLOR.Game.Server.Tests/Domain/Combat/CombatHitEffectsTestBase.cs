@@ -299,7 +299,7 @@ public abstract class CombatHitEffectsTestBase
         _triggered = new TestTriggeredDamage(_log, () => _taken, modifiers, _dealt, stat, statusCombat, ability, recorder, resistance);
         _critical = new CombatCriticalHitEffectsService(queries, resources, timing, abilityHit, stat, statusEffect, statusApplication,
             statusDuration, temporary, ability);
-        var service = new TestHitEffects(queries, suppression, activity, repeatedTarget, stat, recorder, _dealt, _triggered, _critical);
+        var service = new TestHitEffects(queries, suppression, activity, repeatedTarget, stat, recorder, _dealt, _triggered);
         _autoAttack = new CombatAutoAttackEffectsService(queries, resources, activity, stat, statusEffect, statusApplication, statusDuration,
             temporary, service);
         _defeated = new CombatDefeatedEnemyEffectsService(queries, resources, activity, stat, statusEffect, statusApplication, temporary,
@@ -358,6 +358,13 @@ public abstract class CombatHitEffectsTestBase
         var rolls = Enumerable.Range(0, count).Select(_ => Random.D100(1)).ToArray();
         Random.SetSeed(seed);
         return rolls;
+    }
+
+    /// <summary>Forgets a creature the way the cleanup does in the hit effects step: the critical hit part, then the hit effects part.</summary>
+    protected void ForgetHitEffects(uint creature)
+    {
+        _critical.ForgetCreatureState(creature, CombatForgetPhase.HitEffects);
+        _service.ForgetCreatureState(creature, CombatForgetPhase.HitEffects);
     }
 
     protected void RunDelayed()

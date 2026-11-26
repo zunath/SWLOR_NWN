@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// Combat activity records: when a creature last attacked, used a hostile ability, took or dealt damage and entered
     /// combat, and the First Strike stacks, stealth opening window and idle-readiness state those records drive.
     /// </summary>
-    public interface ICombatActivityService
+    public interface ICombatActivityService : ICombatCreatureStateOwner
     {
         /// <summary>
         /// The last time each attacker damaged each defender, keyed (attacker, defender): the instance's own table, which

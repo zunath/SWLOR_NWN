@@ -130,7 +130,11 @@ public class CombatAbilityTranscriptTests
             bench.Step("spear disabler suppression" + tag, () => weaponRiders.ApplySpearDisablerSuppressionRiders(Attacker, Defender));
             bench.Step("is the target attacking an ally" + tag, () => impact.IsTargetAttackingAllyForStatusAppliedRiders(Attacker, Defender));
             bench.Step("hostile ability party buff" + tag, () => statusApplied.ApplyHostileAbilityPartyBuff(Attacker, Ability(SkillType.Force), 30, true));
-            bench.Step("forget the attacker" + tag, () => impact.ForgetImpactState(Attacker));
+            bench.Step("forget the attacker" + tag, () =>
+            {
+                riders.ForgetCreatureState(Attacker, CombatForgetPhase.AbilityImpact);
+                bench.Get<ICombatAbilityAreaImpactService>().ForgetCreatureState(Attacker, CombatForgetPhase.AbilityImpact);
+            });
         }
 
         // The notices the status effect service sends to what registered at boot.

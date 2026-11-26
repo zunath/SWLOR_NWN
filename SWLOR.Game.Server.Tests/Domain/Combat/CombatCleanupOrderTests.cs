@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Combat;
 /// recorder and the refresh publisher recording. The transcript lists the tables before and after, and in order every call the
 /// forgets cause: the overwatch status removal of the suppression forget (it runs once per source that held a pending use),
 /// the refresh notice of the temporary stat modifier clear, the second activity and resources forgets, and the final
-/// <c>TemporaryStatModifier.Clear</c>. The planned cleanup phase list must produce the same transcript. Regenerate with
+/// <c>TemporaryStatModifier.Clear</c>. The owner list walked in phases produces the same transcript. Regenerate with
 /// <c>SWLOR_UPDATE_SNAPSHOTS=1</c> only for a deliberate change.
 /// </summary>
 [TestFixture]
@@ -32,22 +32,26 @@ public class CombatCleanupOrderTests
     [Test]
     public void TheCleanupForgetsEveryPartInTheCapturedOrder()
     {
-        // The ten real parts the cleanup forgets are decorated: a forget (or the temporary modifier clear) is written to the transcript,
+        // The twelve real owners and the temporary stat modifier service are decorated: a step of the cleanup (or the temporary modifier clear) is written to the transcript,
         // in the order CombatService makes them, and then runs on the real part.
         using var bench = new CombatTranscriptBench(Leaves, (services, host) =>
         {
             var lines = host.Lines;
             Func<object?, string> format = host.Format;
             Func<string, bool> forgets = member => member.StartsWith("Forget", StringComparison.Ordinal) || member == "Clear";
-            ForwardingRecorder.Decorate<ICombatResourcesService>(services, "Resources", lines, format, forgets);
-            ForwardingRecorder.Decorate<ICombatActivityService>(services, "Activity", lines, format, forgets);
-            ForwardingRecorder.Decorate<ICombatDefenseMemoryService>(services, "DefenseMemory", lines, format, forgets);
-            ForwardingRecorder.Decorate<ICombatSuppressionService>(services, "Suppression", lines, format, forgets);
-            ForwardingRecorder.Decorate<ICombatAbilityOffenseEffectsService>(services, "OffenseEffects", lines, format, forgets);
-            ForwardingRecorder.Decorate<ICombatHitEffectsService>(services, "HitEffects", lines, format, forgets);
-            ForwardingRecorder.Decorate<ICombatAbilityImpactService>(services, "Impact", lines, format, forgets);
-            ForwardingRecorder.Decorate<ICombatAttackTimingService>(services, "AttackTiming", lines, format, forgets);
-            ForwardingRecorder.Decorate<ICombatRepeatedTargetService>(services, "RepeatedTarget", lines, format, forgets);
+            string? Describe(string label, string member, object?[] args) => CombatForgetSteps.Describe(label, member, args, format);
+            ForwardingRecorder.Decorate<ICombatResourcesService>(services, "Resources", lines, format, forgets, Describe);
+            ForwardingRecorder.Decorate<ICombatActivityService>(services, "Activity", lines, format, forgets, Describe);
+            ForwardingRecorder.Decorate<ICombatDefenseMemoryService>(services, "DefenseMemory", lines, format, forgets, Describe);
+            ForwardingRecorder.Decorate<ICombatSuppressionService>(services, "Suppression", lines, format, forgets, Describe);
+            ForwardingRecorder.Decorate<ICombatAbilityOffenseEffectsService>(services, "OffenseEffects", lines, format, forgets, Describe);
+            ForwardingRecorder.Decorate<ICombatCriticalHitEffectsService>(services, "CriticalHitEffects", lines, format, forgets, Describe);
+            ForwardingRecorder.Decorate<ICombatHitEffectsService>(services, "HitEffects", lines, format, forgets, Describe);
+            ForwardingRecorder.Decorate<ICombatAbilityHitRidersService>(services, "Impact", lines, format, forgets, Describe);
+            ForwardingRecorder.Decorate<ICombatAbilityAreaImpactService>(services, "AreaImpact", lines, format, forgets, Describe);
+            ForwardingRecorder.Decorate<ICombatAttackTimingService>(services, "AttackTiming", lines, format, forgets, Describe);
+            ForwardingRecorder.Decorate<ICombatRateModifiersService>(services, "RateModifiers", lines, format, forgets, Describe);
+            ForwardingRecorder.Decorate<ICombatRepeatedTargetService>(services, "RepeatedTarget", lines, format, forgets, Describe);
             ForwardingRecorder.Decorate<ITemporaryStatModifierService>(services, "TemporaryStatModifier", lines, format, forgets);
         });
         var combat = (CombatService)bench.Get<ICombatService>();

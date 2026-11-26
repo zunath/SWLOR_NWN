@@ -434,5 +434,16 @@ namespace SWLOR.Game.Server.Domain.Combat
                 _areaAbilityTargetHitSequences.Remove(key);
             }
         }
+
+        /// <inheritdoc/>
+        public void ForgetCreatureState(uint creature, CombatForgetPhase phase)
+        {
+            switch (phase)
+            {
+                case CombatForgetPhase.AbilityImpact:
+                    ForgetAreaAbilityTargetHitSequences(creature);
+                    break;
+            }
+        }
     }
 }

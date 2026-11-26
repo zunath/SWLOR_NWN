@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// The effects an ability hit has at hit time (costly ability rewards, the near-target status of a ranged hit, the same-target hit
     /// count reward, the next auto-attack with no delay) and the effects of a finished impact by the number of targets it hit.
     /// </summary>
-    public interface ICombatAbilityHitRidersService
+    public interface ICombatAbilityHitRidersService : ICombatCreatureStateOwner
     {
         void ApplyCostlyAbilityHitEffects(
             uint activator,

@@ -15,15 +15,16 @@ internal sealed partial class TestDeath : DeathService
         INamedAnimationService animation,
         IMessagingService messaging,
         IPlayerNameService names,
-        ICityUpgradeLookup property,
-        IAreaLookup areas)
-        : base(db, animation, messaging, names, property, areas, FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICombatRecordDamageService>(),
-            Array.Empty<ICreatureRevivedListener>(), FacadeForwarder.For<ICombatDamageTakenService>())
+        TestDeathRespawn respawn)
+        : base(db, animation, messaging, names, FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICombatRecordDamageService>(),
+            Array.Empty<ICreatureRevivedListener>(), FacadeForwarder.For<ICombatDamageTakenService>(), respawn)
     {
+        _respawn = respawn;
     }
 
     public List<string> Calls { get; } = new();
-    public List<(LogGroup Group, string Details)> Logs { get; } = new();
+    private readonly TestDeathRespawn _respawn;
+    public List<(LogGroup Group, string Details)> Logs => _respawn.Logs;
     public List<TestWaiver> Waivers { get; } = new();
     public bool PreventFatal { get; set; }
     public bool Recording { get; set; }
@@ -65,5 +66,4 @@ internal sealed partial class TestDeath : DeathService
     protected override void ApplyStatusEffect(uint source, uint creature, Type statusEffectClass, float durationSeconds) =>
         Calls.Add($"ApplyStatusEffect:{source}:{creature}:{statusEffectClass.Name}:{durationSeconds}");
 
-    protected override void WriteLog(LogGroup group, string details) => Logs.Add((group, details));
 }

@@ -35,7 +35,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatRecorderService _combatRecorder;
         private readonly ICombatDealtEffectsService _dealtEffects;
         private readonly ICombatTriggeredDamageService _triggeredDamage;
-        private readonly ICombatCriticalHitEffectsService _criticalHitEffects;
 
         public CombatHitEffectsService(
             ICombatQueriesService queries,
@@ -45,8 +44,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatService stat,
             ICombatRecorderService combatRecorder,
             ICombatDealtEffectsService dealtEffects,
-            ICombatTriggeredDamageService triggeredDamage,
-            ICombatCriticalHitEffectsService criticalHitEffects)
+            ICombatTriggeredDamageService triggeredDamage)
         {
             _queries = queries;
             _suppression = suppression;
@@ -56,7 +54,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             _combatRecorder = combatRecorder;
             _dealtEffects = dealtEffects;
             _triggeredDamage = triggeredDamage;
-            _criticalHitEffects = criticalHitEffects;
         }
 
         /// <summary>
@@ -296,13 +293,23 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         public void ForgetHitEffectState(uint creature)
         {
-            _criticalHitEffects.ForgetCriticalHitSequenceState(creature);
             _autoAttackCycleCounts.Remove(creature);
             foreach (var key in _sourceStatusAutoAttackCycleCounts.Keys.Where(x => x.Item1 == creature || x.Item2 == creature).ToList())
             {
                 _sourceStatusAutoAttackCycleCounts.Remove(key);
             }
             _meleeAutoAttackCycleCounts.Remove(creature);
+        }
+
+        /// <inheritdoc/>
+        public void ForgetCreatureState(uint creature, CombatForgetPhase phase)
+        {
+            switch (phase)
+            {
+                case CombatForgetPhase.HitEffects:
+                    ForgetHitEffectState(creature);
+                    break;
+            }
         }
     }
 }

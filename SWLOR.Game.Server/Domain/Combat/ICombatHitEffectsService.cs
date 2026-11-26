@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// hit is <see cref="ICombatCriticalHitEffectsService"/>'s, a kill is <see cref="ICombatDefeatedEnemyEffectsService"/>'s, and triggered
     /// damage is <see cref="ICombatTriggeredDamageService"/>'s.
     /// </summary>
-    public interface ICombatHitEffectsService
+    public interface ICombatHitEffectsService : ICombatCreatureStateOwner
     {
         /// <summary>
         /// Advances the auto-attack cycle counter for cycle perks with no radius (Follow-Through) and,

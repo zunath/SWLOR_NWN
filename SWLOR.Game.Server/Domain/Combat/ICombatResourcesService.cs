@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// sets off (part 7 of the stat split; until then members of <c>IStatService</c>). The riders that restored FP or
     /// stamina grant are <c>IResourceRestoredEffectsService</c>'s (part 8).
     /// </summary>
-    public interface ICombatResourcesService
+    public interface ICombatResourcesService : ICombatCreatureStateOwner
     {
         IDisposable BeginDamageDerivedHealing(uint creature, uint target);
 

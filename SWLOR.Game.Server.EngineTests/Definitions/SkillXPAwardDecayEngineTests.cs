@@ -96,7 +96,7 @@ public sealed class SkillXPAwardDecayEngineTests
             record.Perks[GatedPerk] = 1;
             record.UnallocatedSP = 0;
         });
-        await ctx.ExecuteInCreatureContextAsync(player, () => Perk.SyncGrantedFeats(player, GatedPerk, 1, true));
+        await ctx.ExecuteInCreatureContextAsync(player, () => PerkGrantedFeat.SyncGrantedFeats(player, GatedPerk, 1, true));
         ctx.Assert(CreaturePlugin.GetKnowsFeat(player, GatedPerkFeat), "The purchased perk's feat is known before the decay");
         Decays.Clear();
 

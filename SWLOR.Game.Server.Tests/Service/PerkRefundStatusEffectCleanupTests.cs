@@ -44,7 +44,7 @@ public class PerkRefundStatusEffectCleanupTests
         var hasten = new HastenAbilityDefinition().BuildAbilities()[FeatType.Hasten1];
         hasten.SourceOwnedStatusEffectTypesRemovedOnPerkRefund.Add(typeof(Hasten1StatusEffect));
 
-        var refunds = Perk.GetSourceOwnedStatusEffectRefunds(
+        var refunds = PerkRefund.GetSourceOwnedStatusEffectRefunds(
             new[] { snapRush, secondTechnique, snapRush, hasten }, PerkType.CombatAnalyzer);
         refunds.Should().Equal(new[]
         {

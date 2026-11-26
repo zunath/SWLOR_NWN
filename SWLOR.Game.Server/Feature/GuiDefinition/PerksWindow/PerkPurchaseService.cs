@@ -29,15 +29,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow
         private IDBService DB { get; }
         private IGuiService Gui { get; }
         private IPerkService Perk { get; }
+        private IPerkRefundService PerkRefund { get; }
         private PerkHotBarService PerkHotBarService { get; }
         private IQuickCastService QuickCast { get; }
 
-        public PerkPurchaseService(ICurrencyService currency, IDBService db, IGuiService gui, IPerkService perk, PerkHotBarService perkHotBarService, IQuickCastService quickCast)
+        public PerkPurchaseService(ICurrencyService currency, IDBService db, IGuiService gui, IPerkService perk, IPerkRefundService perkRefund, PerkHotBarService perkHotBarService, IQuickCastService quickCast)
         {
             Currency = currency;
             DB = db;
             Gui = gui;
             Perk = perk;
+            PerkRefund = perkRefund;
             PerkHotBarService = perkHotBarService;
             QuickCast = quickCast;
         }
@@ -236,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow
                     QuickCast.RemoveFeat(target, feat);
                 }
 
-                Perk.RemoveStatusEffectsOnPerkRefund(target, selectedPerk);
+                PerkRefund.RemoveStatusEffectsOnPerkRefund(target, selectedPerk);
                 PerkHotBarService.RemoveFeatsFromHotBar(host, feats);
 
                 foreach (var actionMode in perkDetail.HotBarActionModes)

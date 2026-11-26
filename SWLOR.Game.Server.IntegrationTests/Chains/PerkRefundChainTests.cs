@@ -62,7 +62,7 @@ public class PerkRefundChainTests : IntegrationTestBase
         Db.EndFrame();
         Fakes.Events.SetReturn("GetEventData", ((int)_skill).ToString());
 
-        Perk.RemovePerkLevelOnSkillDecay();
+        PerkRefund.RemovePerkLevelOnSkillDecay();
 
         Db.EndFrame();
         var after = Db.Get<Player>(HeroId);
@@ -78,7 +78,7 @@ public class PerkRefundChainTests : IntegrationTestBase
         Fakes.Events.SetReturn("GetEventData", ((int)_skill).ToString());
         var before = Db.GetRawJson<Player>(HeroId);
 
-        Perk.RemovePerkLevelOnSkillDecay();
+        PerkRefund.RemovePerkLevelOnSkillDecay();
 
         Db.GetRawJson<Player>(HeroId).Should().Be(before);
     }

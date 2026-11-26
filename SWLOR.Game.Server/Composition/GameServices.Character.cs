@@ -35,8 +35,8 @@ namespace SWLOR.Game.Server.Composition
         public static ILanguageService Language => FacadeAccessor.Resolve<ILanguageService>();
 
         /// <summary>
-        /// Perks: the definition caches, a creature's perk levels, the granted feats that follow from them, and refunds
-        /// (the static facade <c>Perk</c> until it was removed). The stat bonuses and the Force affinity are the two parts below.
+        /// Perks: the definition caches, a creature's perk levels and the unlock (the static facade <c>Perk</c> until it was
+        /// removed). The stat bonuses, the Force affinity, the granted feats and the refunds are the parts below.
         /// </summary>
         public static IPerkService Perk => FacadeAccessor.Resolve<IPerkService>();
 
@@ -45,6 +45,12 @@ namespace SWLOR.Game.Server.Composition
 
         /// <summary>A creature's Force affinity and its effect on ability magnitude and hit chance, a part of perks.</summary>
         public static IPerkForceAffinityService PerkForceAffinity => FacadeAccessor.Resolve<IPerkForceAffinityService>();
+
+        /// <summary>The feats perks grant: the lookups built at boot, the active ability feat a level replaces and the sync to a creature, a part of perks.</summary>
+        public static IPerkGrantedFeatService PerkGrantedFeat => FacadeAccessor.Resolve<IPerkGrantedFeatService>();
+
+        /// <summary>What a perk refund takes away: the status effects of its abilities and the levels a skill decay refunds, a part of perks.</summary>
+        public static IPerkRefundService PerkRefund => FacadeAccessor.Resolve<IPerkRefundService>();
 
         /// <summary>The public descriptors players see for unknown characters (the static facade <c>PlayerDescriptor</c> until it was removed).</summary>
         public static IPlayerDescriptorService PlayerDescriptor => FacadeAccessor.Resolve<IPlayerDescriptorService>();

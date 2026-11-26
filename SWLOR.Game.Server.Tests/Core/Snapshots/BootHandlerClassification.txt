@@ -18,7 +18,7 @@ db_loaded (1)
 mod_content_chg (1)
   BootOnly    SWLOR.Game.Server.Domain.Foundation.WalkmeshService.LoadWalkmeshes
 
-mod_cache_bef (52)
+mod_cache_bef (53)
   Rerun       SWLOR.Game.Server.Domain.Abilities.AbilityCatalogService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Character.AchievementService.LoadAchievements
   Rerun       SWLOR.Game.Server.Domain.World.AreaService.CacheData
@@ -42,6 +42,7 @@ mod_cache_bef (52)
   Rerun       SWLOR.Game.Server.Domain.Foundation.ObjectVisibilityService.LoadVisibilityObjects
   Rerun       SWLOR.Game.Server.Domain.Character.PerkService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Character.PerkStatBonusService.CachePerkStatBonuses
+  Rerun       SWLOR.Game.Server.Domain.Character.PerkGrantedFeatService.ResetPerkFeatCache
   Rerun       SWLOR.Game.Server.Domain.World.PlanetService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Economy.PlayerMarketService.CacheData
   Rerun       SWLOR.Game.Server.Domain.World.PropertyService.CacheData
@@ -83,7 +84,7 @@ mod_cache_aft (17)
   BootOnly    SWLOR.Game.Server.Domain.Foundation.MigrationService.AfterCacheLoaded
   Rerun       SWLOR.Game.Server.Domain.Abilities.MimicryService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Character.MimicryTraitStatsService.CacheData
-  Rerun       SWLOR.Game.Server.Domain.Character.PerkService.CachePerkFeatData
+  Rerun       SWLOR.Game.Server.Domain.Character.PerkGrantedFeatService.CachePerkFeatData
   Rerun       SWLOR.Game.Server.Domain.Abilities.AnimationPreviewCatalog.CacheCategories
   Rerun       SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.RegisterUnequipGuard
   Rerun       SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.RegisterAttackRules
@@ -149,5 +150,5 @@ app_shutdown (2)
 == TOTALS ==
 BootOnly    19
 NativeHook  16
-Rerun       90
+Rerun       91
 Retire      2

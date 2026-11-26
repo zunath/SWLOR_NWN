@@ -30,13 +30,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow
         private IAbilityCatalogService AbilityCatalog { get; }
         private IPerkService Perk { get; }
         private IPerkForceAffinityService PerkForceAffinity { get; }
+        private IPerkGrantedFeatService PerkGrantedFeat { get; }
         private IRecastService Recast { get; }
 
-        public PerkDetailText(IAbilityCatalogService abilityCatalog, IPerkService perk, IPerkForceAffinityService perkForceAffinity, IRecastService recast)
+        public PerkDetailText(IAbilityCatalogService abilityCatalog, IPerkService perk, IPerkForceAffinityService perkForceAffinity, IPerkGrantedFeatService perkGrantedFeat, IRecastService recast)
         {
             AbilityCatalog = abilityCatalog;
             Perk = perk;
             PerkForceAffinity = perkForceAffinity;
+            PerkGrantedFeat = perkGrantedFeat;
             Recast = recast;
         }
 
@@ -185,7 +187,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow
 
         private string BuildRecastGroupText(PerkDetail detail)
         {
-            var recastGroup = Perk.GetActiveAbilityRecastGroup(detail.Type);
+            var recastGroup = PerkGrantedFeat.GetActiveAbilityRecastGroup(detail.Type);
             if (recastGroup == RecastGroup.Invalid ||
                 !Recast.IsRecastGroupVisible(recastGroup))
             {

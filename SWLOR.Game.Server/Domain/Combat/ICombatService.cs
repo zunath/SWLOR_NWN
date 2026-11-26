@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Domain.Character;
+
 namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
@@ -5,7 +7,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// a creature's combat state in every part, and the refresh of the stat-driven trackers. Static code reaches every other member
     /// on the part that owns it (<c>GameServices</c>).
     /// </summary>
-    public interface ICombatService
+    public interface ICombatService : IStatDrivenTrackerRefresh
     {
         /// <summary>
         /// When a creature dies, applies the killer's and the recent damagers' defeated-enemy effects, then forgets the
@@ -15,8 +17,6 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         /// <summary>When a creature leaves the module, forgets its combat state.</summary>
         void ClearStatTriggerState();
-
-        void RefreshStatDrivenTrackerEffects(uint creature);
 
         /// <summary>
         /// On module heartbeat, clear a PC's saved combat facing if they are no longer in combat.

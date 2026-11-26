@@ -19,6 +19,6 @@ internal static class SavedCharacterGameRules
         Resistance.IsValidResistanceType(ResistanceType.Fire);
         Resistance.GetAllResistanceTypes();
         CombatDamageCatalog.GetDefenseDamageTypes();
-        Perk.GetAllActiveAbilityFeats(PerkType.Invalid);
+        PerkGrantedFeat.GetAllActiveAbilityFeats(PerkType.Invalid);
     }
 }

@@ -260,9 +260,9 @@ SWLOR.Game.Server.Service.PerformanceService.PerformanceAudience.StopWatchingOnA
 SWLOR.Game.Server.Service.PerformanceService.PerformanceAudience.StopWatchingOnDeath SWLOR.Game.Server.Domain.Social.PerformanceWatchingService.StopWatchingOnDeath
 SWLOR.Game.Server.Service.PerformanceService.PerformanceAudience.StopWatchingWhenOutOfRange SWLOR.Game.Server.Domain.Social.PerformanceWatchingService.StopWatchingWhenOutOfRange
 SWLOR.Game.Server.Service.PerformanceService.PerformanceWindows.ReserveGuiIds SWLOR.Game.Server.Domain.Social.PerformanceWindowsService.ReserveGuiIds
-SWLOR.Game.Server.Service.Perk.CacheData SWLOR.Game.Server.Domain.Character.PerkService.CacheData SWLOR.Game.Server.Domain.Character.PerkStatBonusService.CachePerkStatBonuses
-SWLOR.Game.Server.Service.Perk.CachePerkFeatData SWLOR.Game.Server.Domain.Character.PerkService.CachePerkFeatData
-SWLOR.Game.Server.Service.Perk.RemovePerkLevelOnSkillDecay SWLOR.Game.Server.Domain.Character.PerkService.RemovePerkLevelOnSkillDecay
+SWLOR.Game.Server.Service.Perk.CacheData SWLOR.Game.Server.Domain.Character.PerkService.CacheData SWLOR.Game.Server.Domain.Character.PerkStatBonusService.CachePerkStatBonuses SWLOR.Game.Server.Domain.Character.PerkGrantedFeatService.ResetPerkFeatCache
+SWLOR.Game.Server.Service.Perk.CachePerkFeatData SWLOR.Game.Server.Domain.Character.PerkGrantedFeatService.CachePerkFeatData
+SWLOR.Game.Server.Service.Perk.RemovePerkLevelOnSkillDecay SWLOR.Game.Server.Domain.Character.PerkRefundService.RemovePerkLevelOnSkillDecay
 SWLOR.Game.Server.Service.Planet.CacheData SWLOR.Game.Server.Domain.World.PlanetService.CacheData
 SWLOR.Game.Server.Service.PlayerList.MoveWindowOnPossession SWLOR.Game.Server.Domain.Social.PlayerListService.MoveWindowOnPossession
 SWLOR.Game.Server.Service.PlayerList.RefreshOnEnter SWLOR.Game.Server.Domain.Social.PlayerListService.RefreshOnEnter

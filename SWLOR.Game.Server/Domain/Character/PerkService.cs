@@ -1,9 +1,6 @@
-using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Abilities;
-using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -16,12 +13,12 @@ using Player = SWLOR.Game.Server.Entity.Player;
 namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
-    /// Perks: the definition caches, a creature's perk levels, the granted feats that follow from them, and refunds. The stat
-    /// bonuses are on <see cref="PerkStatBonusService"/> and the Force affinity on <see cref="PerkForceAffinityService"/>.
-    /// The logic that used to be static in the facade <c>Perk</c> is moved here unchanged; the event handlers
-    /// run on the container's instance, and static callers reach it through <c>GameServices.Perk</c>. Calls into <c>Stat</c>,
-    /// <c>Ability</c>, <c>Droid</c> and <c>Combat</c>, and the definition search, sit behind one-line
-    /// <c>protected virtual</c> methods whose bodies are the original calls.
+    /// Perks: the definition caches, a creature's perk levels and the unlock. The stat bonuses are on
+    /// <see cref="PerkStatBonusService"/>, the Force affinity on <see cref="PerkForceAffinityService"/>, the granted feats on
+    /// <see cref="PerkGrantedFeatService"/> and the refunds on <see cref="PerkRefundService"/>.
+    /// The logic that used to be static in the facade <c>Perk</c> is moved here unchanged; the event handler
+    /// runs on the container's instance, and static callers reach it through <c>GameServices.Perk</c>. Calls into <c>Droid</c>
+    /// and the definition search sit behind one-line <c>protected virtual</c> methods whose bodies are the original calls.
     /// </summary>
     public class PerkService : IPerkService
     {
@@ -52,37 +49,16 @@ namespace SWLOR.Game.Server.Domain.Character
 
         private readonly Dictionary<PerkType, Dictionary<int, int>> _perkLevelTiers = new();
         private readonly Dictionary<SkillType, List<PerkType>> _perksWithSkillRequirement = new();
-        private readonly Dictionary<PerkType, Dictionary<int, FeatType[]>> _grantedFeatsByPerkLevel = new();
-        private readonly Dictionary<PerkType, Dictionary<int, HashSet<FeatType>>> _grantedFeatSetsByPerkLevel = new();
-        private readonly Dictionary<PerkType, Dictionary<int, FeatType[]>> _currentActiveAbilityFeatsByPerkLevel = new();
-        private readonly Dictionary<PerkType, Dictionary<int, HashSet<FeatType>>> _currentActiveAbilityFeatSetsByPerkLevel = new();
-        private readonly Dictionary<PerkType, FeatType[]> _allActiveAbilityFeatsByPerk = new();
-        private readonly Dictionary<PerkType, RecastGroup> _activeAbilityRecastGroupByPerk = new();
-        private readonly HashSet<(PerkType PerkType, FeatType Feat)> _activeAbilityFeatsByPerk = new();
-        private static readonly FrozenSet<FeatType> _emptyFeatSet = FrozenSet<FeatType>.Empty;
-        private bool _perkFeatCacheLoaded;
 
         private readonly IDBService _db;
-        private readonly IQuickCastService _quickCast;
         private readonly ICompanionLookup _companions;
-        private readonly IStatusEffectService _statusEffect;
-        private readonly IAbilityCatalog _catalog;
-        private readonly Lazy<ICombatService> _combat;
 
         public PerkService(
             IDBService db,
-            IQuickCastService quickCast,
-            ICompanionLookup companions,
-            IStatusEffectService statusEffect,
-            IAbilityCatalog catalog,
-            Lazy<ICombatService> combat)
+            ICompanionLookup companions)
         {
             _db = db;
-            _quickCast = quickCast;
             _companions = companions;
-            _statusEffect = statusEffect;
-            _catalog = catalog;
-            _combat = combat;
         }
 
         /// <summary>
@@ -94,13 +70,6 @@ namespace SWLOR.Game.Server.Domain.Character
         {
             CachePerks();
             CacheCharacterTypes();
-        }
-
-        [BootPhase(BootReload.Rerun)]
-        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
-        public void CachePerkFeatData()
-        {
-            CachePerkFeatLookups();
         }
 
         /// <summary>
@@ -221,173 +190,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 }
             }
 
-            _perkFeatCacheLoaded = false;
             Console.WriteLine($"Loaded {_allPerks.Count} player perks.");
-        }
-
-        private void CachePerkFeatLookups()
-        {
-            _grantedFeatsByPerkLevel.Clear();
-            _grantedFeatSetsByPerkLevel.Clear();
-            _currentActiveAbilityFeatsByPerkLevel.Clear();
-            _currentActiveAbilityFeatSetsByPerkLevel.Clear();
-            _allActiveAbilityFeatsByPerk.Clear();
-            _activeAbilityRecastGroupByPerk.Clear();
-            _activeAbilityFeatsByPerk.Clear();
-
-            var abilityDetails = GetAllAbilityDetails();
-            if (abilityDetails.Count <= 0)
-            {
-                _perkFeatCacheLoaded = false;
-                return;
-            }
-
-            foreach (var (perkType, perkDetail) in _allPerks)
-            {
-                if (!_perkMaxLevels.TryGetValue(perkType, out var maxLevel) || maxLevel <= 0)
-                    continue;
-
-                var activeAbilityFeatsByLevel = BuildActiveAbilityFeatsByLevel(perkType, perkDetail, abilityDetails);
-                var activeAbilityRecastGroup = FindActiveAbilityRecastGroup(activeAbilityFeatsByLevel, abilityDetails);
-                var allActiveAbilityFeats = new List<FeatType>();
-
-                if (activeAbilityRecastGroup != RecastGroup.Invalid)
-                {
-                    _activeAbilityRecastGroupByPerk[perkType] = activeAbilityRecastGroup;
-                }
-
-                foreach (var (_, activeAbilityFeats) in activeAbilityFeatsByLevel.OrderBy(x => x.Key))
-                {
-                    foreach (var feat in activeAbilityFeats)
-                    {
-                        AddDistinct(allActiveAbilityFeats, feat);
-                        _activeAbilityFeatsByPerk.Add((perkType, feat));
-                    }
-                }
-
-                if (allActiveAbilityFeats.Count > 0)
-                {
-                    _allActiveAbilityFeatsByPerk[perkType] = allActiveAbilityFeats.ToArray();
-                }
-
-                CachePerkLevelFeatLookups(perkType, perkDetail, maxLevel, activeAbilityFeatsByLevel);
-            }
-
-            _perkFeatCacheLoaded = true;
-            Console.WriteLine($"Loaded active ability feat lookups for {_allActiveAbilityFeatsByPerk.Count} perks.");
-        }
-
-        private Dictionary<int, List<FeatType>> BuildActiveAbilityFeatsByLevel(
-            PerkType perkType,
-            PerkDetail perkDetail,
-            IReadOnlyDictionary<FeatType, AbilityDetail> abilityDetails)
-        {
-            var result = new Dictionary<int, List<FeatType>>();
-
-            foreach (var (level, levelDetail) in perkDetail.PerkLevels)
-            {
-                foreach (var feat in levelDetail.GrantedFeats)
-                {
-                    if (!IsActiveAbilityFeatForPerk(perkType, feat, abilityDetails))
-                        continue;
-
-                    if (!result.ContainsKey(level))
-                    {
-                        result[level] = new List<FeatType>();
-                    }
-
-                    AddDistinct(result[level], feat);
-                }
-            }
-
-            return result;
-        }
-
-        private RecastGroup FindActiveAbilityRecastGroup(
-            IReadOnlyDictionary<int, List<FeatType>> activeAbilityFeatsByLevel,
-            IReadOnlyDictionary<FeatType, AbilityDetail> abilityDetails)
-        {
-            foreach (var (_, activeAbilityFeats) in activeAbilityFeatsByLevel.OrderBy(x => x.Key))
-            {
-                foreach (var feat in activeAbilityFeats)
-                {
-                    var recastGroup = abilityDetails[feat].RecastGroup;
-                    if (recastGroup != RecastGroup.Invalid)
-                    {
-                        return recastGroup;
-                    }
-                }
-            }
-
-            return RecastGroup.Invalid;
-        }
-
-        private bool IsActiveAbilityFeatForPerk(
-            PerkType perkType,
-            FeatType feat,
-            IReadOnlyDictionary<FeatType, AbilityDetail> abilityDetails)
-        {
-            return perkType != PerkType.Invalid &&
-                   abilityDetails.TryGetValue(feat, out var ability) &&
-                   ability.EffectiveLevelPerkType == perkType;
-        }
-
-        private void CachePerkLevelFeatLookups(
-            PerkType perkType,
-            PerkDetail perkDetail,
-            int maxLevel,
-            IReadOnlyDictionary<int, List<FeatType>> activeAbilityFeatsByLevel)
-        {
-            var grantedFeatsByLevel = new Dictionary<int, FeatType[]>();
-            var grantedFeatSetsByLevel = new Dictionary<int, HashSet<FeatType>>();
-            var currentActiveAbilityFeatsByLevel = new Dictionary<int, FeatType[]>();
-            var currentActiveAbilityFeatSetsByLevel = new Dictionary<int, HashSet<FeatType>>();
-            var perkLevels = perkDetail.PerkLevels.OrderBy(x => x.Key).ToList();
-
-            for (var level = 1; level <= maxLevel; level++)
-            {
-                var grantedFeats = new List<FeatType>();
-
-                foreach (var (_, levelDetail) in perkLevels.Where(x => x.Key <= level))
-                {
-                    foreach (var feat in levelDetail.GrantedFeats)
-                    {
-                        if (_activeAbilityFeatsByPerk.Contains((perkType, feat)))
-                            continue;
-
-                        AddDistinct(grantedFeats, feat);
-                    }
-                }
-
-                var currentActiveAbilityFeats = FindCurrentActiveAbilityFeats(activeAbilityFeatsByLevel, level);
-                foreach (var feat in currentActiveAbilityFeats)
-                {
-                    AddDistinct(grantedFeats, feat);
-                }
-
-                grantedFeatsByLevel[level] = grantedFeats.ToArray();
-                grantedFeatSetsByLevel[level] = grantedFeats.ToHashSet();
-                currentActiveAbilityFeatsByLevel[level] = currentActiveAbilityFeats.ToArray();
-                currentActiveAbilityFeatSetsByLevel[level] = currentActiveAbilityFeats.ToHashSet();
-            }
-
-            _grantedFeatsByPerkLevel[perkType] = grantedFeatsByLevel;
-            _grantedFeatSetsByPerkLevel[perkType] = grantedFeatSetsByLevel;
-            _currentActiveAbilityFeatsByPerkLevel[perkType] = currentActiveAbilityFeatsByLevel;
-            _currentActiveAbilityFeatSetsByPerkLevel[perkType] = currentActiveAbilityFeatSetsByLevel;
-        }
-
-        private IReadOnlyList<FeatType> FindCurrentActiveAbilityFeats(
-            IReadOnlyDictionary<int, List<FeatType>> activeAbilityFeatsByLevel,
-            int perkLevel)
-        {
-            foreach (var (level, feats) in activeAbilityFeatsByLevel.OrderByDescending(x => x.Key))
-            {
-                if (level <= perkLevel)
-                    return feats;
-            }
-
-            return Array.Empty<FeatType>();
         }
 
         /// <summary>
@@ -500,6 +303,24 @@ namespace SWLOR.Game.Server.Domain.Character
         public IEnumerable<KeyValuePair<PerkType, PerkDetail>> EnumerateAllPerks()
         {
             return _allPerks;
+        }
+
+        /// <summary>
+        /// The highest level of a perk, or 0 for a perk the catalog does not hold.
+        /// </summary>
+        public int GetPerkMaxLevel(PerkType perkType)
+        {
+            return _perkMaxLevels.TryGetValue(perkType, out var maxLevel) ? maxLevel : 0;
+        }
+
+        /// <summary>
+        /// The perks that have a level requiring the skill, in the order the cache found them; empty when no perk needs it.
+        /// </summary>
+        public IReadOnlyList<PerkType> GetPerksWithSkillRequirement(SkillType skillType)
+        {
+            return _perksWithSkillRequirement.TryGetValue(skillType, out var perks)
+                ? perks
+                : Array.Empty<PerkType>();
         }
 
         /// <summary>
@@ -657,247 +478,6 @@ namespace SWLOR.Game.Server.Domain.Character
             }
         }
 
-        public IReadOnlyList<FeatType> GetGrantedFeatsForPerkLevel(PerkType perkType, int perkLevel)
-        {
-            EnsurePerkFeatCacheLoaded();
-            return GetCachedFeatList(_grantedFeatsByPerkLevel, perkType, perkLevel);
-        }
-
-        public IReadOnlyList<FeatType> GetCurrentActiveAbilityFeats(PerkType perkType, int perkLevel)
-        {
-            EnsurePerkFeatCacheLoaded();
-            return GetCachedFeatList(_currentActiveAbilityFeatsByPerkLevel, perkType, perkLevel);
-        }
-
-        public IReadOnlyList<FeatType> GetAllActiveAbilityFeats(PerkType perkType)
-        {
-            EnsurePerkFeatCacheLoaded();
-            return _allActiveAbilityFeatsByPerk.TryGetValue(perkType, out var feats)
-                ? feats
-                : Array.Empty<FeatType>();
-        }
-
-        public RecastGroup GetActiveAbilityRecastGroup(PerkType perkType)
-        {
-            EnsurePerkFeatCacheLoaded();
-            return _activeAbilityRecastGroupByPerk.TryGetValue(perkType, out var recastGroup)
-                ? recastGroup
-                : RecastGroup.Invalid;
-        }
-
-        /// <summary>
-        /// Restores native feats from purchased perks after loading or migrating a character file.
-        /// This does not repeat purchase triggers or change the player's quickbar layout.
-        /// </summary>
-        public void RestorePlayerFeats(uint player)
-        {
-            if (!GetIsObjectValid(player))
-                return;
-
-            var dbPlayer = _db.Get<Player>(GetObjectUUID(player));
-            if (dbPlayer == null)
-                return;
-
-            foreach (var (perkType, level) in dbPlayer.Perks)
-            {
-                if (level <= 0 ||
-                    !_allPerks.TryGetValue(perkType, out var detail) ||
-                    !detail.IsActive || detail.GroupType != PerkGroupType.Player)
-                    continue;
-
-                SyncGrantedFeats(player, perkType, level, true);
-            }
-        }
-
-        public void SyncGrantedFeats(uint creature, PerkType perkType, int perkLevel, bool addByLevel)
-        {
-            if (!GetIsObjectValid(creature))
-                return;
-
-            var grantedFeats = GetGrantedFeatsForPerkLevel(perkType, perkLevel);
-            var grantedFeatSet = GetGrantedFeatSetForPerkLevel(perkType, perkLevel);
-
-            foreach (var feat in GetAllActiveAbilityFeats(perkType))
-            {
-                if (grantedFeatSet.Contains(feat))
-                    continue;
-
-                _quickCast.RemoveFeat(creature, feat);
-            }
-
-            foreach (var feat in grantedFeats)
-            {
-                if (_quickCast.KnowsFeat(creature, feat))
-                    continue;
-
-                if (addByLevel)
-                {
-                    CreaturePlugin.AddFeatByLevel(creature, feat, 1);
-                }
-                else
-                {
-                    CreaturePlugin.AddFeat(creature, feat);
-                }
-            }
-
-            _quickCast.ApplyPreferences(creature);
-        }
-
-        /// <summary>
-        /// Removes declared self effects and effects granted by the refunded perk's abilities.
-        /// Source-owned effects retain their ability identity even when another perk uses the same status class.
-        /// </summary>
-        public void RemoveStatusEffectsOnPerkRefund(uint creature, PerkType perkType)
-        {
-            if (perkType == PerkType.Invalid || !GetIsObjectValid(creature))
-                return;
-
-            var statusEffectTypes = GetAllAbilityDetails()
-                .Values
-                .Where(ability => ability.EffectiveLevelPerkType == perkType)
-                .SelectMany(ability => ability.StatusEffectTypesRemovedOnPerkRefund)
-                .Distinct()
-                .ToList();
-
-            foreach (var statusEffectType in statusEffectTypes)
-            {
-                _statusEffect.RemoveStatusEffect(creature, statusEffectType, false);
-            }
-
-            var sourceOwnedStatusEffects = GetSourceOwnedStatusEffectRefunds(
-                GetAllAbilityDetails().Values, perkType);
-
-            foreach (var sourceOwnedStatusEffect in sourceOwnedStatusEffects)
-            {
-                _statusEffect.RemoveStatusEffectsFromAllTargetsBySource(
-                    creature,
-                    sourceOwnedStatusEffect.StatusEffectType,
-                    false,
-                    sourceOwnedStatusEffect.Ability);
-            }
-
-            RefreshStatDrivenTrackerEffects(creature);
-        }
-
-        /// <summary>
-        /// Selects distinct ability/status pairs for a perk refund. Deduplication retains separate
-        /// abilities that share a status class so each cleanup uses its own originating ability.
-        /// </summary>
-        public IReadOnlyList<(AbilityDetail Ability, Type StatusEffectType)> GetSourceOwnedStatusEffectRefunds(
-            IEnumerable<AbilityDetail> abilities, PerkType perkType)
-        {
-            return abilities
-                .Where(ability => ability.EffectiveLevelPerkType == perkType)
-                .SelectMany(ability => ability.SourceOwnedStatusEffectTypesRemovedOnPerkRefund
-                    .Select(statusEffectType => (Ability: ability, StatusEffectType: statusEffectType)))
-                .Distinct()
-                .ToArray();
-        }
-
-        public bool ShouldEnforceActiveAbilityFeatReplacement(uint creature, PerkType perkType)
-        {
-            if (perkType == PerkType.Invalid || !GetIsObjectValid(creature))
-                return false;
-
-            if (GetIsPC(creature) && !GetIsDMPossessed(creature))
-                return true;
-
-            if (IsDroid(creature) || _companions.IsPlayerBeast(creature))
-                return true;
-
-            return GetLocalInt(creature, $"PERK_LEVEL_{(int)perkType}") > 0;
-        }
-
-        public bool IsCurrentActiveAbilityFeat(FeatType feat, PerkType perkType, int perkLevel)
-        {
-            if (!IsReplacingActiveAbilityFeat(perkType, feat))
-                return true;
-
-            var currentActiveAbilityFeats = GetCurrentActiveAbilityFeatSet(perkType, perkLevel);
-            return currentActiveAbilityFeats.Count <= 0 ||
-                   currentActiveAbilityFeats.Contains(feat);
-        }
-
-        private IReadOnlySet<FeatType> GetGrantedFeatSetForPerkLevel(PerkType perkType, int perkLevel)
-        {
-            EnsurePerkFeatCacheLoaded();
-            return GetCachedFeatSet(_grantedFeatSetsByPerkLevel, perkType, perkLevel);
-        }
-
-        private IReadOnlySet<FeatType> GetCurrentActiveAbilityFeatSet(PerkType perkType, int perkLevel)
-        {
-            EnsurePerkFeatCacheLoaded();
-            return GetCachedFeatSet(_currentActiveAbilityFeatSetsByPerkLevel, perkType, perkLevel);
-        }
-
-        private IReadOnlyList<FeatType> GetCachedFeatList(
-            Dictionary<PerkType, Dictionary<int, FeatType[]>> cache,
-            PerkType perkType,
-            int perkLevel)
-        {
-            var cacheLevel = NormalizePerkFeatCacheLevel(perkType, perkLevel);
-            if (cacheLevel <= 0)
-                return Array.Empty<FeatType>();
-
-            return cache.TryGetValue(perkType, out var levelCache) &&
-                   levelCache.TryGetValue(cacheLevel, out var feats)
-                ? feats
-                : Array.Empty<FeatType>();
-        }
-
-        private IReadOnlySet<FeatType> GetCachedFeatSet(
-            Dictionary<PerkType, Dictionary<int, HashSet<FeatType>>> cache,
-            PerkType perkType,
-            int perkLevel)
-        {
-            var cacheLevel = NormalizePerkFeatCacheLevel(perkType, perkLevel);
-            if (cacheLevel <= 0)
-                return _emptyFeatSet;
-
-            return cache.TryGetValue(perkType, out var levelCache) &&
-                   levelCache.TryGetValue(cacheLevel, out var feats)
-                ? feats
-                : _emptyFeatSet;
-        }
-
-        private int NormalizePerkFeatCacheLevel(PerkType perkType, int perkLevel)
-        {
-            if (perkLevel <= 0)
-                return 0;
-
-            if (!_perkMaxLevels.TryGetValue(perkType, out var maxLevel))
-                return perkLevel;
-
-            return perkLevel > maxLevel
-                ? maxLevel
-                : perkLevel;
-        }
-
-        private void EnsurePerkFeatCacheLoaded()
-        {
-            if (_perkFeatCacheLoaded || _allPerks.Count <= 0)
-                return;
-
-            if (GetAllAbilityDetails().Count <= 0)
-                return;
-
-            CachePerkFeatLookups();
-        }
-
-        private bool IsReplacingActiveAbilityFeat(PerkType perkType, FeatType feat)
-        {
-            EnsurePerkFeatCacheLoaded();
-            return _activeAbilityFeatsByPerk.Contains((perkType, feat));
-        }
-
-        private void AddDistinct(List<FeatType> feats, FeatType feat)
-        {
-            if (!feats.Contains(feat))
-            {
-                feats.Add(feat);
-            }
-        }
-
         private int GetPlayerPerkLevel(uint player, PerkType perkType)
         {
             var playerId = GetObjectUUID(player);
@@ -1050,72 +630,6 @@ namespace SWLOR.Game.Server.Domain.Character
             _db.Set(dbPlayer);
         }
 
-        /// <summary>
-        /// When a skill receives decay, any perks tied to that skill should be checked.
-        /// If the player no longer meets the requirements for those perks, they should be reduced in level.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnSwlorLoseSkill)]
-        public void RemovePerkLevelOnSkillDecay()
-        {
-            var skillType = (SkillType)Convert.ToInt32(EventsPlugin.GetEventData("SKILL_TYPE_ID"));
-
-            // Early exit - if no perks are tied to this skill, then it doesn't matter. There's nothing to remove.
-            if (!_perksWithSkillRequirement.ContainsKey(skillType))
-                return;
-
-            var player = OBJECT_SELF;
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
-
-            var possiblePerks = _perksWithSkillRequirement[skillType];
-
-            foreach (var perkType in possiblePerks)
-            {
-                // Player doesn't have this perk. Move to the next.
-                if (!dbPlayer.Perks.ContainsKey(perkType))
-                    continue;
-
-                var perkDetail = GetPerkDetails(perkType);
-                var effectiveLevel = GetPlayerEffectivePerkLevel(player, perkType);
-                var currentLevel = dbPlayer.Perks[perkType];
-
-                // Player didn't suffer a reduction in effective level. Move to the next.
-                if (effectiveLevel == currentLevel)
-                    continue;
-
-                // Found at least one perk level that needs to be removed.
-                for (var level = currentLevel; level > effectiveLevel; level--)
-                {
-                    var perkLevel = perkDetail.PerkLevels[level];
-                    dbPlayer.UnallocatedSP += perkLevel.Price;
-
-                    foreach (var feat in perkLevel.GrantedFeats)
-                    {
-                        _quickCast.RemoveFeat(player, feat);
-                    }
-
-                    Log.Write(LogGroup.PerkRefund, $"AUTOMATIC DECAY REFUND - {playerId} - Refunded Date {Clock.UtcNow} - Level {perkLevel} - PerkID {perkType}");
-                    FloatingTextStringOnCreature($"Perk '{perkDetail.Name}' level {level} was refunded because your skill fell under the minimum requirements. You reclaimed {perkLevel.Price} SP.", player, false);
-                }
-
-                dbPlayer.Perks[perkType] = effectiveLevel;
-                if (effectiveLevel > 0)
-                {
-                    SyncGrantedFeats(player, perkType, effectiveLevel, true);
-                }
-
-                _db.Set(dbPlayer);
-
-                RemoveStatusEffectsOnPerkRefund(player, perkType);
-
-                foreach (var refundTrigger in perkDetail.RefundedTriggers)
-                {
-                    refundTrigger(player);
-                }
-            }
-
-            ExportSingleCharacter(player);
-        }
 
         /// <summary>The perk list definitions of every loaded assembly, found lazily as the cache builds.</summary>
         protected virtual IEnumerable<Type> GetPerkListDefinitionTypes()
@@ -1123,11 +637,6 @@ namespace SWLOR.Game.Server.Domain.Character
             return GameAssemblies.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IPerkListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
-        }
-
-        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails()
-        {
-            return _catalog.GetAllAbilityDetails();
         }
 
         protected virtual bool IsDroid(uint creature)
@@ -1138,11 +647,6 @@ namespace SWLOR.Game.Server.Domain.Character
         protected virtual int GetDroidPerkLevel(uint droid, PerkType perkType)
         {
             return _companions.GetDroidPerkLevel(droid, perkType);
-        }
-
-        protected virtual void RefreshStatDrivenTrackerEffects(uint creature)
-        {
-            _combat.Value.RefreshStatDrivenTrackerEffects(creature);
         }
     }
 }

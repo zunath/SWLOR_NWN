@@ -136,6 +136,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPerkService, PerkService>();
             services.AddSingleton<IPerkStatBonusService, PerkStatBonusService>();
             services.AddSingleton<IPerkForceAffinityService, PerkForceAffinityService>();
+            services.AddSingleton<IPerkGrantedFeatService, PerkGrantedFeatService>();
+            services.AddSingleton<IPerkRefundService, PerkRefundService>();
             services.AddSingleton<IPlayerDescriptorService, PlayerDescriptorService>();
             services.AddSingleton<IPlayerIntroductionService, PlayerIntroductionService>();
             services.AddSingleton<IPlayerNameService, PlayerNameService>();
@@ -397,6 +399,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPlayerListService, PlayerListService>();
             // The same instance, seen through the refresh request the holocom owns.
             services.AddSingleton<IPlayerListRefresh>(provider => provider.GetRequiredService<IPlayerListService>());
+            services.AddSingleton<IFeatHotBar>(provider => provider.GetRequiredService<IQuickCastService>());
+            services.AddSingleton<IStatDrivenTrackerRefresh>(provider => provider.GetRequiredService<ICombatService>());
 
             // UI
             services.AddSingleton<IGuiService, GuiService>();

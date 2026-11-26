@@ -1256,10 +1256,10 @@ namespace SWLOR.Game.Server.Feature
             if (effectivePerkLevel <= 0 || ability.AbilityLevel > effectivePerkLevel)
                 return false;
 
-            return !Perk.ShouldEnforceActiveAbilityFeatReplacement(
+            return !PerkGrantedFeat.ShouldEnforceActiveAbilityFeatReplacement(
                        activator,
                        ability.EffectiveLevelPerkType) ||
-                   Perk.IsCurrentActiveAbilityFeat(
+                   PerkGrantedFeat.IsCurrentActiveAbilityFeat(
                        feat,
                        ability.EffectiveLevelPerkType,
                        effectivePerkLevel);

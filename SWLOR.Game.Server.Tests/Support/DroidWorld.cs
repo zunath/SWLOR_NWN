@@ -72,7 +72,7 @@ public sealed class DroidWorld : IDisposable
         GuiCalls = gui;
         Item = Proxy<IItemService>("Item", out var item);
         ItemCalls = item;
-        Perk = Proxy<IPerkService>("Perk", out var perk);
+        Perk = Proxy<IPerkGrantedFeatService>("Perk", out var perk);
         PerkCalls = perk;
         Glove = Proxy<IPowerGloveEquipmentService>("Glove", out var glove);
         GloveCalls = glove;
@@ -149,7 +149,7 @@ public sealed class DroidWorld : IDisposable
     public IDroidEquipmentDiagnosticsService Diagnostics { get; }
     public IGuiService Gui { get; }
     public IItemService Item { get; }
-    public IPerkService Perk { get; }
+    public IPerkGrantedFeatService Perk { get; }
     public IPowerGloveEquipmentService Glove { get; }
     public IRaceService Race { get; }
     public IRecastService Recast { get; }

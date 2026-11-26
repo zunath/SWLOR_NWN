@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
     {
         private readonly IAbilityCatalog _catalog;
         private readonly ISpaceModeQuery _spaceMode;
-        private readonly IPerkService _perk;
+        private readonly IPerkGrantedFeatService _perkGrantedFeat;
         private readonly IMimicryService _mimicry;
         private readonly IActivityService _activity;
         private readonly IStatService _stat;
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         public AbilityActivationService(
             IAbilityCatalog catalog,
             ISpaceModeQuery spaceMode,
-            IPerkService perk,
+            IPerkGrantedFeatService perkGrantedFeat,
             IMimicryService mimicry,
             IActivityService activity,
             IStatService stat,
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         {
             _catalog = catalog;
             _spaceMode = spaceMode;
-            _perk = perk;
+            _perkGrantedFeat = perkGrantedFeat;
             _mimicry = mimicry;
             _activity = activity;
             _stat = stat;
@@ -196,9 +196,9 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.GetStatAdjustment(creature, stat);
 
-        protected virtual bool ShouldEnforceActiveAbilityFeatReplacement(uint creature, PerkType perkType) => _perk.ShouldEnforceActiveAbilityFeatReplacement(creature, perkType);
+        protected virtual bool ShouldEnforceActiveAbilityFeatReplacement(uint creature, PerkType perkType) => _perkGrantedFeat.ShouldEnforceActiveAbilityFeatReplacement(creature, perkType);
 
-        protected virtual bool IsCurrentActiveAbilityFeat(FeatType feat, PerkType perkType, int perkLevel) => _perk.IsCurrentActiveAbilityFeat(feat, perkType, perkLevel);
+        protected virtual bool IsCurrentActiveAbilityFeat(FeatType feat, PerkType perkType, int perkLevel) => _perkGrantedFeat.IsCurrentActiveAbilityFeat(feat, perkType, perkLevel);
 
         protected virtual bool IsForcePower(uint creature, AbilityDetail ability) => _queries.IsForcePower(creature, ability);
 

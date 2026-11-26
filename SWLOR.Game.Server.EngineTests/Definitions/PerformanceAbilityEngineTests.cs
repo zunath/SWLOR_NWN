@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 // Buy exactly this rank: a higher rank replaces the lower rank's feat, so the case owns one rank.
                 fixture.Update(record => record.Perks[perk] = level);
-                Perk.SyncGrantedFeats(player, perk, level, true);
+                PerkGrantedFeat.SyncGrantedFeats(player, perk, level, true);
                 ctx.Assert(GetHasFeat(feat, player), $"buying {perk} rank {level} grants {feat}");
                 ctx.Assert(!GameServices.PerformanceRegistry.TryGetSession(player, out _), "the player starts with no performance");
 

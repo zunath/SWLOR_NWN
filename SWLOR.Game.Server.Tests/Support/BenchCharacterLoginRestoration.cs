@@ -15,7 +15,7 @@ public sealed class BenchCharacterLoginRestoration : CharacterLoginRestoration
     private readonly List<string> _steps;
 
     public BenchCharacterLoginRestoration(IMigrationService migration, InMemoryDBService db, List<string> steps)
-        : base(migration, new OverflowStorageService(db), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatRecordService>())
+        : base(migration, new OverflowStorageService(db), FacadeForwarder.For<IPerkGrantedFeatService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatRecordService>())
     {
         _steps = steps;
     }

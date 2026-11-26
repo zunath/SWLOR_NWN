@@ -115,8 +115,8 @@ SWLOR.Game.Server.Service.Mimicry.CacheData SWLOR.Game.Server.Domain.Abilities.M
 SWLOR.Game.Server.Service.Mimicry.ClearAnalysisOnPlayerExit SWLOR.Game.Server.Domain.Abilities.MimicryService.ClearAnalysisOnPlayerExit
 SWLOR.Game.Server.Service.Mimicry.CombatPointXPDistributed SWLOR.Game.Server.Domain.Abilities.MimicryService.CombatPointXPDistributed
 SWLOR.Game.Server.Service.Mimicry.OnCreatureDeath SWLOR.Game.Server.Domain.Abilities.MimicryService.OnCreatureDeath
-SWLOR.Game.Server.Service.Mimicry.OnMimicrySkillDecay SWLOR.Game.Server.Domain.Abilities.MimicryService.OnMimicrySkillDecay
-SWLOR.Game.Server.Service.Mimicry.OnPlayerLogin SWLOR.Game.Server.Domain.Abilities.MimicryService.OnPlayerLogin
+SWLOR.Game.Server.Service.Mimicry.OnMimicrySkillDecay SWLOR.Game.Server.Domain.Abilities.MimicryLoadoutService.OnMimicrySkillDecay
+SWLOR.Game.Server.Service.Mimicry.OnPlayerLogin SWLOR.Game.Server.Domain.Abilities.MimicryLoadoutService.OnPlayerLogin
 SWLOR.Game.Server.Service.QuickCast.ApplyOnEnter SWLOR.Game.Server.Domain.Abilities.QuickCastService.ApplyOnEnter
 SWLOR.Game.Server.Service.QuickCast.ApplyOnQuickbarEdit SWLOR.Game.Server.Domain.Abilities.QuickCastService.ApplyOnQuickbarEdit
 SWLOR.Game.Server.Service.Stealth.BreakStealthOnDamageDealt SWLOR.Game.Server.Domain.Combat.StealthService.BreakStealthOnDamageDealt

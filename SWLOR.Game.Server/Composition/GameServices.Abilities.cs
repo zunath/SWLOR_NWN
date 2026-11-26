@@ -71,10 +71,14 @@ namespace SWLOR.Game.Server.Composition
         public static IForceControlCooldownsService ForceControlCooldowns => FacadeAccessor.Resolve<IForceControlCooldownsService>();
 
         /// <summary>
-        /// Mimicry techniques: witnessing, learning, loadouts and traits (the facade <c>Service.Mimicry</c> until it was removed). The
-        /// namespace <c>Feature.AbilityDefinition.Mimicry</c> hides an imported property, so callers write <c>GameServices.Mimicry.X</c>.
+        /// Mimicry techniques: the technique catalog, witnessing, learning and traits (the facade <c>Service.Mimicry</c> until it was
+        /// removed). The namespace <c>Feature.AbilityDefinition.Mimicry</c> hides an imported property, so callers write
+        /// <c>GameServices.Mimicry.X</c>. The slots, equipping and saved builds are the part below.
         /// </summary>
         public static IMimicryService Mimicry => FacadeAccessor.Resolve<IMimicryService>();
+
+        /// <summary>The technique loadout: slots, equipping and unequipping, the slot budget, saved builds and the learned and equipped reads, a part of Mimicry.</summary>
+        public static IMimicryLoadoutService MimicryLoadout => FacadeAccessor.Resolve<IMimicryLoadoutService>();
 
         /// <summary>Quick cast targeting preferences on native ability buttons (the facade <c>Service.QuickCast</c> until it was removed).</summary>
         public static IQuickCastService QuickCast => FacadeAccessor.Resolve<IQuickCastService>();

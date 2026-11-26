@@ -43,8 +43,8 @@ public class MimicryWitnessTranscriptTests
 
     private static readonly Type[] Leaves =
     {
-        typeof(IQuickCastService), typeof(IDMPresenceService), typeof(IPlayerFeedbackService), typeof(IGuiService),
-        typeof(IAbilityCatalog), typeof(IPerkService), typeof(IStatService), typeof(ISkillXPService), typeof(IStatusEffectService),
+        typeof(IQuickCastService), typeof(IDMPresenceService), typeof(IPlayerFeedbackService),
+        typeof(IAbilityCatalog), typeof(IPerkService), typeof(IStatService), typeof(ISkillXPService),
         typeof(ICombatPointService)
     };
 

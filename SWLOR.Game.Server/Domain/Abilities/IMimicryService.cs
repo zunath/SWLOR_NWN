@@ -88,115 +88,27 @@ namespace SWLOR.Game.Server.Domain.Abilities
         int GrantAllTechniques(uint player);
 
         /// <summary>
-        /// Returns the maximum number of technique slots available to a player.
-        /// Zero if the player does not have the Combat Analyzer perk.
+        /// Reads a technique straight from the technique table. The key is not normalised the way
+        /// <see cref="GetTechniqueDetail"/> and <see cref="IsTechnique"/> normalise theirs.
         /// </summary>
-        int GetMaxSlots(uint player);
+        bool TryGetTechnique(FeatType feat, out AbilityDetail detail);
 
         /// <summary>
-        /// Returns the maximum number of technique slots available to a player's database record.
+        /// Reads a technique straight from the technique table; throws <see cref="KeyNotFoundException"/> for a feat
+        /// that is not a technique, as an indexer on the table does.
         /// </summary>
-        int GetMaxSlots(Player dbPlayer);
+        AbilityDetail GetTechnique(FeatType feat);
 
         /// <summary>
-        /// Returns the number of technique slots currently used by a player's equipped techniques.
+        /// Finds the technique a creature's own feat teaches, and its ability detail.
+        /// Returns false when the feat teaches nothing or the technique is not registered.
         /// </summary>
-        int GetUsedSlots(uint player);
+        bool TryGetTechniqueForNpcFeat(FeatType npcFeat, out FeatType technique, out AbilityDetail detail);
 
         /// <summary>
-        /// Returns the number of technique slots currently used by a player database record's equipped techniques.
+        /// Every registered technique with its ability detail, read straight from the technique table without a copy.
         /// </summary>
-        int GetUsedSlots(Player dbPlayer);
-
-        /// <summary>
-        /// Determines whether a player can equip a given technique right now.
-        /// </summary>
-        bool CanEquip(uint player, FeatType feat, out string error);
-
-        /// <summary>
-        /// Determines whether a player can equip a given technique right now, using an
-        /// already-fetched player database record to avoid duplicate round trips.
-        /// </summary>
-        bool CanEquip(uint player, Player dbPlayer, FeatType feat, out string error);
-
-        /// <summary>
-        /// Equips a learned technique, granting the underlying feat and adding it to the player's hotbar.
-        /// </summary>
-        bool EquipTechnique(uint player, FeatType feat);
-
-        /// <summary>
-        /// Unequips a technique, removing the underlying feat and any hotbar slot referencing it.
-        /// </summary>
-        bool UnequipTechnique(uint player, FeatType feat);
-
-        /// <summary>
-        /// Unequips techniques that exceed the player's current Mimicry rank, then removes the
-        /// newest-equipped techniques until the remaining loadout fits the current slot budget.
-        /// Used after progression changes and on login to keep persisted loadouts valid.
-        /// </summary>
-        void EnforceSlotBudget(uint player);
-
-        /// <summary>
-        /// Enforces Mimicry rank requirements and the slot budget against an already-fetched player
-        /// database record, avoiding a duplicate round trip when the caller has one in hand.
-        /// </summary>
-        void EnforceSlotBudget(uint player, Player dbPlayer);
-
-        /// <summary>
-        /// Immediately removes equipped techniques whose rank requirement is no longer met when
-        /// Mimicry loses a rank. This must run for every Mimicry decay, including rank losses that
-        /// do not cross a perk requirement and therefore do not trigger a perk refund callback.
-        /// </summary>
-        void OnMimicrySkillDecay();
-
-        /// <summary>
-        /// Unequips every equipped technique. Used when the Combat Analyzer perk is refunded.
-        /// </summary>
-        void UnequipAllTechniques(uint player);
-
-        /// <summary>
-        /// On login, re-grants every equipped technique's feat (in case it was lost, e.g. a fresh
-        /// character load) and enforces rank and slot limits in case progression changed since logout.
-        /// </summary>
-        void OnPlayerLogin();
-
-        /// <summary>Validates the entire draft before changing any equipped state.</summary>
-        bool ValidateLoadout(Player dbPlayer, IReadOnlyCollection<FeatType> techniques, out string error);
-
-        void CaptureLoadoutHotbar(uint player, MimicryLoadout loadout);
-
-        bool ApplyLoadout(uint player, string loadoutId, IReadOnlyCollection<FeatType> techniques, out string error);
-
-        /// <summary>
-        /// Returns every technique a player has learned, alongside its cached ability detail.
-        /// </summary>
-        List<(FeatType Feat, AbilityDetail Detail)> GetLearnedTechniques(uint player);
-
-        /// <summary>
-        /// Returns every technique a player database record has learned, alongside its cached ability detail.
-        /// </summary>
-        List<(FeatType Feat, AbilityDetail Detail)> GetLearnedTechniques(Player dbPlayer);
-
-        /// <summary>
-        /// Returns every technique a player currently has equipped, alongside its cached ability detail.
-        /// </summary>
-        List<(FeatType Feat, AbilityDetail Detail)> GetEquippedTechniques(uint player);
-
-        /// <summary>
-        /// Returns every technique a player database record has equipped, alongside its cached ability detail.
-        /// </summary>
-        List<(FeatType Feat, AbilityDetail Detail)> GetEquippedTechniques(Player dbPlayer);
-
-        /// <summary>
-        /// Returns true when a technique feat is present in a player's equipped loadout.
-        /// </summary>
-        bool IsTechniqueEquipped(uint player, FeatType feat);
-
-        /// <summary>
-        /// Returns true when a technique feat is present in an already-fetched player record's
-        /// equipped loadout.
-        /// </summary>
-        bool IsTechniqueEquipped(Player dbPlayer, FeatType feat);
+        IEnumerable<KeyValuePair<FeatType, AbilityDetail>> EnumerateTechniques();
 
         /// <summary>
         /// Retrieves the cached ability detail for a technique feat, or null if the feat isn't a technique.

@@ -44,7 +44,7 @@
     "Abilities": {
       "services": [
         "Ability", "AbilityCooldownVisual", "AbilityTargetingCache", "FieldEngineerPulseEmitters", "ForceControlCooldowns",
-        "QuickCast", "ReviveHistory", "Mimicry", "TwinPistolAbility"
+        "QuickCast", "ReviveHistory", "Mimicry", "MimicryLoadout", "TwinPistolAbility"
       ],
       "featureFolders": [
         "AbilityDefinition"

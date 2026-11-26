@@ -79,6 +79,7 @@
     { "name": "Messaging", "domain": "Foundation" },
     { "name": "Migration", "domain": "Foundation" },
     { "name": "Mimicry", "domain": "Abilities" },
+    { "name": "MimicryLoadout", "domain": "Abilities" },
     { "name": "MimicryTraitStats", "domain": "Character" },
     { "name": "Music", "domain": "World" },
     { "name": "NPCGroup", "domain": "Creatures" },

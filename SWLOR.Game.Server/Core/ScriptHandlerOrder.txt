@@ -760,7 +760,7 @@ mod_enter
   action      SWLOR.Game.Server.Domain.UI.GuiService.CreatePlayerWindows
   action      SWLOR.Game.Server.Domain.World.HoloComService.OnModuleEnter
   action      SWLOR.Game.Server.Domain.Items.ItemService.EnsureInventoryItemActivations
-  action      SWLOR.Game.Server.Domain.Abilities.MimicryService.OnPlayerLogin
+  action      SWLOR.Game.Server.Domain.Abilities.MimicryLoadoutService.OnPlayerLogin
   action      SWLOR.Game.Server.Domain.Foundation.ObjectVisibilityService.LoadPlayerVisibilityObjects
   action      SWLOR.Game.Server.Domain.Social.PerformanceService.RecoverOnLogin
   action      SWLOR.Game.Server.Domain.Social.PlayerListService.RefreshOnEnter
@@ -1193,7 +1193,7 @@ swlor_heartbeat
   action      SWLOR.Game.Server.Feature.ServerTasks.ProcessAutoRestart
 
 swlor_lose_skill
-  action      SWLOR.Game.Server.Domain.Abilities.MimicryService.OnMimicrySkillDecay
+  action      SWLOR.Game.Server.Domain.Abilities.MimicryLoadoutService.OnMimicrySkillDecay
   action      SWLOR.Game.Server.Domain.Character.PerkRefundService.RemovePerkLevelOnSkillDecay
 
 swlor_skl_cache

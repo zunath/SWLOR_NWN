@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<PlayerEntity>(playerId);
-            var learnedFeats = GameServices.Mimicry.GetLearnedTechniques(dbPlayer);
+            var learnedFeats = GameServices.MimicryLoadout.GetLearnedTechniques(dbPlayer);
             var equippedFeats = _draft.Select(feat => (Feat: feat, Detail: GameServices.Mimicry.GetTechniqueDetail(feat))).ToList();
 
             var unequippedNames = new GuiBindingList<string>();
@@ -245,7 +245,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // grey = locked / amber = met-but-can't-afford / green = actionable convention).
             var skillRank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var mimicrySkill) ? mimicrySkill.Rank : 0;
             var usedSlots = _draft.Sum(feat => GameServices.Mimicry.GetTechniqueDetail(feat)?.MimicrySlotCost ?? 0);
-            var maxSlots = GameServices.Mimicry.GetMaxSlots(dbPlayer);
+            var maxSlots = GameServices.MimicryLoadout.GetMaxSlots(dbPlayer);
 
             // The Learned list honors the search box, category dropdown, and sort dropdown.
             var search = (SearchText ?? string.Empty).Trim().ToLower();
@@ -332,7 +332,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RefreshSlots(PlayerEntity dbPlayer)
         {
             var used = _draft.Sum(feat => GameServices.Mimicry.GetTechniqueDetail(feat)?.MimicrySlotCost ?? 0);
-            var max = GameServices.Mimicry.GetMaxSlots(dbPlayer);
+            var max = GameServices.MimicryLoadout.GetMaxSlots(dbPlayer);
 
             SlotsText = $"Slots: {used} / {max}";
             SlotsColor = used > max ? GuiColor.Red : EquippedColor;
@@ -509,7 +509,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CanRevert = IsDirty || IsEquippedCopyModified(record);
             if (_buildBar == DeleteBarPartial)
                 RefreshDeletePrompt(selected);
-            if (!GameServices.Mimicry.ValidateLoadout(record, _draft, out var error))
+            if (!GameServices.MimicryLoadout.ValidateLoadout(record, _draft, out var error))
             {
                 StatusText = error;
                 StatusColor = ErrorColor;
@@ -545,7 +545,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return false;
             }
             if (MimicryLoadouts.Matches(_draft, record.EquippedTechniques))
-                GameServices.Mimicry.CaptureLoadoutHotbar(Player, saved);
+                GameServices.MimicryLoadout.CaptureLoadoutHotbar(Player, saved);
             DB.Set(record);
             _selectedLoadoutId = saved.Id;
             _savedSnapshot = _draft.ToList();
@@ -650,7 +650,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             LoadDraft(_selectedLoadoutId);
             if (IsEquippedCopyModified(Record) &&
-                !GameServices.Mimicry.ApplyLoadout(Player, _selectedLoadoutId, _draft, out var error))
+                !GameServices.MimicryLoadout.ApplyLoadout(Player, _selectedLoadoutId, _draft, out var error))
             {
                 LoadLists();
                 ShowError(error);
@@ -661,7 +661,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickApply() => () =>
         {
-            if (!GameServices.Mimicry.ApplyLoadout(Player, _selectedLoadoutId, _draft, out var error))
+            if (!GameServices.MimicryLoadout.ApplyLoadout(Player, _selectedLoadoutId, _draft, out var error))
                 ShowError(error);
             else
                 LoadLists();

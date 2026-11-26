@@ -107,6 +107,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IFieldEngineerPulseEmittersService, FieldEngineerPulseEmittersService>();
             services.AddSingleton<IForceControlCooldownsService, ForceControlCooldownsService>();
             services.AddSingleton<IMimicryService, MimicryService>();
+            services.AddSingleton<IMimicryLoadoutService, MimicryLoadoutService>();
             services.AddSingleton<IQuickCastService, QuickCastService>();
             services.AddSingleton<IReviveHistoryService, ReviveHistoryService>();
             services.AddSingleton<ITwinPistolAbilityService, TwinPistolAbilityService>();

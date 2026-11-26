@@ -14,7 +14,7 @@ public class PendingTradeTests
         var trade = new PendingTrade
         {
             Id = "t1", ShipId = "s1", Commodity = CommodityType.Grain, Units = -12, Credits = 0,
-            Exchange = TradeExchangeType.Viscara, CityId = "city1", Tariff = 45, Xp = 150
+            Exchange = TradeExchangeType.Viscara, CityId = "city1", Tariff = 45, Xp = 150, Profit = -20
         };
 
         PendingTrade.TryParse(trade.Serialize(), out var parsed).Should().BeTrue();
@@ -24,7 +24,13 @@ public class PendingTradeTests
         parsedNpc.Should().BeEquivalentTo(npc, "an NPC dock's mark has no city and no tariff");
         PendingTrade.TryParse(string.Empty, out _).Should().BeFalse();
         PendingTrade.TryParse("t1|s1|8|x|0|1||0|0", out _).Should().BeFalse();
-        PendingTrade.TryParse("t1|s1|8|-12|0|1||0", out _).Should().BeFalse("a sale mark carries its XP");
+        PendingTrade.TryParse("t1|s1|8|-12|0|1|city1|45", out var older).Should().BeTrue("a mark an earlier build saved still applies");
+        older.Should().BeEquivalentTo(new PendingTrade { Id = "t1", ShipId = "s1", Commodity = (CommodityType)8, Units = -12,
+            Exchange = (TradeExchangeType)1, CityId = "city1", Tariff = 45 }, "its XP and profit read as 0");
+        PendingTrade.TryParse("t1|s1|8|-12|0|1||0|150", out var nine).Should().BeTrue();
+        nine.Xp.Should().Be(150);
+        nine.Profit.Should().Be(0);
+        PendingTrade.TryParse("t1|s1|8|-12|0|1||0|150|20|extra", out _).Should().BeFalse();
         PendingTrade.TryParse("t1|s1|8|-12|0", out _).Should().BeFalse("a mark without its market and tariff cannot be replayed");
         PendingTrade.TryParse(null, out _).Should().BeFalse();
     }
@@ -128,7 +134,7 @@ public class PendingTradeTests
         var source = ReadServerSource("Service", "Trade.cs");
         var sell = source[source.IndexOf("public static void Sell(", StringComparison.Ordinal)..];
         sell = sell[..sell.IndexOf("private static PendingTrade NewTrade(", StringComparison.Ordinal)];
-        sell.Should().Contain("var trade = NewTrade(ship, exchangeType, dock, commodity, -order.Units, 0, order.Tariff, xp);")
+        sell.Should().Contain("var trade = NewTrade(ship, exchangeType, dock, commodity, -order.Units, 0, order.Tariff, xp, profit);")
             .And.Contain("GiveTradeXp(player, trade);")
             .And.NotContain("restOfLot.XpEarned += xp;", "the mark adds the lot's XP with the bay change")
             .And.NotContain("Skill.GiveSkillXP(", "the XP is given once through the mark");
@@ -136,8 +142,17 @@ public class PendingTradeTests
         login.IndexOf("if (GiveTradeXp(player, trade))", StringComparison.Ordinal)
             .Should().BeInRange(0, login.IndexOf("foreach (var reserved in", StringComparison.Ordinal), "a restart before the award gives it at login");
         var give = source[source.IndexOf("private static bool GiveTradeXp(", StringComparison.Ordinal)..];
+        give = give[..give.IndexOf("private static void ApplyTradeMark(", StringComparison.Ordinal)];
         give.IndexOf("dbPlayer.LastTradeXpId = trade.Id;", StringComparison.Ordinal)
-            .Should().BeLessThan(give.IndexOf("Skill.GiveSkillXP(player, SkillType.Piloting, trade.Xp);", StringComparison.Ordinal), "the award is recorded before it is given");
+            .Should().BeLessThan(give.IndexOf("return Skill.GiveSkillXP(player, SkillType.Piloting, trade.Xp) > 0;", StringComparison.Ordinal),
+                "the receipt rides the frame's cached player record into GiveSkillXP's own write");
+        give.Should().NotContain("DB.Set(dbPlayer);", "a receipt saved apart from the XP could skip the award");
+        login.Should().Contain("Space.RecordTradeEarnings(player, trade.Profit, trade.Id);", "a recovered sale counts toward the earnings milestones once");
+        sell.Should().Contain("Space.RecordTradeEarnings(player, profit, trade.Id);");
+        var earnings = ReadServerSource("Service", "SpaceAchievements.cs");
+        earnings = earnings[earnings.IndexOf("public static void RecordTradeEarnings(", StringComparison.Ordinal)..];
+        earnings.IndexOf("account.AchievementProgress.LastTradeEarningsIds[playerId] = tradeId;", StringComparison.Ordinal)
+            .Should().BeInRange(0, earnings.IndexOf("DB.Set(account);", StringComparison.Ordinal), "the sale's id is saved with the total it adds to");
     }
 
     [Test]

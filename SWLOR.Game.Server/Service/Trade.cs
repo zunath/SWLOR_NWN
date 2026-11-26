@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Service
             // keeps the total, saved with the bay. The XP rides the mark, so a restart before it is given gives it at login.
             var profit = order.Credits - cost;
             var xp = TradeRules.GetSaleXp(profit, ship.Cargo.TryGetValue(commodity, out var soldLot) ? soldLot.XpEarned : 0);
-            var trade = NewTrade(ship, exchangeType, dock, commodity, -order.Units, 0, order.Tariff, xp);
+            var trade = NewTrade(ship, exchangeType, dock, commodity, -order.Units, 0, order.Tariff, xp, profit);
 
             // The sale is reserved on the ship first, so a restart before the bay is saved cannot let another pilot fly the
             // ship and spill units already paid for: the ship waits for its owner's login (ApplyPendingTrade).
@@ -242,7 +242,7 @@ namespace SWLOR.Game.Server.Service
 
             GiveTradeXp(player, trade);
 
-            Space.RecordTradeEarnings(player, profit);
+            Space.RecordTradeEarnings(player, profit, trade.Id);
         }
 
         /// <summary>The character-file local naming the last exchange trade's effects (<see cref="PendingTrade"/>).</summary>
@@ -250,7 +250,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>A trade's mark: its cargo change, the market it presses, and the tariff a city dock takes.</summary>
         private static PendingTrade NewTrade(PlayerShip ship, TradeExchangeType exchangeType, TradeDock dock, CommodityType commodity,
-            int units, int credits, int tariff, int xp = 0)
+            int units, int credits, int tariff, int xp = 0, int profit = 0)
         {
             var isCity = dock != null && dock.IsCity;
             return new PendingTrade
@@ -263,7 +263,8 @@ namespace SWLOR.Game.Server.Service
                 Exchange = exchangeType,
                 CityId = isCity ? dock.CityId ?? string.Empty : string.Empty,
                 Tariff = isCity ? Math.Max(0, tariff) : 0,
-                Xp = Math.Max(0, xp)
+                Xp = Math.Max(0, xp),
+                Profit = profit
             };
         }
 
@@ -344,6 +345,7 @@ namespace SWLOR.Game.Server.Service
                     Log.Write(LogGroup.Space, $"TRADE RECOVER - {PlayerName.GetAuditName(player)} - paid the {trade.Tariff} credit tariff of trade {trade.Id} to city {trade.CityId} after a restart.");
                 if (GiveTradeXp(player, trade))
                     Log.Write(LogGroup.Space, $"TRADE RECOVER - {PlayerName.GetAuditName(player)} - gave the {trade.Xp} Piloting XP of trade {trade.Id} after a restart.");
+                Space.RecordTradeEarnings(player, trade.Profit, trade.Id);
             }
 
             foreach (var reserved in PlayerShipAccess.GetOwnedShips(playerId).Where(owned => !string.IsNullOrWhiteSpace(owned.PendingSaleTradeId)))
@@ -354,8 +356,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Gives a sale's Piloting XP once. The sale is recorded as given before the XP, so a restart between the two
-        /// writes loses the award rather than giving it twice. True when the XP was given now.
+        /// Gives a sale's Piloting XP once. The sale's id goes on the player record DB.Get caches for this frame, so the
+        /// write GiveSkillXP makes with the XP saves it too: a restart leaves both or neither, and the next login finishes
+        /// an award that never saved. True when the XP was given now.
         /// </summary>
         private static bool GiveTradeXp(uint player, PendingTrade trade)
         {
@@ -367,9 +370,7 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             dbPlayer.LastTradeXpId = trade.Id;
-            DB.Set(dbPlayer);
-            Skill.GiveSkillXP(player, SkillType.Piloting, trade.Xp);
-            return true;
+            return Skill.GiveSkillXP(player, SkillType.Piloting, trade.Xp) > 0;
         }
 
         /// <summary>Applies the character file's trade mark to its ship once.</summary>

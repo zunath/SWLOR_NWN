@@ -214,8 +214,8 @@ public class SpaceW11nReviewFixTests
         var source = ReadSource("Service", "SpaceRiftRuns.cs").Replace("\r\n", "\n");
         var start = source.IndexOf("private static void PayRiftRun(", StringComparison.Ordinal);
         var pay = source[start..source.IndexOf("public static void DeliverPendingRiftRunPayout()", start, StringComparison.Ordinal)];
-        pay.Should().Contain("CapitalBattleRules.AddPending(state.PendingRiftPayouts, pilotId,");
-        pay.Should().Contain("CapitalBattleRules.AddPending(state.PendingRiftPayouts, playerId,");
+        pay.Should().Contain("CapitalBattleRules.AddPending(payouts, pilotId,");
+        pay.Should().Contain("CapitalBattleRules.AddPending(payouts, playerId,").And.Contain("var payouts = spend == RiftKeySpend.Saved ? state.PendingRiftPayouts :");
         pay.Should().NotContain("GiveGoldToCreature(");
         pay.Should().NotContain("ShipHold.DeliverYield(");
         pay.IndexOf("SaveIncursions();", StringComparison.Ordinal)

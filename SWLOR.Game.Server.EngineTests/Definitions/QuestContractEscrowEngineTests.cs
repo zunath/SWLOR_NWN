@@ -331,7 +331,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     .AddFieldSearch(nameof(QuestContractDelivery.PlayerId), GetObjectUUID(player), false).AddPaging(100, 0)))
                 {
                     var name = "CONTRACT_CLAIM_" + delivery.Id;
-                    ctx.AssertEqual(GetLocalString(player, name), GetLocalString(restored, name), "The native snapshot preserves the claim checkpoint with the awards");
+                    ctx.AssertEqual(ObjectPlugin.GetString(player, name), ObjectPlugin.GetString(restored, name), "The native snapshot preserves the claim checkpoint with the awards");
                 }
             };
             typeof(QuestContractBoard).GetMethod("ClaimDeliveries", BindingFlags.NonPublic | BindingFlags.Static)

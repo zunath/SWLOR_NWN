@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Service
 
             situation.State = CitySituationState.Expired;
             situation.ResolvedUtc = now;
-            var holdingEffects = new CityHoldingEffects();
+            var holdingEffects = new CityOutcomeEffects();
             if (detail != null)
                 ApplyEffects(city, situation, detail.IgnoredEffects, now, situations, string.Empty, holdingEffects);
 
@@ -416,7 +416,7 @@ namespace SWLOR.Game.Server.Service
             situation.ChosenOption = choiceIndex;
             situation.DecidedByPlayerId = playerId;
             situation.ResolvedUtc = now;
-            var holdingEffects = new CityHoldingEffects();
+            var holdingEffects = new CityOutcomeEffects();
             var change = ApplyEffects(city, situation, choice.Effects, now, situations, entry?.Id ?? string.Empty, holdingEffects, subjectCredits);
             city.NeglectCount = 0;
 
@@ -462,12 +462,13 @@ namespace SWLOR.Game.Server.Service
         /// first write leaves the outcome for <see cref="SettlePendingOutcome"/>, so the situation is settled once and its effects,
         /// the holding's included, are never lost or applied twice.
         /// </summary>
-        private static void SaveOutcome(WorldProperty city, CitySituation situation, CityHoldingEffects holdingEffects)
+        private static void SaveOutcome(WorldProperty city, CitySituation situation, CityOutcomeEffects holdingEffects)
         {
             city.PendingSituationOutcome = CitySituationOutcome.Capture(situation, holdingEffects);
             DB.Set(city);
 
             HoldingCityAffairs.ApplyOutcome(city, city.PendingSituationOutcome, DateTime.UtcNow);
+            CreateFollowUps(city.PendingSituationOutcome);
             DB.Set(situation);
 
             city.PendingSituationOutcome = null;
@@ -487,6 +488,9 @@ namespace SWLOR.Game.Server.Service
 
             if (HoldingCityAffairs.ApplyOutcome(city, outcome, DateTime.UtcNow))
                 Log.Write(LogGroup.Property, $"The holding change of situation '{outcome.SituationId}' of city '{city.CustomName}' ({city.Id}) was applied after a restart.");
+            var created = CreateFollowUps(outcome);
+            if (created > 0)
+                Log.Write(LogGroup.Property, $"{created} follow-up(s) of situation '{outcome.SituationId}' of city '{city.CustomName}' ({city.Id}) were queued after a restart.");
 
             var situation = string.IsNullOrWhiteSpace(outcome.SituationId) ? null : DB.Get<CitySituation>(outcome.SituationId);
             if (outcome.ApplyTo(situation))
@@ -497,6 +501,21 @@ namespace SWLOR.Game.Server.Service
 
             city.PendingSituationOutcome = null;
             DB.Set(city);
+        }
+
+        /// <summary>Saves the outcome's follow-up situations that are not saved yet. Returns how many it saved.</summary>
+        private static int CreateFollowUps(CitySituationOutcome outcome)
+        {
+            var created = 0;
+            foreach (var followUp in outcome?.FollowUps ?? new List<CitySituation>())
+            {
+                if (DB.Get<CitySituation>(followUp.Id) != null)
+                    continue;
+                DB.Set(followUp);
+                created++;
+            }
+
+            return created;
         }
 
         #endregion
@@ -512,7 +531,7 @@ namespace SWLOR.Game.Server.Service
             DateTime now,
             List<CitySituation> situations,
             string secretEntryId,
-            CityHoldingEffects holdingEffects,
+            CityOutcomeEffects holdingEffects,
             int subjectCredits = 0)
         {
             var change = SituationRules.ResolveTreasuryChange(
@@ -548,7 +567,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 else if (effect.Type == SituationEffectType.FollowUp)
                 {
-                    QueueFollowUp(city, effect, now, situations, secretEntryId);
+                    QueueFollowUp(city, effect, now, situations, secretEntryId, holdingEffects);
                 }
                 else if (effect.Type == SituationEffectType.StartHunt)
                 {
@@ -568,7 +587,8 @@ namespace SWLOR.Game.Server.Service
             SituationEffect effect,
             DateTime now,
             List<CitySituation> situations,
-            string secretEntryId)
+            string secretEntryId,
+            CityOutcomeEffects outcomeEffects)
         {
             if (!SituationRules.RollsFollowUp(effect.FollowUpOneIn, Random.Next(effect.FollowUpOneIn)) ||
                 !SituationRules.CanQueueFollowUp(effect.FollowUp, situations))
@@ -582,7 +602,8 @@ namespace SWLOR.Game.Server.Service
                 DueUtc = now.AddDays(effect.FollowUpDelayDays),
                 SecretEntryId = effect.FollowUpCarriesSecret ? secretEntryId : string.Empty
             };
-            DB.Set(followUp);
+            // Saved with the outcome (SaveOutcome), never before the decision that queues it.
+            outcomeEffects.FollowUps.Add(followUp);
             situations.Add(followUp);
         }
     }

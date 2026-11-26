@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrEmpty(refusal) && OpenRiftRun(user, key, spentKey: true))
             {
                 // The pocket is open, so the key is spent for good. Until a save holds the cleared mark, a server stop
-                // returns the key, so the run pays this user nothing until one does (IsRiftKeySpendSaved).
+                // returns the key, so the run pays this user nothing until one does (GetRiftKeySpend).
                 ObjectPlugin.DeleteString(user, PendingRiftKeyVariable);
                 var run = _riftRuns.Values.FirstOrDefault(x => x.KeyUser == user && !x.KeySpendSaved && !x.KeyRefunded);
                 if (CharacterCheckpoint.Save(user))
@@ -151,28 +151,28 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Whether the key user's character file no longer returns the Rift Key spent on this run (<see cref="RiftRun.KeySpendSaved"/>).
-        /// A key user whose cleared mark failed to save is saved again here; while that still fails the run records no
-        /// spoils, since a restart would return the key and keep the spoils. A key user who left before a save held the
-        /// spend is unconfirmed until their login settles it (<see cref="ReturnPendingRiftKey"/>).
+        /// Whether the key user's character file holds the Rift Key spent on this run (<see cref="RiftRun.KeySpendSaved"/>), returns
+        /// it, or cannot tell yet. A key user whose cleared mark failed to save is saved again here; while that still fails the
+        /// key is refunded and the run records no spoils, since a restart would return the key and keep the spoils. A key user
+        /// who left before a save held the spend is unconfirmed until their login settles it (<see cref="ReturnPendingRiftKey"/>).
         /// </summary>
-        private static bool IsRiftKeySpendSaved(RiftRun run)
+        private static RiftKeySpend GetRiftKeySpend(RiftRun run)
         {
             if (string.IsNullOrEmpty(run.KeyUserId) || run.KeySpendSaved)
-                return true;
+                return RiftKeySpend.Saved;
             if (run.KeyRefunded)
-                return false;
+                return RiftKeySpend.Refunded;
 
             var player = run.KeyUser;
             if (!GetIsObjectValid(player) || GetObjectUUID(player) != run.KeyUserId)
-                return false;
+                return RiftKeySpend.Unconfirmed;
 
             var resref = GetLocalString(player, RiftKeySpendUnsavedVariable);
             if (string.IsNullOrEmpty(resref) || CharacterCheckpoint.Save(player))
             {
                 DeleteLocalString(player, RiftKeySpendUnsavedVariable);
                 run.KeySpendSaved = true;
-                return true;
+                return RiftKeySpend.Saved;
             }
 
             // The key is refunded instead: the mark goes back, so every later save keeps it until the login returns the key.
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Service
             ObjectPlugin.SetString(player, PendingRiftKeyVariable, resref, true);
             SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so your Rift Key is returned at your next login instead of these spoils."));
             Log.Write(LogGroup.Space, $"RIFT RUN SPOILS WITHHELD - {PlayerName.GetAuditName(player)} - the spent key was never saved as spent");
-            return false;
+            return RiftKeySpend.Refunded;
         }
 
         /// <summary>A player whose Rift Key was spent but not settled before they left gets it back.</summary>
@@ -205,8 +205,42 @@ namespace SWLOR.Game.Server.Service
                     run.KeyRefunded = true;
             }
 
+            SettleHeldRiftPayouts(playerId, spendSaved: string.IsNullOrEmpty(resref));
+
             if (!string.IsNullOrEmpty(resref))
                 ReturnRiftKey(player, resref);
+        }
+
+        /// <summary>
+        /// Settles the spoils held for runs this key user opened and left before a save held the spend: released to every
+        /// player's pending payouts when the saved file holds the key as spent, dropped when it returns the key.
+        /// </summary>
+        private static void SettleHeldRiftPayouts(string keyUserId, bool spendSaved)
+        {
+            var state = IncursionRecord;
+            if (state.HeldRiftPayouts == null || !state.HeldRiftPayouts.Remove(keyUserId, out var held))
+                return;
+
+            if (spendSaved)
+            {
+                state.PendingRiftPayouts ??= new Dictionary<string, IncursionPayout>();
+                foreach (var (playerId, payout) in held)
+                    CapitalBattleRules.AddPending(state.PendingRiftPayouts, playerId, payout);
+            }
+
+            SaveIncursions();
+            Log.Write(LogGroup.Space, $"RIFT RUN HELD SPOILS {(spendSaved ? "RELEASED" : "DROPPED")} - key user {keyUserId} - {held.Count} player(s)");
+            if (!spendSaved)
+                return;
+
+            // Players online now collect at once; the rest collect at their next login (DeliverPendingRiftRunPayout).
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                var playerId = GetObjectUUID(player);
+                if (held.ContainsKey(playerId))
+                    DelayCommand(6f, () => CollectPendingPayout(player, IncursionRecord.PendingRiftPayouts, playerId,
+                        "Rift Run spoils", "RIFT RUN PAYOUT"));
+            }
         }
 
         /// <summary>
@@ -528,16 +562,20 @@ namespace SWLOR.Game.Server.Service
 
             // A key user whose spent key is not saved as spent yet still has the key's refund in their character file. The
             // whole run pays nothing then: any ship's spoils beside the refunded key would let the party keep both. The run
-            // keeps the key user apart from its pilots, so one who left the controls is still checked.
-            if (!IsRiftKeySpendSaved(run))
+            // keeps the key user apart from its pilots, so one who left the controls is still checked. A key user who left
+            // before a save held the spend cannot be told apart yet: the run's spoils are held for their next login.
+            var spend = GetRiftKeySpend(run);
+            var participants = run.Pilots.Concat(run.Pilots.SelectMany(GetShipCrewPlayers)).Distinct()
+                .Where(x => x != run.KeyUser && GetIsObjectValid(x)).ToList();
+            if (spend == RiftKeySpend.Refunded)
             {
-                var participants = run.Pilots.Concat(run.Pilots.SelectMany(GetShipCrewPlayers)).Distinct()
-                    .Where(x => x != run.KeyUser && GetIsObjectValid(x));
                 foreach (var player in participants)
                     SendMessageToPC(player, ColorToken.Red("The Rift Key that opened this pocket could not be saved as spent, so the run pays no spoils and the key goes back to its user."));
                 Log.Write(LogGroup.Space, $"RIFT RUN SPOILS WITHHELD - {run.Key.Resref} - key user {PlayerName.GetAuditName(run.KeyUser)}");
                 return;
             }
+
+            var payouts = spend == RiftKeySpend.Saved ? state.PendingRiftPayouts : new Dictionary<string, IncursionPayout>();
 
             foreach (var pilot in run.Pilots)
             {
@@ -550,7 +588,7 @@ namespace SWLOR.Game.Server.Service
                 var items = spoils.Items;
 
                 var pilotId = GetObjectUUID(pilot);
-                CapitalBattleRules.AddPending(state.PendingRiftPayouts, pilotId, spoils);
+                CapitalBattleRules.AddPending(payouts, pilotId, spoils);
                 if (GetIsObjectValid(pilot))
                     collecting[pilotId] = pilot;
 
@@ -558,7 +596,7 @@ namespace SWLOR.Game.Server.Service
                 foreach (var (playerId, share) in RiftRunRules.ShareCredits(credits, aboard.Select(GetObjectUUID).ToList()))
                 {
                     var player = aboard.First(x => GetObjectUUID(x) == playerId);
-                    CapitalBattleRules.AddPending(state.PendingRiftPayouts, playerId, new IncursionPayout { Credits = share, RegionName = run.Key.Name });
+                    CapitalBattleRules.AddPending(payouts, playerId, new IncursionPayout { Credits = share, RegionName = run.Key.Name });
                     collecting[playerId] = player;
                     SendMessageToPC(player, ColorToken.Green(
                         $"The pocket is cleared with {RiftRunRules.FormatTimer(secondsLeft)} to spare. The rift returns you in {RiftRunTuning.ReturnDelaySeconds:0} seconds."));
@@ -566,6 +604,20 @@ namespace SWLOR.Game.Server.Service
 
                 Log.Write(LogGroup.Space, $"RIFT RUN CLEARED - {PlayerName.GetAuditName(pilot)} - {run.Key.Resref}, {secondsLeft} s left, " +
                                           $"{credits} credits, {spoils.Credits} pulled credits, {string.Join(", ", items)}");
+            }
+
+            if (spend == RiftKeySpend.Unconfirmed)
+            {
+                state.HeldRiftPayouts ??= new Dictionary<string, Dictionary<string, IncursionPayout>>();
+                if (!state.HeldRiftPayouts.TryGetValue(run.KeyUserId, out var held))
+                    state.HeldRiftPayouts[run.KeyUserId] = held = new Dictionary<string, IncursionPayout>();
+                foreach (var (playerId, payout) in payouts)
+                    CapitalBattleRules.AddPending(held, playerId, payout);
+                SaveIncursions();
+                foreach (var player in participants)
+                    SendMessageToPC(player, ColorToken.Yellow("The spoils wait until the Rift Key's user logs back in and their key is confirmed as spent."));
+                Log.Write(LogGroup.Space, $"RIFT RUN SPOILS HELD - {run.Key.Resref} - key user {run.KeyUserId} left before the spend was saved");
+                return;
             }
 
             SaveIncursions();

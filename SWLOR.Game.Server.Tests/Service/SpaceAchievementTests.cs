@@ -121,7 +121,7 @@ public class SpaceAchievementTests
     [TestCase("Service/SpaceAchievements.cs", "Achievement.GiveAchievement(member, ace.Achievement);")]
     [TestCase("Service/SpaceAchievements.cs", "IsWildSpace(OBJECT_SELF)")]
     [TestCase("Service/SpaceSignatureJump.cs", "GrantSiteAchievement(player, signature.Type);")]
-    [TestCase("Service/Trade.cs", "Space.RecordTradeEarnings(player, profit);")]
+    [TestCase("Service/Trade.cs", "Space.RecordTradeEarnings(player, profit, trade.Id);")]
     [TestCase("Service/TradeFreight.cs", "Space.RecordTradeEarnings(player, result.Fee);")]
     [TestCase("Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs", "Space.GrantModuleFittedAchievement(Player, moduleDetails);")]
     public void Milestones_GrantTheirAchievements(string file, string expected)

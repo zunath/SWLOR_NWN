@@ -66,6 +66,11 @@ public class CitySituationOutcomeTests
         var save = Body(source, "private static void SaveOutcome(");
         var mark = save.IndexOf("city.PendingSituationOutcome = CitySituationOutcome.Capture(situation, holdingEffects);\n            DB.Set(city);", StringComparison.Ordinal);
         var holding = save.IndexOf("HoldingCityAffairs.ApplyOutcome(city, city.PendingSituationOutcome, DateTime.UtcNow);", StringComparison.Ordinal);
+        save.IndexOf("CreateFollowUps(city.PendingSituationOutcome);", StringComparison.Ordinal)
+            .Should().BeInRange(mark, save.IndexOf("DB.Set(situation);", StringComparison.Ordinal),
+                "a follow-up is created only once the city holds the decision that queues it");
+        Body(source, "private static void QueueFollowUp(").Should().NotContain("DB.Set(", "the follow-up rides the outcome")
+            .And.Contain("outcomeEffects.FollowUps.Add(followUp);");
         var situation = save.IndexOf("DB.Set(situation);", StringComparison.Ordinal);
         var clear = save.IndexOf("city.PendingSituationOutcome = null;\n            DB.Set(city);", StringComparison.Ordinal);
         mark.Should().BeGreaterThanOrEqualTo(0, "the city's effects and the outcome are saved in one write");

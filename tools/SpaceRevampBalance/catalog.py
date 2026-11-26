@@ -19,6 +19,7 @@ import components as comp  # noqa: E402
 import events  # noqa: E402
 import model as m  # noqa: E402
 import npc_catalog  # noqa: E402
+import recipe_parameters  # noqa: E402
 import rewards as rw  # noqa: E402
 import scanning  # noqa: E402
 import slicing  # noqa: E402
@@ -1304,9 +1305,13 @@ def decor_recipe_enum(text):
 
 
 def decor_recipes_cs():
+    # The Fabricator settings tools/SWLOR.RecipeParameters wrote stay on each chain (recipe_parameters.py).
+    parameters = recipe_parameters.existing_calls(ROOT / DECOR_RECIPES)
     calls = []
     for d in rw.decor_rows():
         components = "".join(f'\n                .Component("{r}", {q})' for r, q in d["Components"])
+        if d["Enum"] in parameters:
+            components += f"\n                .{parameters[d['Enum']]}"
         calls.append(
             f"            // {d['Name']}: the bill and level of {d['Copies']}\n"
             f"            _builder.Create(RecipeType.{d['Enum']}, SkillType.Fabrication)\n"

@@ -97,13 +97,24 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>Adds credits earned from trade to the account's running total and grants the milestones it reached.</summary>
-        public static void RecordTradeEarnings(uint player, int credits)
+        public static void RecordTradeEarnings(uint player, int credits, string tradeId = null)
         {
             if (credits <= 0 || !GetIsPC(player) || GetIsDM(player))
                 return;
 
             var cdKey = GetPCPublicCDKey(player);
             var account = DB.Get<Account>(cdKey) ?? new Account(cdKey);
+            // A sale counts once: its id is saved with the total, so the login replay of an interrupted sale adds nothing twice.
+            if (!string.IsNullOrWhiteSpace(tradeId))
+            {
+                var playerId = GetObjectUUID(player);
+                account.AchievementProgress.LastTradeEarningsIds ??= new Dictionary<string, string>();
+                if (account.AchievementProgress.LastTradeEarningsIds.TryGetValue(playerId, out var last) &&
+                    string.Equals(last, tradeId, StringComparison.Ordinal))
+                    return;
+                account.AchievementProgress.LastTradeEarningsIds[playerId] = tradeId;
+            }
+
             account.AchievementProgress.TradeCreditsEarned += (ulong)credits;
             DB.Set(account);
 

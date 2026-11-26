@@ -39,6 +39,12 @@ namespace SWLOR.Game.Server.Service.TradeService
         /// </summary>
         public int Xp { get; init; }
 
+        /// <summary>
+        /// A sale's profit (negative for a loss), counted once toward the account's trade earnings milestones
+        /// (<see cref="Entity.AchievementProgress.LastTradeEarningsIds"/>). 0 for a purchase.
+        /// </summary>
+        public int Profit { get; init; }
+
         /// <summary>The pressure the trade puts on its market: a sale adds its units, a purchase takes them away.</summary>
         public int Pressure => -Units;
 
@@ -46,13 +52,20 @@ namespace SWLOR.Game.Server.Service.TradeService
             string.Join("|", Id, ShipId, ((int)Commodity).ToString(CultureInfo.InvariantCulture),
                 Units.ToString(CultureInfo.InvariantCulture), Credits.ToString(CultureInfo.InvariantCulture),
                 ((int)Exchange).ToString(CultureInfo.InvariantCulture), CityId ?? string.Empty,
-                Tariff.ToString(CultureInfo.InvariantCulture), Xp.ToString(CultureInfo.InvariantCulture));
+                Tariff.ToString(CultureInfo.InvariantCulture), Xp.ToString(CultureInfo.InvariantCulture),
+                Profit.ToString(CultureInfo.InvariantCulture));
 
+        /// <summary>
+        /// Reads a mark: ten fields, or the eight (no XP, no profit) or nine (no profit) an earlier build saved, whose
+        /// missing fields read as 0, so a mark saved before an upgrade still applies its cargo, pressure and tariff.
+        /// </summary>
         public static bool TryParse(string value, out PendingTrade trade)
         {
             trade = null;
             var parts = (value ?? string.Empty).Split('|');
-            if (parts.Length != 9 ||
+            var xp = 0;
+            var profit = 0;
+            if (parts.Length is < 8 or > 10 ||
                 string.IsNullOrWhiteSpace(parts[0]) ||
                 string.IsNullOrWhiteSpace(parts[1]) ||
                 !int.TryParse(parts[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out var commodity) ||
@@ -60,7 +73,8 @@ namespace SWLOR.Game.Server.Service.TradeService
                 !int.TryParse(parts[4], NumberStyles.Integer, CultureInfo.InvariantCulture, out var credits) ||
                 !int.TryParse(parts[5], NumberStyles.Integer, CultureInfo.InvariantCulture, out var exchange) ||
                 !int.TryParse(parts[7], NumberStyles.Integer, CultureInfo.InvariantCulture, out var tariff) ||
-                !int.TryParse(parts[8], NumberStyles.Integer, CultureInfo.InvariantCulture, out var xp))
+                (parts.Length > 8 && !int.TryParse(parts[8], NumberStyles.Integer, CultureInfo.InvariantCulture, out xp)) ||
+                (parts.Length > 9 && !int.TryParse(parts[9], NumberStyles.Integer, CultureInfo.InvariantCulture, out profit)))
             {
                 return false;
             }
@@ -75,7 +89,8 @@ namespace SWLOR.Game.Server.Service.TradeService
                 Exchange = (TradeExchangeType)exchange,
                 CityId = parts[6],
                 Tariff = tariff,
-                Xp = Math.Max(0, xp)
+                Xp = Math.Max(0, xp),
+                Profit = profit
             };
             return true;
         }

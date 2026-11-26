@@ -44,5 +44,12 @@ namespace SWLOR.Game.Server.Entity
         /// reads as null, so callers create it on use.
         /// </summary>
         public Dictionary<string, IncursionPayout> PendingRiftPayouts { get; set; }
+
+        /// <summary>
+        /// Key user id to the Rift Run spoils (player id to payout) of a pocket that key user opened and left before a save
+        /// held the spent key. Their next login releases them into <see cref="PendingRiftPayouts"/> when the saved file holds
+        /// the key as spent, or drops them when it returns the key. Older records read as null.
+        /// </summary>
+        public Dictionary<string, Dictionary<string, IncursionPayout>> HeldRiftPayouts { get; set; }
     }
 }

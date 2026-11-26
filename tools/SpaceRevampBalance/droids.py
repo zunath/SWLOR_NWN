@@ -24,6 +24,9 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import recipe_parameters  # noqa: E402
+
 REPO = Path(__file__).resolve().parents[2]
 TIERS = [1, 2, 3, 4, 5]
 ROMAN = {1: "I", 2: "II", 3: "III", 4: "IV", 5: "V"}
@@ -298,6 +301,9 @@ def recipes_cs():
              "    public class DroidIndustrialPartRecipes : IRecipeListDefinition", "    {",
              "        private readonly RecipeBuilder _builder = new();", "",
              "        public Dictionary<RecipeType, RecipeDetail> BuildRecipes()", "        {"]
+    # The Circuit settings tools/SWLOR.RecipeParameters wrote stay on each chain (recipe_parameters.py).
+    parameters = recipe_parameters.existing_calls(
+        REPO / "SWLOR.Game.Server/Feature/RecipeDefinition/EngineeringRecipeDefinition/DroidIndustrialPartRecipes.cs")
     for p in parts():
         lines += [f"            // {p['name']}",
                   f"            _builder.Create(RecipeType.{p['enum']}, SkillType.Engineering)",
@@ -307,7 +313,10 @@ def recipes_cs():
                   "                .Quantity(1)"]
         lines += [f"                .Component(\"{r}\", {q})" for r, q in p["bill"][:-1]]
         r, q = p["bill"][-1]
-        lines += [f"                .Component(\"{r}\", {q});", ""]
+        if p["enum"] in parameters:
+            lines += [f"                .Component(\"{r}\", {q})", f"                .{parameters[p['enum']]};", ""]
+        else:
+            lines += [f"                .Component(\"{r}\", {q});", ""]
     lines += ["            return _builder.Build();", "        }", "    }", "}", ""]
     return "\r\n".join(lines)
 

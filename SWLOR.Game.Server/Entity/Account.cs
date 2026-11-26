@@ -43,5 +43,11 @@ namespace SWLOR.Game.Server.Entity
 
         /// <summary>Credits earned from trade: commodity sale profit and freight contract fees (plan section 14).</summary>
         public ulong TradeCreditsEarned { get; set; }
+
+        /// <summary>
+        /// Each character's last exchange sale counted in <see cref="TradeCreditsEarned"/>, saved with it, so a sale a
+        /// restart interrupted counts once at the next login. Older records load null.
+        /// </summary>
+        public Dictionary<string, string> LastTradeEarningsIds { get; set; }
     }
 }

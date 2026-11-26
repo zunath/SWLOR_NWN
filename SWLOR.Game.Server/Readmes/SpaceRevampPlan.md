@@ -66,6 +66,14 @@ Before any work, read `AGENTS.md` and these guides, plus every guide named in th
 
 **Renumbered IDs (2026-11-25):** master's SWTOR furnishings (#3557) took RecipeType 7000-7499 and StructureType 437-450, so every generator-assigned space revamp RecipeType moved up 2,000 (7000-7798 to 9000-9798, the life support variants 8185-8194 to 10185-10194) and the space trophies moved from StructureType 437-456 to 457-476 (`structure_0457`-`0476`). Build notes below keep the numbers of the day they were written; add 2,000 to any RecipeType from 7000 to 7798 they name. Hand-written RecipeTypes from 8000 (fertilizer, planet identity, the Cargo enhancements 8180-8184) did not move.
 
+**Recovery fixes (2026-11-26, owner review of `3f62ee131b`):**
+
+- **Contract claims:** a claim's checkpoint is a persistent character-file local (`ObjectPlugin.SetString(..., true)`), which the BIC export keeps with the awards; an ordinary local was dropped by the export, so a restart after the character save could pay a claim twice. Removing a draft reward claims through `ClaimDeliveriesFrom`; `ClaimDeliveries(uint, Action)` stays the one private entry point the engine tests call.
+- **Rift Runs:** a run whose key user left before a save held the spent key holds its spoils (`IncursionState.HeldRiftPayouts`, by key user) instead of paying none; the key user's login releases them to every player's pending payouts when the saved file holds the key as spent, or drops them when it returns the key (`SpaceRiftRuns.SettleHeldRiftPayouts`, `RiftKeySpend`).
+- **Trade marks:** `TRADE_PENDING` carries the sale's XP and profit; marks with 8 or 9 fields from earlier builds still parse (missing fields read 0). The XP receipt (`Player.LastTradeXpId`) rides the frame's cached player record into `GiveSkillXP`'s own write, and the earnings milestone counts each character's last sale once (`AchievementProgress.LastTradeEarningsIds`), at login too.
+- **City follow-ups:** a decision's follow-up situation is saved with the pending outcome on the city (`CitySituationOutcome.FollowUps`, gathered in `CityOutcomeEffects`) and created once, by id, after the city holds the outcome or when `SettlePendingOutcome` settles it, never before the decision.
+- **Generators:** `bible_recipes.py` rebuilds each recipe row in place and keeps its minigame parameter cells; `catalog.py` and `droids.py` keep each recipe chain's `.<Key>Parameters(...)` call (`recipe_parameters.py`), so regenerating no longer strips the settings `SWLOR.RecipeParameters` wrote.
+
 **Reading the build notes:** each workstream's "Not built here" line records what that slice left out on the day it was built. Most of those items were built by later slices, and the line says so where it matters. The current open items are the ledger in section 19 (Open items), and the release gates beside it decide what must hold before the revamp merges.
 
 **Standing rules for this project:**

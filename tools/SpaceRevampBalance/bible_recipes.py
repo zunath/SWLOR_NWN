@@ -96,7 +96,14 @@ def cell(ref, value):
     return f'<c r="{ref}" s="{STYLE}" t="inlineStr"><is><t>{html.escape(value, quote=False)}</t></is></c>'
 
 
-def row_xml(number, r):
+def col_index(letter):
+    n = 0
+    for ch in letter:
+        n = n * 26 + ord(ch) - 64
+    return n
+
+
+def row_xml(number, r, kept_cells=()):
     if r["sheet"] == FABRICATION_SHEET:
         cells = [("A", r["skill"]), ("C", r["perk"]), ("D", r["enum"]), ("E", r["category"]), ("F", r["perk_level"]),
                  ("G", r["name"]), ("H", r["level"]), ("I", r.get("quantity", 1)), ("J", r["resref"]), ("K", r["storage"]),
@@ -111,7 +118,9 @@ def row_xml(number, r):
         cells.append((column, resref))
         cells.append((col_after(column), quantity))
     cells.append((RESEARCH_COLUMN[r["sheet"]], 0))
-    return f'<row r="{number}">' + "".join(cell(f"{col}{number}", v) for col, v in cells) + "</row>"
+    # The minigame parameter cells tools/UpdateRecipeParameterBible.py wrote after the research column stay as written.
+    kept = "".join(re.sub(r'(<c r="[A-Z]+)\d+"', lambda mo: f'{mo.group(1)}{number}"', c, count=1) for c in kept_cells)
+    return f'<row r="{number}">' + "".join(cell(f"{col}{number}", v) for col, v in cells) + kept + "</row>"
 
 
 def sheet_path(zf, name=SHEET_NAME):
@@ -126,10 +135,20 @@ def sheet_path(zf, name=SHEET_NAME):
 def rewrite(xml, rows, generated_enums):
     """Drops every previously generated row (any enum this generator writes, on any tab) and appends this tab's rows."""
 
+    parameter_cells = {}
+    positions = {}
+
     def generated(match):
         number = match.group(1)
         d = re.search(r'<c r="D%s"[^>]*t="inlineStr"><is><t[^>]*>([^<]*)</t>' % number, match.group(0))
-        return d is not None and d.group(1) in generated_enums
+        if d is None or d.group(1) not in generated_enums:
+            return False
+        # Keep the cells after the research column (the minigame parameters) by recipe enum, for the rebuilt row.
+        research = col_index(RESEARCH_COLUMN[rows[0]["sheet"]]) if rows else 0
+        positions[d.group(1)] = int(number)
+        parameter_cells[d.group(1)] = [c.group(0) for c in re.finditer(r'<c r="([A-Z]+)%s"[^>]*?(?:/>|>.*?</c>)' % number, match.group(0), re.S)
+                                       if research and col_index(c.group(1)) > research]
+        return True
 
     def blank(text):
         return "<v>" not in text and "<is>" not in text
@@ -146,11 +165,17 @@ def rewrite(xml, rows, generated_enums):
         kept.append((number, match.group(0)))
         if not blank(match.group(0)):
             last = max(last, number)
-    # New rows follow the last row with a value; formatting-only blank rows they land on are replaced.
-    new_rows = [(last + 1 + i, row_xml(last + 1 + i, r)) for i, r in enumerate(rows)]
+    # A recipe that already has a row on this tab is rebuilt in place, so a rerun over current data changes nothing;
+    # new recipes follow the last row with a value, replacing the formatting-only blank rows they land on.
+    in_place = [r for r in rows if r["enum"] in positions]
+    for r in in_place:
+        last = max(last, positions[r["enum"]])
+    new_rows = [(positions[r["enum"]], row_xml(positions[r["enum"]], r, parameter_cells.get(r["enum"], ()))) for r in in_place]
+    appended = [r for r in rows if r["enum"] not in positions]
+    new_rows += [(last + 1 + i, row_xml(last + 1 + i, r, ())) for i, r in enumerate(appended)]
     taken = {n for n, _ in new_rows}
     merged = sorted([x for x in kept if x[0] not in taken] + new_rows, key=lambda x: x[0])
-    end = last + len(new_rows)
+    end = last + len(appended)
     tail = re.sub(r'(<autoFilter ref="\$A\$1:\$[A-Z]+\$)\d+', lambda mo: mo.group(1) + str(max(end, last)), tail, count=1)
     return head + "<sheetData>" + "".join(x for _, x in merged) + "</sheetData>" + tail, end
 

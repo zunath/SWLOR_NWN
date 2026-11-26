@@ -468,7 +468,7 @@ public class SpaceItemMigrationTests
         var mark = removal.IndexOf("rewardItem.RemovalId = Guid.NewGuid().ToString();\n            DB.Set(draft);", StringComparison.Ordinal);
         mark.Should().BeGreaterThan(0, "the removal is marked on the draft before either record changes");
         removal.IndexOf("var delivery = FinishRewardRemoval(draft, rewardItem);", StringComparison.Ordinal).Should().BeGreaterThan(mark);
-        removal.IndexOf("ClaimDeliveries(player, SaveCharacterOrThrow, delivery.Id);", StringComparison.Ordinal)
+        removal.IndexOf("ClaimDeliveriesFrom(player, () => SaveCharacterOrThrow(player), delivery.Id);", StringComparison.Ordinal)
             .Should().BeGreaterThan(removal.IndexOf("var delivery = FinishRewardRemoval(draft, rewardItem);", StringComparison.Ordinal));
 
         var finish = board[board.IndexOf("private static QuestContractDelivery FinishRewardRemoval(", StringComparison.Ordinal)..];
@@ -479,7 +479,13 @@ public class SpaceItemMigrationTests
             .Should().BeLessThan(finish.IndexOf("draft.RewardItems.Remove(rewardItem);", StringComparison.Ordinal), "the delivery holds the item before the draft lets it go");
         board[board.IndexOf("public static QuestContract GetDraft(uint player)", StringComparison.Ordinal)..]
             .Should().Contain("SettleRewardRemovals(draft);", "a removal a restart interrupted is finished before the draft is used");
-        claim = board[board.IndexOf("private static void ClaimDeliveries(uint player, Action saveCharacter, string onlyDeliveryId = null)", StringComparison.Ordinal)..];
+        claim = board[board.IndexOf("private static void ClaimDeliveriesFrom(uint player, Action saveCharacter, string onlyDeliveryId)", StringComparison.Ordinal)..];
+        claim.Should().Contain("checkpoint => ObjectPlugin.SetString(player, checkpointName, JsonConvert.SerializeObject(checkpoint), true),",
+                "the claim checkpoint is a persistent local, which the BIC export keeps with the awards")
+            .And.NotContain("SetLocalString(player, checkpointName", "an ordinary local is not in the saved character file");
+        typeof(SWLOR.Game.Server.Service.QuestContractBoard).GetMethods(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
+            .Where(x => x.Name == "ClaimDeliveries").Should().ContainSingle("the engine tests look the claim up by name")
+            .Which.GetParameters().Select(x => x.ParameterType).Should().Equal(typeof(uint), typeof(Action));
         claim.IndexOf("GetDraft(player);", StringComparison.Ordinal)
             .Should().BeInRange(0, claim.IndexOf("var deliveries = ReadDeliveries(query)", StringComparison.Ordinal), "and before any delivery is claimed");
         board.Should().Contain("GiveGoldToCreature(player, item.RetiredSpaceCredits);")

@@ -333,7 +333,7 @@ namespace SWLOR.Game.Server.Service
             var delivery = FinishRewardRemoval(draft, rewardItem);
 
             Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{draft.AuthorPlayerId}] removed reward item '{rewardItem.Name}' from contract draft '{draft.Id}' into delivery '{delivery.Id}'.");
-            ClaimDeliveries(player, SaveCharacterOrThrow, delivery.Id);
+            ClaimDeliveriesFrom(player, () => SaveCharacterOrThrow(player), delivery.Id);
 
             return string.Empty;
         }
@@ -658,17 +658,21 @@ namespace SWLOR.Game.Server.Service
                 throw new InvalidOperationException("The contract claim character checkpoint could not be saved.");
         }
 
-        /// <summary>Claims one pending delivery of the player's (<paramref name="deliveryId"/>) as <see cref="ClaimDeliveries(uint)"/> does.</summary>
-        private static void ClaimDeliveries(uint player, Action<uint> saveCharacter, string deliveryId)
-        {
-            ClaimDeliveries(player, () => saveCharacter(player), deliveryId);
-        }
-
         /// <summary>
         /// Claims each delivery through a durable character checkpoint before persisting its remaining
         /// value. Empty reward receipts remain only while their source can recover settlement.
         /// </summary>
-        private static void ClaimDeliveries(uint player, Action saveCharacter, string onlyDeliveryId = null)
+        private static void ClaimDeliveries(uint player, Action saveCharacter)
+        {
+            ClaimDeliveriesFrom(player, saveCharacter, null);
+        }
+
+        /// <summary>
+        /// Claims the player's pending deliveries, or only <paramref name="onlyDeliveryId"/>. Each claim's checkpoint is a
+        /// persistent character-file local (the BIC export keeps those, not ordinary locals), saved with the awards it
+        /// records, so a restart after the character save and before the delivery is reduced never pays it twice.
+        /// </summary>
+        private static void ClaimDeliveriesFrom(uint player, Action saveCharacter, string onlyDeliveryId)
         {
             // A reward removal a restart interrupted is finished first, so its reward is claimable from the delivery only.
             GetDraft(player);
@@ -693,8 +697,8 @@ namespace SWLOR.Game.Server.Service
                 try
                 {
                     var remaining = QuestContractClaim.Claim(delivery,
-                        () => JsonConvert.DeserializeObject<QuestContractClaim>(GetLocalString(player, checkpointName)),
-                        checkpoint => SetLocalString(player, checkpointName, JsonConvert.SerializeObject(checkpoint)),
+                        () => JsonConvert.DeserializeObject<QuestContractClaim>(ObjectPlugin.GetString(player, checkpointName)),
+                        checkpoint => ObjectPlugin.SetString(player, checkpointName, JsonConvert.SerializeObject(checkpoint), true),
                         itemData =>
                         {
                             var item = ObjectPlugin.Deserialize(itemData.Data);
@@ -717,7 +721,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         if (!remaining.IsRewardPayment || DB.Get<QuestContract>(remaining.SourceContractId) == null)
                             DB.Delete<QuestContractDelivery>(remaining.Id);
-                        DeleteLocalString(player, checkpointName);
+                        ObjectPlugin.DeleteString(player, checkpointName);
                     }
                 }
                 catch (Exception ex)

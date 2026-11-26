@@ -202,13 +202,22 @@ public class RiftRunTests
         runs.Should().Contain("KeyUser = spentKey ? user : OBJECT_INVALID,", "the run remembers who spent the key");
         new RiftRun().KeyUser.Should().Be(SWLOR.NWN.API.NWScript.NWScript.OBJECT_INVALID, "a run opened without a key has no key user");
         runs.Should().Contain("KeyUserId = spentKey ? GetObjectUUID(user) : string.Empty,", "the spend is kept by the key user's character id");
-        var gate = pay.IndexOf("if (!IsRiftKeySpendSaved(run))", StringComparison.Ordinal);
+        var gate = pay.IndexOf("if (spend == RiftKeySpend.Refunded)", StringComparison.Ordinal);
         gate.Should().BeGreaterThan(0);
         pay.IndexOf("return;", gate, StringComparison.Ordinal)
             .Should().BeLessThan(pay.IndexOf("CapitalBattleRules.AddPending(", StringComparison.Ordinal),
-                "no ship's spoils are recorded while the key that opened the run can still be refunded");
-        pay.Should().NotContain("aboard.Where(IsRiftKeySpendSaved)", "the gate is run-wide, not per recipient");
-        var settled = runs[runs.IndexOf("private static bool IsRiftKeySpendSaved(", StringComparison.Ordinal)..];
+                "no ship's spoils are recorded when the key that opened the run is refunded");
+        pay.Should().Contain("var payouts = spend == RiftKeySpend.Saved ? state.PendingRiftPayouts : new Dictionary<string, IncursionPayout>();",
+            "an unconfirmed spend computes the spoils apart from the payable ones");
+        var whole = runs[runs.IndexOf("private static void PayRiftRun(", StringComparison.Ordinal)..];
+        whole = whole[..whole.IndexOf("public static void DeliverPendingRiftRunPayout(", StringComparison.Ordinal)];
+        whole.IndexOf("state.HeldRiftPayouts[run.KeyUserId] = held", StringComparison.Ordinal)
+            .Should().BeInRange(0, whole.IndexOf("CollectPendingPayout(player, state.PendingRiftPayouts", StringComparison.Ordinal),
+                "a run whose key user left before the spend saved holds its spoils for that user's login");
+        var release = runs[runs.IndexOf("private static void SettleHeldRiftPayouts(", StringComparison.Ordinal)..];
+        release.Should().Contain("CapitalBattleRules.AddPending(state.PendingRiftPayouts, playerId, payout);")
+            .And.Contain("if (spendSaved)");
+        var settled = runs[runs.IndexOf("private static RiftKeySpend GetRiftKeySpend(", StringComparison.Ordinal)..];
         settled.IndexOf("if (string.IsNullOrEmpty(resref) || CharacterCheckpoint.Save(player))", StringComparison.Ordinal)
             .Should().BeLessThan(settled.IndexOf("ObjectPlugin.SetString(player, PendingRiftKeyVariable, resref, true);", StringComparison.Ordinal),
                 "the spend is saved again first, and only a second failure turns the spoils into the key's refund");
@@ -218,7 +227,8 @@ public class RiftRunTests
         login.Should().Contain("foreach (var run in _riftRuns.Values.Where(x => x.KeyUserId == playerId && !x.KeySpendSaved && !x.KeyRefunded))",
                 "the key user's login settles the spend from what their saved file holds")
             .And.Contain("run.KeySpendSaved = true;")
-            .And.Contain("run.KeyRefunded = true;");
+            .And.Contain("run.KeyRefunded = true;")
+            .And.Contain("SettleHeldRiftPayouts(playerId, spendSaved: string.IsNullOrEmpty(resref));");
         open.Should().Contain("run.KeySpendSaved = true;", "the save after the opening confirms the spend");
     }
 

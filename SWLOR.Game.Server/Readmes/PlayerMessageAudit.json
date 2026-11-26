@@ -92,7 +92,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/PerkService.cs",
-    "Line": 1426,
+    "Line": 1098,
     "Member": "RemovePerkLevelOnSkillDecay",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Perk '{perkDetail.Name}' level {level} was refunded because your skill fell under the minimum requirements. You reclaimed {perkLevel.Price} SP.\", player, false)"

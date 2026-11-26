@@ -617,28 +617,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",
-    "Line": 96,
+    "Line": 107,
     "Member": "GateStealthEntry",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red(\"You have not learned to move unseen. The Stealth perk is required.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",
-    "Line": 103,
+    "Line": 114,
     "Member": "GateStealthEntry",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red(\"You cannot enter stealth while in combat.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",
-    "Line": 264,
+    "Line": 275,
     "Member": "BreakStealthOnDamageDealt",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, \"Your attack gives away your position.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",
-    "Line": 749,
+    "Line": 760,
     "Member": "ExitDetectedPlayerStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, ColorToken.Red(\"You have been detected and are forced out of stealth.\"))"
@@ -932,7 +932,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Creatures/AIActionService.cs",
-    "Line": 283,
+    "Line": 286,
     "Member": "ExecuteAction",
     "Delivery": "Retained",
     "Call": "SpeakString(action.Text)"
@@ -1450,56 +1450,56 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs",
-    "Line": 86,
+    "Line": 88,
     "Member": "UseActivator",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You are not ready to use this object.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs",
-    "Line": 94,
+    "Line": 96,
     "Member": "UseActivator",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This encounter object is missing its encounter ID. Please inform an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs",
-    "Line": 100,
+    "Line": 102,
     "Member": "UseActivator",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This encounter is already active.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs",
-    "Line": 108,
+    "Line": 110,
     "Member": "UseActivator",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You need {Time.GetTimeLongIntervals(remainingCooldown, false)} before you can call this encounter again.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs",
-    "Line": 116,
+    "Line": 118,
     "Member": "UseActivator",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This encounter object is missing its creature resref. Please inform an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs",
-    "Line": 124,
+    "Line": 126,
     "Member": "UseActivator",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"The encounter failed to start. Please inform an admin.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs",
-    "Line": 139,
+    "Line": 141,
     "Member": "UseActivator",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"The encounter has begun.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs",
-    "Line": 521,
+    "Line": 523,
     "Member": "SendMessageToNearbyPlayers",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(receiver, message)"
@@ -1919,126 +1919,126 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 704,
+    "Line": 707,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to pilot this starship.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 714,
+    "Line": 717,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"ERROR: Could not locate ship. Notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 721,
+    "Line": 724,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This ship's controls are in use.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 727,
+    "Line": 730,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have the ability to pilot this ship.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 741,
+    "Line": 744,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Unable to locate this starship's space destination. Notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 749,
+    "Line": 752,
     "Member": "UseShipComputer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This starship's space destination is unavailable. Notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 843,
+    "Line": 846,
     "Member": "CheckShipLaunch",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Unable to reach this starship's space destination. Please try again or notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 1493,
+    "Line": 1496,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Unable to use that module.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 1509,
+    "Line": 1512,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 1517,
+    "Line": 1520,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"That module is not ready.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 1543,
+    "Line": 1546,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"This module cannot be used on that target type.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 1550,
+    "Line": 1553,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, \"Invalid target.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 1561,
+    "Line": 1564,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, $\"Target is too far away. Maximum distance: {maxDistance} meters.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 1579,
+    "Line": 1582,
     "Member": "ActivateShipModule",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, result)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 2306,
+    "Line": 2309,
     "Member": "ApplyDeath",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"The ship has exploded!\"), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 2494,
+    "Line": 2497,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(attacker, buildMessage, ShipDamageMessageRange)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 2500,
+    "Line": 2503,
     "Member": "NotifyShipDamage",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, buildMessage(target))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Space/SpaceService.cs",
-    "Line": 2712,
+    "Line": 2715,
     "Member": "PreventSpaceStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red($\"You cannot enter stealth mode in space.\"))"

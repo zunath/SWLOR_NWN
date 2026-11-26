@@ -236,9 +236,11 @@ namespace SWLOR.Game.Server.Service
             // Players online now collect at once; the rest collect at their next login (DeliverPendingRiftRunPayout).
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
-                var playerId = GetObjectUUID(player);
+                // A loop-body copy: the delayed call must not see the for loop's variable after it has moved on.
+                var recipient = player;
+                var playerId = GetObjectUUID(recipient);
                 if (held.ContainsKey(playerId))
-                    DelayCommand(6f, () => CollectPendingPayout(player, IncursionRecord.PendingRiftPayouts, playerId,
+                    DelayCommand(6f, () => CollectPendingPayout(recipient, IncursionRecord.PendingRiftPayouts, playerId,
                         "Rift Run spoils", "RIFT RUN PAYOUT"));
             }
         }

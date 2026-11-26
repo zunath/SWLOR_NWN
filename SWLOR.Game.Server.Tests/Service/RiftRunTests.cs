@@ -216,7 +216,8 @@ public class RiftRunTests
                 "a run whose key user left before the spend saved holds its spoils for that user's login");
         var release = runs[runs.IndexOf("private static void SettleHeldRiftPayouts(", StringComparison.Ordinal)..];
         release.Should().Contain("CapitalBattleRules.AddPending(state.PendingRiftPayouts, playerId, payout);")
-            .And.Contain("if (spendSaved)");
+            .And.Contain("if (spendSaved)")
+            .And.Contain("DelayCommand(6f, () => CollectPendingPayout(recipient,", "the delayed delivery captures its own player, not the loop variable");
         var settled = runs[runs.IndexOf("private static RiftKeySpend GetRiftKeySpend(", StringComparison.Ordinal)..];
         settled.IndexOf("if (string.IsNullOrEmpty(resref) || CharacterCheckpoint.Save(player))", StringComparison.Ordinal)
             .Should().BeLessThan(settled.IndexOf("ObjectPlugin.SetString(player, PendingRiftKeyVariable, resref, true);", StringComparison.Ordinal),

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
@@ -17,6 +18,21 @@ namespace SWLOR.Game.Server.Service
         private const int MaxPackedTelegraphSize = 255;
         private const int MaxPackedTelegraphRotation = 1023;
         private const float TwoPi = (float)(Math.PI * 2.0);
+
+        // Fill timing protocol, shared with fsfbpostpr.shd in the haks. The client's own world timer
+        // runs minutes away from the server's, by an amount that differs per client, so the server
+        // sends its fill clock as a uniform while a viewer has a filling shape. Each slot's vec w
+        // packs the fill start (clock milliseconds, below the period) and the fill length (in units),
+        // which stays an exact float integer below 2^24.
+        private const int FillClockPeriodMilliseconds = 1 << 17;
+        private const int FillDurationUnitMilliseconds = 250;
+        private const int MaxFillDurationUnits = 127;
+        private const int FillClockIntervalMilliseconds = 100;
+        private const ShaderUniformType FillClockUniform = ShaderUniformType.Type1;
+
+        private static readonly Stopwatch _fillClock = Stopwatch.StartNew();
+        private static readonly HashSet<uint> _fillClockViewers = new();
+        private static bool _fillClockScheduled;
 
         private static readonly Dictionary<uint, Dictionary<string, ActiveTelegraph>> _telegraphsByArea = new();
         private static readonly Dictionary<string, ActiveTelegraph> _allTelegraphs = new();
@@ -185,13 +201,59 @@ namespace SWLOR.Game.Server.Service
 
             var start = GetMicrosecondCounter();
             var end = (int)(start + data.Duration * 1000 * 1000);
-            var telegraph = new ActiveTelegraph(area, start, end, data);
+            var telegraph = new ActiveTelegraph(area, start, end, data)
+            {
+                FillStartMilliseconds = _fillClock.ElapsedMilliseconds,
+                FillDurationMilliseconds = GetFillDurationMilliseconds(data)
+            };
 
             if (!_telegraphsByArea.ContainsKey(area))
                 _telegraphsByArea[area] = new Dictionary<string, ActiveTelegraph>();
 
             _telegraphsByArea[area][telegraphId] = telegraph;
             _allTelegraphs[telegraphId] = telegraph;
+        }
+
+        /// <summary>
+        /// Pre-cast telegraphs fill over their wind-up. Impact flashes mark an area that was already
+        /// struck and lingering areas have no moment to count down to, so neither fills. A wind-up so
+        /// long that its fill would start more than half a clock period away cannot be placed on the
+        /// clock, so it keeps the unfilled look.
+        /// </summary>
+        private static int GetFillDurationMilliseconds(TelegraphData data)
+        {
+            if (data.IsImpactFlash || data.IsPersistentAreaIndicator || data.Duration <= 0f)
+                return 0;
+
+            var duration = (int)Math.Round(data.Duration * 1000f);
+            var fillDelay = duration - MaxFillDurationUnits * FillDurationUnitMilliseconds;
+            return fillDelay >= FillClockPeriodMilliseconds / 2 ? 0 : duration;
+        }
+
+        /// <summary>
+        /// Packs a slot's fill timing into its vec uniform's w: the start on the fill clock plus the
+        /// length in 250 ms units times the clock period. Zero means the shape does not fill. A wind-up
+        /// longer than the longest packable fill starts filling later, so it is still full as it fires.
+        /// </summary>
+        private static float PackFillTiming(long startMilliseconds, int durationMilliseconds)
+        {
+            if (durationMilliseconds <= 0)
+                return 0f;
+
+            var units = Math.Max(1, (int)Math.Round(durationMilliseconds / (float)FillDurationUnitMilliseconds));
+            if (units > MaxFillDurationUnits)
+            {
+                startMilliseconds += (long)(units - MaxFillDurationUnits) * FillDurationUnitMilliseconds;
+                units = MaxFillDurationUnits;
+            }
+
+            var start = (int)(startMilliseconds % FillClockPeriodMilliseconds);
+            return start + units * (float)FillClockPeriodMilliseconds;
+        }
+
+        private static float GetFillClockUniformValue(long nowMilliseconds)
+        {
+            return nowMilliseconds % FillClockPeriodMilliseconds;
         }
 
         public static void OnRemoved(uint telegrapher, string telegraphId)
@@ -522,7 +584,66 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void ForgetShaderStateOnExit()
         {
-            _sentShaderStates.Remove(GetExitingObject());
+            var player = GetExitingObject();
+            _sentShaderStates.Remove(player);
+            _fillClockViewers.Remove(player);
+        }
+
+        private static void SendFillClock(uint player, long nowMilliseconds)
+        {
+            SetShaderUniformFloat(player, FillClockUniform, GetFillClockUniformValue(nowMilliseconds));
+            FrameProfiler.Count(FrameMetric.TelegraphFillClock);
+        }
+
+        /// <summary>
+        /// Keeps the fill clock moving for viewers with a shape still filling. Viewers whose fills have
+        /// all completed or who left the game drop out, so an idle server sends nothing.
+        /// </summary>
+        private static void TickFillClock()
+        {
+            if (_fillClockViewers.Count == 0)
+                return;
+
+            var now = _fillClock.ElapsedMilliseconds;
+            foreach (var viewer in _fillClockViewers.ToArray())
+            {
+                if (!GetIsObjectValid(viewer) || !_sentShaderStates.TryGetValue(viewer, out var sent))
+                {
+                    _fillClockViewers.Remove(viewer);
+                    continue;
+                }
+
+                // The last update lands past every fill's end, so no shape stays just short of full.
+                SendFillClock(viewer, now);
+                if (now > sent.FillClockActiveUntil)
+                    _fillClockViewers.Remove(viewer);
+            }
+        }
+
+        private static void TrackFillClockViewer(uint player, TelegraphShaderState sent, long now)
+        {
+            if (sent.FillClockActiveUntil <= 0)
+            {
+                _fillClockViewers.Remove(player);
+                return;
+            }
+
+            // The clock goes out before the slots so a new fill start never meets a stale clock, and
+            // a viewer arriving after a fill finished still sees that shape full.
+            SendFillClock(player, now);
+            if (now > sent.FillClockActiveUntil)
+            {
+                _fillClockViewers.Remove(player);
+                return;
+            }
+
+            if (!_fillClockScheduled)
+            {
+                _fillClockScheduled = true;
+                Scheduler.ScheduleRepeating(TickFillClock, TimeSpan.FromMilliseconds(FillClockIntervalMilliseconds));
+            }
+
+            _fillClockViewers.Add(player);
         }
 
         /// <summary>
@@ -553,6 +674,8 @@ namespace SWLOR.Game.Server.Service
             var area = GetArea(player);
             if (!_telegraphsByArea.ContainsKey(area))
             {
+                sent.FillClockActiveUntil = 0;
+                _fillClockViewers.Remove(player);
                 ResetTelegraphShaderSlots(player, sent, 0);
                 return;
             }
@@ -561,11 +684,20 @@ namespace SWLOR.Game.Server.Service
             var telegraphs = SelectTelegraphsForRendering(
                 _telegraphsByArea[area].Values.Select(telegraph => BuildRenderCandidate(player, partyMember, telegraph)));
 
+            sent.FillClockActiveUntil = telegraphs
+                .Where(candidate => candidate.Telegraph.FillDurationMilliseconds > 0)
+                .Select(candidate => candidate.Telegraph.FillStartMilliseconds + candidate.Telegraph.FillDurationMilliseconds)
+                .DefaultIfEmpty(0)
+                .Max();
+            TrackFillClockViewer(player, sent, _fillClock.ElapsedMilliseconds);
+
             var i = 0;
             foreach (var candidate in telegraphs)
             {
                 var data = candidate.Telegraph.Data;
-                var position = data.Position;
+                var position = new Vector4(
+                    data.Position,
+                    PackFillTiming(candidate.Telegraph.FillStartMilliseconds, candidate.Telegraph.FillDurationMilliseconds));
                 var size = data.Size;
 
                 var packed = PackTelegraphData(data.Shape, candidate.ColorType, size, data.Rotation);
@@ -588,7 +720,7 @@ namespace SWLOR.Game.Server.Service
                         position.X,
                         position.Y,
                         position.Z,
-                        0f);
+                        position.W);
                     sent.Positions[i] = position;
                     FrameProfiler.Count(FrameMetric.TelegraphUniform);
                 }

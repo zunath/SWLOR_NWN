@@ -180,14 +180,14 @@ Largest 15 of 22 (all in `DomainCycles.txt`):
 | `Gameplay content <-> UI content` | 9 | Gameplay content -> UI content: 2 edge(s), 2 member(s); UI content -> Gameplay content: 7 edge(s), 9 member(s) |
 | `Abilities <-> Platform` | 6 | Abilities -> Platform: 5 edge(s), 75 member(s); Platform -> Abilities: 1 edge(s), 2 member(s) |
 | `Character <-> Platform` | 6 | Character -> Platform: 4 edge(s), 138 member(s); Platform -> Character: 2 edge(s), 32 member(s) |
-| `Combat <-> Platform` | 6 | Combat -> Platform: 5 edge(s), 246 member(s); Platform -> Combat: 1 edge(s), 48 member(s) |
+| `Combat <-> Platform` | 6 | Combat -> Platform: 5 edge(s), 250 member(s); Platform -> Combat: 1 edge(s), 48 member(s) |
 | `Foundation content <-> Gameplay content` | 5 | Foundation content -> Gameplay content: 2 edge(s), 4 member(s); Gameplay content -> Foundation content: 3 edge(s), 3 member(s) |
 | `Abilities content <-> Gameplay content` | 4 | Abilities content -> Gameplay content: 2 edge(s), 5 member(s); Gameplay content -> Abilities content: 2 edge(s), 2 member(s) |
 | `Foundation <-> UI` | 4 | Foundation -> UI: 1 edge(s), 6 member(s); UI -> Foundation: 3 edge(s), 127 member(s) |
 | `Items <-> Platform` | 4 | Items -> Platform: 3 edge(s), 46 member(s); Platform -> Items: 1 edge(s), 6 member(s) |
 | `Abilities content <-> Character content` | 3 | Abilities content -> Character content: 1 edge(s), 444 member(s); Character content -> Abilities content: 2 edge(s), 10 member(s) |
 | `Abilities <-> Combat` | 2 | Abilities -> Combat: 1 edge(s), 281 member(s); Combat -> Abilities: 1 edge(s), 10 member(s) |
-| `Character <-> Combat` | 2 | Character -> Combat: 1 edge(s), 1 member(s); Combat -> Character: 1 edge(s), 1118 member(s) |
+| `Character <-> Combat` | 2 | Character -> Combat: 1 edge(s), 1 member(s); Combat -> Character: 1 edge(s), 1121 member(s) |
 | `Character <-> Companions` | 2 | Character -> Companions: 1 edge(s), 2 member(s); Companions -> Character: 1 edge(s), 173 member(s) |
 | `Character <-> Items` | 2 | Character -> Items: 1 edge(s), 1 member(s); Items -> Character: 1 edge(s), 30 member(s) |
 | `Character <-> Quests` | 2 | Character -> Quests: 1 edge(s), 2 member(s); Quests -> Character: 1 edge(s), 31 member(s) |

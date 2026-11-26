@@ -16,11 +16,6 @@ namespace SWLOR.Game.Server.Domain.Character
         /// </summary>
         void CachePerkFeatData();
 
-        /// <summary>
-        /// When the module loads, forgets the feat lookups of an earlier cache build.
-        /// </summary>
-        void ResetPerkFeatCache();
-
         IReadOnlyList<FeatType> GetGrantedFeatsForPerkLevel(PerkType perkType, int perkLevel);
 
         IReadOnlyList<FeatType> GetCurrentActiveAbilityFeats(PerkType perkType, int perkLevel);

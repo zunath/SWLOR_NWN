@@ -50,17 +50,6 @@ namespace SWLOR.Game.Server.Domain.Character
             _perk = perk;
         }
 
-        /// <summary>
-        /// When the module loads, forgets the feat lookups of an earlier cache build so the next read builds them again from
-        /// the perks the catalog cached. It runs right after <see cref="PerkService.CacheData"/>, where the catalog build used to clear the flag.
-        /// </summary>
-        [BootPhase(BootReload.Rerun)]
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
-        public void ResetPerkFeatCache()
-        {
-            _perkFeatCacheLoaded = false;
-        }
-
         [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void CachePerkFeatData()

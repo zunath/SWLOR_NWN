@@ -214,19 +214,6 @@ public class PerkGrantedFeatServiceTests : PerkTestBase
     }
 
     [Test]
-    public void ResetPerkFeatCache_MakesTheNextReadBuildTheLookupsAgain()
-    {
-        Load();
-        _bench.Abilities.Remove(PerkBench.ActiveFeatOne);
-        // The built lookups stay until something resets them.
-        _bench.Feats.GetAllActiveAbilityFeats(Plain).Should().Equal(PerkBench.ActiveFeatOne, PerkBench.ActiveFeatTwo);
-
-        _bench.Feats.ResetPerkFeatCache();
-
-        _bench.Feats.GetAllActiveAbilityFeats(Plain).Should().Equal(PerkBench.ActiveFeatTwo);
-    }
-
-    [Test]
     public void CachePerkFeatData_OfANewInstanceBuildsItsOwnTablesAndLeavesTheOldOnesAlone()
     {
         Load();
@@ -240,21 +227,16 @@ public class PerkGrantedFeatServiceTests : PerkTestBase
     }
 
     [Test]
-    public void TheBootHandlers_AreRerunHandlersOnTheCacheEvents()
+    public void CachePerkFeatData_IsARerunBootHandlerOnTheCacheAfterEvent()
     {
-        foreach (var (name, script) in new[]
-                 {
-                     (nameof(PerkGrantedFeatService.ResetPerkFeatCache), ScriptName.OnModuleCacheBefore),
-                     (nameof(PerkGrantedFeatService.CachePerkFeatData), ScriptName.OnModuleCacheAfter),
-                 })
-        {
-            var method = typeof(PerkGrantedFeatService).GetMethod(name)!;
+        var method = typeof(PerkGrantedFeatService).GetMethod(nameof(PerkGrantedFeatService.CachePerkFeatData))!;
 
-            method.GetCustomAttributes(typeof(BootPhaseAttribute), false).Cast<BootPhaseAttribute>().Single().Reload
-                .Should().Be(BootReload.Rerun, name);
-            method.GetCustomAttributes(typeof(NWNEventHandler), false).Cast<NWNEventHandler>().Single().Script
-                .Should().Be(script, name);
-        }
+        method.GetCustomAttributes(typeof(BootPhaseAttribute), false).Cast<BootPhaseAttribute>().Single().Reload
+            .Should().Be(BootReload.Rerun, "a hot reload builds new lookups and nothing else would fill them");
+        method.GetCustomAttributes(typeof(NWNEventHandler), false).Cast<NWNEventHandler>().Single().Script
+            .Should().Be(ScriptName.OnModuleCacheAfter);
+        typeof(PerkGrantedFeatService).GetMethods().Where(m => m.GetCustomAttributes(typeof(NWNEventHandler), false).Length > 0)
+            .Should().ContainSingle("the part has no other boot handler");
     }
 
     [Test]

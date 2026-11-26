@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     /// reload must recheck"). One phase per generation like <see cref="HotReloadPerksEngineTests"/>: the first run checks the parts in the
     /// boot build; each later run, in the new build, checks that
     /// <list type="bullet">
-    /// <item>exactly one <see cref="PerkGrantedFeatService"/> handler is registered for each cache event (the reset before, the lookups
-    /// after) and exactly one <see cref="PerkRefundService"/> handler for the skill decay event, each bound to this build's instance;</item>
+    /// <item>exactly one <see cref="PerkGrantedFeatService"/> handler is registered for the cache event that builds the lookups and exactly one
+    /// <see cref="PerkRefundService"/> handler for the skill decay event, each bound to this build's instance;</item>
     /// <item>this build's feat lookups hold the active ability feats of every perk, as an independent walk of the perk and ability catalogs finds
     /// them (the handlers filled them once for the generation, not left empty);</item>
     /// <item>a purchased perk's feat reaches a player through this build's sync, and the login restore gives it back after it is taken away;</item>
@@ -131,7 +131,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private void AssertHandlers(EngineTestContext ctx)
         {
-            AssertOneHandler(ctx, ScriptName.OnModuleCacheBefore, nameof(PerkGrantedFeatService), GrantedFeats);
             AssertOneHandler(ctx, ScriptName.OnModuleCacheAfter, nameof(PerkGrantedFeatService), GrantedFeats);
             AssertOneHandler(ctx, ScriptName.OnSwlorLoseSkill, nameof(PerkRefundService), Refunds);
         }

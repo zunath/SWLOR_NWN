@@ -148,7 +148,6 @@ public sealed class PerkBench : IDisposable
     {
         Catalog.CacheData();
         StatBonus.CachePerkStatBonuses();
-        Feats.ResetPerkFeatCache();
     }
 
     /// <summary>What the engine and the seams did, in order (the engine's notes, as strings).</summary>

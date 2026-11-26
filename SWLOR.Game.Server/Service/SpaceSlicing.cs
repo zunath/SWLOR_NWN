@@ -493,7 +493,9 @@ namespace SWLOR.Game.Server.Service
             var unplaced = new List<(string Resref, ShipComponentTraitType? Trait)>();
             var intel = 0;
             var credits = 0;
-            var placed = new List<(string Resref, int Count)>();
+            // What arrived, to undo exactly (UndoLockboxOpening): the created item when it stands alone (a component with
+            // its own rolled trait), otherwise the blueprint and count that merged into a stack of identical items.
+            var placed = new List<(uint Item, string Resref, int Count)>();
             foreach (var reward in rewards)
             {
                 switch (reward.Kind)
@@ -508,7 +510,7 @@ namespace SWLOR.Game.Server.Service
                     default:
                         var arrived = FarmItems.CreateInInventory(player, reward.Resref, reward.Quantity, out var item);
                         if (arrived > 0)
-                            placed.Add((reward.Resref, arrived));
+                            placed.Add((GetIsObjectValid(item) && GetItemPossessor(item) == player ? item : OBJECT_INVALID, reward.Resref, arrived));
                         if (arrived < reward.Quantity)
                             unplaced.AddRange(SpaceSlicingRules.UnplacedItems(reward).Skip(arrived));
                         else if (reward.Trait != ShipComponentTraitType.None && GetIsObjectValid(item))
@@ -522,7 +524,7 @@ namespace SWLOR.Game.Server.Service
                 if (FarmItems.GiveToInventory(player, resref, 1) < 1)
                     unplaced.Add((resref, null));
                 else
-                    placed.Add((resref, 1));
+                    placed.Add((OBJECT_INVALID, resref, 1));
             }
 
             SendMessageToPC(player, ColorToken.Green($"You recover {DescribeRewards(rewards)}."));
@@ -551,7 +553,7 @@ namespace SWLOR.Game.Server.Service
         /// login (<see cref="SettleLockboxGrant"/>). A save that fails closes the lockbox again (<see cref="UndoLockboxOpening"/>).
         /// </summary>
         private static void KeepLockboxGrantAfterSave(uint player, SpaceLockboxGrant grant, int credits,
-            IReadOnlyList<(string Resref, int Count)> placed, string lockboxData)
+            IReadOnlyList<(uint Item, string Resref, int Count)> placed, string lockboxData)
         {
             if (!grant.IsEmpty)
                 ObjectPlugin.SetString(player, LockboxGrantVariable,
@@ -577,13 +579,29 @@ namespace SWLOR.Game.Server.Service
         /// mark, and the lockbox returns to the player, as the saved character file still has it.
         /// </summary>
         private static void UndoLockboxOpening(uint player, SpaceLockboxGrant grant, int credits,
-            IReadOnlyList<(string Resref, int Count)> placed, string lockboxData)
+            IReadOnlyList<(uint Item, string Resref, int Count)> placed, string lockboxData)
         {
             // TakeGoldFromCreature does nothing from the module, so the player's own queue takes it.
             if (credits > 0)
                 AssignCommand(player, () => TakeGoldFromCreature(credits, player, true));
-            foreach (var (resref, count) in placed)
+            foreach (var (item, resref, count) in placed)
+            {
+                // The created item itself, so a component the player already had (perhaps with a rarer trait) is never taken.
+                if (GetIsObjectValid(item))
+                {
+                    if (GetItemPossessor(item) != player)
+                        continue;
+                    var size = GetItemStackSize(item);
+                    if (size > count)
+                        SetItemStackSize(item, size - count);
+                    else
+                        DestroyObject(item);
+                    continue;
+                }
+
+                // A count that merged into a stack: those items are identical, so any of that blueprint will do.
                 FarmItems.Take(player, resref, count);
+            }
 
             if (!grant.IsEmpty)
             {

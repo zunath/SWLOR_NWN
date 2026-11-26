@@ -321,6 +321,8 @@ public class SpaceTransferCrashSafetyTests
         keep.Should().NotContain("if (grant.IsEmpty)\n                return;");
         InOrder(Method(slicing, "private static void UndoLockboxOpening("),
             "AssignCommand(player, () => TakeGoldFromCreature(credits, player, true));",
+            "if (GetIsObjectValid(item))",
+            "DestroyObject(item);",
             "FarmItems.Take(player, resref, count);",
             ".Where(x => x.Id != grant.Id)",
             "ObjectPlugin.Deserialize(lockboxData)",

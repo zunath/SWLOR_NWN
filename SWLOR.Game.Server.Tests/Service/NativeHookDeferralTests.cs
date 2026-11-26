@@ -12,19 +12,19 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public class NativeHookDeferralTests
 {
-    [TestCase("Service/Combat.cs", "ApplyAutoAttackSplashEffects",
+    [TestCase("Domain/Combat/CombatHitEffectsService.cs", "ApplyAutoAttackSplashEffects",
         TestName = "AutoAttackSplash_LandsOnARealAutoAttack")]
-    [TestCase("Service/CombatService/TemporaryStatModifier.cs", "PublishRefresh",
+    [TestCase("Domain/Character/TemporaryStatModifierService.cs", "PublishRefresh",
         TestName = "StatWindow_RefreshesAfterOnHitModifiers")]
     [TestCase("Feature/StatusEffectDefinition/InspiredStatusEffect.cs", "TryStandingOvation",
         TestName = "StandingOvation_HealsAfterANativeWeaponHit")]
-    [TestCase("Service/AI.cs", "StartLeashEvade",
+    [TestCase("Domain/Creatures/AIService.cs", "StartLeashEvade",
         TestName = "LeashEvade_ReassertsItsMovementRateWhenStartedFromAnAttack")]
-    [TestCase("Service/StatusEffect.cs", "RemoveStatusEffectInstance",
+    [TestCase("Domain/Character/StatusEffectService.cs", "RemoveStatusEffectInstance",
         TestName = "StatusRemoval_RecomputesMovementRateInsideAnAttack")]
-    [TestCase("Service/Stealth.cs", "ExitDetectedPlayerStealth",
+    [TestCase("Domain/Combat/StealthService.cs", "ExitDetectedPlayerStealth",
         TestName = "StealthExit_ResyncsAfterDetectionDuringAnAttack")]
-    [TestCase("Service/EspionageInfiltration.cs", "StartMovementSampler",
+    [TestCase("Domain/Character/EspionageInfiltrationService.cs", "StartMovementSampler",
         TestName = "InfiltrationSampler_StartsWhenBegunDuringAnAttack")]
     public void Deferral_IsOwnedByTheModule(string relativePath, string methodName)
     {

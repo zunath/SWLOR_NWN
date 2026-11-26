@@ -19,9 +19,6 @@ public sealed partial class TestBeastMastery
     protected override int GetPerkLevel(uint creature, PerkType perkType) =>
         PerkLevels.GetValueOrDefault((creature, perkType));
 
-    protected override void TogglePlayerWindow(uint player, GuiWindowType windowType, GuiPayloadBase payload, uint tetherObject) =>
-        RecordWindow(player, windowType, payload, tetherObject);
-
     internal void Record(string call) => Calls.Add(call);
 
     internal void RecordWindow(uint player, GuiWindowType windowType, GuiPayloadBase payload, uint tetherObject)

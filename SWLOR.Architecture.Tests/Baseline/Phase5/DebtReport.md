@@ -7,7 +7,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,083 | 12,816 uses | none: GameServices and FacadeAccessor deleted |
+| 1. Static service lookup | `StaticLookups.txt` | 1,084 | 12,817 uses | none: GameServices and FacadeAccessor deleted |
 | 2. Large types | `LargeTypes.txt` | 8 | 13,371 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 7 | 2,187 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 14 | 195 services | none over 10 services |
@@ -20,10 +20,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 ## 1. Static service lookup
 
-- 1,083 files, 12,816 uses: 824 using directives and 11,992 uses in code (7,257 in a static context).
+- 1,084 files, 12,817 uses: 825 using directives and 11,992 uses in code (7,257 in a static context).
 - SWLOR.Game.Server: 635 file(s), 5,354 use(s) (Feature/ 524, Domain/ 86, Native/ 16, NativeSinks/ 7, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 232 file(s), 5,242 use(s).
-- SWLOR.Game.Server.Tests: 187 file(s), 2,062 use(s).
+- SWLOR.Game.Server.Tests: 188 file(s), 2,063 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
 - SWLOR.CraftSim.Tests: 5 file(s), 15 use(s).
 - SWLOR.Game.Server.IntegrationTests: 4 file(s), 20 use(s).
@@ -36,7 +36,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - Content (Feature/) uses in code: 4,081 (1,535 in a static context).
 - Content (Feature/) types that use it: 522. Static classes: 63. Instance classes that use it from a static member: 198 (155 only from static members).
 
-Largest 15 of 1,083 (all in `StaticLookups.txt`):
+Largest 15 of 1,084 (all in `StaticLookups.txt`):
 
 | Entry | Uses | Detail |
 |---|---:|---|
@@ -173,7 +173,7 @@ Largest 15 of 119 (all in `LogicToContent.txt`):
 
 - 24 pairs of domains depend on each other: 20 between logic (6 of them with Foundation or Platform), 4 between content.
 - Foundation's logic is in a pair with 2 domains, Platform with 5.
-- Members both ways: 3,497.
+- Members both ways: 3,499.
 
 Largest 15 of 24 (all in `DomainCycles.txt`):
 
@@ -192,7 +192,7 @@ Largest 15 of 24 (all in `DomainCycles.txt`):
 | `Abilities <-> Character` | 2 | Abilities -> Character: 1 edge(s), 331 member(s); Character -> Abilities: 1 edge(s), 4 member(s) |
 | `Abilities <-> Combat` | 2 | Abilities -> Combat: 1 edge(s), 281 member(s); Combat -> Abilities: 1 edge(s), 10 member(s) |
 | `Character <-> Combat` | 2 | Character -> Combat: 1 edge(s), 7 member(s); Combat -> Character: 1 edge(s), 1115 member(s) |
-| `Character <-> Companions` | 2 | Character -> Companions: 1 edge(s), 2 member(s); Companions -> Character: 1 edge(s), 171 member(s) |
+| `Character <-> Companions` | 2 | Character -> Companions: 1 edge(s), 2 member(s); Companions -> Character: 1 edge(s), 173 member(s) |
 | `Character <-> Items` | 2 | Character -> Items: 1 edge(s), 1 member(s); Items -> Character: 1 edge(s), 28 member(s) |
 
 ## 8. Static entry points and static state

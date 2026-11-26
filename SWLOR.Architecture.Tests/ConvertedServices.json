@@ -14,6 +14,7 @@
     { "name": "BackgroundJob", "domain": "Foundation" },
     { "name": "Bank", "domain": "Economy" },
     { "name": "BattleGrid", "domain": "Combat" },
+    { "name": "BeastEvent", "domain": "Companions" },
     { "name": "BeastIncubation", "domain": "Companions" },
     { "name": "BeastMastery", "domain": "Companions" },
     { "name": "BeastSpawn", "domain": "Companions" },

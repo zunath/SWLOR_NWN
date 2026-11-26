@@ -301,18 +301,32 @@ public class SpaceTransferCrashSafetyTests
         InOrder(give,
             "case SpaceSlicingRewardKind.AgentIntel:\n                        intel++;",
             "if (fromLockbox)",
-            "KeepLockboxGrantAfterSave(player, new SpaceLockboxGrant { Id = Guid.NewGuid().ToString(), Intel = intel, Unplaced = unplaced });",
+            "KeepLockboxGrantAfterSave(player, new SpaceLockboxGrant { Id = Guid.NewGuid().ToString(), Intel = intel, Unplaced = unplaced },",
             "return;",
             "GrantAgentIntel(player);",
             "ShipHold.KeepUnplacedYield(player, unplaced);");
 
-        InOrder(Method(slicing, "private static void KeepLockboxGrantAfterSave("),
+        var keep = Method(slicing, "private static void KeepLockboxGrantAfterSave(");
+        InOrder(keep,
             "SpaceLockboxGrant.Append(ObjectPlugin.GetString(player, LockboxGrantVariable), grant), true);",
             "AssignCommand(GetModule(), () => DelayCommand(0.1f, () =>",
             "if (!GetIsObjectValid(player))",
             "if (!CharacterCheckpoint.Save(player))",
+            "UndoLockboxOpening(player, grant, credits, placed, lockboxData);",
             "return;",
             "KeepLockboxGrants(player);");
+        keep.IndexOf("AssignCommand(GetModule()", StringComparison.Ordinal)
+            .Should().BeGreaterThan(keep.IndexOf("if (!grant.IsEmpty)", StringComparison.Ordinal),
+                "every opening is saved, not only one with intel or refused items, so its credits and items reach the file with it");
+        keep.Should().NotContain("if (grant.IsEmpty)\n                return;");
+        InOrder(Method(slicing, "private static void UndoLockboxOpening("),
+            "AssignCommand(player, () => TakeGoldFromCreature(credits, player, true));",
+            "FarmItems.Take(player, resref, count);",
+            ".Where(x => x.Id != grant.Id)",
+            "ObjectPlugin.Deserialize(lockboxData)",
+            "ObjectPlugin.AcquireItem(player, lockbox)");
+        InOrder(slicing, "var lockboxData = ObjectPlugin.Serialize(target);",
+            "GiveRewardsToPlayer(slicer, rewards, fromLockbox: true, lockboxData: lockboxData);", "DestroyObject(target);");
         InOrder(Method(slicing, "private static void KeepLockboxGrants("),
             "SpaceLockboxGrant.ParseAll(ObjectPlugin.GetString(player, LockboxGrantVariable));",
             "FactionAgents.GrantLockboxIntel(player, grants);",

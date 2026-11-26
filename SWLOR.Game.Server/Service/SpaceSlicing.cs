@@ -378,7 +378,9 @@ namespace SWLOR.Game.Server.Service
             switch (source)
             {
                 case SlicingSourceType.SpaceLockbox:
-                    GiveRewardsToPlayer(slicer, rewards, fromLockbox: true);
+                    // Kept to put the lockbox back if the save that holds its opening fails (KeepLockboxGrantAfterSave).
+                    var lockboxData = ObjectPlugin.Serialize(target);
+                    GiveRewardsToPlayer(slicer, rewards, fromLockbox: true, lockboxData: lockboxData);
                     DestroyObject(target);
                     break;
                 case SlicingSourceType.DataCan:
@@ -486,22 +488,27 @@ namespace SWLOR.Game.Server.Service
         /// lockbox's intel and refused items wait for a save without the lockbox (<see cref="KeepLockboxGrantAfterSave"/>).
         /// </summary>
         private static void GiveRewardsToPlayer(uint player, IReadOnlyList<SpaceSlicingReward> rewards, IReadOnlyCollection<string> extraItems = null,
-            bool fromLockbox = false)
+            bool fromLockbox = false, string lockboxData = null)
         {
             var unplaced = new List<(string Resref, ShipComponentTraitType? Trait)>();
             var intel = 0;
+            var credits = 0;
+            var placed = new List<(string Resref, int Count)>();
             foreach (var reward in rewards)
             {
                 switch (reward.Kind)
                 {
                     case SpaceSlicingRewardKind.Credits:
                         GiveGoldToCreature(player, reward.Credits);
+                        credits += reward.Credits;
                         break;
                     case SpaceSlicingRewardKind.AgentIntel:
                         intel++;
                         break;
                     default:
                         var arrived = FarmItems.CreateInInventory(player, reward.Resref, reward.Quantity, out var item);
+                        if (arrived > 0)
+                            placed.Add((reward.Resref, arrived));
                         if (arrived < reward.Quantity)
                             unplaced.AddRange(SpaceSlicingRules.UnplacedItems(reward).Skip(arrived));
                         else if (reward.Trait != ShipComponentTraitType.None && GetIsObjectValid(item))
@@ -514,12 +521,15 @@ namespace SWLOR.Game.Server.Service
             {
                 if (FarmItems.GiveToInventory(player, resref, 1) < 1)
                     unplaced.Add((resref, null));
+                else
+                    placed.Add((resref, 1));
             }
 
             SendMessageToPC(player, ColorToken.Green($"You recover {DescribeRewards(rewards)}."));
             if (fromLockbox)
             {
-                KeepLockboxGrantAfterSave(player, new SpaceLockboxGrant { Id = Guid.NewGuid().ToString(), Intel = intel, Unplaced = unplaced });
+                KeepLockboxGrantAfterSave(player, new SpaceLockboxGrant { Id = Guid.NewGuid().ToString(), Intel = intel, Unplaced = unplaced },
+                    credits, placed, lockboxData);
                 return;
             }
 
@@ -533,30 +543,65 @@ namespace SWLOR.Game.Server.Service
         private const string LockboxGrantVariable = "SPACE_LOCKBOX_GRANT";
 
         /// <summary>
-        /// The lockbox leaves the character file only after this script, so what the database keeps waits for a save
-        /// without it, with a mark naming the grant: a restart before that save leaves the lockbox to open again, and one
-        /// after keeps the grant at the next login (<see cref="SettleLockboxGrant"/>). The grant joins any the mark still
-        /// holds (a save that failed), and the next save keeps them all.
+        /// The lockbox leaves the character file only after this script, so the character is saved just after it, every
+        /// time: the save holds the lockbox gone together with the credits and items it gave, so nothing the player spends
+        /// somewhere that saves on its own (a city treasury deposit) can outlive a restart that would bring the lockbox back.
+        /// What the database keeps (intel, items a full inventory refused) waits for that save, with a mark naming the
+        /// grant: a restart before the save leaves the lockbox to open again, and one after keeps the grant at the next
+        /// login (<see cref="SettleLockboxGrant"/>). A save that fails closes the lockbox again (<see cref="UndoLockboxOpening"/>).
         /// </summary>
-        private static void KeepLockboxGrantAfterSave(uint player, SpaceLockboxGrant grant)
+        private static void KeepLockboxGrantAfterSave(uint player, SpaceLockboxGrant grant, int credits,
+            IReadOnlyList<(string Resref, int Count)> placed, string lockboxData)
         {
-            if (grant.IsEmpty)
-                return;
-
-            ObjectPlugin.SetString(player, LockboxGrantVariable,
-                SpaceLockboxGrant.Append(ObjectPlugin.GetString(player, LockboxGrantVariable), grant), true);
+            if (!grant.IsEmpty)
+                ObjectPlugin.SetString(player, LockboxGrantVariable,
+                    SpaceLockboxGrant.Append(ObjectPlugin.GetString(player, LockboxGrantVariable), grant), true);
             AssignCommand(GetModule(), () => DelayCommand(0.1f, () =>
             {
-                // A player who logged out first saved the mark without the lockbox; their next login keeps the grant.
+                // A player who logged out first saved the lockbox gone with its rewards and the mark; their next login keeps the grant.
                 if (!GetIsObjectValid(player))
                     return;
 
-                // A save that fails leaves the mark: the next login, or the next lockbox's save, keeps the grant.
                 if (!CharacterCheckpoint.Save(player))
+                {
+                    UndoLockboxOpening(player, grant, credits, placed, lockboxData);
                     return;
+                }
 
                 KeepLockboxGrants(player);
             }));
+        }
+
+        /// <summary>
+        /// The save that should hold a lockbox's opening failed: its credits and items are taken back, its grant leaves the
+        /// mark, and the lockbox returns to the player, as the saved character file still has it.
+        /// </summary>
+        private static void UndoLockboxOpening(uint player, SpaceLockboxGrant grant, int credits,
+            IReadOnlyList<(string Resref, int Count)> placed, string lockboxData)
+        {
+            // TakeGoldFromCreature does nothing from the module, so the player's own queue takes it.
+            if (credits > 0)
+                AssignCommand(player, () => TakeGoldFromCreature(credits, player, true));
+            foreach (var (resref, count) in placed)
+                FarmItems.Take(player, resref, count);
+
+            if (!grant.IsEmpty)
+            {
+                var remaining = SpaceLockboxGrant.ParseAll(ObjectPlugin.GetString(player, LockboxGrantVariable))
+                    .Where(x => x.Id != grant.Id)
+                    .Aggregate(string.Empty, SpaceLockboxGrant.Append);
+                if (string.IsNullOrEmpty(remaining))
+                    ObjectPlugin.DeleteString(player, LockboxGrantVariable);
+                else
+                    ObjectPlugin.SetString(player, LockboxGrantVariable, remaining, true);
+            }
+
+            var lockbox = string.IsNullOrEmpty(lockboxData) ? OBJECT_INVALID : ObjectPlugin.Deserialize(lockboxData);
+            if (GetIsObjectValid(lockbox) && !ObjectPlugin.AcquireItem(player, lockbox))
+                ObjectPlugin.AddToArea(lockbox, GetArea(player), GetPosition(player));
+
+            SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so the lockbox closes again and its rewards are returned to it."));
+            Log.Write(LogGroup.Space, $"SPACE LOCKBOX - {PlayerName.GetAuditName(player)} - save failed after opening; rewards taken back and the lockbox returned");
         }
 
         /// <summary>

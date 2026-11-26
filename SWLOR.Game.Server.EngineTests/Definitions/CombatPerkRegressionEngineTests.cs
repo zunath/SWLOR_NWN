@@ -344,9 +344,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             // A small lead, so Joint Lock's own damage and Enmity would make the caster the top target
             // if the check ran after the hit.
-            Enmity.ModifyEnmity(ally, allyAttacker, 1);
-            Enmity.ModifyEnmity(caster, casterAttacker, 100);
-            Enmity.ModifyEnmity(ally, challengedTarget, 1);
+            EnmityChange.ModifyEnmity(ally, allyAttacker, 1);
+            EnmityChange.ModifyEnmity(caster, casterAttacker, 100);
+            EnmityChange.ModifyEnmity(ally, challengedTarget, 1);
             StatusEffectApplication.ApplyStatusEffect(caster, challengedTarget, new ChallengeEnmityStatusEffect(25), 60f);
 
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
@@ -424,7 +424,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Prepare(ctx, edgeTarget);
             Prepare(ctx, farTarget);
             ctx.MakeHostile(target);
-            Enmity.ModifyEnmity(target, beast, 10);
+            EnmityChange.ModifyEnmity(target, beast, 10);
             foreach (var feat in new[]
             {
                 FeatType.PoisonBreath1, FeatType.PoisonBreath2, FeatType.PoisonBreath3,
@@ -449,7 +449,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     ctx.MakeHostile(edgeTarget);
                     Enmity.ClearEnmityTable(beast);
-                    Enmity.ModifyEnmity(edgeTarget, beast, 10);
+                    EnmityChange.ModifyEnmity(edgeTarget, beast, 10);
                     var edgeContext = new AIContext(beast, AITriggerType.Heartbeat, edgeTarget,
                         context.Profile, new AIState(), Array.Empty<uint>());
                     ctx.AssertEqual(edgeTarget, ability.GetAITargetSelector()(edgeContext), $"{feat} can reach beyond 6m within its 10m cone");
@@ -457,19 +457,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                     ctx.MakeHostile(farTarget);
                     Enmity.ClearEnmityTable(beast);
-                    Enmity.ModifyEnmity(farTarget, beast, 10);
+                    EnmityChange.ModifyEnmity(farTarget, beast, 10);
                     var farContext = new AIContext(beast, AITriggerType.Heartbeat, farTarget,
                         context.Profile, new AIState(), Array.Empty<uint>());
                     ctx.AssertEqual(OBJECT_INVALID, ability.GetAITargetSelector()(farContext), $"{feat} rejects enemies beyond cone reach");
                     ChangeToStandardFaction(farTarget, StandardFaction.Defender);
                     Enmity.ClearEnmityTable(beast);
-                    Enmity.ModifyEnmity(target, beast, 10);
+                    EnmityChange.ModifyEnmity(target, beast, 10);
                 }
                 else
                 {
                     ctx.MakeHostile(farTarget);
                     Enmity.ClearEnmityTable(beast);
-                    Enmity.ModifyEnmity(farTarget, beast, 10);
+                    EnmityChange.ModifyEnmity(farTarget, beast, 10);
                     var farContext = new AIContext(beast, AITriggerType.Heartbeat, farTarget,
                         context.Profile, new AIState(), Array.Empty<uint>());
                     var farSelected = action.TargetSelector(farContext);
@@ -478,7 +478,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(0, action.Score(farContext), $"{feat} does not spend stamina on an empty area");
                     ChangeToStandardFaction(farTarget, StandardFaction.Defender);
                     Enmity.ClearEnmityTable(beast);
-                    Enmity.ModifyEnmity(target, beast, 10);
+                    EnmityChange.ModifyEnmity(target, beast, 10);
                 }
             }
         }

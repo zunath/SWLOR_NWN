@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             if (GetIsObjectValid(attacker) && GetIsReactionTypeHostile(attacker, Source))
             {
-                Enmity.ModifyEnmity(Source, attacker, Math.Max(1, damage));
+                EnmityChange.ModifyEnmity(Source, attacker, Math.Max(1, damage));
                 RecentGuardedAllyHits[(Source, attacker)] = DateTime.UtcNow;
             }
 

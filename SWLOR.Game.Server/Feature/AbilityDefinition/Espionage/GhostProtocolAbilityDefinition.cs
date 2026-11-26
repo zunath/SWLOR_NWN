@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
 
         private static void ApplyGhostProtocol(uint activator, uint target, int level, Location targetLocation)
         {
-            Enmity.ReduceEnmityOnAll(activator, EnmityReductionPercent);
+            EnmityChange.ReduceEnmityOnAll(activator, EnmityReductionPercent);
 
             // The capstone is the only stealth entry allowed while in combat; open the entry
             // window just long enough for the mode change to pass the gate.

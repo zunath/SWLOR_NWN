@@ -166,7 +166,7 @@ public class ForceDarkManipulatorTests
         iconManifest.Should().NotContain("\"Ability\",\"WeakenResolve2\",\"WeakenResolve2\",\"Beneficial\"");
 
         var immobilized = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ImmobilizedStatusEffect.cs").FullName);
-        immobilized.Should().Contain("Enmity.AttackHighestEnmityTarget(creature)");
+        immobilized.Should().Contain("EnmityAttack.AttackHighestEnmityTarget(creature)");
 
         var staminaRequirement = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Abilities" / "AbilityRequirementStamina.cs").FullName);
         staminaRequirement.Should().Contain("AbilityStaminaCostPercentAdjustment");

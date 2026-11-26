@@ -352,14 +352,14 @@ public abstract class CombatAbilityImpactTestBase
             .On(nameof(IAbilityImpactState.GetAbilityImpactStatSources), args => _impactSources.TryGetValue((StatType)args[1]!, out var found)
                 ? found
                 : Array.Empty<StatAdjustmentSource>());
-        var enmity = ScriptedProxy.Create<IEnmityService>(out var enmityCalls);
-        enmityCalls
-            .On(nameof(IEnmityService.ModifyEnmity), args => Log($"Enmity {args[0]} {args[1]} {args[2]}"))
-            .On(nameof(IEnmityService.GetHighestEnmityAttackTarget), args =>
-            {
-                _log.Add($"HighestEnmity {args[0]}");
-                return _highestEnmity;
-            });
+        var enmity = ScriptedProxy.Create<IEnmityChangeService>(out var enmityCalls);
+        enmityCalls.On(nameof(IEnmityChangeService.ModifyEnmity), args => Log($"Enmity {args[0]} {args[1]} {args[2]}"));
+        var enmityAttack = ScriptedProxy.Create<IEnmityAttackService>(out var enmityAttackCalls);
+        enmityAttackCalls.On(nameof(IEnmityAttackService.GetHighestEnmityAttackTarget), args =>
+        {
+            _log.Add($"HighestEnmity {args[0]}");
+            return _highestEnmity;
+        });
         var recorder = ScriptedProxy.Create<ICombatRecorderService>(out var recorderCalls);
         recorderCalls.On(nameof(ICombatRecorderService.BeginStatTriggerAttribution), args =>
         {
@@ -372,7 +372,7 @@ public abstract class CombatAbilityImpactTestBase
         _areaImpactPart = new CombatAbilityAreaImpactService(queries, resources, triggeredDamage, stat, statusEffect, statusApplication, statusDuration, temporary, ability);
         _weaponRiders = new CombatAbilityWeaponRidersService(queries, resources, defeatedEnemyEffects, stat, statusEffect, statusApplication, temporary, enmity);
         _statusApplied = new CombatAbilityStatusAppliedService(resources, timing, stat, statusEffect, statusApplication, temporary, ability, recorder);
-        return new CombatAbilityImpactService(activity, _hitRiders, _areaImpactPart, autoAttackEffects, stat, enmity, _partyProxy, pairedRangedTraits, _weaponRiders, _statusApplied);
+        return new CombatAbilityImpactService(activity, _hitRiders, _areaImpactPart, autoAttackEffects, stat, enmityAttack, _partyProxy, pairedRangedTraits, _weaponRiders, _statusApplied);
     }
 
     [TearDown]

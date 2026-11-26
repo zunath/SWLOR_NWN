@@ -13,5 +13,11 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// Stops a chase whose proximity threat has expired, using the normal return-home behavior.
         /// </summary>
         void StopCombatAfterProximityLoss(uint enemy);
+
+        /// <summary>
+        /// Registers who is told to choose an attack target again when the leash resolves. Registering the same listener twice keeps
+        /// one entry; the list holds service instances, so a reload rebuilds it through the boot handler that registers the listener.
+        /// </summary>
+        void RegisterRetargetListener(ILeashRetargetListener listener);
     }
 }

@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     });
                     var stoppedAt = GameServices.CombatActivity.GetLastCompletedOffensiveActivityAt(player);
                     var hp = GetCurrentHitPoints(player);
-                    Enmity.ModifyEnmity(player, enemy, 10000);
+                    EnmityChange.ModifyEnmity(player, enemy, 10000);
                     AssignCommand(enemy, () => ActionAttack(player));
                     await ctx.WaitUntilAsync(() => GetAttackTarget(enemy) == player &&
                         GameServices.CombatActivity.GetLastCompletedOffensiveActivityAt(enemy) >= stoppedAt,

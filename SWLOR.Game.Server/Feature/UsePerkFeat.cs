@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (!GetIsPC(activator))
             {
-                var enmityTarget = Enmity.GetHighestEnmityAttackTarget(activator);
+                var enmityTarget = EnmityAttack.GetHighestEnmityAttackTarget(activator);
                 if (GetIsObjectValid(enmityTarget))
                     return enmityTarget;
 
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             if (!GetIsPC(activator) && !GetIsPC(GetMaster(activator)))
-                target = Enmity.GetHighestEnmityAttackTarget(activator);
+                target = EnmityAttack.GetHighestEnmityAttackTarget(activator);
 
             if (!GetIsObjectValid(target) ||
                 GetCurrentHitPoints(target) <= 0 ||
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (!GetIsPC(activator))
             {
-                Enmity.IssueAttackCommand(activator, target, clearActions);
+                EnmityAttack.IssueAttackCommand(activator, target, clearActions);
                 return;
             }
 
@@ -893,7 +893,7 @@ namespace SWLOR.Game.Server.Feature
                     // If this is an attack make the NPC react.
                     if (GetIsObjectValid(target) && target != activator)
                     {
-                        Enmity.AttackHighestEnmityTarget(target);
+                        EnmityAttack.AttackHighestEnmityTarget(target);
                     }
                 }
 

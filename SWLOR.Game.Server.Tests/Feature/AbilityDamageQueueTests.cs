@@ -103,7 +103,7 @@ public class AbilityDamageQueueTests
             source.IndexOf("void CompleteActivation", StringComparison.Ordinal));
 
         source.Should().Contain("private static void ResumeAttack(uint activator, uint target, bool clearActions = true)");
-        source.Should().Contain("Enmity.IssueAttackCommand(activator, target, clearActions);");
+        source.Should().Contain("EnmityAttack.IssueAttackCommand(activator, target, clearActions);");
         source.Should().Contain("private static void ResumeAttackAfterDelay(uint activator, uint target, float delay, bool clearActions = true)");
         source.Should().Contain("DelayCommand(delay, () =>");
         var impactIndex = completeBody.IndexOf("ExecuteAbilityImpact(", StringComparison.Ordinal);

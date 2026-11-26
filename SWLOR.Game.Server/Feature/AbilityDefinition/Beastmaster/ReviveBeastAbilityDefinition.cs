@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         if (CombatRecorder.IsRecording)
                             CombatRecordDamage.RecordResurrection(summonedBeast);
                     }
-                    Enmity.ModifyEnmityOnAll(activator, 500);
+                    EnmityChange.ModifyEnmityOnAll(activator, 500);
                     CombatPoint.AddReviveSupportCombatPoint(activator, activator, SkillType.BeastMastery);
                 });
         }
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         if (CombatRecorder.IsRecording)
                             CombatRecordDamage.RecordResurrection(summonedBeast);
                     }
-                    Enmity.ModifyEnmityOnAll(activator, 500);
+                    EnmityChange.ModifyEnmityOnAll(activator, 500);
                     CombatPoint.AddReviveSupportCombatPoint(activator, activator, SkillType.BeastMastery);
                 });
         }
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         if (CombatRecorder.IsRecording)
                             CombatRecordDamage.RecordResurrection(summonedBeast);
                     }
-                    Enmity.ModifyEnmityOnAll(activator, 500);
+                    EnmityChange.ModifyEnmityOnAll(activator, 500);
                     CombatPoint.AddReviveSupportCombatPoint(activator, activator, SkillType.BeastMastery);
                 });
         }

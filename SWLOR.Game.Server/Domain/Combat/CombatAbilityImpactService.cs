@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatAbilityAreaImpactService _areaImpact;
         private readonly ICombatAutoAttackEffectsService _autoAttackEffects;
         private readonly IStatService _stat;
-        private readonly IEnmityService _enmity;
+        private readonly IEnmityAttackService _enmityAttack;
         private readonly IPartyService _party;
         private readonly IPairedRangedTraitsService _pairedRangedTraits;
         private readonly ICombatAbilityWeaponRidersService _weaponRiders;
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatAbilityAreaImpactService areaImpact,
             ICombatAutoAttackEffectsService autoAttackEffects,
             IStatService stat,
-            IEnmityService enmity,
+            IEnmityAttackService enmityAttack,
             IPartyService party,
             IPairedRangedTraitsService pairedRangedTraits,
             ICombatAbilityWeaponRidersService weaponRiders,
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _areaImpact = areaImpact;
             _autoAttackEffects = autoAttackEffects;
             _stat = stat;
-            _enmity = enmity;
+            _enmityAttack = enmityAttack;
             _party = party;
             _pairedRangedTraits = pairedRangedTraits;
             _weaponRiders = weaponRiders;
@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             var attackTarget = GetAttackTarget(attacker);
             if (!GetIsObjectValid(attackTarget))
-                attackTarget = _enmity.GetHighestEnmityAttackTarget(attacker);
+                attackTarget = _enmityAttack.GetHighestEnmityAttackTarget(attacker);
 
             return GetIsObjectValid(attackTarget) &&
                    attackTarget != creature &&

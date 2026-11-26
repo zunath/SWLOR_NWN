@@ -26,7 +26,7 @@ public sealed partial class TestAIService : AIService
     private readonly AIBench _bench;
 
     public TestAIService(AIBench bench, IPartyRoster party, ICompanionLookup beastMastery, IDMPresenceService dmPresence)
-        : base(party, beastMastery, dmPresence, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.LazyFor<IEnmityService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatusEffectService>())
+        : base(party, beastMastery, dmPresence, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatusEffectService>())
     {
         _bench = bench;
         Action = new TestAIActionService(bench, this);

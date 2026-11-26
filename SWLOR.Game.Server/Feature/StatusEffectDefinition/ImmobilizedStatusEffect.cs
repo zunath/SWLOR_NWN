@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             if (GetIsObjectValid(creature) && !GetIsDead(creature))
             {
-                Enmity.AttackHighestEnmityTarget(creature);
+                EnmityAttack.AttackHighestEnmityTarget(creature);
             }
 
             AbilityImmunity.ApplyPostControlImmunity(

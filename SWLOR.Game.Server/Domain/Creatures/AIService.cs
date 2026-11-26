@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly ICompanionLookup _companions;
         private readonly IDMPresenceService _dmPresence;
         private readonly IAbilityCatalog _catalog;
-        private readonly Lazy<IEnmityService> _enmity;
+        private readonly IEnmityService _enmity;
         private readonly ICreatureStatService _stat;
         private readonly IStatusEffectService _statusEffect;
 
@@ -50,12 +50,17 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly Dictionary<uint, AIState> _states = new();
         private readonly Dictionary<FeatType, AITargetSelector> _defaultTargetSelectors = new();
 
+        // The listeners told to choose an attack target again when the leash resolves. They are service instances, so a reload
+        // rebuilds the list through the boot handler that registers each one.
+        [ReloadState(ReloadStateKind.Runtime)]
+        private readonly List<ILeashRetargetListener> _retargetListeners = new();
+
         public AIService(
             IPartyRoster party,
             ICompanionLookup companions,
             IDMPresenceService dmPresence,
             IAbilityCatalog catalog,
-            Lazy<IEnmityService> enmity,
+            IEnmityService enmity,
             ICreatureStatService stat,
             IStatusEffectService statusEffect)
         {
@@ -66,6 +71,12 @@ namespace SWLOR.Game.Server.Domain.Creatures
             _enmity = enmity;
             _stat = stat;
             _statusEffect = statusEffect;
+        }
+
+        public void RegisterRetargetListener(ILeashRetargetListener listener)
+        {
+            if (!_retargetListeners.Contains(listener))
+                _retargetListeners.Add(listener);
         }
 
         [BootPhase(BootReload.Rerun)]
@@ -731,15 +742,26 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 .Where(w => typeof(IAIProfileDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }
 
-        protected virtual uint GetHighestEnmityTarget(uint enemy) => _enmity.Value.GetHighestEnmityTarget(enemy);
+        protected virtual uint GetHighestEnmityTarget(uint enemy) => _enmity.GetHighestEnmityTarget(enemy);
 
-        protected virtual Dictionary<uint, int> GetEnmityTable(uint enemy) => _enmity.Value.GetEnmityTable(enemy);
+        protected virtual Dictionary<uint, int> GetEnmityTable(uint enemy) => _enmity.GetEnmityTable(enemy);
 
-        protected virtual void AttackHighestEnmityTarget(uint creature) => _enmity.Value.AttackHighestEnmityTarget(creature);
+        protected virtual void AttackHighestEnmityTarget(uint creature)
+        {
+            RequireRetargetListeners();
+            foreach (var listener in _retargetListeners)
+                listener.AttackHighestEnmityTarget(creature);
+        }
 
-        protected virtual void ClearEnmityTable(uint enemy) => _enmity.Value.ClearEnmityTable(enemy);
+        private void RequireRetargetListeners()
+        {
+            if (_retargetListeners.Count == 0)
+                throw new InvalidOperationException("No leash retarget listener is registered with the AI service.");
+        }
 
-        protected virtual void RemoveEnmity(uint creature, uint enemy) => _enmity.Value.RemoveEnmity(creature, enemy);
+        protected virtual void ClearEnmityTable(uint enemy) => _enmity.ClearEnmityTable(enemy);
+
+        protected virtual void RemoveEnmity(uint creature, uint enemy) => _enmity.RemoveEnmity(creature, enemy);
 
         protected virtual void ApplyCreatureMovementRate(uint creature) => _stat.ApplyCreatureMovementRate(creature);
 

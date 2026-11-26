@@ -645,15 +645,15 @@ public class AIModelTests
             source.IndexOf("/// <summary>\n        /// Breaks stealth", StringComparison.Ordinal) -
             source.IndexOf("private static void ResumeAttackAfterDelay", StringComparison.Ordinal));
 
-        resumeBody.Should().Contain("Enmity.IssueAttackCommand(activator, target, clearActions);");
-        resumeBody.Should().Contain("target = Enmity.GetHighestEnmityAttackTarget(activator);");
+        resumeBody.Should().Contain("EnmityAttack.IssueAttackCommand(activator, target, clearActions);");
+        resumeBody.Should().Contain("target = EnmityAttack.GetHighestEnmityAttackTarget(activator);");
         var invisibilityGuardIndex = resumeBody.IndexOf(
             "if (Stealth.IsInvisible(activator) || GetActionMode(activator, ActionMode.Stealth))",
             StringComparison.Ordinal);
         invisibilityGuardIndex.Should().BeGreaterThan(-1,
             "resuming an attack would end invisibility or stealth the ability just granted");
         invisibilityGuardIndex.Should().BeLessThan(
-            resumeBody.IndexOf("Enmity.IssueAttackCommand(activator, target, clearActions);", StringComparison.Ordinal));
+            resumeBody.IndexOf("EnmityAttack.IssueAttackCommand(activator, target, clearActions);", StringComparison.Ordinal));
         invisibilityGuardIndex.Should().BeLessThan(
             resumeBody.IndexOf("ActionAttack(target);", StringComparison.Ordinal));
         delayedResumeBody.Should().Contain("GetIsPC(activator) || GetIsPC(GetMaster(activator))");
@@ -706,7 +706,7 @@ public class AIModelTests
         issueBody.IndexOf("if (IsHiddenFrom(creature, target))", StringComparison.Ordinal)
             .Should().BeGreaterThan(-1)
             .And.BeLessThan(issueBody.IndexOf("ActionAttack(target);", StringComparison.Ordinal));
-        invisibilityBody.IndexOf("Enmity.ReevaluateEnemyAttackTargets(activator);", StringComparison.Ordinal)
+        invisibilityBody.IndexOf("EnmityAttack.ReevaluateEnemyAttackTargets(activator);", StringComparison.Ordinal)
             .Should().BeGreaterThan(invisibilityBody.IndexOf("EffectInvisibility(InvisibilityType.Normal)", StringComparison.Ordinal),
                 "enemies must react to the invisibility as soon as it is applied");
     }

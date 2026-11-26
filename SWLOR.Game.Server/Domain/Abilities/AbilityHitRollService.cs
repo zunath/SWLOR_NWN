@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly IAbilityStatusApplicationService _statusApplication;
         private readonly IAbilityImpactMessageService _impactMessage;
         private readonly ICombatPointService _combatPoint;
-        private readonly IEnmityService _enmity;
+        private readonly IEnmityChangeService _enmityChange;
         private readonly ICombatActivityService _combatActivity;
         private readonly ICombatAbilityBonusService _abilityBonus;
         private readonly ICombatAbilityHitService _abilityHit;
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             IAbilityStatusApplicationService statusApplication,
             IAbilityImpactMessageService impactMessage,
             ICombatPointService combatPoint,
-            IEnmityService enmity,
+            IEnmityChangeService enmityChange,
             ICombatActivityService combatActivity,
             ICombatAbilityBonusService abilityBonus,
             ICombatAbilityHitService abilityHit)
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _statusApplication = statusApplication;
             _impactMessage = impactMessage;
             _combatPoint = combatPoint;
-            _enmity = enmity;
+            _enmityChange = enmityChange;
             _combatActivity = combatActivity;
             _abilityBonus = abilityBonus;
             _abilityHit = abilityHit;
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         private void ApplyMissedHostileAbilityEnmity(uint activator, uint target)
         {
-            _enmity.ModifyEnmity(activator, target, HostileAbilityMissEnmity);
+            _enmityChange.ModifyEnmity(activator, target, HostileAbilityMissEnmity);
         }
 
         private bool ShouldResolveCombatImpactHit(AbilityImpactTracker trackedImpact)

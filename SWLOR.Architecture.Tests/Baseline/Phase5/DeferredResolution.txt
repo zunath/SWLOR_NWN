@@ -24,14 +24,11 @@ SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Character (down) | 1
 SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Combat (inside) | 1
 SWLOR.Game.Server/Domain/Combat/ResistanceService.cs -> Character (down) | 1
 SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Character (down) | 4
-SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Combat (inside) | 1
 SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs -> Character (down) | 1
 SWLOR.Game.Server/Domain/Companions/DroidEquipmentDiagnosticsService.cs -> Companions (inside) | 1
-SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Combat (down) | 1
 SWLOR.Game.Server/Domain/Items/ItemService.cs -> Character (down) | 1
 SWLOR.Game.Server/Domain/Items/ItemService.cs -> Combat (up) | 1
 SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs -> Quests (inside) | 1
-SWLOR.Game.Server/Domain/Social/PartyService.cs -> Abilities (down) | 1
 SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> Character (down) | 2
 SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> Space (down) | 1
 SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> World (down) | 1

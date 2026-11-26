@@ -142,7 +142,7 @@ Domain/Combat/RecastTimestamp.cs
 Service/AbilityCooldownVisual.cs # master-only
 Service/Enmity.cs  # master-only (P2-ZG)
 Domain/Combat/CombatPointService.cs
-Domain/Combat/EnmityService.cs
+Domain/Combat/EnmityAttackService.cs
 Domain/Combat/MeleeTechniqueService.cs
 Domain/Combat/RecastService.cs
 Domain/Creatures/AIActionDefinition.cs

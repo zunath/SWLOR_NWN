@@ -13,12 +13,14 @@ public static class EnmitySource
     public static readonly IReadOnlyList<string> PartFiles = new[]
     {
         "SWLOR.Game.Server/Domain/Combat/EnmityService.cs",
+        "SWLOR.Game.Server/Domain/Combat/EnmityChangeService.cs",
+        "SWLOR.Game.Server/Domain/Combat/EnmityAttackService.cs",
     };
 
     /// <summary>The interfaces of the parts: a call through a field of one of these types was a call on the same instance before the move.</summary>
     public static readonly IReadOnlySet<string> PartInterfaces = new HashSet<string>(StringComparer.Ordinal)
     {
-        "IEnmityService",
+        "IEnmityService", "IEnmityChangeService", "IEnmityAttackService",
     };
 
     private static readonly PartSourceFiles Files = new(PartFiles, PartInterfaces);

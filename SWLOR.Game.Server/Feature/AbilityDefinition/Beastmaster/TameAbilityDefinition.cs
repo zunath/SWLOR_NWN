@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     if (Random.D100(1) > chance)
                     {
                         SendMessageToPC(activator, ColorToken.Red($"Failed to tame {GetName(target)}..."));
-                        Enmity.ModifyEnmity(activator, target, 600);
+                        EnmityChange.ModifyEnmity(activator, target, 600);
                         return;
                     }
 

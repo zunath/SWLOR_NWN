@@ -92,10 +92,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 await ctx.ExecuteInCreatureContextAsync(enemy, () =>
                 {
-                    Enmity.ModifyEnmity(enemy, holoReceiver, 100);
-                    Enmity.ModifyEnmity(holoReceiver, enemy, 100);
-                    Enmity.ModifyProximityEnmity(holoReceiver, enemy, 100);
-                    Enmity.ModifyEnmity(bystander, enemy, 10);
+                    EnmityChange.ModifyEnmity(enemy, holoReceiver, 100);
+                    EnmityChange.ModifyEnmity(holoReceiver, enemy, 100);
+                    EnmityChange.ModifyProximityEnmity(holoReceiver, enemy, 100);
+                    EnmityChange.ModifyEnmity(bystander, enemy, 10);
                 });
 
                 ctx.AssertEqual(0, Enmity.GetEnmityTable(holoReceiver).Count, "hologram's enmity table size");

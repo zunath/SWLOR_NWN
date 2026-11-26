@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatService _stat;
         private readonly ICombatRatingService _combatRating;
         private readonly ICombatRecorderService _combatRecorder;
-        private readonly IEnmityService _enmity;
+        private readonly IEnmityChangeService _enmityChange;
         private readonly ICombatDamageRollService _damageRoll;
         private readonly ICombatDamageTakenService _damageTaken;
 
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatService stat,
             ICombatRatingService combatRating,
             ICombatRecorderService combatRecorder,
-            IEnmityService enmity,
+            IEnmityChangeService enmityChange,
             ICombatDamageRollService damageRoll,
             ICombatDamageTakenService damageTaken)
         {
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _stat = stat;
             _combatRating = combatRating;
             _combatRecorder = combatRecorder;
-            _enmity = enmity;
+            _enmityChange = enmityChange;
             _damageRoll = damageRoll;
             _damageTaken = damageTaken;
         }
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                     var damage = ResolveGuardRetaliationDamage(defender, target, dmg, skillType);
                     _triggeredDamage.ApplyTriggeredDamage(defender, target, damage, CombatDamageType.Physical, skillType);
                     if (additionalTargetEnmity > 0)
-                        _enmity.ModifyEnmity(defender, target, additionalTargetEnmity);
+                        _enmityChange.ModifyEnmity(defender, target, additionalTargetEnmity);
 
                     applied = true;
                 }

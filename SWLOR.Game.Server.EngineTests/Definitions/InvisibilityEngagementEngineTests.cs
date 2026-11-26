@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 foreach (var (enemy, _) in enemies)
-                    Enmity.ModifyEnmity(caster, enemy, 100);
+                    EnmityChange.ModifyEnmity(caster, enemy, 100);
                 await WaitOrFailAsync(ctx,
                     () => IsSwingingAt(struck, caster) && IsSwingingAt(secondEnemy, caster),
                     15f,

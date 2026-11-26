@@ -27,7 +27,7 @@ public class AIServiceStealthListenerTests
             return null;
         });
         var service = new AIAggroService(
-            FacadeForwarder.For<IAIService>(), FacadeForwarder.For<IAIDecisionService>(), FacadeForwarder.For<IEnmityService>(),
+            FacadeForwarder.For<IAIService>(), FacadeForwarder.For<IAIDecisionService>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IEnmityChangeService>(), FacadeForwarder.For<IEnmityAttackService>(),
             FacadeForwarder.For<IEspionageInfiltrationService>(), stealth);
 
         service.RegisterStealthAggroListener();

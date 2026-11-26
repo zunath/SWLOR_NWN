@@ -49,11 +49,16 @@ namespace SWLOR.Game.Server.Domain.Combat
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly List<IStealthAggroListener> _aggroListeners = new();
 
+        // The listeners told to choose attack targets again when a creature hides or shows itself. They are service instances, so a
+        // reload rebuilds the list through the boot handler that registers each one.
+        [ReloadState(ReloadStateKind.Runtime)]
+        private readonly List<IStealthRetargetListener> _retargetListeners = new();
+
         private readonly IPerkService _perk;
         private readonly Lazy<IStatService> _stat;
         private readonly Lazy<IStatusEffectService> _statusEffect;
         private readonly Lazy<IStatusEffectApplicationService> _statusEffectApplication;
-        private readonly Lazy<IEnmityService> _enmity;
+        private readonly IEnmityService _enmity;
         private readonly Lazy<IEspionageInfiltrationService> _espionageInfiltration;
 
         public StealthService(
@@ -61,7 +66,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             Lazy<IStatService> stat,
             Lazy<IStatusEffectService> statusEffect,
             Lazy<IStatusEffectApplicationService> statusEffectApplication,
-            Lazy<IEnmityService> enmity,
+            IEnmityService enmity,
             Lazy<IEspionageInfiltrationService> espionageInfiltration)
         {
             _perk = perk;
@@ -76,6 +81,12 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             if (!_aggroListeners.Contains(listener))
                 _aggroListeners.Add(listener);
+        }
+
+        public void RegisterRetargetListener(IStealthRetargetListener listener)
+        {
+            if (!_retargetListeners.Contains(listener))
+                _retargetListeners.Add(listener);
         }
 
         /// <summary>
@@ -838,8 +849,12 @@ namespace SWLOR.Game.Server.Domain.Combat
         protected virtual void RestoreLightsaberAfterHidden(uint creature) =>
             LightsaberAudio.RestoreAfterHidden(creature);
 
-        protected virtual void ReevaluateEnemyAttackTargets(uint creature) =>
-            _enmity.Value.ReevaluateEnemyAttackTargets(creature);
+        protected virtual void ReevaluateEnemyAttackTargets(uint creature)
+        {
+            RequireRetargetListeners();
+            foreach (var listener in _retargetListeners)
+                listener.ReevaluateEnemyAttackTargets(creature);
+        }
 
         protected virtual void AcquireAggroFromNearbyEnemies(uint target)
         {
@@ -849,10 +864,14 @@ namespace SWLOR.Game.Server.Domain.Combat
         }
 
         protected virtual int GetEnmityTableCount(uint enemy) =>
-            _enmity.Value.GetEnmityTable(enemy).Count;
+            _enmity.GetEnmityTable(enemy).Count;
 
-        protected virtual void AttackHighestEnmityTarget(uint creature) =>
-            _enmity.Value.AttackHighestEnmityTarget(creature);
+        protected virtual void AttackHighestEnmityTarget(uint creature)
+        {
+            RequireRetargetListeners();
+            foreach (var listener in _retargetListeners)
+                listener.AttackHighestEnmityTarget(creature);
+        }
 
         protected virtual void CancelInfiltration(uint creature) =>
             _espionageInfiltration.Value.CancelPlayer(creature);
@@ -874,6 +893,12 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             if (_aggroListeners.Count == 0)
                 throw new InvalidOperationException("No stealth aggro listener is registered with the stealth service.");
+        }
+
+        private void RequireRetargetListeners()
+        {
+            if (_retargetListeners.Count == 0)
+                throw new InvalidOperationException("No stealth retarget listener is registered with the stealth service.");
         }
 
         protected virtual bool MayHaveScriptType(uint creature, EffectTypeScript effectType, EffectTypeScript otherEffectType) =>

@@ -279,8 +279,8 @@ public static class ForceEspionageEngineTests
         await ctx.WaitFrameAsync();
         foreach (var enemy in new[] { organic, droid })
         {
-            Enmity.ModifyEnmity(player.Creature, enemy, 100);
-            ctx.AssertEqual(player.Creature, Enmity.GetHighestEnmityAttackTarget(enemy), "the enemy targets the player");
+            EnmityChange.ModifyEnmity(player.Creature, enemy, 100);
+            ctx.AssertEqual(player.Creature, EnmityAttack.GetHighestEnmityAttackTarget(enemy), "the enemy targets the player");
         }
 
         var ability = AbilityCatalog.GetAbilityDetail(FeatType.ForceDecoy2);

@@ -22,17 +22,20 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly IActivityService _activity;
         private readonly IAIService _ai;
         private readonly IEnmityService _enmity;
+        private readonly IEnmityAttackService _enmityAttack;
 
         public AIDecisionService(
             IAIActionService action,
             IActivityService activity,
             IAIService ai,
-            IEnmityService enmity)
+            IEnmityService enmity,
+            IEnmityAttackService enmityAttack)
         {
             _action = action;
             _activity = activity;
             _ai = ai;
             _enmity = enmity;
+            _enmityAttack = enmityAttack;
         }
 
         public bool ProcessTrigger(
@@ -281,7 +284,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         protected virtual uint GetHighestEnmityTarget(uint enemy) => _enmity.GetHighestEnmityTarget(enemy);
 
-        protected virtual void AttackHighestEnmityTarget(uint creature) => _enmity.AttackHighestEnmityTarget(creature);
+        protected virtual void AttackHighestEnmityTarget(uint creature) => _enmityAttack.AttackHighestEnmityTarget(creature);
 
         protected virtual bool MayHaveScriptType(uint creature, EffectTypeScript effectType) => AppliedEffects.MayHaveScriptType(creature, effectType);
 

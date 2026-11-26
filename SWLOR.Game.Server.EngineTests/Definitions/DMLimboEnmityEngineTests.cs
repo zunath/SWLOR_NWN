@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 await ctx.ExecuteInCreatureContextAsync(dm.Creature, () =>
                 {
-                    Enmity.ModifyEnmity(bystander, limboed, 50);
-                    Enmity.ModifyEnmity(limboed, bystander, 50);
+                    EnmityChange.ModifyEnmity(bystander, limboed, 50);
+                    EnmityChange.ModifyEnmity(limboed, bystander, 50);
                     ctx.Assert(Enmity.GetEnmityTable(bystander).ContainsKey(limboed), "setup puts the creature on the bystander's enmity table");
 
                     SendLimbo(ctx, dm.Creature, limboed);
@@ -56,10 +56,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     foreach (var target in new[] { first, second })
                     {
-                        Enmity.ModifyEnmity(bystander, target, 50);
-                        Enmity.ModifyEnmity(target, bystander, 50);
+                        EnmityChange.ModifyEnmity(bystander, target, 50);
+                        EnmityChange.ModifyEnmity(target, bystander, 50);
                     }
-                    Enmity.ModifyEnmity(unrelated, bystander, 30);
+                    EnmityChange.ModifyEnmity(unrelated, bystander, 30);
 
                     SendLimbo(ctx, dm.Creature, first, second);
 

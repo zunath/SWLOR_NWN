@@ -24,7 +24,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly IAbilityCatalog _catalog;
         private readonly ICompanionControlStoreService _companionControlStore;
         private readonly ICompanionTargetAuthorityService _companionTargetAuthority;
-        private readonly IEnmityService _enmity;
+        private readonly IEnmityChangeService _enmityChange;
+        private readonly IEnmityAttackService _enmityAttack;
         private readonly IPerkService _perk;
 
         public AIActionService(
@@ -33,7 +34,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
             IAbilityCatalog catalog,
             ICompanionControlStoreService companionControlStore,
             ICompanionTargetAuthorityService companionTargetAuthority,
-            IEnmityService enmity,
+            IEnmityChangeService enmityChange,
+            IEnmityAttackService enmityAttack,
             IPerkService perk)
         {
             _activation = activation;
@@ -41,7 +43,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
             _catalog = catalog;
             _companionControlStore = companionControlStore;
             _companionTargetAuthority = companionTargetAuthority;
-            _enmity = enmity;
+            _enmityChange = enmityChange;
+            _enmityAttack = enmityAttack;
             _perk = perk;
         }
 
@@ -427,13 +430,13 @@ namespace SWLOR.Game.Server.Domain.Creatures
         // A unit test subclass answers them, because the callees read the static enmity tables, the database, the
         // native engine or the other services' statics for real creatures.
 
-        protected virtual uint GetHighestEnmityAttackTarget(uint enemy) => _enmity.GetHighestEnmityAttackTarget(enemy);
+        protected virtual uint GetHighestEnmityAttackTarget(uint enemy) => _enmityAttack.GetHighestEnmityAttackTarget(enemy);
 
-        protected virtual void AttackHighestEnmityTarget(uint creature) => _enmity.AttackHighestEnmityTarget(creature);
+        protected virtual void AttackHighestEnmityTarget(uint creature) => _enmityAttack.AttackHighestEnmityTarget(creature);
 
-        protected virtual void IssueAttackCommand(uint creature, uint target) => _enmity.IssueAttackCommand(creature, target);
+        protected virtual void IssueAttackCommand(uint creature, uint target) => _enmityAttack.IssueAttackCommand(creature, target);
 
-        protected virtual void ModifyEnmity(uint creature, uint enemy, int amount) => _enmity.ModifyEnmity(creature, enemy, amount);
+        protected virtual void ModifyEnmity(uint creature, uint enemy, int amount) => _enmityChange.ModifyEnmity(creature, enemy, amount);
 
         protected virtual bool IsControlledCompanion(uint creature) => _companionControlStore.IsControlledCompanion(creature);
 

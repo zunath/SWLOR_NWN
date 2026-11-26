@@ -124,6 +124,17 @@ public class NPCChaseTests
                 private static readonly Dictionary<uint, Dictionary<uint, int>> _proximityEnmityAmounts = new();
                 private static readonly Dictionary<uint, DateTime> _attackCommandTimes = new();
                 private static readonly Dictionary<uint, uint> _attackCommandTargets = new();
+                private static void ForgetAttackCommand(uint creature)
+                {
+                    _attackCommandTimes.Remove(creature);
+                    _attackCommandTargets.Remove(creature);
+                }
+                private static bool TryGetAttackCommand(uint creature, out DateTime issuedAt, out uint target)
+                {
+                    var hasTime = _attackCommandTimes.TryGetValue(creature, out issuedAt);
+                    var hasTarget = _attackCommandTargets.TryGetValue(creature, out target);
+                    return hasTime || hasTarget;
+                }
                 private static bool ShouldRecoverStaleAttack(uint creature, uint attackTarget, uint target, ActionType action) => false;
                 private static float GetStaleAttackRecoverySeconds(uint creature) => 4.5f;
                 private static void IssueAttackCommand(uint creature, uint target)

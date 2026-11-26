@@ -356,8 +356,8 @@ public class CombatAbilityWeaponActivationServiceTests : CombatAbilityActivation
         const BindingFlags Instance = BindingFlags.NonPublic | BindingFlags.Instance;
         typeof(CombatAbilityWeaponActivationService).GetField("_offenseEffects", Instance)!.GetValue(part)
             .Should().BeSameAs(_facades.Get<ICombatAbilityOffenseEffectsService>());
-        typeof(CombatAbilityWeaponActivationService).GetField("_enmity", Instance)!.GetValue(part)
-            .Should().BeSameAs(_facades.Get<IEnmityService>());
+        typeof(CombatAbilityWeaponActivationService).GetField("_enmityChange", Instance)!.GetValue(part)
+            .Should().BeSameAs(_facades.Get<IEnmityChangeService>());
         typeof(CombatAbilityWeaponActivationService).GetFields(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)
             .Should().BeEmpty("the part holds no static state");
         typeof(CombatAbilityWeaponActivationService).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)

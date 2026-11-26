@@ -16,7 +16,7 @@ public sealed class TestAIAggroService : AIAggroService
     private readonly TestAIService _model;
 
     public TestAIAggroService(AIBench bench, TestAIService model, TestAIDecisionService decision)
-        : base(model, decision, FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IEspionageInfiltrationService>(), FacadeForwarder.For<IStealthService>())
+        : base(model, decision, FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IEnmityChangeService>(), FacadeForwarder.For<IEnmityAttackService>(), FacadeForwarder.For<IEspionageInfiltrationService>(), FacadeForwarder.For<IStealthService>())
     {
         _bench = bench;
         _model = model;

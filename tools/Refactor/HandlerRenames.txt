@@ -16,7 +16,7 @@ SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerAttack
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerDamaged SWLOR.Game.Server.Domain.Creatures.CompanionControlService.OnOwnerDamaged
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerCombatRound SWLOR.Game.Server.Domain.Creatures.CompanionControlService.OnOwnerCombatRound
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnHostileSpellCastAtOwner SWLOR.Game.Server.Domain.Creatures.CompanionControlService.OnHostileSpellCastAtOwner
-SWLOR.Game.Server.Service.AI.CacheAIData SWLOR.Game.Server.Domain.Creatures.AIService.CacheAIData SWLOR.Game.Server.Domain.Creatures.AIAggroService.RegisterStealthAggroListener
+SWLOR.Game.Server.Service.AI.CacheAIData SWLOR.Game.Server.Domain.Creatures.AIService.CacheAIData SWLOR.Game.Server.Domain.Creatures.AIAggroService.RegisterStealthAggroListener SWLOR.Game.Server.Domain.Combat.EnmityAttackService.RegisterRetargetListeners
 SWLOR.Game.Server.Service.AI.CreatureAggroEnter SWLOR.Game.Server.Domain.Creatures.AIAggroService.CreatureAggroEnter
 SWLOR.Game.Server.Service.AI.CreatureAggroExit SWLOR.Game.Server.Domain.Creatures.AIAggroService.CreatureAggroExit
 SWLOR.Game.Server.Service.AI.CreatureBlocked SWLOR.Game.Server.Domain.Creatures.AICreatureEventService.CreatureBlocked
@@ -176,15 +176,15 @@ SWLOR.Game.Server.Service.Death.InitializeRespawnPoint SWLOR.Game.Server.Domain.
 SWLOR.Game.Server.Service.Death.OnPlayerDeath SWLOR.Game.Server.Domain.Combat.DeathService.OnPlayerDeath
 SWLOR.Game.Server.Service.Death.OnPlayerDying SWLOR.Game.Server.Domain.Combat.DeathService.OnPlayerDying
 SWLOR.Game.Server.Service.Death.OnPlayerRespawn SWLOR.Game.Server.Domain.Combat.DeathService.OnPlayerRespawn
-SWLOR.Game.Server.Service.Enmity.CreatureAttacked SWLOR.Game.Server.Domain.Combat.EnmityService.CreatureAttacked
-SWLOR.Game.Server.Service.Enmity.CreatureDamaged SWLOR.Game.Server.Domain.Combat.EnmityService.CreatureDamaged
-SWLOR.Game.Server.Service.Enmity.CreatureDeath SWLOR.Game.Server.Domain.Combat.EnmityService.CreatureDeath
-SWLOR.Game.Server.Service.Enmity.CreatureDestroyed SWLOR.Game.Server.Domain.Combat.EnmityService.CreatureDestroyed
-SWLOR.Game.Server.Service.Enmity.CreatureLimbo SWLOR.Game.Server.Domain.Combat.EnmityService.CreatureLimbo
-SWLOR.Game.Server.Service.Enmity.HealingCompleted SWLOR.Game.Server.Domain.Combat.EnmityService.HealingCompleted
-SWLOR.Game.Server.Service.Enmity.HealingStarted SWLOR.Game.Server.Domain.Combat.EnmityService.HealingStarted
-SWLOR.Game.Server.Service.Enmity.PlayerDeath SWLOR.Game.Server.Domain.Combat.EnmityService.PlayerDeath
-SWLOR.Game.Server.Service.Enmity.PlayerExit SWLOR.Game.Server.Domain.Combat.EnmityService.PlayerExit
+SWLOR.Game.Server.Service.Enmity.CreatureAttacked SWLOR.Game.Server.Domain.Combat.EnmityChangeService.CreatureAttacked
+SWLOR.Game.Server.Service.Enmity.CreatureDamaged SWLOR.Game.Server.Domain.Combat.EnmityChangeService.CreatureDamaged
+SWLOR.Game.Server.Service.Enmity.CreatureDeath SWLOR.Game.Server.Domain.Combat.EnmityChangeService.CreatureDeath
+SWLOR.Game.Server.Service.Enmity.CreatureDestroyed SWLOR.Game.Server.Domain.Combat.EnmityChangeService.CreatureDestroyed
+SWLOR.Game.Server.Service.Enmity.CreatureLimbo SWLOR.Game.Server.Domain.Combat.EnmityChangeService.CreatureLimbo
+SWLOR.Game.Server.Service.Enmity.HealingCompleted SWLOR.Game.Server.Domain.Combat.EnmityChangeService.HealingCompleted
+SWLOR.Game.Server.Service.Enmity.HealingStarted SWLOR.Game.Server.Domain.Combat.EnmityChangeService.HealingStarted
+SWLOR.Game.Server.Service.Enmity.PlayerDeath SWLOR.Game.Server.Domain.Combat.EnmityChangeService.PlayerDeath
+SWLOR.Game.Server.Service.Enmity.PlayerExit SWLOR.Game.Server.Domain.Combat.EnmityChangeService.PlayerExit
 SWLOR.Game.Server.Service.EquipmentUnequip.BeforeUnequip SWLOR.Game.Server.Domain.Items.EquipmentUnequipService.BeforeUnequip
 SWLOR.Game.Server.Service.ExtraHotbars.LockBarsOnEnter SWLOR.Game.Server.Domain.Social.ExtraHotbarsWindowService.LockBarsOnEnter
 SWLOR.Game.Server.Service.ExtraHotbars.LockBarsOnExit SWLOR.Game.Server.Domain.Social.ExtraHotbarsWindowService.LockBarsOnExit

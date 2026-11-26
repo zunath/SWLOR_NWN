@@ -325,7 +325,7 @@ public class CombatAbilityWeaponRidersServiceTests : CombatAbilityImpactTestBase
 
         constructor.GetParameters().Select(parameter => parameter.ParameterType).Should().Equal(
             typeof(ICombatQueriesService), typeof(ICombatResourcesService), typeof(ICombatDefeatedEnemyEffectsService), typeof(IStatService),
-            typeof(IStatusEffectService), typeof(IStatusEffectApplicationService), typeof(ITemporaryStatModifierService), typeof(IEnmityService));
+            typeof(IStatusEffectService), typeof(IStatusEffectApplicationService), typeof(ITemporaryStatModifierService), typeof(IEnmityChangeService));
         constructor.GetParameters().Should().NotContain(parameter => parameter.ParameterType.IsGenericType, "no Lazy<> is added");
     }
 

@@ -521,7 +521,7 @@ TemporaryStatModifier.Replace(Attacker, EvasionPercentAdjustment, 5, 5, PistolSk
 Stat.GetStatAdjustment(Attacker, PistolSkirmisherEvasiveAbilityNextAttackDamageBonus)
 AttackTiming.GrantNextSkillAbilityBonuses(Attacker, Pistol, 5, 0, 5, 0, None)
 Stat.GetStatAdjustment(Attacker, PistolSkirmisherEvasiveAbilityEnmityReductionPercent)
-Enmity.ReduceEnmity(Attacker, Defender, 5)
+EnmityChange.ReduceEnmity(Attacker, Defender, 5)
 Stat.GetStatAdjustment(Attacker, HostileAbilitySequenceWindowSeconds)
 Stat.GetStatAdjustment(Attacker, HostileAbilitySequenceNextAttackBleedDurationSeconds)
 Stat.GetStatAdjustment(Attacker, HostileAbilityFPRestore)

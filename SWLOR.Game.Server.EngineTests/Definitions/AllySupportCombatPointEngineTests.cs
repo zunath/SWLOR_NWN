@@ -50,8 +50,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var fighting = await SpawnHeldCreatureAsync(ctx, 6f, 0f);
                 var aggroOnly = await SpawnHeldCreatureAsync(ctx, 6f, 3f);
                 var idle = await SpawnHeldCreatureAsync(ctx, 6f, -3f);
-                Enmity.ModifyEnmity(ally, fighting, 100);
-                Enmity.ModifyProximityEnmity(ally, aggroOnly, 1);
+                EnmityChange.ModifyEnmity(ally, fighting, 100);
+                EnmityChange.ModifyProximityEnmity(ally, aggroOnly, 1);
 
                 await UseAbilityAsync(ctx, allyCasts ? ally : supporter.Creature, feat, ally);
                 if (settleSeconds > 0f)
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var lateEnemy = await SpawnHeldCreatureAsync(ctx, 6f, 0f);
                 ctx.AssertEqual(0, Points(healer.Creature, lateEnemy, skill), $"{name} cannot credit an enemy before it engages");
 
-                Enmity.ModifyEnmity(ally, lateEnemy, 100);
+                EnmityChange.ModifyEnmity(ally, lateEnemy, 100);
                 await ctx.WaitUntilAsync(() => Points(healer.Creature, lateEnemy, skill) > 0, 5f,
                     $"a {name} tick to credit the enemy that engaged after the cast");
                 await ctx.DelaySecondsAsync(3.5f);
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(ally, () =>
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(Math.Max(1, GetCurrentHitPoints(ally) - 300)), ally));
                 var fightingSupporter = await SpawnHeldCreatureAsync(ctx, 6f, 0f);
-                Enmity.ModifyEnmity(supporter.Creature, fightingSupporter, 100);
+                EnmityChange.ModifyEnmity(supporter.Creature, fightingSupporter, 100);
 
                 await UseAbilityAsync(ctx, supporter.Creature, feat, ally);
 
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             TemporaryStatModifier.Add(leader.Creature, StatType.ChargeOrderAuraLevel, 1, 60f);
             var fighting = await SpawnHeldCreatureAsync(ctx, 6f, 0f);
-            Enmity.ModifyEnmity(ally, fighting, 100);
+            EnmityChange.ModifyEnmity(ally, fighting, 100);
             try
             {
                 await UseAbilityAsync(ctx, leader.Creature, FeatType.ChargeOrder1, leader.Creature);
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
             var ally = await SpawnPartyAllyAsync(ctx, medic.Creature);
             var fighting = await SpawnHeldCreatureAsync(ctx, 6f, 0f);
-            Enmity.ModifyEnmity(ally, fighting, 100);
+            EnmityChange.ModifyEnmity(ally, fighting, 100);
 
             await UseAbilityAsync(ctx, medic.Creature, FeatType.MedKit1, ally);
             await ctx.ExecuteInCreatureContextAsync(fighting, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), fighting));

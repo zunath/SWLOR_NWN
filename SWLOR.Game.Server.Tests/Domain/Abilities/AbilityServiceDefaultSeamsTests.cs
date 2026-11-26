@@ -100,7 +100,7 @@ public class AbilityServiceDefaultSeamsTests
     private static AbilityHitRollService HitRollPart() =>
         new(Array.Empty<IAbilityImpactObserver>(), FacadeForwarder.For<IMeleeTechniqueService>(), FacadeForwarder.For<IAbilityDamageInputService>(),
             FacadeForwarder.For<IAbilityStatusApplicationService>(), FacadeForwarder.For<IAbilityImpactMessageService>(), FacadeForwarder.For<ICombatPointService>(),
-            FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatAbilityBonusService>(),
+            FacadeForwarder.For<IEnmityChangeService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatAbilityBonusService>(),
             FacadeForwarder.For<ICombatAbilityHitService>());
 
     private static AbilityTargetImpactService TargetImpactPart() =>
@@ -110,7 +110,7 @@ public class AbilityServiceDefaultSeamsTests
 
     private static AbilityHostileImpactService HostileImpactPart() =>
         new(FacadeForwarder.For<IAbilityImpactState>(), Array.Empty<IAbilityImpactObserver>(), FacadeForwarder.For<ICombatPointService>(),
-            FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatAbilityImpactService>(),
+            FacadeForwarder.For<IEnmityChangeService>(), FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatAbilityImpactService>(),
             FacadeForwarder.For<IAbilityDamageDeliveryService>(), FacadeForwarder.For<IAbilityStatusApplicationService>(),
             FacadeForwarder.For<IAbilityDarkForceService>(), FacadeForwarder.For<IAbilityImpactVisualService>());
 

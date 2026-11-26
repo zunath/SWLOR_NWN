@@ -181,13 +181,13 @@ public class ForceSensitiveEspionageTests
         var source = ReadSource("Feature", "AbilityDefinition", "Espionage", "ForceDecoyAbilityDefinition.cs");
         source.Should().Contain("ForceDecoy(builder, FeatType.ForceDecoy1, \"Force Decoy I\", 1, 4, 35, 8, false);");
         source.Should().Contain("ForceDecoy(builder, FeatType.ForceDecoy2, \"Force Decoy II\", 2, 6, 60, 12, true);");
-        source.Should().Contain("Enmity.ReduceEnmityOnAll(activator, enmityReductionPercent);");
+        source.Should().Contain("EnmityChange.ReduceEnmityOnAll(activator, enmityReductionPercent);");
         source.Should().Contain("StatusEffect.RemoveStatusEffectsWithNegativeStat(activator, StatType.MovementSpeedPercentAdjustment);");
         source.Should().Contain("!MindTrickAbilityDefinition.IsNonMechanical(enemy)", "droids are never decoyed");
         source.Should().Contain("for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())",
             "players attacking the caster keep no enmity table but are still decoyed");
         source.IndexOf("GetOrganicEnemiesTargeting(activator).ToList();", StringComparison.Ordinal)
-            .Should().BeLessThan(source.IndexOf("Enmity.ReduceEnmityOnAll(activator, enmityReductionPercent);", StringComparison.Ordinal),
+            .Should().BeLessThan(source.IndexOf("EnmityChange.ReduceEnmityOnAll(activator, enmityReductionPercent);", StringComparison.Ordinal),
                 "attackers are read before the enmity drop sends them elsewhere");
     }
 

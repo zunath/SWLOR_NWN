@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatGuardRetaliationService _retaliation;
         private readonly IStatService _stat;
         private readonly ICombatResourcesService _resources;
-        private readonly IEnmityService _enmity;
+        private readonly IEnmityChangeService _enmityChange;
 
         public CombatGuardedHitService(
             ICombatFeedbackService feedback,
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatGuardRetaliationService retaliation,
             IStatService stat,
             ICombatResourcesService resources,
-            IEnmityService enmity)
+            IEnmityChangeService enmityChange)
         {
             _feedback = feedback;
             _combatRating = combatRating;
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _retaliation = retaliation;
             _stat = stat;
             _resources = resources;
-            _enmity = enmity;
+            _enmityChange = enmityChange;
         }
 
         public int ApplyGuardedHitModifiers(
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 enmity = Math.Max(1, (int)Math.Ceiling(enmity * ((100 + percentAdjustment) / 100f)));
             }
 
-            _enmity.ModifyEnmity(defender, attacker, enmity);
+            _enmityChange.ModifyEnmity(defender, attacker, enmity);
         }
     }
 }

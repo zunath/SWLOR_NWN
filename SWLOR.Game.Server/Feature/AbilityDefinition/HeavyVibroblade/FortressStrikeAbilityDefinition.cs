@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 null,
                 false);
 
-            Enmity.ModifyEnmity(activator, target, enmityBonus + damage);
+            EnmityChange.ModifyEnmity(activator, target, enmityBonus + damage);
             if (StatusEffectApplication.ApplyStatusEffect(activator, activator, new FortressStrikeStatusEffect(defensePercent), 30f))
                 Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
         }

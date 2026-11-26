@@ -19,6 +19,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly IAIService _ai;
         private readonly IAIDecisionService _decision;
         private readonly IEnmityService _enmity;
+        private readonly IEnmityChangeService _enmityChange;
+        private readonly IEnmityAttackService _enmityAttack;
         private readonly IEspionageInfiltrationService _espionageInfiltration;
         private readonly IStealthService _stealth;
 
@@ -26,12 +28,16 @@ namespace SWLOR.Game.Server.Domain.Creatures
             IAIService ai,
             IAIDecisionService decision,
             IEnmityService enmity,
+            IEnmityChangeService enmityChange,
+            IEnmityAttackService enmityAttack,
             IEspionageInfiltrationService espionageInfiltration,
             IStealthService stealth)
         {
             _ai = ai;
             _decision = decision;
             _enmity = enmity;
+            _enmityChange = enmityChange;
+            _enmityAttack = enmityAttack;
             _espionageInfiltration = espionageInfiltration;
             _stealth = stealth;
         }
@@ -237,11 +243,11 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         protected virtual uint GetHighestEnmityTarget(uint enemy) => _enmity.GetHighestEnmityTarget(enemy);
 
-        protected virtual void AttackHighestEnmityTarget(uint creature) => _enmity.AttackHighestEnmityTarget(creature);
+        protected virtual void AttackHighestEnmityTarget(uint creature) => _enmityAttack.AttackHighestEnmityTarget(creature);
 
         protected virtual bool HasProximityEnmity(uint creature, uint enemy) => _enmity.HasProximityEnmity(creature, enemy);
 
-        protected virtual void ModifyProximityEnmity(uint creature, uint enemy, int amount) => _enmity.ModifyProximityEnmity(creature, enemy, amount);
+        protected virtual void ModifyProximityEnmity(uint creature, uint enemy, int amount) => _enmityChange.ModifyProximityEnmity(creature, enemy, amount);
 
         protected virtual bool RemoveTrackedProximityEnmity(uint creature, uint enemy) => _enmity.RemoveProximityEnmity(creature, enemy);
 

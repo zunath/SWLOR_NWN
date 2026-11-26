@@ -50,7 +50,7 @@ public class StanceStatusEffectTests
         AddActiveEffect(Player, new DefensiveStanceStatusEffect());
         AddActiveEffect(Player, new PerfectAegisStatusEffect());
         Stat.GetStatAdjustmentExcludingTemporaryModifiers(Player, StatType.DamageEnmityPercentAdjustment).Should().Be(100);
-        Enmity.ClampEnmityPercentAdjustment(Stat.GetStatAdjustmentExcludingTemporaryModifiers(
+        EnmityChange.ClampEnmityPercentAdjustment(Stat.GetStatAdjustmentExcludingTemporaryModifiers(
             Player, StatType.EnmityPercentAdjustment)).Should().Be(50);
         var tracker = StatusEffect.GetCreatureStatusEffects(Player);
         tracker.Remove(tracker.GetAllEffects().Single(effect => effect is DefensiveStanceStatusEffect));

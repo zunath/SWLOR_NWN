@@ -13,16 +13,15 @@ namespace SWLOR.Game.Server.Domain.Social
     /// container's instance; static callers reach it through <c>GameServices.Party</c>. The caches themselves are the party
     /// roster (<see cref="IPartyRosterService"/>), which the domains below read through Combat's
     /// <see cref="IPartyRoster"/>; this service keeps them as the party events arrive and answers its reads from them. The
-    /// auras it refreshes on a party change reach back to the parties through the roster, so the aura part stays a
-    /// <c>Lazy&lt;&gt;</c> here: its own services (status effects, stats, combat points) still take <see cref="IPartyService"/>.
+    /// auras it refreshes on a party change reach back to the parties through the roster.
     /// </summary>
     public class PartyService : IPartyService
     {
         private readonly IPartyRosterService _roster;
-        private readonly Lazy<IAbilityAuraService> _abilityAura;
+        private readonly IAbilityAuraService _abilityAura;
         private readonly ITelegraphService _telegraph;
 
-        public PartyService(IPartyRosterService roster, Lazy<IAbilityAuraService> abilityAura, ITelegraphService telegraph)
+        public PartyService(IPartyRosterService roster, IAbilityAuraService abilityAura, ITelegraphService telegraph)
         {
             _roster = roster;
             _abilityAura = abilityAura;
@@ -70,7 +69,7 @@ namespace SWLOR.Game.Server.Domain.Social
             }
 
             // Party members already standing in each other's auras never re-fire the aura enter event.
-            _abilityAura.Value.EnrollPartyMemberInAuraRanges(creature);
+            _abilityAura.EnrollPartyMemberInAuraRanges(creature);
 
             _telegraph.UpdateShadersForPlayers(GetAllPartyMembers(requester));
         }
@@ -169,13 +168,13 @@ namespace SWLOR.Game.Server.Domain.Social
             _roster.CreatureToParty.Remove(creature);
 
             // Ensure any active aura effects that this creature was receiving from former party members are removed.
-            _abilityAura.Value.RefreshPartyAuraEligibility(creature);
+            _abilityAura.RefreshPartyAuraEligibility(creature);
 
             // Party composition changed. Refresh aura recipients for remaining members too,
             // so effects from the departing member are not retained.
             foreach (var member in _roster.Parties[partyId])
             {
-                _abilityAura.Value.RefreshPartyAuraEligibility(member);
+                _abilityAura.RefreshPartyAuraEligibility(member);
             }
 
             // If there is now only one party member (or fewer)

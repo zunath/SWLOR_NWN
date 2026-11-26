@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 public sealed class DefaultSeamsAIDecisionService : AIDecisionService
 {
     public DefaultSeamsAIDecisionService(IAIService ai, IAIActionService action)
-        : base(action, FacadeForwarder.For<IActivityService>(), ai, FacadeForwarder.For<IEnmityService>())
+        : base(action, FacadeForwarder.For<IActivityService>(), ai, FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IEnmityAttackService>())
     {
     }
 

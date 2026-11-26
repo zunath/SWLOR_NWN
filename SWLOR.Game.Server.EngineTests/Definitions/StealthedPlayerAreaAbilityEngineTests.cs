@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(GetIsEnemy(decoy, tusken), "the Tusken treats the decoy as an enemy");
 
             // The Tusken is fighting the visible decoy; the stealthed player stands beside it.
-            Enmity.ModifyEnmity(decoy, tusken, 10);
+            EnmityChange.ModifyEnmity(decoy, tusken, 10);
             var screech = AIInternals.Profiles[AIProfileType.Generic].Actions
                 .Single(action => action.Type == AIActionType.Ability && action.Feat == FeatType.DisorientingScreech);
             var context = new AIContext(tusken, AITriggerType.CombatRound, decoy,

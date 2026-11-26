@@ -43,13 +43,15 @@ namespace SWLOR.Game.Server.Domain.Quests
         private readonly IDBService _db;
         private readonly IDMPresenceService _presence;
         private readonly IEnmityService _enmity;
+        private readonly IEnmityChangeService _enmityChange;
         private readonly Lazy<IQuestService> _quest;
 
-        public QuestEncounterService(IDBService db, IDMPresenceService presence, IEnmityService enmity, Lazy<IQuestService> quest)
+        public QuestEncounterService(IDBService db, IDMPresenceService presence, IEnmityService enmity, IEnmityChangeService enmityChange, Lazy<IQuestService> quest)
         {
             _db = db;
             _presence = presence;
             _enmity = enmity;
+            _enmityChange = enmityChange;
             _quest = quest;
         }
 
@@ -133,7 +135,7 @@ namespace SWLOR.Game.Server.Domain.Quests
             MarkEncounterActivity(encounterCreature);
 
             StartCooldown(dbPlayer, encounterId, GetCooldown(activator), DateTime.UtcNow);
-            _enmity.ModifyEnmity(player, encounterCreature, 1);
+            _enmityChange.ModifyEnmity(player, encounterCreature, 1);
             AssignCommand(encounterCreature, () => ActionAttack(player));
 
             SendMessageToPC(player, "The encounter has begun.");

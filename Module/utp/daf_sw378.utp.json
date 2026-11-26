@@ -85,7 +85,7 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "[SWTOR] Bed - Bunk, Cream"
+      "0": "Bed, Bunk (Cream)"
     }
   },
   "OnClick": {

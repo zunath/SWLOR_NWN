@@ -294,6 +294,8 @@ SWLOR.Game.Server.Tests/Domain/Character/StatRulesTests.cs | 11
 SWLOR.Game.Server.Tests/Domain/Character/StatServiceDefaultSeamsTests.cs | 12
 SWLOR.Game.Server.Tests/Domain/Character/StatusEffectFacadeAllocationTests.cs | 35
 SWLOR.Game.Server.Tests/Domain/Character/TemporaryStatModifierFacadeAllocationTests.cs | 9
+SWLOR.Game.Server.Tests/Domain/Combat/CombatAbilityStatusAppliedServiceTests.cs | 1
+SWLOR.Game.Server.Tests/Domain/Combat/CombatAbilityWeaponRidersServiceTests.cs | 1
 SWLOR.Game.Server.Tests/Domain/Combat/CombatDamageCatalogServiceTests.cs | 7
 SWLOR.Game.Server.Tests/Domain/Combat/CombatDamageRollServiceTests.cs | 1
 SWLOR.Game.Server.Tests/Domain/Combat/CombatFacadeAllocationTests.cs | 307
@@ -305,6 +307,7 @@ SWLOR.Game.Server.Tests/Domain/Combat/CombatServiceTests.cs | 1
 SWLOR.Game.Server.Tests/Domain/Combat/MeleeTechniqueServiceTests.cs | 3
 SWLOR.Game.Server.Tests/Domain/Combat/OrdinaryAttackTraitsServiceTests.cs | 8
 SWLOR.Game.Server.Tests/Domain/Combat/QueuedAttackAnimationServiceTests.cs | 10
+SWLOR.Game.Server.Tests/Domain/Companions/BeastEventServiceTests.cs | 1
 SWLOR.Game.Server.Tests/Domain/Companions/BeastIncubationServiceTests.cs | 8
 SWLOR.Game.Server.Tests/Domain/Companions/BeastMasteryServiceTests.cs | 3
 SWLOR.Game.Server.Tests/Domain/Companions/BeastSpawnServiceTests.cs | 1

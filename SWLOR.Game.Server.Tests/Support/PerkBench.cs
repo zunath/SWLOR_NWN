@@ -96,6 +96,8 @@ public sealed class PerkBench : IDisposable
             });
 
         Service = new TestPerkService(this, Db, QuickCast, BeastMastery, StatusEffects);
+        StatBonus = new TestPerkStatBonusService(this, Service, BeastMastery);
+        Affinity = new TestPerkForceAffinityService(this, Service, FacadeForwarder.For<IStatService>());
         Current = this;
     }
 
@@ -125,10 +127,10 @@ public sealed class PerkBench : IDisposable
     public TestPerkService Catalog => Service;
 
     /// <summary>The stat bonus reads and their cache.</summary>
-    public TestPerkService StatBonus => Service;
+    public TestPerkStatBonusService StatBonus { get; }
 
     /// <summary>The force affinity reads and the magnitude and hit chance rules.</summary>
-    public TestPerkService Affinity => Service;
+    public TestPerkForceAffinityService Affinity { get; }
 
     /// <summary>The granted feat lookups, the restore and the sync.</summary>
     public TestPerkService Feats => Service;
@@ -140,7 +142,11 @@ public sealed class PerkBench : IDisposable
     /// Runs the perk boot handlers in <c>ScriptHandlerOrder.txt</c> order, as the cache event does. A part that adds a boot handler adds
     /// its call here.
     /// </summary>
-    public void CacheData() => Catalog.CacheData();
+    public void CacheData()
+    {
+        Catalog.CacheData();
+        StatBonus.CachePerkStatBonuses();
+    }
 
     /// <summary>What the engine and the seams did, in order (the engine's notes, as strings).</summary>
     public IReadOnlyList<string> Timeline =>

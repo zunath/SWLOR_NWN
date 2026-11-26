@@ -260,7 +260,7 @@ public class StatFacadeAllocationTests
             IStatusEffectService statusEffect,
             IMimicryTraitStatsService mimicryTraitStats,
             ICompanionLookup beastMastery,
-            IPerkService perk,
+            IPerkStatBonusService perk,
             ISkillService skill,
             ITemporaryStatModifierService temporaryStatModifier,
             IResourceRestoredListener resourceRestored)

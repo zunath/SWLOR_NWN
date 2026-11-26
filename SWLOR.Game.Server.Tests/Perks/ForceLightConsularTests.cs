@@ -90,12 +90,12 @@ public class ForceLightConsularTests
         cache[PerkType.ThrowRock] = perk;
         try
         {
-            Perk.TryGetForceSideAffinity(0, PerkType.ThrowRock, out var affinity).Should().BeFalse();
+            PerkForceAffinity.TryGetForceSideAffinity(0, PerkType.ThrowRock, out var affinity).Should().BeFalse();
             affinity.Should().Be(0);
-            Perk.GetForceAffinityMagnitudeMultiplier(0, PerkType.ThrowRock).Should().Be(1f);
-            Perk.GetForceAffinityHitChanceAdjustment(0, PerkType.ThrowRock).Should().Be(0);
+            PerkForceAffinity.GetForceAffinityMagnitudeMultiplier(0, PerkType.ThrowRock).Should().Be(1f);
+            PerkForceAffinity.GetForceAffinityHitChanceAdjustment(0, PerkType.ThrowRock).Should().Be(0);
             foreach (var damage in new[] { 22, 40, 60 })
-                Perk.ApplyForceAffinityMagnitude(0, PerkType.ThrowRock, damage).Should().Be(damage);
+                PerkForceAffinity.ApplyForceAffinityMagnitude(0, PerkType.ThrowRock, damage).Should().Be(damage);
 
             var details = (string)typeof(PerkDetailText)
                 .GetMethod("BuildForceAffinityPerkDetailText", BindingFlags.Instance | BindingFlags.NonPublic)!

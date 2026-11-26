@@ -41,6 +41,8 @@ public class SplitBootHandlerTests
         "SWLOR.Game.Server.Service.AI.CacheAIData",
         // Combat services split: the recorder damage part's session listener registers out of Combat.LoadDamageTypes.
         "SWLOR.Game.Server.Service.Combat.LoadDamageTypes",
+        // Character and companions split: the stat bonus tables fill out of Perk.CacheData.
+        "SWLOR.Game.Server.Service.Perk.CacheData",
     };
 
     private static IReadOnlyList<string[]> Splits()

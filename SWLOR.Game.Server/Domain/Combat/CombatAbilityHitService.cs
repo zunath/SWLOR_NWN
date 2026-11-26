@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatRateModifiersService _rateModifiers;
         private readonly ICombatRatingService _combatRating;
         private readonly IAbilityImpactState _impactState;
-        private readonly IPerkService _perk;
+        private readonly IPerkForceAffinityService _perk;
         private readonly IPairedRangedTraitsService _pairedRangedTraits;
         private readonly ICombatAbilityHitAdjustmentService _hitAdjustment;
 
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatRateModifiersService rateModifiers,
             ICombatRatingService combatRating,
             IAbilityImpactState impactState,
-            IPerkService perk,
+            IPerkForceAffinityService perk,
             IPairedRangedTraitsService pairedRangedTraits,
             ICombatAbilityHitAdjustmentService hitAdjustment)
         {

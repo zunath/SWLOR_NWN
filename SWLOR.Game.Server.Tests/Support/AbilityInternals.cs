@@ -27,7 +27,7 @@ public static class AbilityInternals
     public static AbilityService NoNeighbours()
     {
         var impactState = new AbilityImpactStore();
-        var magnitude = new CombatAbilityMagnitudeService(impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>());
+        var magnitude = new CombatAbilityMagnitudeService(impactState, FacadeForwarder.For<IPerkForceAffinityService>(), FacadeForwarder.For<IStatService>());
         var darkForce = new AbilityDarkForceService(impactState, null!, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatResourcesService>());
         var damageInput = new AbilityDamageInputService(impactState, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatRatingService>(), FacadeForwarder.For<ICombatActivityService>(),
             FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityDamageBonusService>(),
@@ -36,7 +36,7 @@ public static class AbilityInternals
             FacadeForwarder.For<ICombatRepeatedTargetService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatDamageReflectionService>(),
             FacadeForwarder.For<ICombatAbilityBonusService>());
         var statusApplication = new AbilityStatusApplicationService(null!, null!, null!, impactState, FacadeForwarder.For<ICombatAbilityBonusService>());
-        var damageStage = new AbilityDamageStageService(damageInput, impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ICombatAbilityHitAdjustmentService>(),
+        var damageStage = new AbilityDamageStageService(damageInput, impactState, FacadeForwarder.For<IPerkForceAffinityService>(), FacadeForwarder.For<ICombatAbilityHitAdjustmentService>(),
             FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatDamageReflectionService>(), FacadeForwarder.For<ICombatFeedbackService>(),
             FacadeForwarder.For<ICombatCriticalHitEffectsService>(), magnitude, null!);
         var impactMessage = new AbilityImpactMessageService(null!, null!, FacadeForwarder.For<ICombatFeedbackService>());

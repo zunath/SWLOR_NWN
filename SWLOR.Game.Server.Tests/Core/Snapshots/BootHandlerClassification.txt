@@ -18,7 +18,7 @@ db_loaded (1)
 mod_content_chg (1)
   BootOnly    SWLOR.Game.Server.Domain.Foundation.WalkmeshService.LoadWalkmeshes
 
-mod_cache_bef (51)
+mod_cache_bef (52)
   Rerun       SWLOR.Game.Server.Domain.Abilities.AbilityCatalogService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Character.AchievementService.LoadAchievements
   Rerun       SWLOR.Game.Server.Domain.World.AreaService.CacheData
@@ -41,6 +41,7 @@ mod_cache_bef (51)
   Rerun       SWLOR.Game.Server.Domain.Creatures.NPCGroupService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Foundation.ObjectVisibilityService.LoadVisibilityObjects
   Rerun       SWLOR.Game.Server.Domain.Character.PerkService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Character.PerkStatBonusService.CachePerkStatBonuses
   Rerun       SWLOR.Game.Server.Domain.World.PlanetService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Economy.PlayerMarketService.CacheData
   Rerun       SWLOR.Game.Server.Domain.World.PropertyService.CacheData
@@ -57,7 +58,7 @@ mod_cache_bef (51)
   Rerun       SWLOR.Game.Server.Domain.Character.CreatureStatService.RegisterStatEffectListener
   Rerun       SWLOR.Game.Server.Domain.Character.StatusEffectCatalogService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.RegisterStatusEffectListener
-  Rerun       SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService.RegisterStatusEffectListener
+  Rerun       SWLOR.Game.Server.Domain.Combat.CombatAbilityStatusAppliedService.RegisterStatusEffectListener
   Rerun       SWLOR.Game.Server.Domain.Quests.CapstoneProofService.RegisterStatusEffectListener
   Rerun       SWLOR.Game.Server.Domain.Character.StatusEffectSessionService.RegisterLoggedOutSource
   Rerun       SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations
@@ -148,5 +149,5 @@ app_shutdown (2)
 == TOTALS ==
 BootOnly    19
 NativeHook  16
-Rerun       89
+Rerun       90
 Retire      2

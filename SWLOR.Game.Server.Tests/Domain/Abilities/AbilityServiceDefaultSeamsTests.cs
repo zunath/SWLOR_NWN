@@ -85,7 +85,7 @@ public class AbilityServiceDefaultSeamsTests
             FacadeForwarder.For<ICombatAbilityMagnitudeService>(), FacadeForwarder.For<IResistanceService>());
 
     private static AbilityDamageStageService DamageStagePart() =>
-        new(FacadeForwarder.For<IAbilityDamageInputService>(), FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<IPerkService>(),
+        new(FacadeForwarder.For<IAbilityDamageInputService>(), FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<IPerkForceAffinityService>(),
             FacadeForwarder.For<ICombatAbilityHitAdjustmentService>(), FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatDamageReflectionService>(),
             FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatCriticalHitEffectsService>(), FacadeForwarder.For<ICombatAbilityMagnitudeService>(),
             FacadeForwarder.For<IResistanceService>());

@@ -89,6 +89,8 @@ public class CombatAbilityTranscriptTests
         var impact = bench.Get<ICombatAbilityImpactService>();
         var bonus = bench.Get<ICombatAbilityDamageBonusService>();
         var riders = bench.Get<ICombatAbilityHitRidersService>();
+        var weaponRiders = bench.Get<ICombatAbilityWeaponRidersService>();
+        var statusApplied = bench.Get<ICombatAbilityStatusAppliedService>();
         var listeners = new List<IStatusEffectAppliedListener>();
         bench.Leaf<IStatusEffectService>().Script(nameof(IStatusEffectService.RegisterAppliedListener), args =>
         {
@@ -125,15 +127,15 @@ public class CombatAbilityTranscriptTests
             }
 
             bench.Step("area hit haste" + tag, () => riders.ApplyAreaHitHaste(Attacker, 3));
-            bench.Step("spear disabler suppression" + tag, () => impact.ApplySpearDisablerSuppressionRiders(Attacker, Defender));
+            bench.Step("spear disabler suppression" + tag, () => weaponRiders.ApplySpearDisablerSuppressionRiders(Attacker, Defender));
             bench.Step("is the target attacking an ally" + tag, () => impact.IsTargetAttackingAllyForStatusAppliedRiders(Attacker, Defender));
-            bench.Step("hostile ability party buff" + tag, () => impact.ApplyHostileAbilityPartyBuff(Attacker, Ability(SkillType.Force), 30, true));
+            bench.Step("hostile ability party buff" + tag, () => statusApplied.ApplyHostileAbilityPartyBuff(Attacker, Ability(SkillType.Force), 30, true));
             bench.Step("forget the attacker" + tag, () => impact.ForgetImpactState(Attacker));
         }
 
         // The notices the status effect service sends to what registered at boot.
         bench.DefaultStat = 5;
-        bench.Step("register the status-applied listener at boot", () => ((CombatAbilityImpactService)impact).RegisterStatusEffectListener());
+        bench.Step("register the status-applied listener at boot", () => ((CombatAbilityStatusAppliedService)statusApplied).RegisterStatusEffectListener());
         bench.Step("the listeners are notified of an applied status", () =>
         {
             foreach (var listener in listeners)

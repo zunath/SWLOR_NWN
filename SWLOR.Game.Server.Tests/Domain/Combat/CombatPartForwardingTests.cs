@@ -34,6 +34,8 @@ public class CombatPartForwardingTests
         typeof(ICombatAbilityDamageBonusService),
         typeof(ICombatAbilityHitRidersService),
         typeof(ICombatAbilityAreaImpactService),
+        typeof(ICombatAbilityWeaponRidersService),
+        typeof(ICombatAbilityStatusAppliedService),
         typeof(ICombatAbilityOffenseEffectsService),
         typeof(ICombatAbilityWeaponActivationService),
         typeof(ICombatActivityService),

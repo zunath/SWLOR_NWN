@@ -13,7 +13,7 @@ public sealed class TestCombatAbilityMagnitudeService : CombatAbilityMagnitudeSe
     private readonly AbilityBench _bench;
 
     public TestCombatAbilityMagnitudeService(AbilityBench bench, IAbilityImpactState impactState)
-        : base(impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>())
+        : base(impactState, FacadeForwarder.For<IPerkForceAffinityService>(), FacadeForwarder.For<IStatService>())
     {
         _bench = bench;
     }

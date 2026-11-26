@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.Abilities;
@@ -47,7 +48,11 @@ public class PerkFacadeAllocationTests
         };
 
         _container = new FacadeContainer(services =>
-            services.Replace(ServiceDescriptor.Singleton<IPerkService>(_bench.Service)));
+        {
+            services.Replace(ServiceDescriptor.Singleton<IPerkService>(_bench.Service));
+            services.Replace(ServiceDescriptor.Singleton<IPerkStatBonusService>(_bench.StatBonus));
+            services.Replace(ServiceDescriptor.Singleton<IPerkForceAffinityService>(_bench.Affinity));
+        });
         _installed = _container.Install();
         _bench.CacheData();
         _bench.Feats.CachePerkFeatData();
@@ -109,12 +114,12 @@ public class PerkFacadeAllocationTests
     {
         var sink = 0;
 
-        Allocated(() => sink += Perk.GetStatBonus(PerkBench.Player, StatType.AccuracyPercentAdjustment)).Should().Be(0);
-        Allocated(() => sink += Perk.GetStatSources(PerkBench.Player, StatType.AccuracyPercentAdjustment).Count).Should().Be(0);
-        Allocated(() => sink += Perk.GetTargetedStatBonus(
+        Allocated(() => sink += GameServices.PerkStatBonus.GetStatBonus(PerkBench.Player, StatType.AccuracyPercentAdjustment)).Should().Be(0);
+        Allocated(() => sink += GameServices.PerkStatBonus.GetStatSources(PerkBench.Player, StatType.AccuracyPercentAdjustment).Count).Should().Be(0);
+        Allocated(() => sink += GameServices.PerkStatBonus.GetTargetedStatBonus(
             PerkBench.Player, PerkType.AlphaRhythm, StatType.AttackPercentAdjustment, StatType.AccuracyPercentAdjustment,
             StatType.EvasionPercentAdjustment)).Should().Be(0);
-        Allocated(() => sink += Perk.GetTargetedStatBonus(
+        Allocated(() => sink += GameServices.PerkStatBonus.GetTargetedStatBonus(
             PerkBench.Player, PerkType.Invalid, StatType.AttackPercentAdjustment, StatType.AccuracyPercentAdjustment,
             StatType.EvasionPercentAdjustment)).Should().Be(0);
         GC.KeepAlive(sink);
@@ -125,12 +130,12 @@ public class PerkFacadeAllocationTests
     {
         var sink = 0;
 
-        Allocated(() => sink += Perk.TryGetForceSideAffinity(PerkBench.Player, PerkType.AlphaRhythm, out var side) ? side : 0).Should().Be(0);
-        Allocated(() => sink += Perk.TryGetForceSideAffinity(PerkBench.Player, PerkType.Invalid, out var side) ? side : 0).Should().Be(0);
-        Allocated(() => sink += (int)Perk.GetForceAffinityMagnitudeMultiplier(PerkBench.Player, PerkType.AlphaRhythm)).Should().Be(0);
-        Allocated(() => sink += Perk.GetForceAffinityHitChanceAdjustment(PerkBench.Player, PerkType.AlphaRhythm)).Should().Be(0);
-        Allocated(() => sink += Perk.ApplyForceAffinityMagnitude(PerkBench.Player, PerkType.AlphaRhythm, 0)).Should().Be(0);
-        Allocated(() => sink += (int)Perk.ApplyForceAffinityMagnitude(PerkBench.Player, PerkType.AlphaRhythm, 0f)).Should().Be(0);
+        Allocated(() => sink += PerkForceAffinity.TryGetForceSideAffinity(PerkBench.Player, PerkType.AlphaRhythm, out var side) ? side : 0).Should().Be(0);
+        Allocated(() => sink += PerkForceAffinity.TryGetForceSideAffinity(PerkBench.Player, PerkType.Invalid, out var side) ? side : 0).Should().Be(0);
+        Allocated(() => sink += (int)PerkForceAffinity.GetForceAffinityMagnitudeMultiplier(PerkBench.Player, PerkType.AlphaRhythm)).Should().Be(0);
+        Allocated(() => sink += PerkForceAffinity.GetForceAffinityHitChanceAdjustment(PerkBench.Player, PerkType.AlphaRhythm)).Should().Be(0);
+        Allocated(() => sink += PerkForceAffinity.ApplyForceAffinityMagnitude(PerkBench.Player, PerkType.AlphaRhythm, 0)).Should().Be(0);
+        Allocated(() => sink += (int)PerkForceAffinity.ApplyForceAffinityMagnitude(PerkBench.Player, PerkType.AlphaRhythm, 0f)).Should().Be(0);
         Allocated(() => sink += Perk.GetPerkLevel(PerkBench.Player, PerkType.Invalid)).Should().Be(0);
         GC.KeepAlive(sink);
     }

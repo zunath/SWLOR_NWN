@@ -16,8 +16,9 @@ using Player = SWLOR.Game.Server.Entity.Player;
 namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
-    /// Perks: the definition caches, a creature's perk levels, the stat bonuses and granted feats that follow from them,
-    /// and refunds. The logic that used to be static in the facade <c>Perk</c> is moved here unchanged; the event handlers
+    /// Perks: the definition caches, a creature's perk levels, the granted feats that follow from them, and refunds. The stat
+    /// bonuses are on <see cref="PerkStatBonusService"/> and the Force affinity on <see cref="PerkForceAffinityService"/>.
+    /// The logic that used to be static in the facade <c>Perk</c> is moved here unchanged; the event handlers
     /// run on the container's instance, and static callers reach it through <c>GameServices.Perk</c>. Calls into <c>Stat</c>,
     /// <c>Ability</c>, <c>Droid</c> and <c>Combat</c>, and the definition search, sit behind one-line
     /// <c>protected virtual</c> methods whose bodies are the original calls.
@@ -51,8 +52,6 @@ namespace SWLOR.Game.Server.Domain.Character
 
         private readonly Dictionary<PerkType, Dictionary<int, int>> _perkLevelTiers = new();
         private readonly Dictionary<SkillType, List<PerkType>> _perksWithSkillRequirement = new();
-        private readonly Dictionary<StatType, List<StatBonusGroup>> _statBonusGroupsByStat = new();
-        private readonly Dictionary<StatType, List<TargetedStatBonusGroup>> _targetedStatBonusGroupsByAdjustmentStat = new();
         private readonly Dictionary<PerkType, Dictionary<int, FeatType[]>> _grantedFeatsByPerkLevel = new();
         private readonly Dictionary<PerkType, Dictionary<int, HashSet<FeatType>>> _grantedFeatSetsByPerkLevel = new();
         private readonly Dictionary<PerkType, Dictionary<int, FeatType[]>> _currentActiveAbilityFeatsByPerkLevel = new();
@@ -62,42 +61,12 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly HashSet<(PerkType PerkType, FeatType Feat)> _activeAbilityFeatsByPerk = new();
         private static readonly FrozenSet<FeatType> _emptyFeatSet = FrozenSet<FeatType>.Empty;
         private bool _perkFeatCacheLoaded;
-        private const int ForceAffinityMinimum = -10;
-        private const int ForceAffinityMaximum = 10;
-        // Heals, shields and regeneration gain at most +25% from affinity; damage and accuracy keep the full range.
-        private const float ForceAffinityRestorativeMaximumMultiplier = 1.25f;
-
-        private class StatBonusGroup
-        {
-            public StatBonusGroup(PerkType perkType, PerkDetail perkDetail)
-            {
-                PerkType = perkType;
-                PerkDetail = perkDetail;
-            }
-
-            public PerkType PerkType { get; }
-            public PerkDetail PerkDetail { get; }
-            public List<PerkStatBonus> PerkBonuses { get; } = new();
-            public Dictionary<int, List<PerkStatBonus>> LevelBonuses { get; } = new();
-        }
-
-        private class TargetedStatBonusGroup
-        {
-            public TargetedStatBonusGroup(PerkType perkType)
-            {
-                PerkType = perkType;
-            }
-
-            public PerkType PerkType { get; }
-            public Dictionary<int, Dictionary<StatType, List<PerkStatBonus>>> BonusesByLevel { get; } = new();
-        }
 
         private readonly IDBService _db;
         private readonly IQuickCastService _quickCast;
         private readonly ICompanionLookup _companions;
         private readonly IStatusEffectService _statusEffect;
         private readonly IAbilityCatalog _catalog;
-        private readonly Lazy<IStatService> _stat;
         private readonly Lazy<ICombatService> _combat;
 
         public PerkService(
@@ -106,7 +75,6 @@ namespace SWLOR.Game.Server.Domain.Character
             ICompanionLookup companions,
             IStatusEffectService statusEffect,
             IAbilityCatalog catalog,
-            Lazy<IStatService> stat,
             Lazy<ICombatService> combat)
         {
             _db = db;
@@ -114,7 +82,6 @@ namespace SWLOR.Game.Server.Domain.Character
             _companions = companions;
             _statusEffect = statusEffect;
             _catalog = catalog;
-            _stat = stat;
             _combat = combat;
         }
 
@@ -251,92 +218,11 @@ namespace SWLOR.Game.Server.Domain.Character
 
                     // Determine the max level for the perk.
                     _perkMaxLevels[perkType] = perkDetail.PerkLevels.Last().Key;
-                    CacheStatBonusPerk(perkType, perkDetail);
                 }
             }
 
             _perkFeatCacheLoaded = false;
             Console.WriteLine($"Loaded {_allPerks.Count} player perks.");
-        }
-
-        private void CacheStatBonusPerk(PerkType perkType, PerkDetail perkDetail)
-        {
-            foreach (var statBonus in perkDetail.StatBonuses)
-            {
-                GetOrCreateStatBonusGroup(statBonus.Stat, perkType, perkDetail).PerkBonuses.Add(statBonus);
-            }
-
-            foreach (var (level, perkLevel) in perkDetail.PerkLevels)
-            {
-                if (perkLevel.StatBonuses.Count <= 0)
-                    continue;
-
-                var levelBonusesByStat = new Dictionary<StatType, List<PerkStatBonus>>();
-                foreach (var statBonus in perkLevel.StatBonuses)
-                {
-                    var statBonusGroup = GetOrCreateStatBonusGroup(statBonus.Stat, perkType, perkDetail);
-                    if (!statBonusGroup.LevelBonuses.TryGetValue(level, out var levelBonuses))
-                    {
-                        levelBonuses = new List<PerkStatBonus>();
-                        statBonusGroup.LevelBonuses[level] = levelBonuses;
-                    }
-
-                    levelBonuses.Add(statBonus);
-
-                    if (!levelBonusesByStat.TryGetValue(statBonus.Stat, out var bonusesByStat))
-                    {
-                        bonusesByStat = new List<PerkStatBonus>();
-                        levelBonusesByStat[statBonus.Stat] = bonusesByStat;
-                    }
-
-                    bonusesByStat.Add(statBonus);
-                }
-
-                foreach (var adjustmentStat in levelBonusesByStat.Keys)
-                {
-                    var targetedStatBonusGroup = GetOrCreateTargetedStatBonusGroup(adjustmentStat, perkType);
-                    targetedStatBonusGroup.BonusesByLevel[level] = levelBonusesByStat;
-                }
-            }
-        }
-
-        private StatBonusGroup GetOrCreateStatBonusGroup(
-            StatType stat,
-            PerkType perkType,
-            PerkDetail perkDetail)
-        {
-            if (!_statBonusGroupsByStat.TryGetValue(stat, out var statBonusGroups))
-            {
-                statBonusGroups = new List<StatBonusGroup>();
-                _statBonusGroupsByStat[stat] = statBonusGroups;
-            }
-
-            var statBonusGroup = statBonusGroups.SingleOrDefault(x => x.PerkType == perkType);
-            if (statBonusGroup != null)
-                return statBonusGroup;
-
-            statBonusGroup = new StatBonusGroup(perkType, perkDetail);
-            statBonusGroups.Add(statBonusGroup);
-            return statBonusGroup;
-        }
-
-        private TargetedStatBonusGroup GetOrCreateTargetedStatBonusGroup(
-            StatType adjustmentStat,
-            PerkType perkType)
-        {
-            if (!_targetedStatBonusGroupsByAdjustmentStat.TryGetValue(adjustmentStat, out var targetedStatBonusGroups))
-            {
-                targetedStatBonusGroups = new List<TargetedStatBonusGroup>();
-                _targetedStatBonusGroupsByAdjustmentStat[adjustmentStat] = targetedStatBonusGroups;
-            }
-
-            var targetedStatBonusGroup = targetedStatBonusGroups.SingleOrDefault(x => x.PerkType == perkType);
-            if (targetedStatBonusGroup != null)
-                return targetedStatBonusGroup;
-
-            targetedStatBonusGroup = new TargetedStatBonusGroup(perkType);
-            targetedStatBonusGroups.Add(targetedStatBonusGroup);
-            return targetedStatBonusGroup;
         }
 
         private void CachePerkFeatLookups()
@@ -608,226 +494,12 @@ namespace SWLOR.Game.Server.Domain.Character
             return _allPerks.ToDictionary(x => x.Key, y => y.Value);
         }
 
-        public int GetForceAffinity(uint creature)
+        /// <summary>
+        /// Every perk in the order the cache built them, without copying the table. The stat bonus tables are built from this.
+        /// </summary>
+        public IEnumerable<KeyValuePair<PerkType, PerkDetail>> EnumerateAllPerks()
         {
-            if (!GetIsPC(creature) || GetIsDM(creature))
-                return 0;
-
-            return Math.Clamp(
-                GetCreatureStatAdjustment(creature, StatType.ForceAffinity),
-                ForceAffinityMinimum,
-                ForceAffinityMaximum);
-        }
-
-        public bool TryGetForceSideAffinity(uint creature, PerkType perkType, out int sideAffinity)
-        {
-            sideAffinity = 0;
-
-            if (perkType == PerkType.Invalid ||
-                !_allPerks.TryGetValue(perkType, out var detail))
-            {
-                return false;
-            }
-
-            if (detail.ForceAffinityType == null)
-                return false;
-
-            var forceAffinity = GetForceAffinity(creature);
-            switch (detail.ForceAffinityType.Value)
-            {
-                case ForceAffinityType.Light:
-                    sideAffinity = forceAffinity;
-                    return true;
-                case ForceAffinityType.Dark:
-                    sideAffinity = -forceAffinity;
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        public float GetForceAffinityMagnitudeMultiplier(uint creature, PerkType perkType)
-        {
-            return TryGetForceSideAffinity(creature, perkType, out var sideAffinity)
-                ? Math.Clamp(1f + 0.05f * sideAffinity, 0.5f, 1.5f)
-                : 1f;
-        }
-
-        public int GetForceAffinityHitChanceAdjustment(uint creature, PerkType perkType)
-        {
-            return TryGetForceSideAffinity(creature, perkType, out var sideAffinity)
-                ? (int)Math.Floor(sideAffinity / 2f)
-                : 0;
-        }
-
-        public float GetForceAffinityRestorativeMagnitudeMultiplier(uint creature, PerkType perkType)
-        {
-            return Math.Min(GetForceAffinityMagnitudeMultiplier(creature, perkType), ForceAffinityRestorativeMaximumMultiplier);
-        }
-
-        public int ApplyForceAffinityMagnitude(uint creature, PerkType perkType, int amount)
-        {
-            return amount <= 0 ? amount : ApplyMagnitudeMultiplier(amount, GetForceAffinityMagnitudeMultiplier(creature, perkType));
-        }
-
-        /// <summary>Applies affinity to a heal, shield or regeneration amount, which gains at most +25%.</summary>
-        public int ApplyForceAffinityRestorativeMagnitude(uint creature, PerkType perkType, int amount)
-        {
-            return amount <= 0 ? amount : ApplyMagnitudeMultiplier(amount, GetForceAffinityRestorativeMagnitudeMultiplier(creature, perkType));
-        }
-
-        private int ApplyMagnitudeMultiplier(int amount, float multiplier)
-        {
-            if (Math.Abs(multiplier - 1f) < 0.001f)
-                return amount;
-
-            return Math.Max(1, (int)Math.Round(amount * multiplier, MidpointRounding.AwayFromZero));
-        }
-
-        public float ApplyForceAffinityMagnitude(uint creature, PerkType perkType, float amount)
-        {
-            if (amount <= 0f)
-                return amount;
-
-            return amount * GetForceAffinityMagnitudeMultiplier(creature, perkType);
-        }
-
-        public IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
-        {
-            if (!_statBonusGroupsByStat.TryGetValue(payloadStat, out var groups))
-                return Array.Empty<StatAdjustmentSource>();
-
-            List<StatAdjustmentSource> sources = null;
-            foreach (var group in groups)
-            {
-                var level = GetStatBonusPerkLevel(creature, group.PerkType);
-                if (level <= 0 || !group.PerkDetail.PerkLevels.TryGetValue(level, out var perkLevel))
-                    continue;
-
-                var stats = new Dictionary<StatType, int>();
-                foreach (var bonus in group.PerkDetail.StatBonuses)
-                {
-                    stats.TryGetValue(bonus.Stat, out var current);
-                    stats[bonus.Stat] = AggregateStatAdjustment(bonus.Stat, current, bonus.Calculate(creature));
-                }
-                foreach (var bonus in perkLevel.StatBonuses)
-                {
-                    stats.TryGetValue(bonus.Stat, out var current);
-                    stats[bonus.Stat] = AggregateStatAdjustment(bonus.Stat, current, bonus.Calculate(creature));
-                }
-
-                if (stats.TryGetValue(payloadStat, out var value) && value != 0)
-                {
-                    sources ??= new List<StatAdjustmentSource>();
-                    sources.Add(new StatAdjustmentSource($"perk:{(int)group.PerkType}", stats));
-                }
-            }
-            return (IReadOnlyList<StatAdjustmentSource>)sources ?? Array.Empty<StatAdjustmentSource>();
-        }
-
-        public int GetStatBonus(uint creature, StatType stat)
-        {
-            var bonus = 0;
-            if (!_statBonusGroupsByStat.TryGetValue(stat, out var statBonusGroups))
-                return bonus;
-
-            foreach (var statBonusGroup in statBonusGroups)
-            {
-                var level = GetStatBonusPerkLevel(creature, statBonusGroup.PerkType);
-                if (level <= 0 || !statBonusGroup.PerkDetail.PerkLevels.ContainsKey(level))
-                    continue;
-
-                foreach (var statBonus in statBonusGroup.PerkBonuses)
-                {
-                    bonus = AggregateStatAdjustment(stat, bonus, statBonus.Calculate(creature));
-                }
-
-                if (!statBonusGroup.LevelBonuses.TryGetValue(level, out var levelBonuses))
-                    continue;
-
-                foreach (var statBonus in levelBonuses)
-                {
-                    bonus = AggregateStatAdjustment(stat, bonus, statBonus.Calculate(creature));
-                }
-            }
-
-            return bonus;
-        }
-
-        public int GetTargetedStatBonus(
-            uint creature,
-            PerkType targetPerkType,
-            StatType primaryPerkStatType,
-            StatType secondaryPerkStatType,
-            StatType adjustmentStatType)
-        {
-            if (targetPerkType == PerkType.Invalid)
-                return 0;
-
-            var bonus = 0;
-            if (!_targetedStatBonusGroupsByAdjustmentStat.TryGetValue(adjustmentStatType, out var targetedStatBonusGroups))
-                return bonus;
-
-            foreach (var targetedStatBonusGroup in targetedStatBonusGroups)
-            {
-                var level = GetStatBonusPerkLevel(creature, targetedStatBonusGroup.PerkType);
-                if (level <= 0 || !targetedStatBonusGroup.BonusesByLevel.TryGetValue(level, out var bonusesByStat))
-                    continue;
-
-                var primaryPerkValue = CalculateStatBonuses(creature, bonusesByStat, primaryPerkStatType);
-                var secondaryPerkValue = CalculateStatBonuses(creature, bonusesByStat, secondaryPerkStatType);
-                var adjustment = CalculateStatBonuses(creature, bonusesByStat, adjustmentStatType);
-
-                if (adjustment != 0 && IsTargetedPerk(targetPerkType, primaryPerkValue, secondaryPerkValue))
-                    bonus += adjustment;
-            }
-
-            return bonus;
-        }
-
-        private int CalculateStatBonuses(
-            uint creature,
-            IReadOnlyDictionary<StatType, List<PerkStatBonus>> bonusesByStat,
-            StatType stat)
-        {
-            if (!bonusesByStat.TryGetValue(stat, out var statBonuses))
-                return 0;
-
-            var bonus = 0;
-            foreach (var statBonus in statBonuses)
-            {
-                bonus += statBonus.Calculate(creature);
-            }
-
-            return bonus;
-        }
-
-        private int GetStatBonusPerkLevel(uint creature, PerkType perkType)
-        {
-            if (perkType == PerkType.Invalid)
-                return 0;
-
-            if (GetIsPC(creature) && !GetIsDMPossessed(creature) ||
-                IsDroid(creature) ||
-                _companions.IsPlayerBeast(creature))
-            {
-                return GetPerkLevel(creature, perkType);
-            }
-
-            return GetLocalInt(creature, $"PERK_LEVEL_{(int)perkType}");
-        }
-
-        private bool IsTargetedPerk(PerkType targetPerkType, int primaryPerkValue, int secondaryPerkValue)
-        {
-            return targetPerkType == GetPerkTypeFromStat(primaryPerkValue) ||
-                   targetPerkType == GetPerkTypeFromStat(secondaryPerkValue);
-        }
-
-        private PerkType GetPerkTypeFromStat(int value)
-        {
-            return value > 0 && System.Enum.IsDefined(typeof(PerkType), value)
-                ? (PerkType)value
-                : PerkType.Invalid;
+            return _allPerks;
         }
 
         /// <summary>
@@ -1456,16 +1128,6 @@ namespace SWLOR.Game.Server.Domain.Character
         protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails()
         {
             return _catalog.GetAllAbilityDetails();
-        }
-
-        protected virtual int GetCreatureStatAdjustment(uint creature, StatType stat)
-        {
-            return _stat.Value.GetStatAdjustment(creature, stat);
-        }
-
-        protected virtual int AggregateStatAdjustment(StatType stat, int current, int adjustment)
-        {
-            return _stat.Value.AggregateStatAdjustment(stat, current, adjustment);
         }
 
         protected virtual bool IsDroid(uint creature)

@@ -92,7 +92,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/PerkService.cs",
-    "Line": 1426,
+    "Line": 1098,
     "Member": "RemovePerkLevelOnSkillDecay",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Perk '{perkDetail.Name}' level {level} was refunded because your skill fell under the minimum requirements. You reclaimed {perkLevel.Price} SP.\", player, false)"
@@ -294,8 +294,8 @@
     "Call": "SendMessageToPC(creature, BuildWornOffMessage(creature))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs",
-    "Line": 882,
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatAbilityStatusAppliedService.cs",
+    "Line": 326,
     "Member": "ApplyStatusAppliedTargetStaminaDrain",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                ColorToken.Combat($\"-{staminaDrained} STM\"),\n                target,\n                false)"
@@ -638,7 +638,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",
-    "Line": 748,
+    "Line": 749,
     "Member": "ExitDetectedPlayerStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, ColorToken.Red(\"You have been detected and are forced out of stealth.\"))"
@@ -663,6 +663,20 @@
     "Member": "RemovePair",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"Free inventory space or make room in a carried bag before unequipping Twin Pistols.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/BeastEventService.cs",
+    "Line": 86,
+    "Member": "OnAcquireItem",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(master, \"Beasts cannot hold items.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/BeastEventService.cs",
+    "Line": 210,
+    "Member": "OpenStablesMenu",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Only players may use this terminal.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Companions/BeastIncubationService.cs",
@@ -701,31 +715,17 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
-    "Line": 352,
+    "Line": 343,
     "Member": "AddXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{dbBeast.Name} earned {xp} XP.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
-    "Line": 373,
+    "Line": 364,
     "Member": "AddXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{dbBeast.Name} reaches level {dbBeast.Level}!\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
-    "Line": 533,
-    "Member": "OnAcquireItem",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(master, \"Beasts cannot hold items.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
-    "Line": 657,
-    "Member": "OpenStablesMenu",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"Only players may use this terminal.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Companions/BeastSpawnService.cs",
@@ -953,14 +953,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Economy/GuildService.cs",
-    "Line": 129,
+    "Line": 131,
     "Member": "GiveGuildPoints",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You earned {amount} {detail.Name} guild points\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Economy/GuildService.cs",
-    "Line": 140,
+    "Line": 142,
     "Member": "GiveGuildPoints",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\"You've reached rank \" + dbGuild.Rank + \" in the \" + detail.Name + \"!\"))"
@@ -6476,7 +6476,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/StatusEffectDefinition/InspiredStatusEffect.cs",
-    "Line": 174,
+    "Line": 175,
     "Member": "HealStandingOvation",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, \"A standing ovation lifts you, restoring your health.\")"

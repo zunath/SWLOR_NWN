@@ -134,6 +134,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ILanguageService, LanguageService>();
             services.AddSingleton<IMimicryTraitStatsService, MimicryTraitStatsService>();
             services.AddSingleton<IPerkService, PerkService>();
+            services.AddSingleton<IPerkStatBonusService, PerkStatBonusService>();
+            services.AddSingleton<IPerkForceAffinityService, PerkForceAffinityService>();
             services.AddSingleton<IPlayerDescriptorService, PlayerDescriptorService>();
             services.AddSingleton<IPlayerIntroductionService, PlayerIntroductionService>();
             services.AddSingleton<IPlayerNameService, PlayerNameService>();
@@ -183,6 +185,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatAbilityDamageBonusService, CombatAbilityDamageBonusService>();
             services.AddSingleton<ICombatAbilityHitRidersService, CombatAbilityHitRidersService>();
             services.AddSingleton<ICombatAbilityAreaImpactService, CombatAbilityAreaImpactService>();
+            services.AddSingleton<ICombatAbilityWeaponRidersService, CombatAbilityWeaponRidersService>();
+            services.AddSingleton<ICombatAbilityStatusAppliedService, CombatAbilityStatusAppliedService>();
             services.AddSingleton<ICombatAbilityMagnitudeService, CombatAbilityMagnitudeService>();
             services.AddSingleton<ICombatAbilityOffenseEffectsService, CombatAbilityOffenseEffectsService>();
             services.AddSingleton<ICombatAbilityWeaponActivationService, CombatAbilityWeaponActivationService>();
@@ -265,6 +269,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICompanionLookup, CompanionLookup>();
             services.AddSingleton<IBeastMasteryService, BeastMasteryService>();
             services.AddSingleton<IBeastSpawnService, BeastSpawnService>();
+            services.AddSingleton<IBeastEventService, BeastEventService>();
             services.AddSingleton<IBeastIncubationService, BeastIncubationService>();
             // The same instance, seen through the corpse reads the loot owns.
             services.AddSingleton<IBeastCorpseInfo>(provider => provider.GetRequiredService<IBeastMasteryService>());

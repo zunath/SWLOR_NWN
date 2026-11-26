@@ -72,8 +72,8 @@ SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Feature/StatusEffectDefinit
 SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs -> Feature/MigrationDefinition | 1
 SWLOR.Game.Server/Domain/Combat/TwinPistolMasteryService.cs -> Feature/QuestDefinition | 1
-SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs -> Feature/AbilityDefinition | 1
-SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs -> Feature/StatusEffectDefinition | 1
+SWLOR.Game.Server/Domain/Companions/BeastEventService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Companions/BeastEventService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Companions/BeastStableCapacity.cs -> Feature/QuestDefinition | 1
 SWLOR.Game.Server/Domain/Companions/DroidService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Companions/NeckModelRenderer.cs -> Feature/AppearanceDefinition | 2

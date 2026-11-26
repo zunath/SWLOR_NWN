@@ -665,6 +665,20 @@
     "Call": "SendMessageToPC(MessageRecipient(creature), ColorToken.Red(\"Free inventory space or make room in a carried bag before unequipping Twin Pistols.\"))"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/Companions/BeastEventService.cs",
+    "Line": 86,
+    "Member": "OnAcquireItem",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(master, \"Beasts cannot hold items.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Companions/BeastEventService.cs",
+    "Line": 210,
+    "Member": "OpenStablesMenu",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"Only players may use this terminal.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/Companions/BeastIncubationService.cs",
     "Line": 76,
     "Member": "UseIncubator",
@@ -701,31 +715,17 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
-    "Line": 352,
+    "Line": 343,
     "Member": "AddXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{dbBeast.Name} earned {xp} XP.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
-    "Line": 373,
+    "Line": 364,
     "Member": "AddXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{dbBeast.Name} reaches level {dbBeast.Level}!\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
-    "Line": 533,
-    "Member": "OnAcquireItem",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(master, \"Beasts cannot hold items.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
-    "Line": 657,
-    "Member": "OpenStablesMenu",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"Only players may use this terminal.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Companions/BeastSpawnService.cs",

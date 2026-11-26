@@ -90,8 +90,9 @@ namespace SWLOR.Game.Server.Domain.Character
 
         /// <summary>
         /// Retrieves the skills which may lose a rank to decay when another skill gains a rank at the skill cap.
-        /// Unlocked skills above their rank limit decay first. Only when none remain do unlocked skills with no limit decay.
-        /// A skill at or below its rank limit never decays.
+        /// Only unlocked skills that count toward the skill cap and have at least one rank can decay. Of those, skills above
+        /// their rank limit decay first; only when none remain do skills with no limit decay. A skill at or below its rank
+        /// limit never decays.
         /// </summary>
         /// <param name="dbPlayer">The player entity.</param>
         /// <param name="skill">The skill gaining the rank, which never decays itself.</param>
@@ -147,8 +148,10 @@ namespace SWLOR.Game.Server.Domain.Character
         }
 
         /// <summary>
-        /// Determines whether the skill cap blocks a skill from gaining XP: the player is at the cap,
-        /// and every other skill is locked, at its rank limit, or at rank 0.
+        /// Determines whether the skill cap blocks a skill from gaining XP: the skill counts toward the cap, the player is at
+        /// or above the cap, and no other skill can decay (see <see cref="GetDecayCandidates"/>). A skill that does not count
+        /// toward the cap cannot decay, so it never prevents the block, and a skill with a rank limit can decay only while its
+        /// rank is above that limit.
         /// </summary>
         /// <param name="dbPlayer">The player entity.</param>
         /// <param name="skill">The skill which would gain XP.</param>

@@ -20,7 +20,7 @@ public sealed class TestAIActionService : AIActionService
     private readonly TestAIService _model;
 
     public TestAIActionService(AIBench bench, TestAIService model)
-        : base(FacadeForwarder.For<IAbilityActivationService>(), model, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<ICompanionControlStoreService>(), FacadeForwarder.For<ICompanionTargetAuthorityService>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IPerkService>())
+        : base(FacadeForwarder.For<IAbilityActivationService>(), model, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<ICompanionControlStoreService>(), FacadeForwarder.For<ICompanionTargetAuthorityService>(), FacadeForwarder.For<IEnmityChangeService>(), FacadeForwarder.For<IEnmityAttackService>(), FacadeForwarder.For<IPerkService>())
     {
         _bench = bench;
         _model = model;

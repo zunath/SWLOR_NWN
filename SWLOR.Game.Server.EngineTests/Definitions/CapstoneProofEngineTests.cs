@@ -136,7 +136,7 @@ public static class CapstoneProofEngineTests
     {
         // Kill credit goes to the player with the most enmity, as it does after a real fight; both kills get the same
         // enmity, so only the proof differs.
-        await ctx.ExecuteInCreatureContextAsync(enemy, () => Enmity.ModifyEnmity(player, enemy, 100));
+        await ctx.ExecuteInCreatureContextAsync(enemy, () => EnmityChange.ModifyEnmity(player, enemy, 100));
         await ctx.ExecuteInCreatureContextAsync(enemy,
             () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), enemy));
         await ctx.WaitUntilAsync(() => !GetIsObjectValid(enemy) || GetIsDead(enemy), 10f, "the adept dies");

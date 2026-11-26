@@ -32,16 +32,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var enemy = SpawnEnemy(ctx, creature, 2f, 0f);
 
             // The enemy is attacking the player, and the player is on its enmity table.
-            Enmity.ModifyEnmity(creature, enemy, 100);
+            EnmityChange.ModifyEnmity(creature, enemy, 100);
             await ctx.WaitUntilAsync(() => GetAttackTarget(enemy) == creature, 8f, "the enemy to attack the player");
             ctx.Assert(Enmity.GetEnmityTable(enemy).ContainsKey(creature), "the player is on the enemy's enmity table");
-            ctx.AssertEqual(creature, Enmity.GetHighestEnmityAttackTarget(enemy), "the player is the enemy's attack target");
+            ctx.AssertEqual(creature, EnmityAttack.GetHighestEnmityAttackTarget(enemy), "the player is the enemy's attack target");
 
             // The player enters stealth: the retarget drops the player as the attack target and keeps the enmity.
             await EnterStealthInCombatAsync(ctx, creature);
             await ctx.WaitUntilAsync(() => GetAttackTarget(enemy) != creature, 4f, "the enemy to stop attacking the player who entered stealth");
             ctx.Assert(Stealth.IsHiddenFrom(enemy, creature), "the enemy has not detected the stealthed player");
-            ctx.AssertEqual(OBJECT_INVALID, Enmity.GetHighestEnmityAttackTarget(enemy), "no creature on the enemy's table can be attacked while hidden");
+            ctx.AssertEqual(OBJECT_INVALID, EnmityAttack.GetHighestEnmityAttackTarget(enemy), "no creature on the enemy's table can be attacked while hidden");
             ctx.Assert(Enmity.GetEnmityTable(enemy).ContainsKey(creature), "the enemy keeps the stealthed player on its enmity table");
             ctx.Assert(Enmity.GetEnmityTable(enemy)[creature] > 0, "the enmity toward the stealthed player is kept");
 
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await SetStealthAsync(ctx, creature, false);
             await ctx.WaitUntilAsync(() => GetAttackTarget(enemy) == creature, 6f, "the enemy to attack the revealed player");
             ctx.Assert(!Stealth.IsHiddenFrom(enemy, creature), "the enemy sees the player once stealth ends");
-            ctx.AssertEqual(creature, Enmity.GetHighestEnmityAttackTarget(enemy), "the revealed player is the enemy's attack target again");
+            ctx.AssertEqual(creature, EnmityAttack.GetHighestEnmityAttackTarget(enemy), "the revealed player is the enemy's attack target again");
             ctx.Assert(Enmity.GetEnmityTable(enemy).ContainsKey(creature), "the player is still on the enemy's enmity table");
         }
 
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var creature = player.Creature;
             var enemies = new[] { SpawnEnemy(ctx, creature, 2f, 0f), SpawnEnemy(ctx, creature, 0f, 2f) };
             foreach (var enemy in enemies)
-                Enmity.ModifyEnmity(creature, enemy, 100);
+                EnmityChange.ModifyEnmity(creature, enemy, 100);
             await ctx.WaitUntilAsync(() => enemies.All(enemy => GetAttackTarget(enemy) == creature), 8f, "both enemies to attack the player");
 
             await EnterStealthInCombatAsync(ctx, creature);

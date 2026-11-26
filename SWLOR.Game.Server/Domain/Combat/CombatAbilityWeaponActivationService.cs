@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatService _stat;
         private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
-        private readonly IEnmityService _enmity;
+        private readonly IEnmityChangeService _enmityChange;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly ICombatAbilityOffenseEffectsService _offenseEffects;
 
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatService stat,
             IStatusEffectApplicationService statusEffectApplication,
             ITemporaryStatModifierService temporaryStatModifier,
-            IEnmityService enmity,
+            IEnmityChangeService enmityChange,
             ICombatRecorderService combatRecorder,
             ICombatAbilityOffenseEffectsService offenseEffects)
         {
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _stat = stat;
             _statusEffectApplication = statusEffectApplication;
             _temporaryStatModifier = temporaryStatModifier;
-            _enmity = enmity;
+            _enmityChange = enmityChange;
             _combatRecorder = combatRecorder;
             _offenseEffects = offenseEffects;
         }
@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             var reduction = _stat.GetStatAdjustment(activator, StatType.PistolSkirmisherEvasiveAbilityEnmityReductionPercent);
             if (reduction > 0 && GetIsObjectValid(target))
             {
-                _enmity.ReduceEnmity(activator, target, reduction);
+                _enmityChange.ReduceEnmity(activator, target, reduction);
             }
         }
 
@@ -234,7 +234,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             var enmityReduction = _stat.GetStatAdjustment(activator, StatType.LightsaberOffenseCenteringEnmityReductionPercent);
             if (enmityReduction > 0 && GetIsObjectValid(target))
             {
-                _enmity.ReduceEnmity(activator, target, enmityReduction);
+                _enmityChange.ReduceEnmity(activator, target, enmityReduction);
             }
         }
 

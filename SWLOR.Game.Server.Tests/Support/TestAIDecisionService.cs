@@ -17,7 +17,7 @@ public sealed class TestAIDecisionService : AIDecisionService
     private readonly TestAIService _model;
 
     public TestAIDecisionService(TestAIService model, TestAIActionService action)
-        : base(action, FacadeForwarder.For<IActivityService>(), model, FacadeForwarder.For<IEnmityService>())
+        : base(action, FacadeForwarder.For<IActivityService>(), model, FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IEnmityAttackService>())
     {
         _model = model;
     }

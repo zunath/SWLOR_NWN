@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             if (GetCurrentHitPoints(beast) > hitPointsBeforeHealing)
             {
                 Ability.PlaySuccessfulImpactVisualEffect(activator, beast);
-                Enmity.ModifyEnmityOnAll(activator, 300);
+                EnmityChange.ModifyEnmityOnAll(activator, 300);
             }
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), beast);
 

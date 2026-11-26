@@ -85,9 +85,9 @@ public sealed partial class AbilityBench
         return service;
     }
 
-    private IEnmityService Enmity()
+    private IEnmityChangeService Enmity()
     {
-        var service = ScriptedProxy.Create<IEnmityService>(out var proxy);
+        var service = ScriptedProxy.Create<IEnmityChangeService>(out var proxy);
         proxy.On("ModifyEnmity", args =>
         {
             Log.Add($"ModifyEnmity:{args[0]}:{args[1]}:{args[2]}");

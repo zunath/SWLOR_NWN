@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
-        private readonly IEnmityService _enmity;
+        private readonly IEnmityChangeService _enmityChange;
         private readonly IDBService _db;
 
         public CombatAbilityBonusService(
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatService stat,
             IStatusEffectService statusEffect,
             ITemporaryStatModifierService temporaryStatModifier,
-            IEnmityService enmity,
+            IEnmityChangeService enmityChange,
             IDBService db)
         {
             _queries = queries;
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _stat = stat;
             _statusEffect = statusEffect;
             _temporaryStatModifier = temporaryStatModifier;
-            _enmity = enmity;
+            _enmityChange = enmityChange;
             _db = db;
         }
 
@@ -252,7 +252,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return;
             }
 
-            _enmity.ModifyEnmity(attacker, defender, enmityBonus);
+            _enmityChange.ModifyEnmity(attacker, defender, enmityBonus);
         }
 
         public void GrantNextAbilityDamageBonus(uint creature, int perkTypeValue, int bonus, int durationSeconds)

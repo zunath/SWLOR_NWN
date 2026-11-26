@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     0);
 
                 Space.ApplyHullDamage(activator, target, damage);
-                Enmity.ModifyEnmity(activator, target, damage);
+                EnmityChange.ModifyEnmity(activator, target, damage);
             }
 
             var attackId = isHit ? 1 : 4;

@@ -20,7 +20,7 @@ public sealed class TestAbilityHostileImpactService : AbilityHostileImpactServic
         IAbilityImpactState impactState,
         IEnumerable<IAbilityImpactObserver> observers,
         ICombatPointService combatPoint,
-        IEnmityService enmity,
+        IEnmityChangeService enmity,
         IAbilityDamageDeliveryService damageDelivery,
         IAbilityStatusApplicationService statusApplication,
         IAbilityDarkForceService darkForce,

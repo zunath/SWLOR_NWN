@@ -55,7 +55,7 @@ public class AbilityAttackResumeTests
                 public static bool IsRegisteredCompanion(uint creature) => Companion;
                 public static uint PeekAuthorizedTarget(uint creature) => AuthorizedTarget;
             }
-            public static class Enmity
+            public static class EnmityAttack
             {
                 public static uint GetHighestEnmityAttackTarget(uint creature) => ThreatTarget;
             }

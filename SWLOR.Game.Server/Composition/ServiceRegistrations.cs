@@ -232,6 +232,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatSuppressionService, CombatSuppressionService>();
             services.AddSingleton<IDeathService, DeathService>();
             services.AddSingleton<IEnmityService, EnmityService>();
+            services.AddSingleton<IEnmityChangeService, EnmityChangeService>();
+            services.AddSingleton<IEnmityAttackService, EnmityAttackService>();
             // The same instance, seen through the enmity reads Espionage owns.
             services.AddSingleton<IEspionageEnmityQuery>(provider => provider.GetRequiredService<IEnmityService>());
             services.AddSingleton<IMeleeTechniqueService, MeleeTechniqueService>();
@@ -418,6 +420,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IFishingService, FishingService>();
             services.AddSingleton<IFishingFightsService, FishingFightsService>();
             services.AddSingleton<IHoloComService, HoloComService>();
+            // The same instance, seen through the one hologram read the enmity code owns.
+            services.AddSingleton<IHologramQuery>(provider => provider.GetRequiredService<IHoloComService>());
             services.AddSingleton<IMusicService, MusicService>();
             // The same instance, seen through the interface Abilities owns for what a hostile ability does to a target.
             services.AddSingleton<IAbilityImpactObserver>(provider => provider.GetRequiredService<IMusicService>());

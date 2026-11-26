@@ -123,9 +123,6 @@ Domain/Combat -> Domain/Social | 9
 # Combat -> UI (1 edge)
 Domain/Combat -> Domain/UI | 1
 
-# Combat -> World (1 edge)
-Domain/Combat -> Domain/World | 3
-
 # Companions -> Abilities (1 edge)
 Domain/Companions -> Feature/AbilityDefinition | 1
 

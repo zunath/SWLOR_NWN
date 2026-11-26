@@ -17,7 +17,7 @@ using static SWLOR.Game.Server.Tests.Support.CombatTranscriptBench;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// The enmity transcript, taken before <c>EnmityService</c> is split into the table, change and attack parts: a scripted
+/// The enmity transcript, taken before <c>EnmityService</c> was split into the table, change and attack parts and run unchanged over the three: a scripted
 /// sequence of damage, attack, healing (with a nested heal), taunt, reduce, proximity, removal, limbo, death, destroy, player death
 /// and exit events, then the attack paths (the highest target, the attack command, the leash retarget). After every step the
 /// transcript lists the three carried tables, the creature-to-enemies list, the attack commands and the healing observations, and
@@ -35,7 +35,7 @@ public class EnmityTranscriptTests
     };
 
     private static readonly Type[] Leaves = DefaultLeaves
-        .Where(type => type != typeof(IEnmityService))
+        .Where(type => type != typeof(IEnmityService) && type != typeof(IEnmityChangeService) && type != typeof(IEnmityAttackService))
         .Concat(new[]
         {
             typeof(IAIService), typeof(IActivityService), typeof(IHoloComService), typeof(ICompanionLookup), typeof(IStealthService),
@@ -48,7 +48,9 @@ public class EnmityTranscriptTests
     {
         using var bench = new CombatTranscriptBench(Leaves);
         var enmity = bench.Get<IEnmityService>();
-        var services = new object[] { enmity };
+        var change = bench.Get<IEnmityChangeService>();
+        var attack = bench.Get<IEnmityAttackService>();
+        var services = new object[] { enmity, change };
         var currentHitPoints = 100;
         var eventData = new Dictionary<string, string>();
         var self = Defender;
@@ -94,84 +96,84 @@ public class EnmityTranscriptTests
             self = Defender;
             damager = Attacker;
             damage = 40;
-            enmity.CreatureDamaged();
+            change.CreatureDamaged();
         });
         Scene("an enemy is damaged by a creature with a reduced enmity stat", () =>
         {
             damager = Other;
             damage = 40;
-            enmity.CreatureDamaged();
+            change.CreatureDamaged();
         });
         Scene("an enemy is damaged for nothing", () =>
         {
             damage = 0;
-            enmity.CreatureDamaged();
+            change.CreatureDamaged();
         });
         Scene("an enemy is damaged by something that is gone", () =>
         {
             damager = Gone;
             damage = 10;
-            enmity.CreatureDamaged();
+            change.CreatureDamaged();
         });
         Scene("a creature attacks an enemy", () =>
         {
             self = Defender;
             attacker = Ally;
-            enmity.CreatureAttacked();
+            change.CreatureAttacked();
         });
         Scene("modify enmity directly", () =>
         {
-            enmity.ModifyEnmity(Master, Defender, 100);
-            enmity.ModifyEnmity(Master, Other, 5);
-            enmity.ModifyEnmity(Master, Defender, -500);
+            change.ModifyEnmity(Master, Defender, 100);
+            change.ModifyEnmity(Master, Other, 5);
+            change.ModifyEnmity(Master, Defender, -500);
         });
-        Scene("modify enmity on all", () => enmity.ModifyEnmityOnAll(Attacker, 30));
+        Scene("modify enmity on all", () => change.ModifyEnmityOnAll(Attacker, 30));
         Scene("a heal starts and completes", () =>
         {
             self = Ally;
             eventData["TARGET_OBJECT_ID"] = Attacker.ToString();
             eventData["HEAL_AMOUNT"] = "60";
             currentHitPoints = 50;
-            enmity.HealingStarted();
+            change.HealingStarted();
             currentHitPoints = 110;
-            enmity.HealingCompleted();
+            change.HealingCompleted();
         });
         Scene("a heal with a nested heal", () =>
         {
             self = Ally;
             currentHitPoints = 50;
-            enmity.HealingStarted();
+            change.HealingStarted();
             self = Master;
             currentHitPoints = 70;
-            enmity.HealingStarted();
+            change.HealingStarted();
             currentHitPoints = 90;
-            enmity.HealingCompleted();
+            change.HealingCompleted();
             self = Ally;
             currentHitPoints = 120;
-            enmity.HealingCompleted();
+            change.HealingCompleted();
         });
         Scene("a heal that reaches nobody", () =>
         {
             eventData["TARGET_OBJECT_ID"] = Gone.ToString();
-            enmity.HealingStarted();
-            enmity.HealingCompleted();
+            change.HealingStarted();
+            change.HealingCompleted();
             eventData["TARGET_OBJECT_ID"] = Attacker.ToString();
         });
         Scene("a taunt", () =>
         {
-            enmity.TryTaunt(Other, Defender, 50);
-            enmity.TryTaunt(Master, Defender, 20);
+            change.TryTaunt(Other, Defender, 50);
+            change.TryTaunt(Master, Defender, 20);
             enmity.IsThreatSecured(Defender, Master);
         });
         Scene("reduce enmity", () =>
         {
-            enmity.ReduceEnmity(Attacker, Defender, 50);
-            enmity.ReduceEnmityOnAll(Master, 25);
+            change.ReduceEnmity(Attacker, Defender, 50);
+            change.ReduceEnmityOnAll(Master, 25);
         });
         Scene("proximity enmity", () =>
         {
-            enmity.ModifyProximityEnmity(Attacker, Ally, 20);
-            enmity.ModifyProximityEnmity(Other, Ally, 5);
+            change.ModifyProximityEnmity(Attacker, Ally, 20);
+            change.ModifyProximityEnmity(Other, Ally, 5);
             bench.Lines.Add("HasProximityEnmity " + enmity.HasProximityEnmity(Attacker, Ally));
             bench.Lines.Add("HasEnmity " + enmity.HasEnmity(Attacker));
             bench.Lines.Add("HasNonProximityEnmity " + enmity.HasNonProximityEnmity(Defender));
@@ -180,64 +182,64 @@ public class EnmityTranscriptTests
         Scene("the highest target and the threat reads", () =>
         {
             bench.Lines.Add("highest " + bench.Name(enmity.GetHighestEnmityTarget(Defender)));
-            bench.Lines.Add("highest attack target " + bench.Name(enmity.GetHighestEnmityAttackTarget(Defender)));
+            bench.Lines.Add("highest attack target " + bench.Name(attack.GetHighestEnmityAttackTarget(Defender)));
             bench.Lines.Add("table size " + enmity.GetEnmityTable(Defender).Count);
             bench.Lines.Add("towards all enemies " + enmity.GetEnmityTowardsAllEnemies(Attacker).Count);
         });
         Scene("the enemy attacks its highest target", () =>
         {
-            enmity.AttackHighestEnmityTarget(Defender);
-            enmity.AttackHighestEnmityTarget(Defender);
+            attack.AttackHighestEnmityTarget(Defender);
+            attack.AttackHighestEnmityTarget(Defender);
         });
         Scene("an attack command is issued and the actions are cleared", () =>
         {
-            enmity.IssueAttackCommand(Defender, Attacker);
-            enmity.IssueAttackCommand(Defender, Attacker, false);
-            enmity.ResumeAttackAfterActionsCleared(Defender);
+            attack.IssueAttackCommand(Defender, Attacker);
+            attack.IssueAttackCommand(Defender, Attacker, false);
+            attack.ResumeAttackAfterActionsCleared(Defender);
         });
-        Scene("a creature is hidden and its enemies reevaluate", () => enmity.ReevaluateEnemyAttackTargets(Attacker));
+        Scene("a creature is hidden and its enemies reevaluate", () => attack.ReevaluateEnemyAttackTargets(Attacker));
         Scene("remove one creature from one enemy", () => enmity.RemoveEnmity(Attacker, Defender));
-        Scene("remove a creature from every table", () => enmity.RemoveCreatureEnmity(Master));
+        Scene("remove a creature from every table", () => change.RemoveCreatureEnmity(Master));
         Scene("clear one enemy's table", () => enmity.ClearEnmityTable(Defender));
         Scene("enmity is built again for the next events", () =>
         {
-            enmity.ModifyEnmity(Attacker, Defender, 70);
-            enmity.ModifyEnmity(Other, Defender, 30);
-            enmity.ModifyEnmity(Attacker, Ally, 20);
-            enmity.ModifyProximityEnmity(Attacker, Master, 8);
+            change.ModifyEnmity(Attacker, Defender, 70);
+            change.ModifyEnmity(Other, Defender, 30);
+            change.ModifyEnmity(Attacker, Ally, 20);
+            change.ModifyProximityEnmity(Attacker, Master, 8);
         });
         Scene("a player dies", () =>
         {
             died = Attacker;
-            enmity.PlayerDeath();
+            change.PlayerDeath();
         });
         Scene("a player exits", () =>
         {
-            enmity.ModifyEnmity(Attacker, Defender, 70);
+            change.ModifyEnmity(Attacker, Defender, 70);
             exiting = Attacker;
-            enmity.PlayerExit();
+            change.PlayerExit();
         });
         Scene("an enemy dies", () =>
         {
-            enmity.ModifyEnmity(Attacker, Defender, 70);
-            enmity.ModifyEnmity(Defender, Ally, 12);
+            change.ModifyEnmity(Attacker, Defender, 70);
+            change.ModifyEnmity(Defender, Ally, 12);
             self = Defender;
-            enmity.CreatureDeath();
+            change.CreatureDeath();
         });
         Scene("an enemy is destroyed", () =>
         {
-            enmity.ModifyEnmity(Attacker, Defender, 70);
+            change.ModifyEnmity(Attacker, Defender, 70);
             self = Defender;
-            enmity.CreatureDestroyed();
+            change.CreatureDestroyed();
         });
         Scene("a DM limbos two creatures", () =>
         {
-            enmity.ModifyEnmity(Attacker, Defender, 70);
-            enmity.ModifyEnmity(Attacker, Other, 70);
+            change.ModifyEnmity(Attacker, Defender, 70);
+            change.ModifyEnmity(Attacker, Other, 70);
             eventData["NUM_TARGETS"] = "2";
             eventData["TARGET_1"] = Defender.ToString();
             eventData["TARGET_2"] = Other.ToString();
-            enmity.CreatureLimbo();
+            change.CreatureLimbo();
         });
 
         var aiLeaf = bench.Leaf<IAIService>();
@@ -245,17 +247,17 @@ public class EnmityTranscriptTests
         Scene("a proximity-only target out of aggro range is dropped", () =>
         {
             enmity.ClearEnmityTable(Defender);
-            enmity.ModifyProximityEnmity(Ally, Defender, 15);
-            enmity.AttackHighestEnmityTarget(Defender);
+            change.ModifyProximityEnmity(Ally, Defender, 15);
+            attack.AttackHighestEnmityTarget(Defender);
         });
         Scene("every target is hidden, so the enemy stops attacking", () =>
         {
             enmity.ClearEnmityTable(Defender);
-            enmity.ModifyEnmity(Attacker, Defender, 70);
+            change.ModifyEnmity(Attacker, Defender, 70);
             stealthLeaf.Script("IsHiddenFrom", _ => true);
             bench.Engine.SetReturn("GetCurrentAction", ActionType.AttackObject);
-            enmity.AttackHighestEnmityTarget(Defender);
-            enmity.ReevaluateEnemyAttackTargets(Attacker);
+            attack.AttackHighestEnmityTarget(Defender);
+            attack.ReevaluateEnemyAttackTargets(Attacker);
             stealthLeaf.Script("IsHiddenFrom", _ => false);
             bench.Engine.SetReturn("GetCurrentAction", 0);
         });
@@ -263,29 +265,29 @@ public class EnmityTranscriptTests
         {
             enmity.ClearEnmityTable(Defender);
             aiLeaf.Script("TryStartCombatLeashEvade", _ => true);
-            enmity.ModifyEnmity(Attacker, Defender, 70);
-            enmity.TryTaunt(Attacker, Defender, 50);
-            enmity.IssueAttackCommand(Defender, Attacker);
+            change.ModifyEnmity(Attacker, Defender, 70);
+            change.TryTaunt(Attacker, Defender, 50);
+            attack.IssueAttackCommand(Defender, Attacker);
             aiLeaf.Script("TryStartCombatLeashEvade", _ => false);
-            enmity.ModifyEnmity(Attacker, Defender, 70);
+            change.ModifyEnmity(Attacker, Defender, 70);
             aiLeaf.Script("TryStartCombatLeashEvade", _ => true);
-            enmity.AttackHighestEnmityTarget(Defender);
+            attack.AttackHighestEnmityTarget(Defender);
             aiLeaf.Script("TryStartCombatLeashEvade", _ => false);
         });
         Scene("an enemy that is already leashing gains no enmity", () =>
         {
             leashing = true;
-            enmity.ModifyEnmity(Other, Defender, 70);
-            enmity.TryTaunt(Other, Defender, 50);
+            change.ModifyEnmity(Other, Defender, 70);
+            change.TryTaunt(Other, Defender, 50);
             leashing = false;
         });
 
         // A reload carries the three tables through the reload carrier under their field keys and reads them into a new build's instance.
         bench.Step("a reload round trip through the carried keys", () =>
         {
-            enmity.ModifyEnmity(Attacker, Defender, 70);
-            enmity.ModifyEnmity(Other, Defender, 30);
-            enmity.ModifyProximityEnmity(Attacker, Ally, 8);
+            change.ModifyEnmity(Attacker, Defender, 70);
+            change.ModifyEnmity(Other, Defender, 30);
+            change.ModifyProximityEnmity(Attacker, Ally, 8);
             var game = typeof(EnmityService).Assembly;
             var carrier = new ReloadStateCarrier(game, new JsonConverter[] { new AbilityDetailReloadConverter(() => new Dictionary<FeatType, AbilityDetail>()) });
             var fields = ReloadStateCarrier.CarriedClasses(game).Single(entry => entry.Type == typeof(EnmityService)).Fields;

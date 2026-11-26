@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                     }
 
-                    Enmity.ModifyEnmityOnAll(activator, 100 + repairAmount);
+                    EnmityChange.ModifyEnmityOnAll(activator, 100 + repairAmount);
                     Messaging.SendMessageNearbyToPlayers(
                         activator,
                         receiver => $"{PlayerName.GetDisplayName(receiver, activator)} begins restoring {recovery} armor HP to nearby ships.");

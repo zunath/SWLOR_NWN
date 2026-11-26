@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             receiver => GameServices.CombatFeedback.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),
                             60f);
 
-                        Enmity.ModifyEnmity(activator, target, damage);
+                        EnmityChange.ModifyEnmity(activator, target, damage);
                         CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
                     });
                 }

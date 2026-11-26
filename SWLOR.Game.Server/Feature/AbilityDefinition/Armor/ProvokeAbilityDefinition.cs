@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                 return;
             }
 
-            if (!Enmity.TryTaunt(activator, target, enmity))
+            if (!EnmityChange.TryTaunt(activator, target, enmity))
                 return;
             Ability.PlaySuccessfulImpactVisualEffect(activator, target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Odd), target);

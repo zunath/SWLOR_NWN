@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatRecorderService _combatRecorder;
         private readonly ICombatRecordDamageService _combatRecordDamage;
         private readonly IPvpCombatService _pvpCombat;
-        private readonly IEnmityService _enmity;
+        private readonly IEnmityChangeService _enmityChange;
 
         public CombatDamageTakenService(
             ICombatQueriesService queries,
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatRecorderService combatRecorder,
             ICombatRecordDamageService combatRecordDamage,
             IPvpCombatService pvpCombat,
-            IEnmityService enmity)
+            IEnmityChangeService enmityChange)
         {
             _queries = queries;
             _resources = resources;
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _combatRecorder = combatRecorder;
             _combatRecordDamage = combatRecordDamage;
             _pvpCombat = pvpCombat;
-            _enmity = enmity;
+            _enmityChange = enmityChange;
         }
 
         public int ApplyDamageTakenModifiers(
@@ -257,7 +257,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 GetIsObjectValid(attacker) &&
                 GetIsReactionTypeHostile(attacker, redirectTarget))
             {
-                _enmity.ModifyEnmity(redirectTarget, attacker, finalRedirectedDamage);
+                _enmityChange.ModifyEnmity(redirectTarget, attacker, finalRedirectedDamage);
             }
 
             return damage - redirectedDamage;
@@ -322,7 +322,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 GetIsObjectValid(attacker) &&
                 GetIsReactionTypeHostile(attacker, shareTarget))
             {
-                _enmity.ModifyEnmity(shareTarget, attacker, finalSharedDamage);
+                _enmityChange.ModifyEnmity(shareTarget, attacker, finalSharedDamage);
             }
 
             return damage - sharedDamage;

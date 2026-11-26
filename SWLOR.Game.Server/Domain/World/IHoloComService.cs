@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Social;
 
 namespace SWLOR.Game.Server.Domain.World
@@ -7,7 +8,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// each player. Static callers reach the container's instance through <c>GameServices.HoloCom</c>; the event
     /// handlers and the faction constant are on <see cref="HoloComService"/>.
     /// </summary>
-    public interface IHoloComService
+    public interface IHoloComService : IHologramQuery
     {
         /// <summary>
         /// When a player dies in a call, ends the call.
@@ -58,11 +59,6 @@ namespace SWLOR.Game.Server.Domain.World
         bool IsInCall(uint player);
 
         void SetIsInCall(uint sender, uint receiver, bool value = true);
-
-        /// <summary>
-        /// Determines whether a creature is a HoloCom call hologram.
-        /// </summary>
-        bool IsHologram(uint creature);
 
         uint GetHoloGram(uint player);
 

@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             shipStatus.Hull = shipStatus.MaxHull / 2;
             shipStatus.Shield = 0;
 
-            await ctx.ExecuteInCreatureContextAsync(ship, () => Enmity.ModifyEnmity(target, ship, 100));
+            await ctx.ExecuteInCreatureContextAsync(ship, () => EnmityChange.ModifyEnmity(target, ship, 100));
             await ctx.WaitUntilAsync(() => CreatureAIRules.IsLeashEvading(ship), 10f, "the ship to start its combat leash");
             await ctx.WaitUntilAsync(() => shipStatus.Hull == shipStatus.MaxHull && shipStatus.Shield == shipStatus.MaxShield, 3f,
                 $"the leashed ship to restore its shield and hull (shield {shipStatus.Shield}/{shipStatus.MaxShield}, hull {shipStatus.Hull}/{shipStatus.MaxHull})");

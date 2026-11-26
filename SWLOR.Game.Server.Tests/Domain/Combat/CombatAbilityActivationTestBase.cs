@@ -258,8 +258,8 @@ public abstract class CombatAbilityActivationTestBase
         });
         var recast = ScriptedProxy.Create<IRecastService>(out var recastCalls);
         recastCalls.On(nameof(IRecastService.ReduceRecastDelay), args => Log($"Recast {args[0]} {args[1]} {args[2]}"));
-        var enmity = ScriptedProxy.Create<IEnmityService>(out var enmityCalls);
-        enmityCalls.On(nameof(IEnmityService.ReduceEnmity), args => Log($"ReduceEnmity {args[0]} {args[1]} {args[2]}"));
+        var enmity = ScriptedProxy.Create<IEnmityChangeService>(out var enmityCalls);
+        enmityCalls.On(nameof(IEnmityChangeService.ReduceEnmity), args => Log($"ReduceEnmity {args[0]} {args[1]} {args[2]}"));
         var recorder = ScriptedProxy.Create<ICombatRecorderService>(out var recorderCalls);
         recorderCalls
             .On("get_" + nameof(ICombatRecorderService.IsRecording), _ => false)

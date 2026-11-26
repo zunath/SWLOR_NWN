@@ -233,8 +233,8 @@ public class CombatUpgradeBibleWorkbookFormattingTests
         AssertStatRange(
             stats,
             "Enmity",
-            EnmityService.MinimumEnmityPercentAdjustment,
-            EnmityService.MaximumEnmityPercentAdjustment);
+            EnmityChangeService.MinimumEnmityPercentAdjustment,
+            EnmityChangeService.MaximumEnmityPercentAdjustment);
         AssertStatRange(stats, "Haste", 0, CombatRules.MaximumAttackDelayAdjustmentPercent);
         AssertStatRange(stats, "Slow", 0, CombatRules.MaximumAttackDelayAdjustmentPercent);
         AssertStatRange(

@@ -54,7 +54,7 @@ public sealed class CombatTranscriptBench : IDisposable
         typeof(IStatService), typeof(IStatusEffectService), typeof(IStatusEffectApplicationService),
         typeof(IStatusEffectCombatEventService), typeof(IStatusEffectDurationService), typeof(ITemporaryStatModifierService),
         typeof(ICombatResourcesService), typeof(ICombatRecorderService), typeof(ICombatRecordDamageService), typeof(ICombatRecording), typeof(ICharacterRecording),
-        typeof(ICombatRecordingState), typeof(IEnmityService), typeof(ICombatActivityService), typeof(ICombatAttackTimingService),
+        typeof(ICombatRecordingState), typeof(IEnmityService), typeof(IEnmityChangeService), typeof(IEnmityAttackService), typeof(ICombatActivityService), typeof(ICombatAttackTimingService),
         typeof(ICombatSuppressionService), typeof(IPairedRangedTraitsService), typeof(ICapstoneProofService),
         typeof(IResistanceService), typeof(IPartyService), typeof(IPartyRoster), typeof(ICombatRatingService)
     };

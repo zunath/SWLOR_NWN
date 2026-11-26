@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                             ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), nearby, 2.0f);
                             ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), nearby, 2.0f);
-                            Enmity.ModifyEnmity(activator, nearby, enmityAmount);
+                            EnmityChange.ModifyEnmity(activator, nearby, enmityAmount);
 
                             count++;
                         }

@@ -4,54 +4,13 @@ using SWLOR.Game.Server.Domain.Character;
 namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
-    /// Who each enemy hates and why: the enmity tables, the attack commands that follow the highest target, and the taunt, healing
-    /// and damage rules that feed them. <see cref="IEnmityTargetQuery.GetHighestEnmityTarget"/> is Character's question.
+    /// Who each enemy hates: the enmity tables and their reads, threat checks, removal and clearing, and the attack-command memory.
+    /// The table part takes no service. <see cref="IEnmityTargetQuery.GetHighestEnmityTarget"/> is Character's question. The changes
+    /// that feed the tables are on <see cref="IEnmityChangeService"/> and the choice and command of an attack target on
+    /// <see cref="IEnmityAttackService"/>; no part holds a table, every access goes through these members.
     /// </summary>
     public interface IEnmityService : IEnmityTargetQuery, IEspionageEnmityQuery
     {
-        /// <summary>
-        /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.
-        /// </summary>
-        void CreatureDamaged();
-
-        int CalculateDamageEnmity(int damage, int adjustment);
-
-        void HealingStarted();
-
-        void HealingCompleted();
-
-        int CalculateHealingEnmity(int requested, int previousHP, int currentHP, long nestedHealing = 0);
-
-        /// <summary>
-        /// When a creature attacks an enemy, increase enmity by 1.
-        /// </summary>
-        void CreatureAttacked();
-
-        /// <summary>
-        /// When a creature dies, remove all enmity tables it is associated with.
-        /// </summary>
-        void CreatureDeath();
-
-        /// <summary>
-        /// When a creature is destroyed with DestroyObject, remove all enmity tables it is associated with.
-        /// </summary>
-        void CreatureDestroyed();
-
-        /// <summary>
-        /// When a player dies, remove them from all enmity tables.
-        /// </summary>
-        void PlayerDeath();
-
-        /// <summary>
-        /// When a player leaves, remove them from all enmity tables.
-        /// </summary>
-        void PlayerExit();
-
-        /// <summary>
-        /// When a DM limbos creatures, ensure their enmity is wiped.
-        /// </summary>
-        void CreatureLimbo();
-
         /// <summary>
         /// Retrieves a table containing the creatures on a specific enemy's enmity table.
         /// If no creatures are on the enmity table, an empty dictionary will be returned.
@@ -61,91 +20,20 @@ namespace SWLOR.Game.Server.Domain.Combat
         Dictionary<uint, int> GetEnmityTable(uint enemy);
 
         /// <summary>
-        /// Retrieves the creature with the highest amount of enmity that the enemy can attack.
-        /// Creatures hidden from the enemy by invisibility or undetected stealth keep their enmity but are skipped until
-        /// they can be seen again. If no creature can be attacked, OBJECT_INVALID will be returned.
-        /// </summary>
-        /// <param name="enemy">The enemy to retrieve the attack target for.</param>
-        /// <returns>The visible target with the highest enmity</returns>
-        uint GetHighestEnmityAttackTarget(uint enemy);
-
-        /// <summary>
-        /// Makes every enemy with this creature on its enmity table choose its attack target again.
-        /// Call after the creature becomes hidden so enemies react without waiting for their next
-        /// heartbeat or combat round.
-        /// </summary>
-        /// <param name="creature">The creature whose enemies should re-evaluate their target.</param>
-        void ReevaluateEnemyAttackTargets(uint creature);
-
-        /// <summary>
         /// Determines whether a creature holds the enemy's attention by a safe margin: it must be the
         /// enemy's highest enmity target and lead the next-highest creature by at least
-        /// <see cref="SecureThreatLeadPercent"/>. Taunts are wasted when this is already true.
+        /// <see cref="EnmityService.SecureThreatLeadPercent"/>. Taunts are wasted when this is already true.
         /// </summary>
         /// <param name="enemy">The enemy whose enmity table is checked.</param>
         /// <param name="creature">The creature expected to hold the enemy's attention.</param>
         /// <returns>true if the creature's threat lead is secure, false otherwise.</returns>
         bool IsThreatSecured(uint enemy, uint creature);
 
+        /// <summary>Whether a holder's enmity leads the next-highest enmity by the secure margin.</summary>
         bool IsThreatLeadSecure(int holderEnmity, int nextHighestEnmity);
 
-        /// <summary>
-        /// Modifies the enmity of a specific target toward the specific creature.
-        /// </summary>
-        /// <param name="creature">The creature whose enmity will be increased.</param>
-        /// <param name="enemy">The enemy who will have raised enmity toward creature.</param>
-        /// <param name="amount">The amount of enmity to adjust by</param>
-        void ModifyEnmity(uint creature, uint enemy, int amount);
-
-        int CalculateAdjustedEnmity(int amount, int adjustment);
-
-        /// <summary>
-        /// Catches up to an eligible rival plus a fixed, stat-adjusted lead. Repeated taunts
-        /// while already ahead do not accumulate threat; there is no target lock.
-        /// </summary>
-        bool TryTaunt(uint creature, uint enemy, int bonus);
-
-        int CalculateTauntEnmity(int current, int rival, int adjustedBonus);
-
-        int ClampEnmityPercentAdjustment(int adjustment);
-
-        /// <summary>
-        /// Modifies the enmity of all creatures who have the specified creature on their enmity table.
-        /// </summary>
-        /// <param name="creature">The creature whose enmity will be increased.</param>
-        /// <param name="amount">The amount of enmity to adjust by.</param>
-        void ModifyEnmityOnAll(uint creature, int amount);
-
-        /// <summary>
-        /// Reduces the creature's current enmity on every enemy table by a percentage.
-        /// </summary>
-        /// <param name="creature">The creature whose current enmity will be reduced.</param>
-        /// <param name="percent">The percent of current enmity to remove.</param>
-        void ReduceEnmityOnAll(uint creature, int percent);
-
-        /// <summary>
-        /// Reduces the creature's current enmity on a single enemy table by a percentage.
-        /// </summary>
-        /// <param name="creature">The creature whose current enmity will be reduced.</param>
-        /// <param name="enemy">The enemy whose enmity table will be adjusted.</param>
-        /// <param name="percent">The percent of current enmity to remove.</param>
-        void ReduceEnmity(uint creature, uint enemy, int percent);
-
+        /// <summary>The enmity left after a percentage of the current amount is removed, rounded up and never below one.</summary>
         int CalculateReducedEnmity(int current, int percent);
-
-        /// <summary>
-        /// Modifies enmity from aggro proximity and tracks the resulting contribution separately.
-        /// </summary>
-        /// <param name="creature">The creature whose enmity will be increased.</param>
-        /// <param name="enemy">The enemy who will have raised enmity toward creature.</param>
-        /// <param name="amount">The proximity enmity amount to apply.</param>
-        void ModifyProximityEnmity(uint creature, uint enemy, int amount);
-
-        /// <summary>
-        /// Removes a creature from all enmity tables.
-        /// </summary>
-        /// <param name="creature">The creature to remove.</param>
-        void RemoveCreatureEnmity(uint creature);
 
         /// <summary>
         /// Removes a creature from one enemy's enmity table without making the enemy pick a new target.
@@ -162,13 +50,25 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <returns>true if proximity enmity was removed.</returns>
         bool RemoveProximityEnmity(uint creature, uint enemy);
 
+        /// <summary>Whether proximity enmity is tracked for the pair.</summary>
         bool HasProximityEnmity(uint creature, uint enemy);
+
+        /// <summary>
+        /// Whether the pair's whole enmity came from the enemy's aggro aura.
+        /// </summary>
+        bool HasOnlyProximityEnmity(uint creature, uint enemy);
 
         /// <summary>
         /// Clears every creature from an enemy's enmity table.
         /// </summary>
         /// <param name="enemy">The enemy whose enmity table will be cleared.</param>
         void ClearEnmityTable(uint enemy);
+
+        /// <summary>
+        /// Clears an enemy's enmity tables and removes associated creatures from cache.
+        /// </summary>
+        /// <param name="enemy">The enemy whose tables we're clearing</param>
+        void ClearEnmityTables(uint enemy);
 
         /// <summary>
         /// Determines if a creature has enmity towards any other creature.
@@ -178,27 +78,55 @@ namespace SWLOR.Game.Server.Domain.Combat
         bool HasEnmity(uint creature);
 
         /// <summary>
-        /// Resumes existing combat after the caller clears the action queue. The previous attack
-        /// command is no longer pending, so its throttle must not delay the replacement command.
-        /// </summary>
-        void ResumeAttackAfterActionsCleared(uint creature);
-
-        /// <summary>
-        /// Forces a creature to attack the highest enmity target it can see.
-        /// Stops an existing chase when its last proximity target is no longer in range.
-        /// Stops attacking, but keeps its enmity, while every target is hidden by invisibility or stealth.
-        /// If creature did not have enmity, nothing will happen.
-        /// If the creature is already actively attacking that target, nothing will happen.
-        /// </summary>
-        void AttackHighestEnmityTarget(uint creature);
-
-        void IssueAttackCommand(uint creature, uint target, bool clearActions = true);
-
-        /// <summary>
         /// Retrieves all of the enmity table information for a given creature.
         /// </summary>
         /// <param name="creature">The creature whose tables will be retrieved</param>
         /// <returns>A dictionary of enmity values for a given creature.</returns>
         Dictionary<uint, int> GetEnmityTowardsAllEnemies(uint creature);
+
+        /// <summary>The creature's enmity on the enemy's table, or zero when it is not on it.</summary>
+        int GetRawEnmityAmount(uint creature, uint enemy);
+
+        /// <summary>The part of the creature's enmity on the enemy's table that came from the aggro aura, or zero.</summary>
+        int GetProximityEnmityAmount(uint creature, uint enemy);
+
+        /// <summary>The enemies that have the creature on their tables, as a copy (empty when there are none).</summary>
+        uint[] GetEnemiesOf(uint creature);
+
+        /// <summary>
+        /// Puts the creature on the enemy's table when it is not there and adds the amount to its enmity (never below one),
+        /// and lists the enemy among the creature's enemies.
+        /// </summary>
+        /// <param name="creature">The creature whose enmity is raised.</param>
+        /// <param name="enemy">The enemy whose table is written.</param>
+        /// <param name="amount">The adjusted amount to add.</param>
+        void AddEnmity(uint creature, uint enemy, int amount);
+
+        /// <summary>
+        /// Reduces the creature's enmity on the enemy's table by a percentage, and its tracked proximity share with it.
+        /// </summary>
+        /// <returns>true when the creature was on the table and its enmity changed.</returns>
+        bool ReduceEnmityEntry(uint creature, uint enemy, int percent);
+
+        /// <summary>Adds an applied amount to the tracked proximity share of the creature's enmity on the enemy's table.</summary>
+        void AddProximityEnmity(uint creature, uint enemy, int appliedAmount);
+
+        /// <summary>Removes the creature's entry from the enemy's table and the enemy from the creature's list.</summary>
+        void RemoveEnmityTableEntry(uint creature, uint enemy);
+
+        /// <summary>Forgets the tracked proximity share of the creature's enmity on the enemy's table.</summary>
+        void RemoveProximityEnmityTracking(uint creature, uint enemy);
+
+        /// <summary>
+        /// The attack command last issued to a creature: when, and against whom.
+        /// </summary>
+        /// <returns>true when a command is remembered for the creature.</returns>
+        bool TryGetAttackCommand(uint creature, out DateTime issuedAt, out uint target);
+
+        /// <summary>Remembers the attack command issued to a creature.</summary>
+        void RecordAttackCommand(uint creature, uint target, DateTime issuedAt);
+
+        /// <summary>Forgets the attack command remembered for a creature.</summary>
+        void ForgetAttackCommand(uint creature);
     }
 }

@@ -119,7 +119,7 @@ public class BeastmasterCombatUpgradeTests
         var guardingBond = new GuardingBondStanceBeastStatusEffect().StatGroup.Stats;
 
         focusAttentionLevel.StatBonuses.Should().NotContain(x => x.Stat == StatType.EnmityPercentAdjustment);
-        guardingBond[StatType.EnmityPercentAdjustment].Should().Be(EnmityService.MaximumEnmityPercentAdjustment);
+        guardingBond[StatType.EnmityPercentAdjustment].Should().Be(EnmityChangeService.MaximumEnmityPercentAdjustment);
         // Player tank stances grant +100% damage Enmity.
         (guardingBond[StatType.DamageEnmityPercentAdjustment] + focusAttention).Should().Be(100);
     }

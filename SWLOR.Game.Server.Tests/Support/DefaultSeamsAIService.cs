@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 public sealed partial class DefaultSeamsAIService : AIService
 {
     public DefaultSeamsAIService(IPartyRoster party, ICompanionLookup beastMastery, IDMPresenceService dmPresence)
-        : base(party, beastMastery, dmPresence, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.LazyFor<IEnmityService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatusEffectService>())
+        : base(party, beastMastery, dmPresence, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IStatusEffectService>())
     {
         Action = new DefaultSeamsAIActionService(this);
         Decision = new DefaultSeamsAIDecisionService(this, Action);

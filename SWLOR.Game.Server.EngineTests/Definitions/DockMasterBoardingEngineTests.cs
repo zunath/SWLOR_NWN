@@ -37,7 +37,7 @@ public static class DockMasterBoardingEngineTests
             await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
             {
                 ctx.Assert(!GetIsInCombat(player.Creature), "targeting scenario starts before native combat");
-                Enmity.ModifyEnmity(player.Creature, enemy, 100);
+                EnmityChange.ModifyEnmity(player.Creature, enemy, 100);
                 ctx.Assert(Enmity.HasEnmity(player.Creature), "the player is on an enemy's enmity table");
                 ctx.Assert(!GetIsInCombat(player.Creature), "the enmity-only scenario does not rely on the native combat flag");
                 board();

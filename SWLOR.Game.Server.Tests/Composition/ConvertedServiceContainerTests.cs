@@ -175,6 +175,8 @@ public class ConvertedServiceContainerTests
             .Concat(new[] { "ITwinPistolPairQuery" })
             // The perk split: the quick bar reads Character owns, which the quick cast service answers, and the stat-driven tracker refresh Character owns, which the combat service answers.
             .Concat(new[] { "IFeatHotBar", "IStatDrivenTrackerRefresh" })
+            // The enmity split: the hologram read Combat owns, which the HoloCom service answers.
+            .Concat(new[] { "IHologramQuery" })
             .ToArray();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);

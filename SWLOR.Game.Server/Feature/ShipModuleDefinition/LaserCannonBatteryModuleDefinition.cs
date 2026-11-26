@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                         receiver => GameServices.CombatFeedback.BuildCombatLogMessage(receiver, activator, nearbyTarget, attackId, chanceToHit),
                                         60f);
 
-                                    Enmity.ModifyEnmity(activator, nearbyTarget, damage);
+                                    EnmityChange.ModifyEnmity(activator, nearbyTarget, damage);
                                     CombatPoint.AddCombatPoint(activator, nearbyTarget, SkillType.Piloting);
                                 }
                             }

@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             _currentEnmityTargetLoaded = true;
             _currentEnmityTarget = CompanionTargetAuthority.IsRegisteredCompanion(Self)
                 ? CompanionTargetAuthority.PeekAuthorizedTarget(Self)
-                : Enmity.GetHighestEnmityAttackTarget(Self);
+                : EnmityAttack.GetHighestEnmityAttackTarget(Self);
         }
 
         public uint Master => GetMaster(Self);

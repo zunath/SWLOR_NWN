@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
             // Read who is attacking the caster before the enmity drop sends them elsewhere.
             var attackers = GetOrganicEnemiesTargeting(activator).ToList();
 
-            Enmity.ReduceEnmityOnAll(activator, enmityReductionPercent);
+            EnmityChange.ReduceEnmityOnAll(activator, enmityReductionPercent);
 
             foreach (var enemy in attackers)
             {
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
         {
             return GetAttackTarget(enemy) == activator ||
                    ActionInterruption.GetQueuedAttackTarget(enemy) == activator ||
-                   Enmity.GetHighestEnmityAttackTarget(enemy) == activator;
+                   EnmityAttack.GetHighestEnmityAttackTarget(enemy) == activator;
         }
     }
 }

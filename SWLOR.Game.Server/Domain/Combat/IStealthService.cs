@@ -172,5 +172,12 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// rebuilds it through the boot handler that registers the listener.
         /// </summary>
         void RegisterAggroListener(IStealthAggroListener listener);
+
+        /// <summary>
+        /// Registers who is told to choose attack targets again when a creature hides or shows itself. Registering the same listener
+        /// twice keeps one entry; the list holds service instances, so a reload rebuilds it through the boot handler that registers
+        /// the listener.
+        /// </summary>
+        void RegisterRetargetListener(IStealthRetargetListener listener);
     }
 }

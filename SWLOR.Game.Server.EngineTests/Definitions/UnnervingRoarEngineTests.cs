@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             var action = AIInternals.Profiles[AIProfileType.Generic].Actions
                 .Single(candidate => candidate.Type == AIActionType.Ability && candidate.Feat == FeatType.UnnervingRoar);
-            Enmity.ModifyEnmity(target, caster, 10);
+            EnmityChange.ModifyEnmity(target, caster, 10);
             var context = new AIContext(caster, AITriggerType.Heartbeat, target,
                 new AIProfile { Type = AIProfileType.Generic }, new AIState(), Array.Empty<uint>());
             // The AI's own resolution, which falls back to the default selector when the action has none.
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ChangeToStandardFaction(target, StandardFaction.Defender);
             ctx.MakeHostile(farTarget);
             Enmity.ClearEnmityTable(caster);
-            Enmity.ModifyEnmity(farTarget, caster, 10);
+            EnmityChange.ModifyEnmity(farTarget, caster, 10);
             var farContext = new AIContext(caster, AITriggerType.Heartbeat, farTarget,
                 new AIProfile { Type = AIProfileType.Generic }, new AIState(), Array.Empty<uint>());
             ctx.AssertEqual(OBJECT_INVALID, ResolveTarget(farContext), "Unnerving Roar waits for an enemy within 8 meters");

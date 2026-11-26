@@ -351,8 +351,8 @@ public abstract class CombatDamageTakenTestBase
                 return (int)args[2]! + _pvpBonus;
             })
             .On(nameof(IPvpCombatService.RecordHit), args => Log($"PvpHit {args[0]} {args[1]}"));
-        var enmity = ScriptedProxy.Create<IEnmityService>(out var enmityCalls);
-        enmityCalls.On(nameof(IEnmityService.ModifyEnmity), args => Log($"Enmity {args[0]} {args[1]} {args[2]}"));
+        var enmity = ScriptedProxy.Create<IEnmityChangeService>(out var enmityCalls);
+        enmityCalls.On(nameof(IEnmityChangeService.ModifyEnmity), args => Log($"Enmity {args[0]} {args[1]} {args[2]}"));
         var messaging = ScriptedProxy.Create<IMessagingService>(out var messagingCalls);
         messagingCalls.On(nameof(IMessagingService.SendMessageNearbyToPlayers), args =>
         {

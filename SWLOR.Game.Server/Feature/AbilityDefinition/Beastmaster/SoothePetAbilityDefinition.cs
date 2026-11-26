@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         CountNativeEffects(beast) < nativeEffectsBeforeCleanse)
                     {
                         Ability.PlaySuccessfulImpactVisualEffect(activator, beast);
-                        Enmity.ModifyEnmityOnAll(activator, 500);
+                        EnmityChange.ModifyEnmityOnAll(activator, 500);
                     }
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), beast);
                     CombatPoint.AddSupportCombatPoint(activator, beast, SkillType.BeastMastery);

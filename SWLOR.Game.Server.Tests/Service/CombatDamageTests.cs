@@ -188,12 +188,12 @@ public class CombatDamageTests
         CombatRules.ClampCriticalDamagePercentAdjustment(500)
             .Should()
             .Be(CombatRules.MaximumCriticalDamagePercentAdjustment);
-        Enmity.ClampEnmityPercentAdjustment(-500)
+        EnmityChange.ClampEnmityPercentAdjustment(-500)
             .Should()
-            .Be(EnmityService.MinimumEnmityPercentAdjustment);
-        Enmity.ClampEnmityPercentAdjustment(500)
+            .Be(EnmityChangeService.MinimumEnmityPercentAdjustment);
+        EnmityChange.ClampEnmityPercentAdjustment(500)
             .Should()
-            .Be(EnmityService.MaximumEnmityPercentAdjustment);
+            .Be(EnmityChangeService.MaximumEnmityPercentAdjustment);
     }
 
     [Test]
@@ -879,7 +879,7 @@ public class CombatDamageTests
 
         combatSource.Should().Contain("ApplyTriggeredDamage(defender, attacker, reflectedDamage, damageType);");
         combatSource.Should().Contain("var appliedDamage = ApplyTriggeredDamage(");
-        combatSource.Should().NotContain("Enmity.ModifyEnmity(attacker, target, appliedDamage);",
+        combatSource.Should().NotContain("EnmityChange.ModifyEnmity(attacker, target, appliedDamage);",
             "triggered damage is credited by the native damage event, once");
         combatSource.Should().NotContain("_enmity.ModifyEnmity(attacker, target, appliedDamage);",
             "triggered damage is credited by the native damage event, once, also through an injected enmity service");

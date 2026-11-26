@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 public sealed class DefaultSeamsAIActionService : AIActionService
 {
     public DefaultSeamsAIActionService(IAIService ai)
-        : base(FacadeForwarder.For<IAbilityActivationService>(), ai, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<ICompanionControlStoreService>(), FacadeForwarder.For<ICompanionTargetAuthorityService>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IPerkService>())
+        : base(FacadeForwarder.For<IAbilityActivationService>(), ai, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<ICompanionControlStoreService>(), FacadeForwarder.For<ICompanionTargetAuthorityService>(), FacadeForwarder.For<IEnmityChangeService>(), FacadeForwarder.For<IEnmityAttackService>(), FacadeForwarder.For<IPerkService>())
     {
     }
 

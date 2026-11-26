@@ -67,8 +67,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var aggroOnly = ctx.SpawnCreature(EnemyResref, 6f, 2f);
                     var idle = ctx.SpawnCreature(EnemyResref, 6f, -2f);
                     await ctx.WaitFrameAsync();
-                    Enmity.ModifyEnmity(ally.Creature, fighting, 100);
-                    Enmity.ModifyProximityEnmity(ally.Creature, aggroOnly, 1);
+                    EnmityChange.ModifyEnmity(ally.Creature, fighting, 100);
+                    EnmityChange.ModifyProximityEnmity(ally.Creature, aggroOnly, 1);
 
                     var before = DB.Get<PlayerShip>(allyShipId).Status;
                     var hullBefore = before.Hull;

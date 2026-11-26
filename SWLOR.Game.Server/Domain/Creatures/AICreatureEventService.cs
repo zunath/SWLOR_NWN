@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly IConversationMenuService _conversationMenu;
         private readonly IConversationService _conversation;
         private readonly IEnmityService _enmity;
+        private readonly IEnmityAttackService _enmityAttack;
         private readonly ICreatureStatService _stat;
 
         public AICreatureEventService(
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             IConversationMenuService conversationMenu,
             IConversationService conversation,
             IEnmityService enmity,
+            IEnmityAttackService enmityAttack,
             ICreatureStatService stat)
         {
             _activity = activity;
@@ -39,6 +41,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             _conversationMenu = conversationMenu;
             _conversation = conversation;
             _enmity = enmity;
+            _enmityAttack = enmityAttack;
             _stat = stat;
         }
 
@@ -278,9 +281,9 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         protected virtual uint GetHighestEnmityTarget(uint enemy) => _enmity.GetHighestEnmityTarget(enemy);
 
-        protected virtual void AttackHighestEnmityTarget(uint creature) => _enmity.AttackHighestEnmityTarget(creature);
+        protected virtual void AttackHighestEnmityTarget(uint creature) => _enmityAttack.AttackHighestEnmityTarget(creature);
 
-        protected virtual void ResumeAttackAfterActionsCleared(uint creature) => _enmity.ResumeAttackAfterActionsCleared(creature);
+        protected virtual void ResumeAttackAfterActionsCleared(uint creature) => _enmityAttack.ResumeAttackAfterActionsCleared(creature);
 
         protected virtual void RestoreNPCStats(bool outOfCombatRegen) => _stat.RestoreNPCStats(outOfCombatRegen, _enmity);
 

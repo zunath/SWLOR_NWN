@@ -23,8 +23,6 @@ SWLOR.Game.Server/Domain/Combat/CombatAbilityCostEffectsService.cs: Combat -> Ab
 SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs: Combat -> Social | 3
 SWLOR.Game.Server/Domain/Combat/CombatAbilityOffenseEffectsService.cs: Combat -> Abilities | 1
 SWLOR.Game.Server/Domain/Combat/CombatResourcesService.cs: Combat -> Abilities | 1
-SWLOR.Game.Server/Domain/Combat/EnmityService.cs: Combat -> Social | 3
-SWLOR.Game.Server/Domain/Combat/EnmityService.cs: Combat -> World | 3
 SWLOR.Game.Server/Domain/Combat/RecastService.cs: Combat -> Abilities | 4
 SWLOR.Game.Server/Domain/Combat/ResistanceService.cs: Combat -> Abilities | 3
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> UI | 6

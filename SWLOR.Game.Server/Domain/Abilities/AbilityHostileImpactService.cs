@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly IAbilityImpactState _impactState;
         private readonly IAbilityImpactObserver[] _observers;
         private readonly ICombatPointService _combatPoint;
-        private readonly IEnmityService _enmity;
+        private readonly IEnmityChangeService _enmityChange;
         private readonly ICombatResourcesService _resources;
         private readonly ICombatAbilityImpactService _abilityImpact;
         private readonly IAbilityDamageDeliveryService _damageDelivery;
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             IAbilityImpactState impactState,
             IEnumerable<IAbilityImpactObserver> observers,
             ICombatPointService combatPoint,
-            IEnmityService enmity,
+            IEnmityChangeService enmityChange,
             ICombatResourcesService resources,
             ICombatAbilityImpactService abilityImpact,
             IAbilityDamageDeliveryService damageDelivery,
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             // Copied once, so a hit notifies them without enumerating the sequence again.
             _observers = observers.ToArray();
             _combatPoint = combatPoint;
-            _enmity = enmity;
+            _enmityChange = enmityChange;
             _resources = resources;
             _abilityImpact = abilityImpact;
             _damageDelivery = damageDelivery;
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             // Damage is credited once by the actual damage event, including resistance and absorption.
             var profile = WeaponImpactProfile.Get(activator);
             var amount = CalculateHostileAbilityEnmity(bonus, profile?.VolleyIndex ?? 0, profile?.VolleyCount ?? 1);
-            _enmity.ModifyEnmity(activator, target, amount);
+            _enmityChange.ModifyEnmity(activator, target, amount);
         }
 
         public int CalculateHostileAbilityEnmity(int bonus, int volleyIndex = 0, int volleyCount = 1) =>

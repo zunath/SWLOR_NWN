@@ -36,7 +36,7 @@ public sealed partial class TestGuardRetaliation : CombatGuardRetaliationService
         IStatService stat,
         ICombatRatingService combatRating,
         ICombatRecorderService combatRecorder,
-        IEnmityService enmity,
+        IEnmityChangeService enmity,
         ICombatDamageTakenService damageTaken)
         : base(queries, damageModifiers, triggeredDamage, stat, combatRating, combatRecorder, enmity,
             FacadeForwarder.For<ICombatDamageRollService>(), damageTaken)

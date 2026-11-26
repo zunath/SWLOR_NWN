@@ -66,6 +66,7 @@ namespace SWLOR.Game.Server.Domain.Space
         private readonly IAreaService _area;
         private readonly IDBService _db;
         private readonly IEnmityService _enmity;
+        private readonly IEnmityChangeService _enmityChange;
         private readonly IGuiService _gui;
         private readonly IMessagingService _messaging;
         private readonly IPerkService _perk;
@@ -86,6 +87,7 @@ namespace SWLOR.Game.Server.Domain.Space
             IAreaService area,
             IDBService db,
             IEnmityService enmity,
+            IEnmityChangeService enmityChange,
             IGuiService gui,
             IMessagingService messaging,
             IPerkService perk,
@@ -105,6 +107,7 @@ namespace SWLOR.Game.Server.Domain.Space
             _area = area;
             _db = db;
             _enmity = enmity;
+            _enmityChange = enmityChange;
             _gui = gui;
             _messaging = messaging;
             _perk = perk;
@@ -1224,7 +1227,7 @@ namespace SWLOR.Game.Server.Domain.Space
             ClearCurrentTarget(player);
             RestoreCharacterAppearance(player, dbPlayer);
             _creatureStat.ApplyCreatureMovementRate(player);
-            _enmity.RemoveCreatureEnmity(player);
+            _enmityChange.RemoveCreatureEnmity(player);
 
             ClearShipModuleRecasts(player, dbPlayer);
             // Save the ship's hot bar and unassign the active ship Id.
@@ -2255,7 +2258,7 @@ namespace SWLOR.Game.Server.Domain.Space
                 ClearCurrentTarget(creature);
                 RestoreCharacterAppearance(creature, dbPlayer);
                 _creatureStat.ApplyCreatureMovementRate(creature);
-                _enmity.RemoveCreatureEnmity(creature);
+                _enmityChange.RemoveCreatureEnmity(creature);
 
                 // Remove all module feats from the player.
                 foreach (var (feat, _) in ShipModuleFeats)

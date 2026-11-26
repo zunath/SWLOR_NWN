@@ -23,7 +23,7 @@ public sealed class TestAbilityHitRollService : AbilityHitRollService
         IAbilityStatusApplicationService statusApplication,
         IAbilityImpactMessageService impactMessage,
         ICombatPointService combatPoint,
-        IEnmityService enmity)
+        IEnmityChangeService enmity)
         : base(observers, meleeTechnique, damageInput, statusApplication, impactMessage, combatPoint, enmity,
             FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitService>())
     {

@@ -140,7 +140,7 @@ mod_exit (46)
               Forfeits the player's combat points at logout; a reload carries them.
   LogoutOnly  SWLOR.Game.Server.Domain.Companions.DroidService.OnPlayerExit
               Despawns the player's droid; it stays in the world.
-  LogoutOnly  SWLOR.Game.Server.Domain.Combat.EnmityService.PlayerExit
+  LogoutOnly  SWLOR.Game.Server.Domain.Combat.EnmityChangeService.PlayerExit
               Makes enemies drop the player; a reload carries the enmity tables.
   LogoutOnly  SWLOR.Game.Server.Domain.Character.EspionageInfiltrationService.OnPlayerExit
               Cancels an infiltration attempt held in memory, which goes with the old build.

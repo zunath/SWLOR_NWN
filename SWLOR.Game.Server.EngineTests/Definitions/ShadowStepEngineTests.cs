@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 // Mid-fight: an engaged target keeps turning toward whoever it is fighting, which
                 // is the situation the tester reported.
-                Enmity.ModifyEnmity(caster, target, 100);
+                EnmityChange.ModifyEnmity(caster, target, 100);
                 var engageDeadline = DateTime.UtcNow.AddSeconds(15);
                 while (!(GetAttackTarget(target) == caster && GameServices.CombatActivity.HasRecentAttackActivity(target, 3f) &&
                          FacingDrift(target, BearingTo(target, caster)) < MaximumFacingDriftDegrees))

@@ -39,7 +39,7 @@ public class TankThreatTests
     [TestCase(-100, -50, -100)]
     [TestCase(int.MaxValue, 50, int.MaxValue)]
     public void GenerationUsesIntegerRoundingAndCannotAmplifyReductions(int amount, int percent, int expected)
-        => Enmity.CalculateAdjustedEnmity(amount, percent).Should().Be(expected);
+        => EnmityChange.CalculateAdjustedEnmity(amount, percent).Should().Be(expected);
 
     [TestCase(2000, 20000, 910, 20910)]
     [TestCase(30000, 20000, 910, 30000)]
@@ -47,15 +47,15 @@ public class TankThreatTests
     [TestCase(0, 0, 910, 910)]
     [TestCase(0, int.MaxValue, 910, int.MaxValue)]
     public void TauntRecoversDeficitsWithoutCompoundingItsOwnLead(int current, int rival, int bonus, int expected)
-        => Enmity.CalculateTauntEnmity(current, rival, bonus).Should().Be(expected);
+        => EnmityChange.CalculateTauntEnmity(current, rival, bonus).Should().Be(expected);
 
     [Test]
     public void TwoTanksCanExchangeAnEnemyAndLoseItToBurstWithoutALock()
     {
-        var first = Enmity.CalculateTauntEnmity(1000, 20000, 910);
-        var second = Enmity.CalculateTauntEnmity(20000, first, 840);
+        var first = EnmityChange.CalculateTauntEnmity(1000, 20000, 910);
+        var second = EnmityChange.CalculateTauntEnmity(20000, first, 840);
         second.Should().Be(21750);
-        Enmity.CalculateTauntEnmity(second, first, 840).Should().Be(second);
+        EnmityChange.CalculateTauntEnmity(second, first, 840).Should().Be(second);
         (first + 841).Should().BeGreaterThan(second);
     }
 
@@ -66,14 +66,14 @@ public class TankThreatTests
     [TestCase(1, 1, 2, 0)]
     [TestCase(20, 100, 90, 0)]
     public void HealingThreatUsesOnlyRestoredHealth(int requested, int before, int after, int expected)
-        => Enmity.CalculateHealingEnmity(requested, before, after).Should().Be(expected);
+        => EnmityChange.CalculateHealingEnmity(requested, before, after).Should().Be(expected);
 
     [TestCase(100, 100, 200, 100L, 0)]
     [TestCase(100, 100, 400, 200L, 50)]
     [TestCase(100, 100, 220, 100L, 10)]
     [TestCase(100, 0, 200, 100L, 0)]
     public void HealingThreatExcludesAllNestedHealthGains(int requested, int before, int after, long nested, int expected)
-        => Enmity.CalculateHealingEnmity(requested, before, after, nested).Should().Be(expected);
+        => EnmityChange.CalculateHealingEnmity(requested, before, after, nested).Should().Be(expected);
 
     [TestCase(typeof(BastionStanceStatusEffect), -20, 20)]
     [TestCase(typeof(DefensiveStanceStatusEffect), -20, 30)]
@@ -93,13 +93,13 @@ public class TankThreatTests
         // A conservative tank uses two 30s area strikes for 6 STM each; omits Guard,
         // threat passives, Provoke and Fortress Strike. Covers each enemy independently.
         var tankDamage = 100 * (100 + attackPenalty) / 100;
-        var tank = 30 * Enmity.CalculateAdjustedEnmity(
-            Enmity.CalculateDamageEnmity(tankDamage, damageBonus), generalBonus);
-        tank += 2 * (Enmity.CalculateAdjustedEnmity(
-            Enmity.CalculateDamageEnmity(tankDamage + 15, damageBonus), generalBonus) +
-            Enmity.CalculateAdjustedEnmity(100, generalBonus));
+        var tank = 30 * EnmityChange.CalculateAdjustedEnmity(
+            EnmityChange.CalculateDamageEnmity(tankDamage, damageBonus), generalBonus);
+        tank += 2 * (EnmityChange.CalculateAdjustedEnmity(
+            EnmityChange.CalculateDamageEnmity(tankDamage + 15, damageBonus), generalBonus) +
+            EnmityChange.CalculateAdjustedEnmity(100, generalBonus));
         var damageDealer = 35 * 125 + 2 * (140 + 100);
-        var healer = 12 * Enmity.CalculateHealingEnmity(500, 500, 1000);
+        var healer = 12 * EnmityChange.CalculateHealingEnmity(500, 500, 1000);
         tank.Should().BeGreaterThan((int)(damageDealer * 1.10), "the active tank needs at least 10% margin");
         tank.Should().BeGreaterThan(healer);
         tank.Should().BeLessThan(damageDealer * 2, "ordinary damage must remain relevant");
@@ -173,7 +173,7 @@ public class TankThreatTests
         var previousOffense = Threat(offenseAttack, 1, 0, 15, true, offensiveAbility, offensiveDamage, offensiveUses);
         after.Should().BeGreaterThan(offense * 1.10, "active comparable tank kit needs at least 10% sustained margin");
         after.Should().BeLessThan(offense * 2, "burst and gear advantages must remain meaningful");
-        after.Should().BeGreaterThan(12 * Enmity.CalculateHealingEnmity(100, 900, 1000));
+        after.Should().BeGreaterThan(12 * EnmityChange.CalculateHealingEnmity(100, 900, 1000));
         // Stopping participation cannot hold against a continuing attacker; this rate has
         // no passive taunt or free per-tick generation, and catch-up is tested separately.
         TestContext.WriteLine($"{stanceType.Name}: old={before:F0}/min new={after:F0}/min oldDPS={previousOffense:F0}/min DPS={offense:F0}/min margin={after / offense - 1:P0} STM={stamina * usesPerMinute}/min");
@@ -246,10 +246,10 @@ public class TankThreatTests
         var guarding = new GuardingBondStanceBeastStatusEffect();
         var predatory = new PredatoryBondStanceBeastStatusEffect();
         // Guarding Bond plus Focus Attention III: +100% damage Enmity, then the capped +50% general bonus.
-        var tank = Enmity.CalculateAdjustedEnmity(Enmity.CalculateDamageEnmity(100,
+        var tank = EnmityChange.CalculateAdjustedEnmity(EnmityChange.CalculateDamageEnmity(100,
             guarding.StatGroup.Stats[StatType.DamageEnmityPercentAdjustment] + 50),
             guarding.StatGroup.Stats[StatType.EnmityPercentAdjustment]);
-        var offense = Enmity.CalculateAdjustedEnmity(125,
+        var offense = EnmityChange.CalculateAdjustedEnmity(125,
             predatory.StatGroup.Stats[StatType.EnmityPercentAdjustment]);
         tank.Should().Be(300);
         offense.Should().Be(75);

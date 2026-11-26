@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             await ctx.WaitFrameAsync();
             foreach (var enemy in enemies)
-                Enmity.ModifyEnmity(player, enemy, 100);
+                EnmityChange.ModifyEnmity(player, enemy, 100);
             AssignCommand(player, () => ActionAttack(enemies[0]));
 
             await ctx.WaitUntilAsync(

@@ -677,7 +677,7 @@ public class EspionageSystemTests
         tacticalEscape.Should().Contain("private const float EvasionDurationSeconds = 30f;");
         tacticalEscape.Should().Contain("TacticalEscape(builder, FeatType.TacticalEscape1, \"Tactical Escape I\", 1, 8, 35, 8, false);");
         tacticalEscape.Should().Contain("TacticalEscape(builder, FeatType.TacticalEscape2, \"Tactical Escape II\", 2, 12, 60, 12, true);");
-        tacticalEscape.Should().Contain("Enmity.ReduceEnmityOnAll(activator, enmityReductionPercent);");
+        tacticalEscape.Should().Contain("EnmityChange.ReduceEnmityOnAll(activator, enmityReductionPercent);");
 
         shadowStep.Should().Contain("private const float EvasionDurationSeconds = 30f;");
         shadowStep.Should().Contain("ShadowStep(builder, FeatType.ShadowStep1, \"Shadow Step I\", 1, 10, 10, false);");

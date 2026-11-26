@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -87,6 +88,35 @@ public class ReloadStateCarrierTests
             foreach (var (field, value) in saved)
                 SetSample(field, null, value);
         }
+    }
+
+    [Test]
+    public void TheEnmityTablesAreCarriedByTheTablePartAloneUnderTheirOwnKeysAndComeBackThroughTheParts()
+    {
+        var carried = ReloadStateCarrier.CarriedClasses(Game);
+        carried.Select(entry => entry.Type.Name).Should().NotContain(new[] { "EnmityChangeService", "EnmityAttackService" },
+            "the change and attack parts hold no carried state, so no reload key names them");
+        var fields = carried.Single(entry => entry.Type == typeof(EnmityService)).Fields;
+        fields.Select(field => field.Name).OrderBy(name => name, StringComparer.Ordinal).Should()
+            .Equal("_creatureToEnemies", "_enemyEnmityTables", "_proximityEnmityAmounts");
+
+        var before = new EnmityService();
+        before.AddEnmity(1, 100, 50);
+        before.AddEnmity(2, 100, 30);
+        before.AddEnmity(1, 101, 8);
+        before.AddProximityEnmity(1, 101, 8);
+        before.RecordAttackCommand(100, 1, new DateTime(2026, 11, 26, 12, 0, 0, DateTimeKind.Utc));
+        var text = Carrier().Write(fields, before);
+
+        var after = new EnmityService();
+        Carrier().Read(fields, after, text);
+
+        after.GetEnmityTable(100).Should().Equal(before.GetEnmityTable(100));
+        after.GetEnmityTable(101).Should().Equal(before.GetEnmityTable(101));
+        after.GetEnemiesOf(1).Should().Equal(before.GetEnemiesOf(1));
+        after.HasProximityEnmity(1, 101).Should().BeTrue();
+        after.GetProximityEnmityAmount(1, 101).Should().Be(8);
+        after.TryGetAttackCommand(100, out _, out _).Should().BeFalse("the attack-command memory is runtime state a reload does not carry");
     }
 
     [Test]

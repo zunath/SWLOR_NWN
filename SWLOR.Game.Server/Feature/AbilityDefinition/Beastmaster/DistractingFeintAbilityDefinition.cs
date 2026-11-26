@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 return;
 
             var enmity = Stat.ScaleEffect(baseEnmity, GetAbilityScore(activator, AbilityType.Vitality));
-            Enmity.ModifyEnmity(activator, target, enmity);
+            EnmityChange.ModifyEnmity(activator, target, enmity);
         }
     }
 }

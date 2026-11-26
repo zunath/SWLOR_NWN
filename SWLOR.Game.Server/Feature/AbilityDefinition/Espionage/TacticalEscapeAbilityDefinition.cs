@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
             int evasionPercent,
             bool removesMovementSlows)
         {
-            Enmity.ReduceEnmityOnAll(activator, enmityReductionPercent);
+            EnmityChange.ReduceEnmityOnAll(activator, enmityReductionPercent);
             TemporaryStatModifier.Replace(
                 activator,
                 StatType.EvasionPercentAdjustment,

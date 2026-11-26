@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatusEffectService _statusEffect;
         private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
-        private readonly IEnmityService _enmity;
+        private readonly IEnmityChangeService _enmityChange;
 
         public CombatAbilityWeaponRidersService(
             ICombatQueriesService queries,
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatusEffectService statusEffect,
             IStatusEffectApplicationService statusEffectApplication,
             ITemporaryStatModifierService temporaryStatModifier,
-            IEnmityService enmity)
+            IEnmityChangeService enmityChange)
         {
             _queries = queries;
             _resources = resources;
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _statusEffect = statusEffect;
             _statusEffectApplication = statusEffectApplication;
             _temporaryStatModifier = temporaryStatModifier;
-            _enmity = enmity;
+            _enmityChange = enmityChange;
         }
 
         public void ApplyHeavyVibrobladeDefenseImpactRiders(
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             var enmityBonus = _stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeDefenseAbilityEnmityBonus);
             if (enmityBonus > 0)
             {
-                _enmity.ModifyEnmity(activator, target, enmityBonus);
+                _enmityChange.ModifyEnmity(activator, target, enmityBonus);
             }
 
             if (_queries.AbilityMatchesAnyPerkTypeStat(

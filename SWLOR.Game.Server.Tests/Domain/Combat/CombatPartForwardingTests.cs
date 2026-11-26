@@ -65,6 +65,9 @@ public class CombatPartForwardingTests
         typeof(ICombatResourcesService),
         typeof(ICombatService),
         typeof(ICombatSuppressionService),
+        typeof(IEnmityService),
+        typeof(IEnmityChangeService),
+        typeof(IEnmityAttackService),
     };
 
     // The methods of a part; a property (the activity part's shared table) is checked by its own test below.
@@ -168,6 +171,13 @@ public class CombatPartForwardingTests
     [TestCase(typeof(ICombatRecordDamageService), "RecordResurrection(kindWithoutScope=Unattributed)")]
     public void TheMovedRecordDamageDefaultsKeepTheirValues(Type part, string expected) =>
         AssertMovedDefaults(part, expected, 2, typeof(ICombatRecordDamageService));
+
+    // The members of the enmity parts that have default arguments, with the defaults they had on the enmity service, on the
+    // interface and the instance class alike.
+    [TestCase(typeof(IEnmityChangeService), "CalculateHealingEnmity(nestedHealing=0)")]
+    [TestCase(typeof(IEnmityAttackService), "IssueAttackCommand(clearActions=True)")]
+    public void TheMovedEnmityDefaultsKeepTheirValues(Type part, string expected) =>
+        AssertMovedDefaults(part, expected, 2, typeof(IEnmityService), typeof(IEnmityChangeService), typeof(IEnmityAttackService));
 
     private static string Defaults(MethodInfo method) => $"{method.Name}(" + string.Join(", ", method.GetParameters()
         .Where(parameter => parameter.HasDefaultValue)

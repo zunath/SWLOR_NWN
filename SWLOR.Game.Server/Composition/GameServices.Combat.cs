@@ -174,6 +174,12 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The enmity tables and the rules that feed them (the facade <c>Service.Enmity</c> until it was removed).</summary>
         public static IEnmityService Enmity => FacadeAccessor.Resolve<IEnmityService>();
 
+        /// <summary>The changes to enmity (damage, healing, taunts, reductions, proximity) and the events that cause them, a part of the enmity code.</summary>
+        public static IEnmityChangeService EnmityChange => FacadeAccessor.Resolve<IEnmityChangeService>();
+
+        /// <summary>Choosing and commanding the attack target by enmity, a part of the enmity code.</summary>
+        public static IEnmityAttackService EnmityAttack => FacadeAccessor.Resolve<IEnmityAttackService>();
+
         /// <summary>Melee technique lines, setups and ordinary-attack power (the facade <c>Service.MeleeTechnique</c> until it was removed).</summary>
         public static IMeleeTechniqueService MeleeTechnique => FacadeAccessor.Resolve<IMeleeTechniqueService>();
 

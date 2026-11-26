@@ -24,20 +24,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
         private ICombatDamageTakenEffectsService CombatDamageTakenEffects { get; }
         private ICombatRecorderService CombatRecorder { get; }
         private ICombatResourcesService CombatResources { get; }
-        private IEnmityService Enmity { get; }
+        private IEnmityAttackService EnmityAttack { get; }
         private StatusAbilityEffects StatusAbilityEffects { get; }
         private IStatusEffectApplicationService StatusEffectApplication { get; }
         private ITemporaryStatModifierService TemporaryStatModifier { get; }
         private WeaponAbilityTemporaryModifiers WeaponAbilityTemporaryModifiers { get; }
 
-        public WeaponAbilitySelfEffects(IAbilityImmunityService abilityImmunity, ICombatAbilityCostEffectsService combatAbilityCostEffects, ICombatDamageTakenEffectsService combatDamageTakenEffects, ICombatRecorderService combatRecorder, ICombatResourcesService combatResources, IEnmityService enmity, StatusAbilityEffects statusAbilityEffects, IStatusEffectApplicationService statusEffectApplication, ITemporaryStatModifierService temporaryStatModifier, WeaponAbilityTemporaryModifiers weaponAbilityTemporaryModifiers)
+        public WeaponAbilitySelfEffects(IAbilityImmunityService abilityImmunity, ICombatAbilityCostEffectsService combatAbilityCostEffects, ICombatDamageTakenEffectsService combatDamageTakenEffects, ICombatRecorderService combatRecorder, ICombatResourcesService combatResources, IEnmityAttackService enmityAttack, StatusAbilityEffects statusAbilityEffects, IStatusEffectApplicationService statusEffectApplication, ITemporaryStatModifierService temporaryStatModifier, WeaponAbilityTemporaryModifiers weaponAbilityTemporaryModifiers)
         {
             AbilityImmunity = abilityImmunity;
             CombatAbilityCostEffects = combatAbilityCostEffects;
             CombatDamageTakenEffects = combatDamageTakenEffects;
             CombatRecorder = combatRecorder;
             CombatResources = combatResources;
-            Enmity = enmity;
+            EnmityAttack = enmityAttack;
             StatusAbilityEffects = statusAbilityEffects;
             StatusEffectApplication = statusEffectApplication;
             TemporaryStatModifier = temporaryStatModifier;
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility
                 EffectInvisibility(InvisibilityType.Normal),
                 activator,
                 profile.SelfInvisibilityDurationSeconds);
-            Enmity.ReevaluateEnemyAttackTargets(activator);
+            EnmityAttack.ReevaluateEnemyAttackTargets(activator);
         }
 
         private void ApplyNearbyPartyStatus(WeaponAbilityProfile profile, uint activator)

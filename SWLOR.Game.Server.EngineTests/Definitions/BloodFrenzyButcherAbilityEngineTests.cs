@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var feat in Kit)
                 ctx.Assert(GetHasFeat(feat, butcher), $"the spawned Butcher knows {feat}");
 
-            Enmity.ModifyEnmity(player.Creature, butcher, 10);
+            EnmityChange.ModifyEnmity(player.Creature, butcher, 10);
             AssignCommand(butcher, () => ActionAttack(player.Creature));
 
             var used = new HashSet<FeatType>();

@@ -17,12 +17,14 @@ public class EnmityTests
     private FacadeContainer _container = null!;
     private IDisposable _installed = null!;
     private EnmityService _enmity = null!;
+    private EnmityAttackService _attack = null!;
 
     [OneTimeSetUp]
     public void BuildContainer()
     {
         _container = new FacadeContainer();
         _enmity = (EnmityService)_container.Get<IEnmityService>();
+        _attack = (EnmityAttackService)_container.Get<IEnmityAttackService>();
     }
 
     [OneTimeTearDown]
@@ -608,9 +610,9 @@ public class EnmityTests
         float recoverySeconds = 6f,
         uint pendingTarget = OBJECT_INVALID)
     {
-        return (bool)typeof(EnmityService)
+        return (bool)typeof(EnmityAttackService)
             .GetMethod("ShouldIssueAttackCommand", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .Invoke(_enmity, new object[]
+            .Invoke(_attack, new object[]
             {
                 attackTarget,
                 desiredTarget,
@@ -633,12 +635,12 @@ public class EnmityTests
         bool hasRecentAttack,
         float recoverySeconds)
     {
-        return (bool)typeof(EnmityService)
+        return (bool)typeof(EnmityAttackService)
             .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
             .Single(method =>
                 method.Name == "ShouldRecoverStaleAttack" &&
                 method.GetParameters().Length == 7)
-            .Invoke(_enmity, new object[]
+            .Invoke(_attack, new object[]
             {
                 attackTarget,
                 desiredTarget,
@@ -652,23 +654,23 @@ public class EnmityTests
 
     private bool ShouldMoveIntoAttackRange(float distance, SkillType skillType, float moveRange)
     {
-        return (bool)typeof(EnmityService)
+        return (bool)typeof(EnmityAttackService)
             .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
             .Single(method =>
                 method.Name == "ShouldMoveIntoAttackRange" &&
                 method.GetParameters().Length == 3)
-            .Invoke(_enmity, new object[] { distance, skillType, moveRange })!;
+            .Invoke(_attack, new object[] { distance, skillType, moveRange })!;
     }
 
     private float GetStaleAttackRecoverySeconds(int effectiveDelayMilliseconds)
     {
-        return (float)typeof(EnmityService)
+        return (float)typeof(EnmityAttackService)
             .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
             .Single(method =>
                 method.Name == "GetStaleAttackRecoverySeconds" &&
                 method.GetParameters().Length == 1 &&
                 method.GetParameters()[0].ParameterType == typeof(int))
-            .Invoke(_enmity, new object[] { effectiveDelayMilliseconds })!;
+            .Invoke(_attack, new object[] { effectiveDelayMilliseconds })!;
     }
 
     private static float ResolveNativeWeaponEngagementRange(
@@ -715,8 +717,6 @@ public class EnmityTests
 
     private bool HasOnlyProximityEnmity(uint creature, uint enemy)
     {
-        return (bool)typeof(EnmityService)
-            .GetMethod("HasOnlyProximityEnmity", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .Invoke(_enmity, new object[] { creature, enemy })!;
+        return _enmity.HasOnlyProximityEnmity(creature, enemy);
     }
 }

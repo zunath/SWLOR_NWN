@@ -110,8 +110,8 @@ public abstract class CombatAbilityBonusTestBase
             .On(nameof(IStatusEffectService.RemoveStatusEffect), _ => null)
             .On(nameof(IStatusEffectService.HasStatusEffect), args =>
                 ((Type[])args[1]!).Any(type => _statuses.Contains(((uint)args[0]!, type))));
-        var enmity = ScriptedProxy.Create<IEnmityService>(out _enmityCalls);
-        _enmityCalls.On(nameof(IEnmityService.ModifyEnmity), _ => null);
+        var enmity = ScriptedProxy.Create<IEnmityChangeService>(out _enmityCalls);
+        _enmityCalls.On(nameof(IEnmityChangeService.ModifyEnmity), _ => null);
         _modifiers = new TemporaryStatModifierService(FacadeForwarder.For<IGuiService>());
         _db = new InMemoryDBService();
 

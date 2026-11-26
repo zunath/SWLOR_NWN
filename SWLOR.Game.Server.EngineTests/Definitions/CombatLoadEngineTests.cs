@@ -178,8 +178,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             teamB.AddRange(playersOfB);
             for (var index = 0; index < Math.Max(teamA.Count, teamB.Count); index++)
             {
-                Enmity.ModifyEnmity(teamA[index % teamA.Count], teamB[index % teamB.Count], 100);
-                Enmity.ModifyEnmity(teamB[index % teamB.Count], teamA[index % teamA.Count], 100);
+                EnmityChange.ModifyEnmity(teamA[index % teamA.Count], teamB[index % teamB.Count], 100);
+                EnmityChange.ModifyEnmity(teamB[index % teamB.Count], teamA[index % teamA.Count], 100);
             }
             KeepPlayersAttacking(players);
 

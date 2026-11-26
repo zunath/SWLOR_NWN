@@ -54,6 +54,8 @@
     { "name": "Droid", "domain": "Companions" },
     { "name": "DroidEquipmentDiagnostics", "domain": "Companions" },
     { "name": "Enmity", "domain": "Combat" },
+    { "name": "EnmityAttack", "domain": "Combat" },
+    { "name": "EnmityChange", "domain": "Combat" },
     { "name": "EquipmentUnequip", "domain": "Items" },
     { "name": "EspionageInfiltration", "domain": "Character" },
     { "name": "ExtraHotbars", "domain": "Social", "extras": [ { "part": "ExtraHotbarsEdit" }, { "part": "ExtraHotbarsEquip" }, { "part": "ExtraHotbarsStatus" }, { "part": "ExtraHotbarsWindow" } ] },

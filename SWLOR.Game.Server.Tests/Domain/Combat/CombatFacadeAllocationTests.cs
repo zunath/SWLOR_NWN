@@ -74,9 +74,9 @@ public class CombatFacadeAllocationTests
         Allocated(() => sink += Enmity.IsThreatSecured(100, 5) ? 1 : 0).Should().Be(0);
         Allocated(() => sink += Enmity.HasProximityEnmity(5, 100) ? 1 : 0).Should().Be(0);
         Allocated(() => sink += Enmity.HasNonProximityEnmity(5, 100) ? 1 : 0).Should().Be(0);
-        Allocated(() => sink += Enmity.CalculateDamageEnmity(40, 25)).Should().Be(0);
-        Allocated(() => sink += Enmity.CalculateAdjustedEnmity(40, 25)).Should().Be(0);
-        Allocated(() => sink += Enmity.CalculateHealingEnmity(40, 10, 60)).Should().Be(0);
+        Allocated(() => sink += EnmityChange.CalculateDamageEnmity(40, 25)).Should().Be(0);
+        Allocated(() => sink += EnmityChange.CalculateAdjustedEnmity(40, 25)).Should().Be(0);
+        Allocated(() => sink += EnmityChange.CalculateHealingEnmity(40, 10, 60)).Should().Be(0);
         Allocated(() => sink += Enmity.CalculateReducedEnmity(40, 25)).Should().Be(0);
         GC.KeepAlive(sink);
     }

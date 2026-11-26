@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var player = await PlayerAbilityFixture.CreateAsync(ctx);
             var mynock = await SpawnMynockAsync(ctx, player.Creature, AILevel.VeryLow);
-            Enmity.ModifyEnmity(player.Creature, mynock, 10);
+            EnmityChange.ModifyEnmity(player.Creature, mynock, 10);
 
             foreach (var (feat, expected, label) in new[]
                      {
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             SetPlotFlag(player.Creature, true);
             var mynock = await SpawnMynockAsync(ctx, player.Creature, AILevel.High);
             SetPlotFlag(mynock, true);
-            Enmity.ModifyEnmity(player.Creature, mynock, 10);
+            EnmityChange.ModifyEnmity(player.Creature, mynock, 10);
             AssignCommand(mynock, () => ActionAttack(player.Creature));
 
             // Disorienting Screech wins the first tie; Sonic Shriek follows while Screech recasts.

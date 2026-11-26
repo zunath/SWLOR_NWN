@@ -1713,15 +1713,7 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplyHostileAbilityUsedAttackAdjustment(activator, ability)");
         combatSource.Should().Contain("public static void ApplyStatusAppliedTargetStaminaDrain(");
         combatSource.Should().Contain("TryUseStatTrigger(activator, StatType.StatusAppliedTargetStaminaDrain, cooldown)");
-        var staminaDrainMethodStart = combatSource.IndexOf(
-            "public static void ApplyStatusAppliedTargetStaminaDrain(",
-            StringComparison.Ordinal);
-        var staminaDrainMethodEnd = combatSource.IndexOf(
-            "namespace SWLOR.Game.Server.Domain.Combat",
-            staminaDrainMethodStart,
-            StringComparison.Ordinal);
-        staminaDrainMethodEnd.Should().BeGreaterThan(staminaDrainMethodStart);
-        var staminaDrainMethod = combatSource[staminaDrainMethodStart..staminaDrainMethodEnd];
+        var staminaDrainMethod = CombatSource.Method("ApplyStatusAppliedTargetStaminaDrain").ToString();
         var staminaBeforeIndex = staminaDrainMethod.IndexOf(
             "var staminaBefore = _stat.GetCurrentStamina(target)",
             StringComparison.Ordinal);

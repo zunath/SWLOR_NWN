@@ -242,7 +242,7 @@ public class SkillRankLimitTests
         Award(player, SkillType.Mimicry, 100).Should().Be(0);
 
         WarningKeys.Should().BeEmpty();
-        Skill.GetRankCeiling(player.Skills[SkillType.Mimicry], SkillType.Mimicry.GetAttribute<SkillType, SkillAttribute>())
+        SkillRank.GetRankCeiling(player.Skills[SkillType.Mimicry], SkillType.Mimicry.GetAttribute<SkillType, SkillAttribute>())
             .Should().Be(50);
     }
 
@@ -368,17 +368,17 @@ public class SkillRankLimitTests
         var combat = SkillType.Mimicry.GetAttribute<SkillType, SkillAttribute>();
 
         language.MaxRank.Should().Be(20);
-        Skill.GetRankLimit(S(5, limit: 1), language).Should().Be(1);
-        Skill.GetRankLimit(S(5, limit: 35), language).Should().Be(20);
-        Skill.GetRankCeiling(S(5, limit: 1), language).Should().Be(1);
-        Skill.GetRankCeiling(S(5), language).Should().Be(language.MaxRank);
-        Skill.GetRankLimit(S(5), combat).Should().BeNull();
-        Skill.GetRankLimit(S(5, limit: 12), combat).Should().Be(12);
-        Skill.GetRankLimit(S(5, limit: 0), combat).Should().Be(0);
-        Skill.GetRankLimit(S(5, limit: -3), combat).Should().Be(0);
-        Skill.GetRankLimit(S(5, limit: 999), combat).Should().Be(combat.MaxRank);
-        Skill.GetRankCeiling(S(5), combat).Should().Be(combat.MaxRank);
-        Skill.GetRankCeiling(S(5, limit: 12), combat).Should().Be(12);
+        SkillRank.GetRankLimit(S(5, limit: 1), language).Should().Be(1);
+        SkillRank.GetRankLimit(S(5, limit: 35), language).Should().Be(20);
+        SkillRank.GetRankCeiling(S(5, limit: 1), language).Should().Be(1);
+        SkillRank.GetRankCeiling(S(5), language).Should().Be(language.MaxRank);
+        SkillRank.GetRankLimit(S(5), combat).Should().BeNull();
+        SkillRank.GetRankLimit(S(5, limit: 12), combat).Should().Be(12);
+        SkillRank.GetRankLimit(S(5, limit: 0), combat).Should().Be(0);
+        SkillRank.GetRankLimit(S(5, limit: -3), combat).Should().Be(0);
+        SkillRank.GetRankLimit(S(5, limit: 999), combat).Should().Be(combat.MaxRank);
+        SkillRank.GetRankCeiling(S(5), combat).Should().Be(combat.MaxRank);
+        SkillRank.GetRankCeiling(S(5, limit: 12), combat).Should().Be(12);
     }
 
     // ---- Decay ----
@@ -398,7 +398,7 @@ public class SkillRankLimitTests
         player.Skills[SkillType.Unarmed].Rank.Should().Be(19);
         player.Skills[SkillType.TwinPistol].Rank.Should().Be(20);
         player.Skills[SkillType.BeastMastery].Rank.Should().Be(20);
-        Skill.GetTotalContributingSkillRanks(player).Should().Be(SkillService.SkillCap);
+        SkillRank.GetTotalContributingSkillRanks(player).Should().Be(SkillService.SkillCap);
     }
 
     [Test]
@@ -416,7 +416,7 @@ public class SkillRankLimitTests
         player.Skills[SkillType.Unarmed].Rank.Should().Be(15);
         player.Skills[SkillType.TwinPistol].Rank.Should().Be(18);
         player.Skills[SkillType.BeastMastery].Rank.Should().Be(20);
-        Skill.GetTotalContributingSkillRanks(player).Should().Be(SkillService.SkillCap);
+        SkillRank.GetTotalContributingSkillRanks(player).Should().Be(SkillService.SkillCap);
     }
 
     [Test]
@@ -431,7 +431,7 @@ public class SkillRankLimitTests
         player.Skills[SkillType.Mimicry].Rank.Should().Be(11);
         player.Skills[SkillType.Mimicry].XP.Should().Be(0);
         player.Skills[SkillType.Unarmed].Rank.Should().Be(15);
-        Skill.GetTotalContributingSkillRanks(player).Should().Be(SkillService.SkillCap);
+        SkillRank.GetTotalContributingSkillRanks(player).Should().Be(SkillService.SkillCap);
         used.Should().Be(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10));
     }
 
@@ -533,21 +533,21 @@ public class SkillRankLimitTests
         var blocked = CreatePlayer(SkillService.SkillCap,
             (SkillType.Mimicry, S(10)),
             (SkillType.Unarmed, S(20, limit: 20)));
-        Skill.IsBlockedBySkillCap(blocked, SkillType.Mimicry).Should().BeTrue();
+        SkillRank.IsBlockedBySkillCap(blocked, SkillType.Mimicry).Should().BeTrue();
 
         // Removing the other skill's limit frees it to decay.
         blocked.Skills[SkillType.Unarmed].RankLimit = null;
-        Skill.IsBlockedBySkillCap(blocked, SkillType.Mimicry).Should().BeFalse();
+        SkillRank.IsBlockedBySkillCap(blocked, SkillType.Mimicry).Should().BeFalse();
 
         // Below the cap nothing is blocked.
         var belowCap = CreatePlayer(SkillService.SkillCap - 1,
             (SkillType.Mimicry, S(10)),
             (SkillType.Unarmed, S(20, limit: 20)));
-        Skill.IsBlockedBySkillCap(belowCap, SkillType.Mimicry).Should().BeFalse();
+        SkillRank.IsBlockedBySkillCap(belowCap, SkillType.Mimicry).Should().BeFalse();
 
         // Languages do not count toward the cap, so the cap never blocks them.
         var language = CreatePlayer(SkillService.SkillCap, (SkillType.Mirialan, S(5)), (SkillType.Unarmed, S(20, limit: 20)));
-        Skill.IsBlockedBySkillCap(language, SkillType.Mirialan).Should().BeFalse();
+        SkillRank.IsBlockedBySkillCap(language, SkillType.Mirialan).Should().BeFalse();
     }
 
     // ---- RP XP: GetMaxDistributableXP ----
@@ -560,10 +560,10 @@ public class SkillRankLimitTests
             (SkillType.Unarmed, S(20, xp: 4, limit: 10)),
             (SkillType.TwinPistol, S(50)));
 
-        Skill.GetMaxDistributableXP(player, SkillType.Mimicry).Should().Be(0);
-        Skill.GetMaxDistributableXP(player, SkillType.Unarmed).Should().Be(0);
-        Skill.GetMaxDistributableXP(player, SkillType.TwinPistol).Should().Be(0);
-        Skill.GetMaxDistributableXP(player, SkillType.Invalid).Should().Be(0);
+        SkillRank.GetMaxDistributableXP(player, SkillType.Mimicry).Should().Be(0);
+        SkillRank.GetMaxDistributableXP(player, SkillType.Unarmed).Should().Be(0);
+        SkillRank.GetMaxDistributableXP(player, SkillType.TwinPistol).Should().Be(0);
+        SkillRank.GetMaxDistributableXP(player, SkillType.Invalid).Should().Be(0);
     }
 
     [Test]
@@ -573,11 +573,11 @@ public class SkillRankLimitTests
             (SkillType.Mimicry, S(10, xp: 30, limit: 12)),
             (SkillType.Unarmed, S(10, xp: 30)));
 
-        Skill.GetMaxDistributableXP(player, SkillType.Mimicry)
+        SkillRank.GetMaxDistributableXP(player, SkillType.Mimicry)
             .Should().Be(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10) - 30 + SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(11));
 
         var expectedToMax = Enumerable.Range(10, 40).Sum(level => Skill.GetRequiredXP(level)) - 30;
-        Skill.GetMaxDistributableXP(player, SkillType.Unarmed).Should().Be(expectedToMax);
+        SkillRank.GetMaxDistributableXP(player, SkillType.Unarmed).Should().Be(expectedToMax);
     }
 
     [Test]
@@ -587,10 +587,10 @@ public class SkillRankLimitTests
             (SkillType.Mimicry, S(10)),
             (SkillType.Unarmed, S(20, limit: 20)),
             (SkillType.TwinPistol, S(20, locked: true)));
-        Skill.GetMaxDistributableXP(blocked, SkillType.Mimicry).Should().Be(0);
+        SkillRank.GetMaxDistributableXP(blocked, SkillType.Mimicry).Should().Be(0);
 
         blocked.Skills[SkillType.Unarmed].RankLimit = null;
-        Skill.GetMaxDistributableXP(blocked, SkillType.Mimicry).Should().BeGreaterThan(0);
+        SkillRank.GetMaxDistributableXP(blocked, SkillType.Mimicry).Should().BeGreaterThan(0);
     }
 
     [Test]
@@ -603,7 +603,7 @@ public class SkillRankLimitTests
             (SkillType.Throwing, S(2)));
         var expected = SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10) - 30 + SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(11) + SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(12);
 
-        Skill.GetMaxDistributableXP(player, SkillType.Mimicry).Should().Be(expected);
+        SkillRank.GetMaxDistributableXP(player, SkillType.Mimicry).Should().Be(expected);
         Award(player, SkillType.Mimicry, expected).Should().Be(expected);
         player.Skills[SkillType.Mimicry].Rank.Should().Be(13);
         player.Skills[SkillType.Unarmed].Rank.Should().Be(20);
@@ -623,7 +623,7 @@ public class SkillRankLimitTests
         var movableRanks = 36 - remainingRank;
         var expected = Enumerable.Range(8, movableRanks).Sum(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP);
 
-        Skill.GetMaxDistributableXP(player, SkillType.Espionage).Should().Be(expected);
+        SkillRank.GetMaxDistributableXP(player, SkillType.Espionage).Should().Be(expected);
         Award(player, SkillType.Espionage, expected).Should().Be(expected);
         player.Skills[SkillType.Espionage].Rank.Should().Be(8 + movableRanks);
         player.Skills[SkillType.Piloting].Rank.Should().Be(remainingRank);
@@ -637,7 +637,7 @@ public class SkillRankLimitTests
             (SkillType.Piloting, S(36, limit: limit)),
             (SkillType.Espionage, S(8)));
 
-        Skill.GetMaxDistributableXP(player, SkillType.Espionage).Should().Be(0);
+        SkillRank.GetMaxDistributableXP(player, SkillType.Espionage).Should().Be(0);
         Award(player, SkillType.Espionage, 1000).Should().Be(0);
         player.Skills[SkillType.Piloting].Rank.Should().Be(36);
     }
@@ -649,7 +649,7 @@ public class SkillRankLimitTests
             (SkillType.Mimicry, S(10, xp: SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10))),
             (SkillType.Unarmed, S(21, limit: 20)));
 
-        Skill.GetMaxDistributableXP(player, SkillType.Mimicry).Should().Be(1);
+        SkillRank.GetMaxDistributableXP(player, SkillType.Mimicry).Should().Be(1);
         Award(player, SkillType.Mimicry, 1);
         player.Skills[SkillType.Mimicry].Rank.Should().Be(11);
         player.Skills[SkillType.Unarmed].Rank.Should().Be(20);
@@ -662,7 +662,7 @@ public class SkillRankLimitTests
             (SkillType.Mimicry, S(10)),
             (SkillType.Unarmed, S(21, limit: 20)));
 
-        Skill.GetMaxDistributableXP(player, SkillType.Mimicry)
+        SkillRank.GetMaxDistributableXP(player, SkillType.Mimicry)
             .Should().Be(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10) + SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(11));
     }
 
@@ -670,10 +670,10 @@ public class SkillRankLimitTests
     public void MaxDistributableXP_RespectsALanguageLimit()
     {
         var atLimit = CreatePlayer(0, (SkillType.Mirialan, S(5, limit: 5)));
-        Skill.GetMaxDistributableXP(atLimit, SkillType.Mirialan).Should().Be(0);
+        SkillRank.GetMaxDistributableXP(atLimit, SkillType.Mirialan).Should().Be(0);
 
         var belowLimit = CreatePlayer(0, (SkillType.Mirialan, S(5, limit: 6)));
-        Skill.GetMaxDistributableXP(belowLimit, SkillType.Mirialan).Should().Be(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(5));
+        SkillRank.GetMaxDistributableXP(belowLimit, SkillType.Mirialan).Should().Be(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(5));
     }
 
     // ---- RP XP window and rebuild (source shape; no engine seam) ----
@@ -685,7 +685,7 @@ public class SkillRankLimitTests
             "Feature", "GuiDefinition", "ViewModel", "DistributeRPXPViewModel.cs"));
         var confirm = ExtractMethod(source, "public Action OnClickConfirm() => () =>");
 
-        var refuse = confirm.IndexOf("Skill.GetMaxDistributableXP(dbPlayer, _skillType)", StringComparison.Ordinal);
+        var refuse = confirm.IndexOf("SkillRank.GetMaxDistributableXP(dbPlayer, _skillType)", StringComparison.Ordinal);
         var cap = confirm.IndexOf("amount = Math.Min(amount, maxDistributableXP);", StringComparison.Ordinal);
         var award = confirm.IndexOf("var acceptedXP = SkillXP.GiveSkillXP(Player, _skillType, amount, true, false);", StringComparison.Ordinal);
         var guard = confirm.IndexOf("if (acceptedXP > 0)", StringComparison.Ordinal);
@@ -758,7 +758,7 @@ public class SkillRankLimitTests
         foreach (var (type, skill) in skills)
             player.Skills[type] = skill;
 
-        var remaining = totalRanks - Skill.GetTotalContributingSkillRanks(player);
+        var remaining = totalRanks - SkillRank.GetTotalContributingSkillRanks(player);
         foreach (var type in Enum.GetValues<SkillType>().Where(type => !player.Skills.ContainsKey(type)))
         {
             if (remaining <= 0)
@@ -782,7 +782,7 @@ public class SkillRankLimitTests
 
     private List<SkillType> DecayCandidates(Player player, SkillType skill)
     {
-        return _facades.Get<ISkillService>().GetDecayCandidates(player, skill);
+        return _facades.Get<ISkillRankService>().GetDecayCandidates(player, skill);
     }
 
     private void Relog() => _harness.GetMethod("Relog")!.Invoke(null, null);

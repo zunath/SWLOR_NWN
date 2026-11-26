@@ -171,6 +171,8 @@ public class ConvertedServiceContainerTests
             .Concat(new[] { "ICombatRecordSession" })
             // The player name split: the display name read Foundation owns, which the name service answers, and the stale portrait tell refusal Character owns, which the chat portrait service answers.
             .Concat(new[] { "IDisplayNameLookup", "IPortraitTellGuard" })
+            // The skill split: the Twin Pistol pairing read Character owns, which the Combat equipment service answers.
+            .Concat(new[] { "ITwinPistolPairQuery" })
             // The perk split: the quick bar reads Character owns, which the quick cast service answers, and the stat-driven tracker refresh Character owns, which the combat service answers.
             .Concat(new[] { "IFeatHotBar", "IStatDrivenTrackerRefresh" })
             .ToArray();

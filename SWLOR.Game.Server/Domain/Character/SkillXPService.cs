@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Domain.Character
     /// <summary>
     /// Skill XP awards: <see cref="GiveSkillXP"/> with its bonuses, debt repayment, rank-ups and decay, the three XP formulas, the
     /// combined XP message queue and the once-per-login rank limit warnings. They moved here from <see cref="SkillService"/>, which keeps the
-    /// catalog and the rank rules.
+    /// catalog and <see cref="SkillRankService"/> the rank rules.
     /// </summary>
     public class SkillXPService : ISkillXPService
     {
@@ -37,19 +37,22 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IPlayerFeedbackService _playerFeedback;
         private readonly Lazy<IStatService> _stat;
         private readonly ISkillService _skill;
+        private readonly ISkillRankService _skillRank;
 
         public SkillXPService(
             IDBService db,
             IGuiRefreshPublisher gui,
             IPlayerFeedbackService playerFeedback,
             Lazy<IStatService> stat,
-            ISkillService skill)
+            ISkillService skill,
+            ISkillRankService skillRank)
         {
             _db = db;
             _gui = gui;
             _playerFeedback = playerFeedback;
             _stat = stat;
             _skill = skill;
+            _skillRank = skillRank;
             _xpMessages = new SkillXPMessageQueue(
                 callback => ScheduleXPMessages(callback),
                 (player, skill, xp) =>
@@ -107,7 +110,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
             // Maxed skills and skills at the player's rank limit can repay XP debt,
             // but cannot earn XP or be blocked by the total-rank cap.
-            var rankCeiling = _skill.GetRankCeiling(pcSkill, details);
+            var rankCeiling = _skillRank.GetRankCeiling(pcSkill, details);
             if (pcSkill.Rank >= rankCeiling)
             {
                 ClearXPAtRankCeiling(player, dbPlayer, skill, pcSkill, details, rankCeiling);
@@ -121,7 +124,7 @@ namespace SWLOR.Game.Server.Domain.Character
                     return detail.ContributesToSkillCap;
                 })
                 .Sum(x => x.Value.Rank);
-            var skillsPossibleToDecay = _skill.GetDecayCandidates(dbPlayer, skill);
+            var skillsPossibleToDecay = _skillRank.GetDecayCandidates(dbPlayer, skill);
 
             // If player is at the skill cap and no skills are available for decay, exit early.
             // Share the warning limit across skills and overflow: one kill can award several skills,
@@ -320,7 +323,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
                 // If player is above the cap, pick a random skill out of the available decayable skills,
                 // reduce its level by 1, and set XP to zero.
-                if (_skill.ShouldDecaySkillRank(details.ContributesToSkillCap, totalRanks))
+                if (_skillRank.ShouldDecaySkillRank(details.ContributesToSkillCap, totalRanks))
                 {
                     // Edge case: Part of the number of levels granted cannot be given because
                     // there are no decayable skills to reduce. All excess XP is lost and we
@@ -341,7 +344,7 @@ namespace SWLOR.Game.Server.Domain.Character
                         modifiedSkills.Add(decaySkill);
 
                     // A decayed skill may have reached 0 or its limit, which can also empty the above-limit pool.
-                    skillsPossibleToDecay = _skill.GetDecayCandidates(dbPlayer, skill);
+                    skillsPossibleToDecay = _skillRank.GetDecayCandidates(dbPlayer, skill);
 
                     if(!decayedSkills.Contains(decaySkill))
                         decayedSkills.Add(decaySkill);

@@ -383,7 +383,7 @@ public class SkillXPServiceTests : SkillTestBase
         var gui = ScriptedProxy.Create<IGuiService>(out var guiScript);
         guiScript.On("PublishRefreshEvent", _ => null);
         var plain = new SkillXPService(new LoggingDB(_store, Mark), gui,
-            ScriptedProxy.Create<IPlayerFeedbackService>(out _), new Lazy<IStatService>(() => stat), _service);
+            ScriptedProxy.Create<IPlayerFeedbackService>(out _), new Lazy<IStatService>(() => stat), _service, _service.Rank);
         Give(SkillType.Armor, 0);
 
         // The experience bonus is read from the stat service, and an award with a message source hands the combined message to the scheduler.

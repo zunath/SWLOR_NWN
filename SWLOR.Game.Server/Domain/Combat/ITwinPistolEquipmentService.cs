@@ -6,7 +6,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 namespace SWLOR.Game.Server.Domain.Combat;
 
 /// <summary>Validates the simulated companion without treating its native carrier as a melee weapon.</summary>
-public interface ITwinPistolEquipmentService
+public interface ITwinPistolEquipmentService : ITwinPistolPairQuery
 {
     bool IsChanging(uint creature);
 
@@ -66,8 +66,6 @@ public interface ITwinPistolEquipmentService
     string GetPairCompatibilityError(BaseItem? mainHandType, BaseItem? offHandType);
 
     (uint MainHand, uint OffHand) GetProspectiveHands(uint creature, uint item, InventorySlot slot);
-
-    bool IsActivePair(uint creature);
 
     /// <summary>The simulated hand, available only when both equipped items satisfy the pair's requirements.</summary>
     uint GetCompanionWeapon(uint creature);

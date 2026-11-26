@@ -54,7 +54,7 @@ public class PlayerSkillPointAccountingTests : SkillFacadeFixture
         dbPlayer.Skills[SkillType.Basic] = new PlayerSkill { Rank = 20 };
         dbPlayer.Skills[(SkillType)9999] = new PlayerSkill { Rank = 50 };
 
-        Skill.GetTotalContributingSkillRanks(dbPlayer).Should().Be(20);
+        SkillRank.GetTotalContributingSkillRanks(dbPlayer).Should().Be(20);
     }
 
     [TestCase(true, SkillService.SkillCap - 1, false)]
@@ -66,7 +66,7 @@ public class PlayerSkillPointAccountingTests : SkillFacadeFixture
         int totalRanks,
         bool expected)
     {
-        var service = SkillFacades.Get<ISkillService>();
+        var service = SkillFacades.Get<ISkillRankService>();
         var result = service.ShouldDecaySkillRank(contributesToSkillCap, totalRanks);
 
         result.Should().Be(expected);
@@ -125,7 +125,7 @@ public class PlayerSkillPointAccountingTests : SkillFacadeFixture
         characterSheetDefinition.Should().NotContain("400-rank limit");
         characterSheet.Should().Contain("public bool ShowSkillRanks");
         characterSheet.Should().Contain("public string SkillRanks");
-        characterSheet.Should().Contain("SkillRanks = $\"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {SkillService.SkillCap}\";");
+        characterSheet.Should().Contain("SkillRanks = $\"{SkillRank.GetTotalContributingSkillRanks(dbPlayer)} / {SkillService.SkillCap}\";");
         characterSheet.Should().Contain("Skill.GetTotalSkillPoints(dbPlayer)} / {SkillService.TotalSkillPointCap}");
         perks.Should().Contain("Total SP: {Skill.GetTotalSkillPoints(dbPlayer)} / {SkillService.TotalSkillPointCap}");
     }

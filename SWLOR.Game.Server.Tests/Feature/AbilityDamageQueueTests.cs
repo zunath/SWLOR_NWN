@@ -310,8 +310,8 @@ public class AbilityDamageQueueTests
         queuedLookupBody.Should().Contain("GetHasFeat(feat, activator)");
         queuedLookupBody.Should().Contain("Perk.GetPerkLevel(activator, ability.EffectiveLevelPerkType)");
         queuedLookupBody.Should().Contain("ability.AbilityLevel > effectivePerkLevel");
-        queuedLookupBody.Should().Contain("Perk.ShouldEnforceActiveAbilityFeatReplacement(");
-        queuedLookupBody.Should().Contain("Perk.IsCurrentActiveAbilityFeat(");
+        queuedLookupBody.Should().Contain("PerkGrantedFeat.ShouldEnforceActiveAbilityFeatReplacement(");
+        queuedLookupBody.Should().Contain("PerkGrantedFeat.IsCurrentActiveAbilityFeat(");
         queuedLookupBody.Should().Contain("ClearQueuedAbility(activator);");
         queuedImpactBody.Should().Contain("if (!TryGetQueuedWeaponAbility(activator, out var abilityDetail))");
         queuedImpactBody.IndexOf("TryGetQueuedWeaponAbility", StringComparison.Ordinal)

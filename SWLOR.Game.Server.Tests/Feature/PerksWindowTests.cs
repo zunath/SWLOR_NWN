@@ -81,7 +81,7 @@ public class PerksWindowTests
         viewModelSource.Should().Contain("selectedDetails += $\"[{categoryDetail.Name}]\\n\";");
         viewModelSource.Should().Contain("var recastGroupText = BuildRecastGroupText(detail);");
         viewModelSource.Should().Contain("selectedDetails += recastGroupText + \"\\n\";");
-        viewModelSource.Should().Contain("Perk.GetActiveAbilityRecastGroup(detail.Type)");
+        viewModelSource.Should().Contain("PerkGrantedFeat.GetActiveAbilityRecastGroup(detail.Type)");
         viewModelSource.Should().Contain("Recast.IsRecastGroupVisible(recastGroup)");
         viewModelSource.Should().Contain("Recast.GetRecastGroupDisplayName(recastGroup)");
         viewModelSource.Should().Contain("recastGroup == RecastGroup.Invalid");

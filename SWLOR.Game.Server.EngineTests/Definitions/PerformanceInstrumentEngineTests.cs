@@ -97,7 +97,7 @@ public static class PerformanceInstrumentEngineTests
             try
             {
                 fixture.Update(record => record.Perks[PerkType.PlayInstrument] = 1);
-                Perk.SyncGrantedFeats(player, PerkType.PlayInstrument, 1, true);
+                PerkGrantedFeat.SyncGrantedFeats(player, PerkType.PlayInstrument, 1, true);
                 var item = await ctx.EquipItemAsync(player, resref, slot);
                 var bow = OBJECT_INVALID;
                 if (family == PerformanceInstrumentFamily.BowedStrings)

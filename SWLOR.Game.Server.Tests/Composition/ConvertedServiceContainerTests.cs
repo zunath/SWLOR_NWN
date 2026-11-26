@@ -173,6 +173,8 @@ public class ConvertedServiceContainerTests
             .Concat(new[] { "IDisplayNameLookup", "IPortraitTellGuard" })
             // The skill split: the Twin Pistol pairing read Character owns, which the Combat equipment service answers.
             .Concat(new[] { "ITwinPistolPairQuery" })
+            // The perk split: the quick bar reads Character owns, which the quick cast service answers, and the stat-driven tracker refresh Character owns, which the combat service answers.
+            .Concat(new[] { "IFeatHotBar", "IStatDrivenTrackerRefresh" })
             .ToArray();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);

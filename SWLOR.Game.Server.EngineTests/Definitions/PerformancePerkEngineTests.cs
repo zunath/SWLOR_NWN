@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     {
                         var current = levels[rank - 1];
                         fixture.Update(record => record.Perks[perk] = rank);
-                        Perk.SyncGrantedFeats(player, perk, rank, true);
+                        PerkGrantedFeat.SyncGrantedFeats(player, perk, rank, true);
 
                         ctx.AssertEqual(rank, Perk.GetPerkLevel(player, perk), $"{perk} rank {rank} is the player's perk level");
                         ctx.Assert(GetHasFeat(current.Feat, player), $"{perk} rank {rank} grants {current.Feat}");

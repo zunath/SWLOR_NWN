@@ -52,6 +52,8 @@ public class PerkFacadeAllocationTests
             services.Replace(ServiceDescriptor.Singleton<IPerkService>(_bench.Service));
             services.Replace(ServiceDescriptor.Singleton<IPerkStatBonusService>(_bench.StatBonus));
             services.Replace(ServiceDescriptor.Singleton<IPerkForceAffinityService>(_bench.Affinity));
+            services.Replace(ServiceDescriptor.Singleton<IPerkGrantedFeatService>(_bench.Feats));
+            services.Replace(ServiceDescriptor.Singleton<IPerkRefundService>(_bench.Refund));
         });
         _installed = _container.Install();
         _bench.CacheData();
@@ -97,15 +99,15 @@ public class PerkFacadeAllocationTests
     {
         var sink = 0;
 
-        Allocated(() => sink += Perk.GetGrantedFeatsForPerkLevel(PerkType.AlphaRhythm, 2).Count).Should().Be(0);
-        Allocated(() => sink += Perk.GetGrantedFeatsForPerkLevel(PerkType.AlphaRhythm, 40).Count).Should().Be(0);
-        Allocated(() => sink += Perk.GetGrantedFeatsForPerkLevel(PerkType.Invalid, 1).Count).Should().Be(0);
-        Allocated(() => sink += Perk.GetCurrentActiveAbilityFeats(PerkType.AlphaRhythm, 2).Count).Should().Be(0);
-        Allocated(() => sink += Perk.GetAllActiveAbilityFeats(PerkType.AlphaRhythm).Count).Should().Be(0);
-        Allocated(() => sink += (int)Perk.GetActiveAbilityRecastGroup(PerkType.AlphaRhythm)).Should().Be(0);
-        Allocated(() => sink += Perk.IsCurrentActiveAbilityFeat(PerkBench.ActiveFeatOne, PerkType.AlphaRhythm, 2) ? 1 : 0).Should().Be(0);
-        Allocated(() => sink += Perk.IsCurrentActiveAbilityFeat(PerkBench.PassiveFeat, PerkType.AlphaRhythm, 1) ? 1 : 0).Should().Be(0);
-        Allocated(() => sink += Perk.IsCurrentActiveAbilityFeat(PerkBench.ActiveFeatOne, PerkType.AlphaRhythm, 0) ? 1 : 0).Should().Be(0);
+        Allocated(() => sink += PerkGrantedFeat.GetGrantedFeatsForPerkLevel(PerkType.AlphaRhythm, 2).Count).Should().Be(0);
+        Allocated(() => sink += PerkGrantedFeat.GetGrantedFeatsForPerkLevel(PerkType.AlphaRhythm, 40).Count).Should().Be(0);
+        Allocated(() => sink += PerkGrantedFeat.GetGrantedFeatsForPerkLevel(PerkType.Invalid, 1).Count).Should().Be(0);
+        Allocated(() => sink += PerkGrantedFeat.GetCurrentActiveAbilityFeats(PerkType.AlphaRhythm, 2).Count).Should().Be(0);
+        Allocated(() => sink += PerkGrantedFeat.GetAllActiveAbilityFeats(PerkType.AlphaRhythm).Count).Should().Be(0);
+        Allocated(() => sink += (int)PerkGrantedFeat.GetActiveAbilityRecastGroup(PerkType.AlphaRhythm)).Should().Be(0);
+        Allocated(() => sink += PerkGrantedFeat.IsCurrentActiveAbilityFeat(PerkBench.ActiveFeatOne, PerkType.AlphaRhythm, 2) ? 1 : 0).Should().Be(0);
+        Allocated(() => sink += PerkGrantedFeat.IsCurrentActiveAbilityFeat(PerkBench.PassiveFeat, PerkType.AlphaRhythm, 1) ? 1 : 0).Should().Be(0);
+        Allocated(() => sink += PerkGrantedFeat.IsCurrentActiveAbilityFeat(PerkBench.ActiveFeatOne, PerkType.AlphaRhythm, 0) ? 1 : 0).Should().Be(0);
         GC.KeepAlive(sink);
     }
 

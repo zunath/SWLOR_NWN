@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         record.Perks[perk] = level;
                         record.UnallocatedSP -= Perk.GetPerkDetails(perk).PerkLevels[level].Price;
                         DB.Set(record);
-                        Perk.SyncGrantedFeats(player, perk, level, true);
+                        PerkGrantedFeat.SyncGrantedFeats(player, perk, level, true);
                     }
                 }
                 AssertPurchasedFeats(ctx, player);
@@ -112,11 +112,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     CreaturePlugin.AddFeatByLevel(player, FeatType.Alertness, 1);
                     var before = JsonConvert.SerializeObject(DB.Get<Player>(record.Id));
 
-                    Perk.RestorePlayerFeats(player);
+                    PerkGrantedFeat.RestorePlayerFeats(player);
                     AssertPurchasedFeats(ctx, player);
                     var featCount = CreaturePlugin.GetFeatCount(player);
                     var levelFeatCount = CreaturePlugin.GetFeatCountByLevel(player, 1);
-                    Perk.RestorePlayerFeats(player);
+                    PerkGrantedFeat.RestorePlayerFeats(player);
 
                     AssertPurchasedFeats(ctx, player);
                     ctx.AssertEqual(featCount, CreaturePlugin.GetFeatCount(player), "Repeated login does not duplicate feats");

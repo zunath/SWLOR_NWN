@@ -35,7 +35,7 @@ public sealed partial class TestDroid : DroidService
             FacadeForwarder.For<IDroidEquipmentDiagnosticsService>(),
             gui,
             FacadeForwarder.For<IItemService>(),
-            FacadeForwarder.For<IPerkService>(),
+            FacadeForwarder.For<IPerkGrantedFeatService>(),
             FacadeForwarder.For<IPowerGloveEquipmentService>(),
             FacadeForwarder.For<IRaceService>(),
             FacadeForwarder.For<IRecastService>(),

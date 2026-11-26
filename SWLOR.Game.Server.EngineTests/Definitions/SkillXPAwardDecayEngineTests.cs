@@ -23,11 +23,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 /// </summary>
 public sealed class SkillXPAwardDecayEngineTests
 {
-    public SkillXPAwardDecayEngineTests(ISkillService skill, ISkillXPService skillXP, IPerkService perk, IAbilityCatalogService abilityCatalog, IDBService db)
+    public SkillXPAwardDecayEngineTests(ISkillService skill, ISkillXPService skillXP, IPerkService perk, IPerkGrantedFeatService perkGrantedFeat, IAbilityCatalogService abilityCatalog, IDBService db)
     {
         Skill = skill;
         SkillXP = skillXP;
         Perk = perk;
+        PerkGrantedFeat = perkGrantedFeat;
         AbilityCatalog = abilityCatalog;
         DB = db;
     }
@@ -35,6 +36,7 @@ public sealed class SkillXPAwardDecayEngineTests
     private ISkillService Skill { get; }
     private ISkillXPService SkillXP { get; }
     private IPerkService Perk { get; }
+    private IPerkGrantedFeatService PerkGrantedFeat { get; }
     private IAbilityCatalogService AbilityCatalog { get; }
     private IDBService DB { get; }
 
@@ -96,7 +98,7 @@ public sealed class SkillXPAwardDecayEngineTests
             record.Perks[GatedPerk] = 1;
             record.UnallocatedSP = 0;
         });
-        await ctx.ExecuteInCreatureContextAsync(player, () => Perk.SyncGrantedFeats(player, GatedPerk, 1, true));
+        await ctx.ExecuteInCreatureContextAsync(player, () => PerkGrantedFeat.SyncGrantedFeats(player, GatedPerk, 1, true));
         ctx.Assert(CreaturePlugin.GetKnowsFeat(player, GatedPerkFeat), "The purchased perk's feat is known before the decay");
         Decays.Clear();
 

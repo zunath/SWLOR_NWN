@@ -133,6 +133,10 @@ public abstract class PerkTestBase
         };
     }
 
+    /// <summary>A facade container whose database is the bench's, for the code that reaches the database through <c>GameServices</c>.</summary>
+    protected FacadeContainer NewContainerOverTheBenchDatabase() =>
+        new(services => services.Replace(ServiceDescriptor.Singleton<IDBService>(_bench.Db)));
+
     protected void Load()
     {
         _bench.CacheData();

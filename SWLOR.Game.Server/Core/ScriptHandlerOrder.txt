@@ -82,7 +82,7 @@ mod_cache_aft  # run by EventRegistration.OnModulePreload through ExecuteScript,
   action      SWLOR.Game.Server.Domain.Foundation.MigrationService.AfterCacheLoaded
   action      SWLOR.Game.Server.Domain.Abilities.MimicryService.CacheData
   action      SWLOR.Game.Server.Domain.Character.MimicryTraitStatsService.CacheData
-  action      SWLOR.Game.Server.Domain.Character.PerkService.CachePerkFeatData
+  action      SWLOR.Game.Server.Domain.Character.PerkGrantedFeatService.CachePerkFeatData
   action      SWLOR.Game.Server.Domain.Abilities.AnimationPreviewCatalog.CacheCategories
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.RegisterUnequipGuard
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.RegisterAttackRules
@@ -1193,7 +1193,7 @@ swlor_heartbeat
 
 swlor_lose_skill
   action      SWLOR.Game.Server.Domain.Abilities.MimicryService.OnMimicrySkillDecay
-  action      SWLOR.Game.Server.Domain.Character.PerkService.RemovePerkLevelOnSkillDecay
+  action      SWLOR.Game.Server.Domain.Character.PerkRefundService.RemovePerkLevelOnSkillDecay
 
 swlor_skl_cache
   action      SWLOR.Game.Server.Domain.Crafting.CraftService.CacheData

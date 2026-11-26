@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly List<IStealthAggroListener> _aggroListeners = new();
 
-        private readonly Lazy<IPerkService> _perk;
+        private readonly IPerkService _perk;
         private readonly Lazy<IStatService> _stat;
         private readonly Lazy<IStatusEffectService> _statusEffect;
         private readonly Lazy<IStatusEffectApplicationService> _statusEffectApplication;
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly Lazy<IEspionageInfiltrationService> _espionageInfiltration;
 
         public StealthService(
-            Lazy<IPerkService> perk,
+            IPerkService perk,
             Lazy<IStatService> stat,
             Lazy<IStatusEffectService> statusEffect,
             Lazy<IStatusEffectApplicationService> statusEffectApplication,
@@ -806,7 +806,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             Log.WriteStructured(group, messageTemplate, propertyValues);
 
         protected virtual int GetStealthPerkLevel(uint creature) =>
-            _perk.Value.GetPerkLevel(creature, PerkType.Stealth);
+            _perk.GetPerkLevel(creature, PerkType.Stealth);
 
         protected virtual int GetDetection(uint creature) =>
             _stat.Value.GetDetection(creature);

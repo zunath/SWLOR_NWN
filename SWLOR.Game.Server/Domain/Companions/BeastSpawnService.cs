@@ -32,20 +32,20 @@ namespace SWLOR.Game.Server.Domain.Companions
         private readonly IDBService _db;
         private readonly IAIService _ai;
         private readonly ICombatRecorderService _combatRecorder;
-        private readonly IPerkService _perk;
+        private readonly IPerkGrantedFeatService _perkGrantedFeat;
         private readonly IBeastMasteryService _beastMastery;
 
         public BeastSpawnService(
             IDBService db,
             IAIService ai,
             ICombatRecorderService combatRecorder,
-            IPerkService perk,
+            IPerkGrantedFeatService perkGrantedFeat,
             IBeastMasteryService beastMastery)
         {
             _db = db;
             _ai = ai;
             _combatRecorder = combatRecorder;
-            _perk = perk;
+            _perkGrantedFeat = perkGrantedFeat;
             _beastMastery = beastMastery;
         }
 
@@ -150,12 +150,12 @@ namespace SWLOR.Game.Server.Domain.Companions
         }
 
         /// <summary>
-        /// Grants the feats a perk level gives to a creature. <c>Perk.SyncGrantedFeats</c> reads the perk catalog and
+        /// Grants the feats a perk level gives to a creature. <c>PerkGrantedFeat.SyncGrantedFeats</c> reads the perk catalog and
         /// the native feat lists, which a unit test does not load, so a test overrides this.
         /// </summary>
         protected virtual void SyncGrantedFeats(uint creature, PerkType perkType, int perkLevel, bool addByLevel)
         {
-            _perk.SyncGrantedFeats(creature, perkType, perkLevel, addByLevel);
+            _perkGrantedFeat.SyncGrantedFeats(creature, perkType, perkLevel, addByLevel);
         }
     }
 }

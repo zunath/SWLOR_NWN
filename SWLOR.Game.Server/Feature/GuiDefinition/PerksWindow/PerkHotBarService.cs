@@ -27,12 +27,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow
     {
         private IAbilityCatalogService AbilityCatalog { get; }
         private IPerkService Perk { get; }
+        private IPerkGrantedFeatService PerkGrantedFeat { get; }
         private IQuickCastService QuickCast { get; }
 
-        public PerkHotBarService(IAbilityCatalogService abilityCatalog, IPerkService perk, IQuickCastService quickCast)
+        public PerkHotBarService(IAbilityCatalogService abilityCatalog, IPerkService perk, IPerkGrantedFeatService perkGrantedFeat, IQuickCastService quickCast)
         {
             AbilityCatalog = abilityCatalog;
             Perk = perk;
+            PerkGrantedFeat = perkGrantedFeat;
             QuickCast = quickCast;
         }
 
@@ -46,10 +48,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow
             if (!GetIsObjectValid(target))
                 return;
 
-            var previousActiveAbilityFeats = Perk.GetCurrentActiveAbilityFeats(perkType, rank - 1);
-            var currentActiveAbilityFeats = Perk.GetCurrentActiveAbilityFeats(perkType, rank);
+            var previousActiveAbilityFeats = PerkGrantedFeat.GetCurrentActiveAbilityFeats(perkType, rank - 1);
+            var currentActiveAbilityFeats = PerkGrantedFeat.GetCurrentActiveAbilityFeats(perkType, rank);
 
-            Perk.SyncGrantedFeats(target, perkType, rank, true);
+            PerkGrantedFeat.SyncGrantedFeats(target, perkType, rank, true);
             SyncHotBarActiveAbilityFeats(host, previousActiveAbilityFeats, currentActiveAbilityFeats);
 
             if (rank == 1)

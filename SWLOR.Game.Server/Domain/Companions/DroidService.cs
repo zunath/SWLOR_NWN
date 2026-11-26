@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         private readonly DroidControllerReader _reader = new();
         private readonly IGuiService _gui;
         private readonly IItemService _item;
-        private readonly IPerkService _perk;
+        private readonly IPerkGrantedFeatService _perkGrantedFeat;
         private readonly IPowerGloveEquipmentService _powerGloveEquipment;
         private readonly IRaceService _race;
         private readonly IRecastService _recast;
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             IDroidEquipmentDiagnosticsService diagnostics,
             IGuiService gui,
             IItemService item,
-            IPerkService perk,
+            IPerkGrantedFeatService perkGrantedFeat,
             IPowerGloveEquipmentService powerGloveEquipment,
             IRaceService race,
             IRecastService recast,
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             _diagnostics = diagnostics;
             _gui = gui;
             _item = item;
-            _perk = perk;
+            _perkGrantedFeat = perkGrantedFeat;
             _powerGloveEquipment = powerGloveEquipment;
             _race = race;
             _recast = recast;
@@ -565,7 +565,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             // Perks
             foreach (var (perk, level) in details.Perks)
             {
-                _perk.SyncGrantedFeats(droid, perk, level, false);
+                _perkGrantedFeat.SyncGrantedFeats(droid, perk, level, false);
             }
 
             _ai.SetAIProfile(droid, AIProfileType.DroidCompanion);

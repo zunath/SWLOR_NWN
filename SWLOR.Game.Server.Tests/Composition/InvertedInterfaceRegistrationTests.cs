@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
@@ -45,6 +46,8 @@ public class InvertedInterfaceRegistrationTests
         (typeof(ICompanionTargetQuery), typeof(ICompanionTargetAuthorityService)),
         (typeof(IDisplayNameLookup), typeof(IPlayerNameService)),
         (typeof(IPortraitTellGuard), typeof(IChatPortraitTellsService)),
+        (typeof(IFeatHotBar), typeof(IQuickCastService)),
+        (typeof(IStatDrivenTrackerRefresh), typeof(ICombatService)),
     };
 
     private static ContainerHost Build()

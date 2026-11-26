@@ -89,7 +89,7 @@ public class StealthAggroListenerTests
     private sealed class ListenerStealth : StealthService
     {
         public ListenerStealth()
-            : base(FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.LazyFor<IStatusEffectApplicationService>(), FacadeForwarder.LazyFor<IEnmityService>(),
+            : base(FacadeForwarder.For<IPerkService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.LazyFor<IStatusEffectApplicationService>(), FacadeForwarder.LazyFor<IEnmityService>(),
                 FacadeForwarder.LazyFor<IEspionageInfiltrationService>())
         {
         }

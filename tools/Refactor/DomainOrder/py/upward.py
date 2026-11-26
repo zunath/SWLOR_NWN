@@ -14,7 +14,7 @@ CHAIN = [("P5-3", r"Domain\.Abilities\.I?Ability(Service|Requirement\w*|ImpactSe
          ("P5-7", r"Domain\.Combat\.I?(Combat\w*Service|EnmityService|CombatRules)$"),
          ("P5-8", r"Domain\.Creatures\.I?(AI|Spawn|CompanionControl|CompanionPositioning|CompanionTargetAuthority)\w*$"),
          ("P5-9", r"Domain\.(Items|World|Crafting)\.I?(Item|Property|Shuttle|Craft|BlueprintBonus)\w*$"),
-         ("P5-10", r"Domain\.(Character|Abilities|Companions)\.I?(Perk|PerkStatBonus|PerkForceAffinity|Skill|PlayerName|PlayerKnownName|PlayerNameOverride|Mimicry|Droid|BeastMastery|BeastSpawn|BeastEvent|BeastIncubation)\w*$"),
+         ("P5-10", r"Domain\.(Character|Abilities|Companions)\.I?(Perk|PerkStatBonus|PerkForceAffinity|PerkGrantedFeat|PerkRefund|Skill|PlayerName|PlayerKnownName|PlayerNameOverride|Mimicry|Droid|BeastMastery|BeastSpawn|BeastEvent|BeastIncubation)\w*$"),
          ("P5-11", r"Domain\.(Foundation|Social|UI)\.I?(Communication|Performance\w*|ExtraHotbars|GuiWindowBuilder)\w*$"),
          ("P5-6", r"Domain\.Space\.I?Space\w*$"),
          ("P5-16", r"(Native|NativeSinks)\.\w+$")]

@@ -44,7 +44,7 @@ public class PerkRefundStatusEffectCleanupTests
         var hasten = new HastenAbilityDefinition().BuildAbilities()[FeatType.Hasten1];
         hasten.SourceOwnedStatusEffectTypesRemovedOnPerkRefund.Add(typeof(Hasten1StatusEffect));
 
-        var refunds = Perk.GetSourceOwnedStatusEffectRefunds(
+        var refunds = PerkRefund.GetSourceOwnedStatusEffectRefunds(
             new[] { snapRush, secondTechnique, snapRush, hasten }, PerkType.CombatAnalyzer);
         refunds.Should().Equal(new[]
         {
@@ -191,8 +191,8 @@ public class PerkRefundStatusEffectCleanupTests
         perkSource.Should().Contain("_statusEffect.RemoveStatusEffectsFromAllTargetsBySource(");
         perkSource.Should().Contain("RefreshStatDrivenTrackerEffects(creature);");
         perkSource.Should().Contain("RemoveStatusEffectsOnPerkRefund(player, perkType);");
-        perksViewModelSource.Should().Contain("Perk.RemoveStatusEffectsOnPerkRefund(target, selectedPerk);");
-        rebuildViewModelSource.Should().Contain("Perk.RemoveStatusEffectsOnPerkRefund(Player, type);");
+        perksViewModelSource.Should().Contain("PerkRefund.RemoveStatusEffectsOnPerkRefund(target, selectedPerk);");
+        rebuildViewModelSource.Should().Contain("PerkRefund.RemoveStatusEffectsOnPerkRefund(Player, type);");
 
         var combatSource = CombatSource.Read();
         combatSource.Should().Contain("_autoAttackCycleCriticalCounts.Remove(creature);");

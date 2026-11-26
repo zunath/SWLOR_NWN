@@ -15,15 +15,15 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
     {
         private IMigrationService Migration { get; }
         private IOverflowStorageService OverflowStorage { get; }
-        private IPerkService Perk { get; }
+        private IPerkGrantedFeatService PerkGrantedFeat { get; }
         private ICreatureStatService CreatureStat { get; }
         private IStatRecordService StatRecord { get; }
 
-        public CharacterLoginRestoration(IMigrationService migration, IOverflowStorageService overflowStorage, IPerkService perk, ICreatureStatService creatureStat, IStatRecordService statRecord)
+        public CharacterLoginRestoration(IMigrationService migration, IOverflowStorageService overflowStorage, IPerkGrantedFeatService perkGrantedFeat, ICreatureStatService creatureStat, IStatRecordService statRecord)
         {
             Migration = migration;
             OverflowStorage = overflowStorage;
-            Perk = perk;
+            PerkGrantedFeat = perkGrantedFeat;
             CreatureStat = creatureStat;
             StatRecord = statRecord;
         }
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         /// <summary>Restores the native feats the record holds. The perk service reads the record and the engine.</summary>
         protected virtual void RestorePlayerFeats(uint player)
         {
-            Perk.RestorePlayerFeats(player);
+            PerkGrantedFeat.RestorePlayerFeats(player);
         }
 
         /// <summary>Reconciles combat readiness with the worn equipment. The stat service reads the record and the engine.</summary>

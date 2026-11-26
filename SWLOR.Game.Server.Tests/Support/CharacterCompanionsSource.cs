@@ -31,8 +31,13 @@ public static class CharacterCompanionsSource
             "SWLOR.Game.Server/Domain/Character/PerkService.cs",
             "SWLOR.Game.Server/Domain/Character/PerkStatBonusService.cs",
             "SWLOR.Game.Server/Domain/Character/PerkForceAffinityService.cs",
+            "SWLOR.Game.Server/Domain/Character/PerkGrantedFeatService.cs",
+            "SWLOR.Game.Server/Domain/Character/PerkRefundService.cs",
         },
-        new HashSet<string>(StringComparer.Ordinal) { "IPerkService", "IPerkStatBonusService", "IPerkForceAffinityService" });
+        new HashSet<string>(StringComparer.Ordinal)
+        {
+            "IPerkService", "IPerkStatBonusService", "IPerkForceAffinityService", "IPerkGrantedFeatService", "IPerkRefundService",
+        });
 
     /// <summary>The skill service: <c>SkillService</c> and each part the split moves out.</summary>
     public static readonly ServiceSource Skill = new(

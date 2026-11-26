@@ -17,7 +17,7 @@ public sealed class TestBeastSpawnService : BeastSpawnService
     private readonly TestBeastMastery _host;
 
     public TestBeastSpawnService(TestBeastMastery host, IDBService db)
-        : base(db, FacadeForwarder.For<IAIService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IPerkService>(), host)
+        : base(db, FacadeForwarder.For<IAIService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IPerkGrantedFeatService>(), host)
     {
         _host = host;
     }

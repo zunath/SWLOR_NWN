@@ -8,8 +8,9 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
-    /// Perks: the definition caches, a creature's perk levels, the granted feats that follow from them, and refunds. The stat
-    /// bonuses are on <see cref="IPerkStatBonusService"/> and the Force affinity on <see cref="IPerkForceAffinityService"/>. The level and feat reads run per attack and per stat rebuild and allocate nothing.
+    /// Perks: the definition caches, a creature's perk levels and the unlock. The stat bonuses are on
+    /// <see cref="IPerkStatBonusService"/>, the Force affinity on <see cref="IPerkForceAffinityService"/>, the granted feats on
+    /// <see cref="IPerkGrantedFeatService"/> and the refunds on <see cref="IPerkRefundService"/>. The level reads run per attack and per stat rebuild and allocate nothing.
     /// </summary>
     public interface IPerkService
     {
@@ -17,8 +18,6 @@ namespace SWLOR.Game.Server.Domain.Character
         /// When the module loads, cache all perk and character type information.
         /// </summary>
         void CacheData();
-
-        void CachePerkFeatData();
 
         /// <summary>
         /// Retrieves all of the equip triggers registered by perks.
@@ -54,6 +53,16 @@ namespace SWLOR.Game.Server.Domain.Character
         /// Every perk in the order the cache built them, without copying the table.
         /// </summary>
         IEnumerable<KeyValuePair<PerkType, PerkDetail>> EnumerateAllPerks();
+
+        /// <summary>
+        /// The highest level of a perk, or 0 for a perk the catalog does not hold.
+        /// </summary>
+        int GetPerkMaxLevel(PerkType perkType);
+
+        /// <summary>
+        /// The perks that have a level requiring the skill, in the order the cache found them; empty when no perk needs it.
+        /// </summary>
+        IReadOnlyList<PerkType> GetPerksWithSkillRequirement(SkillType skillType);
 
         /// <summary>
         /// Retrieves a list of all active perks, excluding inactive ones, by group.
@@ -130,39 +139,6 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <returns>The perk level of a creature.</returns>
         int GetPerkLevel(uint creature, PerkType perkType);
 
-        IReadOnlyList<FeatType> GetGrantedFeatsForPerkLevel(PerkType perkType, int perkLevel);
-
-        IReadOnlyList<FeatType> GetCurrentActiveAbilityFeats(PerkType perkType, int perkLevel);
-
-        IReadOnlyList<FeatType> GetAllActiveAbilityFeats(PerkType perkType);
-
-        RecastGroup GetActiveAbilityRecastGroup(PerkType perkType);
-
-        /// <summary>
-        /// Restores native feats from purchased perks after loading or migrating a character file.
-        /// This does not repeat purchase triggers or change the player's quickbar layout.
-        /// </summary>
-        void RestorePlayerFeats(uint player);
-
-        void SyncGrantedFeats(uint creature, PerkType perkType, int perkLevel, bool addByLevel);
-
-        /// <summary>
-        /// Removes declared self effects and effects granted by the refunded perk's abilities.
-        /// Source-owned effects retain their ability identity even when another perk uses the same status class.
-        /// </summary>
-        void RemoveStatusEffectsOnPerkRefund(uint creature, PerkType perkType);
-
-        /// <summary>
-        /// Selects distinct ability/status pairs for a perk refund. Deduplication retains separate
-        /// abilities that share a status class so each cleanup uses its own originating ability.
-        /// </summary>
-        IReadOnlyList<(AbilityDetail Ability, Type StatusEffectType)> GetSourceOwnedStatusEffectRefunds(
-            IEnumerable<AbilityDetail> abilities, PerkType perkType);
-
-        bool ShouldEnforceActiveAbilityFeatReplacement(uint creature, PerkType perkType);
-
-        bool IsCurrentActiveAbilityFeat(FeatType feat, PerkType perkType, int perkLevel);
-
         /// <summary>
         /// Retrieves a player's effective perk level.
         /// This performs a "hard" check on all perk requirements. This process is VERY expensive so please use sparingly.
@@ -181,11 +157,5 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <param name="player">The player to unlock the perk for</param>
         /// <param name="perkType">The type of perk to unlock for the player</param>
         void UnlockPerkForPlayer(uint player, PerkType perkType);
-
-        /// <summary>
-        /// When a skill receives decay, any perks tied to that skill should be checked.
-        /// If the player no longer meets the requirements for those perks, they should be reduced in level.
-        /// </summary>
-        void RemovePerkLevelOnSkillDecay();
     }
 }

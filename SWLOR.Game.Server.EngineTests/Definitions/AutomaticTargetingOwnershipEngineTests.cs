@@ -27,7 +27,7 @@ public static class AutomaticTargetingOwnershipEngineTests
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         var player = fixture.Creature;
         PreparePerks(fixture);
-        Perk.RestorePlayerFeats(player);
+        PerkGrantedFeat.RestorePlayerFeats(player);
         CreaturePlugin.AddFeat(player, FeatType.Alertness);
         PlayerPlugin.SetQuickBarSlot(player, 17, PlayerQuickBarSlot.UseFeat(Support));
         PlayerPlugin.SetQuickBarSlot(player, 18, PlayerQuickBarSlot.UseFeat(Enemy));
@@ -40,8 +40,8 @@ public static class AutomaticTargetingOwnershipEngineTests
             foreach (var enabled in new[] { true, false })
             {
                 SetPreferences(player, enabled, enabled);
-                Perk.RestorePlayerFeats(player);
-                Perk.RestorePlayerFeats(player);
+                PerkGrantedFeat.RestorePlayerFeats(player);
+                PerkGrantedFeat.RestorePlayerFeats(player);
                 AssertOwnership(ctx, player, Support, enabled, $"cycle {cycle}: support");
                 AssertOwnership(ctx, player, Enemy, enabled, $"cycle {cycle}: enemy");
                 AssertSlot(ctx, player, 17, enabled ? Alias(Support) : Support);
@@ -59,19 +59,19 @@ public static class AutomaticTargetingOwnershipEngineTests
         foreach (var rank in new[] { 2, 3 })
         {
             fixture.Update(record => record.Perks[PerkType.RousingShout] = rank);
-            Perk.SyncGrantedFeats(player, PerkType.RousingShout, rank, true);
+            PerkGrantedFeat.SyncGrantedFeats(player, PerkType.RousingShout, rank, true);
             var current = rank == 2 ? FeatType.RousingShout2 : FeatType.RousingShout3;
             AssertOwnership(ctx, player, current, true, $"rank {rank}");
             foreach (var previous in new[] { Support, FeatType.RousingShout2 }.Where(feat => feat != current))
                 ctx.Assert(!QuickCast.KnowsFeat(player, previous), $"rank {rank}: superseded {previous} is revoked in both forms");
             var count = CreaturePlugin.GetFeatCountByLevel(player, 1);
-            Perk.SyncGrantedFeats(player, PerkType.RousingShout, rank, true);
+            PerkGrantedFeat.SyncGrantedFeats(player, PerkType.RousingShout, rank, true);
             ctx.AssertEqual(count, CreaturePlugin.GetFeatCountByLevel(player, 1), "repeated rank sync does not append another level row");
             AssertCanonicalLevelRow(ctx, player, current, 1);
         }
 
         fixture.Update(record => record.Perks.Remove(PerkType.RousingShout));
-        Perk.SyncGrantedFeats(player, PerkType.RousingShout, 0, true);
+        PerkGrantedFeat.SyncGrantedFeats(player, PerkType.RousingShout, 0, true);
         SetPreferences(player, false, false);
         foreach (var feat in new[] { Support, FeatType.RousingShout2, FeatType.RousingShout3 })
             ctx.Assert(!QuickCast.KnowsFeat(player, feat), $"rank-zero revocation cannot be undone by disabling targeting: {feat}");
@@ -85,7 +85,7 @@ public static class AutomaticTargetingOwnershipEngineTests
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         var player = fixture.Creature;
         PreparePerks(fixture);
-        Perk.RestorePlayerFeats(player);
+        PerkGrantedFeat.RestorePlayerFeats(player);
         PlayerPlugin.SetQuickBarSlot(player, 17, PlayerQuickBarSlot.UseFeat(Support));
         PlayerPlugin.SetQuickBarSlot(player, 18, PlayerQuickBarSlot.UseFeat(Enemy));
         PlayerPlugin.SetQuickBarSlot(player, 19, PlayerQuickBarSlot.UseSkill(0));
@@ -125,7 +125,7 @@ public static class AutomaticTargetingOwnershipEngineTests
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         PreparePerks(fixture);
         SetPreferences(fixture.Creature, true, true);
-        Perk.RestorePlayerFeats(fixture.Creature);
+        PerkGrantedFeat.RestorePlayerFeats(fixture.Creature);
         CreaturePlugin.AddFeat(fixture.Creature, FeatType.Alertness);
         PlayerPlugin.SetQuickBarSlot(fixture.Creature, 17, PlayerQuickBarSlot.UseFeat(Alias(Support)));
         PlayerPlugin.SetQuickBarSlot(fixture.Creature, 18, PlayerQuickBarSlot.UseFeat(Alias(Enemy)));
@@ -147,9 +147,9 @@ public static class AutomaticTargetingOwnershipEngineTests
                 player = restored.Creature;
                 id = restored.Id;
                 ctx.Assert(QuickCast.KnowsFeat(player, Support) && QuickCast.KnowsFeat(player, Enemy), "native player stats retain both purchased abilities before login repair");
-                Perk.RestorePlayerFeats(player);
+                PerkGrantedFeat.RestorePlayerFeats(player);
                 QuickCast.ApplyPreferences(player);
-                Perk.RestorePlayerFeats(player);
+                PerkGrantedFeat.RestorePlayerFeats(player);
                 AssertOwnership(ctx, player, Support, true, $"login cycle {cycle}: support");
                 AssertOwnership(ctx, player, Enemy, true, $"login cycle {cycle}: enemy");
                 AssertSlot(ctx, player, 17, Alias(Support));

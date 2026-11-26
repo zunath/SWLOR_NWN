@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
 /// A scripted world for the perk instance: a recording engine and creature plugin, an in-memory database, stand-ins for
-/// the converted neighbours the constructor takes (quick cast, beast mastery, status effects), and a subclass that
+/// the converted neighbours the constructors take (the hot bar, beast mastery, status effects), and a subclass that
 /// answers the calls into unconverted code (stat rules, droids, abilities, combat). The engine, the plugin, the seams and
 /// the stand-ins all write to <see cref="Timeline"/> in the order they are called, so a test can pin the order of a whole
 /// refund, restore or sync. The perk definitions come from <see cref="Definitions"/> through
@@ -60,7 +60,7 @@ public sealed class PerkBench : IDisposable
         _scopes.Add(EventsPluginRuntime.Override(Events));
 
         Db = new InMemoryDBService();
-        QuickCast = ScriptedProxy.Create<IQuickCastService>(out var quickCastScript);
+        QuickCast = ScriptedProxy.Create<IFeatHotBar>(out var quickCastScript);
         quickCastScript
             .On("KnowsFeat", args => KnownFeats.Contains((FeatType)args[1]!))
             .On("RemoveFeat", args =>
@@ -95,8 +95,10 @@ public sealed class PerkBench : IDisposable
                 return null;
             });
 
-        Service = new TestPerkService(this, Db, QuickCast, BeastMastery, StatusEffects);
+        Service = new TestPerkService(this, Db, BeastMastery);
         StatBonus = new TestPerkStatBonusService(this, Service, BeastMastery);
+        Feats = new TestPerkGrantedFeatService(this, Db, QuickCast, BeastMastery, Service);
+        Refund = new TestPerkRefundService(this, Db, QuickCast, StatusEffects, Service, Feats);
         Affinity = new TestPerkForceAffinityService(this, Service, FacadeForwarder.For<IStatService>());
         Current = this;
     }
@@ -112,7 +114,7 @@ public sealed class PerkBench : IDisposable
 
     public InMemoryDBService Db { get; }
 
-    public IQuickCastService QuickCast { get; }
+    public IFeatHotBar QuickCast { get; }
 
     public ICompanionLookup BeastMastery { get; }
 
@@ -133,10 +135,10 @@ public sealed class PerkBench : IDisposable
     public TestPerkForceAffinityService Affinity { get; }
 
     /// <summary>The granted feat lookups, the restore and the sync.</summary>
-    public TestPerkService Feats => Service;
+    public TestPerkGrantedFeatService Feats { get; }
 
     /// <summary>The refund cleanup and the skill decay handler.</summary>
-    public TestPerkService Refund => Service;
+    public TestPerkRefundService Refund { get; }
 
     /// <summary>
     /// Runs the perk boot handlers in <c>ScriptHandlerOrder.txt</c> order, as the cache event does. A part that adds a boot handler adds

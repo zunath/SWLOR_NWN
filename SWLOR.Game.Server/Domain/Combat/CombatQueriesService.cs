@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IPartyRoster _party;
         private readonly ISkillService _skill;
         private readonly IPerkService _perk;
+        private readonly IPerkStatBonusService _perkStatBonus;
         private readonly IItemService _item;
         private readonly ITwinPistolEquipmentService _twinPistolEquipment;
 
@@ -39,6 +40,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IPartyRoster party,
             ISkillService skill,
             IPerkService perk,
+            IPerkStatBonusService perkStatBonus,
             IItemService item,
             ITwinPistolEquipmentService twinPistolEquipment)
         {
@@ -47,6 +49,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _party = party;
             _skill = skill;
             _perk = perk;
+            _perkStatBonus = perkStatBonus;
             _item = item;
             _twinPistolEquipment = twinPistolEquipment;
         }
@@ -657,7 +660,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (perkType == PerkType.Invalid)
                 return 0;
 
-            var adjustment = _perk.GetTargetedStatBonus(
+            var adjustment = _perkStatBonus.GetTargetedStatBonus(
                 creature,
                 perkType,
                 primaryPerkStatType,

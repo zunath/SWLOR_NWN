@@ -84,7 +84,7 @@
     { "facade": "PerformanceService.PerformanceAudience", "members": [ { "owner": "PerformanceWatchingWindow", "names": [ "BuildWatchingView", "Follow", "OnWatchingWindowClosed", "RefreshWatching", "SetPlayPerformerSong", "Unfollow" ] } ] },
     { "facade": "PerformanceService.PerformanceVenue", "constants": [ { "name": "AreaRatingVariable", "owner": "SWLOR.Game.Server.Domain.Social.PerformanceVenueService" }, { "name": "DanceFloorBonus", "owner": "SWLOR.Game.Server.Domain.Social.PerformanceVenueService" }, { "name": "DanceFloorRadiusMeters", "owner": "SWLOR.Game.Server.Domain.Social.PerformanceVenueService" } ] },
     { "facade": "PerformanceService.PerformanceWindows" },
-    { "facade": "Perk" },
+    { "facade": "Perk", "members": [ { "owner": "PerkForceAffinity", "names": [ "ApplyForceAffinityMagnitude", "ApplyForceAffinityRestorativeMagnitude", "GetForceAffinity", "GetForceAffinityHitChanceAdjustment", "GetForceAffinityMagnitudeMultiplier", "GetForceAffinityRestorativeMagnitudeMultiplier", "TryGetForceSideAffinity" ] }, { "owner": "PerkStatBonus", "names": [ "GetStatBonus", "GetStatSources", "GetTargetedStatBonus" ] } ] },
     { "facade": "Planet" },
     { "facade": "PlayerDescriptor", "constants": [ { "name": "DefaultUnknownDisplayName", "owner": "SWLOR.Game.Server.Domain.Character.PlayerDescriptorService" } ] },
     { "facade": "PlayerFeedback" },

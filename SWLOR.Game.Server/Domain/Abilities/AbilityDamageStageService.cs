@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
     {
         private readonly IAbilityDamageInputService _damageInput;
         private readonly IAbilityImpactState _impactState;
-        private readonly IPerkService _perk;
+        private readonly IPerkForceAffinityService _perk;
         private readonly ICombatAbilityHitAdjustmentService _abilityHitAdjustment;
         private readonly ICombatDamageModifiersService _damageModifiers;
         private readonly ICombatDamageTakenService _damageTaken;
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         public AbilityDamageStageService(
             IAbilityDamageInputService damageInput,
             IAbilityImpactState impactState,
-            IPerkService perk,
+            IPerkForceAffinityService perk,
             ICombatAbilityHitAdjustmentService abilityHitAdjustment,
             ICombatDamageModifiersService damageModifiers,
             ICombatDamageTakenService damageTaken,

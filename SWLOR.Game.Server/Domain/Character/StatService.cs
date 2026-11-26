@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IStatusEffectService _statusEffect;
         private readonly IMimicryTraitStatsService _mimicryTraitStats;
         private readonly ICompanionLookup _companions;
-        private readonly IPerkService _perk;
+        private readonly IPerkStatBonusService _perk;
         private readonly ISkillService _skill;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly IResourceRestoredListener _resourceRestored;
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Domain.Character
             IStatusEffectService statusEffect,
             IMimicryTraitStatsService mimicryTraitStats,
             ICompanionLookup companions,
-            IPerkService perk,
+            IPerkStatBonusService perk,
             ISkillService skill,
             ITemporaryStatModifierService temporaryStatModifier,
             IResourceRestoredListener resourceRestored)

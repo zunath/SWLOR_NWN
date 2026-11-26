@@ -164,8 +164,8 @@ public abstract class CombatAbilityHitTestBase
         });
         var ability = ScriptedProxy.Create<IAbilityImpactState>(out var abilityCalls);
         abilityCalls.On(nameof(IAbilityImpactState.GetWeaponTraitAccuracy), _ => _traitAccuracy);
-        var perk = ScriptedProxy.Create<IPerkService>(out var perkCalls);
-        perkCalls.On(nameof(IPerkService.GetForceAffinityHitChanceAdjustment), args =>
+        var perk = ScriptedProxy.Create<IPerkForceAffinityService>(out var perkCalls);
+        perkCalls.On(nameof(IPerkForceAffinityService.GetForceAffinityHitChanceAdjustment), args =>
         {
             _log.Add($"Affinity {args[0]} {args[1]}");
             return _forceAffinity;

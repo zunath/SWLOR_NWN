@@ -26,8 +26,13 @@ public static class CharacterCompanionsSource
     /// <summary>The perk service: <c>PerkService</c> and each part the split moves out.</summary>
     public static readonly ServiceSource Perk = new(
         "PerkService",
-        new[] { "SWLOR.Game.Server/Domain/Character/PerkService.cs" },
-        new HashSet<string>(StringComparer.Ordinal) { "IPerkService" });
+        new[]
+        {
+            "SWLOR.Game.Server/Domain/Character/PerkService.cs",
+            "SWLOR.Game.Server/Domain/Character/PerkStatBonusService.cs",
+            "SWLOR.Game.Server/Domain/Character/PerkForceAffinityService.cs",
+        },
+        new HashSet<string>(StringComparer.Ordinal) { "IPerkService", "IPerkStatBonusService", "IPerkForceAffinityService" });
 
     /// <summary>The skill service: <c>SkillService</c> and each part the split moves out.</summary>
     public static readonly ServiceSource Skill = new(

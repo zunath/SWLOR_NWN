@@ -8,8 +8,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
-    /// Perks: the definition caches, a creature's perk levels, the stat bonuses and granted feats that follow from them,
-    /// and refunds. The level and feat reads run per attack and per stat rebuild and allocate nothing.
+    /// Perks: the definition caches, a creature's perk levels, the granted feats that follow from them, and refunds. The stat
+    /// bonuses are on <see cref="IPerkStatBonusService"/> and the Force affinity on <see cref="IPerkForceAffinityService"/>. The level and feat reads run per attack and per stat rebuild and allocate nothing.
     /// </summary>
     public interface IPerkService
     {
@@ -50,33 +50,10 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <returns>A list of all perks.</returns>
         Dictionary<PerkType, PerkDetail> GetAllPerks();
 
-        int GetForceAffinity(uint creature);
-
-        bool TryGetForceSideAffinity(uint creature, PerkType perkType, out int sideAffinity);
-
-        float GetForceAffinityMagnitudeMultiplier(uint creature, PerkType perkType);
-
-        int GetForceAffinityHitChanceAdjustment(uint creature, PerkType perkType);
-
-        float GetForceAffinityRestorativeMagnitudeMultiplier(uint creature, PerkType perkType);
-
-        int ApplyForceAffinityMagnitude(uint creature, PerkType perkType, int amount);
-
-        /// <summary>Applies affinity to a heal, shield or regeneration amount, which gains at most +25%.</summary>
-        int ApplyForceAffinityRestorativeMagnitude(uint creature, PerkType perkType, int amount);
-
-        float ApplyForceAffinityMagnitude(uint creature, PerkType perkType, float amount);
-
-        IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat);
-
-        int GetStatBonus(uint creature, StatType stat);
-
-        int GetTargetedStatBonus(
-            uint creature,
-            PerkType targetPerkType,
-            StatType primaryPerkStatType,
-            StatType secondaryPerkStatType,
-            StatType adjustmentStatType);
+        /// <summary>
+        /// Every perk in the order the cache built them, without copying the table.
+        /// </summary>
+        IEnumerable<KeyValuePair<PerkType, PerkDetail>> EnumerateAllPerks();
 
         /// <summary>
         /// Retrieves a list of all active perks, excluding inactive ones, by group.

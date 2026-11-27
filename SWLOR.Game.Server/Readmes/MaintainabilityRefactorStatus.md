@@ -556,6 +556,7 @@ Existing bugs found while locking outputs. They are recorded for the owner and s
 
 | `master` commit | File | Ported to | Pull request |
 |---|---|---|---|
+| `a625154a66` (#3573) | Telegraph wind-up fill and shader state | `Domain/Combat/TelegraphService` owns the fill clock and viewers. The shader slot stores the fill timing in its fourth component. The unit and engine tests use the converted service and enum. | #3376 |
 | #2959 (bank paging) | `Service/Bank.cs` | `Domain/Economy/BankService.cs`, `IBankService.cs`, facade (`db5f1616c`) | #3143 |
 | #3012 (chat commands) | `Service/ChatCommand.cs` | `Domain/Social/ChatCommandService.cs`, `IChatCommandService.cs`, facade (`b8216dd17`) | #3143 |
 | #3032 | `Service/Shuttle.cs` | `Domain/World/ShuttleService.cs` (`6b07cecb9`) | #3143 |

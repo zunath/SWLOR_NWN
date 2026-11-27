@@ -3640,5 +3640,6 @@ namespace SWLOR.Game.Server.Domain.Foundation
         SwtorCabinetDisplayNarrow = 7497,
         SwtorCabinetDisplayWide = 7498,
         SwtorCabinetDisplayStocked = 7499,
+        StatueDarthFomoire = 7500,
     }
 }

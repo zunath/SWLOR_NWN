@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Core
         GuiBindSend,
         TelegraphPlayerUpdate,
         TelegraphUniform,
+        TelegraphFillClock,
         LogWrite,
     }
 }

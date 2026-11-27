@@ -5505,6 +5505,34 @@
           "type": "cexostring",
           "value": "Echani monk waypoint: es_monk_note_15"
         }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_river_up_lower"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_river_up_upper"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_river_down_upper"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_river_down_lower"
+        }
       }
     ]
   }

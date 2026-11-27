@@ -3467,6 +3467,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("hyphae_wood", 1)
                 .FabricatorParameters(frameSizePercent: 26, shellSizePercent: 52, frameQualityPercent: 20, shellQualityPercent: 59, wearRate: 9);
 
+            // Statue of Darth Fomóíre
+            _builder.Create(RecipeType.StatueDarthFomoire, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Statues)
+                .Resref("structure_0937")
+                .Level(50)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_arkoxit", 8)
+                .Component("ref_jasioclase", 5)
+                .Component("hyphae_wood", 5)
+                .FabricatorParameters(frameSizePercent: 28, shellSizePercent: 53, frameQualityPercent: 21, shellQualityPercent: 59, wearRate: 8);
+
             // Fridge, Stainless
             _builder.Create(RecipeType.FridgeStainless, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Electronics)

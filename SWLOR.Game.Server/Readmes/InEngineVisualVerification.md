@@ -58,6 +58,13 @@ Read source JSON in its actual encoding (the module IFO uses a legacy encoding),
 - Log the subject's `GetPosition` and `GetFacing` at capture and compare them with the authored data. The engine moves creatures off blocked coordinates; an adjusted spawn does not verify the requested one. Correct the source and recapture.
 - Capture at least a clear close view and a contextual overview for each moved NPC or object. Keep the native PNGs; contact sheets may resize copies but must link the originals. Do not edit away clipping or obstacles.
 
+## Creature animation batches
+
+- Watch each creature walk, run, attack, fall, and recover at normal speed in the client previews. Check a full stride and the transitions between actions for sliding, snapping, and misplaced limbs.
+- Review forward and backward knockdowns from ground level and from the opposite side. Follow the fall through impact, the held pose, and the first push off the ground. Check where the chest, hips, and supporting limbs meet the terrain. For a snake or worm, follow the underside along the body.
+- Exercise the ordinary knockdown effect, death, and recovery in the client as well as previewing the named animations. Compare the last frame of each transition with the pose the engine holds next. Preserve previously approved actions when fixing a specific state.
+- Play the delivered 60 fps files before handoff and verify their source cadence. For a preview assembled from individually rendered client poses, verify the source animation time of each pose and identify the recording method. Keep the review links and approval count tied to the model revision shown.
+
 ## Equipment and garment captures
 
 Use `GarmentModelRules.md` for the required coverage and acceptance criteria.

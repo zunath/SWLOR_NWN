@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Core
             text.Append($"remove {Rate(FrameMetric.StatusEffectRemove)} {Ms(FrameMetric.StatusEffectRemove)} ms; ");
             text.Append($"stat adjustments {Rate(FrameMetric.StatAdjustment)} {Ms(FrameMetric.StatAdjustment)} ms; ");
             text.Append($"sheet refreshes {Rate(FrameMetric.CharacterSheetRefresh)}, binds {Rate(FrameMetric.GuiBindSend)}; ");
-            text.Append($"telegraph {Rate(FrameMetric.TelegraphPlayerUpdate)} players {Ms(FrameMetric.TelegraphPlayerUpdate)} ms {Rate(FrameMetric.TelegraphUniform)} uniforms; ");
+            text.Append($"telegraph {Rate(FrameMetric.TelegraphPlayerUpdate)} players {Ms(FrameMetric.TelegraphPlayerUpdate)} ms {Rate(FrameMetric.TelegraphUniform)} uniforms {Rate(FrameMetric.TelegraphFillClock)} fill clocks; ");
             text.Append($"log {Rate(FrameMetric.LogWrite)} lines {Ms(FrameMetric.LogWrite)} ms");
             return text.ToString();
         }

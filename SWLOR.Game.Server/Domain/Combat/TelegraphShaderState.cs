@@ -8,7 +8,13 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// </summary>
     public sealed class TelegraphShaderState
     {
-        public int?[] PackedData { get; } = new int?[Domain.Combat.TelegraphService.MaxRenderCount];
-        public Vector3?[] Positions { get; } = new Vector3?[Domain.Combat.TelegraphService.MaxRenderCount];
+        public int?[] PackedData { get; } = new int?[TelegraphService.MaxRenderCount];
+        public Vector4?[] Positions { get; } = new Vector4?[TelegraphService.MaxRenderCount];
+
+        /// <summary>
+        /// The fill clock time until which this viewer has a shape still filling. Until then the fill
+        /// clock uniform keeps being sent to them.
+        /// </summary>
+        public long FillClockActiveUntil { get; set; }
     }
 }

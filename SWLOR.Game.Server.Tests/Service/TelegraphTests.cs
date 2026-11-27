@@ -52,6 +52,108 @@ public class TelegraphTests
         shader.Should().Contain("COLOR_PARTY_MEMBER) return vec3(0.66, 0.66, 0.66); // Gray");
     }
 
+    [Test]
+    public void FillTiming_MatchesTheShaderProtocol()
+    {
+        var shader = File.ReadAllText(ResolveRepositoryPath(
+            "SWLOR_Haks",
+            "sw_shader",
+            "fsfbpostpr.shd"));
+
+        shader.Should().Contain($"const float FILL_CLOCK_PERIOD_MS = {GetTelegraphConstant("FillClockPeriodMilliseconds")}.0;");
+        shader.Should().Contain($"const float FILL_DURATION_UNIT_MS = {GetTelegraphConstant("FillDurationUnitMilliseconds")}.0;");
+        shader.Should().Contain("float fill = GetFillFraction(positionData.w);");
+        shader.Should().Contain("scriptableFloat1 - startMs",
+            "the server sends its fill clock in the first float uniform");
+        shader.Should().NotContain("worldtimerTimeOfDay % ",
+            "each client's world timer runs minutes away from the server's");
+    }
+
+    [TestCase(0, 0f)]
+    [TestCase(1000, 0.25f)]
+    [TestCase(2000, 0.5f)]
+    [TestCase(4000, 1f)]
+    [TestCase(9000, 1f)]
+    public void FillTiming_FillsOverTheWindUp(int elapsedMilliseconds, float expectedFraction)
+    {
+        const long start = 5_000;
+        var packed = InvokePackFillTiming(start, 4000);
+
+        DecodeFillFraction(packed, InvokeFillClockValue(start + elapsedMilliseconds))
+            .Should().BeApproximately(expectedFraction, 0.001f);
+    }
+
+    [Test]
+    public void FillTiming_StaysContinuousWhenTheClockWraps()
+    {
+        var period = GetTelegraphConstant("FillClockPeriodMilliseconds");
+        var start = 9L * period - 1000;
+        var packed = InvokePackFillTiming(start, 4000);
+
+        DecodeFillFraction(packed, InvokeFillClockValue(start + 1000)).Should().BeApproximately(0.25f, 0.001f);
+        DecodeFillFraction(packed, InvokeFillClockValue(start + 3000)).Should().BeApproximately(0.75f, 0.001f);
+    }
+
+    [Test]
+    public void FillTiming_ClockSentBeforeTheStartShowsAnEmptyShape()
+    {
+        const long start = 50_000;
+        var packed = InvokePackFillTiming(start, 2000);
+
+        DecodeFillFraction(packed, InvokeFillClockValue(start - 300)).Should().Be(0f);
+    }
+
+    [Test]
+    public void FillTiming_LongWindUpsFillOverTheirFinalStretch()
+    {
+        const long start = 1_000;
+        var maxFill = GetTelegraphConstant("MaxFillDurationUnits") * GetTelegraphConstant("FillDurationUnitMilliseconds");
+        var packed = InvokePackFillTiming(start, maxFill + 10_000);
+
+        DecodeFillFraction(packed, InvokeFillClockValue(start + 10_000)).Should().Be(0f);
+        DecodeFillFraction(packed, InvokeFillClockValue(start + 10_000 + maxFill / 2)).Should().BeApproximately(0.5f, 0.001f);
+        DecodeFillFraction(packed, InvokeFillClockValue(start + 10_000 + maxFill)).Should().Be(1f);
+    }
+
+    [Test]
+    public void FillTiming_PacksToExactFloatIntegers()
+    {
+        var maxFill = GetTelegraphConstant("MaxFillDurationUnits") * GetTelegraphConstant("FillDurationUnitMilliseconds");
+        var packed = InvokePackFillTiming(GetTelegraphConstant("FillClockPeriodMilliseconds") - 1, maxFill);
+
+        packed.Should().BeLessThan(1 << 24, "floats hold integers exactly only below 2^24");
+        packed.Should().Be(MathF.Floor(packed));
+    }
+
+    [Test]
+    public void ShapesWithoutAWindUp_DoNotFill()
+    {
+        InvokePackFillTiming(12_345, 0).Should().Be(0f);
+        DecodeFillFraction(0f, 500f).Should().Be(-1f);
+    }
+
+    [Test]
+    public void PrecastTelegraphs_FillOverTheirWindUp()
+    {
+        InvokeFillDuration(new TelegraphData { Duration = 2.5f }).Should().Be(2500);
+    }
+
+    [Test]
+    public void ImpactFlashesAndLingeringAreas_DoNotFill()
+    {
+        InvokeFillDuration(new TelegraphData { Duration = 0.5f, IsImpactFlash = true }).Should().Be(0);
+        InvokeFillDuration(new TelegraphData { Duration = 30f, IsPersistentAreaIndicator = true }).Should().Be(0);
+    }
+
+    [Test]
+    public void WindUpsTooLongForTheFillClock_DoNotFill()
+    {
+        // The fill of a very long wind-up would start more than half a clock period ahead, which
+        // the shader cannot tell apart from a fill that already started.
+        InvokeFillDuration(new TelegraphData { Duration = 90f }).Should().Be(90_000);
+        InvokeFillDuration(new TelegraphData { Duration = 100f }).Should().Be(0);
+    }
+
     [TestCase(true, true, true, TelegraphColorType.Self)]
     [TestCase(true, false, false, TelegraphColorType.Self)]
     [TestCase(false, true, true, TelegraphColorType.PartyMember)]
@@ -335,6 +437,57 @@ public class TelegraphTests
         directory.Should().NotBeNull("the repository root must be locatable from the test directory");
 
         return Path.Combine(new[] { directory!.FullName }.Concat(segments).ToArray());
+    }
+
+    /// <summary>
+    /// The shader's GetFillFraction, in single precision as the GPU computes it.
+    /// </summary>
+    private static float DecodeFillFraction(float packedFill, float clock)
+    {
+        float period = GetTelegraphConstant("FillClockPeriodMilliseconds");
+        float unit = GetTelegraphConstant("FillDurationUnitMilliseconds");
+        var units = MathF.Floor(packedFill / period);
+        if (units < 1f)
+            return -1f;
+
+        var start = packedFill - units * period;
+        var x = clock - start + period;
+        var elapsed = x - period * MathF.Floor(x / period);
+        if (elapsed > period * 0.5f)
+            return 0f;
+
+        return Math.Clamp(elapsed / (units * unit), 0f, 1f);
+    }
+
+    private static int GetTelegraphConstant(string name)
+    {
+        return (int)typeof(TelegraphInstance)
+            .GetField(name, BindingFlags.Static | BindingFlags.NonPublic)!
+            .GetRawConstantValue()!;
+    }
+
+    private static float InvokePackFillTiming(long startMilliseconds, int durationMilliseconds)
+    {
+        var method = typeof(TelegraphInstance)
+            .GetMethod("PackFillTiming", BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        return (float)method.Invoke(null, new object[] { startMilliseconds, durationMilliseconds })!;
+    }
+
+    private static float InvokeFillClockValue(long nowMilliseconds)
+    {
+        var method = typeof(TelegraphInstance)
+            .GetMethod("GetFillClockUniformValue", BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        return (float)method.Invoke(null, new object[] { nowMilliseconds })!;
+    }
+
+    private static int InvokeFillDuration(TelegraphData data)
+    {
+        var method = typeof(TelegraphInstance)
+            .GetMethod("GetFillDurationMilliseconds", BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        return (int)method.Invoke(null, new object[] { data })!;
     }
 
     private static int InvokePackTelegraphData(TelegraphType type, float rotation)

@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.JuvenileChirodactyl)
                 .Name("Juvenile Chirodactyl")
                 .Appearance(AppearanceType.WyvernAdult)
-                .AppearanceScale(0.66f)
+                .AppearanceScale(0.44f)
                 .SoundSetId(30)
                 .PortraitId(1298)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)

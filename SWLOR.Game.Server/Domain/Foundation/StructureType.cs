@@ -2908,6 +2908,9 @@ namespace SWLOR.Game.Server.Domain.Foundation
         [Structure("Cabinet, Display (Stocked)", "swd_ward04", "", true, 1)]
         SwtorCabinetDisplayStocked = 936,
 
+        [Structure("Statue of Darth Fomóíre", "pl_fomoire", "", true, 1)]
+        StatueDarthFomoire = 937,
+
         // Buildings start here (5000+)
         [Structure("City Hall - Style 1",
             "city_hall",

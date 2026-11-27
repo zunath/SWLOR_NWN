@@ -43,7 +43,7 @@ public partial class SavedDataItemSweepTests
         PartFields(root, "ArmorPart_RBicep").Should().Be((0, 0));
         PartFields(root, "ArmorPart_Belt").Should().Be((0, 0));
         PartFields(root, "ArmorPart_RFoot").Should().Be((0, 0));
-        PartFields(root, "ArmorPart_LShin").Should().Be((1, 1), "the shin list has no None, so 1 is its bare option");
+        PartFields(root, "ArmorPart_LShin").Should().Be((1, 1), "migration 26 shipped when the shin list had no None, so 1 was its bare option");
         PartFields(root, "ArmorPart_LBicep").Should().Be((17, 17), "bicep 17 still ships");
         PartFields(root, "ArmorPart_Pelvis").Should().Be((34, 34));
         Value(root, "UUID").Should().Be("retired-armor");

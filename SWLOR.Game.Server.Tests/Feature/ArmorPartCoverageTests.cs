@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -101,6 +102,39 @@ public class ArmorPartCoverageTests
 
         Assert.That(gaps, Is.Empty,
             "Refit missing bodies with SWLOR_Haks/tools/GenerateRacialPartVariants.py (ItemAppearanceRules.md).");
+    }
+
+    [Test]
+    public void EveryPlayableBodyOffersNoneOnEveryArmorPart()
+    {
+        // Xisifer: every playable species and gender gets a "None" option (0, the wearer's own body part in its
+        // own colors) on every armor part. None needs no model, so it must survive the editor's availability
+        // filters on every body even when no part model exists. Neck lists are left out: the editor puts None
+        // first on every neck list itself.
+        var races = BodyRaces();
+        var missing = new List<string>();
+        foreach (var type in RacialAppearanceRegistry.GetAppearanceTypes())
+        {
+            Assert.That(ArmorAppearanceCatalog.Definitions.TryGetValue(type, out var definition), Is.True,
+                $"{type} has no armor part catalog");
+            foreach (var gender in "mf")
+            {
+                var body = $"p{gender}{races[(int)type]}0";
+                foreach (var (part, _) in Slots.Where(slot => slot.Part != AppearanceArmor.Neck))
+                {
+                    var styles = ArmorAppearanceCatalog.GetStyles(definition!, part);
+                    var offered = part == AppearanceArmor.Robe
+                        ? RobeAppearance.FilterStyles(styles, _ => string.Empty, _ => false)
+                        : ArmorPartAppearance.FilterOptions(body, part,
+                                styles.Select(style => new GuiComboEntry(style.ToString(), style)), _ => 0, _ => false)
+                            .Select(option => option.Value).ToList();
+                    if (!offered.Contains(0))
+                        missing.Add($"{type} {body} {part}");
+                }
+            }
+        }
+
+        Assert.That(missing, Is.Empty, "Offer 0 (\"None\") on this armor part list (ItemAppearanceRules.md).");
     }
 
     private static Dictionary<(AppearanceArmor Part, int Style), HashSet<char>> SpeciesBodyParts()

@@ -54,9 +54,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
         };
 
         /// <summary>
-        /// Styles 1 and 2 draw the wearer's own body part, exactly like 0, so they add no armor part. A list
-        /// that offers 0 ("None") offers neither; a list without 0 keeps 1 as its bare option and drops 2. Armor
-        /// already on 1 or 2 keeps it and stays editable, because moving it would change how the part takes dyes
+        /// Styles 1 and 2 draw the wearer's own body part, exactly like 0, so they add no armor part. Every list
+        /// offers 0 ("None") and neither 1 nor 2. Armor already on 1 or 2 keeps it and stays editable, because moving it would change how the part takes dyes
         /// (SWLOR dyes the material named by the part number). Shoulders, belts and robes show nothing at 1 or 2
         /// and are repaired to 0 instead.
         /// </summary>
@@ -68,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
 
         /// <summary>
         /// The style whose picture and name the editor shows: a retained bare style shows as the list's own
-        /// bare option ("None" where the list offers 0, otherwise 1), since it looks exactly like it and its own
+        /// bare option ("None"; 1 only on a list without 0), since it shows the same body part and its own
         /// picture shows a model the armor never draws.
         /// </summary>
         public static int DisplayedStyle(BaseArmorAppearanceDefinition definition, AppearanceArmor part, int style) =>

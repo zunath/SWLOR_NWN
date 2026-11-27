@@ -36,6 +36,29 @@ public class AppearancePartNamesTests
     }
 
     [Test]
+    public void AnAstromechPartHasItsOwnNameNotTheClothingNameOfItsNumber()
+    {
+        // Astromech torsos and thighs are barrels and legs, not the shared armor shapes of those numbers.
+        AppearancePartNames.Get("pmh0_chest008", "?").Should().Be(AppearancePartNames.All["chest008"]);
+        foreach (var gender in new[] { "m", "f" })
+        {
+            for (var design = 1; design <= 8; design++)
+            {
+                var dome = AppearancePartNames.Get($"p{gender}r0_head{design:000}", "?");
+                var body = AppearancePartNames.Get($"p{gender}r0_chest{design:000}", "?");
+                var left = AppearancePartNames.Get($"p{gender}r0_legl{design:000}", "?");
+                var right = AppearancePartNames.Get($"p{gender}r0_legr{design:000}", "?");
+
+                dome.Should().EndWith(" Dome");
+                body.Should().EndWith(" Body");
+                left.Should().EndWith(" Leg");
+                right.Should().Be(left);
+                body.Should().NotBe(AppearancePartNames.All[$"chest{design:000}"]);
+            }
+        }
+    }
+
+    [Test]
     public void LeftAndRightPartsShareOneName()
     {
         var key = AppearancePartNames.All.Keys.First(k => k.StartsWith("bicep"));

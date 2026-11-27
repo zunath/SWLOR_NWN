@@ -549,6 +549,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.CircuitParameters(overloadLine: 4, loadBoostPercent: 7, assemblySharePercent: 42)
 				;
 
+			// Starship Enhancement - Cargo I
+			_builder.Create(RecipeType.StarshipEnhancementCargo1, SkillType.Engineering)
+				.Category(RecipeCategoryType.StarshipEnhancement)
+				.Resref("sen_cargo1")
+				.Level(3)
+				.Quantity(1)
+				.Component("ref_tilarium", 2)
+				.Component("ref_veldite", 1)
+				.Component("elec_ruined", 1)
+				.CircuitParameters(overloadLine: 3, loadBoostPercent: 8, assemblySharePercent: 42)
+				;
+
 			// Starship Enhancement - Capacitor I
 			_builder.Create(RecipeType.StarshipEnhancementCapacitor1, SkillType.Engineering)
 				.Category(RecipeCategoryType.StarshipEnhancement)
@@ -1250,6 +1262,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 44)
 				;
 
+			// Starship Enhancement - Cargo II
+			_builder.Create(RecipeType.StarshipEnhancementCargo2, SkillType.Engineering)
+				.Category(RecipeCategoryType.StarshipEnhancement)
+				.Resref("sen_cargo2")
+				.Level(13)
+				.Quantity(1)
+				.Component("ref_currian", 2)
+				.Component("ref_scordspar", 1)
+				.Component("elec_flawed", 1)
+				.CircuitParameters(overloadLine: 4, loadBoostPercent: 9, assemblySharePercent: 43)
+				;
+
 			// Starship Enhancement - Capacitor II
 			_builder.Create(RecipeType.StarshipEnhancementCapacitor2, SkillType.Engineering)
 				.Category(RecipeCategoryType.StarshipEnhancement)
@@ -1913,6 +1937,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_plagionite", 1)
 				.Component("elec_good", 1)
 				.CircuitParameters(overloadLine: 6, loadBoostPercent: 9, assemblySharePercent: 42)
+				;
+
+			// Starship Enhancement - Cargo III
+			_builder.Create(RecipeType.StarshipEnhancementCargo3, SkillType.Engineering)
+				.Category(RecipeCategoryType.StarshipEnhancement)
+				.Resref("sen_cargo3")
+				.Level(23)
+				.Quantity(1)
+				.Component("ref_idailia", 2)
+				.Component("ref_plagionite", 1)
+				.Component("elec_good", 1)
+				.CircuitParameters(overloadLine: 5, loadBoostPercent: 8, assemblySharePercent: 36)
 				;
 
 			// Starship Enhancement - Capacitor III
@@ -2616,6 +2652,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 42)
 				;
 
+			// Starship Enhancement - Cargo IV
+			_builder.Create(RecipeType.StarshipEnhancementCargo4, SkillType.Engineering)
+				.Category(RecipeCategoryType.StarshipEnhancement)
+				.Resref("sen_cargo4")
+				.Level(33)
+				.Quantity(1)
+				.Component("ref_barinium", 2)
+				.Component("ref_keromber", 1)
+				.Component("elec_imperfect", 1)
+				.CircuitParameters(overloadLine: 6, loadBoostPercent: 8, assemblySharePercent: 37)
+				;
+
 			// Starship Enhancement - Capacitor IV
 			_builder.Create(RecipeType.StarshipEnhancementCapacitor4, SkillType.Engineering)
 				.Category(RecipeCategoryType.StarshipEnhancement)
@@ -3279,6 +3327,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_jasioclase", 1)
 				.Component("elec_high", 1)
 				.CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 41)
+				;
+
+			// Starship Enhancement - Cargo V
+			_builder.Create(RecipeType.StarshipEnhancementCargo5, SkillType.Engineering)
+				.Category(RecipeCategoryType.StarshipEnhancement)
+				.Resref("sen_cargo5")
+				.Level(43)
+				.Quantity(1)
+				.Component("ref_gostian", 2)
+				.Component("ref_jasioclase", 1)
+				.Component("elec_high", 1)
+				.CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 45)
 				;
 
 			// Starship Enhancement - Capacitor V

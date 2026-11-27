@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 
@@ -123,7 +124,7 @@ namespace SWLOR.Game.Server.Service
                         GetIsDM(player) ||
                         GetIsDead(player) ||
                         GetCurrentHitPoints(player) <= 0 ||
-                        GetDistanceBetween(player, npc) > 40.0f ||
+                        GetDistanceBetween(player, npc) > ShipKillXpRules.GetRange(Space.IsPlayerInSpaceMode(player)) ||
                         GetArea(player) != GetArea(npc))
                         continue;
 
@@ -137,6 +138,9 @@ namespace SWLOR.Game.Server.Service
                         .ToDictionary(x => x.Key, y => y.Value);
 
                     var areaBonus = GetLocalInt(GetArea(npc), "AREA_XP_BONUS_PERCENTAGE") * 0.01f;
+
+                    // Hunting Grounds adds points to the skill XP bonus of these awards, and no other XP.
+                    var huntingGroundsPoints = EdictEffects.GetHuntingGroundsPoints(dbPlayer, GetArea(player));
 
                     foreach (CombatPointCategoryType cpCategory in Enum.GetValues(typeof(CombatPointCategoryType)))
                     {
@@ -171,21 +175,24 @@ namespace SWLOR.Game.Server.Service
                                 var adjXP = baseXP * (cp / totalCatCP);
                                 adjXP += adjXP * areaBonus;
                                 Skill.GiveSkillXP(player, skillType, (int)adjXP,
-                                    xpMessageSource: skillType == SkillType.Mimicry ? npc : OBJECT_INVALID);
+                                    xpMessageSource: skillType == SkillType.Mimicry ? npc : OBJECT_INVALID,
+                                    extraBonusPoints: huntingGroundsPoints);
                             }
                         }
                         else
                         {
                             // Skills that are exempt from CP sharing; XP gain is calculated directly on a rank vs NPC level basis
                             // As long as the player is on the ground, we always try to give them Armor XP
-                            if (!Space.IsPlayerInSpaceMode(player)) validSkills.Add(SkillType.Armor, dbPlayer.Skills[SkillType.Armor]);
+                            // (Chassis XP for an astromech, whose Chassis rank stands in for Armor).
+                            var defenseSkill = SkillBodyFrames.GetDefenseSkill(dbPlayer.BodyFrame);
+                            if (!Space.IsPlayerInSpaceMode(player)) validSkills.Add(defenseSkill, dbPlayer.Skills[defenseSkill]);
                             if (!validSkills.Any()) continue;
 
                             foreach (var (skillType, ps) in validSkills)
                             {
                                 float adjXP = Skill.GetDeltaXP(npcLevel - ps.Rank);
                                 adjXP += adjXP * areaBonus;
-                                Skill.GiveSkillXP(player, skillType, (int)adjXP);
+                                Skill.GiveSkillXP(player, skillType, (int)adjXP, extraBonusPoints: huntingGroundsPoints);
                             }
                         }
                     }
@@ -245,6 +252,10 @@ namespace SWLOR.Game.Server.Service
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (GetIsPC(creature) || GetIsDM(creature)) return;
+
+            // An astromech's tools act as a staff and a rifle; the points they earn belong to Armaments, so the
+            // XP that follows is weighed against the rank the astromech actually trains.
+            skill = SkillBodyFrames.GetTrainedSkill(skill, Race.GetBodyFrame(player));
 
             var tracker = _creatureCombatPointTracker.ContainsKey(creature) ?
                 _creatureCombatPointTracker[creature] :

@@ -191,6 +191,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="ignoreBonuses">If true, bonuses from food and other sources will NOT be applied.</param>
         /// <param name="applyHenchmanPenalty">If true, a penalty will apply if the player has a henchman active (droid, pet, etc.)</param>
         /// <param name="xpMessageSource">Combines XP feedback for the same player, skill, and source until the next frame.</param>
+        /// <param name="extraBonusPoints">Points added to the bonus Social, status effects, and DM bonuses make (10 is +10%) for this
+        /// award only, such as Hunting Grounds on XP from defeating enemies. Ignored when <paramref name="ignoreBonuses"/> is true.</param>
         /// <returns>
         /// The XP the award used: XP debt repaid plus XP applied to the skill, after bonuses and penalties.
         /// XP discarded at a max rank or rank limit, or blocked by the skill cap, is not counted.
@@ -201,7 +203,8 @@ namespace SWLOR.Game.Server.Service
             int xp,
             bool ignoreBonuses = false,
             bool applyHenchmanPenalty = true,
-            uint xpMessageSource = OBJECT_INVALID)
+            uint xpMessageSource = OBJECT_INVALID,
+            int extraBonusPoints = 0)
         {
             if (skill == SkillType.Invalid ||
                 xp <= 0 ||
@@ -215,7 +218,14 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
+            // XP earned with a tool that follows another skill's weapon rules trains the skill of the body frame.
+            skill = SkillBodyFrames.GetTrainedSkill(skill, dbPlayer.BodyFrame);
             var details = GetSkillDetails(skill);
+
+            // A skill closed to the body frame of the character never gains rank, whatever awarded the XP.
+            if (!SkillBodyFrames.IsOpenTo(skill, dbPlayer.BodyFrame))
+                return 0;
+
             var pcSkill = dbPlayer.Skills[skill];
             var requiredXP = GetRequiredXP(pcSkill.Rank);
             var receivedRankUp = false;
@@ -234,6 +244,9 @@ namespace SWLOR.Game.Server.Service
 
                 // DM bonus
                 bonusPercentage += dbPlayer.DMXPBonus * 0.01f;
+
+                // Points from the caller, such as the player's city's Hunting Grounds.
+                bonusPercentage += extraBonusPoints / 100f;
 
                 // Apply bonuses
                 xp += (int)(xp * bonusPercentage);

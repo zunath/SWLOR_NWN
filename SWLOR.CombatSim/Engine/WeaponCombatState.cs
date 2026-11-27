@@ -47,7 +47,8 @@ public sealed partial class WeaponCombatState
         {
             "Flow" => new FlowStanceStatusEffect(), "Bruiser" => new BruiserStanceStatusEffect(),
             "Berserker" => new BerserkerStanceStatusEffect(), "Scrapper" => new ScrapperStanceStatusEffect(),
-            "Crusher" => new CrusherStanceStatusEffect(), _ => null
+            // Aggression Routine is the astromech copy of Crusher Stance and applies the same status effect.
+            "Crusher" or "AggressionRoutine" => new CrusherStanceStatusEffect(), _ => null
         };
         if (stance is BerserkerStanceStatusEffect)
             typeof(BerserkerStanceStatusEffect).GetMethod("Apply", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(stance, new object[] { 0u, 0 });

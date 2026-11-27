@@ -30,11 +30,13 @@ namespace SWLOR.Game.Server.Service.HostedEventService
         public const string AtAnotherEvent = "You are at another event. Leave it first with /leaveevent.";
         public const string DeadCannotJoin = "You cannot travel to an event while dead.";
         public const string SpaceCannotJoin = "Land your ship before traveling to an event.";
+        public const string CrewStationCannotJoin = "Leave your station before traveling to an event.";
         public const string CombatCannotJoin = "You cannot travel to an event during combat.";
         public const string OutOfCharacterCannotJoin = "You cannot travel to an event from here.";
         public const string NotAtEvent = "You have not joined an event. Use /events to find one.";
         public const string DeadCannotLeave = "You cannot leave the event while dead.";
         public const string SpaceCannotLeave = "Land your ship before leaving the event.";
+        public const string CrewStationCannotLeave = "Leave your station before leaving the event.";
         public const string CombatCannotLeave = "You cannot leave the event during combat.";
 
         /// <summary>
@@ -60,6 +62,8 @@ namespace SWLOR.Game.Server.Service.HostedEventService
                 return DeadCannotJoin;
             if (state.IsInSpace)
                 return SpaceCannotJoin;
+            if (state.IsAtCrewStation)
+                return CrewStationCannotJoin;
             if (state.IsInCombat)
                 return CombatCannotJoin;
             if (state.IsInOutOfCharacterArea)
@@ -82,6 +86,8 @@ namespace SWLOR.Game.Server.Service.HostedEventService
                 return DeadCannotLeave;
             if (state.IsInSpace)
                 return SpaceCannotLeave;
+            if (state.IsAtCrewStation)
+                return CrewStationCannotLeave;
             if (state.IsInCombat && !ignoreCombat)
                 return CombatCannotLeave;
 

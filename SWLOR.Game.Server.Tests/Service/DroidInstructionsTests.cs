@@ -79,7 +79,8 @@ public class DroidInstructionsTests
         var actions = new DefaultAIProfileDefinition().BuildProfiles()[AIProfileType.DroidCompanion]
             .Actions.Where(action => action.Type == AIActionType.Ability).Select(action => action.Feat).ToHashSet();
 
-        foreach (var (perk, detail) in Perk.GetAllPerks())
+        // Droid protocols (PerkGroupType.Droid) work at a ship's post, not as abilities (DroidIndustryTests).
+        foreach (var (perk, detail) in Perk.GetAllPerks().Where(entry => entry.Value.GroupType != PerkGroupType.Droid))
         foreach (var (rank, level) in detail.PerkLevels.Where(entry => entry.Value.DroidAISlots > 0))
         {
             var context = $"{perk} rank {rank}";
@@ -146,7 +147,7 @@ public class DroidInstructionsTests
     {
         Ability.CacheData();
         var abilities = Ability.GetAllAbilityDetails();
-        foreach (var (perk, detail) in Perk.GetAllPerks())
+        foreach (var (perk, detail) in Perk.GetAllPerks().Where(entry => entry.Value.GroupType != PerkGroupType.Droid))
         foreach (var (rank, level) in detail.PerkLevels)
         {
             var restrictedSkill = level.Requirements.OfType<PerkRequirementSkill>()

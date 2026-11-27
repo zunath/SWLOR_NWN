@@ -77,7 +77,8 @@ public sealed class CircuitParameterProfile : RecipeParameterProfile<CircuitPara
         RecipeCategoryType.DroidComponent => (DroidPartBoostPercent, 50),
         RecipeCategoryType.Breastplate => (DroidPartBoostPercent, 55),
         RecipeCategoryType.Helmet or RecipeCategoryType.Cloak or RecipeCategoryType.Belt or RecipeCategoryType.Bracer or
-            RecipeCategoryType.Legging or RecipeCategoryType.Glove or RecipeCategoryType.Necklace or RecipeCategoryType.Ring =>
+            RecipeCategoryType.Legging or RecipeCategoryType.Glove or RecipeCategoryType.Necklace or RecipeCategoryType.Ring or
+            RecipeCategoryType.AstromechModule =>
             (DroidPartBoostPercent, 50),
 
         RecipeCategoryType.ArmorEnhancement or RecipeCategoryType.WeaponEnhancement or

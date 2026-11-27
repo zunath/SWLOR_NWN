@@ -182,4 +182,76 @@ public class RecipeFolderUpdaterTests
 
         Assert.That(update.Problems, Has.Some.Contain("RecipeType.NotARealRecipe"));
     }
+
+    private const string CatalogLoop = @"using System.Collections.Generic;
+
+namespace Fixture
+{
+    public class Catalog : IRecipeListDefinition
+    {
+        private readonly RecipeBuilder _builder = new();
+
+        public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
+        {
+            foreach (var row in GeneratedCatalog.Rows)
+            {
+                var recipe = _builder.Create(row.RecipeType, SkillType.Smithery)
+                    .Level(row.Level)
+                    .MinigameParameters(RecipeParameterTable.For(row.RecipeType));
+            }
+
+            return _builder.Build();
+        }
+    }
+}
+";
+
+    private const string Table = @"namespace Fixture
+{
+    public static class RecipeParameterTable
+    {
+        private static readonly Dictionary<RecipeType, RecipeMinigameParameters> _parameters = new()
+        {
+            [RecipeType.CombatTunic] = new OtherParameters(size: 3),
+            [RecipeType.SpiritmasterTunic] = new TestForgeParameters(center: 1),
+        };
+    }
+}
+";
+
+    [Test]
+    public void Update_WritesALoopOverAGeneratedCatalogIntoTheParameterTable_AndKeepsOtherProfilesEntries()
+    {
+        WriteFixture("Catalog.cs", Crlf(CatalogLoop), false);
+        var tablePath = WriteFixture(RecipeParameterTableFile.FileName, Crlf(Table), true);
+        var profile = new TestForgeProfile(SkillType.Smithery, false);
+        var registry = Registry();
+        var expected = RecipeFolderUpdater.FormatArguments(
+            profile,
+            RecipeParameterGenerator.Generate(profile, RecipeParameterContext.From(RecipeType.AdventTunic, registry[RecipeType.AdventTunic])).Values);
+
+        var update = RecipeFolderUpdater.Update(_folder, profile, registry, true);
+
+        var bytes = File.ReadAllBytes(tablePath);
+        var text = System.Text.Encoding.UTF8.GetString(bytes, 3, bytes.Length - 3);
+        Assert.That(update.Problems, Is.Empty);
+        Assert.That(update.ChangedFiles, Is.EqualTo(new[] { RecipeParameterTableFile.FileName }), "the catalog loop itself is left alone");
+        Assert.That(bytes.Take(3), Is.EqualTo(Bom));
+        Assert.That(text, Does.Contain($"            [RecipeType.AdventTunic] = new TestForgeParameters({expected}),\r\n"));
+        Assert.That(text, Does.Contain("[RecipeType.CombatTunic] = new OtherParameters(size: 3),"), "another profile's entry stays");
+        Assert.That(text, Does.Not.Contain("SpiritmasterTunic"), "a recipe this profile no longer covers leaves the table");
+
+        var second = RecipeFolderUpdater.Update(_folder, profile, registry, true);
+        Assert.That(second.ChangedFiles, Is.Empty, "a second run changes nothing");
+    }
+
+    [Test]
+    public void Update_ATableDrivenLoopWithoutATable_IsStillReportedAsMissing()
+    {
+        WriteFixture("Catalog.cs", Lf(CatalogLoop), false);
+
+        var update = RecipeFolderUpdater.Update(_folder, new TestForgeProfile(SkillType.Smithery, false), Registry(), false);
+
+        Assert.That(update.Problems, Has.Some.Contain("AdventTunic"));
+    }
 }

@@ -359,9 +359,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             });
                             col2.AddRow(row2 =>
                             {
-                                // Keeps the resistance rows aligned with the two other columns.
                                 row2.AddLabel()
-                                    .SetText(string.Empty);
+                                    .BindText(model => model.Industry);
                             });
                             col2.AddRow(row2 =>
                             {

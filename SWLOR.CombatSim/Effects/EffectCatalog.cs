@@ -93,7 +93,13 @@ namespace SWLOR.CombatSim.Effects
             [FeatType.BloodFrenzyBurst] = SelfStatus(typeof(BloodFrenzyStatusEffect), CapstoneAbility.ActiveDurationSeconds)
         };
 
-        public static bool TryGet(FeatType feat, out AbilityEffect effect) => Effects.TryGetValue(feat, out effect);
+        /// <summary>
+        /// The effect model of an ability. An astromech ability is a number-for-number copy of a humanoid one and
+        /// applies the same status effect, so it uses the model, and the stacking key, of the ability it copies.
+        /// </summary>
+        public static bool TryGet(FeatType feat, out AbilityEffect effect) =>
+            Effects.TryGetValue(feat, out effect) ||
+            SWLOR.CombatSim.Data.AstromechMirrors.TryGetSource(feat, out var source) && Effects.TryGetValue(source, out effect);
 
         private static AbilityEffect Benevolence(float percent, HealAmount heal) => new()
         {

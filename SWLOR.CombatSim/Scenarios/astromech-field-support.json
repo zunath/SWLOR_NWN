@@ -1,0 +1,197 @@
+{
+  "name": "Astromech: field support against a First Aid medic",
+  "description": "Two pairs of a heavy-blade fighter and a healer, with the fighters and healers of Scenarios/defensive-duel.json. One healer is an astromech on Utility Systems (Field Repair, Damper Field, Maintenance Routine, Nanite Cloud); the other is a medic on the First Aid abilities those copy (Med Kit, Pain Suppressant, Infusion, Kolto Mist). The pairs should be even over many seeds.",
+  "durationSeconds": 900,
+  "isPvp": true,
+  "teams": [
+    {
+      "name": "Astromech support",
+      "members": [
+        {
+          "name": "Blade with the astromech",
+          "maxHp": 811,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 16,
+          "might": 27,
+          "social": 10,
+          "maxFp": 103,
+          "fpRegenPer30Seconds": 17,
+          "maxStm": 78,
+          "stmRegenPer30Seconds": 20,
+          "perks": [
+            "DefensiveHarmony"
+          ],
+          "autoAttack": {
+            "attacksPerSecond": 0.23,
+            "damage": {
+              "min": 40,
+              "max": 80,
+              "hitChance": 0.29,
+              "critChance": 0.1
+            }
+          },
+          "abilities": [
+            {
+              "feat": "RendingStrike1",
+              "target": "Enemy",
+              "damage": {
+                "min": 60,
+                "max": 100,
+                "hitChance": 0.3
+              }
+            },
+            {
+              "feat": "ShatteringStrike2",
+              "target": "Enemy",
+              "damage": {
+                "min": 50,
+                "max": 90,
+                "hitChance": 0.5
+              }
+            }
+          ]
+        },
+        {
+          "name": "Astromech",
+          "maxHp": 805,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 20,
+          "might": 20,
+          "social": 10,
+          "outgoingHealingPercent": 10,
+          "damageReductionPercent": 11,
+          "maxFp": 55,
+          "fpRegenPer30Seconds": 8,
+          "maxStm": 76,
+          "stmRegenPer30Seconds": 23,
+          "autoAttack": {
+            "attacksPerSecond": 0.35,
+            "damage": {
+              "min": 9,
+              "max": 19,
+              "hitChance": 0.29
+            }
+          },
+          "abilities": [
+            {
+              "feat": "FieldRepair4",
+              "target": "LowestAlly",
+              "belowHpPercent": 75
+            },
+            {
+              "feat": "DamperField2",
+              "target": "LowestAlly",
+              "belowHpPercent": 60
+            },
+            {
+              "feat": "MaintenanceRoutine2",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 90
+            },
+            {
+              "feat": "NaniteCloud2",
+              "target": "Self",
+              "belowHpPercent": 85
+            }
+          ],
+          "bodyFrame": "Astromech"
+        }
+      ]
+    },
+    {
+      "name": "Medic support",
+      "members": [
+        {
+          "name": "Blade with the medic",
+          "maxHp": 811,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 16,
+          "might": 27,
+          "social": 10,
+          "maxFp": 103,
+          "fpRegenPer30Seconds": 17,
+          "maxStm": 78,
+          "stmRegenPer30Seconds": 20,
+          "perks": [
+            "DefensiveHarmony"
+          ],
+          "autoAttack": {
+            "attacksPerSecond": 0.23,
+            "damage": {
+              "min": 40,
+              "max": 80,
+              "hitChance": 0.29,
+              "critChance": 0.1
+            }
+          },
+          "abilities": [
+            {
+              "feat": "RendingStrike1",
+              "target": "Enemy",
+              "damage": {
+                "min": 60,
+                "max": 100,
+                "hitChance": 0.3
+              }
+            },
+            {
+              "feat": "ShatteringStrike2",
+              "target": "Enemy",
+              "damage": {
+                "min": 50,
+                "max": 90,
+                "hitChance": 0.5
+              }
+            }
+          ]
+        },
+        {
+          "name": "Medic",
+          "maxHp": 805,
+          "hpRegenPer30Seconds": 26,
+          "willpower": 20,
+          "might": 20,
+          "social": 10,
+          "outgoingHealingPercent": 10,
+          "damageReductionPercent": 11,
+          "maxFp": 55,
+          "fpRegenPer30Seconds": 8,
+          "maxStm": 76,
+          "stmRegenPer30Seconds": 23,
+          "autoAttack": {
+            "attacksPerSecond": 0.35,
+            "damage": {
+              "min": 9,
+              "max": 19,
+              "hitChance": 0.29
+            }
+          },
+          "abilities": [
+            {
+              "feat": "MedKit4",
+              "target": "LowestAlly",
+              "belowHpPercent": 75
+            },
+            {
+              "feat": "PainSuppressant2",
+              "target": "LowestAlly",
+              "belowHpPercent": 60
+            },
+            {
+              "feat": "Infusion2",
+              "target": "LowestAlly",
+              "keepUp": true,
+              "belowHpPercent": 90
+            },
+            {
+              "feat": "KoltoMist2",
+              "target": "Self",
+              "belowHpPercent": 85
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

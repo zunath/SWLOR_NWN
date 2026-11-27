@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
@@ -32,6 +33,10 @@ namespace SWLOR.Game.Server.Service
         public const int MinimumPostingFee = 100;
         public const int MinRewardCredits = 1;
         public const int MaxItemSearchResults = 50;
+
+        /// <summary>Shown when a contract asks for an item the space update retired.</summary>
+        public const string RetiredObjectiveMessage =
+            "Retired ship deeds and modules, including configuration modules, cannot be contract objectives. Ask for their current versions instead.";
 
         private const string DeliveriesWaitingMessage = "Contract deliveries are waiting for you. Visit any Contract Board to claim your items and credits.";
 
@@ -103,6 +108,48 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.QuestContract, $"Pruned {prunedCount} quest contract history record(s) and {orphanedCount} orphaned empty delivery record(s).", true);
         }
 
+        /// <summary>
+        /// Rebuilds the runtime quest of every registered published contract from its saved record. A server migration
+        /// that changes saved contracts after <see cref="RegisterContracts"/> ran at boot calls it, so the change applies
+        /// at once instead of after the next restart.
+        /// </summary>
+        public static void RefreshRegisteredContracts()
+        {
+            foreach (var contract in GetPublishedContracts())
+            {
+                if (Quest.GetQuestByIdOrDefault(QuestContractFactory.BuildQuestId(contract.Id)) != null)
+                    Quest.RegisterRuntimeQuest(QuestContractFactory.BuildQuest(contract));
+            }
+        }
+
+        /// <summary>
+        /// Grants what the space revamp's migration owes with a contract item the player just received: the credits for
+        /// the configuration modules taken out of it and the Hull Designs its deed keeps
+        /// (<see cref="QuestContractItem.RetiredSpaceCredits"/>, <see cref="QuestContractItem.HullDesigns"/>). The credits
+        /// go on the character with the item, so the claim's checkpoint covers both.
+        /// </summary>
+        private static void GrantCarriedEntitlements(uint player, QuestContractItem item)
+        {
+            if (item.RetiredSpaceCredits > 0)
+            {
+                GiveGoldToCreature(player, item.RetiredSpaceCredits);
+                SendMessageToPC(player, "Configuration modules were retired, since ship roles are now built into each hull. " +
+                    $"You received {item.RetiredSpaceCredits} credits for the ones in {item.Name}.");
+            }
+
+            if (item.HullDesigns is not { Count: > 0 })
+                return;
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (dbPlayer == null)
+                return;
+            dbPlayer.UnlockedHullDesigns ??= new Dictionary<string, DateTime>();
+            var unlocked = false;
+            foreach (var design in item.HullDesigns)
+                unlocked |= dbPlayer.UnlockedHullDesigns.TryAdd(design, DateTime.UtcNow);
+            if (unlocked)
+                DB.Set(dbPlayer);
+        }
+
         private static List<QuestContract> GetPublishedContracts()
         {
             var query = new DBQuery<QuestContract>()
@@ -133,9 +180,10 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the player's existing Draft contract, or null if they don't have one. This is a
-        /// read-only lookup: it never creates or persists a draft, so opening the editor to look around
-        /// does not leave an empty draft cluttering the player's contract list.
+        /// Retrieves the player's existing Draft contract, or null if they don't have one. This lookup
+        /// never creates a draft, so opening the editor to look around does not leave an empty draft
+        /// cluttering the player's contract list. It only writes to finish a reward removal a restart
+        /// interrupted (<see cref="SettleRewardRemovals"/>).
         /// </summary>
         public static QuestContract GetDraft(uint player)
         {
@@ -144,7 +192,45 @@ namespace SWLOR.Game.Server.Service
                 .AddFieldSearch(nameof(QuestContract.AuthorPlayerId), playerId, false)
                 .AddFieldSearch(nameof(QuestContract.Status), (int)QuestContractStatus.Draft);
 
-            return DB.Search(query).FirstOrDefault();
+            var draft = DB.Search(query).FirstOrDefault();
+            SettleRewardRemovals(draft);
+            return draft;
+        }
+
+        /// <summary>
+        /// Finishes every reward removal a restart left marked on the draft (<see cref="QuestContractItem.RemovalId"/>): the
+        /// delivery gets the item unless it already holds that removal, and the draft lets it go. Runs before the draft or
+        /// the author's deliveries are used, so the reward is never claimable from both.
+        /// </summary>
+        private static void SettleRewardRemovals(QuestContract draft)
+        {
+            if (draft == null)
+                return;
+
+            foreach (var item in draft.RewardItems.Where(x => !string.IsNullOrWhiteSpace(x.RemovalId)).ToList())
+            {
+                var delivery = FinishRewardRemoval(draft, item);
+                Log.Write(LogGroup.QuestContract, $"Finished the removal of reward item '{item.Name}' from contract draft '{draft.Id}' into delivery '{delivery.Id}' after a restart.");
+            }
+        }
+
+        /// <summary>
+        /// Moves a reward whose removal is marked on the draft into the author's pending delivery once, then saves the draft
+        /// without it. Safe to repeat: a delivery that already holds the removal is not given the item again.
+        /// </summary>
+        private static QuestContractDelivery FinishRewardRemoval(QuestContract draft, QuestContractItem rewardItem)
+        {
+            // Claimed at once (RemoveRewardItem) or before any claim (ClaimDeliveries settles first), so the author is not told a delivery is waiting.
+            var delivery = GetOrCreatePendingDelivery(draft.AuthorPlayerId, draft.Id, draft.Title, false);
+            if (!delivery.Items.Any(x => string.Equals(x.RemovalId, rewardItem.RemovalId, StringComparison.Ordinal)))
+            {
+                delivery.Items.Add(rewardItem);
+                DB.Set(delivery);
+            }
+
+            draft.RewardItems.Remove(rewardItem);
+            DB.Set(draft);
+            return delivery;
         }
 
         /// <summary>
@@ -220,7 +306,9 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Removes an escrowed reward item from the player's Draft contract by its index in
-        /// <see cref="QuestContract.RewardItems"/> and returns it to their inventory.
+        /// <see cref="QuestContract.RewardItems"/> and returns it to their inventory. The item moves to a pending delivery
+        /// first and is claimed through the delivery's character checkpoint, so a restart before the character file is
+        /// saved leaves the item (and the credits a migrated item carries) owed in the delivery rather than lost.
         /// </summary>
         /// <returns>An empty string on success, otherwise an error message to show the player.</returns>
         public static string RemoveRewardItem(uint player, int index)
@@ -232,20 +320,20 @@ namespace SWLOR.Game.Server.Service
 
             var rewardItem = draft.RewardItems[index];
             var deserialized = ObjectPlugin.Deserialize(rewardItem.Data);
-
-            if (!GetIsObjectValid(deserialized) || !Item.FitsInInventory(player, deserialized) ||
-                !ObjectPlugin.AcquireItem(player, deserialized))
-            {
-                if (GetIsObjectValid(deserialized))
-                    DestroyObject(deserialized);
-
+            var fits = GetIsObjectValid(deserialized) && Item.FitsInInventory(player, deserialized);
+            if (GetIsObjectValid(deserialized))
+                DestroyObject(deserialized);
+            if (!fits)
                 return "The item could not be returned to your inventory. Make room and try again.";
-            }
 
-            draft.RewardItems.RemoveAt(index);
+            // The removal is marked on the draft first, so a restart between the delivery and the draft finishes the move
+            // once (SettleRewardRemovals) instead of leaving the reward in both.
+            rewardItem.RemovalId = Guid.NewGuid().ToString();
             DB.Set(draft);
+            var delivery = FinishRewardRemoval(draft, rewardItem);
 
-            Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{draft.AuthorPlayerId}] removed reward item '{rewardItem.Name}' from contract draft '{draft.Id}'.");
+            Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{draft.AuthorPlayerId}] removed reward item '{rewardItem.Name}' from contract draft '{draft.Id}' into delivery '{delivery.Id}'.");
+            ClaimDeliveriesFrom(player, () => SaveCharacterOrThrow(player), delivery.Id);
 
             return string.Empty;
         }
@@ -457,6 +545,50 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Whether an item cannot be a contract objective because the space update retired it: a retired ship deed or
+        /// module (converted to its replacement wherever it is stored) or a configuration module (refunded and destroyed).
+        /// Nobody can hold one, so a contract asking for one could never be completed.
+        /// </summary>
+        public static bool IsRetiredObjectiveItem(string resref) => LegacySpaceItemCatalog.IsLegacySpaceItem(resref);
+
+        /// <summary>
+        /// Withdraws a published contract that can no longer be completed, the way a cancellation does, and leaves it free
+        /// to Post Again: the escrowed reward and the posting fee go back to the author in a delivery (<see cref="QuestContractRetirement"/>), held
+        /// submissions return to their submitters, and the quest leaves accepted players' journals. Does nothing to a
+        /// contract that is not published, so a rerun changes nothing.
+        /// </summary>
+        /// <param name="reason">Saved as the takedown reason.</param>
+        /// <param name="playerReason">Shown to accepted players: "The contract 'X' has been {playerReason}."</param>
+        /// <param name="authorNotice">Shown to the author at their next login, after the contract's title.</param>
+        public static void RetireContract(string contractId, string reason, string playerReason, string authorNotice)
+        {
+            var contract = DB.Get<QuestContract>(contractId);
+            if (contract == null || contract.Status != QuestContractStatus.Published)
+                return;
+
+            var refundSaved = DB.Get<QuestContractDelivery>(QuestContractRetirement.RefundDeliveryId(contract.Id)) != null;
+            var refund = QuestContractRetirement.Retire(contract, refundSaved, CalculatePostingFee(contract.RewardCredits), reason, DateTime.UtcNow);
+            if (refund != null)
+            {
+                DB.Set(refund);
+                var author = DB.Get<Player>(contract.AuthorPlayerId);
+                if (author != null)
+                {
+                    author.UpgradeNotices ??= new List<string>();
+                    author.UpgradeNotices.Add($"Your contract '{contract.Title}' {authorNotice} Its reward and posting fee are waiting for you at any Contract Board, and you can use Post Again to repost it with a new objective.");
+                    DB.Set(author);
+                }
+            }
+
+            DB.Set(contract);
+            ReleaseSubmissions(contract.Id);
+            Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
+            VoidActiveContractQuests(contract, playerReason);
+
+            Log.Write(LogGroup.QuestContract, $"Contract '{contract.Id}' ('{contract.Title}') was withdrawn: {reason}", true);
+        }
+
+        /// <summary>
         /// Removes a voided contract's quest from every online player who had accepted it: clears it
         /// from their quest list, removes the journal entry, refreshes their quest UI, and notifies
         /// them of the reason. Offline players are cleaned up by <see cref="Quest.LoadPlayerQuests"/>
@@ -515,12 +647,15 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void ClaimDeliveries(uint player)
         {
-            ClaimDeliveries(player, () =>
-            {
-                var client = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetClientObjectByObjectId(player);
-                if (client == null || client.SaveServerCharacter() == 0)
-                    throw new InvalidOperationException("The contract claim character checkpoint could not be saved.");
-            });
+            ClaimDeliveries(player, () => SaveCharacterOrThrow(player));
+        }
+
+        /// <summary>Saves the player's character file for a contract claim, throwing when it could not be saved.</summary>
+        private static void SaveCharacterOrThrow(uint player)
+        {
+            var client = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetClientObjectByObjectId(player);
+            if (client == null || client.SaveServerCharacter() == 0)
+                throw new InvalidOperationException("The contract claim character checkpoint could not be saved.");
         }
 
         /// <summary>
@@ -529,10 +664,24 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void ClaimDeliveries(uint player, Action saveCharacter)
         {
+            ClaimDeliveriesFrom(player, saveCharacter, null);
+        }
+
+        /// <summary>
+        /// Claims the player's pending deliveries, or only <paramref name="onlyDeliveryId"/>. Each claim's checkpoint is a
+        /// persistent character-file local (the BIC export keeps those, not ordinary locals), saved with the awards it
+        /// records, so a restart after the character save and before the delivery is reduced never pays it twice.
+        /// </summary>
+        private static void ClaimDeliveriesFrom(uint player, Action saveCharacter, string onlyDeliveryId)
+        {
+            // A reward removal a restart interrupted is finished first, so its reward is claimable from the delivery only.
+            GetDraft(player);
             var playerId = GetObjectUUID(player);
             var query = new DBQuery<QuestContractDelivery>()
                 .AddFieldSearch(nameof(QuestContractDelivery.PlayerId), playerId, false);
-            var deliveries = ReadDeliveries(query).Where(IsClaimable).ToList();
+            var deliveries = ReadDeliveries(query)
+                .Where(x => IsClaimable(x) && (onlyDeliveryId == null || x.Id == onlyDeliveryId))
+                .ToList();
             if (deliveries.Count == 0)
             {
                 SendMessageToPC(player, "You have no pending contract deliveries.");
@@ -548,15 +697,18 @@ namespace SWLOR.Game.Server.Service
                 try
                 {
                     var remaining = QuestContractClaim.Claim(delivery,
-                        () => JsonConvert.DeserializeObject<QuestContractClaim>(GetLocalString(player, checkpointName)),
-                        checkpoint => SetLocalString(player, checkpointName, JsonConvert.SerializeObject(checkpoint)),
+                        () => JsonConvert.DeserializeObject<QuestContractClaim>(ObjectPlugin.GetString(player, checkpointName)),
+                        checkpoint => ObjectPlugin.SetString(player, checkpointName, JsonConvert.SerializeObject(checkpoint), true),
                         itemData =>
                         {
                             var item = ObjectPlugin.Deserialize(itemData.Data);
                             if (!GetIsObjectValid(item))
                                 return false;
                             if (Item.FitsInInventory(player, item) && ObjectPlugin.AcquireItem(player, item))
+                            {
+                                GrantCarriedEntitlements(player, itemData);
                                 return true;
+                            }
                             inventoryFull = true;
                             DestroyObject(item);
                             return false;
@@ -569,7 +721,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         if (!remaining.IsRewardPayment || DB.Get<QuestContract>(remaining.SourceContractId) == null)
                             DB.Delete<QuestContractDelivery>(remaining.Id);
-                        DeleteLocalString(player, checkpointName);
+                        ObjectPlugin.DeleteString(player, checkpointName);
                     }
                 }
                 catch (Exception ex)
@@ -595,7 +747,7 @@ namespace SWLOR.Game.Server.Service
         /// it doesn't exist yet. Refunds accumulate separately from held objective submissions and
         /// retained reward-payment receipts.
         /// </summary>
-        public static QuestContractDelivery GetOrCreatePendingDelivery(string playerId, string contractId, string contractTitle)
+        public static QuestContractDelivery GetOrCreatePendingDelivery(string playerId, string contractId, string contractTitle, bool notify = true)
         {
             var query = new DBQuery<QuestContractDelivery>()
                 .AddFieldSearch(nameof(QuestContractDelivery.PlayerId), playerId, false)
@@ -613,7 +765,8 @@ namespace SWLOR.Game.Server.Service
             };
 
             DB.Set(delivery);
-            NotifyDeliveryRecipientIfOnline(playerId);
+            if (notify)
+                NotifyDeliveryRecipientIfOnline(playerId);
 
             return delivery;
         }
@@ -825,6 +978,9 @@ namespace SWLOR.Game.Server.Service
 
                 if (objective.Quantity < 1 || objective.Quantity > MaxObjectiveQuantity)
                     return $"Objective quantities must be between 1 and {MaxObjectiveQuantity}.";
+
+                if (IsRetiredObjectiveItem(objective.ItemResref))
+                    return RetiredObjectiveMessage;
 
                 var itemName = resolveItemName(objective.ItemResref);
                 if (string.IsNullOrWhiteSpace(itemName))

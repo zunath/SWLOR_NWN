@@ -76,12 +76,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (damageAmount <= 0)
                 return;
 
-            AssignCommand(
-                source,
-                () => ApplyEffectToObject(
-                    DurationType.Instant,
-                    EffectDamage(damageAmount, CombatDamageType.Poison.GetNWScriptDamageType()),
-                    creature));
+            StatusEffect.ApplyDamageOverTime(source, creature, damageAmount, CombatDamageType.Poison.GetNWScriptDamageType());
         }
 
         public static int CalculateBaseDamagePerTick(int damageBonusPercent, int baseDamagePerTick = DefaultDamagePerTick)

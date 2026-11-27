@@ -73,6 +73,21 @@ public static class CraftSessionService
         return dbPlayer != null && Lifecycle.GrantPendingXp(player, dbPlayer);
     }
 
+    /// <summary>Lists a station fee a quick craft took, for the station's treasury once a character file holds it.</summary>
+    public static void QueueStationFee(uint player, StationFeeCharge charge)
+    {
+        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+        if (dbPlayer != null)
+            Lifecycle.QueueStationFee(player, dbPlayer, charge);
+    }
+
+    /// <summary>Credits the station treasuries with the player's fees a character file holds, each exactly once.</summary>
+    public static bool CreditStationFees(uint player)
+    {
+        var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+        return dbPlayer != null && Lifecycle.CreditStationFees(player, dbPlayer);
+    }
+
     /// <summary>True while the player has a craft saved, whichever window is playing it.</summary>
     public static bool IsCrafting(uint player)
     {

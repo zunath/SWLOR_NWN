@@ -6,6 +6,7 @@ using SWLOR.CraftSim.Tests.Support;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Research;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.CraftSim.Tests.Progression
 {
@@ -49,10 +50,12 @@ namespace SWLOR.CraftSim.Tests.Progression
         [Test]
         public void ResearchIsOfferedForTheRecipesTheServerListsAndNoOthers()
         {
-            // Craft.IsResearchableRecipe: weapons, armor and food. Structures, starships, modules and droids are not listed.
+            // Craft.IsResearchableRecipe: weapons, armor and food, and the space revamp's ship module and deed recipes
+            // (ShipBlueprintRules.IsResearchable). Structures, the retired starships and modules, and droids are not listed.
             foreach (var recipe in SharedData.Recipes.Recipes.Where(r => r.Detail != null))
             {
-                var expected = recipe.EnhancementType is RecipeEnhancementType.Weapon or RecipeEnhancementType.Armor or RecipeEnhancementType.Food;
+                var expected = recipe.EnhancementType is RecipeEnhancementType.Weapon or RecipeEnhancementType.Armor or RecipeEnhancementType.Food ||
+                               ShipBlueprintRules.IsResearchable(recipe.Detail);
                 ServerResearchRules.IsResearchable(recipe).Should().Be(expected, recipe.Type.ToString());
             }
 

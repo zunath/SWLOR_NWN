@@ -54,7 +54,9 @@ public class HelmetTintTests
         var raceColumn = Array.IndexOf(header, "RACE") + 1;
         var rows = appearanceRows.Skip(3).Where(columns => columns.Length > raceColumn && int.TryParse(columns[0], out _))
             .ToDictionary(columns => int.Parse(columns[0]), columns => columns[raceColumn].ToLowerInvariant());
+        // An astromech's helmet-slot modules are never drawn (ArmorDisplay), so its body needs no helmet heads.
         var races = RacialAppearanceRegistry.GetAppearanceTypes()
+            .Where(type => type != AppearanceType.Astromech)
             .Select(type => rows[(int)type])
             .Distinct()
             .ToList();

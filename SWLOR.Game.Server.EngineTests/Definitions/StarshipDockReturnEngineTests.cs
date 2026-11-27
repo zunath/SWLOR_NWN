@@ -64,7 +64,7 @@ public static class StarshipDockReturnEngineTests
                 OwnerPlayerId = actor.Id, PropertyId = property.Id,
                 Status = new ShipStatus
                 {
-                    ItemTag = "ShipDeedLightFreighter", Hull = 50, MaxHull = 50,
+                    ItemTag = "sd_striker", Hull = 50, MaxHull = 50,
                     Shield = 50, MaxShield = 50, Capacitor = 50, MaxCapacitor = 50
                 }
             };
@@ -209,6 +209,76 @@ public static class StarshipDockReturnEngineTests
         }
 
         ctx.SetResultDetail("The module-load cleanup resolved the station's planet through the live area data, returned a ship stranded with a station safe dock to Veles, repaired a station safe dock on a ship elsewhere, restored a missing dock, and kept going past a ship with no dock data, across two restarts.");
+    }
+
+    [EngineTest("A restart keeps ships in the Viscara system instead of sending them to a Tatooine safe dock", Category = "StarshipDockReturn", TimeoutSeconds = 30f)]
+    public static async Task RestartKeepsShipsInTheirSystem(EngineTestContext ctx)
+    {
+        var viscara = Planet.GetPlanetByType(PlanetType.Viscara);
+        var cz220 = Planet.GetPlanetByType(PlanetType.CZ220);
+        var tatooine = Planet.GetPlanetByType(PlanetType.Tatooine);
+        var velesLanding = GetWaypointByTag(viscara.LandingWaypointTag);
+        var viscaraOrbit = GetWaypointByTag(viscara.SpaceOrbitWaypointTag);
+        var cz220Landing = GetWaypointByTag(cz220.LandingWaypointTag);
+        var cz220Orbit = GetWaypointByTag(cz220.SpaceOrbitWaypointTag);
+        var tatooineLanding = GetWaypointByTag(tatooine.LandingWaypointTag);
+        var tatooineOrbit = GetWaypointByTag(tatooine.SpaceOrbitWaypointTag);
+        var stationLanding = GetWaypointByTag("ABANDONED_STATION_DOCK_LANDING");
+        var stationOrbit = GetWaypointByTag("Abandoned_Station_Orbit");
+        foreach (var waypoint in new[] { velesLanding, viscaraOrbit, cz220Landing, cz220Orbit, tatooineLanding, tatooineOrbit, stationLanding, stationOrbit })
+            ctx.Assert(GetIsObjectValid(waypoint), $"waypoint {GetTag(waypoint)} resolves in the packed module");
+        ctx.AssertEqual(GetResRef(GetArea(viscaraOrbit)), GetResRef(GetArea(cz220Orbit)), "CZ-220's orbit waypoint is in the Viscara orbit area");
+        ctx.AssertEqual(GetResRef(GetArea(viscaraOrbit)), GetResRef(GetArea(stationOrbit)), "the Abandoned Station's orbit is in the Viscara orbit area");
+
+        PropertyLocation At(uint waypoint) => ToPropertyLocation(GetLocation(waypoint));
+        PropertyLocation AtRemovedStarport() => new() { InstancePropertyId = Guid.NewGuid().ToString(), X = 3f, Y = 4f };
+        WorldProperty Ship(PropertyLocation dock, uint orbit, uint safeDock, uint safeOrbit)
+        {
+            var positions = new Dictionary<PropertyLocationType, PropertyLocation>
+            {
+                [PropertyLocationType.SpacePosition] = At(orbit),
+                [PropertyLocationType.LastNPCDockPosition] = At(safeDock),
+                [PropertyLocationType.LastNPCSpacePosition] = At(safeOrbit),
+            };
+            if (dock != null)
+                positions[PropertyLocationType.DockPosition] = dock;
+
+            return new WorldProperty { CustomName = "Engine Test Starship", PropertyType = PropertyType.Starship, Positions = positions };
+        }
+
+        var ships = new (WorldProperty Ship, StarshipDockReturnResult Result, uint Landing, uint Orbit, string Case)[]
+        {
+            (Ship(At(stationLanding), stationOrbit, tatooineLanding, tatooineOrbit), StarshipDockReturnResult.ReturnedFromShipOnlyLocation,
+                velesLanding, viscaraOrbit, "a ship at the Abandoned Station with a Tatooine safe dock returns to Veles"),
+            (Ship(AtRemovedStarport(), cz220Orbit, tatooineLanding, tatooineOrbit), StarshipDockReturnResult.ReturnedFromMissingStarport,
+                cz220Landing, cz220Orbit, "a ship at a removed starport in CZ-220's orbit with a Tatooine safe dock returns to CZ-220"),
+            (Ship(null, cz220Orbit, cz220Landing, cz220Orbit), StarshipDockReturnResult.RestoredMissingDock,
+                cz220Landing, cz220Orbit, "a ship without a dock in CZ-220's orbit keeps its CZ-220 safe dock"),
+            (Ship(AtRemovedStarport(), viscaraOrbit, cz220Landing, cz220Orbit), StarshipDockReturnResult.ReturnedFromMissingStarport,
+                cz220Landing, cz220Orbit, "a ship at a removed starport in Viscara's orbit keeps its CZ-220 safe dock in the same system"),
+        };
+
+        var results = new StarshipDockReturnResult[ships.Length];
+        var context = ctx.SpawnCreature("nw_bandit001");
+        await ctx.WaitFrameAsync();
+        await ctx.ExecuteInCreatureContextAsync(context, () =>
+        {
+            for (var index = 0; index < ships.Length; index++)
+                results[index] = Property.ReturnStarshipToSafeDock(ships[index].Ship);
+        });
+
+        for (var index = 0; index < ships.Length; index++)
+        {
+            var (ship, result, landing, orbit, description) = ships[index];
+            ctx.AssertEqual(result, results[index], $"{description}: result");
+            AssertAt(ctx, ship.Positions[PropertyLocationType.DockPosition], landing, $"{description}: dock");
+            AssertAt(ctx, ship.Positions[PropertyLocationType.SpacePosition], orbit, $"{description}: orbit");
+            AssertAt(ctx, ship.Positions[PropertyLocationType.LastNPCDockPosition], landing, $"{description}: safe dock");
+            AssertAt(ctx, ship.Positions[PropertyLocationType.LastNPCSpacePosition], orbit, $"{description}: safe orbit");
+            ctx.Assert(string.IsNullOrEmpty(ship.Positions[PropertyLocationType.DockPosition].InstancePropertyId), $"{description}: no player starport");
+        }
+
+        ctx.SetResultDetail("Property.ReturnStarshipToSafeDock against the live module areas and waypoints: a ship at the Abandoned Station with a Tatooine safe dock went to Veles and Viscara orbit, a ship at a removed starport in CZ-220's orbit (inside the Viscara orbit area) with a Tatooine safe dock went to CZ-220, a ship without a dock in CZ-220's orbit kept its CZ-220 safe dock, and a ship at a removed starport by Viscara kept its CZ-220 safe dock in the same system.");
     }
 
     private static WorldProperty CreateShip(Dictionary<PropertyLocationType, PropertyLocation> positions)

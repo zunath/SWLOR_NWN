@@ -34,5 +34,11 @@ namespace SWLOR.Game.Server.Entity
         public DateTime? DateRetired { get; set; }
         public DateTime? DateLastActivated { get; set; }
         public List<PlayerListFlagType> PlayerListFlags { get; set; }
+
+        /// <summary>When the player accepted the one-time notice that cities can post bounties on this disguise. Unset until then.</summary>
+        public DateTime? BountyNoticeAcceptedUtc { get; set; }
+
+        /// <summary>When a city bounty on this disguise was last claimed.</summary>
+        public DateTime? LastBountyClaimedUtc { get; set; }
     }
 }

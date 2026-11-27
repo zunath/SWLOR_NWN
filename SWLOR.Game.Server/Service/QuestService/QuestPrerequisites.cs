@@ -48,21 +48,37 @@ namespace SWLOR.Game.Server.Service.QuestService
         public SkillType SkillType { get; }
         public int RequiredRank { get; }
 
-        public RequiredSkillRankPrerequisite(SkillType skillType, int requiredRank)
+        /// <summary>
+        /// Whether the astromech skill that mirrors this one also qualifies. Off for a quest whose work needs a perk
+        /// line the mirror does not copy (the Staff Sentinel and Rifle Marksman capstones).
+        /// </summary>
+        public bool AcceptsMirror { get; }
+
+        public RequiredSkillRankPrerequisite(SkillType skillType, int requiredRank, bool acceptsMirror = true)
         {
             SkillType = skillType;
             RequiredRank = requiredRank;
+            AcceptsMirror = acceptsMirror;
         }
 
         public bool MeetsPrerequisite(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            return MeetsPrerequisite(DB.Get<Player>(playerId));
+        }
 
-            if (!dbPlayer.Skills.ContainsKey(SkillType))
+        public bool MeetsPrerequisite(Player dbPlayer)
+        {
+            // An astromech proves a quest's skill with the skill that mirrors it (Utility Systems for First Aid).
+            var skillType = AcceptsMirror ? SkillBodyFrames.GetMirror(SkillType, dbPlayer.BodyFrame) : SkillType;
+
+            // A skill the body frame cannot train never qualifies, whatever rank an old record holds.
+            if (!SkillBodyFrames.IsOpenTo(skillType, dbPlayer.BodyFrame))
+                return false;
+            if (!dbPlayer.Skills.ContainsKey(skillType))
                 return false;
 
-            return dbPlayer.Skills[SkillType].Rank >= RequiredRank;
+            return dbPlayer.Skills[skillType].Rank >= RequiredRank;
         }
     }
 

@@ -57,7 +57,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player whose faction standing will be adjusted.</param>
         /// <param name="faction">The faction to adjust</param>
         /// <param name="adjustBy">The amount to adjust by. This can be positive for increases and negative for decreases.</param>
-        public static void AdjustPlayerFactionStanding(uint player, FactionType faction, int adjustBy)
+        /// <param name="beforeSave">Changes saved in the same write as the standing, such as a mark that it was given.</param>
+        public static void AdjustPlayerFactionStanding(uint player, FactionType faction, int adjustBy, Action<Player> beforeSave = null)
         {
             if (!GetIsPC(player) || adjustBy == 0) return;
 
@@ -110,6 +111,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            beforeSave?.Invoke(dbPlayer);
             DB.Set(dbPlayer);
         }
 

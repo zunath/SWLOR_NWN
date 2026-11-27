@@ -30,5 +30,11 @@ namespace SWLOR.Game.Server.Service.PropertyService
         /// to failing to pay upkeep.
         /// </summary>
         DisrepairDestruction = 5,
+
+        /// <summary>
+        /// Used for cities while a week's citizenship fees are being charged: the upkeep date of that week. Set in the same save
+        /// that bills the week, and removed once every citizen is charged, so a restart in between finishes the charge once.
+        /// </summary>
+        CitizenshipFeesDue = 6,
     }
 }

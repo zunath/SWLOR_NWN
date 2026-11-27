@@ -14,16 +14,21 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             typeof(WatchfulPresence1StatusEffect),
         };
         public IReadOnlyDictionary<StatType, int> LeadershipDamageReductionStats { get; private set; } = new Dictionary<StatType, int>();
+        public override (int Base, int Maximum) StrengthScale => (6, 7);
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            var reduction = -ScaleBySourceSocial(6, 7);
+            var reduction = -ScaleBySourceSocial(StrengthScale.Base, StrengthScale.Maximum);
             StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment] = reduction;
             StatGroup.Stats[StatType.LeadershipForceDamageTakenPercentAdjustment] = reduction;
+
+            // A ship takes Leadership's "other" damage and reads its own reduction stat.
+            StatGroup.Stats[StatType.SpaceLeadershipDamageTakenPercentAdjustment] = reduction;
             LeadershipDamageReductionStats = new Dictionary<StatType, int>
             {
                 [StatType.LeadershipPhysicalDamageTakenPercentAdjustment] = reduction,
                 [StatType.LeadershipForceDamageTakenPercentAdjustment] = reduction,
+                [StatType.SpaceLeadershipDamageTakenPercentAdjustment] = reduction,
             };
         }
     }

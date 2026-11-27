@@ -386,8 +386,8 @@ public class PlayerFacingNameBroadcastTests
             "GuiDefinition",
             "ViewModel",
             "ElectionViewModel.cs"));
-        electionSource.Should().Contain("PlayerName.GetPlainDisplayNameByPlayerId(Player, candidate.Id, candidate.Name)");
-        electionSource.Should().Contain("PlayerName.GetDisplayNameByPlayerId(Player, selectedCandidateId, dbCandidate.Name)");
+        electionSource.Should().Contain("PlayerName.GetPlainDisplayNameByPlayerId(Player, candidateId, candidate.Name)");
+        electionSource.Should().Contain("PlayerName.GetDisplayNameByPlayerId(Player, candidateId, DB.Get<Entity.Player>(candidateId)?.Name)");
         electionSource.Should().NotContain("Your vote for {dbCandidate.Name} has been cast.");
 
         var citySource = File.ReadAllText(Path.Combine(

@@ -57,6 +57,7 @@ internal static class SavedCharacterData
         ContainerHeight = repository.m_nHeight;
         DestroyObject(bag);
         Load(sizes, definitions);
+        Feature.MigrationDefinition.LegacySpaceItemBlueprints.Load();
     }
 
     /// <summary>Supplies the data directly, for tests and for callers that read it elsewhere.</summary>

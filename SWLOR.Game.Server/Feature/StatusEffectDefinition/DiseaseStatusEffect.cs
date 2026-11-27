@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 deliveryType: CombatDamageDeliveryType.DamageOverTime, targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment);
             if (damage > 0)
             {
-                AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Poison.GetNWScriptDamageType()), creature));
+                StatusEffect.ApplyDamageOverTime(source, creature, damage, CombatDamageType.Poison.GetNWScriptDamageType());
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Disease_S), creature);

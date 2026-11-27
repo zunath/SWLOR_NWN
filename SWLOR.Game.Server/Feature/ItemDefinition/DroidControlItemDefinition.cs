@@ -4,9 +4,11 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.HoldingService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
@@ -54,13 +56,15 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             var skillLevel = 0;
             foreach (var skill in _skillsUsedForAverages)
             {
-                // Records saved before a skill existed have no entry for it.
-                var rank = dbPlayer.Skills.TryGetValue(skill, out var playerSkill) ? playerSkill.Rank : 0;
+                // Records saved before a skill existed have no entry for it. An astromech counts the skill that
+                // mirrors a humanoid one (Armaments for Staff and Rifle, Utility Systems for First Aid).
+                var counted = SkillBodyFrames.GetMirror(skill, dbPlayer.BodyFrame);
+                var rank = dbPlayer.Skills.TryGetValue(counted, out var playerSkill) ? playerSkill.Rank : 0;
                 if (rank > skillLevel)
                     skillLevel = rank;
             }
 
-            skillLevel += dbPlayer.Skills[SkillType.Armor].Rank;
+            skillLevel += dbPlayer.Skills[SkillBodyFrames.GetDefenseSkill(dbPlayer.BodyFrame)].Rank;
 
             return (int)(skillLevel / 2f);
         }
@@ -89,9 +93,16 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             return $"This item can be used in {timeToWait}.";
                         }
 
-                        if (GetIsObjectValid(droid))
+                        // A droid posted at a ship's station or a holding stays there and does not count toward the follow limit.
+                        if (HoldingRules.IsDroidPosting(Droid.GetPostedShipId(item)))
                         {
-                            return "Only one droid may be activated at a time.";
+                            return "This droid works a Planetary Holding. Recall it in the Holdings window first.";
+                        }
+
+                        var activationError = DroidCrewRules.GetActivationError(Droid.IsPosted(item), GetIsObjectValid(droid) ? 1 : 0);
+                        if (!string.IsNullOrEmpty(activationError))
+                        {
+                            return activationError;
                         }
 
                         var companionSlotError = BeastMastery.GetCompanionSlotValidationError(user);
@@ -122,6 +133,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         if (GetIsObjectValid(droid))
                         {
                             return "Droid AI cannot be adjusted while active. Please dismiss your droid and try again.";
+                        }
+
+                        if (Droid.IsPosted(item))
+                        {
+                            return "Droid AI cannot be adjusted while the droid is posted at a ship's station or a holding.";
                         }
 
                         if (CraftRankMilestones.GetDroidAssemblyTier(user) < droidDetails.Tier)

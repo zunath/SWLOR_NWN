@@ -637,6 +637,10 @@ namespace SWLOR.Game.Server.Service
             else if (isLandedAttack)
                 PvpCombat.RecordHit(attacker, defender);
 
+            // Before the damage lands, so a blow that kills a duelist already finds the duel voided and protected.
+            if (isLandedAttack)
+                Duels.RecordDamage(defender, attacker);
+
             var leadershipPhysicalAdjustment = !typedLeadershipReductionAlreadyApplied &&
                                                damageType.IsPhysicalDamageType()
                 ? GetLeadershipPhysicalDamageTakenPercentAdjustment(defender)
@@ -11810,7 +11814,8 @@ namespace SWLOR.Game.Server.Service
 
         private static ResistanceType GetResistanceTypeFromStat(int value)
         {
-            return value > 0 && Enum.IsDefined(typeof(ResistanceType), value)
+            return value > 0 && Enum.IsDefined(typeof(ResistanceType), value) &&
+                   Resistance.IsValidResistanceType((ResistanceType)value)
                 ? (ResistanceType)value
                 : ResistanceType.Invalid;
         }
@@ -12433,7 +12438,8 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                var pcSkill = dbPlayer.Skills[skill];
+                // An astromech's abilities act as Staff and Rifle; the rank behind them is Armaments.
+                var pcSkill = dbPlayer.Skills[SkillBodyFrames.GetTrainedSkill(skill, dbPlayer.BodyFrame)];
                 level = pcSkill.Rank;
             }
 

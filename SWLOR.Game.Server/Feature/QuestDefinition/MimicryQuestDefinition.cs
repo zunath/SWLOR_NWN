@@ -24,6 +24,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void SalvagedIntelligence()
         {
             _builder.Create("salvaged_intel", "Salvaged Intelligence")
+                // Closed to a species that cannot train Mimicry: its reward and its lesson are the skill itself.
+                .PrerequisiteSkill(SkillType.Mimicry, 0)
 
                 .AddState()
                 .SetStateJournalText("Renna Tarsk lent you a salvaged Combat Analyzer prototype to field-test. Defeat three Kath Hounds in the Viscara Wildlands so it can record their combat patterns, then return to her in the Veles Colony.")

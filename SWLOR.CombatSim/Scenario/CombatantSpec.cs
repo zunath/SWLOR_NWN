@@ -10,6 +10,12 @@ namespace SWLOR.CombatSim.Scenario
 
         public bool IsNpc { get; set; }
 
+        /// <summary>
+        /// "Humanoid" (the default) or "Astromech". An astromech uses only the abilities and perks open to its body:
+        /// the Utility Systems and Armaments lines in place of First Aid, Staff and Rifle, plus the shared lines.
+        /// </summary>
+        public string BodyFrame { get; set; } = "Humanoid";
+
         /// <summary>Until this many seconds into the fight the combatant does not act, cannot be targeted by enemies and is not reached by allies' zone heals; it still regenerates.</summary>
         public float JoinAtSeconds { get; set; }
 
@@ -116,6 +122,8 @@ namespace SWLOR.CombatSim.Scenario
             // The game's outgoing healing stat only adds healing; a negative value would silently do nothing.
             Percent(nameof(OutgoingHealingPercent), OutgoingHealingPercent, 0f);
             Percent(nameof(HealingReceivedPercent), HealingReceivedPercent, -100f);
+            if (!Enum.TryParse<SWLOR.Game.Server.Enumeration.BodyFrame>(BodyFrame, out var frame) || !Enum.IsDefined(frame))
+                problems.Add($"{nameof(BodyFrame)} must be Humanoid or Astromech");
             if (ForceAffinity < -10 || ForceAffinity > 10)
                 problems.Add($"{nameof(ForceAffinity)} must be from -10 to 10");
             if (!float.IsFinite(DamageReductionPercent) || DamageReductionPercent < 0f || DamageReductionPercent > 100f)

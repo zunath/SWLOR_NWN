@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 
@@ -225,6 +226,10 @@ namespace SWLOR.Game.Server.Service
                 RightHandId = 45,
                 LeftHandId = 45
             };
+
+            // An astromech is built from a dome, a barrel and two legs; it has no neck, arms, pelvis, shins or feet.
+            _defaultRaceAppearancesMale[RacialType.Astromech] = CreateAstromechAppearance();
+            _defaultRaceAppearancesFemale[RacialType.Astromech] = CreateAstromechAppearance();
 
             _defaultRaceAppearancesMale[RacialType.Droid] = new RacialAppearance
             {
@@ -585,6 +590,32 @@ namespace SWLOR.Game.Server.Service
                 SetCreatureBodyPart(CreaturePart.LeftFoot, raceConfig.LeftFootId, player);
             }
 
+            private static RacialAppearance CreateAstromechAppearance()
+            {
+                return new RacialAppearance
+                {
+                    AppearanceType = AppearanceType.Astromech,
+                    SkinColorId = 0,
+                    HairColorId = 0,
+                    HeadId = 1,
+                    TorsoId = 1,
+                    RightThighId = 1,
+                    LeftThighId = 1,
+                    NeckId = 0,
+                    PelvisId = 0,
+                    RightBicepId = 0,
+                    RightForearmId = 0,
+                    RightHandId = 0,
+                    RightShinId = 0,
+                    RightFootId = 0,
+                    LeftBicepId = 0,
+                    LeftForearmId = 0,
+                    LeftHandId = 0,
+                    LeftShinId = 0,
+                    LeftFootId = 0
+                };
+            }
+
             /// <summary>
             /// Retrieves the default racial appearance of a specific race.
             /// </summary>
@@ -596,6 +627,34 @@ namespace SWLOR.Game.Server.Service
                 return gender == Gender.Female ?
                     _defaultRaceAppearancesFemale[race] :
                     _defaultRaceAppearancesMale[race];
+            }
+
+            /// <summary>
+            /// The body frame of a species: the humanoid body, or the astromech's dome, barrel and legs.
+            /// </summary>
+            public static BodyFrame GetBodyFrame(RacialType race)
+            {
+                return race == RacialType.Astromech ? BodyFrame.Astromech : BodyFrame.Humanoid;
+            }
+
+            /// <summary>
+            /// The body frame of a creature, from its species.
+            /// </summary>
+            public static BodyFrame GetBodyFrame(uint creature)
+            {
+                return GetBodyFrame(GetRacialType(creature));
+            }
+
+            /// <summary>
+            /// Whether a species is a machine: the playable droid species and the droid, robot and construct
+            /// creature types. Ion effects hit these harder and mind effects do not work on them.
+            /// </summary>
+            public static bool IsMechanical(RacialType race)
+            {
+                return race == RacialType.Droid ||
+                       race == RacialType.Astromech ||
+                       race == RacialType.Robot ||
+                       race == RacialType.Construct;
             }
 
             public static bool IsClassAvailableToRace(ClassType classType, RacialType race)

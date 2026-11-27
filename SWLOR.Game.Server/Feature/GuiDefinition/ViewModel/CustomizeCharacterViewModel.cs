@@ -139,8 +139,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var soundSetToggles = new GuiBindingList<bool>();
             _soundSetIds = new List<int>();
 
+            var isAstromech = Astromech.IsAstromech(_target);
             foreach (var (soundSet, label) in Cache.GetSoundSets())
             {
+                // An astromech has no humanoid voice; its only voice set is its own.
+                if (isAstromech && soundSet != Astromech.SoundSetId)
+                    continue;
+
                 soundSetNames.Add(label);
                 soundSetToggles.Add(activeSoundSetId == soundSet);
                 _soundSetIds.Add(soundSet);

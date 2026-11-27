@@ -26,7 +26,7 @@ public class SpeciesCameraHeightTests
     };
 
     // Species on a custom skeleton with no stock row to compare against.
-    private static readonly AppearanceType[] CustomSkeletonSpecies = { AppearanceType.Droid };
+    private static readonly AppearanceType[] CustomSkeletonSpecies = { AppearanceType.Droid, AppearanceType.Astromech };
 
     [Test]
     public void PlayableSpeciesUseTheCameraHeightOfTheSkeletonTheyRenderWith()

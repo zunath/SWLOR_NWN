@@ -26,6 +26,8 @@ namespace SWLOR.Game.Server.Service
             AbilityType.Social
         };
 
+        private const string AstromechSpeciesName = "Astromech";
+
         private static readonly HashSet<AppearanceType> DescriptorSpeciesAppearanceTypes = new()
         {
             AppearanceType.Human,
@@ -111,6 +113,11 @@ namespace SWLOR.Game.Server.Service
             {
                 return false;
             }
+
+            // A record still waiting for character initialization has no species or stats yet; a
+            // descriptor made from it would read "Humanoid" for every species and never be replaced.
+            if (dbPlayer.CharacterInitializationPending)
+                return false;
 
             var generatedDisplayName = GenerateUnknownDisplayName(dbPlayer);
             if (string.IsNullOrWhiteSpace(generatedDisplayName))
@@ -235,6 +242,9 @@ namespace SWLOR.Game.Server.Service
 
         private static string ResolveSpeciesName(AppearanceType appearanceType)
         {
+            if (appearanceType == AppearanceType.Astromech)
+                return AstromechSpeciesName;
+
             if (appearanceType == AppearanceType.Invalid ||
                 !DescriptorSpeciesAppearanceTypes.Contains(appearanceType))
             {

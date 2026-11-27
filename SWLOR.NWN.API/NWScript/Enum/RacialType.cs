@@ -50,7 +50,8 @@ namespace SWLOR.NWN.API.NWScript.Enum
         KelDor = 166,
         Droid = 167,
         Nautolan = 168,
-        Ewok = 169
+        Ewok = 169,
+        Astromech = 170
 
     }
 }

@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature
                     continue;
 
                 var duration = StatusEffect.GetEffectDuration(player, statusType);
-                var effectName = StatusEffect.GetStatusEffectName(statusType);
+                var effectName = StatusEffect.GetStatusEffectName(player, statusType);
 
                 if (duration > 0)
                 {

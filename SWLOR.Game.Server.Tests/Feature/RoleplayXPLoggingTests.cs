@@ -78,6 +78,11 @@ public class RoleplayXPLoggingTests
                     public static int CantinaLevel;
                     public static int GetEffectiveUpgradeLevel(string id, PropertyUpgradeType type) => CantinaLevel;
                 }
+                public static class EdictEffects
+                {
+                    public static int FestivalPercent;
+                    public static int GetRoleplayBonusXp(Player player, int baseXp, DateTime? nowUtc = null) => baseXp * FestivalPercent / 100;
+                }
                 public class ApplicationSettings
                 {
                     public static bool PenaltiesEnabled;
@@ -151,6 +156,7 @@ public class RoleplayXPLoggingTests
         SetField("Native", "Ticks", 0);
         SetField("Native", "Context", OOCMessageContext.Standard);
         SetField("Property", "CantinaLevel", 0);
+        SetField("EdictEffects", "FestivalPercent", 0);
         SetField("ApplicationSettings", "PenaltiesEnabled", true);
         Entries.Clear();
     }
@@ -202,6 +208,31 @@ public class RoleplayXPLoggingTests
         entry["AwardedXP"].Should().Be(2120);
     }
 
+    [TestCase(10, 150)]
+    [TestCase(15, 225)]
+    public void Distribution_AddsTheFestivalBonusBesideTheCantinaAndLogsIt(int festivalPercent, int festivalXp)
+    {
+        _player.RoleplayProgress.RPPoints = 50;
+        SetField("Property", "CantinaLevel", 2);
+        SetField("EdictEffects", "FestivalPercent", festivalPercent);
+
+        Invoke("ProcessPlayerRoleplayXP", 1u);
+
+        var entry = Entries.Single();
+        entry["FestivalBonusXP"].Should().Be(festivalXp);
+        entry["XPBeforePenalty"].Should().Be(1500 + 150 + festivalXp, "the Cantina's 5% per level and the festival share both come from the 1,500 base");
+        entry["AwardedXP"].Should().Be(1500 + 150 + festivalXp);
+    }
+
+    [Test]
+    public void Distribution_WithNoFestivalLogsNoFestivalBonus()
+    {
+        _player.RoleplayProgress.RPPoints = 50;
+
+        Invoke("ProcessPlayerRoleplayXP", 1u);
+
+        Entries.Single()["FestivalBonusXP"].Should().Be(0);
+    }
     [Test]
     public void SkippedDistribution_PreservesCountAndPenaltiesUntilNextAward()
     {

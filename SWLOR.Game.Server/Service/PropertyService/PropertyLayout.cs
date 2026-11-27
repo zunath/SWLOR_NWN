@@ -6,6 +6,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
         public string Name { get; set; }
         public int StructureLimit { get; set; }
         public int ItemStorageLimit { get; set; }
+
+        /// <summary>
+        /// How many pieces of furniture add item storage, the best first (<see cref="FurnitureStorageRules"/>); 0 means every
+        /// piece does. Ships set it below <see cref="StructureLimit"/>, so the extra furniture they hold decorates only.
+        /// </summary>
+        public int StoragePieceLimit { get; set; }
         public int BuildingLimit { get; set; }
         public int ResearchDeviceLimit { get; set; }
         public int InitialPrice { get; set; }

@@ -552,7 +552,12 @@
             "city_hall",
             "medical_center",
             "player_rnd",
-            "starport"
+            "starport",
+            "station_deck",
+            "holding_plains",
+            "holding_forest",
+            "holding_desert",
+            "holding_cave"
           ]
         },
         {
@@ -584,9 +589,18 @@
             "moncalaorbit",
             "narshadorbit",
             "space_dathomir",
+            "space_korrdebris",
             "space_korriban",
             "space_midrim1",
             "space_midrim2",
+            "space_midrimneb",
+            "space_viscbelt",
+            "space_wsblkhole",
+            "space_wsgraveyrd",
+            "space_wsionstorm",
+            "space_wsmagnetar",
+            "space_wspulsar",
+            "space_wsredgiant",
             "tatooineorbit",
             "viscaraorbit"
           ]

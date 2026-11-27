@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Feature.ShipRewardDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
@@ -12,6 +13,7 @@ using SWLOR.Game.Server.Service.CraftService.Research;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -34,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             public int TimeReduction { get; set; }
             public int ItemBonuses { get; set; }
             public List<ItemProperty> GuaranteedBonuses { get; set; }
+            public List<ShipComponentTraitType> GuaranteedTraits { get; set; }
             public int CreditCost { get; set; }
             public int TimeCost { get; set; }
             public int RequiredResearchTier { get; set; }
@@ -186,6 +189,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 TimeReduction = blueprint.TimeReduction,
                 ItemBonuses = blueprint.ItemBonuses,
                 GuaranteedBonuses = blueprint.GuaranteedBonuses,
+                GuaranteedTraits = blueprint.GuaranteedTraits,
                 CreditCost = creditCost,
                 TimeCost = timeCost,
                 RequiredResearchTier = researchTier
@@ -239,7 +243,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     : $"Licensed Runs: {researchJob.CurrentLicensedRuns}";
                 TimeReduction = $"Time Reduction: -{researchJob.TimeReduction}%";
                 ItemBonuses = $"Item Bonuses: {researchJob.ItemBonuses}";
-                GuaranteedBonuses = Item.BuildItemPropertyList(researchJob.GuaranteedBonuses);
+                var guaranteedBonuses = Item.BuildItemPropertyList(researchJob.GuaranteedBonuses);
+                foreach (var line in ShipTraitRules.DescribeLines(researchJob.GuaranteedTraits))
+                {
+                    guaranteedBonuses.Add(line);
+                }
+                GuaranteedBonuses = guaranteedBonuses;
                 CreditCost = $"Price: {researchJob.CreditCost}cr";
                 TimeCost = $"Time: {researchJob.TimeString}";
                 NextLevelBonus = $"Next Level: {GetUpgradeLevelBonus(researchJob.CurrentLevel + 1)}";
@@ -366,50 +375,79 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"This job will cost {researchJob.CreditCost}cr and take {researchJob.TimeString} to complete. A short experiment follows that can shorten the job; closing it early keeps the evidence you gathered. Are you sure you want to start the job?",
                 () =>
                 {
-                    var jobValidation = ValidateJob();
-                    if (!string.IsNullOrWhiteSpace(jobValidation))
+                    // A ship blueprint can spend one Prototype Tech, once, for a guaranteed bonus of the best tier its recipe allows.
+                    var prototypeTech = GetItemPossessedBy(Player, RevampRewardCatalog.PrototypeTechResref);
+                    if (ShipBlueprintRules.IsResearchable(Craft.GetRecipe(_recipeType)) && GetIsObjectValid(prototypeTech) &&
+                        !HasSpentPrototypeTech())
                     {
-                        FloatingTextStringOnCreature(jobValidation, Player, false);
-                        ChangePartialView(PartialView, StartStageView);
+                        ShowModal("Spend one Prototype Tech on this job? The blueprint gains a guaranteed bonus of the best tier its recipe level allows when the job completes. A blueprint takes Prototype Tech only once.",
+                            () => StartJob(researchJob, true),
+                            () => StartJob(researchJob, false),
+                            "Spend",
+                            "Don't Spend");
                         return;
                     }
 
-                    var now = DateTime.UtcNow;
-                    var targetLevel = researchJob.CurrentLevel + 1;
-                    var extraBonus = ResearchGrantRules.RollExtraBonus(targetLevel, ServiceMinigameRandom.Instance);
-                    var licensedRunsGrant = ResearchGrantRules.RollLicensedRunsGrant(
-                        targetLevel, researchJob.EnhancementSlots > 0, ServiceMinigameRandom.Instance);
-                    // The experiment keeps the trials it opens with: the perks' and the ones Craftsmanship adds now.
-                    var trials = ExperimentTuning.FromStatTotals(stat => Stat.GetStatAdjustment(Player, stat)).Trials +
-                                 ExperimentSetup.TrialsFromCraftsmanship(Stat.CalculateCraftsmanship(Player, SkillType.Fabrication));
-                    var dbResearchJob = new ResearchJob
-                    {
-                        ParentPropertyId = _researchTerminalPropertyId,
-                        PlayerId = GetObjectUUID(Player),
-                        DateStarted = now,
-                        DateCompleted = now.AddSeconds(researchJob.TimeCost),
-                        SerializedItem = GetIsObjectValid(_blueprintItem) ? ObjectPlugin.Serialize(_blueprintItem) : string.Empty,
-                        Level = researchJob.CurrentLevel,
-                        Recipe = _recipeType,
-                        Experiment = ResearchExperimentLifecycle.Open(
-                            targetLevel, trials, researchJob.TimeCost, extraBonus, licensedRunsGrant)
-                    };
-                    ResearchExperimentService.StampStart(Player, dbResearchJob);
-
-                    AssignCommand(Player, () => TakeGoldFromCreature(researchJob.CreditCost, Player, true));
-                    DestroyObject(_blueprintItem);
-                    NwnCraftSessionWorld.Instance.PersistCharacter(Player);
-                    Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
-                    Gui.TogglePlayerWindow(
-                        Player,
-                        GuiWindowType.ResearchExperiment,
-                        new ResearchExperimentPayload(dbResearchJob.Id),
-                        TetherObject);
+                    StartJob(researchJob, false);
                 }, () =>
                 {
                     ChangePartialView(PartialView, StartStageView);
                 });
         };
+
+        /// <summary>Whether the blueprint being researched already gained its Prototype Tech bonus.</summary>
+        private bool HasSpentPrototypeTech() =>
+            GetIsObjectValid(_blueprintItem) && Craft.GetBlueprintDetails(_blueprintItem).PrototypeTechUsed;
+
+        private void StartJob(ResearchJobDetails researchJob, bool spendPrototypeTech)
+        {
+            var jobValidation = ValidateJob();
+            if (!string.IsNullOrWhiteSpace(jobValidation))
+            {
+                FloatingTextStringOnCreature(jobValidation, Player, false);
+                ChangePartialView(PartialView, StartStageView);
+                return;
+            }
+
+            // The Prototype Tech leaves the inventory with the blueprint and the credits, so the start's file stamp covers all three.
+            var prototypeTech = GetItemPossessedBy(Player, RevampRewardCatalog.PrototypeTechResref);
+            var usesPrototypeTech = spendPrototypeTech && GetIsObjectValid(prototypeTech) && !HasSpentPrototypeTech();
+            if (usesPrototypeTech)
+                Item.ReduceItemStack(prototypeTech, 1);
+
+            var now = DateTime.UtcNow;
+            var targetLevel = researchJob.CurrentLevel + 1;
+            var extraBonus = ResearchGrantRules.RollExtraBonus(targetLevel, ServiceMinigameRandom.Instance);
+            var licensedRunsGrant = ResearchGrantRules.RollLicensedRunsGrant(
+                targetLevel, researchJob.EnhancementSlots > 0, ServiceMinigameRandom.Instance);
+            // The experiment keeps the trials it opens with: the perks' and the ones Craftsmanship adds now.
+            var trials = ExperimentTuning.FromStatTotals(stat => Stat.GetStatAdjustment(Player, stat)).Trials +
+                         ExperimentSetup.TrialsFromCraftsmanship(Stat.CalculateCraftsmanship(Player, SkillType.Fabrication));
+            var dbResearchJob = new ResearchJob
+            {
+                ParentPropertyId = _researchTerminalPropertyId,
+                PlayerId = GetObjectUUID(Player),
+                DateStarted = now,
+                DateCompleted = now.AddSeconds(researchJob.TimeCost),
+                SerializedItem = GetIsObjectValid(_blueprintItem) ? ObjectPlugin.Serialize(_blueprintItem) : string.Empty,
+                Level = researchJob.CurrentLevel,
+                Recipe = _recipeType,
+                PrototypeTech = usesPrototypeTech,
+                Experiment = ResearchExperimentLifecycle.Open(
+                    targetLevel, trials, researchJob.TimeCost, extraBonus, licensedRunsGrant)
+            };
+            ResearchExperimentService.StampStart(Player, dbResearchJob);
+
+            AssignCommand(Player, () => TakeGoldFromCreature(researchJob.CreditCost, Player, true));
+            DestroyObject(_blueprintItem);
+            NwnCraftSessionWorld.Instance.PersistCharacter(Player);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
+            Gui.TogglePlayerWindow(
+                Player,
+                GuiWindowType.ResearchExperiment,
+                new ResearchExperimentPayload(dbResearchJob.Id),
+                TetherObject);
+        }
 
         public Action ClickCancelJob() => () =>
         {
@@ -510,6 +548,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             void AddGuaranteedBonus(int tier)
             {
+                // A ship blueprint's guaranteed bonuses are blueprint traits, within the research ceiling
+                // (ShipBlueprintRules.PickGuaranteed: the recipe level caps the tier, no repeats, at most 11).
+                if (ShipBlueprintRules.IsResearchable(recipe))
+                {
+                    var trait = ShipBlueprintRules.PickGuaranteed(
+                        recipe, tier, blueprintDetails.GuaranteedTraits, Random.Next);
+                    if (trait != ShipComponentTraitType.None)
+                        blueprintDetails.GuaranteedTraits.Add(trait);
+                    return;
+                }
+
                 var bonus = _blueprintBonuses.PickBonus(recipe.EnhancementType, tier, recipe.IsItemIntendedForCrafting);
                 ItemProperty ip;
 
@@ -541,6 +590,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 dbJob.Experiment,
                 ServiceMinigameRandom.Instance,
                 AddGuaranteedBonus);
+
+            // Prototype Tech adds its guaranteed trait once per blueprint.
+            if (dbJob.PrototypeTech && ShipBlueprintRules.IsResearchable(recipe) && !blueprintDetails.PrototypeTechUsed)
+            {
+                AddGuaranteedBonus(RevampRewardCatalog.PrototypeTechBonusTier);
+                blueprintDetails.PrototypeTechUsed = true;
+            }
 
             if (isNewBlueprint)
             {

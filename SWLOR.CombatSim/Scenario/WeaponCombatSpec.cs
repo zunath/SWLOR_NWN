@@ -41,7 +41,7 @@ public sealed class WeaponCombatSpec
             OffhandDelayReductionPercent is < 0 or > 50 || !PairedHands && OffhandDelayReductionPercent > 0 ||
             Attack is < 1 or > 10000 || Accuracy is < 0 or > 10000 || Defense is < 1 or > 10000 || Evasion is < 0 or > 10000 ||
             Might is < 0 or > 255 || Perception is < 0 or > 255 || Vitality is < 0 or > 255 || ExternalHastePercent is < -50 or > 50 ||
-            MindResistance is < -100 or > 100 || MobilityResistance is < -100 or > 100 || TraumaResistance is < -100 or > 100 || Stance is not ("None" or "Flow" or "Bruiser" or "Berserker" or "Scrapper" or "Crusher"))
+            MindResistance is < -100 or > 100 || MobilityResistance is < -100 or > 100 || TraumaResistance is < -100 or > 100 || Stance is not ("None" or "Flow" or "Bruiser" or "Berserker" or "Scrapper" or "Crusher" or "AggressionRoutine"))
             throw new InvalidDataException("WeaponCombat has unsupported calibration values or stance.");
     }
 }

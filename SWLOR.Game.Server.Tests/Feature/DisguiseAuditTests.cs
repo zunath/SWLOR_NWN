@@ -55,6 +55,7 @@ public class DisguiseAuditTests
             {{ReadSource("Service/DisguiseService/ActivateDisguiseResult.cs").DescendantNodes().OfType<ClassDeclarationSyntax>().Single()}}
             {{ReadSource("Service/DisguiseService/DeleteRetiredDisguiseResult.cs").DescendantNodes().OfType<EnumDeclarationSyntax>().Single()}}
             {{ReadSource("Service/DisguiseService/DisguisePaymentMethod.cs").DescendantNodes().OfType<EnumDeclarationSyntax>().Single()}}
+            {{ReadSource("Service/PvpCombatService/PvpCombatChangeOutcome.cs").DescendantNodes().OfType<EnumDeclarationSyntax>().Single()}}
             {{ReadSource("Service/PastedText.cs").DescendantNodes().OfType<ClassDeclarationSyntax>().Single()}}
 
             public sealed class Player : EntityBase
@@ -62,7 +63,7 @@ public class DisguiseAuditTests
                 public string ActiveDisguiseId = "", UnknownDisplayName = "Base descriptor";
                 public int UndisguisedPortraitId = -1, UndisguisedSoundSetId = -1, UnallocatedXP = 100000;
                 public string UndisguisedPortraitResref = "", UndisguisedDescription = "";
-                public bool HasUndisguisedDescriptionSnapshot;
+                public bool HasUndisguisedDescriptionSnapshot, CharacterInitializationPending;
             }
             public static class World
             {
@@ -88,7 +89,18 @@ public class DisguiseAuditTests
                 public static void SetPortraitResRef(uint player, string portrait) { }
                 public static void SetSoundset(uint player, int sound) { }
                 public static void SetDescription(uint player, string description) { }
+                public static void SendMessageToPC(uint player, string message) { }
             }
+            public static class ColorToken { public static string Combat(string text) => text; }
+            // No PvP combat window is ever open in the harness, so identity changes go ahead and no notice is due.
+            public static class PvpCombatWindow
+            {
+                public static bool IsOpen(uint player) => false;
+                public static PvpCombatChangeOutcome RequestIdentity(uint player, Player dbPlayer, string wantedDisguiseId, out string message)
+                { message = ""; return dbPlayer.ActiveDisguiseId == (wantedDisguiseId ?? "") ? PvpCombatChangeOutcome.Unchanged : PvpCombatChangeOutcome.Applied; }
+                public static void CancelQueuedIdentity(uint player, Player dbPlayer) { }
+            }
+            public static class BountyConsent { public static void PromptIfNeeded(uint player) { } }
             public sealed class DBQuery<T>
             {
                 public string OwnerId;
@@ -145,7 +157,7 @@ public class DisguiseAuditTests
                 private static int GetDisguiseSlotLimit(uint player, Player dbPlayer) => 3;
                 private static int ResolvePortraitInternalId(uint player) => 10;
                 private static int GetMaxPortraitCount() => 100;
-                private static int ResolveSoundSetId(int id) => id;
+                private static int ResolveSoundSetId(uint player, int id) => id;
                 private static string ValidateActivationDelay(uint player, string playerId) => "";
                 private static void ApplyAppearance(uint player, PlayerDisguise disguise) { }
                 private static void RefreshDisguiseDisplay(uint player) { }

@@ -18,11 +18,36 @@ public interface ICraftSessionWorld
     /// <summary>True when the player meets the recipe's skill and other requirements. It does not check materials.</summary>
     bool CanCraft(uint player, RecipeType recipe);
 
+    /// <summary>
+    /// The reason one of the recipe's own requirements (a perk, an unlock, a Shipyard, a planet identity) stops the player from crafting it
+    /// now, in the requirement's words, or an empty string when none does.
+    /// </summary>
+    string GetRequirementProblem(uint player, RecipeType recipe);
+
     /// <summary>Returns the reason the blueprint cannot be used for the recipe now, or an empty string when it can.</summary>
     string ValidateBlueprint(uint player, uint blueprintItem, RecipeType recipe);
 
     /// <summary>Takes the blueprint's credit cost and one licensed run, and returns its details after the charge.</summary>
     BlueprintDetail ChargeBlueprint(uint player, uint blueprintItem);
+
+    /// <summary>
+    /// Returns the reason the station's fee for the recipe cannot be paid beside the blueprint's credit cost, or an empty string when it
+    /// can or there is none. A station Shipyard charges one for each Capital hull (space revamp).
+    /// </summary>
+    string ValidateStationFee(uint player, RecipeDetail recipe, uint blueprintItem);
+
+    /// <summary>
+    /// Takes the station's fee for the recipe from the player, when it has one, and returns it for the station's treasury; null when
+    /// there is none. It is not refunded when the craft fails. The treasury is credited by <see cref="CreditStationFee"/> only when the
+    /// craft ends and a character file holds the payment.
+    /// </summary>
+    StationFeeCharge ChargeStationFee(uint player, RecipeDetail recipe);
+
+    /// <summary>
+    /// Credits a fee the player paid to its station's treasury, exactly once: a fee already credited (the same id) is not credited again,
+    /// so a retry after a stop between the credit and the player's save does nothing.
+    /// </summary>
+    void CreditStationFee(uint player, PendingStationFee fee);
 
     /// <summary>
     /// Takes exactly the recipe's components from the player's inventory, one serialized item per stack taken. When the
@@ -81,6 +106,12 @@ public interface ICraftSessionWorld
     void ApplyBlueprintBonuses(uint player, uint item, RecipeDetail recipe, BlueprintDetail blueprint);
 
     /// <summary>
+    /// Gives the crafted item what its consumed components pass on: a ship component variant stamps its trait, and a ship module, deed or
+    /// capital part keeps the traits of the components it consumed (space revamp). Other recipes are unchanged.
+    /// </summary>
+    void ApplyComponentTraits(uint item, RecipeType recipeType, RecipeDetail recipe, IReadOnlyList<string> components);
+
+    /// <summary>
     /// Gives one skill's waiting craft XP and takes it off <see cref="Player.PendingCraftXp"/> in the same player save, so a stop can
     /// neither lose it nor give it twice. Returns false, keeping the entitlement, when the award cannot run now.
     /// </summary>
@@ -88,6 +119,24 @@ public interface ICraftSessionWorld
 
     /// <summary>True when the player can be given skill XP now. A dead player cannot, so XP earned then waits on the record.</summary>
     bool CanReceiveXp(uint player);
+
+    /// <summary>
+    /// The id of the city the player's crafting station stands in (a building, a house or the city's land), or an empty string when it is
+    /// not in a city. A craft records it when it starts.
+    /// </summary>
+    string GetStationCityId(uint player);
+
+    /// <summary>
+    /// The Craftsmanship and Control a house Workshop adds to a craft of the skill, from the house the player stands in now, or 0. A craft
+    /// records it when it starts and keeps that value, so a change to the house mid-craft does not touch it.
+    /// </summary>
+    int GetWorkshopBonus(uint player, SkillType skill);
+
+    /// <summary>
+    /// The points Artisans' Charter adds to the XP of a craft made at a station in <paramref name="craftCityId"/>, judged when the XP is
+    /// settled: 10 for a citizen in good standing of that city whose city has the Edict in effect, otherwise 0.
+    /// </summary>
+    int GetCraftXpBonusPoints(Player dbPlayer, string craftCityId);
 
     void SaveRecord(Player dbPlayer);
 

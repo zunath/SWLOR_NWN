@@ -55,10 +55,15 @@ public class CombatLeashPartyTests
             {
                 private const float ReturnHomeRadius = 15f;
                 private const float CombatLeashRadius = 45f;
+                private const float SpaceCombatLeashRadius = 180f;
                 {{ExtractMethods(
                     "TryStartLeashEvade", "TryStartCombatLeashEvade", "TryKeepFightingWithinLeash",
                     "IsEngagedWithinLeash", "ShouldStartCombatLeashEvade", "ShouldLeashCombatTarget",
                     "IsTargetBeyondLeash", "GetCombatLeashRadius", "IsOutsideHomeRadius")}}
+            }
+            public static class Space
+            {
+                public static bool IsShipInSpace(uint creature) => false;
             }
             public static class World
             {

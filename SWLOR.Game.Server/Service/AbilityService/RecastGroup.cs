@@ -935,12 +935,104 @@ namespace SWLOR.Game.Server.Service.AbilityService
         [RecastGroup("Crossfire Stance", "Crossfire St.", true)]
         CrossfireStance = 578,
 
+        [RecastGroup("Ace Disabling Shot", "Disabling Shot", true)]
+        AceDisablingShot = 602,
+
+        [RecastGroup("Ace Double Shot", "Ace Dbl. Shot", true)]
+        AceDoubleShot = 603,
+
+        [RecastGroup("Ace Point Blank Burst", "Ace Burst", true)]
+        AcePointBlankBurst = 587,
+
+        [RecastGroup("Ace Stance", "Ace Stance", true)]
+        AceStance = 588,
+
+        [RecastGroup("Ordnance Volley", "Volley", true)]
+        OrdnanceVolley = 589,
+
+        [RecastGroup("Ordnance Flare Missile", "Flare Missile", true)]
+        OrdnanceFlareMissile = 590,
+
+        [RecastGroup("Ordnance Concussion Barrage", "Concussion", true)]
+        OrdnanceConcussionBarrage = 591,
+
+        [RecastGroup("Ordnance Stance", "Ord. Stance", true)]
+        OrdnanceShipStance = 592,
+
+        [RecastGroup("Bulwark Shield Ram", "Shield Ram", true)]
+        BulwarkShieldRam = 593,
+
+        [RecastGroup("Bulwark Defiance", "Defiance", true)]
+        BulwarkDefiance = 594,
+
+        [RecastGroup("Bulwark Hail", "Hail", true)]
+        BulwarkHail = 595,
+
+        [RecastGroup("Bulwark Hail II", "Hail II", true)]
+        BulwarkHail2 = 596,
+
+        [RecastGroup("Bulwark Stance", "Bulwark Stance", true)]
+        BulwarkShipStance = 597,
+
+        [RecastGroup("Command Emergency Repair", "Emerg. Repair", true)]
+        CommandEmergencyRepair = 598,
+
+        [RecastGroup("Command Focus Fire", "Focus Fire", true)]
+        CommandFocusFire = 599,
+
+        [RecastGroup("Command Break Formation", "Brk. Formation", true)]
+        CommandBreakFormation = 600,
+
+        [RecastGroup("Command Formation", "Formation", true)]
+        CommandFormation = 601,
+
         [RecastGroup("Force Decoy", "Force Decoy", true)]
         ForceDecoy = 585,
 
         [RecastGroup("Cloud Mind", "Cloud Mind", true)]
         CloudMind = 586,
-
+        [RecastGroup("Field Repair", "Field Repair", true)]
+        FieldRepair = 604,
+        [RecastGroup("System Purge", "System Purge", true)]
+        SystemPurge = 605,
+        [RecastGroup("Nanite Cloud", "Nanite Cloud", true)]
+        NaniteCloud = 606,
+        [RecastGroup("Jump Start", "Jump Start", true)]
+        JumpStart = 607,
+        [RecastGroup("Maintenance Routine", "Maintenance", true)]
+        MaintenanceRoutine = 608,
+        [RecastGroup("Emergency Override", "Emerg Override", true)]
+        EmergencyOverride = 609,
+        [RecastGroup("Power Transfer", "Power Transfer", true)]
+        PowerTransfer = 610,
+        [RecastGroup("Deflector Field", "Deflector Fld", true)]
+        DeflectorField = 611,
+        [RecastGroup("Damper Field", "Damper Field", true)]
+        DamperField = 612,
+        [RecastGroup("Filter Flush", "Filter Flush", true)]
+        FilterFlush = 613,
+        [RecastGroup("Targeting Uplink", "Target Uplink", true)]
+        TargetingUplink = 614,
+        [RecastGroup("Full Override", "Full Override", true)]
+        FullOverride = 615,
+        [RecastGroup("Shock Jab", "Shock Jab", true)]
+        ShockJab = 616,
+        [RecastGroup("Stun Prod", "Stun Prod", true)]
+        StunProd = 617,
+        [RecastGroup("Discharge Ring", "Discharge Ring", true)]
+        DischargeRing = 618,
+        [RecastGroup("Aggression Routine", "Aggression", true)]
+        AggressionRoutine = 619,
+        [RecastGroup("Overload Burst", "Overload Burst", true)]
+        OverloadBurst = 620,
+        [RecastGroup("Suppressive Burst", "Suppr. Burst", true)]
+        SuppressiveBurst = 621,
+        [RecastGroup("Hobbling Bolt", "Hobbling Bolt", true)]
+        HobblingBolt = 622,
+        [RecastGroup("Sweeping Fire", "Sweeping Fire", true)]
+        SweepingFire = 623,
+        [RecastGroup("Suppression Protocol", "Suppr Protocol", true)]
+        SuppressionProtocol = 624,
     }
 
     public class RecastGroupAttribute : Attribute

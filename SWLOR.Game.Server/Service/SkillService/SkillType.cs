@@ -25,7 +25,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             false,
             CombatPointCategoryType.Utility,
-            CharacterType.ForceSensitive)]
+            CharacterType.ForceSensitive,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         Force = 5,
 
         [Skill(SkillCategoryType.Combat,
@@ -35,7 +36,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to effectively wear and defend against attacks with armor.",
             true,
             false,
-            false)]
+            false,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         Armor = 6,
 
         [Skill(SkillCategoryType.Utility,
@@ -55,7 +57,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to treat bodily injuries in the field with healing kits and stim packs.",
             true,
             false,
-            false)]
+            false,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         FirstAid = 8,
 
         [Skill(SkillCategoryType.Crafting,
@@ -105,7 +108,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to tame wild animals, raise them, and train them.",
             true,
             false,
-            false)]
+            false,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         BeastMastery = 13,
 
         [Skill(SkillCategoryType.Languages,
@@ -338,7 +342,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             false,
             false,
-            CombatPointCategoryType.Weapon)]
+            CombatPointCategoryType.Weapon,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         Vibroblade = 36,
 
         [Skill(SkillCategoryType.Combat,
@@ -349,7 +354,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             false,
             false,
-            CombatPointCategoryType.Weapon)]
+            CombatPointCategoryType.Weapon,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         Vibroknife = 37,
 
         [Skill(SkillCategoryType.Combat,
@@ -361,7 +367,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             false,
             CombatPointCategoryType.Weapon,
-            CharacterType.ForceSensitive)]
+            CharacterType.ForceSensitive,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         Lightsaber = 38,
 
         [Skill(SkillCategoryType.Combat,
@@ -372,7 +379,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             false,
             false,
-            CombatPointCategoryType.Weapon)]
+            CombatPointCategoryType.Weapon,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         HeavyVibroblade = 39,
 
         [Skill(SkillCategoryType.Combat,
@@ -383,7 +391,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             false,
             false,
-            CombatPointCategoryType.Weapon)]
+            CombatPointCategoryType.Weapon,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         Spear = 40,
 
         [Skill(SkillCategoryType.Combat,
@@ -394,7 +403,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             false,
             false,
-            CombatPointCategoryType.Weapon)]
+            CombatPointCategoryType.Weapon,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         TwinBlade = 41,
 
         [Skill(SkillCategoryType.Combat,
@@ -406,7 +416,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             false,
             CombatPointCategoryType.Weapon,
-            CharacterType.ForceSensitive)]
+            CharacterType.ForceSensitive,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         Saberstaff = 42,
 
         [Skill(SkillCategoryType.Combat,
@@ -417,7 +428,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             false,
             false,
-            CombatPointCategoryType.Weapon)]
+            CombatPointCategoryType.Weapon,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         Katar = 43,
 
         [Skill(SkillCategoryType.Combat,
@@ -428,7 +440,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             false,
             false,
-            CombatPointCategoryType.Weapon)]
+            CombatPointCategoryType.Weapon,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         Staff = 44,
 
         [Skill(SkillCategoryType.Combat,
@@ -439,7 +452,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             false,
             false,
-            CombatPointCategoryType.Weapon)]
+            CombatPointCategoryType.Weapon,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         Pistol = 45,
 
         [Skill(SkillCategoryType.Combat,
@@ -450,7 +464,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             false,
             false,
-            CombatPointCategoryType.Weapon)]
+            CombatPointCategoryType.Weapon,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         Rifle = 46,
 
         [Skill(SkillCategoryType.Combat,
@@ -461,7 +476,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             false,
             false,
-            CombatPointCategoryType.Weapon)]
+            CombatPointCategoryType.Weapon,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         Throwing = 47,
 
         [Skill(SkillCategoryType.Combat,
@@ -472,7 +488,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             false,
             false,
-            CombatPointCategoryType.Utility)]
+            CombatPointCategoryType.Utility,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         Mimicry = 48,
 
         [Skill(SkillCategoryType.Utility,
@@ -504,7 +521,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             false,
             false,
-            CombatPointCategoryType.Weapon)]
+            CombatPointCategoryType.Weapon,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         Unarmed = 51,
 
         [Skill(SkillCategoryType.Combat,
@@ -515,7 +533,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             false,
             false,
-            CombatPointCategoryType.Weapon)]
+            CombatPointCategoryType.Weapon,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         TwinPistol = 52,
 
         [Skill(SkillCategoryType.Utility,
@@ -525,8 +544,43 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to entertain an audience through dance and music, inspiring those who stay to watch.",
             true,
             false,
-            false)]
+            false,
+            BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         Performance = 60,
+
+        [Skill(SkillCategoryType.Combat,
+            "Chassis",
+            50,
+            true,
+            "Ability of an astromech to withstand attacks through its frame, plating, and internal modules.",
+            true,
+            false,
+            false,
+            BodyFrameRestriction = BodyFrameRestriction.AstromechOnly)]
+        Chassis = 61,
+
+        [Skill(SkillCategoryType.Utility,
+            "Utility Systems",
+            50,
+            true,
+            "Ability of an astromech to repair, restore, and reinforce itself and its allies in the field.",
+            true,
+            false,
+            false,
+            BodyFrameRestriction = BodyFrameRestriction.AstromechOnly)]
+        UtilitySystems = 62,
+
+        [Skill(SkillCategoryType.Combat,
+            "Armaments",
+            50,
+            true,
+            "Ability of an astromech to fight with the tools built into its chassis: the shock prod and the blaster mount.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon,
+            BodyFrameRestriction = BodyFrameRestriction.AstromechOnly)]
+        Armaments = 63,
     }
 
     public class SkillAttribute : Attribute
@@ -541,10 +595,23 @@ namespace SWLOR.Game.Server.Service.SkillService
         public bool IsShownInResearchMenu { get; set; }
         public CharacterType CharacterTypeRestriction { get; set; }
 
+        /// <summary>
+        /// Limits the skill to one body frame. Skills that need a humanoid body are closed to astromechs.
+        /// </summary>
+        public BodyFrameRestriction BodyFrameRestriction { get; set; }
+
         public bool IsAvailableToCharacterType(CharacterType characterType)
         {
             return CharacterTypeRestriction == CharacterType.Invalid ||
                    CharacterTypeRestriction == characterType;
+        }
+
+        /// <summary>
+        /// Whether a character of this type and body frame can train the skill at all.
+        /// </summary>
+        public bool IsAvailableTo(CharacterType characterType, BodyFrame bodyFrame)
+        {
+            return IsAvailableToCharacterType(characterType) && BodyFrameRestriction.Allows(bodyFrame);
         }
 
         public CombatPointCategoryType CombatPointCategory { get; set; }

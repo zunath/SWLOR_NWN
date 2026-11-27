@@ -61,6 +61,16 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .AnimationAction(Animation.FireForgetDodgeDuck)
                 .IsEmote();
+            builder.Create("lookleft")
+                .Description("Turns your head to the left.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationAction(Animation.FireForgetHeadTurnLeft)
+                .IsEmote();
+            builder.Create("lookright")
+                .Description("Turns your head to the right.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationAction(Animation.FireForgetHeadTurnRight)
+                .IsEmote();
             builder.Create("greet")
                 .Description("Plays a greet animation.")
                 .Permissions(AuthorizationLevel.All)

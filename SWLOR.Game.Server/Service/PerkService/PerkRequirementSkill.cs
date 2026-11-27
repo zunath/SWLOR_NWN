@@ -11,10 +11,17 @@ namespace SWLOR.Game.Server.Service.PerkService
         public SkillType Type { get; }
         public int RequiredRank { get; }
 
-        public PerkRequirementSkill(SkillType type, int requiredRank)
+        /// <summary>
+        /// Whether the skill a body frame trains in place of this one also meets the requirement
+        /// (an astromech's Chassis for Armor). Off for perks that need the humanoid body itself.
+        /// </summary>
+        public bool AcceptsFrameEquivalent { get; }
+
+        public PerkRequirementSkill(SkillType type, int requiredRank, bool acceptsFrameEquivalent = true)
         {
             Type = type;
             RequiredRank = requiredRank;
+            AcceptsFrameEquivalent = acceptsFrameEquivalent;
         }
 
         public PerkRequirementCategory Category => PerkRequirementCategory.Skill;
@@ -23,8 +30,13 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         public string CheckRequirements(Player dbPlayer, Beast activeBeast)
         {
-            var skill = dbPlayer.Skills[Type];
-            var rank = skill.Rank;
+            var type = AcceptsFrameEquivalent
+                ? SkillBodyFrames.GetFrameEquivalent(Type, dbPlayer.BodyFrame)
+                : Type;
+            if (!SkillBodyFrames.IsOpenTo(type, dbPlayer.BodyFrame))
+                return SkillBodyFrames.GetRefusal(type);
+
+            var rank = dbPlayer.Skills.TryGetValue(type, out var skill) ? skill.Rank : 0;
 
             if (rank >= RequiredRank)
                 return string.Empty;

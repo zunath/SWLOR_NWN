@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -282,12 +283,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
-                    // Wookiees cannot speak any language besides Shyriiwook.
-                    if (race == RacialType.Wookiee &&
-                        command != SkillType.Shyriiwook.ToString().ToLower())
+                    // Wookiees can only speak Shyriiwook and astromechs can only speak Droidspeak.
+                    var onlyLanguage = Language.GetOnlySpokenLanguage(race);
+                    if (onlyLanguage != SkillType.Invalid &&
+                        command != onlyLanguage.ToString().ToLower())
                     {
-                        Language.SetActiveLanguage(user, SkillType.Shyriiwook);
-                        SendMessageToPC(user, ColorToken.Red("Wookiees can only speak Shyriiwook."));
+                        Language.SetActiveLanguage(user, onlyLanguage);
+                        SendMessageToPC(user, ColorToken.Red(Language.GetOnlySpokenLanguageMessage(race)));
                         return;
                     }
 
@@ -361,6 +363,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         var entity = DB.Get<Player>(playerId);
                         entity.IsDeleted = true;
                         DB.Set(entity);
+
+                        // A candidate who is deleted during an election leaves the ballot, and the votes for them are dropped.
+                        ElectionBallot.RemoveDepartedCandidate(entity.CitizenPropertyId, playerId);
+                        CityOfficers.OnCitizenLeft(entity.CitizenPropertyId, playerId);
 
                         var playerName = GetPCPlayerName(user);
                         var characterName = GetName(user);
@@ -445,6 +451,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     if (GetIsDM(user) || GetIsDMPossessed(user))
                     {
                         return "This command can only be used by players.";
+                    }
+
+                    if (Astromech.IsAstromech(user))
+                    {
+                        return Astromech.HeadScaleMessage;
                     }
 
                     if (!RacialAppearanceRegistry.TryGet(GetAppearanceType(user), out var appearance))

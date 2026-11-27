@@ -67,6 +67,15 @@ public class DiscordWebhookCallerSafetyTests
     }
 
     [Test]
+    public void CityGazetteDoesNotMoveItsCallerOntoAnAsyncContinuation()
+    {
+        var method = FindMethod(ReadSource("Service/CityGazette.cs"), "QueueDiscord");
+        method.DescendantNodes().OfType<AwaitExpressionSyntax>().Should().BeEmpty();
+        method.ReturnType.ToString().Should().Be("void");
+        method.ToString().Should().Contain(".GetResult()");
+    }
+
+    [Test]
     public void NewDiscordQueueCallersRequireThreadingReview()
     {
         var callers = new List<string>();
@@ -92,6 +101,7 @@ public class DiscordWebhookCallerSafetyTests
             "DMChatCommand.SendDMShoutWebhookAsync",
             "HostedEvents.PostToDiscordAsync",
             "Property.BroadcastPropertyEvent",
+            "CityGazette.QueueDiscord",
             "ServerTasks.SendServerLifecycleNotification"
         }, "each new caller must be checked for native calls after its asynchronous enqueue");
     }

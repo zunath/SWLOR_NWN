@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.LootService;
@@ -144,6 +145,18 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var loot = CreateItemOnObject(item.Resref, receiver, quantity);
+                lootList.Add(loot);
+
+                item.OnSpawn?.Invoke(loot);
+            }
+
+            // Astromech gear: a second roll of the same table at the same chance, which drops the astromech form
+            // of the piece it picks and nothing for any other pick (AstromechLoot).
+            var forms = AstromechLoot.Roll(table, attempts, () => Random.D100(1) <= chance,
+                rolled => rolled.GetRandomItemWithRareBonus(rareBonusChance));
+            foreach (var (item, resref) in forms)
+            {
+                var loot = CreateItemOnObject(resref, receiver, Random.Next(item.MaxQuantity) + 1);
                 lootList.Add(loot);
 
                 item.OnSpawn?.Invoke(loot);

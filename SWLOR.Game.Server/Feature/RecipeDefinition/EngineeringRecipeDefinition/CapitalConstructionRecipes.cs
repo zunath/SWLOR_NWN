@@ -12,7 +12,13 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             CapitalShipComponents();
 
-            return _builder.Build();
+            // W11o: the structural components, reactor and thrusters are the capital top band now, crafted from tier 5
+            // components (ShipComponentRecipes). Their legacy level 52 recipes stay so saved unlocks still find them, but
+            // are no longer crafted.
+            var recipes = _builder.Build();
+            foreach (var retired in new[] { RecipeType.CapitalConstruction, RecipeType.CapitalReactor, RecipeType.CapitalThruster })
+                recipes[retired].IsActive = false;
+            return recipes;
         }
 
         private void CapitalShipComponents()
@@ -39,8 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_arkoxit", 10)
                 .Component("ref_arda", 5)
                 .Component("ref_gostian", 25)
-                .Component("ref_jasioclase", 25)
-                .CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 61);
+                .Component("ref_jasioclase", 25);
 
             // Capital Class Power Relay
             _builder.Create(RecipeType.CapitalPowerRelay, SkillType.Engineering)
@@ -89,8 +94,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_gostian", 80)
                 .Component("ref_jasioclase", 80)
                 .Component("zinsiam", 20)
-                .Component("elec_high", 50)
-                .CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 63);
+                .Component("elec_high", 50);
 
             // Capital Class Engines: Corvette
             _builder.Create(RecipeType.CorvetteEngines, SkillType.Engineering)
@@ -111,8 +115,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .Component("elec_high", 25)
                 .Component("ref_gostian", 50)
-                .Component("zinsiam", 5)
-                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 70);
+                .Component("zinsiam", 5);
 
             // Capital Class System Dedicated Computer
             _builder.Create(RecipeType.CapitalModuleComputer, SkillType.Engineering)

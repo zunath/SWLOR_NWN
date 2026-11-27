@@ -399,7 +399,8 @@ public class CombatDamageTests
         accuracy.Should().Contain("skillOverride != SkillType.Invalid ? skillOverride :");
         accuracy.Should().Contain("Skill.GetWeaponSkill(creature.m_idSelf, weapon.m_idSelf)",
             "ordinary paired shots use Twin Pistol while queued abilities retain their explicit skill");
-        accuracy.Should().Contain("skillLevel = dbPlayer.Skills[skillType].Rank");
+        accuracy.Should().Contain("skillLevel = dbPlayer.Skills[SkillBodyFrames.GetTrainedSkill(skillType, dbPlayer.BodyFrame)].Rank",
+            "the rank read is the explicit skill's, or for an astromech the skill it trains in its place");
         accuracy.Should().Contain("var statType = accuracyAbilityOverride != AbilityType.Invalid");
         accuracy.Should().Contain("accuracyBonus += ip.m_nCostTableValue");
     }

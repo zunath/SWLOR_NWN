@@ -122,6 +122,40 @@ public class QuestContractBoardTests
             .Should().Be($"A contract must have between 1 and {QuestContractBoard.MaxObjectives} objectives.");
     }
 
+    [TestCase("config_fig3", TestName = "ValidateDraft_RejectsRetiredSpaceObjectives(configuration module)")]
+    [TestCase("beamcannon1", TestName = "ValidateDraft_RejectsRetiredSpaceObjectives(retired module)")]
+    [TestCase("sdeed_hound", TestName = "ValidateDraft_RejectsRetiredSpaceObjectives(retired deed)")]
+    public void ValidateDraft_RejectsRetiredSpaceObjectives(string resref)
+    {
+        QuestContractBoard.IsRetiredObjectiveItem(resref).Should().BeTrue();
+        var draft = CreateValidDraft();
+        draft.Objectives.Add(new QuestContractObjective { ItemResref = resref, ItemName = "Retired", Quantity = 1 });
+
+        QuestContractBoard.ValidateDraft(draft, "Title", "Description", ResolveKnownItem)
+            .Should().Be(QuestContractBoard.RetiredObjectiveMessage, "a contract for an item nobody can hold could never be completed");
+        QuestContractBoard.RetiredObjectiveMessage.Should().Match(x => x.All(c => c < 128), "game text is ASCII");
+    }
+
+    [Test]
+    public void RetiredSpaceItems_AreNeitherOfferedNorAddedAsObjectives()
+    {
+        foreach (var current in new[] { "sm_beam_00", "sd_republicstrik", "ref_tilarium" })
+            QuestContractBoard.IsRetiredObjectiveItem(current).Should().BeFalse(current);
+        QuestContractBoard.ValidateDraft(CreateValidDraft(), "Title", "Description", ResolveKnownItem).Should().BeEmpty();
+
+        var editor = ReadSource("SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "QuestContractEditorViewModel.cs").Replace("\r\n", "\n");
+        var search = ExtractMethod(editor, "public Action OnClickSearchItems()");
+        search.Should().Contain(".Where(x => !QuestContractBoard.IsRetiredObjectiveItem(x.Resref))", "the search does not offer them");
+        var add = ExtractMethod(editor, "public Action OnClickAddObjective()");
+        add.IndexOf("if (QuestContractBoard.IsRetiredObjectiveItem(selected.Resref))", StringComparison.Ordinal)
+            .Should().BeInRange(0, add.IndexOf("draft.Objectives.Add(", StringComparison.Ordinal));
+        add.Should().Contain("StatusText = QuestContractBoard.RetiredObjectiveMessage;");
+
+        // Publishing (including a contract posted again) runs the draft check.
+        ExtractMethod(ReadSource("SWLOR.Game.Server", "Service", "QuestContractBoard.cs"), "public static string PublishContract(uint player)")
+            .Should().Contain("ValidateDraft(draft, title, description, Cache.GetItemNameByResref)");
+    }
+
     [Test]
     public void ValidateDraft_RejectsTooManyObjectives()
     {

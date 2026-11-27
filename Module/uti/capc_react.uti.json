@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 2500
+    "value": 663
   },
   "BaseItem": {
     "type": "int",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2500
+    "value": 663
   },
   "Cursed": {
     "type": "byte",
@@ -26,12 +26,14 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A capital ship's main reactor: a tier 5 Ship Reactor shielded with Refined Ardanium. One goes into every Capital hull. Crafted by Engineering."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A capital ship's main reactor: a tier 5 Ship Reactor shielded with Refined Ardanium. One goes into every Capital hull. Crafted by Engineering."
     }
   },
   "Identified": {

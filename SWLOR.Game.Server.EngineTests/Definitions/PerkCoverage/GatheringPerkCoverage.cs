@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
 {
@@ -106,6 +107,48 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                     MaxLevel = 1,
                     Prices = new[] { 4 },
                     Notes = "Treasure Seeker capstone, Gathering 50. Automatic trait: the first Dig Deeper find of each board weights the rare entries most.",
+                },
+                new()
+                {
+                    Perk = PerkType.Prospector,
+                    MaxLevel = 3,
+                    Prices = new[] { 2, 3, 4 },
+                    GrantedFeats = new[] { FeatType.ProspectorTrait },
+                },
+                new()
+                {
+                    Perk = PerkType.DeepCore,
+                    MaxLevel = 2,
+                    Prices = new[] { 3, 4 },
+                    GrantedFeats = new[] { FeatType.DeepCoreTrait },
+                },
+                new()
+                {
+                    Perk = PerkType.RapidExtraction,
+                    MaxLevel = 2,
+                    Prices = new[] { 3, 4 },
+                    GrantedFeats = new[] { FeatType.RapidExtractionTrait },
+                },
+                new()
+                {
+                    Perk = PerkType.GasSiphoning,
+                    MaxLevel = 2,
+                    Prices = new[] { 2, 3 },
+                    GrantedFeats = new[] { FeatType.GasSiphoningTrait },
+                },
+                new()
+                {
+                    Perk = PerkType.SalvageExpert,
+                    MaxLevel = 3,
+                    Prices = new[] { 2, 3, 4 },
+                    GrantedFeats = new[] { FeatType.SalvageExpertTrait },
+                },
+                new()
+                {
+                    Perk = PerkType.TraitHunter,
+                    MaxLevel = 2,
+                    Prices = new[] { 3, 4 },
+                    GrantedFeats = new[] { FeatType.TraitHunterTrait },
                 },
             };
         }

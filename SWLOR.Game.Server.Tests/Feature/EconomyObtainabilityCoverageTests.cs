@@ -140,6 +140,8 @@ public class EconomyObtainabilityCoverageTests
             @"RefinedItemResref\s*=\s*""([^""]+)""",
             @"new\s+TerminalItem\([^,]+,\s*""([^""]+)""",
             @"(?:Named|Schematic|Note|Tool)\(\s*SlicingSourceType\.[^,]+,\s*\d+,\s*""([^""]+)""",
+            // The exclusive items city stores sell with a weekly allowance (CityStoreCatalog).
+            @"new\s+CityStoreLimitedItem\(\s*""([^""]+)""",
         };
         var compiled = literalPatterns.Select(p => new Regex(p)).ToArray();
 
@@ -148,9 +150,14 @@ public class EconomyObtainabilityCoverageTests
         {
             "FishType.cs", "FishingRodType.cs", "FishingBaitType.cs",
             "SlicingCacheSmitheryRecipes.cs", "SlicingCacheCookingRecipes.cs", "TraceFuseRecipes.cs",
-            "SlicingTerminalFurnitureRecipes.cs", "ConcentratedVenomRecipes.cs",
+            "SlicingTerminalFurnitureRecipes.cs", "ConcentratedVenomRecipes.cs", "ShipSalvageItems.cs",
+            "RevampComponentCatalog.cs", "RevampRewardCatalog.cs", "SpaceSlicingItems.cs",
+            // The astromech form of an item is handed out wherever a quest rewards the item it copies.
+            "AstromechItemTwins.Generated.cs",
         };
         var serverDir = Path.Combine(root, "SWLOR.Game.Server");
+        // Space revamp catalogs: each hull and module Tag is the output resref of a RevampStarshipRecipes recipe.
+        var revampCatalogs = new[] { "RevampModuleCatalog.cs", "RevampShipCatalog.cs" };
         foreach (var file in Directory.EnumerateFiles(serverDir, "*.cs", SearchOption.AllDirectories))
         {
             // Skip nested worktree copies, but compare relative to the repository root so this
@@ -165,12 +172,18 @@ public class EconomyObtainabilityCoverageTests
             if (literalRegistries.Any(reg => file.EndsWith(reg)))
                 foreach (Match m in Regex.Matches(text, @"""([a-z0-9_]{2,16})"""))
                     Add(m.Groups[1].Value);
+
+            if (revampCatalogs.Any(catalog => file.EndsWith(catalog)))
+                foreach (Match m in Regex.Matches(text, @"\bTag\s*=\s*""([^""]+)"""))
+                    Add(m.Groups[1].Value);
         }
 
-        // Fixed resref constants that are granted directly.
+        // Fixed resref constants that are granted directly. The livestock crate and the manure are created by the livestock code
+        // from constants, not from a literal at a call site.
         foreach (var r in new[] { "beast_dna", "beast_egg", "blueprint", "survival_knife",
-                                  "fresh_bread", "dlarproto", "traveler_m", "traveler_f",
-                                  "ls_custom", "ss_custom" })
+                                  "fresh_bread", "dlarproto", "traveler_m", "traveler_f", "am_plat_start",
+                                  "ls_custom", "ss_custom", "livestock_crate",
+                                  "manure_t1", "manure_t2", "manure_t3", "manure_t4", "manure_t5" })
             Add(r);
 
         return obtainable;

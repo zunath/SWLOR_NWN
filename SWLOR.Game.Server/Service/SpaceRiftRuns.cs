@@ -1,0 +1,861 @@
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+
+namespace SWLOR.Game.Server.Service
+{
+    /// <summary>
+    /// Rift Runs (plan section 31). Using a Rift Key in space opens a private pocket, an instance of the
+    /// <see cref="RiftRunTuning.TemplateResref"/> area, for the user's ship and up to two party ships nearby. Its three
+    /// chambers' waves come one at a time; clearing a chamber pulls the party into the next. Clearing the last within the
+    /// 15-minute timer pays by the key's tier and the time left and returns the party where it opened the pocket. When the
+    /// timer runs out the pocket collapses and destroys every ship in it, so everyone aboard ejects in escape pods with
+    /// the normal XP debt (SpaceDeath). Runs live in memory: a restart empties the pockets and the ships go back to their
+    /// docks at boot.
+    /// </summary>
+    public static partial class Space
+    {
+        private static readonly Dictionary<string, RiftRun> _riftRuns = new();
+
+        // The resref of a Rift Key spent but not yet settled: its pocket has not opened, or the key handed back has not been
+        // saved. It rides in the character file, which never holds both it and the returned key, so a player who logs out
+        // or a server that stops before the key is settled gives it back at the next login.
+        private const string PendingRiftKeyVariable = "SPACE_RIFT_KEY_PENDING";
+
+        // Set on each pocket instance when it is created. An instance takes a generated resref, so the template name
+        // alone does not tell a live pocket.
+        private const string RiftPocketVariable = "SPACE_RIFT_POCKET";
+
+        // The resref of the key, set (not saved) on a key user whose cleared pending mark failed to save: their file still
+        // returns the key.
+        private const string RiftKeySpendUnsavedVariable = "SPACE_RIFT_KEY_SPEND_UNSAVED";
+
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public static void ScheduleRiftRuns()
+        {
+            Scheduler.ScheduleRepeating(ProcessRiftRuns, TimeSpan.FromSeconds(1));
+        }
+
+        /// <summary>The run a ship is in: the pilot's own, or the one of the ship whose station a crew member holds.</summary>
+        public static RiftRun FindRiftRun(uint player)
+        {
+            var ship = GetFiringShip(player);
+            return _riftRuns.Values.FirstOrDefault(x => x.Phase != RiftRunPhase.Closing && x.Pilots.Contains(ship));
+        }
+
+        /// <summary>Why a Rift Key cannot open a pocket for this user now, or empty.</summary>
+        public static string GetRiftKeyRefusal(uint user, uint item) =>
+            string.IsNullOrEmpty(ObjectPlugin.GetString(user, PendingRiftKeyVariable))
+                ? GetRiftOpenRefusal(user, RiftRunRules.FindKey(GetResRef(item)))
+                : "Your last Rift Key is still opening or being returned.";
+
+        /// <summary>Why a pocket of this key's tier cannot open for this user now, or empty.</summary>
+        private static string GetRiftOpenRefusal(uint user, RiftKeyDetail key)
+        {
+            var entry = GetRiftEntryRefusal(user);
+            return string.IsNullOrEmpty(entry)
+                ? RiftRunRules.Message(RiftRunRules.GetOpenRefusal(key, _riftRuns.Count))
+                : entry;
+        }
+
+        /// <summary>Whether the player flies their own ship, not crewing another's station or viewport.</summary>
+        private static bool IsFlyingOwnShip(uint player) => IsPlayerInSpaceMode(player) && IsShipInSpace(player);
+
+        /// <summary>
+        /// Why a ship cannot go into a pocket now, or empty. The key user and every party ship entering with them pass
+        /// these checks, so a party member never pulls a ship out of an Interdictor's hold or a fight.
+        /// </summary>
+        private static string GetRiftEntryRefusal(uint pilot)
+        {
+            // An Interdictor's hold keeps a ship from opening or entering a pocket (W11k).
+            var hold = GetInterdictionRefusal(pilot);
+            if (!string.IsNullOrEmpty(hold))
+                return hold;
+
+            var refusal = RiftRunRules.GetEntryRefusal(
+                IsFlyingOwnShip(pilot),
+                GetCloakPhase(pilot) != ShipCloakPhase.Off,
+                IsShipInCombat(pilot),
+                FindRiftRun(pilot) != null || IsRiftPocket(GetArea(pilot)));
+            return RiftRunRules.Message(refusal);
+        }
+
+        /// <summary>Whether an area is a Rift Run pocket.</summary>
+        public static bool IsRiftPocket(uint area) =>
+            GetIsObjectValid(area) && (GetLocalBool(area, RiftPocketVariable) || RiftRunRules.IsPocketTemplate(GetResRef(area)));
+
+        /// <summary>
+        /// Spends the key, saves the character without it, then opens a pocket for the key user and the party ships nearby.
+        /// The run's rewards are recorded only after that save, so a crash can never leave both the key and the rewards.
+        /// </summary>
+        public static void StartRiftRun(uint user, uint item)
+        {
+            var refusal = GetRiftKeyRefusal(user, item);
+            if (!string.IsNullOrEmpty(refusal))
+            {
+                SendMessageToPC(user, ColorToken.Red(refusal));
+                return;
+            }
+
+            var resref = GetResRef(item);
+            ObjectPlugin.SetString(user, PendingRiftKeyVariable, resref, true);
+            Item.ReduceItemStack(item, 1);
+            // A destroyed key leaves the inventory when this script ends, so the save waits a moment.
+            AssignCommand(GetModule(), () => DelayCommand(0.1f, () => OpenSpentRiftKey(user, RiftRunRules.FindKey(resref), resref)));
+        }
+
+        /// <summary>
+        /// Saves the spent key, with its pending mark, and opens the pocket. The saved file then holds the mark and not the
+        /// key, so a refused or failed opening, or a server stop before the pocket opens, always gives the key back. Once
+        /// the pocket is open the mark is cleared; a player who logged out first keeps the mark in their logout save and
+        /// gets the key back at login.
+        /// </summary>
+        private static void OpenSpentRiftKey(uint user, RiftKeyDetail key, string resref)
+        {
+            if (!GetIsObjectValid(user))
+                return;
+
+            var refusal = GetRiftOpenRefusal(user, key);
+            if (string.IsNullOrEmpty(refusal) && !CharacterCheckpoint.Save(user))
+                refusal = "Your character could not be saved, so the rift stays closed. Try again in a moment.";
+            if (string.IsNullOrEmpty(refusal) && OpenRiftRun(user, key, spentKey: true))
+            {
+                // The pocket is open, so the key is spent for good. Until a save holds the cleared mark, a server stop
+                // returns the key, so the run pays this user nothing until one does (GetRiftKeySpend).
+                ObjectPlugin.DeleteString(user, PendingRiftKeyVariable);
+                var run = _riftRuns.Values.FirstOrDefault(x => x.KeyUser == user && !x.KeySpendSaved && !x.KeyRefunded);
+                if (CharacterCheckpoint.Save(user))
+                {
+                    if (run != null)
+                        run.KeySpendSaved = true;
+                }
+                else
+                {
+                    SetLocalString(user, RiftKeySpendUnsavedVariable, resref);
+                    Log.Write(LogGroup.Space, $"RIFT KEY SPENT - {PlayerName.GetAuditName(user)} - {resref} - character save failed, spoils wait for a save");
+                }
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(refusal))
+                SendMessageToPC(user, ColorToken.Red(refusal));
+            ReturnRiftKey(user, resref);
+        }
+
+        /// <summary>
+        /// Whether the key user's character file holds the Rift Key spent on this run (<see cref="RiftRun.KeySpendSaved"/>), returns
+        /// it, or cannot tell yet. A key user whose cleared mark failed to save is saved again here; while that still fails the
+        /// key is refunded and the run records no spoils, since a restart would return the key and keep the spoils. A key user
+        /// who left before a save held the spend is unconfirmed until their login settles it (<see cref="ReturnPendingRiftKey"/>).
+        /// </summary>
+        private static RiftKeySpend GetRiftKeySpend(RiftRun run)
+        {
+            if (string.IsNullOrEmpty(run.KeyUserId) || run.KeySpendSaved)
+                return RiftKeySpend.Saved;
+            if (run.KeyRefunded)
+                return RiftKeySpend.Refunded;
+
+            var player = run.KeyUser;
+            if (!GetIsObjectValid(player) || GetObjectUUID(player) != run.KeyUserId)
+                return RiftKeySpend.Unconfirmed;
+
+            var resref = GetLocalString(player, RiftKeySpendUnsavedVariable);
+            if (string.IsNullOrEmpty(resref) || CharacterCheckpoint.Save(player))
+            {
+                DeleteLocalString(player, RiftKeySpendUnsavedVariable);
+                run.KeySpendSaved = true;
+                return RiftKeySpend.Saved;
+            }
+
+            // The key is refunded instead: the mark goes back, so every later save keeps it until the login returns the key.
+            run.KeyRefunded = true;
+            DeleteLocalString(player, RiftKeySpendUnsavedVariable);
+            ObjectPlugin.SetString(player, PendingRiftKeyVariable, resref, true);
+            SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so your Rift Key is returned at your next login instead of these spoils."));
+            Log.Write(LogGroup.Space, $"RIFT RUN SPOILS WITHHELD - {PlayerName.GetAuditName(player)} - the spent key was never saved as spent");
+            return RiftKeySpend.Refunded;
+        }
+
+        /// <summary>A player whose Rift Key was spent but not settled before they left gets it back.</summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ReturnPendingRiftKey()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var resref = ObjectPlugin.GetString(player, PendingRiftKeyVariable);
+
+            // A key user who left a run before a save held their spend is settled by what their saved file holds: the mark
+            // means the key comes back (no spoils), none means the spend was saved (the run pays).
+            var playerId = GetObjectUUID(player);
+            foreach (var run in _riftRuns.Values.Where(x => x.KeyUserId == playerId && !x.KeySpendSaved && !x.KeyRefunded))
+            {
+                if (string.IsNullOrEmpty(resref))
+                    run.KeySpendSaved = true;
+                else
+                    run.KeyRefunded = true;
+            }
+
+            SettleHeldRiftPayouts(playerId, spendSaved: string.IsNullOrEmpty(resref));
+
+            if (!string.IsNullOrEmpty(resref))
+                ReturnRiftKey(player, resref);
+        }
+
+        /// <summary>
+        /// Settles the spoils held for runs this key user opened and left before a save held the spend: released to every
+        /// player's pending payouts when the saved file holds the key as spent, dropped when it returns the key.
+        /// </summary>
+        private static void SettleHeldRiftPayouts(string keyUserId, bool spendSaved)
+        {
+            var state = IncursionRecord;
+            if (state.HeldRiftPayouts == null || !state.HeldRiftPayouts.Remove(keyUserId, out var held))
+                return;
+
+            if (spendSaved)
+            {
+                state.PendingRiftPayouts ??= new Dictionary<string, IncursionPayout>();
+                foreach (var (playerId, payout) in held)
+                    CapitalBattleRules.AddPending(state.PendingRiftPayouts, playerId, payout);
+            }
+
+            SaveIncursions();
+            Log.Write(LogGroup.Space, $"RIFT RUN HELD SPOILS {(spendSaved ? "RELEASED" : "DROPPED")} - key user {keyUserId} - {held.Count} player(s)");
+            if (!spendSaved)
+                return;
+
+            // Players online now collect at once; the rest collect at their next login (DeliverPendingRiftRunPayout).
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                // A loop-body copy: the delayed call must not see the for loop's variable after it has moved on.
+                var recipient = player;
+                var playerId = GetObjectUUID(recipient);
+                if (held.ContainsKey(playerId))
+                    DelayCommand(6f, () => CollectPendingPayout(recipient, IncursionRecord.PendingRiftPayouts, playerId,
+                        "Rift Run spoils", "RIFT RUN PAYOUT"));
+            }
+        }
+
+        /// <summary>
+        /// Hands a pending Rift Key back. The mark stays until the key is in the character's own inventory and saved with
+        /// the mark cleared: a key that lands outside the inventory (a full one) is removed, and a failed save takes the
+        /// key back and restores the mark, so the key is never lost and never given twice.
+        /// </summary>
+        private static void ReturnRiftKey(uint player, string resref)
+        {
+            ObjectPlugin.SetString(player, PendingRiftKeyVariable, resref, true);
+            var key = CreateItemOnObject(resref, player);
+            if (!GetIsObjectValid(key) || GetItemPossessor(key) != player)
+            {
+                if (GetIsObjectValid(key))
+                    DestroyObject(key);
+                SendMessageToPC(player, ColorToken.Red("Your inventory has no room for your Rift Key, so it is returned at your next login."));
+                return;
+            }
+
+            ObjectPlugin.DeleteString(player, PendingRiftKeyVariable);
+            if (!CharacterCheckpoint.Save(player))
+            {
+                DestroyObject(key);
+                ObjectPlugin.SetString(player, PendingRiftKeyVariable, resref, true);
+                SendMessageToPC(player, ColorToken.Red("Your character could not be saved, so your Rift Key is returned at your next login."));
+                return;
+            }
+
+            SendMessageToPC(player, ColorToken.Cyan("Your rift did not open, so your Rift Key is returned."));
+        }
+
+        /// <summary>
+        /// Opens a pocket of <paramref name="key"/>'s tier for the user and the party ships nearby. A key user's key is
+        /// already spent and saved (<paramref name="spentKey"/>); a DM opening one spends none.
+        /// </summary>
+        private static bool OpenRiftRun(uint user, RiftKeyDetail key, bool spentKey)
+        {
+            var nearby = new List<(uint Ship, float Distance)>();
+            for (var member = GetFirstFactionMember(user); GetIsObjectValid(member); member = GetNextFactionMember(user))
+            {
+                // Only a pilot flying their own ship is a party ship: crew at a station or viewport keep an active ship
+                // but are aboard the pilot's, and would count as a phantom ship.
+                if (member == user || GetIsDM(member) || !IsFlyingOwnShip(member) || GetArea(member) != GetArea(user) ||
+                    FindRiftRun(member) != null)
+                {
+                    continue;
+                }
+
+                nearby.Add((member, GetDistanceBetween(member, user)));
+            }
+
+            var (pilots, leftOut) = RiftRunRules.PickParty(user, nearby, GetRiftEntryRefusal);
+            var area = Area.CreateInstance(key.Template, $"rift_pocket_{Guid.NewGuid():N}", $"Rift Pocket (Tier {key.TierLabel})");
+            if (GetIsObjectValid(area))
+                SetLocalBool(area, RiftPocketVariable, true);
+            if (!GetIsObjectValid(area))
+            {
+                SendMessageToPC(user, ColorToken.Red("The rift flickers and will not open."));
+                Log.Write(LogGroup.Error, $"Rift Run: could not create an instance of {key.Template}.");
+                return false;
+            }
+
+            // A party ship that fails an entry check stays where it is, and its pilot hears why.
+            foreach (var (pilot, refusal) in leftOut)
+                SendMessageToPC(pilot, ColorToken.Red(refusal));
+
+            var now = DateTime.UtcNow;
+            var run = new RiftRun
+            {
+                Key = key,
+                Ships = pilots.Count,
+                StartedAt = now,
+                NextAt = now.AddSeconds(RiftRunTuning.WaveDelaySeconds),
+                Area = area,
+                KeyUser = spentKey ? user : OBJECT_INVALID,
+                KeyUserId = spentKey ? GetObjectUUID(user) : string.Empty,
+                Pilots = pilots,
+            };
+            _riftRuns[run.Id] = run;
+
+            for (var index = 0; index < pilots.Count; index++)
+            {
+                var pilot = pilots[index];
+                run.Origins[pilot] = GetLocation(pilot);
+                if (TryGetFlownShip(pilot, out var flown))
+                {
+                    run.ShipIds[pilot] = flown.Id;
+                    run.PilotIds[flown.Id] = GetObjectUUID(pilot);
+                }
+                JumpIntoRiftRoom(run, pilot, index);
+                foreach (var player in GetShipCrewPlayers(pilot))
+                {
+                    SendMessageToPC(player, ColorToken.Cyan(
+                        $"{(spentKey ? GetName(user) : "A DM")} opens a tier {key.TierLabel} rift pocket. Clear its three chambers within " +
+                        $"{RiftRunTuning.TimerSeconds / 60} minutes, or it collapses with you inside."));
+                }
+            }
+
+            Log.Write(LogGroup.Space, $"RIFT RUN STARTED - {PlayerName.GetAuditName(user)} - {key.Resref}, {pilots.Count} ship(s): " +
+                                      string.Join(", ", pilots.Select(PlayerName.GetAuditName)));
+            return true;
+        }
+
+        /// <summary>
+        /// A pilot logging out of a run, docking their ship aboard another ship, or leaving the controls (/exit): their ship
+        /// waits in the run for them to rejoin (W11k). This runs at logout because the run's next check can still see the leaving pilot's creature
+        /// after its ship is unregistered, and would then drop the pilot without keeping their ship (W11m live check).
+        /// </summary>
+        private static void MarkRiftRunPilotAway(uint pilot)
+        {
+            foreach (var run in _riftRuns.Values.Where(x => x.Pilots.Contains(pilot)))
+                RiftRunRules.MarkAway(run, pilot);
+        }
+
+        /// <summary>
+        /// Refuses /exit for the last pilot flying an open Rift Run: leaving would abandon the run, and its collapse wrecks
+        /// the ship. A disconnect still forfeits (so logging out cannot escape a losing run); a group's pilot may leave,
+        /// since their ship waits for them to rejoin.
+        /// </summary>
+        public static bool RefuseLeavingLastRiftRunShip(uint pilot)
+        {
+            var run = _riftRuns.Values.FirstOrDefault(x => x.Pilots.Contains(pilot));
+            if (run == null || !RiftRunRules.LeavingWouldAbandon(run.Phase, run.Pilots.Count(x => x != pilot && GetIsObjectValid(x))))
+                return false;
+
+            SendMessageToPC(pilot, ColorToken.Red("You are the last ship in this Rift Run. Leaving the controls now would abandon the run, " +
+                                                  "and the collapsing pocket would wreck your ship."));
+            return true;
+        }
+
+        /// <summary>A run's waiting ship that left the pocket aboard its host and undocked elsewhere is out of the run.</summary>
+        private static void ForgetRiftRunShip(string shipId)
+        {
+            foreach (var run in _riftRuns.Values)
+                RiftRunRules.Forget(run, shipId);
+        }
+
+        /// <summary>The open run a logged-out pilot's ship waits in, or null (W11k).</summary>
+        private static RiftRun FindRejoinableRiftRun(string shipId) =>
+            _riftRuns.Values.FirstOrDefault(x => RiftRunRules.CanRejoin(x, shipId) && GetIsObjectValid(x.Area));
+
+        /// <summary>
+        /// Where a pilot taking the controls of a ship waiting in an open Rift Run launches: the run's current chamber.
+        /// Null when the ship is in no open run, so the launch goes where the ship is as usual.
+        /// </summary>
+        private static Location GetRiftRunRejoinLocation(string shipId)
+        {
+            var run = FindRejoinableRiftRun(shipId);
+            if (run == null)
+                return null;
+
+            var (dx, dy) = RiftRunRules.ArrivalOffset(run.Pilots.Count);
+            return RiftRoomLocation(run, run.Room, dx, dy);
+        }
+
+        /// <summary>A pilot launched back into the pocket their ship waits in: they are one of the run's ships again.</summary>
+        private static void RejoinRiftRun(uint pilot, string shipId)
+        {
+            var run = FindRejoinableRiftRun(shipId);
+            if (run == null || GetArea(pilot) != run.Area || !RiftRunRules.Rejoin(run, pilot, shipId))
+                return;
+
+            run.PilotIds[shipId] = GetObjectUUID(pilot);
+
+            var left = RiftRunRules.FormatTimer(RiftRunRules.SecondsLeft(run.StartedAt, DateTime.UtcNow));
+            SendMessageToPC(pilot, ColorToken.Cyan(
+                $"You rejoin the Rift Run in chamber {run.Room + 1} of {RiftRunTuning.Rooms.Count}, the {RiftRunTuning.Rooms[run.Room].Name}: {left} left."));
+            Log.Write(LogGroup.Space, $"RIFT RUN REJOINED - {PlayerName.GetAuditName(pilot)} - {run.Key.Resref}, chamber {run.Room + 1}");
+        }
+
+        private static Location RiftRoomLocation(RiftRun run, int room, float dx = 0f, float dy = 0f)
+        {
+            var waypoint = GetNearestObjectByTag($"{RiftRunTuning.RoomWaypointPrefix}{room + 1}", GetFirstObjectInArea(run.Area));
+            var (x, y, z) = RiftRunRules.RoomPoint(run.Key.Template, room);
+            var position = GetIsObjectValid(waypoint) && GetArea(waypoint) == run.Area ? GetPosition(waypoint) : Vector3(x, y, z);
+            return Location(run.Area, Vector3(position.X + dx, position.Y + dy, position.Z), 0f);
+        }
+
+        private static void JumpIntoRiftRoom(RiftRun run, uint pilot, int index)
+        {
+            var (dx, dy) = RiftRunRules.ArrivalOffset(index);
+            var location = RiftRoomLocation(run, run.Room, dx, dy);
+            ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Unsummon), GetLocation(pilot));
+            AssignCommand(pilot, () =>
+            {
+                ClearAllActions();
+                JumpToLocation(location);
+            });
+            // Runs from the run check (a scheduler task), where DelayCommand never runs.
+            Scheduler.Schedule(() =>
+            {
+                if (GetIsObjectValid(pilot))
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Magblue), pilot);
+            }, TimeSpan.FromSeconds(0.5));
+        }
+
+        private static void ProcessRiftRuns()
+        {
+            foreach (var run in _riftRuns.Values.ToList())
+            {
+                try
+                {
+                    ProcessRiftRun(run);
+                }
+                catch (Exception ex)
+                {
+                    Log.Write(LogGroup.Error, $"Rift Run {run.Id} failed: {ex}");
+                }
+            }
+        }
+
+        private static void ProcessRiftRun(RiftRun run)
+        {
+            var now = DateTime.UtcNow;
+            if (run.Phase == RiftRunPhase.Closing)
+            {
+                CloseRiftPocket(run);
+                return;
+            }
+
+            // Ships that died (and left in pods), logged out or were moved out of the pocket are out of the run. A pilot
+            // who logged out can rejoin while the run is open (W11k): their ship waits in the pocket. The wait needs another
+            // ship still in the run; a run every pilot left closes at once as failed (W15b), so a solo logout ends it.
+            if ((now - run.StartedAt).TotalSeconds >= RiftRunRules.ArrivalGraceSeconds)
+            {
+                foreach (var pilot in run.Pilots.Where(x => !GetIsObjectValid(x)).ToList())
+                    RiftRunRules.MarkAway(run, pilot);
+                run.Pilots.RemoveAll(x => RiftRunRules.HasLeftPocket(
+                    GetIsObjectValid(x), IsPlayerInSpaceMode(x), !GetIsObjectValid(GetArea(x)), GetArea(x) == run.Area));
+            }
+
+            run.Enemies.RemoveAll(x => !GetIsObjectValid(x) || GetIsDead(x));
+            var secondsLeft = RiftRunRules.SecondsLeft(run.StartedAt, now);
+            if (run.Phase != RiftRunPhase.Returning)
+            {
+                foreach (var warning in RiftRunRules.DueWarnings(run, secondsLeft))
+                    MessageRiftRun(run, ColorToken.Orange($"The rift pocket is failing: {RiftRunRules.FormatTimer(warning)} left."));
+            }
+
+            switch (RiftRunRules.Step(run, run.Enemies.Count, run.Pilots.Count, now))
+            {
+                case RiftRunAction.SpawnWave:
+                    SpawnRiftWave(run);
+                    break;
+                case RiftRunAction.RoomCleared:
+                    MessageRiftRun(run, ColorToken.Cyan($"The {RiftRunTuning.Rooms[run.Room].Name} is clear. The rift pulls you deeper..."));
+                    break;
+                case RiftRunAction.PullToNextRoom:
+                    for (var index = 0; index < run.Pilots.Count; index++)
+                        JumpIntoRiftRoom(run, run.Pilots[index], index);
+                    MessageRiftRun(run, ColorToken.Cyan($"Chamber {run.Room + 1} of {RiftRunTuning.Rooms.Count}: the {RiftRunTuning.Rooms[run.Room].Name}."));
+                    break;
+                case RiftRunAction.Complete:
+                    PayRiftRun(run);
+                    break;
+                case RiftRunAction.ReturnHome:
+                    foreach (var pilot in run.Pilots.ToList())
+                        ReturnFromRiftPocket(run, pilot);
+                    break;
+                case RiftRunAction.Collapse:
+                    CollapseRiftPocket(run);
+                    break;
+                case RiftRunAction.Abandon:
+                    Log.Write(LogGroup.Space, $"RIFT RUN ABANDONED - {run.Key.Resref}, no ships left in the pocket");
+                    break;
+            }
+        }
+
+        private static void SpawnRiftWave(RiftRun run)
+        {
+            var tags = RiftRunRules.WaveTags(run.Key, run.Room, run.Wave, run.Ships);
+            for (var index = 0; index < tags.Count; index++)
+            {
+                var (dx, dy) = RiftRunRules.EnemyOffset(index, tags.Count);
+                var ship = CreateObject(ObjectType.Creature, tags[index], RiftRoomLocation(run, run.Room, dx, dy));
+                if (GetIsObjectValid(ship))
+                    run.Enemies.Add(ship);
+            }
+
+            if (run.Enemies.Count > 0)
+            {
+                run.FailedSpawns = 0;
+                return;
+            }
+
+            // An empty wave would count as cleared: the wave is tried again shortly, and after a few failures the run
+            // ends with the ships sent home, unpaid but unharmed.
+            Log.Write(LogGroup.Error, $"Rift Run {run.Id}: no ship of wave {run.Wave} in chamber {run.Room} could be created ({string.Join(", ", tags)}).");
+            run.FailedSpawns++;
+            if (run.FailedSpawns < MaxFailedSpawns)
+            {
+                run.Phase = RiftRunPhase.Waiting;
+                run.NextAt = DateTime.UtcNow.AddSeconds(RiftRunTuning.WaveDelaySeconds);
+                return;
+            }
+
+            run.Phase = RiftRunPhase.Returning;
+            run.NextAt = DateTime.UtcNow.AddSeconds(RiftRunTuning.ReturnDelaySeconds);
+            MessageRiftRun(run, ColorToken.Red("The rift pocket destabilizes before its defenders can form. The run is over, and the rift returns you home."));
+            Log.Write(LogGroup.Space, $"RIFT RUN ENDED - {run.Key.Resref}, chamber {run.Room + 1}: waves could not be created");
+        }
+
+        /// <summary>Waves in a row that may fail to spawn before a run is ended.</summary>
+        private const int MaxFailedSpawns = 3;
+
+        /// <summary>
+        /// Pays each ship that finished: credits shared by the players aboard, item pulls to the pilot's hold. Every share
+        /// is saved as pending before any is handed out, so a restart mid-payout leaves the rest to collect at login.
+        /// </summary>
+        private static void PayRiftRun(RiftRun run)
+        {
+            var secondsLeft = run.FinishedSecondsLeft;
+            var credits = RiftRunRules.Credits(run.Key, secondsLeft);
+            var pulls = RiftRunRules.Pulls(secondsLeft);
+            var table = Loot.GetLootTableByName(run.Key.LootTable);
+            var state = IncursionRecord;
+            state.PendingRiftPayouts ??= new Dictionary<string, IncursionPayout>();
+            var collecting = new Dictionary<string, uint>();
+
+            // A key user whose spent key is not saved as spent yet still has the key's refund in their character file. The
+            // whole run pays nothing then: any ship's spoils beside the refunded key would let the party keep both. The run
+            // keeps the key user apart from its pilots, so one who left the controls is still checked. A key user who left
+            // before a save held the spend cannot be told apart yet: the run's spoils are held for their next login.
+            var spend = GetRiftKeySpend(run);
+            var participants = run.Pilots.Concat(run.Pilots.SelectMany(GetShipCrewPlayers)).Distinct()
+                .Where(x => x != run.KeyUser && GetIsObjectValid(x)).ToList();
+            if (spend == RiftKeySpend.Refunded)
+            {
+                foreach (var player in participants)
+                    SendMessageToPC(player, ColorToken.Red("The Rift Key that opened this pocket could not be saved as spent, so the run pays no spoils and the key goes back to its user."));
+                Log.Write(LogGroup.Space, $"RIFT RUN SPOILS WITHHELD - {run.Key.Resref} - key user {PlayerName.GetAuditName(run.KeyUser)}");
+                return;
+            }
+
+            var payouts = spend == RiftKeySpend.Saved ? state.PendingRiftPayouts : new Dictionary<string, IncursionPayout>();
+
+            foreach (var pilot in run.Pilots)
+            {
+                var spoils = new IncursionPayout { RegionName = run.Key.Name };
+                for (var pull = 0; pull < pulls; pull++)
+                    AddPull(spoils, table);
+                var nextKey = RiftRunRules.NextKey(run.Key);
+                if (nextKey != null && Random.Next(100) < RiftRunTuning.NextKeyPercent)
+                    spoils.Items.Add(nextKey.Resref);
+                var items = spoils.Items;
+
+                var pilotId = GetObjectUUID(pilot);
+                CapitalBattleRules.AddPending(payouts, pilotId, spoils);
+                if (GetIsObjectValid(pilot))
+                    collecting[pilotId] = pilot;
+
+                var aboard = GetShipCrewPlayers(pilot);
+                foreach (var (playerId, share) in RiftRunRules.ShareCredits(credits, aboard.Select(GetObjectUUID).ToList()))
+                {
+                    var player = aboard.First(x => GetObjectUUID(x) == playerId);
+                    CapitalBattleRules.AddPending(payouts, playerId, new IncursionPayout { Credits = share, RegionName = run.Key.Name });
+                    collecting[playerId] = player;
+                    SendMessageToPC(player, ColorToken.Green(
+                        $"The pocket is cleared with {RiftRunRules.FormatTimer(secondsLeft)} to spare. The rift returns you in {RiftRunTuning.ReturnDelaySeconds:0} seconds."));
+                }
+
+                Log.Write(LogGroup.Space, $"RIFT RUN CLEARED - {PlayerName.GetAuditName(pilot)} - {run.Key.Resref}, {secondsLeft} s left, " +
+                                          $"{credits} credits, {spoils.Credits} pulled credits, {string.Join(", ", items)}");
+            }
+
+            if (spend == RiftKeySpend.Unconfirmed)
+            {
+                state.HeldRiftPayouts ??= new Dictionary<string, Dictionary<string, IncursionPayout>>();
+                if (!state.HeldRiftPayouts.TryGetValue(run.KeyUserId, out var held))
+                    state.HeldRiftPayouts[run.KeyUserId] = held = new Dictionary<string, IncursionPayout>();
+                foreach (var (playerId, payout) in payouts)
+                    CapitalBattleRules.AddPending(held, playerId, payout);
+                SaveIncursions();
+                foreach (var player in participants)
+                    SendMessageToPC(player, ColorToken.Yellow("The spoils wait until the Rift Key's user logs back in and their key is confirmed as spent."));
+                Log.Write(LogGroup.Space, $"RIFT RUN SPOILS HELD - {run.Key.Resref} - key user {run.KeyUserId} left before the spend was saved");
+                return;
+            }
+
+            SaveIncursions();
+            foreach (var (playerId, player) in collecting)
+                CollectPendingPayout(player, state.PendingRiftPayouts, playerId, "Rift Run spoils", "RIFT RUN PAYOUT");
+        }
+
+        /// <summary>A player whose Rift Run spoils were saved but not handed out (a restart mid-payout) collects them at login.</summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void DeliverPendingRiftRunPayout()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            if (IncursionRecord.PendingRiftPayouts == null || !IncursionRecord.PendingRiftPayouts.ContainsKey(playerId))
+                return;
+
+            // The payout stays pending until delivery: a player who disconnects within the delay collects it at the next login.
+            DelayCommand(6f, () => CollectPendingPayout(player, IncursionRecord.PendingRiftPayouts, playerId,
+                "Rift Run spoils", "RIFT RUN PAYOUT"));
+        }
+
+        /// <summary>
+        /// A logged-out pilot's ship in a failed run is lost with everyone aboard, as a ship destroyed online is
+        /// (<see cref="ApplyDeath"/>): its cargo spills into the dying pocket and it is left at 1 hull and no shield for
+        /// the repair bill (modules stay installed, as no player destroyed it). Every player in its interior (its own crew
+        /// and passengers, a pilot who logged back in and stayed aboard, and those who came aboard with a docked ship)
+        /// rides an escape pod to its dock and takes the XP debt now. The ships docked aboard are wrecked with it
+        /// (<see cref="WreckShipsDockedInCollapse"/>) and the players in their interiors ride the pods too. A run pilot who
+        /// rides no pod takes the debt at their next login instead, never both.
+        /// </summary>
+        private static void ForfeitAwayShip(RiftRun run, PlayerShip ship, Location location)
+        {
+            var riders = new List<uint>();
+            if (Property.TryGetLoadedInstance(ship.PropertyId, out var instance))
+                riders.AddRange(GetPlayersInArea(instance.Area).Where(GetIsObjectValid));
+
+            var visitors = GetDockedShips(ship.Id);
+            if (visitors.Count > 0)
+                WreckShipsDockedInCollapse(run, visitors, location, riders.Select(GetObjectUUID).ToList(), riders);
+
+            WreckShipInPocket(ship, location);
+            var pilotId = run.PilotIds.TryGetValue(ship.Id, out var id) ? id : null;
+            var deferred = RiftRunRules.OwesDeferredLoss(pilotId, riders.Select(GetObjectUUID).ToList());
+            if (deferred)
+                OweAwayShipLoss(run, ship.Id);
+
+            Log.Write(LogGroup.Space, $"RIFT RUN - away ship {ship.Id} lost in a failed run with {riders.Count} players aboard; " +
+                                      $"pilot {pilotId ?? "unknown"} {(deferred ? "owes the XP debt at login" : "rides the escape pods")}");
+            EjectAwayShipRiders(ship, riders);
+        }
+
+        /// <summary>A ship lost in a failed run's collapse: its cargo spills and it is left at 1 hull and no shield.</summary>
+        private static void WreckShipInPocket(PlayerShip ship, Location location)
+        {
+            Trade.SpillCargo(ship, location);
+            ship.Status.PendingRiders?.Clear();
+            ship.Status.Hull = 1;
+            ship.Status.Shield = 0;
+            DB.Set(ship);
+        }
+
+        /// <summary>The run's pilot of a ship lost while they were away takes the XP debt at their next login. Returns their id.</summary>
+        private static string OweAwayShipLoss(RiftRun run, string shipId)
+        {
+            var dbPlayer = run.PilotIds.TryGetValue(shipId, out var pilotId) ? DB.Get<Player>(pilotId) : null;
+            if (dbPlayer != null)
+            {
+                dbPlayer.PendingShipLossMessage = "The Rift Run failed while you were away. Your ship was wrecked in the collapsing pocket and towed home at 1 hull, its cargo lost.";
+                DB.Set(dbPlayer);
+            }
+
+            return pilotId;
+        }
+
+        /// <summary>The failed run whose pocket is collapsing in this area (<see cref="RiftRunRules.WrecksDockedShips"/>), or null.</summary>
+        private static RiftRun FindCollapsingRiftRun(uint area) =>
+            GetIsObjectValid(area)
+                ? _riftRuns.Values.FirstOrDefault(x => x.Area == area && RiftRunRules.WrecksDockedShips(x))
+                : null;
+
+        /// <summary>
+        /// A host destroyed in a collapsing pocket takes the ships docked aboard down with it instead of launching them
+        /// into the pocket. Each is wrecked as a ship lost in the collapse, leaves the host and returns to its last
+        /// dock, and leaves the run. The players in their interiors join <paramref name="riders"/>, who ride the host's
+        /// escape pods with its crew and take the XP debt; a ship's run pilot who rides no pod (logged out) takes it at
+        /// their next login.
+        /// </summary>
+        private static void WreckShipsDockedInCollapse(RiftRun run, List<PlayerShip> visitors, Location location,
+            ICollection<string> aboardHostIds, ICollection<uint> riders)
+        {
+            foreach (var visitor in visitors)
+            {
+                if (Property.TryGetLoadedInstance(visitor.PropertyId, out var instance))
+                {
+                    foreach (var player in GetPlayersInArea(instance.Area).Where(GetIsObjectValid))
+                    {
+                        if (!riders.Contains(player))
+                            riders.Add(player);
+                    }
+                }
+
+                WreckShipInPocket(visitor, location);
+                ClearDockedState(visitor);
+                DB.Set(visitor);
+                var property = DB.Get<WorldProperty>(visitor.PropertyId);
+                if (property != null && property.Positions.Remove(PropertyLocationType.CurrentPosition))
+                    DB.Set(property);
+                RiftRunRules.Forget(run, visitor.Id);
+
+                var pilotId = run.PilotIds.TryGetValue(visitor.Id, out var id) ? id : null;
+                var podded = !RiftRunRules.OwesDeferredLoss(pilotId, aboardHostIds.Concat(riders.Select(GetObjectUUID)).ToList());
+                if (pilotId != null && !podded)
+                    OweAwayShipLoss(run, visitor.Id);
+
+                Log.Write(LogGroup.Space, $"RIFT RUN - ship {visitor.Id} docked aboard a ship destroyed in the collapsing pocket was wrecked with it; " +
+                                          $"pilot {pilotId ?? "unknown"} {(podded ? "rides the host's escape pods" : "owes the XP debt at login")}");
+            }
+        }
+
+        private static void ReturnFromRiftPocket(RiftRun run, uint pilot)
+        {
+            if (!GetIsObjectValid(pilot) || GetArea(pilot) != run.Area)
+                return;
+
+            var origin = run.Origins.TryGetValue(pilot, out var location) && GetIsObjectValid(GetAreaFromLocation(location))
+                ? location
+                : null;
+            if (origin == null)
+                return;
+
+            ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Unsummon), GetLocation(pilot));
+            AssignCommand(pilot, () =>
+            {
+                ClearAllActions();
+                JumpToLocation(origin);
+            });
+        }
+
+        /// <summary>The timer ran out: every ship still in the pocket is destroyed, and everyone aboard ejects in escape pods.</summary>
+        private static void CollapseRiftPocket(RiftRun run)
+        {
+            MessageRiftRun(run, ColorToken.Red("The rift pocket collapses around you! Your ship breaks apart."));
+            foreach (var pilot in run.Pilots.Where(x => GetIsObjectValid(x) && GetArea(x) == run.Area).ToList())
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), pilot);
+                ApplyEffectToObject(DurationType.Instant, EffectDeath(), pilot);
+            }
+
+            Log.Write(LogGroup.Space, $"RIFT RUN COLLAPSED - {run.Key.Resref}, chamber {run.Room + 1}, {run.Pilots.Count} ship(s) destroyed");
+        }
+
+        /// <summary>The players aboard a logged-out pilot's ship lost in a failed run ride escape pods to its dock.</summary>
+        private static void EjectAwayShipRiders(PlayerShip host, List<uint> riders)
+        {
+            if (riders.Count == 0)
+                return;
+
+            var hostProperty = DB.Get<WorldProperty>(host.PropertyId);
+            if (hostProperty != null && TryResolveEscapePodDestination(hostProperty, out var podLocation, out var podType))
+            {
+                EjectEscapePods(riders, OBJECT_INVALID, podLocation, podType);
+                return;
+            }
+
+            // No dock can be found: as for a host destroyed online, the riders die.
+            Log.Write(LogGroup.Space, $"RIFT RUN - ship {host.Id} was lost in a failed run with no dock to eject the players aboard to.");
+            foreach (var rider in riders)
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), rider);
+                ApplyEffectToObject(DurationType.Instant, EffectDeath(), rider);
+            }
+        }
+
+        /// <summary>
+        /// Removes a finished pocket once no player is in it. Ships left in it by pilots who logged out are sent back to
+        /// their docks; when the run failed they first take the losses of a ship destroyed in the collapse
+        /// (<see cref="ForfeitAwayShip"/>).
+        /// </summary>
+        private static void CloseRiftPocket(RiftRun run)
+        {
+            if (!GetIsObjectValid(run.Area))
+            {
+                _riftRuns.Remove(run.Id);
+                return;
+            }
+
+            foreach (var enemy in run.Enemies.Where(GetIsObjectValid))
+                DestroyObject(enemy);
+            run.Enemies.Clear();
+
+            foreach (var (shipId, clone) in _shipClones.Where(x => GetIsObjectValid(x.Value) && GetArea(x.Value) == run.Area).ToList())
+            {
+                _shipClones.Remove(shipId);
+                var dbShip = DB.Get<PlayerShip>(shipId);
+                if (run.Failed && dbShip != null)
+                    ForfeitAwayShip(run, dbShip, GetLocation(clone));
+
+                DestroyObject(clone);
+                var dbProperty = dbShip == null ? null : DB.Get<WorldProperty>(dbShip.PropertyId);
+                if (dbProperty != null && dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition))
+                    DB.Set(dbProperty);
+                Log.Write(LogGroup.Space, $"RIFT RUN - unpiloted ship {shipId} returned to its dock from a closed pocket");
+            }
+
+            for (var obj = GetFirstObjectInArea(run.Area); GetIsObjectValid(obj); obj = GetNextObjectInArea(run.Area))
+            {
+                if (GetIsPC(obj))
+                    return;
+            }
+
+            if (DestroyArea(run.Area) == 1)
+                _riftRuns.Remove(run.Id);
+        }
+
+        private static void MessageRiftRun(RiftRun run, string message)
+        {
+            foreach (var pilot in run.Pilots.Where(GetIsObjectValid))
+            {
+                foreach (var player in GetShipCrewPlayers(pilot))
+                    SendMessageToPC(player, message);
+            }
+        }
+
+        /// <summary>The Ship HUD's Rift Run line, or null outside a run.</summary>
+        public static string GetRiftRunStatusText(uint player)
+        {
+            var run = FindRiftRun(player);
+            if (run == null)
+                return null;
+
+            return run.Phase == RiftRunPhase.Returning
+                ? "cleared, returning"
+                : $"chamber {run.Room + 1}/{RiftRunTuning.Rooms.Count}, {RiftRunRules.FormatTimer(RiftRunRules.SecondsLeft(run.StartedAt, DateTime.UtcNow))} left";
+        }
+    }
+}

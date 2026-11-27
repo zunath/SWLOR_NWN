@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.ManageStructures)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 700f, 340f)
+                .SetInitialGeometry(0, 0, 700f, 410f)
                 .SetTitle("Manage Structures")
                 .BindOnClosed(model => model.OnCloseWindow())
 
@@ -63,6 +63,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindIsEnabled(model => model.IsOpenStorageEnabled)
                             .SetText("Open Storage")
                             .SetHeight(35f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButton()
+                            .BindOnClicked(model => model.OnOpenHouseSpecialization())
+                            .SetText("House Specialization")
+                            .SetHeight(35f);
+
+                        row.BindIsVisible(model => model.IsHouseSpecializationVisible);
                     });
 
                     col.AddRow(row =>
@@ -216,6 +226,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindIsEnabled(model => model.IsEditStructureEnabled);
 
                         row.AddSpacer();
+                    });
+
+                    // Both caps: the furniture placed against its limit, and the items stored against the storage.
+                    col.AddRow(row =>
+                    {
+                        row.BindIsVisible(model => model.IsFurnitureCountVisible);
+                        row.AddLabel()
+                            .BindText(model => model.FurnitureCount)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                            .SetHeight(20f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.BindIsVisible(model => model.IsFurnitureCountVisible);
+                        row.AddLabel()
+                            .BindText(model => model.ItemStorageText)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                            .SetHeight(20f);
                     });
 
                     col.AddRow(row =>

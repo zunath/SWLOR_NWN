@@ -134,6 +134,17 @@ namespace SWLOR.Game.Server.Core
         public const string OnSpaceExit = "space_exit";
         public const string OnShipComputer = "ship_computer";
         public const string OnSpaceTarget = "spc_target";
+        public const string OnCargoPodUsed = "cargo_pod_used";
+        public const string OnStationBuildingUsed = "stn_bldg_used";
+        public const string OnSiteCacheUsed = "site_cache_used";
+        public const string OnDerelictAirlockUsed = "derelict_airlock";
+        public const string OnDerelictStrongboxUsed = "derelict_strbox";
+
+        // Farming events
+        public const string OnGardenPlotUsed = "garden_plot_used";
+        public const string OnGardenPlotCropHeartbeat = "garden_crop_hb";
+        public const string OnCorralUsed = "corral_used";
+        public const string OnFermentationVatUsed = "ferment_vat_used";
 
         // Aura events
         public const string OnAuraEnter = "aura_enter";
@@ -218,6 +229,8 @@ namespace SWLOR.Game.Server.Core
         public const string OnPlaceablePermanentVfx = "permanent_vfx";
         public const string OnPlaceableGenericConversation = "generic_convo";
         public const string OnPlaceableSit = "sit";
+        // The stock chair script most area chairs name; handled here so a body that cannot sit is refused.
+        public const string OnPlaceableStockSit = "x2_plc_used_sit";
         public const string OnPlaceableBuyRebuild = "buy_rebuild";
 
         // Property events
@@ -227,6 +240,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnOpenCitizenship = "open_citizenship";
         public const string OnOpenCityManage = "open_city_manage";
         public const string OnOpenPropertyBank = "open_prop_bank";
+        public const string OnDuelingRingUsed = "duel_ring_used";
 
         // Quest events
         public const string OnQuestCollectOpen = "qst_collect_open";

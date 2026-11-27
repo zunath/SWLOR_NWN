@@ -852,8 +852,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var currentPage = new GuiBindingList<GuiComboEntry>();
             var optionIndex = 0;
 
+            var isAstromech = Astromech.IsAstromech(Player);
             foreach (var (soundSetId, label) in Cache.GetSoundSets())
             {
+                // An astromech has no humanoid voice; a disguise cannot give it one.
+                if (isAstromech && soundSetId != Astromech.SoundSetId)
+                    continue;
+
                 var absoluteIndex = _soundSetIds.Count;
                 _soundSetIds.Add(soundSetId);
                 _soundSetIndexesById[soundSetId] = absoluteIndex;

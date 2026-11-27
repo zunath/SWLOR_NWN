@@ -564,12 +564,22 @@ the new appearance after both.
 `--config` points the tool at another model list in the same format. `tools/TrophyStandModels.json` holds the ten furniture
 Trophy Stands, which are new blueprints (resref = model name) rather than stations swapped in place;
 `tools/FieldCotModels.json` holds the five Meshy Field Cots the same way.
+`tools/GardenPlotModels.json` holds the garden plots: the empty bed is the Garden Plot blueprint, and the sprouting, ripe
+and withered models have a null `blueprint` because Farming creates them at run time (their rows are the `FarmingRules`
+stage appearances). Each stage is only its plants: Meshy builds a whole bed per concept image and the frames came out
+different at every stage, so the plants were cut out of each stage bed (the faces above its soil and inside the rim) and
+stand on the empty bed's soil at `FarmingRules.GetCropModelHeight`. The sapling is a separate Meshy text-to-3d young tree.
+Check a Meshy bed's soil from above and at a low angle before shipping: the empty bed came with frame shards poking
+through the soil and a few down-facing dents, which show in the game as specks. Re-exporting a model that is already in the haks
+but not yet on the live server needs `replaces_haks_resources: true` in the manifest.
 
 ### Meshy placeables
 
 The Trophy Stands came from Meshy (opt-in and paid; see the weapon section above for the approval rule) with one owner-made
 concept image each, `model_type: smart-topology`, `ai_model: meshy-t2`, `target_polycount: 8000`, `texture_model: meshy-7`
-and `enable_pbr: true` (15 credits each). Meshy output differs from TRELLIS output in three ways:
+and `enable_pbr: true` (15 credits each). For anything with foliage use `ai_model: meshy-t2.5` at a higher
+`target_polycount` (the garden plots used 12,000 for the bed and 20,000 per crop, same price): at 8,000 on `meshy-t2`
+seedlings came out as pegs and plants as blobs. Meshy output differs from TRELLIS output in three ways:
 
 - **Winding.** Meshy builds a model from separate open parts (a skull, a chain, a cloth). An open part has no meaningful
   signed volume, so `near_closed` rejects good models, and `reorient: propagate` turned 18-23 percent of their area against
@@ -578,7 +588,10 @@ and `enable_pbr: true` (15 credits each). Meshy output differs from TRELLIS outp
   cloth-draped Veilcarved stand is the high one) and `max_opposed_fraction`. Check open parts such as cloth and wings from
   behind in the client.
 - **Normals.** Meshy ships a tangent-space normal map for its own mesh. Reprojection fails (faces with no texel-center
-  coverage), so use `normal_basis_policy: "authored_tangents"` (the stands used `authored_angle_limit_degrees: 2`).
+  coverage), so use `normal_basis_policy: "authored_tangents"` (the stands used `authored_angle_limit_degrees: 2`). When
+  packaging stops with "Authored tangent conflict ... do not average" (the garden plot beds, whose soil and leaves split
+  tangents at many shared corners), use `"authored_tangent_seams"`: export keeps Meshy's exact corner normals and
+  packaging keeps each tangent seam instead of averaging it, as the weapon exporter does.
 - **Tangents.** Meshy GLBs carry no `TANGENT` attribute. When the computed MikkTSpace tangents differ between corners of
   one vertex, export stops with "Missing source tangent requires splitting a Mikk seam". Re-export that GLB from Blender 4.0
   with `export_tangents=True` (it splits those vertices) and replace any zero-length tangent with a unit vector
@@ -631,6 +644,94 @@ neutral standing pose that matches the reference's bind pose (quadrupeds four-sq
 credits). Each creature gets its own `appearance.2da` row copied from the row it replaces, with only `LABEL` and `RACE`
 changed. Verify the idle, attack and run poses in the client on the real spawn area; clear the hover highlight with
 `SetObjectUiDiscoveryMask` or hostile creatures render red.
+
+### Astromech chassis
+
+`tools/AstromechCreatureExport.py` turns a generated astromech chassis into a rigid machine instead of a skinned
+creature. Meshy cannot rig a non-humanoid, so nothing here uses its rigging or motion tools. See
+`AstromechPlayableSpeciesPlan.md` for the design and the approved generation recipe.
+
+The exporter's models are an intermediate and are not committed. A playable species has a dynamic body
+(`ContentStandards.md`), so `tools/AstromechDynamicBody.py` re-cuts the exporter's output into the body the game
+loads:
+
+- **Dynamic body.** One skeleton for both genders (`pmr0`, `pfr0`, race letter `R`), one animation bank
+  (`a_astro`), and each chassis as four part models: dome `p?r0_headNNN`, barrel `_chestNNN`, legs `_leglNNN` and
+  `_legrNNN`. Every chassis is measured against the one skeleton and each mesh is moved by the difference, so a
+  matched set stands as its chassis did. Parts mix freely in the Appearance Editor; a dome on another design's
+  barrel is seated by `AstromechBody.FitDome`, whose table holds the height of each design's dome seat. A new design
+  needs a row there, in `AstromechRacialAppearanceDefinition` and in `AstromechBody.DesignCount`.
+- **Animation names.** A dynamic body is asked for the humanoid animation names. The bank holds every engine-native
+  name as a chassis clip with its nodes renamed (`NATIVE_ANIMATIONS`, `source_clip`). The arm chain is folded onto
+  one point at the front of the barrel; the clip that slid a built-in tool out now slides the hand, and whatever it
+  holds, out of the barrel.
+- **Held tools.** The shock prod and blaster mount are items with their own item classes (`WAmPr`, `WAmBl`), cut
+  from the tool meshes of chassis 1. Each blueprint part number gets a model, so adding a tool tier needs a rerun
+  (`--tools-only`).
+- **Tint bindings.** The parts name the chassis materials (`c_astro_NN`), which are marked `explicitMeshMaterial` in
+  `TintMapSources.json` so the part loader's palette does not replace them. After installing parts, run
+  `python -B tools/GenerateTintMapAssets.py --refresh-model-bindings` from the hak root: it gives each part folder
+  its own copy of the material and writes the `tintmap.2da` rows. Restore every file whose
+  `git diff --ignore-cr-at-eol` is empty.
+- **Paint.** The chassis shows through every module and takes the dyes of the worn Chassis Plating: cloth 2 is the
+  main paint, cloth 1 the accent panels, metal 2 the trim. `tools/GenerateAstromechModules.py` gives each plating a
+  paint job and clears the part models it copied (thigh 6 would otherwise draw the legs of design 6); `AstromechBody`
+  holds the paint of a chassis with no plating on.
+- **Inventory icons.** `tools/BuildAstromechIcons.py` draws them from the packed models with the Appearance
+  Editor's renderer. An armor icon is built from the armor's part numbers, and an armor with none shows a bare
+  torso, so every plating carries torso 240 (`AstromechBody.PlatingTorso`): no body has a model under it, so the
+  chassis still shows through, and its icon (`ip?_chest240.plt`) is a chassis body as a palette picture that wears
+  the plating's dyes. Never give any body a chest model numbered 240. The prod and blaster mount get the picture
+  of the held tool on their bottom part icon and empty middle and top icons, as DDS inside the 32x64 slot with the
+  8x8 registration TGA. Rerun it after a tool tier adds part numbers or the tool models change.
+
+The rest of this section is the exporter:
+
+- **Segments.** The source is one mesh made of many separate shells. Each whole shell goes to the head, the body or a
+  leg by its area-weighted centroid against the manifest thresholds, so a part is never torn along a boundary. Each
+  segment is its own mesh on its own node. Read `review_segments.png` before packaging.
+- **Shared animation model.** Every chassis names `c_astromech` as its supermodel and carries no clips of its own. The
+  clips live in the exporter as data. Only the root dummy and the two tool nodes may carry position keys; the torso, head
+  and legs carry orientation keys only, so chassis of different proportions share the clips. A tool hangs from an
+  unkeyed socket dummy, which every clip must declare or the compiler drops the tool from that clip.
+- **Built-in tools.** The prod and the blaster are separate generated parts on the two sockets. They rest inside the
+  body and slide out in the attack and ability clips. The export fails when a retracted tool is not inside the body mesh.
+  The dynamic body leaves these meshes out of the parts and holds them as items; their tracks move the hand.
+- **Fishing clips.** Every exported chassis carries a rod and line, and the fishing clips (`cfish*`) swing it. The
+  dynamic body leaves the built-in rod out: the astromech holds the fishing rod item, and the same clips swing the
+  hand that carries it. The server maps the work animation to those clips while an astromech fishes
+  (`AstromechWorkAnimation`).
+- **Dye mask.** The exporter classifies the base color into three dye layers (accents cloth 1, panels cloth 2, dark
+  metal 2) and writes a PLT named after the material, a normal map and a starter MTR. Copy the packaged textures and
+  material (not the models) into `sw_cr_creature` and run `python -B tools/GenerateTintMapAssets.py
+  --generate-preserving` from the hak root: it emits the `tm_*` map and the `fs_plt_tinter_nm` material, and removes
+  the PLT. Then mark the new entry `explicitMeshMaterial` and build the parts (above). The run can also
+  rewrite line endings in unrelated materials; restore every file whose `git diff --ignore-cr-at-eol` is empty. The
+  mask holds a metal layer, so the material keeps its normal map and binds no specular or roughness map
+  (`TintMapRendering.md`).
+- **Skinned GR2 sources.** A chassis entry with `"kind": "gr2"` takes a model skinned to a skeleton instead of a
+  generated mesh; pass `--addon-root` for the pinned importer from `tools/SetupBlasterImporter.ps1`. Triangles go to the
+  segment of their dominant bone, and the pivots come from the skeleton's hip and head bones. The model's own tool arm
+  becomes the prod node; there is no blaster part. Such a family names its own copy of the clip model (`c_astromechb`)
+  with a shorter tool retract, because its arm is as long as its body is deep. These sources carry no dye mask, so the
+  mask comes from the diffuse map: `panel_hue` marks the main paint when it is itself saturated, omitting `accent_hue`
+  takes any saturated paint as trim. The shade of every layer is centred on the palette midtone (5th percentile
+  0.25, median 0.50, 95th percentile 0.75) so a chosen colour renders as chosen. Painted detail such as
+  lenses and decals takes the color of the layer it falls in.
+- **Package.** `--mode package` compiles the models with cleanmodels and compresses textures with NWN Crunch, as for
+  other Meshy creatures. Commit the compiled MDL, DDS and MTR files only.
+- **Voice set.** `tools/GenerateAstromechSoundset.py` synthesizes the sounds and the SSF from a phrase table; nothing is
+  sampled.
+- **Portraits.** `tools/BuildAstromechPortraits.py` builds a chassis portrait from two client captures taken from one
+  camera in a still scene: the chassis in its default paint, and the same view with the chassis hidden. It cuts the
+  chassis out by the difference (shadows are left out), sets it on a drawn backdrop and writes the four portrait sizes.
+  Register each in `portraits.2da` under the astromech race; `Astromech.DefaultPortrait` names the one a new
+  character starts with.
+- **Paint colors.** Pick a paint by looking at it in the client. The tint shaders light a color from its nearest
+  palette swatch, so some values (light greys near 228, pure white) do not render as entered.
+
+Verify in the client that the body plays its clips, that a held prod and blaster slide out, that the dyes of the
+worn plating change the three zones on every part, that mixed parts sit together, and that the voice set plays.
 
 ## Import a rigid, opaque GR2 blaster
 

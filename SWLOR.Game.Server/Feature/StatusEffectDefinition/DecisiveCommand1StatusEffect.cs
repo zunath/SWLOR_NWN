@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             StatGroup.Stats[StatType.DamageDealtPercentAdjustment] = ScaleBySourceSocial(12, 15);
             StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment] = ScaleBySourceSocial(6, 8);
+            StatGroup.Stats[StatType.SpaceAccuracyPercentAdjustment] = ScaleBySourceSocial(6, 8);
             StatGroup.Stats[StatType.CriticalRatePercentAdjustment] = ScaleBySourceSocial(6, 8);
         }
 

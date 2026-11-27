@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -84,12 +85,16 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
         }
 
         /// <summary>
-        /// Creatures without modular bodies keep every style; zero is the wearer's own body part.
+        /// Creatures without modular bodies keep every style; zero is the wearer's own body part, and so is the
+        /// astromech plating torso, which has no model on any body on purpose.
         /// </summary>
         public static bool IsRenderable(string body, AppearanceArmor part, int style,
             Func<int, int> fallback, Func<string, bool> exists) =>
-            string.IsNullOrEmpty(body) || style <= 0 ||
+            string.IsNullOrEmpty(body) || style <= 0 || IsPlatingTorso(part, style) ||
             !string.IsNullOrEmpty(ResolveModel(body, part, style, fallback, exists));
+
+        private static bool IsPlatingTorso(AppearanceArmor part, int style) =>
+            part == AppearanceArmor.Torso && style == AstromechBody.PlatingTorso;
 
         /// <summary>
         /// The modular slots whose saved style cannot render on the body. Neck and robe styles

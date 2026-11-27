@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, configure the feedback messages.
         /// </summary>
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "The feedback message settings stay in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ConfigureFeedbackMessages()
         {

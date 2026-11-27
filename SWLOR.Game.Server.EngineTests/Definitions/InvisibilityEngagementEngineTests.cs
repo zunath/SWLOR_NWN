@@ -4,6 +4,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -25,6 +26,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var struck = arena.Spawn(ActorResref, 10f, 270f);
             var secondEnemy = arena.Spawn(ActorResref, 6f, 90f);
             var enemies = new[] { (Creature: struck, Label: "the struck enemy"), (Creature: secondEnemy, Label: "the second enemy") };
+            // Arm the caster while nobody is hostile: with the enemies fighting it, the unequip of its starting weapon
+            // queued behind combat actions and timed out under load.
+            await ctx.WaitFrameAsync();
+            await ctx.EquipItemAsync(caster, VibroknifeResref, InventorySlot.RightHand);
             foreach (var (enemy, _) in enemies)
             {
                 ctx.MakeHostile(enemy);
@@ -37,17 +42,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             ctx.SetResources(caster, ResourcePool, ResourcePool);
             CreaturePlugin.AddFeat(caster, FeatType.EscapeArtist1);
-            await ctx.EquipItemAsync(caster, VibroknifeResref, InventorySlot.RightHand);
             ctx.SuppressNPCNaturalRegen(caster);
             foreach (var (enemy, _) in enemies)
                 ctx.SuppressNPCNaturalRegen(enemy);
 
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 foreach (var (enemy, _) in enemies)
-                    Enmity.ModifyEnmity(caster, enemy, 100);
+                    EnmityChange.ModifyEnmity(caster, enemy, 100);
                 await WaitOrFailAsync(ctx,
                     () => IsSwingingAt(struck, caster) && IsSwingingAt(secondEnemy, caster),
                     15f,
@@ -67,7 +71,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     used = UsePerkFeat.TryUseAbility(caster, struck, FeatType.EscapeArtist1, GetLocation(struck));
                     if (!used)
-                        denial = Ability.GetLastActivationDenialReason();
+                        denial = AbilityActivation.GetLastActivationDenialReason();
                 });
                 ctx.Assert(used, $"Escape Artist must activate: {denial}");
 
@@ -87,7 +91,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     {
                         // The activator is the only creature on each enemy's table, so any swing
                         // would be at it.
-                        ctx.Assert(GetAttackTarget(enemy) != caster && !Combat.HasRecentAttackActivity(enemy, window),
+                        ctx.Assert(GetAttackTarget(enemy) != caster && !GameServices.CombatActivity.HasRecentAttackActivity(enemy, window),
                             $"sample {sample}: {label} is still attacking the invisible activator. {Describe(caster, enemies)}");
                         ctx.Assert(Enmity.GetEnmityTable(enemy).ContainsKey(caster),
                             $"sample {sample}: {label} must keep its enmity toward the hidden activator");
@@ -103,8 +107,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             }
         }
 
@@ -112,7 +116,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         // Attack activity is recorded by the native attack-roll hook, so it reflects real swings.
         private static bool IsSwingingAt(uint enemy, uint target)
         {
-            return GetAttackTarget(enemy) == target && Combat.HasRecentAttackActivity(enemy, 3f);
+            return GetAttackTarget(enemy) == target && GameServices.CombatActivity.HasRecentAttackActivity(enemy, 3f);
         }
 
         private static string Describe(uint caster, (uint Creature, string Label)[] enemies)
@@ -121,7 +125,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var (enemy, label) in enemies)
             {
                 parts.Add($"{label}: action {GetCurrentAction(enemy)}, targeting activator {GetAttackTarget(enemy) == caster}, " +
-                          $"in combat {GetIsInCombat(enemy)}, swung in last 1s {Combat.HasRecentAttackActivity(enemy, 1f)}, " +
+                          $"in combat {GetIsInCombat(enemy)}, swung in last 1s {GameServices.CombatActivity.HasRecentAttackActivity(enemy, 1f)}, " +
                           $"AI level {GetAILevel(enemy)}, enmity entries {Enmity.GetEnmityTable(enemy).Count}, " +
                           $"distance {GetDistanceBetween(enemy, caster):0.0}m");
             }

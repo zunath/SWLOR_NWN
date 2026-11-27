@@ -1,9 +1,8 @@
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -43,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             if (Stat.GetStatAdjustment(activator, StatType.LightGuardianTemporaryHPReflectiveBarrier) > 0 &&
                 TemporaryHitPointEffects.IsActivePoolFromSource(target, TemporaryHitPointEffectKey.GuardianWard, activator))
             {
-                StatusEffect.ApplyStatusEffect(activator, target, typeof(ReflectiveBarrier1StatusEffect), durationSeconds);
+                StatusEffectApplication.ApplyStatusEffect(activator, target, typeof(ReflectiveBarrier1StatusEffect), durationSeconds);
             }
         }
 
@@ -69,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 var resistance = hasForceTemporaryHP
                     ? 15
                     : 10;
-                StatusEffect.ApplyStatusEffect(activator, friendly, new CourageousResolve1StatusEffect(resistance), 30f);
+                StatusEffectApplication.ApplyStatusEffect(activator, friendly, new CourageousResolve1StatusEffect(resistance), 30f);
             }
         }
     }

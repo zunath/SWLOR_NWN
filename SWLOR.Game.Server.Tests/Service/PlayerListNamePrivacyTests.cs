@@ -1,7 +1,7 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Native;
+using SWLOR.Game.Server.NativeSinks;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -12,7 +12,7 @@ public class PlayerListNamePrivacyTests
     private const uint AllPlayers = 0xFFFFFFF7;
     private const uint AllClients = 0xFFFFFFFF;
     private static readonly Func<uint, IEnumerable<(uint PlayerId, bool IsDM)>, Func<uint, int>, int> Dispatch =
-        typeof(PlayerListNamePrivacy).GetMethod("Dispatch", BindingFlags.NonPublic | BindingFlags.Static)!
+        typeof(PlayerListNamePrivacySink).GetMethod("Dispatch", BindingFlags.NonPublic | BindingFlags.Static)!
             .CreateDelegate<Func<uint, IEnumerable<(uint PlayerId, bool IsDM)>, Func<uint, int>, int>>();
 
     [Test]

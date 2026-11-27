@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private const string PrimalOverrunMeasureQuestId = "primal_overrun_measure";
         private const string PrimalOverrunBreachQuestId = "primal_overrun_breach";
         private const string PrimalOverrunCircleQuestId = "primal_overrun_circle";
-        internal const string PrimalOverrunMasteryQuestId = "primal_overrun_mastery";
+        internal const string PrimalOverrunMasteryQuestId = CapstoneQuestIds.PrimalOverrunMasteryQuestId;
         internal const string PrimalOverrunAdeptResref = "cp_primover_ad";
         internal const string PrimalOverrunSpecialistResref = "cp_primover_sp";
         internal const string PrimalOverrunInnerCircleResref = "cp_primover_ic";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private const string UntouchableInstinctMeasureQuestId = "untouchable_instinct_measure";
         private const string UntouchableInstinctBreachQuestId = "untouchable_instinct_breach";
         private const string UntouchableInstinctCircleQuestId = "untouchable_instinct_circle";
-        internal const string UntouchableInstinctMasteryQuestId = "untouchable_instinct_mastery";
+        internal const string UntouchableInstinctMasteryQuestId = CapstoneQuestIds.UntouchableInstinctMasteryQuestId;
         internal const string UntouchableInstinctAdeptResref = "cp_untinst_ad";
         internal const string UntouchableInstinctSpecialistResref = "cp_untinst_sp";
         internal const string UntouchableInstinctInnerCircleResref = "cp_untinst_ic";
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private const string ForceBondedBeastMeasureQuestId = "force_bonded_beast_measure";
         private const string ForceBondedBeastBreachQuestId = "force_bonded_beast_breach";
         private const string ForceBondedBeastCircleQuestId = "force_bonded_beast_circle";
-        internal const string ForceBondedBeastMasteryQuestId = "force_bonded_beast_mastery";
+        internal const string ForceBondedBeastMasteryQuestId = CapstoneQuestIds.ForceBondedBeastMasteryQuestId;
         internal const string ForceBondedBeastAdeptResref = "cp_forcebeast_ad";
         internal const string ForceBondedBeastSpecialistResref = "cp_forcebeast_sp";
         internal const string ForceBondedBeastInnerCircleResref = "cp_forcebeast_ic";
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private const string ApexBiteMeasureQuestId = "apex_bite_measure";
         private const string ApexBiteBreachQuestId = "apex_bite_breach";
         private const string ApexBiteCircleQuestId = "apex_bite_circle";
-        internal const string ApexBiteMasteryQuestId = "apex_bite_mastery";
+        internal const string ApexBiteMasteryQuestId = CapstoneQuestIds.ApexBiteMasteryQuestId;
         internal const string ApexBiteAdeptResref = "cp_apexbite_ad";
         internal const string ApexBiteSpecialistResref = "cp_apexbite_sp";
         internal const string ApexBiteInnerCircleResref = "cp_apexbite_ic";
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private const string UnbreakableBeastMeasureQuestId = "unbreakable_beast_measure";
         private const string UnbreakableBeastBreachQuestId = "unbreakable_beast_breach";
         private const string UnbreakableBeastCircleQuestId = "unbreakable_beast_circle";
-        internal const string UnbreakableBeastMasteryQuestId = "unbreakable_beast_mastery";
+        internal const string UnbreakableBeastMasteryQuestId = CapstoneQuestIds.UnbreakableBeastMasteryQuestId;
         internal const string UnbreakableBeastAdeptResref = "cp_unbrbeast_ad";
         internal const string UnbreakableBeastSpecialistResref = "cp_unbrbeast_sp";
         internal const string UnbreakableBeastInnerCircleResref = "cp_unbrbeast_ic";
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private const string AlphaRhythmMeasureQuestId = "alpha_rhythm_measure";
         private const string AlphaRhythmBreachQuestId = "alpha_rhythm_breach";
         private const string AlphaRhythmCircleQuestId = "alpha_rhythm_circle";
-        internal const string AlphaRhythmMasteryQuestId = "alpha_rhythm_mastery";
+        internal const string AlphaRhythmMasteryQuestId = CapstoneQuestIds.AlphaRhythmMasteryQuestId;
         internal const string AlphaRhythmAdeptResref = "cp_alpharhy_ad";
         internal const string AlphaRhythmSpecialistResref = "cp_alpharhy_sp";
         internal const string AlphaRhythmInnerCircleResref = "cp_alpharhy_ic";

@@ -1,0 +1,121 @@
+# Phase 5 debt (P5-1b): references that point up the domain order (target 4), read from the server's source with the
+# compiler's binding, so the result does not depend on the build configuration.
+# Line: <file>: <node> -> <higher node> | <members>: the distinct source members of <file>'s code in <node> (a
+# method, property, field, constructor or enum member, with its lambdas and local functions) that name a type of
+# <higher node>, a domain higher in the order (DomainMap.json order) in the same band. A node is a domain's logic
+# (Character) or its content (Character content); content is a band above all logic, Entity and Enumeration count as
+# Foundation, references out of the wiring areas (Composition, NativeSinks) do not count, and logic naming content is
+# LogicToContent.txt. Every reference counts, vocabulary (enums, constants, records) included: the type moves of P5-1e
+# and P5-1f remove those. The domain order and every direction's fix:
+# SWLOR.Game.Server/Readmes/MaintainabilityRefactorDomainOrder.md (Appendix C).
+#
+# The guard (SWLOR.Architecture.Tests, Phase5DebtTests) fails when a line appears, when a count grows, and when a count
+# shrinks or a line disappears: each Phase 5 item shrinks this file in the same pull request. Plan and targets:
+# SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
+# SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
+
+SWLOR.Game.Server/ApplicationSettings.cs: Platform -> Character | 1
+SWLOR.Game.Server/Domain/Character/EquipmentStatTotals.cs: Character -> Combat | 1
+SWLOR.Game.Server/Domain/Character/EquipmentStatTotals.cs: Character -> Items | 1
+SWLOR.Game.Server/Domain/Character/PerkRequirementBeastRole.cs: Character -> Companions | 2
+SWLOR.Game.Server/Domain/Character/PerkRequirementQuest.cs: Character -> Quests | 2
+SWLOR.Game.Server/Domain/Combat/CombatAbilityCostEffectsService.cs: Combat -> Abilities | 1
+SWLOR.Game.Server/Domain/Combat/CombatAbilityOffenseEffectsService.cs: Combat -> Abilities | 1
+SWLOR.Game.Server/Domain/Combat/CombatResourcesService.cs: Combat -> Abilities | 1
+SWLOR.Game.Server/Domain/Combat/RecastService.cs: Combat -> Abilities | 4
+SWLOR.Game.Server/Domain/Combat/ResistanceService.cs: Combat -> Abilities | 3
+SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> UI | 6
+SWLOR.Game.Server/Domain/Items/EquipmentPredicates.cs: Items -> Combat | 2
+SWLOR.Game.Server/Domain/Items/ItemService.cs: Items -> Combat | 6
+SWLOR.Game.Server/Domain/Items/ItemService.cs: Items -> Crafting | 3
+SWLOR.Game.Server/Domain/Items/KeyItemIcon.cs: Items -> Companions | 1
+SWLOR.Game.Server/Domain/Items/KeyItemIcon.cs: Items -> World | 1
+SWLOR.Game.Server/Domain/Quests/GuildTaskXpReward.cs: Quests -> Economy | 2
+SWLOR.Game.Server/Domain/Quests/QuestRewards.cs: Quests -> Economy | 2
+SWLOR.Game.Server/Domain/World/StructureChangedAction.cs: World -> Space | 1
+SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceSettingsService.cs: UI content -> Gameplay content | 3
+SWLOR.Game.Server/Feature/BeastStableTrials.cs: Gameplay content -> Quests content | 1
+SWLOR.Game.Server/Feature/DialogDefinition/MarketDialog.cs: Foundation content -> UI content | 1
+SWLOR.Game.Server/Feature/GuiDefinition/CharacterSheetWindow/CharacterSheetAccuracyRows.cs: UI content -> Abilities content | 1
+SWLOR.Game.Server/Feature/GuiDefinition/CharacterSheetWindow/CharacterSheetSurvivalRows.cs: UI content -> Gameplay content | 1
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs: UI content -> Gameplay content | 1
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs: UI content -> Abilities content | 1
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerExamineViewModel.cs: UI content -> Abilities content | 1
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMSettingsViewModel.cs: UI content -> Gameplay content | 2
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ExamineItemViewModel.cs: UI content -> Gameplay content | 1
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerStatusViewModel.cs: UI content -> Abilities content | 1
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/SettingsViewModel.cs: UI content -> Gameplay content | 1
+SWLOR.Game.Server/Feature/ItemDefinition/FaultlineCapacitorItemDefinition.cs: Items content -> Abilities content | 1
+SWLOR.Game.Server/Feature/ItemDefinition/StormcoreMatrixItemDefinition.cs: Items content -> Abilities content | 1
+SWLOR.Game.Server/Feature/ItemDefinition/TidecallBeaconItemDefinition.cs: Items content -> Abilities content | 1
+SWLOR.Game.Server/Feature/MigrationDefinition/FurnitureRenameMigration.cs: Foundation content -> UI content | 1
+SWLOR.Game.Server/Feature/MigrationDefinition/ItemAppearanceCatalogMigration.cs: Foundation content -> Character content | 2
+SWLOR.Game.Server/Feature/MigrationDefinition/LootStatRevisionMigration.cs: Foundation content -> Gameplay content | 1
+SWLOR.Game.Server/Feature/MigrationDefinition/PelvisAppearanceMigration.cs: Foundation content -> Character content | 1
+SWLOR.Game.Server/Feature/MigrationDefinition/RetiredAppearanceMigration.cs: Foundation content -> Character content | 1
+SWLOR.Game.Server/Feature/MigrationDefinition/StoredObjectData.FurnitureRenames.cs: Foundation content -> UI content | 1
+SWLOR.Game.Server/Feature/NaturalRegeneration.cs: Gameplay content -> Abilities content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/DevicesGrenadierPerkDefinition.cs: Character content -> Abilities content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/LeadershipVanguardCommandPerkDefinition.cs: Character content -> Abilities content | 1
+SWLOR.Game.Server/Feature/SnippetDefinition/ConversationStateSnippetDefinition.cs: Foundation content -> Gameplay content | 3
+SWLOR.Game.Server/Feature/SnippetDefinition/ConversationStateSnippetDefinition.cs: Foundation content -> UI content | 2
+SWLOR.Game.Server/Feature/StatusEffectDefinition/CleanseOrder1StatusEffect.cs: Character content -> Abilities content | 1
+SWLOR.Game.Server/Feature/StatusEffectDefinition/CleanseOrder2StatusEffect.cs: Character content -> Abilities content | 1
+SWLOR.Game.Server/Feature/StatusEffectDefinition/GuardiansResolveStatusEffect.cs: Character content -> Abilities content | 1
+SWLOR.Game.Server/Feature/StatusEffectDefinition/LastBastionBarrierStatusEffect.cs: Character content -> Abilities content | 2
+SWLOR.Game.Server/Feature/StatusEffectDefinition/ReflectiveBarrier1StatusEffect.cs: Character content -> Abilities content | 1
+SWLOR.Game.Server/Feature/StatusEffectDefinition/RegenerativeHealingStatusEffect.cs: Character content -> Abilities content | 1
+SWLOR.Game.Server/Feature/StatusEffectDefinition/SoulDevourerStanceStatusEffect.cs: Character content -> Abilities content | 1
+SWLOR.Game.Server/Feature/UnarmedMastery.cs: Gameplay content -> Quests content | 1
+SWLOR.Game.Server/Feature/UsePerkFeat.cs: Gameplay content -> Abilities content | 1
+SWLOR.Game.Server/Native/AttackRollAccuracy.cs: Platform -> Character | 2
+SWLOR.Game.Server/Native/AttackRollAccuracy.cs: Platform -> Combat | 2
+SWLOR.Game.Server/Native/AttackRollAccuracy.cs: Platform -> Foundation | 3
+SWLOR.Game.Server/Native/AttackRollAccuracy.cs: Platform -> Items | 1
+SWLOR.Game.Server/Native/AttackRollCritical.cs: Platform -> Character | 3
+SWLOR.Game.Server/Native/AttackRollCritical.cs: Platform -> Combat | 2
+SWLOR.Game.Server/Native/AttackRollCritical.cs: Platform -> Foundation | 3
+SWLOR.Game.Server/Native/AttackRollDefense.cs: Platform -> Character | 2
+SWLOR.Game.Server/Native/AttackRollDefense.cs: Platform -> Combat | 3
+SWLOR.Game.Server/Native/AttackRollDefense.cs: Platform -> Foundation | 3
+SWLOR.Game.Server/Native/AttackRollFeedback.cs: Platform -> Character | 3
+SWLOR.Game.Server/Native/AttackRollFeedback.cs: Platform -> Combat | 1
+SWLOR.Game.Server/Native/AttackRollFeedback.cs: Platform -> Foundation | 3
+SWLOR.Game.Server/Native/AttackRollSettlement.cs: Platform -> Character | 1
+SWLOR.Game.Server/Native/AttackRollSettlement.cs: Platform -> Combat | 1
+SWLOR.Game.Server/Native/AttackRollSettlement.cs: Platform -> Foundation | 1
+SWLOR.Game.Server/Native/AttackSwing.cs: Platform -> Foundation | 1
+SWLOR.Game.Server/Native/CombatRecorderEffectHooks.cs: Platform -> Combat | 1
+SWLOR.Game.Server/Native/DamageRollCreature.cs: Platform -> Combat | 1
+SWLOR.Game.Server/Native/DamageRollCreature.cs: Platform -> Foundation | 1
+SWLOR.Game.Server/Native/DamageRollHitEffects.cs: Platform -> Combat | 3
+SWLOR.Game.Server/Native/DamageRollHitEffects.cs: Platform -> Foundation | 3
+SWLOR.Game.Server/Native/DamageRollMitigation.cs: Platform -> Combat | 2
+SWLOR.Game.Server/Native/DamageRollMitigation.cs: Platform -> Foundation | 2
+SWLOR.Game.Server/Native/DamageRollWeapon.cs: Platform -> Character | 1
+SWLOR.Game.Server/Native/DamageRollWeapon.cs: Platform -> Combat | 3
+SWLOR.Game.Server/Native/DamageRollWeapon.cs: Platform -> Foundation | 2
+SWLOR.Game.Server/Native/DamageRollWeapon.cs: Platform -> Items | 1
+SWLOR.Game.Server/Native/GetDamageRoll.cs: Platform -> Character | 4
+SWLOR.Game.Server/Native/GetDamageRoll.cs: Platform -> Combat | 4
+SWLOR.Game.Server/Native/GetDamageRoll.cs: Platform -> Foundation | 6
+SWLOR.Game.Server/Native/OnAIActionAttackObject.cs: Platform -> Combat | 2
+SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs: Platform -> Abilities | 1
+SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs: Platform -> Character | 5
+SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs: Platform -> Combat | 5
+SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs: Platform -> Foundation | 2
+SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs: Platform -> Items | 1
+SWLOR.Game.Server/Native/PairedRangedPresentation.cs: Platform -> Character | 4
+SWLOR.Game.Server/Native/RangedWeaponAttackContext.cs: Platform -> Combat | 10
+SWLOR.Game.Server/Native/RangedWeaponAttackContext.cs: Platform -> Foundation | 1
+SWLOR.Game.Server/Native/ResolveAttackRoll.cs: Platform -> Character | 2
+SWLOR.Game.Server/Native/ResolveAttackRoll.cs: Platform -> Combat | 2
+SWLOR.Game.Server/Native/ResolveAttackRoll.cs: Platform -> Foundation | 2
+SWLOR.Game.Server/Native/ResolvedCombatDamage.cs: Platform -> Combat | 1
+SWLOR.Game.Server/Native/ResolvedCombatDamage.cs: Platform -> Foundation | 1
+SWLOR.Game.Server/Native/WeaponAttackAnimation.cs: Platform -> Combat | 2
+SWLOR.Game.Server/Native/WeaponAttackCycle.cs: Platform -> Abilities | 1
+SWLOR.Game.Server/Native/WeaponAttackCycle.cs: Platform -> Character | 4
+SWLOR.Game.Server/Native/WeaponAttackCycle.cs: Platform -> Combat | 3
+SWLOR.Game.Server/Native/WeaponAttackCycle.cs: Platform -> Items | 3
+SWLOR.Game.Server/Native/WeaponDamageProfile.cs: Platform -> Foundation | 2

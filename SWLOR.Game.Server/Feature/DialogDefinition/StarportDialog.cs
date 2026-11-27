@@ -1,16 +1,33 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class StarportDialog: ConversationMenuDefinition
     {
+        private IAreaService Area { get; }
+        private IDBService DB { get; }
+        private IGuiService Gui { get; }
+        private IKeyItemService KeyItem { get; }
+        private IPlanetService Planet { get; }
+        private IPropertyService Property { get; }
+
+        public StarportDialog(IAreaService area, IDBService db, IGuiService gui, IKeyItemService keyItem, IPlanetService planet, IPropertyService property)
+        {
+            Area = area;
+            DB = db;
+            Gui = gui;
+            KeyItem = keyItem;
+            Planet = planet;
+            Property = property;
+        }
+
         private const string MainPageId = "MAIN_PAGE";
 
         public override ConversationMenuSpec Build()

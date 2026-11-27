@@ -13,7 +13,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Unless custom content is used, only Wizards have spell schools.</remarks>
         public static SpellSchool GetSpecialization(uint creature, ClassType playerClass)
         {
-            return (SpellSchool)global::NWN.Core.NWScript.GetSpecialization(creature, (int)playerClass);
+            return NWScriptRuntime.Current.GetSpecialization(creature, playerClass);
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Unless custom content is used, only Clerics have domains.</remarks>
         public static ClericDomain GetDomain(uint creature, int DomainIndex = 1, ClassType playerClass = ClassType.Cleric)
         {
-            return (ClericDomain)global::NWN.Core.NWScript.GetDomain(creature, DomainIndex, (int)playerClass);
+            return NWScriptRuntime.Current.GetDomain(creature, DomainIndex, playerClass);
         }
     }
 }

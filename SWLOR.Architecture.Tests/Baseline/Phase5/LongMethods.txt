@@ -1,0 +1,18 @@
+# Phase 5 debt (P5-0): methods of SWLOR.Game.Server over 150 lines, and GUI layout methods over 400 (target 3).
+# Line: <type>.<member> | <lines>; an overloaded member adds its parameter types. A member is a method, constructor,
+# destructor, operator, property, indexer or event with accessors, from its first attribute or modifier to its last
+# token (body, accessors and initializer included). The members of a GUI window definition (a type that implements
+# IGuiWindowDefinition) are layout and are measured against 400. Not measured: the exemptions in Exemptions.json.
+#
+# The guard (SWLOR.Architecture.Tests, Phase5DebtTests) fails when a line appears, when a count grows, and when a count
+# shrinks or a line disappears: each Phase 5 item shrinks this file in the same pull request. Plan and targets:
+# SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
+# SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
+
+SWLOR.Game.Server.Domain.Companions.DroidService.SpawnDroid | 272
+SWLOR.Game.Server.Domain.Items.ItemService.UseItem | 189
+SWLOR.Game.Server.Domain.Space.SpaceService.ActivateShipModule | 155
+SWLOR.Game.Server.Feature.DialogDefinition.StarportDockDialog.MainPageInit | 193
+SWLOR.Game.Server.Feature.GuiDefinition.ShipManagementDefinition.BuildWindow | 414
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel.LoadShip | 532
+SWLOR.Game.Server.Feature.UsePerkFeat.ActivateAbility | 432

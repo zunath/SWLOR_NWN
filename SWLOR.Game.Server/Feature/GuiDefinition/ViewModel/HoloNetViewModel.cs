@@ -1,8 +1,9 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core.Async;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Core;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -87,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
                 {
                     var receiver = DMPresence.GetControlledCreature(onlinePlayer);
-                    var displayName = PlayerName.GetChatDisplayName(receiver, player);
+                    var displayName = PlayerNameOverride.GetChatDisplayName(receiver, player);
                     SendMessageToPC(receiver, ColorToken.Custom(displayName + " broadcasts a new HoloNet message: ", 0, 180, 255) + ColorToken.White(message));
                 }
             }

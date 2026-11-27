@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private const string LastStandOfTheLightMeasureQuestId = "last_stand_of_the_light_measure";
         private const string LastStandOfTheLightBreachQuestId = "last_stand_of_the_light_breach";
         private const string LastStandOfTheLightCircleQuestId = "last_stand_of_the_light_circle";
-        internal const string LastStandOfTheLightMasteryQuestId = "last_stand_of_the_light_mastery";
+        internal const string LastStandOfTheLightMasteryQuestId = CapstoneQuestIds.LastStandOfTheLightMasteryQuestId;
         internal const string LastStandOfTheLightAdeptResref = "cp_lightstand_ad";
         internal const string LastStandOfTheLightSpecialistResref = "cp_lightstand_sp";
         internal const string LastStandOfTheLightInnerCircleResref = "cp_lightstand_ic";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private const string HungerOfTheDarkMeasureQuestId = "hunger_of_the_dark_measure";
         private const string HungerOfTheDarkBreachQuestId = "hunger_of_the_dark_breach";
         private const string HungerOfTheDarkCircleQuestId = "hunger_of_the_dark_circle";
-        internal const string HungerOfTheDarkMasteryQuestId = "hunger_of_the_dark_mastery";
+        internal const string HungerOfTheDarkMasteryQuestId = CapstoneQuestIds.HungerOfTheDarkMasteryQuestId;
         internal const string HungerOfTheDarkAdeptResref = "cp_darkhung_ad";
         internal const string HungerOfTheDarkSpecialistResref = "cp_darkhung_sp";
         internal const string HungerOfTheDarkInnerCircleResref = "cp_darkhung_ic";
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private const string EclipseOfResolveMeasureQuestId = "eclipse_of_resolve_measure";
         private const string EclipseOfResolveBreachQuestId = "eclipse_of_resolve_breach";
         private const string EclipseOfResolveCircleQuestId = "eclipse_of_resolve_circle";
-        internal const string EclipseOfResolveMasteryQuestId = "eclipse_of_resolve_mastery";
+        internal const string EclipseOfResolveMasteryQuestId = CapstoneQuestIds.EclipseOfResolveMasteryQuestId;
         internal const string EclipseOfResolveAdeptResref = "cp_eclipse_ad";
         internal const string EclipseOfResolveSpecialistResref = "cp_eclipse_sp";
         internal const string EclipseOfResolveInnerCircleResref = "cp_eclipse_ic";

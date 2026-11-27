@@ -1,8 +1,9 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -26,7 +27,7 @@ public class BeastMutationRecipeTests
     // One lyase, isomerase, and hydrolase can be added per stage, so a job holds at most this many of each.
     private static int GetStagesPerJob()
     {
-        var stagesField = typeof(IncubatorViewModel).GetField("NumberOfStages", BindingFlags.NonPublic | BindingFlags.Static);
+        var stagesField = typeof(IncubatorJobCalculator).GetField("NumberOfStages", BindingFlags.Public | BindingFlags.Static);
         stagesField.Should().NotBeNull("the overlap checks need the number of stages a job runs");
         return (int)stagesField!.GetRawConstantValue()!;
     }

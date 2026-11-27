@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using Player = SWLOR.Game.Server.Entity.Player;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -127,6 +127,8 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Loads map pins on all areas for a player. This only happens one time per reset.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The map pins stay in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void LoadMapPins()
         {

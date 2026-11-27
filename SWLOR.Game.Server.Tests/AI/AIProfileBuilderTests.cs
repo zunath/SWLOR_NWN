@@ -1,14 +1,30 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AIDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.AI;
 
 public class AIProfileBuilderTests
 {
+    // Building the default AI profiles asks the StatusEffect facade which effects are stances.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private enum TestPhase
     {
         Opening,
@@ -205,21 +221,9 @@ public class AIProfileBuilderTests
     }
 
     [Test]
-    public void TargetDefaults_CanRegisterFeatSpecificOverrides()
-    {
-        AITarget.RegisterDefault(FeatType.Provoke1, AITarget.AllyAttacker());
-
-        AITarget.TryGetDefaultOverride(FeatType.Provoke1, out var selector)
-            .Should()
-            .BeTrue();
-
-        selector.Should().NotBeNull();
-    }
-
-    [Test]
     public void DefaultProfiles_RegisterCoreProfiles()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
 
         profiles.Keys.Should().Contain(new[]

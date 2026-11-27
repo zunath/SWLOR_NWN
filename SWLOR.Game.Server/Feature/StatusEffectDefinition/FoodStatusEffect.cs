@@ -1,14 +1,13 @@
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class FoodStatusEffect : StatusEffectBase
+    public sealed class FoodStatusEffect : StatusEffectBase, IFoodStatusEffect
     {
         public FoodEffectData Food { get; }
         public override string Name => "Food";
@@ -69,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var dbPlayer = DB.Get<Player>(playerId);
 
             dbPlayer.TemporaryFoodHP = Food.HP;
-            Stat.AdjustPlayerMaxHP(dbPlayer, creature, Food.HP);
+            CreatureStat.AdjustPlayerMaxHP(dbPlayer, creature, Food.HP);
             DB.Set(dbPlayer);
         }
 
@@ -81,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var playerId = GetObjectUUID(creature);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            Stat.AdjustPlayerMaxHP(dbPlayer, creature, 0);
+            CreatureStat.AdjustPlayerMaxHP(dbPlayer, creature, 0);
         }
 
         protected override void Remove(uint creature)
@@ -93,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var dbPlayer = DB.Get<Player>(playerId);
 
             dbPlayer.TemporaryFoodHP = 0;
-            Stat.AdjustPlayerMaxHP(dbPlayer, creature, -Food.HP);
+            CreatureStat.AdjustPlayerMaxHP(dbPlayer, creature, -Food.HP);
             DB.Set(dbPlayer);
         }
 

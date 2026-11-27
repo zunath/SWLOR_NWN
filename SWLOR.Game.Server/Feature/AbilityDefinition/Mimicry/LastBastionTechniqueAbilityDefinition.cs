@@ -2,11 +2,12 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 {
@@ -37,14 +38,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     // Allies get a shield that absorbs 30 damage (temporary HP) for 30 seconds.
                     foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 8.0f))
                     {
-                        if (StatusEffect.ApplyStatusEffect(activator, ally, new LastBastionBarrierStatusEffect(), 30f))
+                        if (StatusEffectApplication.ApplyStatusEffect(activator, ally, new LastBastionBarrierStatusEffect(), 30f))
                             Ability.PlaySuccessfulImpactVisualEffect(activator, ally);
                     }
 
                     // Nearby enemies generate +25% enmity toward the caster for the duration.
                     foreach (var enemy in AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(activator), 8.0f, 0))
                     {
-                        if (StatusEffect.ApplyStatusEffect(activator, enemy, new LastBastionStatusEffect(), 30f))
+                        if (StatusEffectApplication.ApplyStatusEffect(activator, enemy, new LastBastionStatusEffect(), 30f))
                             Ability.PlaySuccessfulImpactVisualEffect(activator, enemy);
                     }
                 });

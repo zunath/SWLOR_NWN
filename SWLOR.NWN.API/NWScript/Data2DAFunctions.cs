@@ -12,7 +12,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Avoid using this function in loops.</remarks>
         public static string Get2DAString(string s2DA, string sColumn, int nRow)
         {
-            return global::NWN.Core.NWScript.Get2DAString(s2DA, sColumn, nRow);
+            return NWScriptRuntime.Current.Get2DAString(s2DA, sColumn, nRow);
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The column name. Returns empty string if column doesn't exist (at end)</returns>
         public static string Get2DAColumn(string s2DA, int nColumnIdx)
         {
-            return global::NWN.Core.NWScript.Get2DAColumn(s2DA, nColumnIdx);
+            return NWScriptRuntime.Current.Get2DAColumn(s2DA, nColumnIdx);
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The number of defined rows in the 2DA file</returns>
         public static int Get2DARowCount(string s2DA)
         {
-            return global::NWN.Core.NWScript.Get2DARowCount(s2DA);
+            return NWScriptRuntime.Current.Get2DARowCount(s2DA);
         }
     }
 }

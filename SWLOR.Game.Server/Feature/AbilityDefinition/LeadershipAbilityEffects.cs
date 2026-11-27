@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition
 {
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ? typeof(TriageProtocol2StatusEffect)
                 : typeof(TriageProtocol1StatusEffect);
 
-            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, durationSeconds);
+            StatusEffectApplication.ApplyStatusEffect(activator, target, statusEffect, durationSeconds);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 if (rank >= 2)
                 {
-                    StatusEffect.ApplyStatusEffect(activator, friendly, typeof(BolsterResolve2StatusEffect), durationSeconds);
+                    StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(BolsterResolve2StatusEffect), durationSeconds);
                 }
 
                 bolstered.Add(friendly);
@@ -117,16 +117,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             var statusEffectType = statusEffectTypes[Math.Clamp(auraLevel, 1, statusEffectTypes.Length) - 1];
 
-            if (!Ability.ToggleAura(activator, statusEffectType))
+            if (!AbilityAura.ToggleAura(activator, statusEffectType))
                 return false;
 
             foreach (var auraType in statusEffectTypes)
             {
                 if (auraType != statusEffectType)
-                    Ability.RemoveAura(activator, auraType);
+                    AbilityAura.RemoveAura(activator, auraType);
             }
 
-            Ability.ApplyAura(activator, statusEffectType, true, true, false,
+            AbilityAura.ApplyAura(activator, statusEffectType, true, true, false,
                 Ability.GetSuccessfulImpactVisualEffect(activator));
             return true;
         }

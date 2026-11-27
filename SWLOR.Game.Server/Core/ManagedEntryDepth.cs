@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Core
 {
@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Core
         /// </summary>
         internal static bool Enter()
         {
-            if (!CombatRecorder.IsRecording)
+            if (!CombatRecordingState.IsRecording)
                 return false;
 
             Current++;

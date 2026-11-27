@@ -1,11 +1,9 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -24,8 +22,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var npc = ctx.SpawnCreature("nw_bandit001");
             await ctx.WaitFrameAsync();
 
-            StatusEffect.ApplyPermanentStatusEffect(typeof(OverclockStatusEffect), npc, npc);
-            StatusEffect.ApplyPermanentStatusEffect(typeof(SafeModeStatusEffect), npc, npc);
+            StatusEffectApplication.ApplyPermanentStatusEffect(typeof(OverclockStatusEffect), npc, npc);
+            StatusEffectApplication.ApplyPermanentStatusEffect(typeof(SafeModeStatusEffect), npc, npc);
             ctx.Assert(StatusEffect.HasStatusEffect<OverclockStatusEffect>(npc), "Overclock applies");
             ctx.Assert(StatusEffect.HasStatusEffect<SafeModeStatusEffect>(npc), "Safe Mode applies");
             var withStyles = LoadBoost(npc);
@@ -40,23 +38,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             // Rifle Pacification's Neutralizing Shot: takes the first beneficial effect, which is the ordinary buff here.
-            ctx.Assert(StatusEffect.ApplyStatusEffect<RegenerativeHealingStatusEffect>(npc, npc, 60f), "an ordinary buff applies");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect<RegenerativeHealingStatusEffect>(npc, npc, 60f), "an ordinary buff applies");
             ctx.Assert(StatusEffect.RemoveFirstBeneficialCombatStatusEffect(npc, false), "the purge takes the ordinary buff");
             ctx.Assert(!StatusEffect.HasStatusEffect<RegenerativeHealingStatusEffect>(npc), "the ordinary buff is gone");
             ctx.Assert(!StatusEffect.RemoveFirstBeneficialCombatStatusEffect(npc, false), "the purge finds nothing else to take");
             StylesRemain("a beneficial-effect purge");
 
-            ctx.Assert(StatusEffect.ApplyStatusEffect<RegenerativeHealingStatusEffect>(npc, npc, 60f), "the ordinary buff applies again");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect<RegenerativeHealingStatusEffect>(npc, npc, 60f), "the ordinary buff applies again");
             ctx.Assert(StatusEffect.RemoveFirstStatusEffectByCategory(npc, StatusEffectCategory.Buff, false), "the category removal takes the ordinary buff");
             ctx.Assert(!StatusEffect.RemoveFirstStatusEffectByCategory(npc, StatusEffectCategory.Buff, false), "the category removal finds no other Buff");
             StylesRemain("a Buff category removal");
 
-            ctx.Assert(StatusEffect.ApplyStatusEffect<PoisonStatusEffect>(npc, npc, 60f), "a cleanseable debuff applies");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect<PoisonStatusEffect>(npc, npc, 60f), "a cleanseable debuff applies");
             StatusEffect.RemoveCleanseableStatusEffects(npc, StatusEffectCleanseType.Purify, false);
             ctx.Assert(!StatusEffect.HasStatusEffect<PoisonStatusEffect>(npc), "the cleanse takes the debuff");
             StylesRemain("a cleanse");
 
-            ctx.Assert(StatusEffect.ApplyStatusEffect<PoisonStatusEffect>(npc, npc, 60f), "the debuff applies again");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect<PoisonStatusEffect>(npc, npc, 60f), "the debuff applies again");
             ctx.Assert(StatusEffect.RemoveFirstCleanseableStatusEffect(npc, StatusEffectCleanseType.Purify, false), "the single cleanse takes the debuff");
             ctx.Assert(!StatusEffect.RemoveFirstCleanseableStatusEffect(npc, StatusEffectCleanseType.Purify, false), "the single cleanse finds nothing else");
             StylesRemain("a single cleanse");
@@ -66,7 +64,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             StatusEffect.RemoveStatusEffectsWithNegativeStat(npc, StatType.CircuitLoadBoostPercent, false);
             StylesRemain("a removal by negative stat");
 
-            ctx.Assert(StatusEffect.ApplyStatusEffect<RegenerativeHealingStatusEffect>(npc, npc, 60f), "the ordinary buff applies a third time");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect<RegenerativeHealingStatusEffect>(npc, npc, 60f), "the ordinary buff applies a third time");
             StatusEffect.RemoveAllStatusEffects(npc);
             ctx.Assert(!StatusEffect.HasStatusEffect<RegenerativeHealingStatusEffect>(npc), "remove-all takes the ordinary buff");
             StylesRemain("remove-all");

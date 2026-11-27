@@ -2,12 +2,14 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -37,7 +39,7 @@ public static class CapstoneProofEngineTests
         // A sibling line's adept counts once the player made it bleed.
         var proven = SpawnTierAdept(ctx);
         await ctx.ExecuteInCreatureContextAsync(player,
-            () => ctx.Assert(StatusEffect.ApplyStatusEffect<BleedStatusEffect>(player, proven, 30f), "The player makes the adept bleed."));
+            () => ctx.Assert(StatusEffectApplication.ApplyStatusEffect<BleedStatusEffect>(player, proven, 30f), "The player makes the adept bleed."));
         ctx.Assert(CapstoneProof.HasProof(player, proven, "perfect_flurry"), "Bleed proves Perfect Flurry on that adept.");
         ctx.Assert(!CapstoneProof.HasProof(player, proven, "kill_box"), "Bleed does not prove another line's mechanic.");
         await KillAsync(ctx, player, proven);
@@ -57,12 +59,12 @@ public static class CapstoneProofEngineTests
         SetPlotFlag(enemy, false);
         ctx.Assert(!CapstoneProof.HasProof(player, enemy, "hold_the_line"), "No support has been used yet.");
 
-        var ability = Ability.GetAbilityDetail(FeatType.RousingShout1);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.RousingShout1);
         await ctx.ExecuteInCreatureContextAsync(player, () =>
         {
-            Ability.BeginAbilityImpact(player, ability);
+            AbilityImpactLifecycle.BeginAbilityImpact(player, ability);
             try { ability.ImpactAction(player, player, 1, GetLocation(player)); }
-            finally { Ability.EndAbilityImpact(player); }
+            finally { AbilityImpactLifecycle.EndAbilityImpact(player); }
         });
         ctx.Assert(!StatusEffect.HasEffect(typeof(RousingShout1StatusEffect), player), "Full-health shielding has no rescue rider.");
         ctx.Assert(CapstoneProof.HasProof(player, enemy, "hold_the_line"), "The shield itself proves the support action.");
@@ -81,15 +83,15 @@ public static class CapstoneProofEngineTests
         ctx.MakeHostile(enemy);
         await ctx.ExecuteInCreatureContextAsync(player, () =>
         {
-            ctx.Assert(StatusEffect.ApplyStatusEffect<VenomStatusEffect>(player, enemy, 30f), "Unattributed Venom applies.");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect<VenomStatusEffect>(player, enemy, 30f), "Unattributed Venom applies.");
             ctx.Assert(!CapstoneProof.HasProof(player, enemy, "viral_cascade"), "Item Venom alone does not prove the skill.");
-            var ability = Ability.GetAbilityDetail(FeatType.VirulentBlade1);
-            Ability.BeginAbilityImpact(player, ability);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.VirulentBlade1);
+            AbilityImpactLifecycle.BeginAbilityImpact(player, ability);
             try
             {
-                ctx.Assert(StatusEffect.ApplyStatusEffect<VenomStatusEffect>(player, enemy, 30f), "Vibroknife Venom applies.");
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect<VenomStatusEffect>(player, enemy, 30f), "Vibroknife Venom applies.");
             }
-            finally { Ability.EndAbilityImpact(player); }
+            finally { AbilityImpactLifecycle.EndAbilityImpact(player); }
         });
         ctx.Assert(CapstoneProof.HasProof(player, enemy, "viral_cascade"), "Venom from the Vibroknife ability proves the skill.");
     }
@@ -107,11 +109,11 @@ public static class CapstoneProofEngineTests
         ctx.Assert(BeastMastery.IsPlayerBeast(beast), "The beast is owned by the player.");
         var keys = new[] { "primal_overrun", "untouchable_instinct", "force_bonded_beast", "apex_bite", "unbreakable_beast", "alpha_rhythm" };
         await ctx.ExecuteInCreatureContextAsync(fixture.Creature, () =>
-            Combat.ApplyDamageDealtEffects(fixture.Creature, enemy, 1, SkillType.Vibroblade, CombatDamageType.Physical));
+            GameServices.CombatHitEffects.ApplyDamageDealtEffects(fixture.Creature, enemy, 1, SkillType.Vibroblade, CombatDamageType.Physical));
         foreach (var key in keys)
             ctx.Assert(!CapstoneProof.HasProof(fixture.Creature, enemy, key), "The master's own hit does not prove " + key);
         await ctx.ExecuteInCreatureContextAsync(beast, () =>
-            Combat.ApplyDamageDealtEffects(beast, enemy, 1, SkillType.BeastMastery, CombatDamageType.Physical));
+            GameServices.CombatHitEffects.ApplyDamageDealtEffects(beast, enemy, 1, SkillType.BeastMastery, CombatDamageType.Physical));
         foreach (var key in keys)
         {
             ctx.Assert(CapstoneProof.HasProof(fixture.Creature, enemy, key), "The beast's hit proves " + key);
@@ -134,7 +136,7 @@ public static class CapstoneProofEngineTests
     {
         // Kill credit goes to the player with the most enmity, as it does after a real fight; both kills get the same
         // enmity, so only the proof differs.
-        await ctx.ExecuteInCreatureContextAsync(enemy, () => Enmity.ModifyEnmity(player, enemy, 100));
+        await ctx.ExecuteInCreatureContextAsync(enemy, () => EnmityChange.ModifyEnmity(player, enemy, 100));
         await ctx.ExecuteInCreatureContextAsync(enemy,
             () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), enemy));
         await ctx.WaitUntilAsync(() => !GetIsObjectValid(enemy) || GetIsDead(enemy), 10f, "the adept dies");

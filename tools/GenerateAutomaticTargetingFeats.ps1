@@ -45,7 +45,7 @@ function Export-EligibleAbilities {
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Json;
-using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.NWN.API.NWScript.Enum;
 
 var directory = Path.GetFullPath(args[0]);

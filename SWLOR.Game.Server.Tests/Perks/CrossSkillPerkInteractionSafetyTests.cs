@@ -1,18 +1,34 @@
+using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
-public class CrossSkillPerkInteractionSafetyTests
+public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void IdleAbilityBonuses_KeepStaffAndRifleChannelsIndependent()
     {
@@ -47,13 +63,15 @@ public class CrossSkillPerkInteractionSafetyTests
                 "Steady Aim and Dead Center each promise the same three-second opening window");
 
         var root = FindRepositoryRoot();
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
         combat.Should().Contain("_idleSkillAbilityStatChannels");
         combat.Should().Contain("StatType.AlternateIdleSkillAbilitySkillType");
         combat.Should().Contain("foreach (var channel in _idleSkillAbilityStatChannels)");
         combat.Should().Contain("typeof(IdleSkillAbilityReadyStatusEffect)");
         combat.Should().Contain("ColorToken.Combat(\"Idle Skill Ability Ready\")");
-        var restoreOnLogin = ExtractMethod(combat, "public static void RestoreIdleReadinessOnPlayerEnter()");
+        // The login handler is a call of its per-player step (a hot reload runs the step for players who stay online).
+        ExtractMethod(combat, "public static void RestoreIdleReadinessOnPlayerEnter()").Should().Contain("RestoreIdleReadiness(GetEnteringObject())");
+        var restoreOnLogin = ExtractMethod(combat, "public static void RestoreIdleReadiness(uint creature)");
         restoreOnLogin.Should().Contain("RefreshIdleReadiness(creature)",
             "non-persistent readiness markers must be rebuilt when a player logs in");
         restoreOnLogin.Should().Contain("ScheduleIdleReadinessRefresh(creature)");
@@ -88,25 +106,28 @@ public class CrossSkillPerkInteractionSafetyTests
             .Should().Be((int)StatusEffectCategory.Control,
                 "owning Charged Blows and Skull Rattle must not turn two Control selectors into Bleeding");
 
-        var perkSource = Read(root, "SWLOR.Game.Server", "Service", "Perk.cs");
-        var getStatBonus = ExtractMethod(perkSource, "public static int GetStatBonus(uint creature, StatType stat)");
-        getStatBonus.Should().Contain("Stat.AggregateStatAdjustment(stat, bonus, statBonus.Calculate(creature))");
+        var getStatBonus = CharacterCompanionsSource.Perk.Member("GetStatBonus");
+        getStatBonus.Should().Contain("AggregateStatAdjustment(stat, bonus, statBonus.Calculate(creature))");
 
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
-        var statusApplied = ExtractMethod(combat, "private static void ApplyStatusAppliedEffects(");
+        var combat = CombatSource.Read();
+        var statusApplied = ExtractMethod(combat, "public static void ApplyStatusAppliedEffects(");
         statusApplied.Should().Contain("GrantStatusAppliedNextAttackDamageBonus");
 
-        var ability = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
-        var beginAbilityImpact = ExtractMethod(ability, "public static void BeginAbilityImpact(");
+        var ability = AbilitySource.Read();
+        var beginAbilityImpact = ExtractMethod(ability, "public void BeginAbilityImpact(");
         beginAbilityImpact.Should().Contain("GetStatusAppliedNextAttackDamageBonus");
         beginAbilityImpact.Should().NotContain("ConsumeStatusAppliedNextAttackDamageBonus",
             "a miss or zero-damage hostile ability must preserve Charged Blows");
         beginAbilityImpact.Should().Contain("ability.IsHostileAbility");
-        var hostileImpact = ExtractMethod(ability, "public static int ApplyHostileCombatImpact(");
+        // The hostile impact is its part's since the ability split: it hands a damaging hit to the delivery part, which
+        // consumes the bonus first.
+        var hostileImpact = AbilitySource.Member("AbilityHostileImpactService", "ApplyHostileCombatImpact");
         hostileImpact.Should().Contain("if (damage > 0)");
-        hostileImpact.Should().Contain("trackedImpact?.ConsumeStatusAppliedNextAttackDamageBonus(activator);");
+        hostileImpact.Should().Contain("DeliverHostileImpactDamage(");
+        AbilitySource.Member("AbilityDamageDeliveryService", "DeliverHostileImpactDamage")
+            .Should().Contain("ConsumeStatusAppliedNextAttackDamageBonus(trackedImpact, activator);");
         hostileImpact.IndexOf(
-                "trackedImpact?.ConsumeStatusAppliedNextAttackDamageBonus(activator);",
+                "ConsumeStatusAppliedNextAttackDamageBonus(trackedImpact, activator);",
                 StringComparison.Ordinal)
             .Should()
             .BeLessThan(hostileImpact.IndexOf("ApplyCombatImpactStatusEffect(", StringComparison.Ordinal),
@@ -114,16 +135,19 @@ public class CrossSkillPerkInteractionSafetyTests
         ability.Should().Contain("_statusAppliedNextAttackDamageBonusConsumed",
             "an area ability must not consume a newly granted proc on each additional target");
         ability.Should().Contain("public int NextAbilityDamageBonus { get; private set; }");
+        ExtractMethod(ability, "private void ConsumeStatusAppliedNextAttackDamageBonus(AbilityImpactTracker impact, uint activator)")
+            .Should().Contain("impact.StatusAppliedNextAttackDamageBonusConsumed",
+                "the bonus service is asked once per impact, not once per area target");
         var consumeStatusBonus = ExtractMethod(
             ability,
-            "public void ConsumeStatusAppliedNextAttackDamageBonus(uint activator)");
+            "public void CompleteStatusAppliedNextAttackDamageBonusConsumption()");
         consumeStatusBonus.Should().Contain(
             "NextAbilityDamageBonus -= StatusAppliedNextAttackDamageBonus;",
             "the consumed Charged Blows value must be removed from the tracked aggregate before another hit or area target calculates damage");
 
-        var nativeDamage = Read(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs");
+        var nativeDamage = NativeCombatSource.DamageRoll();
         var nextAttackBonusIndex = nativeDamage.IndexOf(
-            "Combat.ConsumeStatusAppliedNextAttackDamageBonus(attacker.m_idSelf)",
+            "GameServices.CombatAbilityBonus.ConsumeStatusAppliedNextAttackDamageBonus(attacker.m_idSelf)",
             StringComparison.Ordinal);
         var formulaIndex = nativeDamage.IndexOf("CalculateDamageWithCriticalMitigation", StringComparison.Ordinal);
         nextAttackBonusIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -136,16 +160,15 @@ public class CrossSkillPerkInteractionSafetyTests
     [Test]
     public void StatusAppliedCategoryRiders_OnlyCountCategoriesFromSuccessfulApplications()
     {
-        var root = FindRepositoryRoot();
-        var abilitySource = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
-        var applyImpactStatus = ExtractMethod(abilitySource, "private static bool ApplyCombatImpactStatusEffect(");
+        var abilitySource = AbilitySource.Read();
+        var applyImpactStatus = ExtractMethod(abilitySource, "public bool ApplyCombatImpactStatusEffect(");
         applyImpactStatus.Should().Contain("out StatusEffectCategory appliedStatusCategories");
         applyImpactStatus.Should().Contain("if (applied)");
         applyImpactStatus.Should().Contain("appliedStatusCategories |= categories;");
-        abilitySource.Should().Contain("StatusEffect.GetStatusEffect(target, type, activator)?.Categories");
+        abilitySource.Should().Contain("_statusEffect.GetStatusEffect(target, type, activator)?.Categories");
 
-        var combatSource = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
-        var applyStatusRider = ExtractMethod(combatSource, "private static void ApplyStatusAppliedEffects(");
+        var combatSource = CombatSource.Read();
+        var applyStatusRider = ExtractMethod(combatSource, "public static void ApplyStatusAppliedEffects(");
         applyStatusRider.Should().Contain("(appliedStatusCategories & requiredCategory) == 0");
         applyStatusRider.Should().NotContain("AbilityAppliedAnyStatusCategory",
             "declared-but-rejected status types must not satisfy a successful-application rider");
@@ -155,8 +178,8 @@ public class CrossSkillPerkInteractionSafetyTests
     public void SecondaryDamage_CannotReenterDirectDamageProcOrReflectionChains()
     {
         var root = FindRepositoryRoot();
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
-        var statusBase = Read(root, "SWLOR.Game.Server", "Service", "StatusEffectService", "StatusEffectBase.cs");
+        var combat = CombatSource.Read();
+        var statusBase = Read(root, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectBase.cs");
         var blazingSpikes = Read(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "BlazingSpikesStatusEffect.cs");
         var markedForDeath = Read(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "MarkedForDeathStatusEffect.cs");
 
@@ -167,20 +190,20 @@ public class CrossSkillPerkInteractionSafetyTests
             damageEffects.IndexOf("ApplyDamageDealtMimicryTraitProcs", StringComparison.Ordinal),
             "triggered damage and damage-over-time must exit before any direct-hit perk proc runs");
         directGate.Should().BeLessThan(
-            damageEffects.IndexOf("ApplyDamageDerivedHealing", StringComparison.Ordinal),
+            damageEffects.IndexOf("ApplyDamageDealtHPPercentRestore", StringComparison.Ordinal),
             "secondary damage must not recursively sustain its source");
 
         var triggeredDamage = ExtractMethod(combat, "public static int ApplyTriggeredDamage(");
         triggeredDamage.Should().Contain(
-            "ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered)");
+            "ApplyDamageDealtTracking(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered, false)");
         triggeredDamage.Should().Contain(
-            "StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered)");
+            "_statusEffectCombatEvents.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered)");
         triggeredDamage.Should().NotContain("ApplyDamageReflectionEffects");
 
         statusBase.Should().Contain("if (deliveryType != CombatDamageDeliveryType.Direct)",
             "legacy and delivery-aware status hooks must ignore triggered and periodic damage");
         blazingSpikes.Should().Contain("if (deliveryType != CombatDamageDeliveryType.Direct)");
-        blazingSpikes.Should().Contain("Combat.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire)");
+        blazingSpikes.Should().Contain("GameServices.CombatTriggeredDamage.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire)");
         markedForDeath.Should().NotContain("ApplyTriggeredDamage",
             "Marked for Death amplifies the marker's own hits instead of adding a separate unmitigated damage instance");
         new MarkedForDeathStatusEffect().StatGroup.Stats[StatType.DamageTakenFromStatusSourcePercentAdjustment]
@@ -211,22 +234,25 @@ public class CrossSkillPerkInteractionSafetyTests
 
         var reflectionDispatchFiles = Directory
             .EnumerateFiles(Path.Combine(root.FullName, "SWLOR.Game.Server"), "*.cs", SearchOption.AllDirectories)
-            .Where(path => !path.EndsWith(Path.Combine("Service", "Combat.cs"), StringComparison.OrdinalIgnoreCase))
-            .Where(path => File.ReadAllText(path).Contains("Combat.ApplyDamageReflectionEffects(", StringComparison.Ordinal))
-            .Select(path => Path.GetRelativePath(root.FullName, path).Replace('\\', '/'))
-            .OrderBy(path => path)
+            .Where(path => !CombatSource.IsCombatFile(path))
+            .Where(path => File.ReadAllText(path) is var text && (text.Contains("GameServices.CombatDamageReflection.ApplyDamageReflectionEffects(", StringComparison.Ordinal) ||
+                                                                  text.Contains("_damageTaken.ApplyDamageReflectionEffects(", StringComparison.Ordinal) ||
+                                                                  text.Contains("_damageReflection.ApplyDamageReflectionEffects(", StringComparison.Ordinal)))
+            // The part files of AbilityService count as the one ability source they were split from.
+            .Select(path => AbilitySource.IsAbilityFile(path) ? "AbilityService" : Path.GetRelativePath(root.FullName, path).Replace('\\', '/'))
+            .Distinct()
+            .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
         reflectionDispatchFiles.Should().Equal(
-            "SWLOR.Game.Server/Native/GetDamageRoll.cs",
-            "SWLOR.Game.Server/Service/Ability.cs");
+            "AbilityService",
+            "SWLOR.Game.Server/Native/GetDamageRoll.cs");
     }
 
     [Test]
     public void DirectDamageRiders_RunOnlyForTheirIntendedDeliveryPath()
     {
-        var root = FindRepositoryRoot();
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
-        var ability = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
+        var combat = CombatSource.Read();
+        var ability = AbilitySource.Read();
 
         var damageEffects = ExtractMethod(combat, "public static void ApplyDamageDealtEffects(");
         damageEffects.Should().Contain("bool isAbilityDamage = false");
@@ -243,7 +269,7 @@ public class CrossSkillPerkInteractionSafetyTests
         damageEffects.Should().NotContain("ApplyBleedingTargetAbilityBleedRefresh(");
         damageEffects.Should().NotContain("ApplyBleedingTargetAbilityBleedSpread(");
 
-        var abilityDamageRiders = ExtractMethod(combat, "private static void ApplyAbilityDamageRiders(");
+        var abilityDamageRiders = ExtractMethod(combat, "public static void ApplyAbilityDamageRiders(");
         abilityDamageRiders.Should().Contain(
             "ApplyBleedingTargetAbilityBleedRefresh(activator, target, skillType);");
         abilityDamageRiders.Should().Contain(
@@ -254,15 +280,19 @@ public class CrossSkillPerkInteractionSafetyTests
 
         var bleedingRestore = ExtractMethod(
             combat,
-            "private static void ApplyBleedingTargetStaminaRestore(");
+            "public static void ApplyBleedingTargetStaminaRestore(");
         bleedingRestore.Should().Contain("SkillDamageBleedingTargetStaminaRestoreSkillType");
         bleedingRestore.Should().Contain("SkillAbilityBleedingTargetStaminaRestoreSkillType");
         bleedingRestore.Should().Contain("if (!isAbilityDamage)");
         bleedingRestore.Should().Contain(
             "SkillAbilityBleedingTargetStaminaRestoreCooldownSeconds");
 
-        var hostileImpact = ExtractMethod(ability, "public static int ApplyHostileCombatImpact(");
-        hostileImpact.Should().Contain("isAbilityDamage: true",
+        // The damage block of the hostile impact is the delivery part's since the ability split, the hostile impact its
+        // own part's since the ability split.
+        var hostileImpact = AbilitySource.Member("AbilityHostileImpactService", "ApplyHostileCombatImpact");
+        hostileImpact.Should().Contain("DeliverHostileImpactDamage(");
+        var delivery = ExtractMethod(ability, "public void DeliverHostileImpactDamage(");
+        delivery.Should().Contain("isAbilityDamage: true",
             "ability impacts must select ability-only riders and exclude auto-attack procs");
     }
 
@@ -270,7 +300,7 @@ public class CrossSkillPerkInteractionSafetyTests
     public void DamageSharingAndRedirects_HaveNoRecursiveTransferCycle()
     {
         var root = FindRepositoryRoot();
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
         var modifiers = ExtractMethod(combat, "public static int ApplyDamageTakenModifiers(");
         var share = ExtractMethod(combat, "private static int ApplyDamageTakenShareToStatusSource(");
         var redirect = ExtractMethod(combat, "private static int ApplyDamageTakenRedirectToStatusSource(");
@@ -280,7 +310,7 @@ public class CrossSkillPerkInteractionSafetyTests
         share[(share.IndexOf('{') + 1)..].Should().NotContain("ApplyDamageTakenShareToStatusSource(");
 
         var consumeIndex = redirect.IndexOf(
-            "StatusEffect.RemoveStatusEffectsWithStat(defender, StatType.DamageTakenRedirectToStatusSourcePercent, false)",
+            "_statusEffect.RemoveStatusEffectsWithStat(defender, StatType.DamageTakenRedirectToStatusSourcePercent, false)",
             StringComparison.Ordinal);
         var damageIndex = redirect.IndexOf("EffectDamage(finalRedirectedDamage", StringComparison.Ordinal);
         damageIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -369,14 +399,14 @@ public class CrossSkillPerkInteractionSafetyTests
             "Training, Stance, and Infinite Conduit together must remain below full cost restoration");
 
         var root = FindRepositoryRoot();
-        var stamina = Read(root, "SWLOR.Game.Server", "Service", "AbilityService", "AbilityRequirementStamina.cs");
-        var force = Read(root, "SWLOR.Game.Server", "Service", "AbilityService", "AbilityRequirementFP.cs");
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var stamina = Read(root, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityRequirementStamina.cs");
+        var force = Read(root, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityRequirementFP.cs");
+        var combat = CombatSource.Read();
 
         stamina.IndexOf("Stat.ReduceStamina(player, requiredSTM)", StringComparison.Ordinal)
-            .Should().BeLessThan(stamina.IndexOf("Combat.ApplyAbilityStaminaCostFPRestore", StringComparison.Ordinal));
+            .Should().BeLessThan(stamina.IndexOf("GameServices.CombatResources.ApplyAbilityStaminaCostFPRestore", StringComparison.Ordinal));
         force.IndexOf("Stat.ReduceFP(player, requiredFP)", StringComparison.Ordinal)
-            .Should().BeLessThan(force.IndexOf("Combat.ApplyAbilityFPCostStaminaRestore", StringComparison.Ordinal));
+            .Should().BeLessThan(force.IndexOf("GameServices.CombatResources.ApplyAbilityFPCostStaminaRestore", StringComparison.Ordinal));
 
         ExtractMethod(combat, "public static void ApplyAbilityStaminaCostFPRestore(")
             .Should().NotContain("ApplyAbilityFPCostStaminaRestore");
@@ -386,14 +416,14 @@ public class CrossSkillPerkInteractionSafetyTests
             .Should().Contain("ApplyAbilityRestoredFPEffects(creature)",
                 "Energized Forms must trigger when Conduit restores FP");
 
-        var hostileRestore = ExtractMethod(combat, "private static void ApplyHostileAbilityResourceRestoreEffects(");
+        var hostileRestore = ExtractMethod(combat, "static void ApplyHostileAbilityResourceRestoreEffects(");
         hostileRestore.Should().Contain("var restoredFP =");
         hostileRestore.Should().Contain("var restoredStamina =");
         hostileRestore.Should().Contain("if (restoredFP > 0)");
         hostileRestore.Should().Contain("if (restoredFP > 0 && restoredStamina > 0)");
 
         var deflectionRestore = ExtractMethod(combat, "public static void ApplyAbilityGrantedAttackDeflectionEffects(");
-        deflectionRestore.Should().Contain("if (Stat.RestoreFP(activator, fpRestore) > 0)");
+        deflectionRestore.Should().Contain("if (_stat.RestoreFP(activator, fpRestore) > 0)");
 
         var areaRestore = ExtractMethod(combat, "private static void ApplyAreaAbilityImpactEffects(");
         areaRestore.Should().Contain("var restoredFP =");
@@ -406,15 +436,15 @@ public class CrossSkillPerkInteractionSafetyTests
     public void AvoidedAttackRangedDeflectionRefresh_RunsAbilityGrantedDeflectionRiders()
     {
         var root = FindRepositoryRoot();
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
         var refresh = ExtractMethod(
             combat,
             "private static void ApplyAvoidedAttackAbilityUsedRangedDeflectionRefresh(");
 
-        refresh.Should().Contain("if (StatusEffect.ApplyStatusEffect(",
+        refresh.Should().Contain("if (_statusEffectApplication.ApplyStatusEffect(",
             "deflection riders must run only when the refreshed status was actually applied");
         refresh.Should().Contain(
-            "Stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection)",
+            "_stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection)",
             "the refreshed deflection must retain the stat-declared ranged source");
         refresh.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(creature, source)",
             "Last Word refreshes must trigger Force Gyre and any future stat-driven deflection riders");
@@ -422,8 +452,7 @@ public class CrossSkillPerkInteractionSafetyTests
 
     private static int CalculateCrossResourceRestore(int cost, int percent)
     {
-        return (int)typeof(Combat)
-            .GetMethod("CalculateResourceRestoreFromCost", BindingFlags.Static | BindingFlags.NonPublic)!
+        return (int)CombatMembers.FindMethod("CalculateResourceRestoreFromCost")!
             .Invoke(null, new object[] { cost, percent })!;
     }
 
@@ -431,8 +460,8 @@ public class CrossSkillPerkInteractionSafetyTests
     public void CooldownReduction_CannotResetCapstonesOrRunPastReady()
     {
         var root = FindRepositoryRoot();
-        var recast = Read(root, "SWLOR.Game.Server", "Service", "Recast.cs");
-        var reduction = ExtractMethod(recast, "public static void ReduceRecastDelay(");
+        var recast = Read(root, "SWLOR.Game.Server", "Domain", "Combat", "RecastService.cs");
+        var reduction = ExtractMethod(recast, "public void ReduceRecastDelay(");
 
         reduction.Should().Contain("if (group == RecastGroup.Capstone)");
         reduction.Should().Contain("if (reducedDate <= now)");
@@ -444,24 +473,28 @@ public class CrossSkillPerkInteractionSafetyTests
     [Test]
     public void CrossSkillDamageHealing_UsesOneAggregatePerHitCap()
     {
-        var root = FindRepositoryRoot();
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
-        var ability = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
-        var nativeDamage = Read(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs");
+        var combat = CombatSource.Read();
+        var ability = AbilitySource.Read();
+        var nativeDamage = NativeCombatSource.DamageRoll();
 
         var healing = ExtractMethod(combat, "public static int ApplyDamageDerivedHealing(");
         healing.Should().Contain("state.HealingApplied");
         healing.Should().Contain("CalculateCappedDamageDerivedHealingAmount");
 
-        var weaponScope = nativeDamage.IndexOf("using var damageDerivedHealing = Combat.BeginDamageDerivedHealing", StringComparison.Ordinal);
+        var weaponScope = nativeDamage.IndexOf("using var damageDerivedHealing = GameServices.CombatResources.BeginDamageDerivedHealing", StringComparison.Ordinal);
         weaponScope.Should().BeGreaterThanOrEqualTo(0);
-        weaponScope.Should().BeLessThan(nativeDamage.IndexOf("Combat.ApplyCriticalHitEffects", weaponScope, StringComparison.Ordinal));
+        weaponScope.Should().BeLessThan(nativeDamage.IndexOf("GameServices.CombatCriticalHitEffects.ApplyCriticalHitEffects", weaponScope, StringComparison.Ordinal));
         weaponScope.Should().BeLessThan(nativeDamage.IndexOf("PublishDamageDealtEvent", weaponScope, StringComparison.Ordinal));
 
-        var abilityScope = ability.IndexOf("using var damageDerivedHealing = Combat.BeginDamageDerivedHealing", StringComparison.Ordinal);
+        // The hostile impact opens the scope before it hands the damage to the delivery part, which converts Dark Force and
+        // applies the damage-dealt effects (the ability split).
+        var hostileImpact = AbilitySource.Member("AbilityHostileImpactService", "ApplyHostileCombatImpact");
+        var abilityScope = hostileImpact.IndexOf("using var damageDerivedHealing = BeginDamageDerivedHealing", StringComparison.Ordinal);
         abilityScope.Should().BeGreaterThanOrEqualTo(0);
-        abilityScope.Should().BeLessThan(ability.IndexOf("ApplyDarkForceConversion", abilityScope, StringComparison.Ordinal));
-        abilityScope.Should().BeLessThan(ability.IndexOf("Combat.ApplyDamageDealtEffects", abilityScope, StringComparison.Ordinal));
+        abilityScope.Should().BeLessThan(hostileImpact.IndexOf("DeliverHostileImpactDamage(", abilityScope, StringComparison.Ordinal));
+        var delivery = AbilitySource.Member("AbilityDamageDeliveryService", "DeliverHostileImpactDamage");
+        delivery.Should().Contain("ApplyDarkForceConversion").And.Contain("ApplyDamageDealtEffects(");
+        ability.Should().Contain("using var damageDerivedHealing = BeginDamageDerivedHealing");
     }
 
     [Test]
@@ -533,12 +566,12 @@ public class CrossSkillPerkInteractionSafetyTests
             "the superseded shared costly-ability threshold must not remain as usable stat API");
 
         var root = FindRepositoryRoot();
-        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
         var guardedBonuses = ExtractMethod(combat, "private static void ApplyGuardedHitNextSkillAbilityEffects(");
         guardedBonuses.Should().Contain("primary.DamageBonus + secondary.DamageBonus");
         guardedBonuses.Should().Contain("Math.Max(primary.Window, secondary.Window)");
 
-        var crossSkillCounter = ExtractMethod(combat, "private static void ApplyGuardedHitNextAttackEffects(");
+        var crossSkillCounter = ExtractMethod(combat, "public static void ApplyGuardedHitNextAttackEffects(");
         crossSkillCounter.Should().Contain("StatType.GuardedHitNextAttackDMGBonus");
         crossSkillCounter.Should().Contain("StatType.GuardedHitSecondaryNextAttackDMGBonus");
         crossSkillCounter.Should().Contain("StatType.GuardedHitSecondaryNextAttackEnmityBonus");
@@ -548,25 +581,29 @@ public class CrossSkillPerkInteractionSafetyTests
         crossSkillCounter.Should().Contain("StatType.NextAttackGuardedHitDMGBonus");
         crossSkillCounter.Should().Contain("StatType.NextAttackGuardedHitEnmityBonus");
 
-        var abilitySource = Read(root, "SWLOR.Game.Server", "Service", "Ability.cs");
-        var beginAbilityImpact = ExtractMethod(abilitySource, "public static void BeginAbilityImpact(");
+        var abilitySource = AbilitySource.Read();
+        var beginAbilityImpact = ExtractMethod(abilitySource, "public void BeginAbilityImpact(");
         beginAbilityImpact.Should().Contain("ability.IsHostileAbility");
         beginAbilityImpact.Should().Contain("ConsumeNextAttackGuardedHitBonuses");
         beginAbilityImpact.Should().Contain("guardedHitBonuses.DMGBonus");
         beginAbilityImpact.Should().Contain("guardedHitBonuses.CriticalRatePercentAdjustment");
         beginAbilityImpact.Should().Contain("guardedHitBonuses.EnmityBonus");
         abilitySource.Should().Contain("trackedImpact?.NextAttackEnmityBonus");
-        var telegraphedImpact = ExtractMethod(abilitySource, "public static int ApplyTelegraphedCombatImpact(");
+        // The delayed half of the telegraphed impact is its own method, and the delayed action begins the impact through the
+        // lifecycle's telegraphed begin, since the ability split.
+        var telegraphedImpact = ExtractMethod(abilitySource, "public int ApplyTelegraphedCombatImpact(") +
+            ExtractMethod(abilitySource, "private int ScheduleTelegraphedCombatImpact(");
         telegraphedImpact.Should().Contain("trackedImpact?.NextAttackEnmityBonus ?? 0",
             "a telegraphed hostile ability must carry Retaliatory Flow's consumed Enmity into its delayed impact");
         var delayedImpact = ExtractMethod(
             abilitySource,
-            "private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(");
+            "private ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(");
         delayedImpact.Should().Contain("int nextAttackEnmityBonus");
         delayedImpact.Should().Contain("nextAttackEnmityBonus,",
             "the reconstructed tracked impact must retain the guarded-hit Enmity bonus");
-        delayedImpact.Should().Contain("Combat.GetStatusAppliedNextAttackDamageBonus(creator)",
+        ExtractMethod(abilitySource, "public void BeginTelegraphedAbilityImpact(").Should().Contain("GetStatusAppliedNextAttackDamageBonus(creator)",
             "a delayed impact must resolve the live Charged Blows proc when it lands");
+        delayedImpact.Should().Contain("BeginTelegraphedAbilityImpact(");
         telegraphedImpact.Should().Contain("deferredNextAbilityDamageBonus");
         telegraphedImpact.Should().Contain(
             "(trackedImpact?.StatusAppliedNextAttackDamageBonus ?? 0)",
@@ -574,13 +611,13 @@ public class CrossSkillPerkInteractionSafetyTests
         delayedImpact.Should().NotContain("int statusAppliedNextAttackDamageBonus",
             "the delayed callback must not carry a stale Charged Blows reservation");
 
-        var nativeAttackSource = Read(root, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs");
+        var nativeAttackSource = NativeCombatSource.AttackRoll();
         nativeAttackSource.Should().Contain("ConsumeNextAttackGuardedHitCriticalRateBonus(attacker.m_idSelf)",
             "the next landed non-queued auto attack must receive Redirecting Counter's critical chance");
         var autoAttackDamage = ExtractMethod(combat, "public static int ApplyAutoAttackDamageModifiers(");
         autoAttackDamage.Should().NotContain("NextAttackGuardedHitDMGBonus",
             "DMG must enter the attack-versus-defense formula rather than being added to resolved damage");
-        var nativeDamageRollSource = Read(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs");
+        var nativeDamageRollSource = NativeCombatSource.DamageRoll();
         var guardedDMGIndex = nativeDamageRollSource.IndexOf("guardedHitBonuses.DMGBonus", StringComparison.Ordinal);
         var calculateDamageIndex = nativeDamageRollSource.IndexOf("CalculateDamageWithCriticalMitigation", StringComparison.Ordinal);
         guardedDMGIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -600,7 +637,7 @@ public class CrossSkillPerkInteractionSafetyTests
         retaliationPulse.Should().Contain("target != originalAttacker",
             "the triggering attacker must not be struck twice when inside the pulse radius");
 
-        var guardedHitRetaliation = ExtractMethod(combat, "private static void ApplyGuardedHitRetaliation(");
+        var guardedHitRetaliation = ExtractMethod(combat, "public static void ApplyGuardedHitRetaliation(");
         guardedHitRetaliation.Should().Contain("StatType.GuardedHitPulseDMG");
         guardedHitRetaliation.Should().NotContain("SkillTypeMatches(",
             "Iron Elbows is cross-skill and must work with any equipped weapon or unarmed");
@@ -611,13 +648,13 @@ public class CrossSkillPerkInteractionSafetyTests
         evasion.Should().Contain("evasionStatType);",
             "each trigger family needs an independent replacement group so valid cross-skill Evasion perks can stack");
 
-        var skillEvasion = ExtractMethod(combat, "private static void ApplyAbilityUsedSkillEvasion(");
+        var skillEvasion = ExtractMethod(combat, "static void ApplyAbilityUsedSkillEvasion(");
         skillEvasion.Should().Contain("StatType.AbilityUsedEvasionPercentAdjustmentSkillType");
         skillEvasion.Should().Contain("StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType");
         var skillEvasionChannel = ExtractMethod(combat, "private static void ApplyAbilityUsedSkillEvasionChannel(");
         skillEvasionChannel.Should().Contain("new EvasiveFootworkStatusEffect(evasionPercent)",
             "Lateral and Mobile Footwork need a visible timed status while retaining their shared stat-driven trigger");
-        skillEvasionChannel.Should().Contain("StatusEffect.ApplyStatusEffect(");
+        skillEvasionChannel.Should().Contain("_statusEffectApplication.ApplyStatusEffect(");
 
         var damageModifiers = ExtractMethod(combat, "public static int ApplyDamageDealtModifiers(");
         var outgoingDamageIndex = damageModifiers.IndexOf("ApplyOutgoingDamageModifier", StringComparison.Ordinal);
@@ -630,20 +667,20 @@ public class CrossSkillPerkInteractionSafetyTests
         staminaCost.Should().Contain("if (ability.IsHostileAbility)");
         staminaCost.Should().Contain("StatType.HostileAbilityStaminaCostFlatAdjustment");
 
-        var hostileEvasion = ExtractMethod(combat, "private static void ApplyHostileAbilityUsedEvasion(");
+        var hostileEvasion = ExtractMethod(combat, "static void ApplyHostileAbilityUsedEvasion(");
         hostileEvasion.Should().Contain("SkillTypeMatchesOrGlobal(skillType, requiredSkillType)",
             "an omitted selector makes Vigor Stance trigger from every hostile combat skill");
-        var costlyEvasion = ExtractMethod(combat, "private static void ApplyCostlyAbilityUsedEvasion(");
+        var costlyEvasion = ExtractMethod(combat, "static void ApplyCostlyAbilityUsedEvasion(");
         costlyEvasion.Should().Contain("SkillTypeMatchesOrGlobal(skillType, requiredSkillType)");
         var costlyDamage = ExtractMethod(combat, "public static int GetCostlyAbilityDamageBonus(");
         costlyDamage.Should().Contain("SkillTypeMatchesOrGlobal(skillType, requiredSkillType)");
-        var globalSkillMatch = ExtractMethod(combat, "private static bool SkillTypeMatchesOrGlobal(");
+        var globalSkillMatch = CombatSource.Method("SkillTypeMatchesOrGlobal").ToString();
         globalSkillMatch.Should().Contain(
             "requiredSkillType == SkillType.Invalid || SkillTypeMatches(actualSkillType, requiredSkillType)");
 
-        combat.Should().Contain("Dictionary<(uint Creature, AbilityDetail Ability), AbilityStaminaCostState>",
+        combat.Should().Contain("Dictionary<(uint Creature, AbilityDetail Ability), CombatAbilityStaminaCostState>",
             "cost-gated riders must bind the paid STM to the exact ability instead of a later ability");
-        var costlyHitEffects = ExtractMethod(combat, "private static void ApplyCostlyAbilityHitEffects(");
+        var costlyHitEffects = ExtractMethod(combat, "public static void ApplyCostlyAbilityHitEffects(");
         costlyHitEffects.Should().Contain("StatType.CostlyAbilityHitStaminaRestoreMinimumStaminaCost");
         costlyHitEffects.Should().Contain("StatType.CostlyAbilityStatusMinimumStaminaCost");
         costlyHitEffects.Should().Contain("!costState.StaminaRestoreApplied",
@@ -664,8 +701,8 @@ public class CrossSkillPerkInteractionSafetyTests
         completeDeferredCostContext.Should().Contain("_abilityStaminaCosts.Remove((creature, ability))");
 
         var usePerkFeat = Read(root, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs");
-        usePerkFeat.Should().Contain("Combat.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);");
-        usePerkFeat.Should().Contain("Combat.CompleteAbilityStaminaCostContext(activator, ability);");
+        usePerkFeat.Should().Contain("GameServices.CombatAbilityActivation.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);");
+        usePerkFeat.Should().Contain("GameServices.CombatResources.CompleteAbilityStaminaCostContext(activator, ability);");
         usePerkFeat.IndexOf("ApplyAbilityActivatedEffects(activator, target, feat, ability, summary)", StringComparison.Ordinal)
             .Should().BeLessThan(
                 usePerkFeat.IndexOf("CompleteAbilityStaminaCostContext(activator, ability)", StringComparison.Ordinal),

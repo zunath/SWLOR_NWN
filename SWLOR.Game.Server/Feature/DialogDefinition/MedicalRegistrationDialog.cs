@@ -1,11 +1,17 @@
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class MedicalRegistrationDialog: ConversationMenuDefinition
     {
+        private IDBService DB { get; }
+
+        public MedicalRegistrationDialog(IDBService db)
+        {
+            DB = db;
+        }
+
         private const string MainPageId = "MAIN_PAGE";
 
         public override ConversationMenuSpec Build()

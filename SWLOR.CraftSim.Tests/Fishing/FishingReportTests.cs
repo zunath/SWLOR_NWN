@@ -4,7 +4,7 @@ using SWLOR.CraftSim.Cli;
 using SWLOR.CraftSim.Fishing;
 using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Scenario;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
 
 namespace SWLOR.CraftSim.Tests.Fishing
 {

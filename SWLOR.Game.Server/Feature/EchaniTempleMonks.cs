@@ -1,7 +1,8 @@
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -205,7 +206,7 @@ namespace SWLOR.Game.Server.Feature
         private static bool Available(uint creature) =>
             !GetIsDMPossessed(creature) && !GetIsDead(creature) && GetCurrentHitPoints(creature) > 0 &&
             !GetIsInCombat(creature) && !GetIsObjectValid(Enmity.GetHighestEnmityTarget(creature)) &&
-            AI.IsCreatureAIEnabled(creature) && GetCommandable(creature) &&
+            CreatureAIRules.IsCreatureAIEnabled(creature) && GetCommandable(creature) &&
             !IsInConversation(creature) && !Activity.IsBusy(creature) &&
             !Area.GetPlayersInArea(GetArea(creature)).Any(player => Gui.HasOpenWindowTetheredTo(player, creature));
 

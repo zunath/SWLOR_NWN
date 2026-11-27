@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.TimeZoneService;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -28,7 +28,7 @@ public class PlayerTimeZonesTests
         PlayerTimeZones.Get("Mars/Olympus_Mons").Should().BeSameAs(PlayerTimeZones.Utc);
         PlayerTimeZones.IndexOf(null).Should().Be(0);
         PlayerTimeZones.GetByIndex(-1).Should().BeSameAs(PlayerTimeZones.Utc);
-        PlayerTimeZones.GetByIndex(PlayerTimeZones.All.Count).Should().BeSameAs(PlayerTimeZones.Utc);
+        PlayerTimeZones.GetByIndex(PlayerTimeZones.All.Length).Should().BeSameAs(PlayerTimeZones.Utc);
     }
 
     [Test]

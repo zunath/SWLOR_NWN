@@ -1,10 +1,11 @@
 using System;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -45,26 +46,26 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             var source = GetIsObjectValid(Source) ? Source : creature;
             damage = Resistance.ApplyResistanceToDamage(creature, ResistanceType, damage);
-            damage = Combat.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Force, out var targetStatusDamageAdjustment);
-            damage = Combat.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime, targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment);
+            damage = GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Force, out var targetStatusDamageAdjustment);
+            damage = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime, targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment);
             if (damage <= 0)
                 return;
 
-            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(source, creature);
+            using var damageDerivedHealing = GameServices.CombatResources.BeginDamageDerivedHealing(source, creature);
             AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Force.GetNWScriptDamageType()), creature));
 
             if (!GetIsObjectValid(Source))
                 return;
 
-            Combat.ApplyDamageDealtEffects(
+            GameServices.CombatHitEffects.ApplyDamageDealtEffects(
                 Source,
                 creature,
                 damage,
                 SkillType.Force,
                 CombatDamageType.Force,
                 CombatDamageDeliveryType.DamageOverTime);
-            Ability.ApplyDarkForceDamageRestoration(Source, damage);
-            StatusEffect.NotifyDamageStatusEffects(Source, creature, damage, CombatDamageType.Force, CombatDamageDeliveryType.DamageOverTime);
+            AbilityDarkForce.ApplyDarkForceDamageRestoration(Source, damage);
+            StatusEffectCombatEvent.NotifyDamageStatusEffects(Source, creature, damage, CombatDamageType.Force, CombatDamageDeliveryType.DamageOverTime);
         }
     }
 }

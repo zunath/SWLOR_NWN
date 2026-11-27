@@ -1,13 +1,14 @@
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -192,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 true);
             ApplyEffectAtLocation(DurationType.Temporary, EffectAreaOfEffect(areaOfEffect), location, durationSeconds);
 
-            var applyPulse = Ability.CaptureRepeatedAbilityImpact(activator,
+            var applyPulse = AbilityImpactLifecycle.CaptureRepeatedAbilityImpact(activator,
                 () => ApplyCreepingTerrorPulse(activator, location, scaledPulseDamage, radius),
                 baseDamage: scaledPulseDamage);
 
@@ -215,16 +216,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ApplyCreepingTerrorDamage(uint activator, uint target, int scaledPulseDamage)
         {
-            var damage = Ability.ApplyCapturedAbilityDamageBonus(activator, scaledPulseDamage);
+            var damage = AbilityHostileImpact.ApplyCapturedAbilityDamageBonus(activator, scaledPulseDamage);
             damage = Resistance.ApplyResistanceToDamage(target, ResistanceType.Disruption, damage);
-            damage = Combat.ApplyDamageOverTimeTakenModifiers(target, damage, CombatDamageType.Force, out var targetStatusDamageAdjustment);
-            damage = Combat.ApplyDamageTakenModifiers(target, damage, activator, CombatDamageType.Force,
+            damage = GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(target, damage, CombatDamageType.Force, out var targetStatusDamageAdjustment);
+            damage = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(target, damage, activator, CombatDamageType.Force,
                 deliveryType: CombatDamageDeliveryType.DamageOverTime,
                 targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment);
             if (damage < 0)
                 damage = 0;
 
-            Ability.ApplyHostileCombatImpact(
+            AbilityHostileImpact.ApplyHostileCombatImpact(
                 activator,
                 target,
                 SkillType.Force,

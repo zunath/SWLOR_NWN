@@ -6,8 +6,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -25,19 +26,24 @@ public class SkillXPAwardTests
 
     private static Type CompileProductionXPAwardWithControlledPlayerAndFeedback()
     {
-        var root = new DirectoryInfo(Path.GetDirectoryName(SourcePath())!);
-        while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
-            root = root.Parent;
-        root.Should().NotBeNull();
-        var methods = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root!.FullName,
-                "SWLOR.Game.Server", "Service", "Skill.cs"))).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(method => method.Identifier.ValueText is "GiveSkillXP" or "ShouldDecaySkillRank" or "ApplyAbilityPoint" or "GetRankLimit" or "GetRankCeiling"
-                or "GetDecayCandidates" or "IsBlockedBySkillCap" or "GetTotalContributingSkillRanks" or "ForgetLimitWarnings");
-        var fields = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
-                "SWLOR.Game.Server", "Service", "Skill.cs"))).GetRoot()
-            .DescendantNodes().OfType<FieldDeclarationSyntax>()
-            .Where(field => field.Declaration.Variables.Any(variable => variable.Identifier.ValueText == "_limitWarningsSent"));
+        var methods = CharacterCompanionsSource.Skill.Trees().SelectMany(tree => tree.GetRoot().DescendantNodes()).OfType<MethodDeclarationSyntax>()
+            .Where(method => method.Identifier.ValueText is "GiveSkillXP" or "ApplyXPBonuses" or "RepayXPDebt" or "ClearXPAtRankCeiling" or "AwardRanks"
+                or "ShouldDecaySkillRank" or "ApplyAbilityPoint" or "GetRankLimit" or "GetRankCeiling"
+                or "GetDecayCandidates" or "IsBlockedBySkillCap" or "GetTotalContributingSkillRanks" or "ForgetLimitWarnings")
+            // The production methods are instance methods of the skill service; the harness is a static class.
+            .Select(method => method.WithAttributeLists(default).Modifiers.Any(SyntaxKind.StaticKeyword)
+                ? method
+                : method.AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword).WithTrailingTrivia(SyntaxFactory.Space)));
+        var fields = CharacterCompanionsSource.Skill.Trees().SelectMany(tree => tree.GetRoot().DescendantNodes()).OfType<FieldDeclarationSyntax>()
+            .Where(field => field.Declaration.Variables.Any(variable => variable.Identifier.ValueText == "_limitWarningsSent"))
+            .Select(field => field.WithAttributeLists(default)
+                .WithModifiers(SyntaxFactory.TokenList(
+                    SyntaxFactory.Token(SyntaxKind.PrivateKeyword).WithTrailingTrivia(SyntaxFactory.Space),
+                    SyntaxFactory.Token(SyntaxKind.StaticKeyword).WithTrailingTrivia(SyntaxFactory.Space),
+                    SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword).WithTrailingTrivia(SyntaxFactory.Space))));
+
+        var outcomeTypes = CharacterCompanionsSource.Skill.Trees().SelectMany(tree => tree.GetRoot().DescendantNodes()).OfType<ClassDeclarationSyntax>()
+            .Where(type => type.Identifier.ValueText == "RankUpOutcome");
 
         // Run the production award flow, replacing native inputs, storage, and feedback only.
         var source = $$"""
@@ -47,10 +53,14 @@ public class SkillXPAwardTests
             using SWLOR.Game.Server.Entity;
             using SWLOR.Game.Server.Extension;
             using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-            using SWLOR.Game.Server.Service.SkillService;
-            using SWLOR.Game.Server.Service.StatService;
+            using SWLOR.Game.Server.Domain.UI;
+            using SWLOR.Game.Server.Domain.Character;
+            using SWLOR.Game.Server.Domain.Character;
+            using SkillType = SWLOR.Game.Server.Domain.Foundation.SkillType;
+            using SkillAttribute = SWLOR.Game.Server.Domain.Foundation.SkillAttribute;
+            using SkillXPRefreshEvent = SWLOR.Game.Server.Domain.Foundation.SkillXPRefreshEvent;
             using SWLOR.NWN.API.NWScript.Enum;
-            using RuntimeSkill = SWLOR.Game.Server.Service.Skill;
+            using RuntimeSkill = SWLOR.Game.Server.Domain.Character.SkillService;
 
             public static class SkillXPHarness
             {
@@ -67,6 +77,7 @@ public class SkillXPAwardTests
                 private static readonly XPQueue _xpMessages = new();
                 {{string.Join(Environment.NewLine, fields)}}
                 {{string.Join(Environment.NewLine, methods)}}
+                {{string.Join(Environment.NewLine, outcomeTypes)}}
                 private static bool IsSkillCapContributingSkill(SkillType skill) => GetSkillDetails(skill).ContributesToSkillCap;
                 private static bool GetIsPC(uint player) => true;
                 private static bool GetIsDM(uint player) => false;
@@ -74,25 +85,22 @@ public class SkillXPAwardTests
                 private static int GetCurrentHitPoints(uint player) => 100;
                 private static string GetObjectUUID(uint player) => "test-player";
                 private static int GetAbilityScore(uint player, AbilityType type) => 0;
-                private static int GetRequiredXP(int rank) => RuntimeSkill.GetRequiredXP(rank);
+                private static int GetRequiredXP(int rank) => SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(rank);
                 private static SkillAttribute GetSkillDetails(SkillType skill) => skill.GetAttribute<SkillType, SkillAttribute>();
                 private static void SendMessageToPC(uint player, string message) => Messages.Add(message);
                 private static void FloatingTextStringOnCreature(string message, uint player, bool faction) => Messages.Add(message);
-                private static class DB
+                private static class _db
                 {
                     public static T Get<T>(string id) => (T)(object)Saved;
                     public static void Set(Player player) { Saved = player; Saves++; }
                 }
-                private static class Stat
-                {
-                    public static int GetStatAdjustment(uint player, StatType type) => 0;
-                }
+                private static int GetExperiencePercentAdjustment(uint player) => 0;
                 private static class ColorToken
                 {
                     public static string Red(string message) => message;
                     public static string Green(string message) => message;
                 }
-                private static class PlayerFeedback
+                private static class _playerFeedback
                 {
                     public static void SendWarningToPlayer(uint player, string key, string message, int intervalSeconds = 60) { WarningKeys.Add(key); Warnings.Add(message); }
                 }
@@ -100,7 +108,7 @@ public class SkillXPAwardTests
                 {
                     public void Add(uint player, uint source, SkillType skill, int xp) => QueuedXP.Add(xp);
                 }
-                private static class Gui
+                private static class _gui
                 {
                     public static void PublishRefreshEvent(uint player, SkillXPRefreshEvent refresh) => Refreshes++;
                 }
@@ -121,7 +129,7 @@ public class SkillXPAwardTests
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
-            .Split(Path.PathSeparator).Append(typeof(Skill).Assembly.Location)
+            .Split(Path.PathSeparator).Append(typeof(ISkillService).Assembly.Location)
             .Append(typeof(AbilityType).Assembly.Location).Distinct()
             .Select(path => MetadataReference.CreateFromFile(path));
         var compilation = CSharpCompilation.Create("SkillXPAwardHarness",
@@ -192,7 +200,7 @@ public class SkillXPAwardTests
     public void ReachingMimicryMaximum_DiscardsExcessXPWithoutWarning()
     {
         var player = CreatePlayer(49, 399, true);
-        Award(player, Skill.GetRequiredXP(49) + 100);
+        Award(player, SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(49) + 100);
 
         Warnings.Should().BeEmpty();
         player.Skills[SkillType.Mimicry].Rank.Should().Be(50);

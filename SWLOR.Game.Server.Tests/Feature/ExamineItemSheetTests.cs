@@ -1,7 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Feature.GuiDefinition;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

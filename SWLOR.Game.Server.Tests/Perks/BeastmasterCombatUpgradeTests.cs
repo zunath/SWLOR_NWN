@@ -2,21 +2,36 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster;
-using SWLOR.Game.Server.Feature.PerkDefinition.Beast;
+using SWLOR.Game.Server.Feature.PerkDefinition.BeastPerks;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.AIService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class BeastmasterCombatUpgradeTests
 {
+    // Reading Anger's recast reads the creature's status effects through the facade.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void BruiserBreaths_AllRanksUseTenMetreCones()
     {
@@ -41,9 +56,8 @@ public class BeastmasterCombatUpgradeTests
     [TestCase(-1f, 0f, false)]
     public void BruiserBreathCone_CoversSeparatedEnemiesAndRespectsBoundaries(float x, float y, bool expected)
     {
-        var method = typeof(SWLOR.Game.Server.Service.Ability)
-            .GetMethod("IsPositionInCone", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var result = (bool)method.Invoke(null, new object[]
+        var method = AbilityInternals.GeometryMethod("IsPositionInCone");
+        var result = (bool)method.Invoke(AbilityInternals.Geometry(), new object[]
         {
             new System.Numerics.Vector3(x, y, 0f), System.Numerics.Vector3.Zero, 0f, 10f, 10f
         })!;
@@ -105,7 +119,7 @@ public class BeastmasterCombatUpgradeTests
         var guardingBond = new GuardingBondStanceBeastStatusEffect().StatGroup.Stats;
 
         focusAttentionLevel.StatBonuses.Should().NotContain(x => x.Stat == StatType.EnmityPercentAdjustment);
-        guardingBond[StatType.EnmityPercentAdjustment].Should().Be(Enmity.MaximumEnmityPercentAdjustment);
+        guardingBond[StatType.EnmityPercentAdjustment].Should().Be(EnmityChangeService.MaximumEnmityPercentAdjustment);
         // Player tank stances grant +100% damage Enmity.
         (guardingBond[StatType.DamageEnmityPercentAdjustment] + focusAttention).Should().Be(100);
     }
@@ -185,8 +199,8 @@ public class BeastmasterCombatUpgradeTests
 
         var anger = new AngerAbilityDefinition().BuildAbilities()[FeatType.Anger1];
         AssertStaminaAbility(anger, "Anger I", RecastGroup.Anger, 12f, 3, requiresTarget: true);
-        anger.AITargetSelector.Should().NotBeNull();
-        anger.AIScore.Should().NotBeNull();
+        anger.GetAITargetSelector().Should().NotBeNull();
+        anger.GetAIScore().Should().NotBeNull();
         var angerSource = File.ReadAllText((FindRepositoryRoot() / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "AngerAbilityDefinition.cs").FullName);
         angerSource.Should().Contain("ApplyTemporaryHP(activator, new HealAmount(68, 3.75f), 30f);",
             "Anger II's shield lasts the 30 seconds its description promises");
@@ -196,8 +210,8 @@ public class BeastmasterCombatUpgradeTests
         guardingRoar.IsHostileAbility.Should().BeTrue();
         guardingRoar.IsAreaAbility.Should().BeTrue();
         guardingRoar.MaxRange.Should().Be(5f);
-        guardingRoar.AITargetSelector.Should().NotBeNull();
-        guardingRoar.AIScore.Should().NotBeNull();
+        guardingRoar.GetAITargetSelector().Should().NotBeNull();
+        guardingRoar.GetAIScore().Should().NotBeNull();
 
         var ironHide = new IronHideAbilityDefinition().BuildAbilities()[FeatType.IronHide1];
         AssertStaminaAbility(ironHide, "Iron Hide I", RecastGroup.IronHide, 18f, 3, requiresTarget: false);
@@ -300,14 +314,14 @@ public class BeastmasterCombatUpgradeTests
         var evasiveChallenge = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "EvasiveChallengeAbilityDefinition.cs").FullName);
         evasiveChallenge.Should().Contain("RemoveStatusEffectsWithNegativeStat");
 
-        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var combat = CombatSource.Read();
         combat.Should().Contain("ApplyAbilityUsedMasterAbilityHitChance");
         combat.Should().Contain("ApplyDamageTakenRedirectToStatusSource");
         combat.Should().Contain("ApplyPredatorsMarkEffects");
         combat.Should().Contain("ApplyPredatorsMarkEffects(attacker, defender, isAbilityDamage);");
         combat.Should().NotContain("skillType != SkillType.BeastMastery");
         combat.Should().Contain("StatType.PredatorsMarkDurationSeconds");
-        combat.Should().Contain("StatusEffect.HasStatusEffectCategory(defender, StatusEffectCategory.Bleeding)");
+        combat.Should().Contain("_statusEffect.HasStatusEffectCategory(defender, StatusEffectCategory.Bleeding)");
         combat.Should().Contain("StatType.DamageDealtBleedingTargetStaminaRestoreChance");
         combat.Should().Contain("StatType.DamageDealtBleedingTargetStaminaRestore");
         combat.Should().Contain("StatType.BeastBalancedAbilityStaminaRestoreCategoryId");
@@ -333,7 +347,7 @@ public class BeastmasterCombatUpgradeTests
     {
         var root = FindRepositoryRoot();
         var definitionFiles = Directory.EnumerateFiles(
-            (root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "Beast").FullName,
+            (root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "BeastPerks").FullName,
             "*.cs");
 
         foreach (var file in definitionFiles)
@@ -354,8 +368,8 @@ public class BeastmasterCombatUpgradeTests
         var root = FindRepositoryRoot();
         var requirementFiles = new[]
         {
-            root / "SWLOR.Game.Server" / "Service" / "PerkService" / "PerkRequirementBeastLevel.cs",
-            root / "SWLOR.Game.Server" / "Service" / "PerkService" / "PerkRequirementBeastRole.cs"
+            root / "SWLOR.Game.Server" / "Domain" / "Character" / "PerkRequirementBeastLevel.cs",
+            root / "SWLOR.Game.Server" / "Domain" / "Character" / "PerkRequirementBeastRole.cs"
         };
 
         foreach (var file in requirementFiles)
@@ -406,7 +420,7 @@ public class BeastmasterCombatUpgradeTests
         ability.IsHostileAbility.Should().BeTrue();
         ability.MaxRange.Should().Be(15f);
         ability.HasExplicitMaxRange.Should().BeTrue();
-        ability.AIScore.Should().NotBeNull();
+        ability.GetAIScore().Should().NotBeNull();
         ability.ActivationAction.Should().NotBeNull();
         ability.ImpactDelay.Should().Be(1f);
     }

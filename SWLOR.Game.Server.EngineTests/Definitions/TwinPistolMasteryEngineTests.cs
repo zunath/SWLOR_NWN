@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using NumericsVector3 = System.Numerics.Vector3;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -76,7 +76,7 @@ public static class TwinPistolMasteryEngineTests
             await trial.ExecuteInCreatureContextAsync(actor, () =>
             {
                 trial.SuppressNPCNaturalRegen(target);
-                Stat.SetNPCMaxHitPoints(target, 20000, true);
+                CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 150f);
                 trial.MakeHostile(target);
                 ctx.Assert(GetIsEnemy(target, actor) && LineOfSightObject(actor, target) &&
@@ -85,7 +85,7 @@ public static class TwinPistolMasteryEngineTests
                 ctx.Assert(!KeyItem.HasKeyItem(actor, KeyItemType.TwinSunsCanyonFiringTrace), "No proof is awarded before the quest is accepted");
                 ctx.Assert(Quest.AcceptQuest(actor, jek, "twin_suns_mastery"), "Twin rank fifty with Pistol rank zero can accept the firing trial");
             });
-            Combat.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             AssignCommand(actor, () => ActionAttack(target));
             try
             {
@@ -94,8 +94,7 @@ public static class TwinPistolMasteryEngineTests
             }
             catch (Exception exception)
             {
-                var attempts = (Dictionary<uint, TwinPistolTrialProgress>)typeof(TwinPistolMastery)
-                    .GetField("Attempts", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+                var attempts = CombatHelperInternals.Field<ITwinPistolMasteryService, Dictionary<uint, TwinPistolTrialProgress>>("_attempts");
                 var counts = attempts.TryGetValue(actor, out var progress)
                     ? $"main={typeof(TwinPistolTrialProgress).GetField("_mainHits", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(progress)}, " +
                       $"companion={typeof(TwinPistolTrialProgress).GetField("_companionHits", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(progress)}"
@@ -121,8 +120,8 @@ public static class TwinPistolMasteryEngineTests
             await TwinPistolEquipmentEngineTests.WaitForRemovedPair(trial, actor, main, companion);
             var routeWeapon = await trial.EquipItemAsync(actor, "b_longsword", InventorySlot.RightHand);
             ctx.Assert(!TwinPistolEquipment.IsActivePair(actor), "The route mastery supports a cross-trained single weapon");
-            Combat.SetAutoAttackHitResolutionOverride(false);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             // Tempo Shot grants two Cadence, Lead Shot chains a third, and Closing Shot lands spending all three.
             await UseAbility(trial, actor, target, FeatType.TempoShot1);
             await trial.DelaySecondsAsync(.6f);
@@ -162,8 +161,8 @@ public static class TwinPistolMasteryEngineTests
         }
         finally
         {
-            Combat.SetAutoAttackHitResolutionOverride(null);
-            Combat.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             if (GetIsObjectValid(actor))
             {
                 TwinPistolAbility.Cancel(actor);
@@ -178,12 +177,12 @@ public static class TwinPistolMasteryEngineTests
     {
         await context.ExecuteInCreatureContextAsync(actor, () =>
         {
-            Ability.ClearLastCompletedAbilityImpactSummary(actor);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
             var activated = UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target));
-            context.Assert(activated, $"The mastery action uses the normal validated feat pipeline: {Ability.GetLastActivationDenialReason()}");
+            context.Assert(activated, $"The mastery action uses the normal validated feat pipeline: {AbilityActivation.GetLastActivationDenialReason()}");
         });
         await context.WaitUntilAsync(() => !TwinPistolAbility.HasActiveActivation(actor) &&
-            Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
+            AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
             8f, "a landed captured attack");
         // A single melee weapon naturally resumes pursuit after its paid impact.
         // Stop that ordinary follow-up before the next sequence step.

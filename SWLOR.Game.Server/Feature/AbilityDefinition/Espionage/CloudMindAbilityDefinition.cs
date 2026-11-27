@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
 {
@@ -104,12 +105,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
             }
 
             // Mind Resistance can shorten or negate the cloud; the status service reports that.
-            if (!StatusEffect.ApplyStatusEffect<CloudedMindStatusEffect>(activator, target, duration))
+            if (!StatusEffectApplication.ApplyStatusEffect<CloudedMindStatusEffect>(activator, target, duration))
                 return false;
 
             // From a hidden caster, the puff on the target would point at someone unseen nearby.
             if (Stealth.IsConcealed(activator))
-                Ability.ShowVisualEffectToPlayer(activator, target, VisualEffect.Vfx_Imp_Confusion_S);
+                AbilityImpactVisual.ShowVisualEffectToPlayer(activator, target, VisualEffect.Vfx_Imp_Confusion_S);
             else
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S), target);
             SendMessageToPC(activator, $"You cloud the mind of {PlayerName.GetDisplayName(activator, target)}.");

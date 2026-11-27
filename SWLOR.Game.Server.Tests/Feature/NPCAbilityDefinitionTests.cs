@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.IO.Compression;
 using System.Globalization;
 using System.Xml.Linq;
@@ -5,15 +6,33 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AIDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class NPCAbilityDefinitionTests
 {
+    // Building the default AI profiles asks the StatusEffect facade which effects are stances.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void NPCAbilities_MatchBibleRecastAndResourceCosts()
     {
@@ -194,7 +213,7 @@ public class NPCAbilityDefinitionTests
     [Test]
     public void NPCAbilities_AreAvailableToDefaultNpcAI()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
         var genericAbilityFeats = profiles[AIProfileType.Generic].Actions
             .Where(action => action.Type == AIActionType.Ability)
@@ -203,7 +222,7 @@ public class NPCAbilityDefinitionTests
 
         foreach (var feat in ExpectedAbilities().Keys)
         {
-            Ability.IsFeatRegistered(feat).Should().BeTrue($"{feat} must be registered before AI can execute it");
+            AbilityCatalog.IsFeatRegistered(feat).Should().BeTrue($"{feat} must be registered before AI can execute it");
             genericAbilityFeats.Should().Contain(feat, $"{feat} should be exposed through the Generic NPC AI profile");
         }
     }

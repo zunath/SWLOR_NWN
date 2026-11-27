@@ -1,0 +1,40 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Domain.Creatures
+{
+    public delegate void OnSpawnDelegate(uint spawn);
+
+    public class SpawnObject
+    {
+        public ObjectType Type { get; set; }
+        public string Resref { get; set; }
+        public int Weight { get; set; }
+        public bool IsRare { get; set; }
+        public AIFlag AIFlags { get; set; }
+        public AIProfileType AIProfile { get; set; }
+
+        public List<DayOfWeek> RealWorldDayOfWeekRestriction { get; set; }
+        public TimeSpan? RealWorldStartRestriction { get; set; }
+        public TimeSpan? RealWorldEndRestriction { get; set; }
+
+        public int GameHourStartRestriction { get; set; }
+        public int GameHourEndRestriction { get; set; }
+
+        public List<IAnimator> Animators { get; set; }
+
+        public List<OnSpawnDelegate> OnSpawnActions { get; } = new();
+
+        public SpawnObject()
+        {
+            AIFlags = AIFlag.None;
+            AIProfile = AIProfileType.Invalid;
+            RealWorldDayOfWeekRestriction = new List<DayOfWeek>();
+            GameHourStartRestriction = -1;
+            GameHourEndRestriction = -1;
+            Animators = new List<IAnimator>();
+        }
+    }
+}

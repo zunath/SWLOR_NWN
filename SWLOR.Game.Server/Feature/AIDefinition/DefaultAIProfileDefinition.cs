@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AIDefinition
 {
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
 
         public DefaultAIProfileDefinition()
         {
-            _registeredAbilities = Ability.GetAllAbilityDetails()
+            _registeredAbilities = AbilityCatalog.GetAllAbilityDetails()
                 .OrderByDescending(x => x.Value.IsHostileAbility && x.Value.IsAreaAbility)
                 .ThenByDescending(x => x.Value.RequiresTarget && !x.Value.IsHostileAbility)
                 .ThenByDescending(x => !x.Value.RequiresTarget && !x.Value.IsHostileAbility)
@@ -93,8 +94,8 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             {
                 _builder.Ability(feat);
 
-                if (ability.AITargetSelector != null)
-                    _builder.Target(ability.AITargetSelector);
+                if (ability.GetAITargetSelector() != null)
+                    _builder.Target(ability.GetAITargetSelector());
 
                 var action = _builder
                     .Score(AIScore.Ability(ability))

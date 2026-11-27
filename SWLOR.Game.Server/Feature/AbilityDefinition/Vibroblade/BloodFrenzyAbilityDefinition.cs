@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 {
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .IsCastedAbility()
                 .BreaksStealth()
                 .HasImpactAction((activator, target, level, location) =>
-                    StatusEffect.ApplyStatusEffect(activator, activator, new BloodFrenzyStatusEffect(),
+                    StatusEffectApplication.ApplyStatusEffect(activator, activator, new BloodFrenzyStatusEffect(),
                         CapstoneAbility.ActiveDurationSeconds));
 
             return builder.Build();

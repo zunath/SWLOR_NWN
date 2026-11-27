@@ -1,8 +1,10 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
-using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -34,12 +36,7 @@ public class AbilityImpactAnimationAuditTests
     [Test]
     public void CombatImpactAnimation_DoesNotUseSharedDefaultAnimation()
     {
-        var root = FindRepositoryRoot();
-        var abilityServiceSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs"));
+        var abilityServiceSource = AbilitySource.Read();
 
         abilityServiceSource.Should().NotContain(
             "Animation.DoubleStrike",
@@ -52,16 +49,11 @@ public class AbilityImpactAnimationAuditTests
     [Test]
     public void QueuedWeaponAbilityImpact_UsesEngineAttackAnimationOnly()
     {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
+        var source = AbilitySource.Read().Replace("\r\n", "\n");
         var impactAnimationBody = source.Substring(
-            source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal),
-            source.IndexOf("public static int ApplyHostileCombatImpact", StringComparison.Ordinal) -
-            source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal));
+            source.IndexOf("private void PlayCombatImpactAnimation", StringComparison.Ordinal),
+            source.IndexOf("public int ApplyHostileCombatImpact", StringComparison.Ordinal) -
+            source.IndexOf("private void PlayCombatImpactAnimation", StringComparison.Ordinal));
 
         var queuedWeaponEarlyReturn = System.Text.RegularExpressions.Regex.Match(
             impactAnimationBody,
@@ -114,16 +106,11 @@ public class AbilityImpactAnimationAuditTests
     [Test]
     public void ImpactAnimationOverwrite_UsesExplicitThrowPreservingPlayback()
     {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
+        var source = AbilitySource.Read().Replace("\r\n", "\n");
         var impactAnimationBody = source.Substring(
-            source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal),
-            source.IndexOf("public static int ApplyHostileCombatImpact", StringComparison.Ordinal) -
-            source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal));
+            source.IndexOf("private void PlayCombatImpactAnimation", StringComparison.Ordinal),
+            source.IndexOf("public int ApplyHostileCombatImpact", StringComparison.Ordinal) -
+            source.IndexOf("private void PlayCombatImpactAnimation", StringComparison.Ordinal));
 
         var helperCall = System.Text.RegularExpressions.Regex.Match(
             impactAnimationBody,

@@ -1,12 +1,13 @@
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.CraftSim.Data
 {
-    /// <summary>Reads crafting stats from Module/uti as EquipmentStats.cs:929-1075 applies them; CraftingGearCostTableTests checks that the cost value is the amount.</summary>
+    /// <summary>Reads crafting stats from Module/uti as EquipmentCraftStatActions.cs:25-172 applies them; CraftingGearCostTableTests checks that the cost value is the amount.</summary>
     public static class GearItemReader
     {
         public const int ControlProperty = 88;

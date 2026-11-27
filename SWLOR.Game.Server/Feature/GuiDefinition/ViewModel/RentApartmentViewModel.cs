@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.World;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     AssignCommand(Player, () => TakeGoldFromCreature(layout.InitialPrice, Player, true));
 
                     var property = Property.CreateApartment(Player, layoutType);
-                    Property.EnterProperty(Player, property.Id);
+                    PropertyAccess.EnterProperty(Player, property.Id);
 
                     Gui.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
 
@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var layoutType = _layoutTypes[SelectedLayout];
 
-            Property.PreviewProperty(Player, layoutType);
+            PropertyAccess.PreviewProperty(Player, layoutType);
             Gui.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
         };
     }

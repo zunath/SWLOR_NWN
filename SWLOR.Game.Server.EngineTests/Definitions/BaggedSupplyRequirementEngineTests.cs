@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static AbilityRequirementItem GetEmergencyTriageSupplyRequirement(EngineTestContext ctx)
         {
-            var requirement = Ability.GetAbilityDetail(FeatType.EmergencyTriage1).Requirements
+            var requirement = AbilityCatalog.GetAbilityDetail(FeatType.EmergencyTriage1).Requirements
                 .OfType<AbilityRequirementItem>()
                 .SingleOrDefault(r => r.ItemResref == "med_supplies");
             ctx.Assert(requirement != null, "Emergency Triage requires medical supplies");

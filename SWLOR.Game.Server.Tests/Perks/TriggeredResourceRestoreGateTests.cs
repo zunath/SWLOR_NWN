@@ -1,11 +1,11 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.PerkDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -14,8 +14,24 @@ namespace SWLOR.Game.Server.Tests.Perks;
 /// a cooldown stat and consumes it through <c>TryUseStatTrigger</c>. Guard rolls on every landed
 /// physical hit from every attacker, which makes the gate load-bearing rather than cosmetic.
 /// </summary>
-public class TriggeredResourceRestoreGateTests
+public class TriggeredResourceRestoreGateTests : SkillFacadeFixture
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     // Restores that fire off an incoming attack are limited by the attacker count, not by the
     // defender's own rotation, so each one is gated by a cooldown or by a proc chance. Guard was
     // the only member of this family with neither.
@@ -23,13 +39,13 @@ public class TriggeredResourceRestoreGateTests
     {
         ("private static void ApplyGuardedHitRecovery(", "TryUseStatTrigger"),
         ("public static void ApplyMeleeDamageTakenEffects(", "StatType.MeleeDamageTakenStaminaRestoreChance"),
-        ("private static void ApplyForceAbilityEvadedEffects(", "TryUseStatTrigger")
+        ("public static void ApplyForceAbilityEvadedEffects(", "TryUseStatTrigger")
     };
 
     [TestCaseSource(nameof(DefensiveRestoreGates))]
     public void DefensiveResourceRestores_AreRateLimited((string Method, string Gate) usage)
     {
-        var combat = ReadSource("SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
         ExtractMethod(combat, usage.Method).Should().Contain(usage.Gate,
             $"{usage.Method} fires once per incoming hit and must not scale freely with attacker count");
     }
@@ -37,10 +53,12 @@ public class TriggeredResourceRestoreGateTests
     [Test]
     public void DeflectionResourceRestores_AreRateLimited()
     {
-        var stat = ReadSource("SWLOR.Game.Server", "Service", "Stat.cs");
-        var deflection = ExtractMethod(stat, "public static void ApplyDeflectionEffectsNative(");
-        deflection.Should().Contain("Combat.TryUseStatTrigger(creatureId, staminaRestoreStat, staminaRestoreCooldown)");
-        deflection.Should().Contain("Combat.TryUseStatTrigger(creatureId, fpRestoreStat, fpRestoreCooldown)");
+        var stat = StatSource.Read();
+        // The reactions read their payloads first and then apply them (the stat split divided the two), so the rule spans both methods.
+        var deflection = ExtractMethod(stat, "public void ApplyDeflectionEffectsNative(") +
+            ExtractMethod(stat, "private void ReadDeflectionReaction(");
+        deflection.Should().Contain("TryUseStatTrigger(creatureId, staminaRestoreStat, staminaRestoreCooldown)");
+        deflection.Should().Contain("TryUseStatTrigger(creatureId, fpRestoreStat, fpRestoreCooldown)");
         deflection.Should().Contain("recastReductionCooldown");
         deflection.Should().Contain("StatType.DeflectionRecastReductionCooldownSeconds");
         deflection.Should().MatchRegex(
@@ -51,21 +69,21 @@ public class TriggeredResourceRestoreGateTests
     [Test]
     public void TheDeflectionGate_IsOnlySpentWhenThereIsACooldownToShorten()
     {
-        var stat = ReadSource("SWLOR.Game.Server", "Service", "Stat.cs");
-        var deflection = ExtractMethod(stat, "public static void ApplyDeflectionEffectsNative(");
+        var stat = StatSource.Read();
+        var deflection = ExtractMethod(stat, "public void ApplyDeflectionEffectsNative(");
 
-        deflection.Should().Contain("Recast.IsOnRecastDelay(creatureId, recastReductionGroup)",
+        deflection.Should().Contain("_recast.IsOnRecastDelay(creatureId, recastReductionGroup)",
             "deflecting while the ability is ready must not burn the window the next cooldown needs");
 
         var readyCheck = deflection.IndexOf("isOnRecastDelay &&", StringComparison.Ordinal);
         var gate = deflection.IndexOf(
-            "Combat.TryUseStatTrigger(",
+            "TryUseStatTrigger(",
             readyCheck < 0 ? 0 : readyCheck,
             StringComparison.Ordinal);
         readyCheck.Should().BeGreaterThan(-1);
         gate.Should().BeGreaterThan(readyCheck,
             "the readiness check has to short-circuit before TryUseStatTrigger consumes the gate");
-        deflection.IndexOf("Recast.ReduceRecastDelay(", StringComparison.Ordinal)
+        deflection.IndexOf("_recast.ReduceRecastDelay(", StringComparison.Ordinal)
             .Should().BeGreaterThan(gate, "the reduction runs only after both the readiness check and the gate");
     }
 
@@ -90,7 +108,7 @@ public class TriggeredResourceRestoreGateTests
     [Test]
     public void GuardStaminaRestore_IsGatedAtTheSameRateAsItsDefensiveSiblings()
     {
-        var combat = ReadSource("SWLOR.Game.Server", "Service", "Combat.cs");
+        var combat = CombatSource.Read();
         var recovery = ExtractMethod(combat, "private static void ApplyGuardedHitRecovery(");
         recovery.Should().Contain("StatType.GuardStaminaRestoreCooldownSeconds");
         recovery.Should().Contain("TryUseStatTrigger(defender, StatType.GuardStaminaRestore, cooldown)");
@@ -184,18 +202,6 @@ public class TriggeredResourceRestoreGateTests
             foreach (var entry in perks)
                 yield return (entry.Key, entry.Value);
         }
-    }
-
-    private static string ReadSource(params string[] pathParts)
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-            directory = directory.Parent;
-
-        if (directory == null)
-            throw new DirectoryNotFoundException("Could not locate SWLOR.Game.Server.sln from the test directory.");
-
-        return File.ReadAllText(Path.Combine(new[] { directory.FullName }.Concat(pathParts).ToArray()));
     }
 
     private static string ExtractMethod(string source, string signature)

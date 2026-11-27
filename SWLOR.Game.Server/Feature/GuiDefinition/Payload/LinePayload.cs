@@ -1,5 +1,5 @@
-using SWLOR.Game.Server.Service.FishingService;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.UI;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
 {

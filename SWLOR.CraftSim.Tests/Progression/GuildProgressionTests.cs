@@ -3,9 +3,9 @@ using NUnit.Framework;
 using SWLOR.CraftSim.Progression;
 using SWLOR.CraftSim.Tests.Support;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.CraftSim.Tests.Progression
 {
@@ -142,9 +142,8 @@ namespace SWLOR.CraftSim.Tests.Progression
         [Test]
         public void TheGuildRankThresholdsAreTheServers()
         {
-            Guild.LoadData();
-            Guild.MaxRank.Should().Be(5);
-            Guild.GetGPRequiredForRank(4).Should().Be(45_000);
+            ServerGuildRules.MaxRank.Should().Be(5);
+            ServerGuildRules.GetGPRequiredForRank(4).Should().Be(45_000);
         }
     }
 }

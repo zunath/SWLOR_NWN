@@ -17,11 +17,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NRediSearch" Version="2.2.79" />
     <PackageReference Include="NReJSON" Version="4.0.0" />
-    <PackageReference Include="NWN.Core" Version="8193.37.4" />
-    <PackageReference Include="NWN.Native" Version="8193.37.4" />
+    <PackageReference Include="NWN.Core" Version="8193.37.7" />
+    <PackageReference Include="NWN.Native" Version="8193.37.8" />
     <PackageReference Include="Serilog" Version="4.4.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
@@ -29,12 +30,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SWLOR.Game.Contracts\SWLOR.Game.Contracts.csproj" />
+    <!-- The native hook trampolines: the native entry installs them through it; under the host the game resolves the
+         host's copy (a shared assembly), so both entries run the same trampolines. -->
+    <ProjectReference Include="..\SWLOR.Game.NativeHooks\SWLOR.Game.NativeHooks.csproj" />
     <ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="ConversationData\**\*.conversation.json" />
-    <EmbeddedResource Include="Feature\AppearanceDefinition\AppearancePreview\AppearancePartNames.json" />
+    <!-- The order script handlers run in (see Core/ScriptHandlerManifest.cs). Embedded so it is deployed inside the server assembly. -->
+    <EmbeddedResource Include="Core\ScriptHandlerOrder.txt" LogicalName="ScriptHandlerOrder.txt" />
+    <EmbeddedResource Include="Feature\AppearanceDefinition\Preview\AppearancePartNames.json" />
   </ItemGroup>
 
   <Target Name="NWN" AfterTargets="Build">
@@ -47,6 +54,17 @@
   </Target>
 
   <Target Name="PostBuild" AfterTargets="Build" Condition="'$(OS)' == 'Windows_NT' AND '$(RunPostBuildEvent)' != 'Never'">
-    <Exec Command="call &quot;..\tools\SWLOR.CLI\RunCLI.cmd&quot; -o --server-output &quot;$(TargetDir).&quot;" WorkingDirectory="$(MSBuildProjectDirectory)\..\Build" />
+    <!-- The host entry (swlor.env SWLOR_DOTNET_ENTRY=host) also deploys SWLOR.Game.Host of the same configuration. It is
+         built here, with this build's global properties, so a build of this project alone deploys a current host too; in
+         a solution build the solution has already built it (ProjectDependencies in SWLOR.Game.Server.sln) and MSBuild
+         returns that result. The host has no post-build step, so this does not recurse. This project does not reference
+         the host, so a build of it alone has not restored the host's packages: restore them first, in an evaluation of
+         its own (the session id), so the build evaluation below reads the restored assets. -->
+    <MSBuild Projects="$(MSBuildProjectDirectory)\..\SWLOR.Game.Host\SWLOR.Game.Host.csproj" Targets="Restore"
+             Properties="MSBuildRestoreSessionId=$([System.Guid]::NewGuid())" />
+    <MSBuild Projects="$(MSBuildProjectDirectory)\..\SWLOR.Game.Host\SWLOR.Game.Host.csproj" Targets="Build">
+      <Output TaskParameter="TargetOutputs" ItemName="SwlorHostAssembly" />
+    </MSBuild>
+    <Exec Command="call &quot;..\tools\SWLOR.CLI\RunCLI.cmd&quot; -o --server-output &quot;$(TargetDir).&quot; --host-output &quot;@(SwlorHostAssembly->'%(RootDir)%(Directory)').&quot;" WorkingDirectory="$(MSBuildProjectDirectory)\..\Build" />
   </Target>
 </Project>

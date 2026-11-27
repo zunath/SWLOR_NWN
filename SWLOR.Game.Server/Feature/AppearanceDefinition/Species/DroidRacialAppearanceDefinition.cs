@@ -1,0 +1,25 @@
+namespace SWLOR.Game.Server.Feature.AppearanceDefinition.Species
+{
+    public class DroidRacialAppearanceDefinition : RacialAppearanceBaseDefinition
+    {
+        public override float MaximumScale => 1.3f;
+        public override float MinimumScale => 0.7f;
+        public override int[] MaleHeads { get; } = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43};
+        public override int[] FemaleHeads { get; } = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43};
+
+        public override int[] Torsos { get; } = { 1 };
+        public override int[] Pelvis { get; } = { 1, };
+        public override int[] RightBicep { get; } = { 1, };
+        public override int[] RightForearm { get; } = { 1, };
+        public override int[] RightHand { get; } = { 1, };
+        public override int[] RightThigh { get; } = { 1, };
+        public override int[] RightShin { get; } = { 1, };
+        public override int[] RightFoot { get; } = { 1, };
+        public override int[] LeftBicep { get; } = { 1, };
+        public override int[] LeftForearm { get; } = { 1, };
+        public override int[] LeftHand { get; } = { 1, };
+        public override int[] LeftThigh { get; } = { 1, };
+        public override int[] LeftShin { get; } = { 1, };
+        public override int[] LeftFoot { get; } = { 1, };
+    }
+}

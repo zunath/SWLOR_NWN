@@ -1,8 +1,8 @@
 using System.Collections.Concurrent;
 using SWLOR.CraftSim.Play;
 using SWLOR.CraftSim.Rng;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Search;
 
 namespace SWLOR.CraftSim.Search
 {

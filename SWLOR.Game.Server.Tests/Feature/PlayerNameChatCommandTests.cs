@@ -11,7 +11,7 @@ public class PlayerNameChatCommandTests
     [Test]
     public void AfkCommand_IsAvailableToAllPlayerAccountsWithoutTargeting()
     {
-        var command = new CharacterChatCommand().BuildChatCommands()["afk"];
+        var command = new CharacterSocialChatCommand().BuildChatCommands()["afk"];
 
         command.Authorization.Should().Be(AuthorizationLevel.All);
         command.RequiresTarget.Should().BeFalse();
@@ -23,7 +23,7 @@ public class PlayerNameChatCommandTests
     [Test]
     public void NameCommands_AreAvailableToStaffAuthorizedPlayerAccounts()
     {
-        var commands = new CharacterChatCommand().BuildChatCommands();
+        var commands = new CharacterSocialChatCommand().BuildChatCommands();
 
         commands["name"].Authorization.Should().Be(AuthorizationLevel.All);
         commands["name"].RequiresTarget.Should().BeTrue();
@@ -50,11 +50,11 @@ public class PlayerNameChatCommandTests
             "SWLOR.Game.Server",
             "Feature",
             "ChatCommandDefinition",
-            "CharacterChatCommand.cs"));
+            "CharacterSocialChatCommand.cs"));
 
-        source.Should().Contain("PlayerName.SetKnownName(user, target, name);");
+        source.Should().Contain("PlayerKnownName.SetKnownName(user, target, name);");
         source.Should().Contain("PlayerDescriptor.SetUnknownDisplayName(user, name);");
-        source.Should().Contain("PlayerName.ForgetKnownName(user, target);");
+        source.Should().Contain("PlayerKnownName.ForgetKnownName(user, target);");
         source.Should().Contain("Log.WriteStructured(");
         source.Should().Contain("LogGroup.PrivateNames");
         source.Should().NotContain("LogGroup.PublicDescriptors");
@@ -77,11 +77,11 @@ public class PlayerNameChatCommandTests
             "SWLOR.Game.Server",
             "Feature",
             "ChatCommandDefinition",
-            "CharacterChatCommand.cs"));
+            "CharacterSocialChatCommand.cs"));
 
-        source.Should().Contain("PlayerName.ValidateKnownNameInput(rawName)");
+        source.Should().Contain("PlayerKnownName.ValidateKnownNameInput(rawName)");
         source.Should().Contain("SendMessageToPC(user, ColorToken.Red(validationError));");
-        source.Should().Contain("PlayerName.ValidateKnownNameAssignment(user, target, name)");
+        source.Should().Contain("PlayerKnownName.ValidateKnownNameAssignment(user, target, name)");
         source.Should().Contain("PlayerDescriptor.SetUnknownDisplayName(user, name);");
         source.Should().NotContain("catch (ArgumentException ex)");
         source.Should().NotContain("ColorToken.Red(ex.Message)");

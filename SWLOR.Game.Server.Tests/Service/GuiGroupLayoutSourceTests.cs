@@ -22,7 +22,7 @@ public class GuiGroupLayoutSourceTests
 
         callers.Should().BeEquivalentTo(new[] { "GuiViewModelBase.cs" });
 
-        var source = File.ReadAllText(Path.Combine(serverRoot, "Service", "GuiService", "GuiViewModelBase.cs"));
+        var source = File.ReadAllText(Path.Combine(serverRoot, "Domain", "UI", "GuiViewModelBase.cs"));
         var calls = Regex.Matches(source, @"NuiSetGroupLayout\((?<args>[^;]*)\);");
 
         calls.Should().ContainSingle();

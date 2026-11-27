@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Space;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -102,9 +102,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             var dbPlayer = DB.Get<Player>(playerId);
                             var rank = dbPlayer.Skills[SkillType.Piloting].Rank;
                             var delta = asteroidLevel - rank;
-                            var xp = Skill.GetDeltaXP(delta);
+                            var xp = SkillXP.GetDeltaXP(delta);
 
-                            Skill.GiveSkillXP(activator, SkillType.Piloting, xp);
+                            SkillXP.GiveSkillXP(activator, SkillType.Piloting, xp);
                         }
                     });
                     SetLocalBool(target, Mined, false);

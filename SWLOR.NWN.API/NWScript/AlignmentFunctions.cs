@@ -18,7 +18,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void AdjustAlignment(uint oSubject, Alignment nAlignment, int nShift,
             bool bAllPartyMembers = true)
         {
-            global::NWN.Core.NWScript.AdjustAlignment(oSubject, (int)nAlignment, nShift, bAllPartyMembers ? 1 : 0);
+            NWScriptRuntime.Current.AdjustAlignment(oSubject, nAlignment, nShift, bAllPartyMembers);
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>An integer between 0 and 100 (100=law, 0=chaos). Returns -1 if the creature is not valid</returns>
         public static int GetLawChaosValue(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetLawChaosValue(oCreature);
+            return NWScriptRuntime.Current.GetLawChaosValue(oCreature);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>An integer between 0 and 100 (100=good, 0=evil). Returns -1 if the creature is not valid</returns>
         public static int GetGoodEvilValue(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetGoodEvilValue(oCreature);
+            return NWScriptRuntime.Current.GetGoodEvilValue(oCreature);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>An ALIGNMENT_* constant. Returns -1 if the creature is not valid</returns>
         public static Alignment GetAlignmentLawChaos(uint oCreature)
         {
-            return (Alignment)global::NWN.Core.NWScript.GetAlignmentLawChaos(oCreature);
+            return NWScriptRuntime.Current.GetAlignmentLawChaos(oCreature);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>An ALIGNMENT_* constant. Returns -1 if the creature is not valid</returns>
         public static Alignment GetAlignmentGoodEvil(uint oCreature)
         {
-            return (Alignment)global::NWN.Core.NWScript.GetAlignmentGoodEvil(oCreature);
+            return NWScriptRuntime.Current.GetAlignmentGoodEvil(oCreature);
         }
 
         /// <summary>
@@ -68,9 +68,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oSource">The source whose personal feelings to clear (default: OBJECT_SELF)</param>
         public static void ClearPersonalReputation(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            if (oSource == OBJECT_INVALID)
-                oSource = OBJECT_SELF;
-            global::NWN.Core.NWScript.ClearPersonalReputation(oTarget, oSource);
+            NWScriptRuntime.Current.ClearPersonalReputation(oTarget, oSource);
         }
 
         /// <summary>
@@ -84,9 +82,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void SetIsTemporaryFriend(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
-            if (oSource == OBJECT_INVALID)
-                oSource = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetIsTemporaryFriend(oTarget, oSource, bDecays ? 1 : 0, fDurationInSeconds);
+            NWScriptRuntime.Current.SetIsTemporaryFriend(oTarget, oSource, bDecays, fDurationInSeconds);
         }
 
         /// <summary>
@@ -100,9 +96,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void SetIsTemporaryEnemy(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
-            if (oSource == OBJECT_INVALID)
-                oSource = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetIsTemporaryEnemy(oTarget, oSource, bDecays ? 1 : 0, fDurationInSeconds);
+            NWScriptRuntime.Current.SetIsTemporaryEnemy(oTarget, oSource, bDecays, fDurationInSeconds);
         }
 
         /// <summary>
@@ -116,9 +110,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void SetIsTemporaryNeutral(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
-            if (oSource == OBJECT_INVALID)
-                oSource = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetIsTemporaryNeutral(oTarget, oSource, bDecays ? 1 : 0, fDurationInSeconds);
+            NWScriptRuntime.Current.SetIsTemporaryNeutral(oTarget, oSource, bDecays, fDurationInSeconds);
         }
     }
 }

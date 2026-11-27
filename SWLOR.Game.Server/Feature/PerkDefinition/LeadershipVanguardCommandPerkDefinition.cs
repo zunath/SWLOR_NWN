@@ -1,12 +1,10 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Game.Server.Feature.QuestDefinition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -180,8 +178,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.LeadershipCommandRadiusBonusMeters, 2)
                 .IncreasesStat(StatType.LeadershipCommandDurationBonusBaseSeconds, 2)
                 .IncreasesStat(StatType.LeadershipCommandDurationBonusMaximumSeconds, 3)
-                .TriggerPurchase(AbilityTargeting.RefreshClientTargeting)
-                .TriggerRefund(AbilityTargeting.RefreshClientTargeting)
+                .TriggerPurchase(AbilityClientTargeting.RefreshClientTargeting)
+                .TriggerRefund(AbilityClientTargeting.RefreshClientTargeting)
 
                 .AddPerkLevel()
                 .Description("All Leadership auras and area commands have +4m range. Non-capstone Leadership command buffs last 4 seconds longer. SOC scaling can raise the duration bonus to +5 seconds.")
@@ -190,8 +188,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.LeadershipCommandRadiusBonusMeters, 4)
                 .IncreasesStat(StatType.LeadershipCommandDurationBonusBaseSeconds, 4)
                 .IncreasesStat(StatType.LeadershipCommandDurationBonusMaximumSeconds, 5)
-                .TriggerPurchase(AbilityTargeting.RefreshClientTargeting)
-                .TriggerRefund(AbilityTargeting.RefreshClientTargeting);
+                .TriggerPurchase(AbilityClientTargeting.RefreshClientTargeting)
+                .TriggerRefund(AbilityClientTargeting.RefreshClientTargeting);
         }
 
         private void DecisiveCommand()
@@ -204,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Leadership, 50)
                 .GrantsFeat(FeatType.DecisiveCommand1)
-                .RequirementQuest(LeadershipCapstoneQuestDefinition.DecisiveCommandMasteryQuestId);
+                .RequirementQuest(CapstoneQuestIds.DecisiveCommandMasteryQuestId);
         }
 
     }

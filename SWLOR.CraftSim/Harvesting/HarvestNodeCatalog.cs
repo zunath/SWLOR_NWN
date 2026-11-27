@@ -1,8 +1,8 @@
 using System.Text;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
-using SWLOR.Game.Server.Service.LootService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.CraftSim.Harvesting
 {

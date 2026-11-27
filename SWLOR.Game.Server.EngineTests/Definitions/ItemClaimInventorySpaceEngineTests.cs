@@ -1,10 +1,8 @@
-using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.QuestContractService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.NWN.API.NWNX;
 using static SWLOR.Game.Server.EngineTests.Framework.FullInventoryFixture;
 
@@ -126,8 +124,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static void ClaimDeliveries(uint player)
         {
             // The fixture has no servervault file to save, so the claim checkpoint is a no-op.
-            typeof(QuestContractBoard).GetMethod("ClaimDeliveries", BindingFlags.NonPublic | BindingFlags.Static)
-                .Invoke(null, new object[] { player, (System.Action)(() => { }) });
+            QuestContractBoardInternals.Invoke("ClaimDeliveries", player, (System.Action)(() => { }));
         }
     }
 }

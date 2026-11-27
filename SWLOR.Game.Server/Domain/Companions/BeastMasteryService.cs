@@ -1,0 +1,646 @@
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Associate;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
+
+namespace SWLOR.Game.Server.Domain.Companions
+{
+    /// <summary>
+    /// Beast companions: the logic and state that used to be static in <c>Service.BeastMastery</c>, moved here
+    /// unchanged. The beast catalog, the roles, the foods and the incubation percentages are this instance's state,
+    /// filled by the module cache handler; the order and the number of random rolls are what they were. The event
+    /// handlers run on the container's instance; static callers reach it through <c>GameServices.BeastMastery</c>.
+    /// </summary>
+    public class BeastMasteryService : IBeastMasteryService
+    {
+        private readonly Dictionary<BeastType, BeastDetail> _beasts = new();
+        private readonly Dictionary<BeastRoleType, BeastRoleAttribute> _beastRoles = new();
+        private List<BeastFoodType> _beastFoods = new();
+        private readonly Dictionary<int, float> _incubationPercentages = new();
+        private int _highestDelta;
+
+        public const int MaxLevel = 50;
+        public const string DNAResref = "beast_dna";
+        public const string BeastEggResref = "beast_egg";
+        public const string EnzymeTag = "INCUBATION_ENZYME";
+
+        public const string BeastClawResref = "beast_claw";
+        public const string HydrolaseResrefPrefix = "hydrolase_";
+        public const string LyaseResrefPrefix = "lyase_";
+        public const string IsomeraseResrefPrefix = "isomerase_";
+        public const string ExtractCorpseObjectResref = IBeastCorpseInfo.ExtractCorpseObjectResref;
+        public const string BeastTypeVariable = CompanionLookup.BeastTypeVariable;
+        public const string BeastLevelVariable = IBeastCorpseInfo.BeastLevelVariable;
+
+        private readonly IDBService _db;
+        private readonly IGuiService _gui;
+        private readonly IPerkService _perk;
+        private readonly IResistanceService _resistance;
+        private readonly IStatService _stat;
+        private readonly ICreatureStatService _creatureStat;
+        private readonly ICombatDamageCatalogService _damageCatalog;
+
+        public BeastMasteryService(
+            IDBService db,
+            IGuiService gui,
+            IPerkService perk,
+            IResistanceService resistance,
+            IStatService stat,
+            ICreatureStatService creatureStat,
+            ICombatDamageCatalogService damageCatalog)
+        {
+            _db = db;
+            _gui = gui;
+            _perk = perk;
+            _resistance = resistance;
+            _stat = stat;
+            _creatureStat = creatureStat;
+            _damageCatalog = damageCatalog;
+        }
+
+        [BootPhase(BootReload.Rerun)]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        public void CacheData()
+        {
+            LoadBeasts();
+            LoadBeastRoles();
+            LoadFoods();
+            LoadHighestDelta();
+            LoadIncubationPercentages();
+        }
+
+        private void LoadBeasts()
+        {
+            var types = GetBeastListDefinitionTypes();
+
+            foreach (var type in types)
+            {
+                var instance = (IBeastListDefinition)Activator.CreateInstance(type);
+                var beasts = instance.Build();
+
+                foreach (var (beastType, beastDetail) in beasts)
+                {
+                    _beasts[beastType] = beastDetail;
+                }
+            }
+
+            Console.WriteLine($"Loaded {_beasts.Count} beasts.");
+        }
+
+        /// <summary>
+        /// The concrete beast list definitions of every loaded assembly. Searching the loaded assemblies needs the whole
+        /// server, so a unit test overrides this with the definitions it wants loaded. The default is the search
+        /// <c>LoadBeasts</c> always made, and it stays lazy: each definition is built when the loop reaches it.
+        /// </summary>
+        protected virtual IEnumerable<Type> GetBeastListDefinitionTypes()
+        {
+            return GameAssemblies.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(IBeastListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+        }
+
+        private void LoadBeastRoles()
+        {
+            var types = Enum.GetValues(typeof(BeastRoleType)).Cast<BeastRoleType>();
+            foreach (var type in types)
+            {
+                var detail = type.GetAttribute<BeastRoleType, BeastRoleAttribute>();
+                _beastRoles[type] = detail;
+            }
+        }
+
+        private void LoadFoods()
+        {
+            _beastFoods = Enum.GetValues<BeastFoodType>().ToList();
+            _beastFoods.Remove(BeastFoodType.Invalid);
+        }
+
+        private void LoadHighestDelta()
+        {
+            _highestDelta = _deltaXP.Keys.Max();
+        }
+
+        private void LoadIncubationPercentages()
+        {
+            const string FileName = "iprp_incubonus";
+            var rowCount = Get2DARowCount(FileName);
+
+            for (var row = 1; row <= rowCount; row++)
+            {
+                var label = Get2DAString(FileName, "Label", row);
+                if (float.TryParse(label, out var percentage))
+                {
+                    _incubationPercentages[row] = percentage;
+                }
+            }
+        }
+
+        public string GetBeastName(BeastType type)
+        {
+            return GetBeastDetail(type).Name;
+        }
+
+        public BeastDetail GetBeastDetail(BeastType type)
+        {
+            return _beasts[type];
+        }
+
+        public IEnumerable<BeastType> GetAllBeastTypes()
+        {
+            return _beasts.Keys.ToList();
+        }
+
+        public BeastRoleAttribute GetBeastRoleDetail(BeastRoleType type)
+        {
+            return _beastRoles[type];
+        }
+
+        public string GetBeastId(uint beast)
+        {
+            return GetLocalString(beast, CompanionLookup.BeastIdVariable);
+        }
+
+        public void SetBeastId(uint beast, string beastId)
+        {
+            SetLocalString(beast, CompanionLookup.BeastIdVariable, beastId);
+        }
+
+        public BeastType GetBeastType(uint beast)
+        {
+            return (BeastType)GetLocalInt(beast, BeastTypeVariable);
+        }
+
+        public bool IsPlayerBeast(uint beast)
+        {
+            if (GetBeastType(beast) == BeastType.Invalid)
+                return false;
+
+            var master = GetMaster(beast);
+            if (!GetIsObjectValid(master) || !GetIsPC(master))
+                return false;
+
+            return true;
+        }
+
+        public void SetBeastType(uint beast, BeastType type)
+        {
+            SetLocalInt(beast, BeastTypeVariable, (int)type);
+        }
+
+        public void GiveBeastXP(uint beast, int xp, bool ignoreBonuses)
+        {
+            var player = GetMaster(beast);
+            var beastId = GetBeastId(beast);
+            var dbBeast = _db.Get<Beast>(beastId);
+            var maxBeastLevel = GetPerkLevel(player, PerkType.Tame) * 10;
+            var bonusPercentage = 0f;
+            var social = GetAbilityScore(beast, AbilityType.Social);
+
+            if (!ignoreBonuses)
+            {
+                // Status bonus
+                bonusPercentage += GetStatAdjustment(beast, StatType.ExperiencePercentAdjustment) * 0.01f;
+
+                // Social bonus
+                if (social > 0)
+                    bonusPercentage += social * 0.025f;
+
+                // Learning purity bonus
+                bonusPercentage += (dbBeast.LearningPurity * 2) * 0.01f;
+
+                xp += (int)(xp * bonusPercentage);
+            }
+
+            AddXP(player, dbBeast, xp, maxBeastLevel);
+
+            _db.Set(dbBeast);
+            ApplyStats(beast);
+
+            PublishBeastGainXPRefresh(player);
+        }
+
+        /// <summary>
+        /// A creature's perk level. <c>Perk.GetPerkLevel</c> reads the database for a player and the native engine for a
+        /// droid or a beast, which a unit test cannot run, so a test overrides this.
+        /// </summary>
+        protected virtual int GetPerkLevel(uint creature, PerkType perkType)
+        {
+            return _perk.GetPerkLevel(creature, perkType);
+        }
+
+        /// <summary>
+        /// A creature's stat adjustment. <c>Stat.GetStatAdjustment</c> adds up perks, status effects and temporary
+        /// modifiers from the database and the native engine, which a unit test cannot run, so a test overrides this.
+        /// </summary>
+        protected virtual int GetStatAdjustment(uint creature, StatType stat)
+        {
+            return _stat.GetStatAdjustment(creature, stat);
+        }
+
+        /// <summary>
+        /// Refreshes the beast XP of the player's open windows. The original call into <c>Gui</c> (which is not
+        /// converted yet and keeps the open windows in static state), on its own so a unit test can see it made.
+        /// </summary>
+        protected virtual void PublishBeastGainXPRefresh(uint player)
+        {
+            _gui.PublishRefreshEvent(player, new BeastGainXPRefreshEvent());
+        }
+
+        /// <summary>
+        /// Gives RP XP to one of the player's beasts, whether it is out or in the stables.
+        /// The award is capped so no XP is lost, and XP bonuses do not apply.
+        /// </summary>
+        /// <param name="player">The beast's owner</param>
+        /// <param name="beastId">The beast to receive the XP</param>
+        /// <param name="xp">The RP XP to give</param>
+        /// <returns>The XP the beast accepted</returns>
+        public int GiveBeastRPXP(uint player, string beastId, int xp)
+        {
+            var dbBeast = _db.Get<Beast>(beastId);
+            if (dbBeast == null || dbBeast.OwnerPlayerId != GetObjectUUID(player))
+                return 0;
+
+            var tamePerkLevel = GetPerkLevel(player, PerkType.Tame);
+            var amount = Math.Min(xp, GetMaxDistributableXP(dbBeast, GetBeastLevelCap(tamePerkLevel)));
+            if (amount <= 0)
+                return 0;
+
+            var beast = GetAssociate(AssociateType.Henchman, player);
+            if (IsPlayerBeast(beast) && GetBeastId(beast) == beastId)
+            {
+                GiveBeastXP(beast, amount, true);
+            }
+            else
+            {
+                AddXP(player, dbBeast, amount, tamePerkLevel * 10);
+                _db.Set(dbBeast);
+                PublishBeastGainXPRefresh(player);
+            }
+
+            return amount;
+        }
+
+        /// <summary>
+        /// Retrieves the highest level a beast can reach with the given Tame perk level.
+        /// </summary>
+        public int GetBeastLevelCap(int tamePerkLevel)
+        {
+            return Math.Clamp(tamePerkLevel * 10, 0, MaxLevel);
+        }
+
+        /// <summary>
+        /// Calculates how much XP a beast can take before it reaches its level cap, so none is lost.
+        /// </summary>
+        /// <param name="dbBeast">The beast entity</param>
+        /// <param name="levelCap">The highest level the beast can reach</param>
+        /// <returns>The maximum amount of XP that can be safely distributed</returns>
+        public int GetMaxDistributableXP(Beast dbBeast, int levelCap)
+        {
+            levelCap = Math.Min(levelCap, MaxLevel);
+            var totalXP = 0L;
+            var currentXP = dbBeast.XP;
+
+            for (var level = dbBeast.Level; level < levelCap; level++)
+            {
+                totalXP += Math.Max(0, GetRequiredXP(level, dbBeast.XPPenaltyPercent) - currentXP);
+                currentXP = 0;
+            }
+
+            return (int)Math.Min(totalXP, int.MaxValue);
+        }
+
+        private void AddXP(uint player, Beast dbBeast, int xp, int maxBeastLevel)
+        {
+            var requiredXP = GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent);
+
+            dbBeast.XP += xp;
+
+            if (dbBeast.Level >= MaxLevel)
+            {
+                dbBeast.XP = 0;
+            }
+            else
+            {
+                SendMessageToPC(player, $"{dbBeast.Name} earned {xp} XP.");
+            }
+
+            while (dbBeast.XP >= requiredXP)
+            {
+                if (dbBeast.Level >= maxBeastLevel)
+                {
+                    dbBeast.XP = GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent) - 1;
+                    break;
+                }
+
+                dbBeast.XP -= requiredXP;
+                dbBeast.UnallocatedSP++;
+                dbBeast.Level++;
+
+                requiredXP = GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent);
+                if (dbBeast.Level >= MaxLevel)
+                {
+                    dbBeast.XP = 0;
+                }
+
+                SendMessageToPC(player, $"{dbBeast.Name} reaches level {dbBeast.Level}!");
+            }
+        }
+
+        public int GetRequiredXP(int level, int xpPenalty)
+        {
+            return _beastXPRequirements[level] + (int)(_beastXPRequirements[level] * (xpPenalty * 0.01f));
+        }
+
+
+        public void ApplyStats(uint beast)
+        {
+            var beastId = GetBeastId(beast);
+            var dbBeast = _db.Get<Beast>(beastId);
+            var beastDetail = GetBeastDetail(dbBeast.Type);
+
+            var skin = GetItemInSlot(InventorySlot.CreatureArmor, beast);
+            var claw = GetItemInSlot(InventorySlot.CreatureLeft, beast);
+
+            var level = beastDetail.Levels[dbBeast.Level];
+
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.NPCLevel, -1, dbBeast.Level), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Stamina, -1, level.STM), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.FP, -1, level.FP), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+
+            BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.DMG, -1, level.DMG), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.Delay, -1, (int)level.AttackDelay), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.DamageStat, (int)beastDetail.DamageStat), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.AccuracyStat, (int)beastDetail.AccuracyStat), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+
+            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Might, level.Stats[AbilityType.Might]);
+            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Perception, level.Stats[AbilityType.Perception]);
+            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Vitality, level.Stats[AbilityType.Vitality]);
+            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Willpower, level.Stats[AbilityType.Willpower]);
+            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Agility, level.Stats[AbilityType.Agility]);
+            CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Social, level.Stats[AbilityType.Social]);
+            SetNPCMaxHitPoints(beast, level.HP);
+
+            var attackBonus = BeastCombatStatCalculator.CalculateAttackBonus(level, dbBeast);
+            var accuracyBonus = BeastCombatStatCalculator.CalculateAccuracyBonus(level, dbBeast);
+            var evasionBonus = BeastCombatStatCalculator.CalculateEvasionBonus(level, dbBeast);
+
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Attack, -1, attackBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPRemoveMatchingItemProperties(skin, ItemPropertyType.AccuracyBonus, DurationType.Invalid, -1);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, accuracyBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Evasion, -1, evasionBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+
+            foreach (var damageType in _damageCatalog.GetDefenseDamageTypes())
+            {
+                var defenseBonus = BeastResistanceCalculator.CalculateDefenseBonus(level, dbBeast, damageType);
+                BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)damageType, defenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            }
+
+            foreach (var resistanceType in _resistance.GetAllResistanceTypes())
+            {
+                var resistanceBonus = BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, resistanceType);
+                BiowareXP2.IPSafeAddItemProperty(
+                    skin,
+                    ItemPropertyCustom(
+                        ItemPropertyType.Resistance,
+                        (int)resistanceType,
+                        _resistance.EncodeItemPropertyCostTableValue(resistanceBonus)),
+                    0f,
+                    AddItemPropertyPolicy.ReplaceExisting,
+                    false,
+                    false);
+            }
+        }
+
+        /// <summary>
+        /// Sets the base maximum hit points of an NPC. <c>Stat.SetNPCMaxHitPoints</c> probes the native hit point
+        /// totals of the creature in passes, which a unit test cannot run, so a test overrides this.
+        /// </summary>
+        protected virtual void SetNPCMaxHitPoints(uint creature, int desiredMaxHitPoints)
+        {
+            _creatureStat.SetNPCMaxHitPoints(creature, desiredMaxHitPoints);
+        }
+
+        public (BeastFoodType, BeastFoodType) GetLikedAndHatedFood()
+        {
+            var availableFoods = _beastFoods.ToList();
+            var likedFood = availableFoods[Random.Next(availableFoods.Count)];
+            availableFoods.Remove(likedFood);
+            var hatedFood = availableFoods[Random.Next(availableFoods.Count)];
+
+            return (likedFood, hatedFood);
+        }
+
+        [NWNEventHandler(ScriptName.OnCombatPointXPDistribute)]
+        public void CombatPointXPDistributed()
+        {
+            var player = OBJECT_SELF;
+            var beast = GetAssociate(AssociateType.Henchman, player);
+
+            if (!IsPlayerBeast(beast))
+                return;
+
+            var npc = StringToObject(EventsPlugin.GetEventData("NPC"));
+            var npcStats = GetNPCStats(npc);
+            var beastId = GetBeastId(beast);
+            var dbBeast = _db.Get<Beast>(beastId);
+
+            var delta = npcStats.Level - dbBeast.Level;
+            if (delta > _highestDelta)
+                delta = _highestDelta;
+
+            if (!_deltaXP.ContainsKey(delta))
+                return;
+
+            // Beasts get the same area XP bonus as their master's skills.
+            var xp = _deltaXP[delta];
+            var areaBonus = GetLocalInt(GetArea(npc), "AREA_XP_BONUS_PERCENTAGE") * 0.01f;
+            xp += (int)(xp * areaBonus);
+            GiveBeastXP(beast, xp, false);
+        }
+
+        /// <summary>
+        /// The stats an NPC's stat skin grants. <c>Stat.GetNPCStats</c> reads the skin in the creature's armor slot, which
+        /// a unit test answers by overriding this.
+        /// </summary>
+        protected virtual NPCStats GetNPCStats(uint npc)
+        {
+            return _stat.GetNPCStats(npc);
+        }
+
+        private readonly Dictionary<int, int> _beastXPRequirements = new()
+        {
+            { 0,   1100 },
+            { 1,   1650 },
+            { 2,   2200 },
+            { 3,   2750 },
+            { 4,   3300 },
+            { 5,   3850 },
+            { 6,   4400 },
+            { 7,   4840 },
+            { 8,   5280 },
+            { 9,   5720 },
+            { 10,  6160 },
+            { 11,  8400 },
+            { 12,  8960 },
+            { 13,  9520 },
+            { 14,  10080 },
+            { 15,  10640 },
+            { 16,  11200 },
+            { 17,  11760 },
+            { 18,  12320 },
+            { 19,  12880 },
+            { 20,  13440 },
+            { 21,  17000 },
+            { 22,  17340 },
+            { 23,  17680 },
+            { 24,  18020 },
+            { 25,  18360 },
+            { 26,  18700 },
+            { 27,  19040 },
+            { 28,  19380 },
+            { 29,  19720 },
+            { 30,  20060 },
+            { 31,  20400 },
+            { 32,  20740 },
+            { 33,  21080 },
+            { 34,  21420 },
+            { 35,  21760 },
+            { 36,  22100 },
+            { 37,  22440 },
+            { 38,  22780 },
+            { 39,  23120 },
+            { 40,  23460 },
+            { 41,  28000 },
+            { 42,  28400 },
+            { 43,  28800 },
+            { 44,  29200 },
+            { 45,  29600 },
+            { 46,  30000 },
+            { 47,  30400 },
+            { 48,  30800 },
+            { 49,  32000 },
+            { 50,  36800 },
+            { 51,  49920 },
+            { 52,  55680 },
+            { 53,  61440 },
+            { 54,  67200 },
+            { 55,  72960 },
+            { 56,  78720 },
+            { 57,  84480 },
+            { 58,  90240 },
+            { 59,  96000 },
+            { 60,  103200 },
+            { 61,  110400 },
+            { 62,  117600 },
+            { 63,  124800 },
+            { 64,  132000 },
+            { 65,  139200 },
+            { 66,  146400 },
+            { 67,  153600 },
+            { 68,  163200 },
+            { 69,  172800 },
+            { 70,  182400 },
+            { 71,  216000 },
+            { 72,  226800 },
+            { 73,  237600 },
+            { 74,  240300 },
+            { 75,  243000 },
+            { 76,  245700 },
+            { 77,  248400 },
+            { 78,  251100 },
+            { 79,  253800 },
+            { 80,  256500 },
+            { 81,  288000 },
+            { 82,  291000 },
+            { 83,  294000 },
+            { 84,  297000 },
+            { 85,  300000 },
+            { 86,  303000 },
+            { 87,  306000 },
+            { 88,  309000 },
+            { 89,  312000 },
+            { 90,  318000 },
+            { 91,  432000 },
+            { 92,  440000 },
+            { 93,  448000 },
+            { 94,  456000 },
+            { 95,  464000 },
+            { 96,  472000 },
+            { 97,  480000 },
+            { 98,  520000 },
+            { 99,  560000 },
+            { 100, 800000 }
+        };
+
+        private readonly Dictionary<int, int> _deltaXP = new()
+        {
+            { 6, 1200 },
+            { 5, 1050 },
+            { 4, 976 },
+            { 3, 900 },
+            { 2, 750 },
+            { 1, 676 },
+            { 0, 600 },
+            { -1, 450 },
+            { -2, 300 },
+            { -3, 150 },
+            { -4, 76 }
+        };
+
+        /// <summary>
+        /// Retrieves the percentage associated with a specific item property Id for the incubation stats.
+        /// </summary>
+        /// <param name="itemPropertyId">The incubation stat Id</param>
+        /// <returns>The percentage associated or 0.0 if not found.</returns>
+        public float GetIncubationPercentageById(int itemPropertyId)
+        {
+            return !_incubationPercentages.ContainsKey(itemPropertyId)
+                ? 0f
+                : _incubationPercentages[itemPropertyId];
+        }
+
+        /// <summary>
+        /// Determines if the specified item is an incubation crafting item.
+        /// This includes enzymes and DNA but excludes beast eggs.
+        /// </summary>
+        /// <param name="item">The item to check</param>
+        /// <returns>true if used in incubation, false otherwise</returns>
+        public bool IsIncubationCraftingItem(uint item)
+        {
+            var tag = GetTag(item);
+            var resref = GetResRef(item);
+
+            return tag == EnzymeTag || resref == DNAResref;
+        }
+
+        /// <summary>
+        /// Determines if the specified item is a beast egg.
+        /// </summary>
+        /// <param name="item">The item to check</param>
+        /// <returns>true if beast egg, false otherwise</returns>
+        public bool IsBeastEgg(uint item)
+        {
+            return GetResRef(item) == BeastEggResref;
+        }
+
+    }
+}

@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string KillBoxMeasureQuestId = "kill_box_measure";
         internal const string KillBoxBreachQuestId = "kill_box_breach";
         internal const string KillBoxCircleQuestId = "kill_box_circle";
-        internal const string KillBoxMasteryQuestId = "kill_box_mastery";
+        internal const string KillBoxMasteryQuestId = CapstoneQuestIds.KillBoxMasteryQuestId;
         internal const string KillBoxAdeptResref = "cp_killbox_ad";
         internal const string KillBoxSpecialistResref = "cp_killbox_sp";
         internal const string KillBoxInnerCircleResref = "cp_killbox_ic";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string OneShotMeasureQuestId = "one_shot_measure";
         internal const string OneShotBreachQuestId = "one_shot_breach";
         internal const string OneShotCircleQuestId = "one_shot_circle";
-        internal const string OneShotMasteryQuestId = "one_shot_mastery";
+        internal const string OneShotMasteryQuestId = CapstoneQuestIds.OneShotMasteryQuestId;
         internal const string OneShotAdeptResref = "cp_oneshot_ad";
         internal const string OneShotSpecialistResref = "cp_oneshot_sp";
         internal const string OneShotInnerCircleResref = "cp_oneshot_ic";

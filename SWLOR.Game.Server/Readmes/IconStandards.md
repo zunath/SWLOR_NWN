@@ -66,7 +66,7 @@ always sees the *configuring perk's* icon, whose anchor class carries the enum m
 row, TLK entry, and artwork (`RundownStatusEffect` anchors `ief_rndwn`).
 
 Such a class is exempted from the one-class-one-icon model **only** when it declares
-`[StatConfiguredIcon]` (see `Service/StatusEffectService/StatConfiguredIconAttribute.cs`); the
+`[StatConfiguredIcon]` (see `Domain/Character/StatConfiguredIconAttribute.cs`); the
 audit skips it entirely on that marker. The exemption does not weaken the rule above: the apply
 path must refuse to apply the effect when the configured icon resolves to
 `EffectIconType.Invalid`, so a mis-wired perk degrades to no visual rather than an invisible

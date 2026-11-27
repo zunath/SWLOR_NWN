@@ -16,33 +16,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         public static void ExecuteScript(string sScript, uint oTarget)
         {
-            var provider = ScriptExecutionProvider.Current;
-
-            // Check if we have a C# script first
-            if (provider != null && provider.HasScript(sScript))
-            {
-                // Execute C# script using proper VM context management to avoid OBJECT_SELF corruption
-                provider.ExecuteInScriptContext(() => {
-                    foreach (var (action, name) in provider.GetActionScripts(sScript))
-                    {
-                        try
-                        {
-                            action();
-                        }
-                        catch (Exception ex)
-                        {
-                            // Match top-level ScriptExecutor behavior: one broken handler must not
-                            // prevent the remaining handlers or later cache phases from running.
-                            provider.ReportScriptException(sScript, name, ex);
-                        }
-                    }
-                }, oTarget);
-            }
-            else
-            {
-                // No C# script found - fallback to NWScript execution
-                global::NWN.Core.NWScript.ExecuteScript(sScript, oTarget);
-            }
+            NWScriptRuntime.Current.ExecuteScript(sScript, oTarget);
         }
     }
 }

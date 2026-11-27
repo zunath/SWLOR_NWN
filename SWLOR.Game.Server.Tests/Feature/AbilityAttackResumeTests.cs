@@ -50,12 +50,12 @@ public class AbilityAttackResumeTests
                 public static uint GetQueuedAttackTarget(NativeObject creature) => QueuedAttackTarget;
             }
             public class AbilityDetail { public bool IsHostileAbility { get; set; } }
-            public static class CompanionControl
+            public static class CompanionTargetAuthority
             {
                 public static bool IsRegisteredCompanion(uint creature) => Companion;
                 public static uint PeekAuthorizedTarget(uint creature) => AuthorizedTarget;
             }
-            public static class Enmity
+            public static class EnmityAttack
             {
                 public static uint GetHighestEnmityAttackTarget(uint creature) => ThreatTarget;
             }

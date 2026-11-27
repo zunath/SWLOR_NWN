@@ -1,0 +1,35 @@
+# Phase 5 debt (P5-0, counted by band since P5-1b): pairs of domains that depend on each other (target 4), read from
+# the server's source with the compiler's binding, so the result does not depend on the build configuration.
+# Line: <node> <-> <node> | <edges>: two nodes of one band that reference each other, and the unit edges between them
+# both ways. A node is a domain's logic (Character: Domain/, Platform areas) or its content (Character content: Feature/),
+# as DomainMap.json maps them (owner decisions 10 to 12): content is a band above all logic, so content using logic and
+# logic naming content (LogicToContent.txt) never make a pair; Entity and Enumeration count as Foundation; references
+# out of the wiring areas (Composition, NativeSinks) do not count. Every reference counts, constants, enum members and
+# nameof included (SourceReferenceScanner). One direction of each pair points up the order: UpwardEdges.txt.
+#
+# The guard (SWLOR.Architecture.Tests, Phase5DebtTests) fails when a line appears, when a count grows, and when a count
+# shrinks or a line disappears: each Phase 5 item shrinks this file in the same pull request. Plan and targets:
+# SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
+# SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
+
+Abilities <-> Combat | 2
+Abilities <-> Platform | 6
+Abilities content <-> Character content | 3
+Abilities content <-> Gameplay content | 4
+Character <-> Combat | 2
+Character <-> Companions | 2
+Character <-> Items | 2
+Character <-> Platform | 6
+Character <-> Quests | 2
+Combat <-> Items | 2
+Combat <-> Platform | 6
+Companions <-> Items | 2
+Crafting <-> Items | 2
+Economy <-> Quests | 2
+Foundation <-> Platform | 9
+Foundation <-> UI | 4
+Foundation content <-> Gameplay content | 5
+Gameplay content <-> UI content | 9
+Items <-> Platform | 4
+Items <-> World | 2
+Space <-> World | 2

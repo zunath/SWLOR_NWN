@@ -1,10 +1,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
@@ -35,7 +34,7 @@ public static class TwinPistolAccuracyEngineTests
         await ctx.ExecuteInCreatureContextAsync(actor, () =>
         {
             var before = weapons.Select(weapon => WeaponShotProfile.Capture(actor, weapon, SkillType.TwinPistol).Accuracy).ToArray();
-            var forceBefore = Stat.GetAccuracy(actor, main, AbilityType.Willpower, SkillType.Force,
+            var forceBefore = CombatRating.GetAccuracy(actor, main, AbilityType.Willpower, SkillType.Force,
                 ignoreWeaponAccuracyStatOverride: true);
             var globalBefore = Stat.GetStatAdjustment(actor, StatType.Accuracy);
             player.Update(record => record.Perks[PerkType.BalancedGrip] = 1);
@@ -46,7 +45,7 @@ public static class TwinPistolAccuracyEngineTests
                     WeaponShotProfile.Capture(actor, weapons[index], SkillType.TwinPistol).Accuracy,
                     "Each real weapon receives five accuracy, never ten when two weapons are equipped");
             ctx.AssertEqual(forceBefore + 5,
-                Stat.GetAccuracy(actor, main, AbilityType.Willpower, SkillType.Force, ignoreWeaponAccuracyStatOverride: true),
+                CombatRating.GetAccuracy(actor, main, AbilityType.Willpower, SkillType.Force, ignoreWeaponAccuracyStatOverride: true),
                 "General accuracy also benefits Force accuracy without requiring a Twin Pistol ability");
             player.Update(record => record.Perks.Remove(PerkType.BalancedGrip));
             ctx.AssertEqual(globalBefore, Stat.GetStatAdjustment(actor, StatType.Accuracy),

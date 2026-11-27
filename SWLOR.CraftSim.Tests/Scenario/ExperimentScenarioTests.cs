@@ -6,12 +6,13 @@ using SWLOR.CraftSim.Play;
 using SWLOR.CraftSim.Scenario;
 using SWLOR.CraftSim.Scenario.Experiment;
 using SWLOR.CraftSim.Tests.Support;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
-using SWLOR.Game.Server.Service.CraftService.Research;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Experiment;
+using SWLOR.Game.Server.Domain.Crafting.Research;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.CraftSim.Tests.Scenario
 {
@@ -210,7 +211,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
             ExperimentStudy.JobSeconds(20, 2).Should().Be((int)(200 * Math.Pow(3, 2.2f) * 4));
             ExperimentStudy.JobSeconds(52, 10).Should().Be((int)(200 * Math.Pow(5, 2.2f) * 100));
 
-            var source = File.ReadAllText(Path.Combine(SharedData.Root, "SWLOR.Game.Server", "Service", "Craft.cs"));
+            var source = File.ReadAllText(Path.Combine(SharedData.Root, "SWLOR.Game.Server", "Domain", "Crafting", "CraftService.cs"));
             source.Should().Contain("var price = baseConstant * (Math.Pow(perkLevel, 2.2f) * Math.Pow(blueprintLevel, 2f));");
             source.Should().Contain("return CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);");
         }
@@ -255,7 +256,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
         {
             Skill.CacheXPChartData();
             // 15 actions at 6 s, 0% quality, no blueprint, chart XP 600 at level: the low end of at-level crafting.
-            var crafting = CraftOutcomeRules.CalculateXp(Skill.GetDeltaXP(0), 0, false, 0f) / (15 * 6.0) * 3600;
+            var crafting = CraftOutcomeRules.CalculateXp(SkillXP.GetDeltaXP(0), 0, false, 0f) / (15 * 6.0) * 3600;
             var worst = 0.0;
             foreach (var rank in new[] { 10, 20, 30, 40, 50 })
             {
@@ -264,7 +265,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
                 for (var researchLevel = 1; researchLevel <= 10; researchLevel++)
                 {
                     // Generous inputs: 6 actions, the 25% cap always reached, a 0 s overhead.
-                    var row = ExperimentStudy.XpRow(rank, recipeLevel, researchLevel, concurrent, 6, 25, 100, 6, 0, Skill.GetDeltaXP);
+                    var row = ExperimentStudy.XpRow(rank, recipeLevel, researchLevel, concurrent, 6, 25, 100, 6, 0, delta => SkillXP.GetDeltaXP(delta));
                     worst = Math.Max(worst, row.XpPerHour);
                 }
             }

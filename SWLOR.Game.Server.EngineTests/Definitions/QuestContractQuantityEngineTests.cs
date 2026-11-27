@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.ActivityService;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.QuestContractService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
@@ -129,8 +128,7 @@ public static class QuestContractQuantityEngineTests
             else
             {
                 // Simulate a stop after cancellation is saved but before held submissions are released.
-                typeof(QuestContractBoard).GetMethod("RefundEscrowToAuthor", BindingFlags.NonPublic | BindingFlags.Static)
-                    .Invoke(null, new object[] { contract });
+                QuestContractBoardInternals.Invoke("RefundEscrowToAuthor", contract);
                 contract.Status = QuestContractStatus.Cancelled;
                 DB.Set(contract);
             }
@@ -222,18 +220,16 @@ public static class QuestContractQuantityEngineTests
     private static List<QuestContractDelivery> Deliveries(string id) => DB.Search(new DBQuery<QuestContractDelivery>()
         .AddFieldSearch(nameof(QuestContractDelivery.SourceContractId), id, false).AddPaging(100, 0)).ToList();
 
-    private static void Claim(EngineTestContext ctx, uint player) => typeof(QuestContractBoard)
-        .GetMethod("ClaimDeliveries", BindingFlags.NonPublic | BindingFlags.Static)
-        .Invoke(null, new object[] { player, (Action)(() =>
+    private static void Claim(EngineTestContext ctx, uint player) => QuestContractBoardInternals.Invoke("ClaimDeliveries", player,
+        (Action)(() =>
         {
             var restored = ObjectPlugin.Deserialize(ObjectPlugin.Serialize(player));
             ctx.Track(restored);
             ctx.AssertEqual(Count(player), Count(restored), "The character snapshot preserves awarded units.");
             ctx.AssertEqual(GetGold(player), GetGold(restored), "The character snapshot preserves credits.");
-        }) });
+        }));
 
-    private static void Recover() => typeof(QuestContractBoard)
-        .GetMethod("RecoverSettlements", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
+    private static void Recover() => QuestContractBoardInternals.Invoke("RecoverSettlements");
 
     private static void Cleanup(QuestContract contract)
     {

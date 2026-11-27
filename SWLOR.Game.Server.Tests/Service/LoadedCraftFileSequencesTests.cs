@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Research;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Research;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -15,66 +15,68 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public class LoadedCraftFileSequencesTests
 {
+    private static readonly LoadedCraftFileSequences _loads = new();
+
     private static readonly DateTime Now = new(2026, 11, 19, 3, 0, 0, DateTimeKind.Utc);
 
     [SetUp]
-    public void SetUp() => LoadedCraftFileSequences.Clear();
+    public void SetUp() => _loads.Clear();
 
     [TearDown]
-    public void TearDown() => LoadedCraftFileSequences.Clear();
+    public void TearDown() => _loads.Clear();
 
     [Test]
     public void ARecordedLoad_IsTakenOnce()
     {
-        LoadedCraftFileSequences.Record("pc-7", 9, Now);
+        _loads.Record("pc-7", 9, Now);
 
-        LoadedCraftFileSequences.TryTake("pc-7", out var sequence).Should().BeTrue();
+        _loads.TryTake("pc-7", out var sequence).Should().BeTrue();
         sequence.Should().Be(9);
-        LoadedCraftFileSequences.TryTake("pc-7", out _).Should().BeFalse();
+        _loads.TryTake("pc-7", out _).Should().BeFalse();
     }
 
     [Test]
     public void ACreatureWithNoRecordedLoad_HasNothingToTake()
     {
-        LoadedCraftFileSequences.TryTake("pc-7", out var sequence).Should().BeFalse();
+        _loads.TryTake("pc-7", out var sequence).Should().BeFalse();
         sequence.Should().Be(0);
     }
 
     [Test]
     public void ALaterLoadIntoTheSameCreature_ReplacesTheEarlierOne()
     {
-        LoadedCraftFileSequences.Record("pc-7", 2, Now);
-        LoadedCraftFileSequences.Record("pc-7", 5, Now.AddSeconds(1));
+        _loads.Record("pc-7", 2, Now);
+        _loads.Record("pc-7", 5, Now.AddSeconds(1));
 
-        LoadedCraftFileSequences.TryTake("pc-7", out var sequence).Should().BeTrue();
+        _loads.TryTake("pc-7", out var sequence).Should().BeTrue();
         sequence.Should().Be(5);
     }
 
     [Test]
     public void ALoadNoLoginClaimed_IsDroppedAfterItsLifetime()
     {
-        LoadedCraftFileSequences.Record("pc-7", 4, Now);
-        LoadedCraftFileSequences.Record("pc-8", 6, Now + LoadedCraftFileSequences.Lifetime + TimeSpan.FromSeconds(1));
+        _loads.Record("pc-7", 4, Now);
+        _loads.Record("pc-8", 6, Now + LoadedCraftFileSequences.Lifetime + TimeSpan.FromSeconds(1));
 
-        LoadedCraftFileSequences.TryTake("pc-7", out _).Should().BeFalse();
-        LoadedCraftFileSequences.TryTake("pc-8", out var sequence).Should().BeTrue();
+        _loads.TryTake("pc-7", out _).Should().BeFalse();
+        _loads.TryTake("pc-8", out var sequence).Should().BeTrue();
         sequence.Should().Be(6);
     }
 
     [Test]
     public void AFileWithoutACharacterId_IsNotRecorded()
     {
-        LoadedCraftFileSequences.Record(string.Empty, 4, Now);
+        _loads.Record(string.Empty, 4, Now);
 
-        LoadedCraftFileSequences.TryTake(string.Empty, out _).Should().BeFalse();
+        _loads.TryTake(string.Empty, out _).Should().BeFalse();
     }
 
     [Test]
     public void AFileWithoutASequence_LoadsAsZero()
     {
-        LoadedCraftFileSequences.Record("pc-7", -3, Now);
+        _loads.Record("pc-7", -3, Now);
 
-        LoadedCraftFileSequences.TryTake("pc-7", out var sequence).Should().BeTrue();
+        _loads.TryTake("pc-7", out var sequence).Should().BeTrue();
         sequence.Should().Be(0);
     }
 
@@ -95,7 +97,7 @@ public class LoadedCraftFileSequencesTests
             [CraftSessionFileSequence.ExportedVariable] = 3,
             [CraftSessionFileSequence.LoadedVariable] = 0,
         };
-        LoadedCraftFileSequences.Record("pc-7", 3, Now);
+        _loads.Record("pc-7", 3, Now);
 
         Apply("pc-7", locals);
 
@@ -108,7 +110,7 @@ public class LoadedCraftFileSequencesTests
     public void Apply_DoesNothingTheSecondTime()
     {
         var locals = new Dictionary<string, int>();
-        LoadedCraftFileSequences.Record("pc-7", 3, Now);
+        _loads.Record("pc-7", 3, Now);
         Apply("pc-7", locals);
         locals[CraftSessionFileSequence.Variable] = 6;
         locals[CraftSessionFileSequence.ExportedVariable] = 6;
@@ -140,7 +142,7 @@ public class LoadedCraftFileSequencesTests
         foreach (var job in jobs)
             ResearchJobFileRules.AtLogin(job, locals[CraftSessionFileSequence.LoadedVariable]).Should().Be(ResearchJobFileState.StartNotInFile);
 
-        LoadedCraftFileSequences.Record("pc-7", 8, Now);
+        _loads.Record("pc-7", 8, Now);
         Apply("pc-7", locals);
 
         foreach (var job in jobs)
@@ -152,7 +154,7 @@ public class LoadedCraftFileSequencesTests
     {
         // A crash lost the export after the start: the file carries 5 though the job was stamped 6.
         var locals = new Dictionary<string, int>();
-        LoadedCraftFileSequences.Record("pc-7", 5, Now);
+        _loads.Record("pc-7", 5, Now);
         Apply("pc-7", locals);
 
         ResearchJobFileRules.AtLogin(new ResearchJob { StartSequence = 6 }, locals[CraftSessionFileSequence.LoadedVariable])
@@ -160,5 +162,5 @@ public class LoadedCraftFileSequencesTests
     }
 
     private static void Apply(string characterId, Dictionary<string, int> locals) =>
-        LoadedCraftFileSequences.Apply(characterId, name => locals.GetValueOrDefault(name), (name, value) => locals[name] = value);
+        _loads.Apply(characterId, name => locals.GetValueOrDefault(name), (name, value) => locals[name] = value);
 }

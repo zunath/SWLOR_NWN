@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SWLOR.NWN.API.NWScript.Enum;

@@ -1,13 +1,30 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class NativeControlStatusEffectTests
 {
+    // Applying a status effect checks the combat recorder, which the facade resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void StatusEffectBase_CentralizesNativeEffectTags()
     {
@@ -15,14 +32,10 @@ public class NativeControlStatusEffectTests
         var statusEffectBase = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
-            "Service",
-            "StatusEffectService",
+            "Domain",
+            "Character",
             "StatusEffectBase.cs"));
-        var statusEffectService = File.ReadAllText(Path.Combine(
-            root,
-            "SWLOR.Game.Server",
-            "Service",
-            "StatusEffect.cs"));
+        var statusEffectService = StatusEffectSource.Read();
 
         statusEffectBase.Should().Contain("protected Effect TagNativeEffect");
         statusEffectBase.Should().Contain("void RemoveNativeEffects");
@@ -75,11 +88,11 @@ public class NativeControlStatusEffectTests
 
         source.Should().Contain("protected override void Remove(uint creature)");
         source.Should().Contain("if (IsBeingReplaced)");
-        source.Should().Contain("Ability.ApplyPostControlImmunity(");
+        source.Should().Contain("AbilityImmunity.ApplyPostControlImmunity(");
         source.Should().Contain("SecondsSinceNaturalExpiration");
         source.Should().Contain($"ImmunityType.{immunityType});");
         source.Should().NotContain(
-            $"Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.{immunityType});",
+            $"AbilityImmunity.ApplyTemporaryImmunity(creature, duration, ImmunityType.{immunityType});",
             "hard-control immunity begins after the status ends, not while it is active");
     }
 
@@ -117,7 +130,7 @@ public class NativeControlStatusEffectTests
             "StatusEffect.HasStatusEffect(creature, GetType())",
             StringComparison.Ordinal);
         var immunityCheck = canApply.IndexOf(
-            "Ability.HasHardCrowdControlImmunity(",
+            "AbilityImmunity.HasHardCrowdControlImmunity(",
             StringComparison.Ordinal);
         activeCheck.Should().BeGreaterThanOrEqualTo(0);
         activeCheck.Should().BeLessThan(
@@ -128,17 +141,12 @@ public class NativeControlStatusEffectTests
     [Test]
     public void RepeatedHardControlRemovals_RestartTheSharedImmunityWindow()
     {
-        var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(
-            root,
-            "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs"));
+        var abilitySource = AbilitySource.Read();
         var methodStart = abilitySource.IndexOf(
-            "private static void ApplyTemporaryImmunitySingle(",
+            "private void ApplyTemporaryImmunitySingle(",
             StringComparison.Ordinal);
         var methodEnd = abilitySource.IndexOf(
-            "public static bool HasTemporaryImmunity(",
+            "public bool HasTemporaryImmunity(",
             methodStart,
             StringComparison.Ordinal);
         methodStart.Should().BeGreaterThanOrEqualTo(0);
@@ -170,13 +178,8 @@ public class NativeControlStatusEffectTests
     [Test]
     public void PostControlImmunity_AgesTheWindowDuringOfflineReconciliation()
     {
-        var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(
-            root,
-            "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs"));
-        var method = ExtractMethod(abilitySource, "public static void ApplyPostControlImmunity(");
+        var abilitySource = AbilitySource.Read();
+        var method = ExtractMethod(abilitySource, "public void ApplyPostControlImmunity(");
 
         method.Should().Contain(
             "TemporaryImmunityBaseDurationSeconds - Math.Max(0f, secondsSinceControlEnded)");
@@ -242,7 +245,7 @@ public class NativeControlStatusEffectTests
     [Test]
     public void HardCrowdControlEffects_DeclareTheCategoryTheSharedGateReads()
     {
-        // While one hard CC runs, a different one must not land: Ability.HasHardCrowdControlImmunity
+        // While one hard CC runs, a different one must not land: AbilityImmunity.HasHardCrowdControlImmunity
         // treats any active status carrying StatusEffectCategory.HardCrowdControl as immunity. An
         // effect that grants post-control immunity on Remove but forgets the category would be
         // stackable during its own duration - the regression this pins down.
@@ -262,7 +265,7 @@ public class NativeControlStatusEffectTests
                 "stacks during its duration or blocks without ever releasing");
         }
 
-        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Ability.cs"))
+        AbilitySource.Read()
             .Should().Contain("HasActiveHardCrowdControlStatus(target)",
                 "the shared immunity gate must treat an active hard-CC status as immunity");
     }

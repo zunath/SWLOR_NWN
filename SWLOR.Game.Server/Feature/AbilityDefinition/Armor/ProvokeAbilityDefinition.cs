@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
 {
@@ -52,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                 return;
             }
 
-            if (!Enmity.TryTaunt(activator, target, enmity))
+            if (!EnmityChange.TryTaunt(activator, target, enmity))
                 return;
             Ability.PlaySuccessfulImpactVisualEffect(activator, target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Odd), target);

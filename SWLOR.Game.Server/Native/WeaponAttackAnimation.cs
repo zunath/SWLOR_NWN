@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using NWN.Native.API;
-using NWNX.NET;
-using NWNX.NET.Native;
+using SWLOR.Game.Contracts;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.FrameProfilerService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.NativeSinks;
 
 namespace SWLOR.Game.Server.Native;
 
@@ -19,17 +19,15 @@ public static unsafe class WeaponAttackAnimation
     private const int Attack = 9;
     private const int Ready = 1;
     private const int AttackAction = 12;
-    private const uint AnimationUpdate = 4;
-    private const uint AnimationReplacementUpdate = 0x1000000;
+    internal const uint AnimationUpdate = 4;
+    internal const uint AnimationReplacementUpdate = 0x1000000;
     // The installed a_ba sword clips (slashl, slashr, stab and slasho) are one
     // second long. The 1,750 ms gameplay cycle floor is not a clip duration.
     public const int SwingDuration = 1000;
     public const int TransitionDuration = 100;
-    private static FunctionHook* _computeHook;
-    private static FunctionHook* _writeHook;
-    private static readonly Dictionary<uint, Playback> _playbacks = new();
+    internal static readonly Dictionary<uint, Playback> _playbacks = new();
 
-    private sealed class Playback
+    internal sealed class Playback
     {
         public long Started;
         public int Duration;
@@ -82,7 +80,7 @@ public static unsafe class WeaponAttackAnimation
 
     public static int CalculateSwingDuration(int cycleDuration, int handCount) =>
         Math.Min(SwingDuration,
-            Math.Max(Combat.BaseAttackDelayMilliseconds, cycleDuration) / Math.Max(1, handCount) - TransitionDuration);
+            Math.Max(CombatRules.BaseAttackDelayMilliseconds, cycleDuration) / Math.Max(1, handCount) - TransitionDuration);
 
     public static int AdvanceStage(int sent, long elapsed, int swingDuration, int handCount) =>
         elapsed >= (sent % 2 == 0 ? swingDuration : TransitionDuration)
@@ -116,7 +114,7 @@ public static unsafe class WeaponAttackAnimation
     {
         var round = creature.m_pcCombatRound;
         var count = round.m_nCurrentAttack - firstAttack;
-        if (creature.GetRangeWeaponEquipped() != 0 || count <= 0 || count > Combat.MaxAttacksPerSwing * 2)
+        if (creature.GetRangeWeaponEquipped() != 0 || count <= 0 || count > CombatRules.MaxAttacksPerSwing * 2)
         {
             if (_playbacks.TryGetValue(creature.m_idSelf, out var inactive)) inactive.Cancelled = true;
             return;
@@ -128,7 +126,7 @@ public static unsafe class WeaponAttackAnimation
         var swingLength = CalculateSwingDuration(cycleDuration, visualRolls.Length);
         var playback = new Playback
         {
-            Started = Environment.TickCount64,
+            Started = Clock.TickCount64,
             Duration = visualRolls.Length * (swingLength + TransitionDuration),
             SwingLength = swingLength,
             EndAttack = round.m_nCurrentAttack,
@@ -158,10 +156,10 @@ public static unsafe class WeaponAttackAnimation
 
     public static bool IsPlaying(CNWSObject obj) =>
         TryGetPlayback(obj, out var playback) &&
-        (Environment.TickCount64 - playback.Started < playback.Duration ||
+        (Clock.TickCount64 - playback.Started < playback.Duration ||
          playback.SentStages.Any(sent => sent.Value < playback.Rolls.Length * 2 - 1));
 
-    private static bool TryGetPlayback(CNWSObject obj, out Playback playback)
+    internal static bool TryGetPlayback(CNWSObject obj, out Playback playback)
     {
         if (!_playbacks.TryGetValue(obj.m_idSelf, out playback) || playback.Cancelled)
             return false;
@@ -203,9 +201,9 @@ public static unsafe class WeaponAttackAnimation
         return OBJECT_INVALID;
     }
 
-    private static int ObserverStage(Playback playback, uint playerId)
+    internal static int ObserverStage(Playback playback, uint playerId)
     {
-        var now = Environment.TickCount64;
+        var now = Clock.TickCount64;
         if (!playback.SentStages.TryGetValue(playerId, out var sent))
             return now - playback.Started < playback.Duration ? 0 : playback.Rolls.Length * 2 - 1;
         var next = AdvanceStage(sent, now - playback.SentAt[playerId], playback.SwingLength, playback.Rolls.Length);
@@ -213,130 +211,16 @@ public static unsafe class WeaponAttackAnimation
         return next == 2 && playback.Rolls[1] == null ? sent : next;
     }
 
+    [BootPhase(BootReload.NativeHook)]
     [NWNEventHandler(ScriptName.OnModuleLoad)]
     public static void RegisterHooks()
     {
-        if (_computeHook != null) return;
-        var library = NativeLibrary.GetMainProgramHandle();
-        delegate* unmanaged<void*, void*, void*, void*, int, uint> compute = &ComputeUpdate;
-        delegate* unmanaged<void*, void*, void*, void*, uint, uint, void> write = &WriteUpdate;
-        _computeHook = NWNXAPI.RequestFunctionHook(NativeLibrary.GetExport(library,
-            "_ZN11CNWSMessage21ComputeUpdateRequiredEP10CNWSPlayerP10CNWSObjectP17CLastUpdateObjecti"),
-            (IntPtr)compute, HookOrder.Late);
-        _writeHook = NWNXAPI.RequestFunctionHook(NativeLibrary.GetExport(library,
-            "_ZN11CNWSMessage31WriteGameObjUpdate_UpdateObjectEP10CNWSPlayerP10CNWSObjectP17CLastUpdateObjectjj"),
-            (IntPtr)write, HookOrder.Late);
-    }
-
-    [UnmanagedCallersOnly]
-    private static uint ComputeUpdate(void* message, void* player, void* obj, void* last, int playerObject)
-    {
-        var original = (delegate* unmanaged<void*, void*, void*, void*, int, uint>)_computeHook->m_trampoline;
-        var updates = original(message, player, obj, last, playerObject);
-        var profile = FrameProfiler.EnterManaged();
-        try
-        {
-            var nativeObject = CNWSObject.FromPointer(obj);
-            var playerId = CNWSPlayer.FromPointer(player).m_nPlayerID;
-            if (NeedsAnimationUpdate(nativeObject, playerId))
-                updates |= AnimationUpdate;
-            if (_playbacks.TryGetValue(nativeObject.m_idSelf, out var playback) &&
-                playback.RemappedObservers.Contains(playerId) && !TryGetPlayback(nativeObject, out _))
-                updates |= AnimationReplacementUpdate;
-        }
-        catch (Exception ex) { Log.WriteError(ex, "Could not refresh a weapon attack animation"); }
-        finally { FrameProfiler.ExitManaged(FrameMetric.ObjectUpdateHook, profile); }
-        return updates;
+        NativeHookAccess.Hooks.Enable(NativeHookId.WeaponAttackAnimation);
     }
 
     public static bool NeedsAnimationUpdate(CNWSObject obj, uint playerId) =>
         TryGetPlayback(obj, out var playback) &&
         (!playback.SentStages.TryGetValue(playerId, out var sent) || sent != ObserverStage(playback, playerId));
-
-    [UnmanagedCallersOnly]
-    private static void WriteUpdate(void* message, void* player, void* obj, void* last, uint updates, uint appearance)
-    {
-        var profile = FrameProfiler.EnterManaged();
-        try { WriteObjectUpdate(message, player, obj, last, updates, appearance); }
-        finally { FrameProfiler.ExitManaged(FrameMetric.ObjectUpdateHook, profile); }
-    }
-
-    private static void WriteObjectUpdate(void* message, void* player, void* obj, void* last, uint updates, uint appearance)
-    {
-        var trampoline = (delegate* unmanaged<void*, void*, void*, void*, uint, uint, void>)_writeHook->m_trampoline;
-        // Packet serialization is engine work; keep it out of managed time.
-        void original(void* message, void* player, void* obj, void* last, uint updates, uint appearance)
-        {
-            var native = FrameProfiler.Start();
-            trampoline(message, player, obj, last, updates, appearance);
-            FrameProfiler.ExcludeFromManaged(native);
-        }
-
-        // Keep exceptions inside managed code; the native call must run exactly once.
-        Playback playback = null;
-        var stage = 0;
-        var playerId = CNWSPlayer.FromPointer(player).m_nPlayerID;
-        var nativeObject = CNWSObject.FromPointer(obj);
-        try
-        {
-            if ((updates & (AnimationUpdate | AnimationReplacementUpdate)) != 0 &&
-                TryGetPlayback(nativeObject, out var active))
-            {
-                playback = active;
-                stage = ObserverStage(playback, playerId);
-            }
-        }
-        catch (Exception ex)
-        {
-            playback = null;
-            Log.WriteError(ex, "Could not prepare a weapon attack animation");
-        }
-        if (playback == null)
-        {
-            if (_playbacks.TryGetValue(nativeObject.m_idSelf, out var previous) &&
-                previous.RemappedObservers.Contains(playerId) && !TryGetPlayback(nativeObject, out _))
-                updates |= AnimationReplacementUpdate;
-            original(message, player, obj, last, updates, appearance);
-            if ((updates & AnimationReplacementUpdate) != 0) previous?.RemappedObservers.Remove(playerId);
-            return;
-        }
-        // A native ready-pose update must not restart or shorten a swing already
-        // playing on the client. Only emit an animation when its visual stage changes.
-        if (playback.SentStages.TryGetValue(playerId, out var sentStage) && sentStage == stage)
-            updates &= ~AnimationUpdate;
-        if ((updates & (AnimationUpdate | AnimationReplacementUpdate)) == 0)
-        {
-            original(message, player, obj, last, updates, appearance);
-            return;
-        }
-        var wrote = false;
-        try
-        {
-            var creature = CNWSObject.FromPointer(obj).AsNWSCreature();
-            var roll = stage % 2 == 0 ? playback.Rolls[stage / 2] : null;
-            WithSwingVariant(creature, roll == null ? -1 : playback.Variant, () =>
-            {
-                WithProjectedAttack(creature, roll, playback.SwingLength, () =>
-                {
-                    wrote = true;
-                    // Replacement names are serialized before the attack in this packet.
-                    original(message, player, obj, last, updates | AnimationReplacementUpdate, appearance);
-                });
-            });
-            if ((updates & AnimationUpdate) != 0)
-            {
-                playback.SentAt[playerId] = Environment.TickCount64;
-                playback.SentStages[playerId] = stage;
-            }
-            if (roll == null) playback.RemappedObservers.Remove(playerId);
-            else playback.RemappedObservers.Add(playerId);
-        }
-        catch (Exception ex)
-        {
-            Log.WriteError(ex, "Could not write a weapon attack animation");
-            if (!wrote) original(message, player, obj, last, updates, appearance);
-        }
-    }
 
     public static Dictionary<string, string> ReadAnimationReplacements(CNWSObject obj) =>
         obj.m_lAnimationReplaceInfo.ToDictionary(
@@ -426,7 +310,7 @@ public static unsafe class WeaponAttackAnimation
     public static void ClearInactive()
     {
         foreach (var pair in _playbacks.ToArray())
-            if (Environment.TickCount64 - pair.Value.Started > 30000 || !GetIsObjectValid(pair.Key))
+            if (Clock.TickCount64 - pair.Value.Started > 30000 || !GetIsObjectValid(pair.Key))
                 _playbacks.Remove(pair.Key);
     }
 }

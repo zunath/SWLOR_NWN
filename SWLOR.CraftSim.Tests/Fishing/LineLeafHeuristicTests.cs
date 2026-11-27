@@ -2,7 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.CraftSim.Fishing;
 using SWLOR.CraftSim.Play;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
 
 namespace SWLOR.CraftSim.Tests.Fishing
 {

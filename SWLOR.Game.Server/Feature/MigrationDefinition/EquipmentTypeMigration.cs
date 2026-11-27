@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
@@ -114,7 +114,7 @@ public static class EquipmentTypeMigration
                     SetLocalInt(owner, "FP", Math.Min(fp, Stat.GetMaxFP(owner)));
                     SetLocalInt(owner, "STAMINA", Math.Min(stamina, Stat.GetMaxStamina(owner)));
                 }
-                Stat.RefreshCombatReadinessEquipment(owner);
+                StatRecord.RefreshCombatReadinessEquipment(owner);
             }
         }
         return true;

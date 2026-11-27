@@ -8,14 +8,13 @@ using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -56,12 +55,12 @@ public static class TwinPistolFatalSaveEngineTests
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
         var actor = player.Creature;
-        var ability = Ability.GetAbilityDetail(FeatType.FinalSalvo);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.FinalSalvo);
         var stamina = 0;
         var targetHealth = 0;
         var seededAt = DateTime.UtcNow;
-        Combat.SetAutoAttackHitResolutionOverride(false);
-        Combat.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
         {
             var target = await Prepare(ctx, player);
@@ -79,12 +78,12 @@ public static class TwinPistolFatalSaveEngineTests
                 seededAt = DateTime.UtcNow;
                 stamina = Stat.GetCurrentStamina(actor);
                 targetHealth = GetCurrentHitPoints(target);
-                Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
                 HostileAbilityDelay.EndForTesting(actor);
                 if (duringCast)
                 {
                     ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.FinalSalvo, GetLocation(target)),
-                        $"Final Salvo begins its normal unpaid cast: {Ability.GetLastActivationDenialReason()}");
+                        $"Final Salvo begins its normal unpaid cast: {AbilityActivation.GetLastActivationDenialReason()}");
                     ctx.Assert(TwinPistolAbility.HasActiveActivation(actor) && Activity.IsBusy(actor),
                         "A real captured Twin activation exists before the native dying event");
                     ctx.Assert(!string.IsNullOrWhiteSpace(UsePerkFeat.GetActiveAbilityActivationId(actor)),
@@ -124,7 +123,7 @@ public static class TwinPistolFatalSaveEngineTests
                 ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "The canceled cast deadline spends no stamina or Cadence");
                 ctx.Assert(!Recast.IsOnRecastDelay(actor, ability.RecastGroup).Item1,
                     "The canceled cast starts no capstone recast");
-                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null,
+                ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) == null,
                     "The canceled cast deadline resolves no impact");
                 ctx.AssertEqual(targetHealth, GetCurrentHitPoints(target), "The canceled cast deals no target damage");
             }
@@ -150,8 +149,8 @@ public static class TwinPistolFatalSaveEngineTests
         finally
         {
             _actor = OBJECT_INVALID;
-            Combat.SetAutoAttackHitResolutionOverride(null);
-            Combat.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             if (GetIsObjectValid(actor))
             {
                 AssignCommand(actor, () => ClearAllActions());
@@ -197,7 +196,7 @@ public static class TwinPistolFatalSaveEngineTests
             }
             SetPlotFlag(target, false);
             ctx.SuppressNPCNaturalRegen(target);
-            Stat.SetNPCMaxHitPoints(target, 10000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 10000, true);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 45f);
             SetCommandable(false, target);
             ctx.MakeHostile(target);

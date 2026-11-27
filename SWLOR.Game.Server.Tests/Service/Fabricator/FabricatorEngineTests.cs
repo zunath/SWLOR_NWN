@@ -1,8 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Fabricator;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Tests.Service.Fabricator.FabricatorTestData;
 
 namespace SWLOR.Game.Server.Tests.Service.Fabricator;
@@ -102,7 +103,7 @@ public class FabricatorEngineTests
     {
         var setup = new FabricatorSetup(null, 10, 45, 10, 0, 0, 0);
 
-        setup.Parameters.Should().BeSameAs(FabricatorParameters.Fallback);
+        setup.Parameters.Should().BeEquivalentTo(FabricatorParameters.Fallback);
         setup.WearRate.Should().Be(FabricatorParameters.Fallback.WearRate);
     }
 
@@ -755,7 +756,7 @@ public class FabricatorEngineTests
     {
         var setup = Setup();
         var engine = new FabricatorEngine(new SeededMinigameRandom(seed), setup);
-        var chooser = new Random(seed);
+        var chooser = new System.Random(seed);
 
         for (var step = 0; step < 80 && engine.Status == MinigameStatus.InProgress; step++)
         {

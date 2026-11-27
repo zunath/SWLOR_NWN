@@ -3,10 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
-using SWLOR.Game.Server.Service.PerformanceService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -41,9 +43,9 @@ public static class PerformanceInstrumentEngineTests
                 var item = await ctx.EquipItemAsync(player, resref, InventorySlot.RightHand);
                 for (var i = 0; i < channels.Length; i++)
                     SetObjectVisualTransform(item, channels[i], authored[i], nScope: scope);
-                Performance.SetRoleplay(player, true);
-                await ctx.ExecuteInCreatureContextAsync(player, () => Performance.TogglePlayInstrument(player, 1));
-                await ctx.WaitUntilAsync(() => Performance.TryGetSession(player, out _), 8f, "instrument to start performing");
+                GameServices.Performance.SetRoleplay(player, true);
+                await ctx.ExecuteInCreatureContextAsync(player, () => GameServices.Performance.TogglePlayInstrument(player, 1));
+                await ctx.WaitUntilAsync(() => GameServices.PerformanceRegistry.TryGetSession(player, out _), 8f, "instrument to start performing");
                 var fitted = channels.Select(channel => GetObjectVisualTransform(item, channel, nScope: scope)).ToArray();
                 if (resref == "jessoon")
                     ctx.Assert(Math.Abs(fitted[5] - authored[5]) > .0001f, "the Jessoon's playing fit turns it on the RotateX channel too");
@@ -57,20 +59,20 @@ public static class PerformanceInstrumentEngineTests
                     ctx.Assert(Math.Abs(GetObjectVisualTransform(item, channels[i], nScope: scope) - fitted[i]) < .0001f,
                         "repeated fit refresh does not compound its offset");
                 if (gender == Gender.Male)
-                    Performance.EndPerformance(player, PerformanceEndReason.Stopped);
+                    GameServices.Performance.EndPerformance(player, PerformanceEndReason.Stopped);
                 else
                 {
                     AssignCommand(player, () => { ClearAllActions(); ActionUnequipItem(item); });
                     await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, player) != item, 8f, "instrument to be unequipped");
                 }
-                await ctx.WaitUntilAsync(() => !Performance.TryGetSession(player, out _), 8f, "the performance to stop");
+                await ctx.WaitUntilAsync(() => !GameServices.PerformanceRegistry.TryGetSession(player, out _), 8f, "the performance to stop");
                 for (var i = 0; i < channels.Length; i++)
                     ctx.Assert(Math.Abs(GetObjectVisualTransform(item, channels[i], nScope: scope) - authored[i]) < .0001f,
                         "stopping or unequipping removes only the playing fit");
             }
             finally
             {
-                if (Performance.TryGetSession(player, out _)) Performance.EndPerformance(player, PerformanceEndReason.Invalid);
+                if (GameServices.PerformanceRegistry.TryGetSession(player, out _)) GameServices.Performance.EndPerformance(player, PerformanceEndReason.Invalid);
                 AssignCommand(player, () => DestroyObject(player));
             }
         }
@@ -95,21 +97,21 @@ public static class PerformanceInstrumentEngineTests
             try
             {
                 fixture.Update(record => record.Perks[PerkType.PlayInstrument] = 1);
-                Perk.SyncGrantedFeats(player, PerkType.PlayInstrument, 1, true);
+                PerkGrantedFeat.SyncGrantedFeats(player, PerkType.PlayInstrument, 1, true);
                 var item = await ctx.EquipItemAsync(player, resref, slot);
                 var bow = OBJECT_INVALID;
                 if (family == PerformanceInstrumentFamily.BowedStrings)
                 {
-                    ctx.Assert(!Performance.HasInstrumentEquipped(player, out _), "a violin cannot perform without its bow");
+                    ctx.Assert(!GameServices.PerformanceEligibility.HasInstrumentEquipped(player, out _), "a violin cannot perform without its bow");
                     bow = await ctx.EquipItemAsync(player, "violin_bow", InventorySlot.RightHand);
                 }
 
-                ctx.Assert(Performance.HasInstrumentEquipped(player, out var recognized), $"{resref} is recognized without item locals");
+                ctx.Assert(GameServices.PerformanceEligibility.HasInstrumentEquipped(player, out var recognized), $"{resref} is recognized without item locals");
                 ctx.AssertEqual(family, recognized, $"{resref} selects the correct family");
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                     ctx.Assert(UsePerkFeat.TryUseAbility(player, player, FeatType.PlayInstrument1, GetLocation(player)), "the music feat activates"));
-                await ctx.WaitUntilAsync(() => Performance.TryGetSession(player, out _), 8f, $"{resref} to start performing");
-                Performance.TryGetSession(player, out var session);
+                await ctx.WaitUntilAsync(() => GameServices.PerformanceRegistry.TryGetSession(player, out _), 8f, $"{resref} to start performing");
+                GameServices.PerformanceRegistry.TryGetSession(player, out var session);
                 ctx.AssertEqual(PerformanceKind.Music, session.Kind, "the prop uses the existing music audience channel");
                 ctx.AssertEqual(family, session.InstrumentFamily, "the session retains the recognized family");
                 ctx.AssertEqual(item, session.Instrument, "the session tracks the exact instrument");
@@ -122,13 +124,13 @@ public static class PerformanceInstrumentEngineTests
                 });
                 await ctx.WaitUntilAsync(() => GetItemInSlot(bow != OBJECT_INVALID ? InventorySlot.RightHand : slot, player) != removed,
                     8f, "the required item to leave its equipment slot");
-                await ctx.WaitUntilAsync(() => !Performance.TryGetSession(player, out _), 8f, "removing a required item to end the performance");
+                await ctx.WaitUntilAsync(() => !GameServices.PerformanceRegistry.TryGetSession(player, out _), 8f, "removing a required item to end the performance");
                 ctx.Assert(!GetHasFeat(FeatType.PerformanceNoteLow, player), "ending the performance removes its note feats");
             }
             finally
             {
-                if (Performance.TryGetSession(player, out _))
-                    Performance.EndPerformance(player, PerformanceEndReason.Invalid);
+                if (GameServices.PerformanceRegistry.TryGetSession(player, out _))
+                    GameServices.Performance.EndPerformance(player, PerformanceEndReason.Invalid);
                 AssignCommand(player, () => DestroyObject(player));
             }
         }

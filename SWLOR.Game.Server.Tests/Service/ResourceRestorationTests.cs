@@ -4,8 +4,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -20,14 +21,9 @@ public class ResourceRestorationTests
         while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
             root = root.Parent;
         root.Should().NotBeNull();
-        var stat = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
-            "SWLOR.Game.Server", "Service", "Stat.cs"))).GetRoot();
-        var methods = stat.DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(method => method.Identifier.ValueText is "GetMaxFP" or "GetMaxStamina" or "RestoreFP" or "RestoreStamina"
-                or "GetCurrentFP" or "GetCurrentStamina" or "IsStaminaRestorationBlocked");
-        var constants = stat.DescendantNodes().OfType<FieldDeclarationSyntax>()
-            .Where(field => field.Declaration.Variables.Any(variable =>
-                variable.Identifier.ValueText is "FPPerWillpower" or "StaminaPerTwoMight"));
+        var methods = StatHarnessSource.Methods(method => method.Identifier.ValueText is "GetMaxFP" or "GetMaxStamina" or "RestoreFP" or "RestoreStamina"
+            or "GetCurrentFP" or "GetCurrentStamina" or "IsStaminaRestorationBlocked");
+        var constants = StatHarnessSource.Fields(name => name is "FPPerWillpower" or "StaminaPerTwoMight");
         var tick = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
                 "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SereneFocusStatusEffect.cs")))
             .GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>()
@@ -39,8 +35,9 @@ public class ResourceRestorationTests
         // native actor queries, persistence, modifiers, and observable side effects.
         var source = $$"""
             using System;
-            using SWLOR.Game.Server.Service.CombatRecorderService;
-            using SWLOR.Game.Server.Service.StatService;
+            using SWLOR.Game.Server.Domain.Combat;
+            using SWLOR.Game.Server.Domain.Foundation;
+            using SWLOR.Game.Server.Domain.Character;
             using SWLOR.NWN.API.NWScript.Enum;
             using Stat = ResourceHarness;
             public static class ResourceHarness
@@ -78,11 +75,8 @@ public class ResourceRestorationTests
                 }
                 private static int ApplyFPRestoreAdjustment(uint creature, int amount) => amount + RestoreBonus;
                 private static void ExecuteScript(string script, uint creature) => Scripts++;
-                private static class Combat
-                {
-                    public static void ApplyFPRestoredEffects(uint creature) => Triggers++;
-                    public static void ApplyStaminaRestoredEffects(uint creature) => Triggers++;
-                }
+                private static void ApplyFPRestoredEffects(uint creature) => Triggers++;
+                private static void ApplyStaminaRestoredEffects(uint creature) => Triggers++;
                 private static class PlayerFeedback
                 {
                     public static void SendResourceRestored(uint creature, int amount, string resource) => Feedback++;
@@ -112,7 +106,7 @@ public class ResourceRestorationTests
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES"))
-            .Split(Path.PathSeparator).Append(typeof(Stat).Assembly.Location)
+            .Split(Path.PathSeparator).Append(typeof(IStatService).Assembly.Location)
             .Append(typeof(AbilityType).Assembly.Location).Distinct()
             .Select(path => MetadataReference.CreateFromFile(path));
         var compilation = CSharpCompilation.Create("ResourceRestorationHarness",

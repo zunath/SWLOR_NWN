@@ -1,9 +1,8 @@
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Legacy.Gathering;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
 
 namespace SWLOR.CraftSim.Progression
 {
@@ -59,12 +58,11 @@ namespace SWLOR.CraftSim.Progression
         public static IReadOnlyList<GuildChoreRow> Chore(
             GuildTaskCatalog guilds, ComponentSupply supply, GuildType guild, ProgressionAssumptions assumptions, ICraftResults results = null)
         {
-            Guild.LoadData();
             assumptions = assumptions with { GatheringTier = CraftRankMilestones.TierForRank(ProgressionAssumptions.MaximumRank) };
             var rows = new List<GuildChoreRow>();
             var tasks = guilds.For(guild).Where(t => t.Kind == GuildTaskKind.Crafted).ToList();
             var previousThreshold = 0;
-            for (var tier = 0; tier < Guild.MaxRank; tier++)
+            for (var tier = 0; tier < ServerGuildRules.MaxRank; tier++)
             {
                 var eligible = tasks
                     .Where(t => t.Tier == tier && t.Level.Value <= HighestQuickCraftLevel)
@@ -95,7 +93,7 @@ namespace SWLOR.CraftSim.Progression
 
                 var task = eligible[0];
                 var pointsEach = GuildHandInPlan.GuildPointsFor(task.GuildPoints, tier);
-                var threshold = Guild.GetGPRequiredForRank(tier);
+                var threshold = ServerGuildRules.GetGPRequiredForRank(tier);
                 var handIns = (threshold - previousThreshold) / (double)pointsEach;
                 rows.Add(new GuildChoreRow(guild, tier, task.Resref, task.Level.Value, pointsEach, handIns, (handIns * itemSeconds + manualSeconds) / 3600, handIns * task.Credits, boardChance));
                 previousThreshold = threshold;

@@ -1,8 +1,9 @@
 using System.Linq;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -58,7 +59,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     DB.Delete<PlayerDisguise>(disguise.Id);
 
                 foreach (var knownNames in DB.Search(new DBQuery<PlayerKnownName>()
-                             .AddFieldSearch(nameof(PlayerKnownName.ObserverPlayerId), observer.Id, false)).ToList())
+                             .AddFieldSearch(nameof(Entity.PlayerKnownName.ObserverPlayerId), observer.Id, false)).ToList())
                     DB.Delete<PlayerKnownName>(knownNames.Id);
             }
         }
@@ -69,9 +70,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var error = string.Empty;
             await ctx.ExecuteInCreatureContextAsync(observer.Creature, () =>
             {
-                error = PlayerName.ValidateKnownNameAssignment(observer.Creature, target.Creature, name);
+                error = GameServices.PlayerKnownName.ValidateKnownNameAssignment(observer.Creature, target.Creature, name);
                 if (string.IsNullOrEmpty(error))
-                    PlayerName.SetKnownName(observer.Creature, target.Creature, name);
+                    GameServices.PlayerKnownName.SetKnownName(observer.Creature, target.Creature, name);
             });
             return error;
         }

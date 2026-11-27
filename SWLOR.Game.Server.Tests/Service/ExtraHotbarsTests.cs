@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Social;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
@@ -5,24 +6,43 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ExtraHotbarService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.NWScript.Enum;
+
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class ExtraHotbarsTests
 {
+    // The Gui facade resolves the GUI service from a container.
+    private FacadeContainer _guiFacades = null!;
+    private IDisposable _guiFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildGuiFacades() => _guiFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeGuiFacades() => _guiFacades.Dispose();
+
+    [SetUp]
+    public void InstallGuiFacades() => _guiFacadeScope = _guiFacades.Install();
+
+    [TearDown]
+    public void RemoveGuiFacades() => _guiFacadeScope.Dispose();
+
     [Test]
     public void GetBars_PlayerSavedBeforeHotbars_GetsEveryBarWithEverySlot()
     {
         var player = JsonConvert.DeserializeObject<Player>("{}")!;
 
-        var bars = ExtraHotbars.GetBars(player);
+        var bars = ExtraHotbarsWindow.GetBars(player);
 
-        bars.Should().HaveCount(ExtraHotbars.BarCount);
-        bars.Should().OnlyContain(bar => bar.Slots.Count == ExtraHotbars.MaxSlots && !bar.IsVisible);
+        bars.Should().HaveCount(ExtraHotbarsWindowService.BarCount);
+        bars.Should().OnlyContain(bar => bar.Slots.Count == ExtraHotbarsWindowService.MaxSlots && !bar.IsVisible);
         bars.SelectMany(bar => bar.Slots).Should().OnlyContain(slot => slot.Type == ExtraHotbarSlotType.Empty);
     }
 
@@ -45,18 +65,18 @@ public class ExtraHotbarsTests
             }
         };
 
-        var bars = ExtraHotbars.GetBars(player);
+        var bars = ExtraHotbarsWindow.GetBars(player);
 
-        bars[0].SlotCount.Should().Be(ExtraHotbars.MaxSlots);
+        bars[0].SlotCount.Should().Be(ExtraHotbarsWindowService.MaxSlots);
         bars[0].Slots[0].Feat.Should().Be(FeatType.Provoke1);
-        bars[0].Slots.Should().HaveCount(ExtraHotbars.MaxSlots);
+        bars[0].Slots.Should().HaveCount(ExtraHotbarsWindowService.MaxSlots);
     }
 
     [Test]
     public void SavedSlots_RoundTripThroughJson()
     {
         var player = new Player();
-        var slots = ExtraHotbars.GetBars(player)[1].Slots;
+        var slots = ExtraHotbarsWindow.GetBars(player)[1].Slots;
         slots[2] = new ExtraHotbarSlot { Type = ExtraHotbarSlotType.Item, ItemResref = "stim_a", ItemName = "Stim A" };
         slots[3] = new ExtraHotbarSlot { Type = ExtraHotbarSlotType.Command, Command = "/sit" };
 
@@ -70,7 +90,7 @@ public class ExtraHotbarsTests
     public void ActionModeSlot_RoundTripsThroughJson()
     {
         var player = new Player();
-        ExtraHotbars.GetBars(player)[0].Slots[5] = new ExtraHotbarSlot
+        ExtraHotbarsWindow.GetBars(player)[0].Slots[5] = new ExtraHotbarSlot
         {
             Type = ExtraHotbarSlotType.ActionMode,
             ActionMode = ActionMode.Stealth
@@ -86,13 +106,13 @@ public class ExtraHotbarsTests
     public void EquipmentSlot_RoundTripsBothHandsThroughJson()
     {
         var player = new Player();
-        ExtraHotbars.GetBars(player)[2].Slots[0] = new ExtraHotbarSlot
+        ExtraHotbarsWindow.GetBars(player)[2].Slots[0] = new ExtraHotbarSlot
         {
             Type = ExtraHotbarSlotType.Equipment,
             MainHand = new ExtraHotbarEquipItem { ItemId = "saber-1", ItemResref = "lightsaber", ItemName = "Lightsaber" },
             OffHand = new ExtraHotbarEquipItem { ItemId = "saber-2", ItemResref = "lightsaber", ItemName = "Lightsaber" }
         };
-        ExtraHotbars.GetBars(player)[2].Slots[1] = new ExtraHotbarSlot
+        ExtraHotbarsWindow.GetBars(player)[2].Slots[1] = new ExtraHotbarSlot
         {
             Type = ExtraHotbarSlotType.Equipment,
             MainHand = new ExtraHotbarEquipItem { ItemId = "rifle-1", ItemResref = "rifle", ItemName = "Rifle" }
@@ -122,36 +142,36 @@ public class ExtraHotbarsTests
         bool CanMain(uint candidate) => candidate != Shield;
         bool CanOff(uint candidate) => candidate is not (Rifle or Pistol);
 
-        return ExtraHotbars.PickHandItem(mainHand, offHand, item, CanMain(item), CanOff(item), CanPair);
+        return ExtraHotbarsEquip.PickHandItem(mainHand, offHand, item, CanMain(item), CanOff(item), CanPair);
     }
 
     [Test]
     public void PlanHands_ReplacesBothHandsOfASet()
     {
-        ExtraHotbars.PlanHands(Saber, SecondSaber, Saber, Shield, CanPair).Should().Be((Saber, Shield));
-        ExtraHotbars.PlanHands(Rifle, NoItem, Saber, SecondSaber, CanPair).Should().Be((Saber, SecondSaber));
+        ExtraHotbarsEquip.PlanHands(Saber, SecondSaber, Saber, Shield, CanPair).Should().Be((Saber, Shield));
+        ExtraHotbarsEquip.PlanHands(Rifle, NoItem, Saber, SecondSaber, CanPair).Should().Be((Saber, SecondSaber));
     }
 
     [Test]
     public void PlanHands_LeavesAnUnsetHandAloneWhenItStillFits()
     {
-        ExtraHotbars.PlanHands(Saber, Shield, SecondSaber, NoItem, CanPair).Should().Be((SecondSaber, Shield));
-        ExtraHotbars.PlanHands(Saber, SecondSaber, NoItem, Shield, CanPair).Should().Be((Saber, Shield));
+        ExtraHotbarsEquip.PlanHands(Saber, Shield, SecondSaber, NoItem, CanPair).Should().Be((SecondSaber, Shield));
+        ExtraHotbarsEquip.PlanHands(Saber, SecondSaber, NoItem, Shield, CanPair).Should().Be((Saber, Shield));
     }
 
     [Test]
     public void PlanHands_EmptiesAnUnsetHandThatNoLongerFits()
     {
-        ExtraHotbars.PlanHands(Saber, SecondSaber, Rifle, NoItem, CanPair).Should().Be((Rifle, NoItem));
-        ExtraHotbars.PlanHands(Saber, SecondSaber, Pistol, NoItem, CanPair).Should().Be((Pistol, NoItem));
-        ExtraHotbars.PlanHands(Rifle, NoItem, NoItem, Shield, CanPair).Should().Be((NoItem, Shield));
+        ExtraHotbarsEquip.PlanHands(Saber, SecondSaber, Rifle, NoItem, CanPair).Should().Be((Rifle, NoItem));
+        ExtraHotbarsEquip.PlanHands(Saber, SecondSaber, Pistol, NoItem, CanPair).Should().Be((Pistol, NoItem));
+        ExtraHotbarsEquip.PlanHands(Rifle, NoItem, NoItem, Shield, CanPair).Should().Be((NoItem, Shield));
     }
 
     [Test]
     public void PlanHands_ItemMovingToTheOtherHandLeavesItsOldHand()
     {
-        ExtraHotbars.PlanHands(Saber, SecondSaber, SecondSaber, NoItem, CanPair).Should().Be((SecondSaber, NoItem));
-        ExtraHotbars.PlanHands(Saber, SecondSaber, NoItem, Saber, CanPair).Should().Be((NoItem, Saber));
+        ExtraHotbarsEquip.PlanHands(Saber, SecondSaber, SecondSaber, NoItem, CanPair).Should().Be((SecondSaber, NoItem));
+        ExtraHotbarsEquip.PlanHands(Saber, SecondSaber, NoItem, Saber, CanPair).Should().Be((NoItem, Saber));
     }
 
     [Test]

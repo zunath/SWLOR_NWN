@@ -11,9 +11,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>1 if the encounter is active, 0 otherwise</returns>
         public static int GetEncounterActive(uint oEncounter = OBJECT_INVALID)
         {
-            if (oEncounter == OBJECT_INVALID)
-                oEncounter = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetEncounterActive(oEncounter);
+            return NWScriptRuntime.Current.GetEncounterActive(oEncounter);
         }
 
         /// <summary>
@@ -23,9 +21,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oEncounter">The encounter to set the active state for (default: OBJECT_SELF)</param>
         public static void SetEncounterActive(int nNewValue, uint oEncounter = OBJECT_INVALID)
         {
-            if (oEncounter == OBJECT_INVALID)
-                oEncounter = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetEncounterActive(nNewValue, oEncounter);
+            NWScriptRuntime.Current.SetEncounterActive(nNewValue, oEncounter);
         }
 
         /// <summary>
@@ -35,9 +31,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The maximum number of spawns</returns>
         public static int GetEncounterSpawnsMax(uint oEncounter = OBJECT_INVALID)
         {
-            if (oEncounter == OBJECT_INVALID)
-                oEncounter = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetEncounterSpawnsMax(oEncounter);
+            return NWScriptRuntime.Current.GetEncounterSpawnsMax(oEncounter);
         }
 
         /// <summary>
@@ -47,9 +41,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oEncounter">The encounter to set the maximum spawns for (default: OBJECT_SELF)</param>
         public static void SetEncounterSpawnsMax(int nNewValue, uint oEncounter = OBJECT_INVALID)
         {
-            if (oEncounter == OBJECT_INVALID)
-                oEncounter = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetEncounterSpawnsMax(nNewValue, oEncounter);
+            NWScriptRuntime.Current.SetEncounterSpawnsMax(nNewValue, oEncounter);
         }
 
         /// <summary>
@@ -59,9 +51,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The current number of spawns</returns>
         public static int GetEncounterSpawnsCurrent(uint oEncounter = OBJECT_INVALID)
         {
-            if (oEncounter == OBJECT_INVALID)
-                oEncounter = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetEncounterSpawnsCurrent(oEncounter);
+            return NWScriptRuntime.Current.GetEncounterSpawnsCurrent(oEncounter);
         }
 
         /// <summary>
@@ -71,9 +61,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oEncounter">The encounter to set the current spawns for (default: OBJECT_SELF)</param>
         public static void SetEncounterSpawnsCurrent(int nNewValue, uint oEncounter = OBJECT_INVALID)
         {
-            if (oEncounter == OBJECT_INVALID)
-                oEncounter = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetEncounterSpawnsCurrent(nNewValue, oEncounter);
+            NWScriptRuntime.Current.SetEncounterSpawnsCurrent(nNewValue, oEncounter);
         }
 
         /// <summary>
@@ -84,9 +72,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void SetEncounterDifficulty(EncounterDifficulty nEncounterDifficulty,
             uint oEncounter = OBJECT_INVALID)
         {
-            if (oEncounter == OBJECT_INVALID)
-                oEncounter = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetEncounterDifficulty((int)nEncounterDifficulty, oEncounter);
+            NWScriptRuntime.Current.SetEncounterDifficulty(nEncounterDifficulty, oEncounter);
         }
 
         /// <summary>
@@ -96,9 +82,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The encounter difficulty level</returns>
         public static int GetEncounterDifficulty(uint oEncounter = OBJECT_INVALID)
         {
-            if (oEncounter == OBJECT_INVALID)
-                oEncounter = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetEncounterDifficulty(oEncounter);
+            return NWScriptRuntime.Current.GetEncounterDifficulty(oEncounter);
         }
     }
 }

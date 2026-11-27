@@ -54,6 +54,8 @@ services:
             - ./hak:/nwn/home/hak:ro
             - ./tlk:/nwn/home/tlk:ro
             - ./modules:/nwn/home/modules:ro
+            # The .NET entry swlor.env's SWLOR_DOTNET_ENTRY names: the host in dotnet/ with the game in
+            # dotnet/game/ (host), or the game in dotnet/ (native).
             - ./dotnet:/nwn/home/dotnet:ro
             - ./logs:/nwn/data/bin/linux-x86/logs.0
         ports:

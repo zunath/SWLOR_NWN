@@ -1,8 +1,9 @@
+using SWLOR.Game.Server.Domain.Social;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.HostedEventService;
-using SWLOR.Game.Server.Service.TimeZoneService;
+using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Service;
 

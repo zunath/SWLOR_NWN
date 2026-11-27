@@ -13,7 +13,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>No return value, but if an error occurs, the log file will contain "AssignCommand failed." (If the object doesn't exist, nothing happens.)</remarks>
         public static void AssignCommand(uint oActionSubject, Action aActionToAssign)
         {
-            global::NWN.Core.NWScript.AssignCommand(oActionSubject, aActionToAssign);
+            NWScriptRuntime.Current.AssignCommand(oActionSubject, aActionToAssign);
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>No return value, but if an error occurs, the log file will contain "DelayCommand failed." It is suggested that functions which create effects should not be used as parameters to delayed actions. Instead, the effect should be created in the script and then passed into the action.</remarks>
         public static void DelayCommand(float fSeconds, Action aActionToDelay)
         {
-            global::NWN.Core.NWScript.DelayCommand(fSeconds, aActionToDelay);
+            NWScriptRuntime.Current.DelayCommand(fSeconds, aActionToDelay);
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="aActionToDo">The action to execute</param>
         public static void ActionDoCommand(Action aActionToDo)
         {
-            global::NWN.Core.NWScript.ActionDoCommand(aActionToDo);
+            NWScriptRuntime.Current.ActionDoCommand(aActionToDo);
         }
 
         /// <summary>
@@ -44,9 +44,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>No return value, but if an error occurs, the log file will contain "ClearAllActions failed."</remarks>
         public static void ClearAllActions(bool nClearCombatState = false, uint oObject = OBJECT_INVALID)
         {
-            if (oObject == OBJECT_INVALID)
-                oObject = OBJECT_SELF;
-            global::NWN.Core.NWScript.ClearAllActions(nClearCombatState ? 1 : 0, oObject);
+            NWScriptRuntime.Current.ClearAllActions(nClearCombatState, oObject);
         }
 
         /// <summary>
@@ -55,7 +53,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>ActionRandomWalk never ends, which means it is necessary to call ClearAllActions in order to allow a creature to perform any other action once ActionRandomWalk has been called. No return value, but if an error occurs the log file will contain "ActionRandomWalk failed."</remarks>
         public static void ActionRandomWalk()
         {
-            global::NWN.Core.NWScript.ActionRandomWalk();
+            NWScriptRuntime.Current.ActionRandomWalk();
         }
 
         /// <summary>
@@ -66,7 +64,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>No return value, but if an error occurs the log file will contain "MoveToPoint failed."</remarks>
         public static void ActionMoveToLocation(Location lDestination, bool bRun = false)
         {
-            global::NWN.Core.NWScript.ActionMoveToLocation(lDestination, bRun ? 1 : 0);
+            NWScriptRuntime.Current.ActionMoveToLocation(lDestination, bRun);
         }
 
         /// <summary>
@@ -78,7 +76,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>No return value, but if an error occurs the log file will contain "ActionMoveToObject failed."</remarks>
         public static void ActionMoveToObject(uint oMoveTo, bool bRun = false, float fRange = 1.0f)
         {
-            global::NWN.Core.NWScript.ActionMoveToObject(oMoveTo, bRun ? 1 : 0, fRange);
+            NWScriptRuntime.Current.ActionMoveToObject(oMoveTo, bRun, fRange);
         }
 
         /// <summary>
@@ -90,7 +88,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>No return value, but if an error occurs the log file will contain "ActionMoveAwayFromObject failed."</remarks>
         public static void ActionMoveAwayFromObject(uint oFleeFrom, bool bRun = false, float fMoveAwayRange = 40.0f)
         {
-            global::NWN.Core.NWScript.ActionMoveAwayFromObject(oFleeFrom, bRun ? 1 : 0, fMoveAwayRange);
+            NWScriptRuntime.Current.ActionMoveAwayFromObject(oFleeFrom, bRun, fMoveAwayRange);
         }
 
         /// <summary>
@@ -101,7 +99,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fDurationSeconds">Duration of the animation in seconds. This is not used for Fire and Forget animations (default: 0.0)</param>
         public static void ActionPlayAnimation(Animation nAnimation, float fSpeed = 1.0f, float fDurationSeconds = 0.0f)
         {
-            global::NWN.Core.NWScript.ActionPlayAnimation((int)nAnimation, fSpeed, fDurationSeconds);
+            NWScriptRuntime.Current.ActionPlayAnimation(nAnimation, fSpeed, fDurationSeconds);
         }
 
         /// <summary>
@@ -118,7 +116,7 @@ namespace SWLOR.NWN.API.NWScript
             bool nCheat = false, int nDomainLevel = 0,
             ProjectilePathType nProjectilePathType = ProjectilePathType.Default, bool bInstantSpell = false)
         {
-            global::NWN.Core.NWScript.ActionCastSpellAtObject((int)nSpell, oTarget, (int)nMetaMagic, nCheat ? 1 : 0, nDomainLevel, (int)nProjectilePathType, bInstantSpell ? 1 : 0);
+            NWScriptRuntime.Current.ActionCastSpellAtObject(nSpell, oTarget, nMetaMagic, nCheat, nDomainLevel, nProjectilePathType, bInstantSpell);
         }
 
         /// <summary>
@@ -128,7 +126,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fFollowDistance">Follow distance in meters (default: 0.0)</param>
         public static void ActionForceFollowObject(uint oFollow, float fFollowDistance = 0.0f)
         {
-            global::NWN.Core.NWScript.ActionForceFollowObject(oFollow, fFollowDistance);
+            NWScriptRuntime.Current.ActionForceFollowObject(oFollow, fFollowDistance);
         }
 
         /// <summary>
@@ -138,7 +136,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Not all creatures will be able to sit and not all objects can be sat on. To get a player to sit when they click on a chair, place the following script in the OnUsed event: void main() { object oChair = OBJECT_SELF; AssignCommand(GetLastUsedBy(),ActionSit(oChair)); }</remarks>
         public static void ActionSit(uint oChair)
         {
-            global::NWN.Core.NWScript.ActionSit(oChair);
+            NWScriptRuntime.Current.ActionSit(oChair);
         }
 
         /// <summary>
@@ -148,7 +146,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bWalkStraightLineToPoint">If true, walks in a straight line to the point (default: true)</param>
         public static void ActionJumpToObject(uint oToJumpTo, bool bWalkStraightLineToPoint = true)
         {
-            global::NWN.Core.NWScript.ActionJumpToObject(oToJumpTo, bWalkStraightLineToPoint ? 1 : 0);
+            NWScriptRuntime.Current.ActionJumpToObject(oToJumpTo, bWalkStraightLineToPoint);
         }
 
         /// <summary>
@@ -157,7 +155,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fSeconds">Number of seconds to wait</param>
         public static void ActionWait(float fSeconds)
         {
-            global::NWN.Core.NWScript.ActionWait(fSeconds);
+            NWScriptRuntime.Current.ActionWait(fSeconds);
         }
 
         /// <summary>
@@ -170,7 +168,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void ActionStartConversation(uint oObjectToConverseWith, string sDialogResRef = "",
             bool bPrivateConversation = true, bool bPlayHello = true)
         {
-            global::NWN.Core.NWScript.ActionStartConversation(oObjectToConverseWith, sDialogResRef, bPrivateConversation ? 1 : 0, bPlayHello ? 1 : 0);
+            NWScriptRuntime.Current.ActionStartConversation(oObjectToConverseWith, sDialogResRef, bPrivateConversation, bPlayHello);
         }
 
         /// <summary>
@@ -178,7 +176,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         public static void ActionPauseConversation()
         {
-            global::NWN.Core.NWScript.ActionPauseConversation();
+            NWScriptRuntime.Current.ActionPauseConversation();
         }
 
         /// <summary>
@@ -186,7 +184,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         public static void ActionResumeConversation()
         {
-            global::NWN.Core.NWScript.ActionResumeConversation();
+            NWScriptRuntime.Current.ActionResumeConversation();
         }
 
         /// <summary>
@@ -196,7 +194,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nTalkVolume">The talk volume (TALKVOLUME_* constant) (default: TalkVolume.Talk)</param>
         public static void ActionSpeakStringByStrRef(int nStrRef, TalkVolume nTalkVolume = TalkVolume.Talk)
         {
-            global::NWN.Core.NWScript.ActionSpeakStringByStrRef(nStrRef, (int)nTalkVolume);
+            NWScriptRuntime.Current.ActionSpeakStringByStrRef(nStrRef, nTalkVolume);
         }
 
         /// <summary>
@@ -206,7 +204,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oTarget">The target to use the feat on</param>
         public static void ActionUseFeat(FeatType nFeat, uint oTarget)
         {
-            global::NWN.Core.NWScript.ActionUseFeat((int)nFeat, oTarget);
+            NWScriptRuntime.Current.ActionUseFeat(nFeat, oTarget);
         }
 
         /// <summary>
@@ -219,7 +217,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void ActionUseSkill(NWNSkillType nSkill, uint oTarget, SubSkill nSubSkill = SubSkill.None,
             uint oItemUsed = OBJECT_INVALID)
         {
-            global::NWN.Core.NWScript.ActionUseSkill((int)nSkill, oTarget, (int)nSubSkill, oItemUsed);
+            NWScriptRuntime.Current.ActionUseSkill(nSkill, oTarget, nSubSkill, oItemUsed);
         }
 
         /// <summary>
@@ -229,7 +227,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oTarget">The target object to use the talent on</param>
         public static void ActionUseTalentOnObject(Talent tChosenTalent, uint oTarget)
         {
-            global::NWN.Core.NWScript.ActionUseTalentOnObject(tChosenTalent, oTarget);
+            NWScriptRuntime.Current.ActionUseTalentOnObject(tChosenTalent, oTarget);
         }
 
         /// <summary>
@@ -239,7 +237,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="lTargetLocation">The target location to use the talent at</param>
         public static void ActionUseTalentAtLocation(Talent tChosenTalent, Location lTargetLocation)
         {
-            global::NWN.Core.NWScript.ActionUseTalentAtLocation(tChosenTalent, lTargetLocation);
+            NWScriptRuntime.Current.ActionUseTalentAtLocation(tChosenTalent, lTargetLocation);
         }
 
         /// <summary>
@@ -248,7 +246,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="lDestination">The destination location to jump to</param>
         public static void JumpToLocation(Location lDestination)
         {
-            global::NWN.Core.NWScript.JumpToLocation(lDestination);
+            NWScriptRuntime.Current.JumpToLocation(lDestination);
         }
 
         /// <summary>
@@ -261,7 +259,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bDecrementCharges">Whether to decrement charges if the item property is limited (default: true)</param>
         public static void ActionUseItemOnObject(uint oItem, IntPtr ip, uint oTarget, int nSubPropertyIndex = 0, bool bDecrementCharges = true)
         {
-            global::NWN.Core.NWScript.ActionUseItemOnObject(oItem, ip, oTarget, nSubPropertyIndex, bDecrementCharges ? 1 : 0);
+            NWScriptRuntime.Current.ActionUseItemOnObject(oItem, ip, oTarget, nSubPropertyIndex, bDecrementCharges);
         }
 
         /// <summary>
@@ -274,7 +272,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bDecrementCharges">Whether to decrement charges if the item property is limited (default: true)</param>
         public static void ActionUseItemAtLocation(uint oItem, IntPtr ip, IntPtr lTarget, int nSubPropertyIndex = 0, bool bDecrementCharges = true)
         {
-            global::NWN.Core.NWScript.ActionUseItemAtLocation(oItem, ip, lTarget, nSubPropertyIndex, bDecrementCharges ? 1 : 0);
+            NWScriptRuntime.Current.ActionUseItemAtLocation(oItem, ip, lTarget, nSubPropertyIndex, bDecrementCharges);
         }
     }
 }

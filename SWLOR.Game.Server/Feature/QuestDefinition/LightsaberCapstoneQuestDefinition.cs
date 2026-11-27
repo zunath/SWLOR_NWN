@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string SaberStormMeasureQuestId = "saber_storm_measure";
         internal const string SaberStormBreachQuestId = "saber_storm_breach";
         internal const string SaberStormCircleQuestId = "saber_storm_circle";
-        internal const string SaberStormMasteryQuestId = "saber_storm_mastery";
+        internal const string SaberStormMasteryQuestId = CapstoneQuestIds.SaberStormMasteryQuestId;
         internal const string SaberStormAdeptResref = "cp_sabstorm_ad";
         internal const string SaberStormSpecialistResref = "cp_sabstorm_sp";
         internal const string SaberStormInnerCircleResref = "cp_sabstorm_ic";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string GuardianMasterMeasureQuestId = "guardian_master_measure";
         internal const string GuardianMasterBreachQuestId = "guardian_master_breach";
         internal const string GuardianMasterCircleQuestId = "guardian_master_circle";
-        internal const string GuardianMasterMasteryQuestId = "guardian_master_mastery";
+        internal const string GuardianMasterMasteryQuestId = CapstoneQuestIds.GuardianMasterMasteryQuestId;
         internal const string GuardianMasterAdeptResref = "cp_guardmst_ad";
         internal const string GuardianMasterSpecialistResref = "cp_guardmst_sp";
         internal const string GuardianMasterInnerCircleResref = "cp_guardmst_ic";

@@ -4,15 +4,15 @@ using System.Numerics;
 using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -49,11 +49,11 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             {
                 CreaturePlugin.AddFeat(actor, FeatType.LeadShot1);
                 CreaturePlugin.AddFeat(actor, FeatType.Headshot1);
-                Combat.SetAbilityHitResolutionOverride(true);
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             });
             await InFrame(ctx, actor, () => ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.LeadShot1, GetLocation(target)),
-                $"Lead Shot enters the pipeline: {Ability.GetLastActivationDenialReason()}"));
+                $"Lead Shot enters the pipeline: {AbilityActivation.GetLastActivationDenialReason()}"));
             await Until(ctx, () => State(actor)?.Cadence == 1, "Lead Shot's landed hit to grant one Cadence");
             await Until(ctx, () => !Activity.IsBusy(actor) && !TwinPistolAbility.HasActiveActivation(actor), "Lead Shot resolution");
             var state = State(actor);
@@ -69,10 +69,8 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             {
                 ClearAllActions();
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.Headshot1, GetLocation(target)),
-                    $"Foreign Rifle Headshot queues: {Ability.GetLastActivationDenialReason()}");
-                var dictionary = (Dictionary<uint, WeaponAbilityTraitActivation>)typeof(UsePerkFeat)
-                    .GetField("_queuedWeaponTraits", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
-                traits = dictionary[actor];
+                    $"Foreign Rifle Headshot queues: {AbilityActivation.GetLastActivationDenialReason()}");
+                ctx.Assert(AbilityActivationState.TryGetQueuedWeaponTraits(actor, out traits), "the queued Headshot captures its traits");
                 ctx.AssertEqual(5, UsePerkFeat.GetQueuedWeaponTraitAccuracy(actor), "Captured Changing Angles reaches the carrier attack roll");
                 ctx.AssertEqual(1, traits.Snapshot.CadenceSpent, "A foreign paid weapon ability captures Cadence");
                 ctx.AssertEqual(0, State(actor).Cadence, "The captured Cadence is spent once when the queued cost is paid");
@@ -103,10 +101,10 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
                 TemporaryStatModifier.Add(actor, StatType.CadenceMaximum, 3, 30f);
                 TemporaryStatModifier.Add(actor, StatType.CadenceDamagePerCharge, 2, 30f);
                 TemporaryStatModifier.Add(actor, StatType.CadenceBonusDamagePerCharge, 3, 30f);
-                var salvo = PairedRangedTraits.CaptureWeaponAbility(actor, Ability.GetAbilityDetail(FeatType.FinalSalvo));
-                var closing = PairedRangedTraits.CaptureWeaponAbility(actor, Ability.GetAbilityDetail(FeatType.ClosingShot1));
-                var lead = PairedRangedTraits.CaptureWeaponAbility(actor, Ability.GetAbilityDetail(FeatType.LeadShot1));
-                var tempo = PairedRangedTraits.CaptureWeaponAbility(actor, Ability.GetAbilityDetail(FeatType.TempoShot1));
+                var salvo = PairedRangedTraits.CaptureWeaponAbility(actor, AbilityCatalog.GetAbilityDetail(FeatType.FinalSalvo));
+                var closing = PairedRangedTraits.CaptureWeaponAbility(actor, AbilityCatalog.GetAbilityDetail(FeatType.ClosingShot1));
+                var lead = PairedRangedTraits.CaptureWeaponAbility(actor, AbilityCatalog.GetAbilityDetail(FeatType.LeadShot1));
+                var tempo = PairedRangedTraits.CaptureWeaponAbility(actor, AbilityCatalog.GetAbilityDetail(FeatType.TempoShot1));
                 ctx.AssertEqual(7, salvo.DamagePerCharge, "Final Salvo's own 4 per charge plus Steady Cadence III's 3");
                 ctx.AssertEqual(5, closing.DamagePerCharge, "Closing Shot's generic 2 per charge plus Steady Cadence III's 3");
                 ctx.Assert(salvo.Snapshot.SpendsCadence && closing.Snapshot.SpendsCadence, "Finishers spend Cadence");
@@ -157,7 +155,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             ctx.Assert(GetCurrentHitPoints(actor) < hp, "The discount source deals actual hostile damage");
             var stamina = Stat.GetCurrentStamina(actor);
             await InFrame(ctx, actor, () => ctx.Assert(UsePerkFeat.TryUseAbility(actor, actor, FeatType.Shielding1, GetLocation(actor)),
-                $"Real First Aid support cast enters the pipeline: {Ability.GetLastActivationDenialReason()}"));
+                $"Real First Aid support cast enters the pipeline: {AbilityActivation.GetLastActivationDenialReason()}"));
             await Until(ctx, () => !Activity.IsBusy(actor), "First Aid support cast completion");
             ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "The first support cast pays zero STM");
             ctx.AssertEqual(otherMakesFree ? -2 : 0, PairedRangedTraits.GetAbilityStaminaCostAdjustment(actor),
@@ -165,7 +163,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             // A direct requirement invocation isolates the next payment without bypassing
             // or resetting Shielding's real cooldown. No damage event can re-arm the charge.
             await InFrame(ctx, actor, () => new AbilityRequirementStamina(3).AfterActivationAction(actor,
-                Ability.GetAbilityDetail(FeatType.Shielding1)));
+                AbilityCatalog.GetAbilityDetail(FeatType.Shielding1)));
             ctx.AssertEqual(stamina - (otherMakesFree ? 0 : 1), Stat.GetCurrentStamina(actor),
                 "The charge cannot make an unlimited series of one-STM support actions free");
             ctx.AssertEqual(0, PairedRangedTraits.GetAbilityStaminaCostAdjustment(actor), "The charge is consumed at most once");
@@ -191,19 +189,19 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             await InFrame(ctx, actor, () =>
             {
                 CreaturePlugin.AddFeat(actor, FeatType.ControlledBurst1); CreaturePlugin.AddFeat(actor, FeatType.TwinSuns);
-                Combat.SetAbilityHitResolutionOverride(true); Combat.SetAutoAttackHitResolutionOverride(false);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true); GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
                 player.Update(record => record.Stamina = Stat.GetMaxStamina(actor) - 100);
             });
             var stamina = Stat.GetCurrentStamina(actor);
             await InFrame(ctx, actor, () => ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.ControlledBurst1, GetLocation(target)),
-                $"Controlled Burst enters the pipeline: {Ability.GetLastActivationDenialReason()}"));
+                $"Controlled Burst enters the pipeline: {AbilityActivation.GetLastActivationDenialReason()}"));
             await Until(ctx, () => !Activity.IsBusy(actor) && !TwinPistolAbility.HasActiveActivation(actor), "Controlled Burst resolution");
             ctx.AssertEqual(stamina - 6 + 2, Stat.GetCurrentStamina(actor), "Neutral Cadence context preserves Controlled Burst's intrinsic recovery");
             await InFrame(ctx, actor, () =>
             {
                 ClearAllActions();
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.TwinSuns, GetLocation(target)),
-                    $"Twin Suns enters the pipeline: {Ability.GetLastActivationDenialReason()}");
+                    $"Twin Suns enters the pipeline: {AbilityActivation.GetLastActivationDenialReason()}");
             });
             await Until(ctx, () => State(actor)?.BonusAttempts == 6, "Twin Suns intrinsic six-attempt buff");
             ctx.AssertEqual(25, State(actor).BonusDamagePercent, "Neutral context preserves Twin Suns damage buff");
@@ -227,7 +225,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
                 SetEventScript(creature, EventScript.Creature_OnNotice, "");
                 SetEventScript(creature, EventScript.Creature_OnMeleeAttacked, "");
             }
-            SetPlotFlag(target, false); ctx.SuppressNPCNaturalRegen(target); Stat.SetNPCMaxHitPoints(target, 20000, true);
+            SetPlotFlag(target, false); ctx.SuppressNPCNaturalRegen(target); CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 55f); SetCommandable(false, target);
             TemporaryStatModifier.Add(target, StatType.RangedDeflection, -100, 55f); ctx.MakeHostile(target);
         });
@@ -235,8 +233,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
     }
 
     private static PairedRangedTraitState State(uint actor) =>
-        ((Dictionary<uint, PairedRangedTraitState>)typeof(PairedRangedTraits).GetField("States", BindingFlags.NonPublic | BindingFlags.Static)
-            .GetValue(null)).GetValueOrDefault(actor);
+        CombatHelperInternals.Field<IPairedRangedTraitsService, Dictionary<uint, PairedRangedTraitState>>("_states").GetValueOrDefault(actor);
 
     private static async Task InFrame(EngineTestContext ctx, uint actor, Action action)
     {
@@ -255,7 +252,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
 
     private static void Cleanup(uint actor)
     {
-        Combat.SetAutoAttackHitResolutionOverride(null); Combat.SetAbilityHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null); GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         if (!GetIsObjectValid(actor)) return;
         AssignCommand(actor, () => ClearAllActions());
         TwinPistolAbility.Cancel(actor); UsePerkFeat.InterruptAbilityActivation(actor); UsePerkFeat.ClearQueuedAbility(actor);

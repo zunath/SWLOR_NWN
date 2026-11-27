@@ -2,16 +2,15 @@ using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
@@ -81,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private static void ApplyBunkerTemporaryHP(uint activator, uint target, float durationSeconds)
         {
             var temporaryHP = BunkerShield.ForMaxHitPoints(GetMaxHitPoints(target));
-            temporaryHP = Ability.ApplyCombatReadinessMagnitude(activator, temporaryHP);
+            temporaryHP = CombatAbilityMagnitude.ApplyCombatReadinessMagnitude(activator, temporaryHP);
             TemporaryHitPointEffects.ApplyFlat(target, "EMERGENCY_BUNKER", temporaryHP, durationSeconds);
             Ability.PlaySuccessfulImpactVisualEffect(activator, target);
             DeviceAbilityEffects.ApplyFieldSupportAllyBuffRiders(activator, target);

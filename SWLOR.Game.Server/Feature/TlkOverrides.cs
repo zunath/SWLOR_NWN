@@ -1,15 +1,18 @@
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.AttributeService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
     public class TlkOverrides
     {
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "The TLK overrides stay in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void OverrideTlks()
         {
@@ -131,11 +134,11 @@ namespace SWLOR.Game.Server.Feature
                             continue;
                         if (!int.TryParse(Get2DAString("feat", "DESCRIPTION", (int)feat), out var featDescriptionId))
                             continue;
-                        if (!Ability.IsFeatRegistered(feat))
+                        if (!AbilityCatalog.IsFeatRegistered(feat))
                             continue;
 
                         var spellDescriptionId = GetSpellDescriptionId(feat);
-                        var abilityDetail = Ability.GetAbilityDetail(feat);
+                        var abilityDetail = AbilityCatalog.GetAbilityDetail(feat);
                         var description = BuildAbilityDescription(abilityDetail, perkLevel.Description);
 
                         if (level == 1)
@@ -170,14 +173,14 @@ namespace SWLOR.Game.Server.Feature
 
             // Learned techniques grant their feats through Mimicry equipment rather than
             // perk levels, so they need the same hotbar overrides from the ability registry.
-            foreach (var (feat, abilityDetail) in Ability.GetAllAbilityDetails())
+            foreach (var (feat, abilityDetail) in AbilityCatalog.GetAllAbilityDetails())
             {
                 if (!abilityDetail.IsMimicryTechnique ||
                     !int.TryParse(Get2DAString("feat", "DESCRIPTION", (int)feat), out var descriptionId) ||
                     descriptionId <= 0)
                     continue;
 
-                var description = BuildAbilityDescription(abilityDetail, Mimicry.GetTechniqueDescription(feat));
+                var description = BuildAbilityDescription(abilityDetail, GameServices.Mimicry.GetTechniqueDescription(feat));
                 SetTlkOverride(descriptionId, description);
                 var spellDescriptionId = GetSpellDescriptionId(feat);
                 if (spellDescriptionId > 0)

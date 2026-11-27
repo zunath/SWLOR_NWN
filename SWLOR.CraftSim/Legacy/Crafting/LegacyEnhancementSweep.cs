@@ -1,8 +1,10 @@
 using System.Collections.Concurrent;
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Scenario;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.CraftSim.Legacy.Crafting
 {

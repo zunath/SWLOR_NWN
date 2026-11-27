@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -15,19 +14,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var enemy = ctx.SpawnCreature("nw_rat001", 2f);
             await ctx.WaitFrameAsync();
             ctx.SuppressNPCNaturalRegen(beast);
-            Stat.SetNPCMaxHitPoints(beast, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(beast, 1000, true);
             ctx.MakeHostile(enemy);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), enemy, 60f);
 
-            var anger = Ability.GetAbilityDetail(FeatType.Anger2);
-            Ability.BeginAbilityImpact(beast, anger);
+            var anger = AbilityCatalog.GetAbilityDetail(FeatType.Anger2);
+            AbilityImpactLifecycle.BeginAbilityImpact(beast, anger);
             try
             {
                 anger.ImpactAction(beast, enemy, 2, GetLocation(enemy));
             }
             finally
             {
-                Ability.EndAbilityImpact(beast);
+                AbilityImpactLifecycle.EndAbilityImpact(beast);
             }
 
             // 68 HP plus 3.75% of 1000 = 105.5, rounded up.

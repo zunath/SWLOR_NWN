@@ -2,15 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
 {
@@ -69,11 +68,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
             // Read who is attacking the caster before the enmity drop sends them elsewhere.
             var attackers = GetOrganicEnemiesTargeting(activator).ToList();
 
-            Enmity.ReduceEnmityOnAll(activator, enmityReductionPercent);
+            EnmityChange.ReduceEnmityOnAll(activator, enmityReductionPercent);
 
             foreach (var enemy in attackers)
             {
-                var applied = StatusEffect.ApplyStatusEffect(
+                var applied = StatusEffectApplication.ApplyStatusEffect(
                     activator,
                     enemy,
                     new DecoyStatusEffect(accuracyPenaltyPercent),
@@ -123,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
         {
             return GetAttackTarget(enemy) == activator ||
                    ActionInterruption.GetQueuedAttackTarget(enemy) == activator ||
-                   Enmity.GetHighestEnmityAttackTarget(enemy) == activator;
+                   EnmityAttack.GetHighestEnmityAttackTarget(enemy) == activator;
         }
     }
 }

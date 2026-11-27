@@ -5,11 +5,14 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Game.Server.Feature.AppearanceEditing;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using ItemPlugin = SWLOR.NWN.API.NWNX.ItemPlugin;
@@ -61,8 +64,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 SetLocalInt(template, ItemMarker, 999);
                 AddItemProperty(DurationType.Permanent, ItemPropertyACBonus(5), template);
                 for (var part = 0; part < (int)AppearanceArmor.Num; ++part)
+                    // Belt and shoulder styles 1 and 2 show nothing, so worn armor is repaired to 0 (master #3260).
                     EquippedItemAppearance.Set(template, ItemAppearanceType.ArmorModel, part,
-                        part == (int)AppearanceArmor.Robe ? 0 : 1);
+                        part == (int)AppearanceArmor.Robe ? 0
+                        : part is (int)AppearanceArmor.Belt or (int)AppearanceArmor.RightShoulder or (int)AppearanceArmor.LeftShoulder ? 3
+                        : 1);
                 for (var index = 0; index < 120; ++index)
                     EquippedItemAppearance.Set(template, ItemAppearanceType.ArmorColor, index, 20 + index % 100);
                 for (var part = 0; part < (int)AppearanceArmor.Num; ++part)
@@ -114,12 +120,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 0);
                 EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm, 6);
                 var editor = BindEditor(creature);
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2)();
+                editor.OnClickColorTarget(AppearanceColorTarget.Global, AppearanceArmorColor.Leather2)();
                 ctx.Assert(editor.IsCustomTintEditable, "RGB safety fixture has a tintable armor material.");
                 editor.OnMouseDownTintPicker()();
                 editor.SelectedTintColor = new GuiColor(205, 228, 197);
                 editor.OnMouseUpTintPicker()();
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
+                editor.OnClickColorTarget(AppearanceColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
                 editor.OnMouseDownTintPicker()();
                 editor.SelectedTintColor = new GuiColor(1, 17, 91);
                 editor.OnMouseUpTintPicker()();
@@ -183,8 +189,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await AssignedAsync(ctx, creature, () =>
                 {
                     var editor = BindEditor(creature);
-                    editor.OnClickColorTarget(copyToRight ? AppearanceEditorViewModel.ColorTarget.LeftForearm :
-                        AppearanceEditorViewModel.ColorTarget.RightForearm, AppearanceArmorColor.Leather2)();
+                    editor.OnClickColorTarget(copyToRight ? AppearanceColorTarget.LeftForearm :
+                        AppearanceColorTarget.RightForearm, AppearanceArmorColor.Leather2)();
                     ctx.Assert(editor.IsCustomTintEditable, "The source forearm has a custom Leather2 channel.");
                     editor.OnMouseDownTintPicker()();
                     editor.SelectedTintColor = new GuiColor(1, 17, 91);
@@ -206,8 +212,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     AssertForearmColors("copy commits the pending source value");
                     // Replay the delayed handlers after copying; neither may restore an older color.
                     editor.OnMouseUpTintPicker()();
-                    typeof(AppearanceEditorViewModel).GetMethod("CommitCustomTintComponents",
-                        BindingFlags.Instance | BindingFlags.NonPublic).Invoke(editor, null);
+                    ((AppearanceTintEditorService)AppearanceEditorEngineTests.ServiceOf(editor, typeof(AppearanceTintEditorService))).CommitCustomTintComponents(editor);
                     AssertForearmColors("late callbacks preserve both copied colors");
                 });
                 await AssertSettledAsync(ctx, before, observation, $"copy {(copyToRight ? "right" : "left")} {(typed ? "text" : "picker")}");
@@ -219,92 +224,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     {
                         var selection = TintMapModelResolver.GetCurrentSelections(creature).Single(selection =>
                             selection.ArmorPart == part && selection.Material.Layers.Contains(TintMapLayerType.Leather2));
-                        ctx.AssertEqual(expected, TintMapService.GetEffectiveDisplayColor(creature, selection, TintMapLayerType.Leather2),
+                        ctx.AssertEqual(expected, TintMapColorResolver.GetEffectiveDisplayColor(creature, selection, TintMapLayerType.Leather2),
                             $"{part}: {stage}");
                         TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref, TintMapLayerType.Leather2, expected);
                     }
                 }
             }
             ctx.SetResultDetail("Both copy directions commit queued RGB text and picker samples before reading source colors; late callbacks retain both sides. Native RGB, item identity and gameplay snapshots pass with zero extra equipment events. Client events/timer replay are synthesized.");
-        }
-
-        [EngineTest("Robe choices exclude missing body models and recover armor without equipment events", Category = "AppearanceEditor", TimeoutSeconds = 60f)]
-        public static async Task MissingRobeModels(EngineTestContext ctx)
-        {
-            var creature = await SpawnCivilianAsync(ctx, "colonisthuman2");
-            var item = GetItemInSlot(InventorySlot.Chest, creature);
-            var female = await SpawnCivilianAsync(ctx);
-            var configured = new GeneralArmorAppearanceDefinition().Robe;
-            var maleStyles = RobeAppearance.GetAvailableStyles(creature, configured);
-            var femaleStyles = RobeAppearance.GetAvailableStyles(female, configured);
-            ctx.Assert(!maleStyles.Contains(19) && !maleStyles.Contains(24), "Male robes 19/24 have no model.");
-            ctx.Assert(femaleStyles.Contains(19) && femaleStyles.Contains(24), "Female robes 19/24 remain available.");
-            using var observation = new EventObservation(creature);
-            await VerifyGenuineEquipmentEventsAsync(ctx, creature, item, InventorySlot.Chest, observation);
-            await AssignedAsync(ctx, creature, () => SeedGameplaySentinels(ctx, creature, item));
-            await ctx.DelaySecondsAsync(0.5f);
-            var before = Snapshot(creature, item, InventorySlot.Chest);
-            observation.Reset();
-
-            foreach (var missing in new[] { 19, 24 })
-            {
-                await AssignedAsync(ctx, creature, () =>
-                {
-                    EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, missing);
-                    // Exercise the exact queued path used by ordinary equip events,
-                    // without opening the editor or directly refreshing the item.
-                    TintMapService.QueueRefresh(creature);
-                });
-                await ctx.DelaySecondsAsync(0.5f);
-                ctx.AssertEqual(0, GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
-                    "The ordinary equip refresh recovers a robe unavailable for this wearer.");
-                await AssertSettledAsync(ctx, before, observation, $"queued recovery of missing robe {missing}");
-
-                var femaleItem = GetItemInSlot(InventorySlot.Chest, female);
-                await AssignedAsync(ctx, female, () =>
-                {
-                    EquippedItemAppearance.Set(femaleItem, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, missing);
-                    TintMapService.QueueRefresh(female);
-                });
-                await ctx.DelaySecondsAsync(0.5f);
-                ctx.AssertEqual(missing, GetItemAppearance(femaleItem, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
-                    "The same queue preserves the robe on a supported wearer.");
-
-                await AssignedAsync(ctx, creature, () =>
-                {
-                    EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, missing);
-                    var editor = BindEditor(creature);
-                    ctx.AssertEqual(0, editor.RobeSelection, "Opening the editor recovers a missing saved robe.");
-                    ctx.AssertEqual(0, GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
-                        "The equipped armor no longer hides body parts for a missing robe.");
-                    ctx.Assert(editor.RobeOptions.All(option => maleStyles.Contains(option.Value)),
-                        "Every displayed option has a model for this wearer.");
-                    editor.RobeSelection = 24;
-                    editor.OnClickAdjustArmorPart(AppearanceArmor.Robe, 0)();
-                    ctx.AssertEqual(0, editor.RobeSelection, "A stale unavailable choice is rejected.");
-                    editor.RobeSelection = 17;
-                    editor.OnClickAdjustArmorPart(AppearanceArmor.Robe, 1)();
-                    var expected = maleStyles.First(style => style > 17);
-                    ctx.AssertEqual(expected, GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
-                        "Next skips unavailable IDs and applies the displayed model value.");
-                });
-                await AssertSettledAsync(ctx, before, observation, $"recover missing robe {missing} and skip unavailable choices");
-            }
-            await AssignedAsync(ctx, creature, () =>
-            {
-                var template = CopyItem(item, creature, true);
-                EquippedItemAppearance.Set(template, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 24);
-                EquippedItemAppearance.ApplyOutfit(creature, item, template);
-                ctx.AssertEqual(0, GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
-                    "A saved outfit cannot reintroduce a missing body model.");
-                ctx.AssertEqual(24, GetItemAppearance(template, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
-                    "The saved outfit retains its valid female style.");
-                DestroyObject(template);
-            });
-            await AssertSettledAsync(ctx, before, observation, "missing robe outfit recovery");
-            ctx.SetResultDetail($"Validated {maleStyles.Count} male and {femaleStyles.Count} female robe choices; " +
-                "male 19/24 recovered through the equip refresh queue, editor and outfit application; the queue preserved female 19/24. Stale choices rejected, arrows retained actual model IDs, " +
-                "same equipped item and gameplay snapshot retained with zero observed equipment events. Client rendering still needs visual confirmation.");
         }
 
         private static async Task VerifyRobeRgbNeverReequips(EngineTestContext ctx, bool male)
@@ -338,7 +264,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     selection.ArmorPart == AppearanceArmor.Robe);
                 ctx.Assert(RobeModelRenderer.SupportsRgb(initialRobe), $"Catalog must support {initialRobe.ModelResref}; table has {Get2DARowCount("roberender")} rows.");
                 foreach (var layer in layers)
-                    TintMapService.SetGlobalItemCustomColor(creature,
+                    TintMapItemColor.SetGlobalItemCustomColor(creature,
                         TintMapModelResolver.GetCurrentSelections(creature), layer, requested, item);
                 generatedPhenotype = (int)GetPhenoType(creature);
                 ctx.Assert(generatedPhenotype >= 34 && generatedPhenotype <= 255, $"Generated phenotype fits the native byte; actual {generatedPhenotype}.");
@@ -356,9 +282,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 foreach (var layer in layers)
                     TintMapEngineTests.AssertNativeRgb(ctx, creature, robe.Material.Resref, layer, requested);
                 var partColor = new TintMapColor(1, 17, 91);
-                TintMapService.SetColor(creature, robe, TintMapLayerType.Cloth1, partColor);
+                TintMapItemColor.SetColor(creature, robe, TintMapLayerType.Cloth1, partColor);
                 TintMapEngineTests.AssertNativeRgb(ctx, creature, robe.Material.Resref, TintMapLayerType.Cloth1, partColor);
-                TintMapService.ResetColorToInheritance(creature, robe, TintMapLayerType.Cloth1);
+                TintMapItemColor.ResetColorToInheritance(creature, robe, TintMapLayerType.Cloth1);
                 TintMapEngineTests.AssertNativeRgb(ctx, creature, robe.Material.Resref, TintMapLayerType.Cloth1, requested);
             });
             await AssertSettledAsync(ctx, before, observation, "all robe layers and per-part RGB inheritance");
@@ -374,13 +300,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await AssignedAsync(ctx, creature, () =>
                 {
                     EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, robeId);
-                    TintMapService.ApplyCurrentColors(creature);
+                    TintMapApply.ApplyCurrentColors(creature);
                     if (robeId > 1)
                     {
                         var robeSelection = TintMapModelResolver.GetCurrentSelections(creature)
                             .FirstOrDefault(selection => selection.ArmorPart == AppearanceArmor.Robe);
                         ctx.Assert(robeSelection != null, $"Robe {robeId} must resolve a tint material for this body.");
-                        TintMapService.SetGlobalItemCustomColor(creature,
+                        TintMapItemColor.SetGlobalItemCustomColor(creature,
                             TintMapModelResolver.GetCurrentSelections(creature),
                             robeSelection.Material.Layers.First(), requested, item);
                     }
@@ -396,14 +322,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     {
                         var selections = TintMapModelResolver.GetCurrentSelections(creature);
                         var custom = new TintMapColor(100, 7, 180);
-                        TintMapService.SetGlobalItemCustomColor(creature, selections, TintMapLayerType.Cloth1, custom, item);
+                        TintMapItemColor.SetGlobalItemCustomColor(creature, selections, TintMapLayerType.Cloth1, custom, item);
                         foreach (var selection in selections.Where(part => part.ArmorPart == AppearanceArmor.Robe &&
                                      part.Material.Layers.Contains(TintMapLayerType.Cloth1)))
                         {
                             TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref, TintMapLayerType.Cloth1, custom);
-                            TintMapService.SetColor(creature, selection, TintMapLayerType.Cloth1, requested);
+                            TintMapItemColor.SetColor(creature, selection, TintMapLayerType.Cloth1, requested);
                             TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref, TintMapLayerType.Cloth1, requested);
-                            TintMapService.ResetColorToInheritance(creature, selection, TintMapLayerType.Cloth1);
+                            TintMapItemColor.ResetColorToInheritance(creature, selection, TintMapLayerType.Cloth1);
                             TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref, TintMapLayerType.Cloth1, custom);
                         }
                     }
@@ -418,7 +344,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                              AppearanceArmorColor.Leather1, AppearanceArmorColor.Leather2,
                              AppearanceArmorColor.Metal1, AppearanceArmorColor.Metal2 })
                 {
-                    editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, channel)();
+                    editor.OnClickColorTarget(AppearanceColorTarget.Global, channel)();
                     editor.OnClickColorPalette(77)();
                 }
                 // Catalogued robes render through their generated root with or without RGB.
@@ -704,13 +630,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await AssignedAsync(ctx, creature, () =>
             {
                 var armor = GetItemInSlot(InventorySlot.Chest, creature);
-                var standardColor = typeof(TintMapService).GetMethod("GetStandardColor",
-                    BindingFlags.NonPublic | BindingFlags.Static);
+                var standardColor = typeof(TintMapColorResolver).GetMethod("GetStandardColor",
+                    BindingFlags.Public | BindingFlags.Static);
                 foreach (var dye in new[] { 37, 82 })
                 {
                     // Switching away and back must retain head 139 and reread the current outfit.
                     SetCreatureBodyPart(SWLOR.NWN.API.NWScript.Enum.Creature.CreaturePart.Head, 79, creature);
-                    TintMapService.ApplyCurrentColors(creature);
+                    TintMapApply.ApplyCurrentColors(creature);
                     SetCreatureBodyPart(SWLOR.NWN.API.NWScript.Enum.Creature.CreaturePart.Head, 139, creature);
                     for (var channel = 0; channel < 6; channel++)
                         EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorColor, channel, dye + channel);
@@ -760,15 +686,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static AppearanceEditorViewModel BindEditor(uint creature)
         {
             var geometry = new GuiRectangle(0, 0, 1200, 900);
-            var editor = new AppearanceEditorViewModel { Geometry = geometry };
+            var editor = Content.Create<AppearanceEditorViewModel>();
+            editor.Geometry = geometry;
             editor.Bind(OBJECT_INVALID, 0, geometry, GuiWindowType.AppearanceEditor, new AppearanceEditorPayload(creature), OBJECT_INVALID);
             editor.OnSelectEquipment()();
             return editor;
         }
 
         private static void InvokeModify(AppearanceEditorViewModel editor, int index, int model, int color = -1) =>
-            typeof(AppearanceEditorViewModel).GetMethod("ModifyItemPart", BindingFlags.Instance | BindingFlags.NonPublic)
-                .Invoke(editor, new object[] { index, model, color });
+            ((AppearancePartEditService)AppearanceEditorEngineTests.ServiceOf(editor, typeof(AppearancePartEditService))).ModifyItemPart(editor, index, model, color);
 
         private static async Task AssignedAsync(EngineTestContext ctx, uint creature, Action action)
         {

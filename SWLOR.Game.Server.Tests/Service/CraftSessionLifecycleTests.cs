@@ -3,17 +3,34 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.NWN.API.NWScript.NWScript;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 /// <summary>Covers the craft session lifecycle: what is committed and saved, and how every way a craft ends settles it.</summary>
 public class CraftSessionLifecycleTests
 {
+    // The craft rules reach the crafting service through its static facade, which resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private const RecipeType TestRecipe = RecipeType.VenomCoating1;
     private const uint NoItem = OBJECT_INVALID;
 
@@ -1146,12 +1163,12 @@ public class CraftSessionLifecycleTests
     public void RecoverAtLogin_WithTheLoadedFilesSequence_NeverGivesTheLastCraftAgain_HoweverOftenThePlayerRelogs()
     {
         // What the login applies now: the sequence the file carried, recorded at load under the character's UUID.
-        LoadedCraftFileSequences.Clear();
+        var loads = new LoadedCraftFileSequences();
         CraftThenRelogTwice(file =>
         {
             var locals = new Dictionary<string, int> { [CraftSessionFileSequence.LoadedVariable] = 0 };
-            LoadedCraftFileSequences.Record("pc", file, DateTime.UtcNow);
-            LoadedCraftFileSequences.Apply("pc", name => locals.GetValueOrDefault(name), (name, value) => locals[name] = value);
+            loads.Record("pc", file, DateTime.UtcNow);
+            loads.Apply("pc", name => locals.GetValueOrDefault(name), (name, value) => locals[name] = value);
             return locals[CraftSessionFileSequence.LoadedVariable];
         });
 

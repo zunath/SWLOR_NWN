@@ -21,7 +21,7 @@ public class ExtraHotbarsCraftWindowTests
     [OneTimeSetUp]
     public void CompileProductionEquipmentSlotUse()
     {
-        const string hotbars = "Service/ExtraHotbars.cs";
+        const string equip = "Domain/Social/ExtraHotbarsEquipService.cs";
         _harness = Compile($$"""
             public enum InventorySlot { RightHand, LeftHand, Invalid }
             public enum BaseItem { Weapon, CompanionPistol, CompanionPowerGlove }
@@ -55,27 +55,36 @@ public class ExtraHotbarsCraftWindowTests
 
             public static class ExtraHotbars
             {
-                private static (uint MainHand, uint OffHand) FindEquipItems(uint player, ExtraHotbarSlot slot) =>
-                    (Hands.Slotted, Hands.SlottedOffHand);
                 private static uint GetItemInSlot(InventorySlot slot, uint creature) => Hands.In(slot);
                 private static uint GetItemPossessor(uint item) => OBJECT_INVALID;
                 private static BaseItem GetBaseItemType(uint item) => BaseItem.Weapon;
-                private static bool CanPairHands(uint mainHand, uint offHand) => true;
-                private static bool CanHoldInMainHand(uint item) => true;
+                private static bool IsAnyCraftWindowOpen(uint player) => CraftMinigameRouting.IsAnyCraftWindowOpen(player);
+                private static bool TryUnequip(uint player, uint item, InventorySlot slot, bool allowRecoveryBag) =>
+                    PlayerEquipmentStorage.TryUnequip(player, item, slot, allowRecoveryBag);
                 private static string GetEquipError(uint player, uint item) => string.Empty;
                 private static uint GetAttackTarget(uint creature) => OBJECT_INVALID;
                 private static bool GetIsDead(uint creature) => false;
                 private static void ClearAllActions() { }
                 private static void ActionAttack(uint target) { }
                 private static void ActionEquipItem(uint item, InventorySlot slot) { Hands.Held[slot] = item; Hands.Equipped++; }
-                private static void RefreshStatusSoon(uint player) { }
 
-                {{Method(hotbars, "EquipHands")}}
-                {{Method(hotbars, "UnequipHands")}}
-                {{Method(hotbars, "GetHandSlot")}}
-                {{Method(hotbars, "IsHandCompanion")}}
-                {{Method(hotbars, "PutAwayHandItem")}}
-                {{Method(hotbars, "PlanHands")}}
+                private static (uint MainHand, uint OffHand) FindEquipItems(uint player, ExtraHotbarSlot slot) =>
+                    (Hands.Slotted, Hands.SlottedOffHand);
+                private static bool CanPairHands(uint mainHand, uint offHand) => true;
+                private static bool CanHoldInMainHand(uint item) => true;
+
+                // The equip service redraws the bars through its status part, named like its field.
+                private static class _status
+                {
+                    public static void RefreshStatusSoon(uint player) { }
+                }
+
+                {{InstanceMethod(equip, "EquipHands")}}
+                {{InstanceMethod(equip, "UnequipHands")}}
+                {{InstanceMethod(equip, "GetHandSlot")}}
+                {{InstanceMethod(equip, "IsHandCompanion")}}
+                {{InstanceMethod(equip, "PutAwayHandItem")}}
+                {{InstanceMethod(equip, "PlanHands")}}
 
                 public static void Use(uint player) => EquipHands(player, new ExtraHotbarSlot
                 {

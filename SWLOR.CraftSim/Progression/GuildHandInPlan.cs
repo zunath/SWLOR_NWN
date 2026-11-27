@@ -101,24 +101,24 @@ namespace SWLOR.CraftSim.Progression
 
         /// <summary>
         /// Adds hand-ins to a guild's points. Each earns guild points at the rank the guild has when it is made, and the rank rises the moment the
-        /// points reach the threshold (<c>Guild.GiveGuildPoints</c>), so a batch is split at every threshold it crosses. Needs <c>Guild.LoadData</c>.
+        /// points reach the threshold (<c>Guild.GiveGuildPoints</c>), so a batch is split at every threshold it crosses.
         /// </summary>
         /// <param name="pointsPerHandIn">The guild points one hand-in earns at a guild rank.</param>
         public static (int GuildRank, double Points) AddHandIns(int guildRank, double points, double handIns, Func<int, double> pointsPerHandIn)
         {
-            var maximumPoints = Game.Server.Service.Guild.GetGPRequiredForRank(Game.Server.Service.Guild.MaxRank) - 1;
+            var maximumPoints = ServerGuildRules.GetGPRequiredForRank(ServerGuildRules.MaxRank) - 1;
             while (handIns > 1e-12)
             {
-                if (guildRank >= Game.Server.Service.Guild.MaxRank)
+                if (guildRank >= ServerGuildRules.MaxRank)
                     return (guildRank, Math.Min(points, maximumPoints));
 
                 var pointsEach = pointsPerHandIn(guildRank);
-                var needed = Game.Server.Service.Guild.GetGPRequiredForRank(guildRank) - points;
+                var needed = ServerGuildRules.GetGPRequiredForRank(guildRank) - points;
                 if (handIns * pointsEach < needed)
                     return (guildRank, points + handIns * pointsEach);
 
                 handIns -= needed / pointsEach;
-                points = Game.Server.Service.Guild.GetGPRequiredForRank(guildRank);
+                points = ServerGuildRules.GetGPRequiredForRank(guildRank);
                 guildRank++;
             }
 

@@ -2,9 +2,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -47,8 +49,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             var abilities = new SerratedArcAbilityDefinition().BuildAbilities();
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 foreach (var (feat, rank) in new[]
@@ -64,7 +66,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             StatusEffect.RemoveStatusEffect<BleedStatusEffect>(enemy);
 
                         if (startsBleeding)
-                            ctx.Assert(StatusEffect.ApplyStatusEffect<BleedStatusEffect>(caster, target, 60f), "setup Bleed must apply");
+                            ctx.Assert(StatusEffectApplication.ApplyStatusEffect<BleedStatusEffect>(caster, target, 60f), "setup Bleed must apply");
                         var originalBleed = StatusEffect.GetStatusEffect(target, typeof(BleedStatusEffect));
 
                         ctx.Assert((GetDistanceBetween(caster, nearby) < 5f) == recipientInsideArea &&
@@ -78,14 +80,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         }
                         var ability = abilities[feat];
                         var impactedTargetCount = 0;
-                        Ability.BeginAbilityImpact(caster, ability);
+                        AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                         try
                         {
                             await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, target, rank, GetLocation(target)));
                         }
                         finally
                         {
-                            impactedTargetCount = Ability.EndAbilityImpact(caster).ImpactedTargetCount;
+                            impactedTargetCount = AbilityImpactLifecycle.EndAbilityImpact(caster).ImpactedTargetCount;
                         }
 
                         ctx.AssertEqual(recipientInsideArea ? 2 : 1, impactedTargetCount,
@@ -108,8 +110,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             }
         }
     }

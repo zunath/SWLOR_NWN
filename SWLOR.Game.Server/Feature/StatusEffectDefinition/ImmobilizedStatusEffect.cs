@@ -1,7 +1,8 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (StatusEffect.HasStatusEffect(creature, GetType()))
                 return "Target is already immobilized.";
 
-            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Immobilized)
+            return AbilityImmunity.HasHardCrowdControlImmunity(creature, ImmunityType.Immobilized)
                 ? "Target is temporarily immune to immobilization."
                 : string.Empty;
         }
@@ -40,10 +41,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             if (GetIsObjectValid(creature) && !GetIsDead(creature))
             {
-                Enmity.AttackHighestEnmityTarget(creature);
+                EnmityAttack.AttackHighestEnmityTarget(creature);
             }
 
-            Ability.ApplyPostControlImmunity(
+            AbilityImmunity.ApplyPostControlImmunity(
                 creature,
                 SecondsSinceNaturalExpiration,
                 ImmunityType.Immobilized);

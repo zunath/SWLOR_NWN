@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -20,14 +20,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.DelaySecondsAsync(1f);
             ctx.SetNPCResources(recipient, 100, 100);
             ctx.SuppressNPCNaturalRegen(recipient);
-            Stat.SetNPCMaxHitPoints(recipient, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(recipient, 1000, true);
             ObjectPlugin.SetCurrentHitPoints(recipient, 100);
             Stat.ReduceStamina(recipient, Stat.GetCurrentStamina(recipient));
             TemporaryStatModifier.Add(recipient, StatType.HealingReceivedStaminaRestoreChance, 100, 60f);
             TemporaryStatModifier.Add(recipient, StatType.HealingReceivedStaminaRestore, RestoredStamina, 60f);
             TemporaryStatModifier.Add(recipient, StatType.HealingReceivedStaminaRestoreCooldownSeconds, CooldownSeconds, 60f);
 
-            Stat.ApplyHealingReceivedAdjustment(recipient, 50);
+            CombatResources.ApplyHealingReceivedAdjustment(recipient, 50);
             ctx.AssertEqual(0, Stat.GetCurrentStamina(recipient), "regeneration, lifesteal and other non-instant heals never restore STM");
 
             AbilityEffectScaling.ApplyActivatedScaledHeal(healer, recipient, HealAmount.Percent(5));

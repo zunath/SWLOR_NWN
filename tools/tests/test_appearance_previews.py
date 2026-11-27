@@ -15,7 +15,7 @@ from appearance_previews import jobs  # noqa: E402
 from appearance_previews.tint import LAYER_BASE, PREVIEW_DYES, bake, cloak_tile  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
-CSHARP = REPO / "SWLOR.Game.Server/Feature/AppearanceDefinition/AppearancePreview/AppearancePreview.cs"
+CSHARP = REPO / "SWLOR.Game.Server/Feature/AppearanceDefinition/Preview/AppearancePreview.cs"
 
 
 class PreviewResrefTests(unittest.TestCase):

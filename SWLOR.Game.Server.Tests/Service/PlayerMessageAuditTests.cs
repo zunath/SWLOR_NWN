@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Text.Json;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
@@ -48,12 +49,16 @@ public class PlayerMessageAuditTests
     public void GameplayOutcomes_CannotBeHiddenBehindDiagnostics()
     {
         var root = FindRepositoryRoot();
-        var files = new[] { "Service/Space.cs", "Service/Ability.cs", "Service/StatusEffect.cs",
-            "Service/Faction.cs", "Service/Guild.cs", "Service/Skill.cs", "Service/BeastMastery.cs",
-            "Service/QuestService/QuestObjectives.cs", "Service/QuestService/KillTargetObjective.cs", "Feature/RoleplayXP.cs", "Service/Mimicry.cs",
-            "Service/Fishing.cs", "Service/Weather.cs", "Feature/ScavengePoint.cs",
+        var files = new[] { "Domain/Space/SpaceService.cs",
+            "Domain/Quests/FactionService.cs", "Domain/Economy/GuildService.cs", "Domain/Companions/BeastMasteryService.cs",
+            "Domain/Quests/QuestObjectives.cs", "Domain/Quests/KillTargetObjective.cs", "Feature/RoleplayXP.cs", "Domain/Abilities/MimicryService.cs",
+            "Domain/World/FishingService.cs", "Domain/World/WeatherService.cs", "Feature/ScavengePoint.cs",
             "Feature/StatusEffectDefinition/GuardedStatusEffect.cs" }
             .Select(relative => Path.Combine(root, "SWLOR.Game.Server", relative)).ToList();
+        files.AddRange(StatusEffectSource.Paths());
+        files.AddRange(CharacterCompanionsSource.Skill.Paths());
+        files.AddRange(MimicryBeastDroidSource.AllPaths().Where(path => !files.Select(Path.GetFullPath).Contains(path)));
+        files.AddRange(AbilitySource.Paths());
         files.AddRange(Directory.EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server", "Feature", "ShipModuleDefinition"), "*.cs"));
 
         var hiddenOutcomes = files.SelectMany(file => ReadCalls(file)
@@ -78,26 +83,29 @@ public class PlayerMessageAuditTests
     [TestCase("ApplyStatusAppliedTargetStaminaDrain", 1)]
     public void CombatOutcomesAndReadiness_RetainTheirProductionMessages(string member, int expectedMessages)
     {
-        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Combat.cs");
-        var messages = ReadCalls(file).Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>()
-                .First().Identifier.ValueText == member &&
+        // A call outside any method (a field initializer, a facade's instance property) belongs to no member.
+        var messages = CombatSource.Nodes<InvocationExpressionSyntax>().Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>()
+                .FirstOrDefault()?.Identifier.ValueText == member &&
             MethodName(call) is "SendMessageToPC" or "FloatingTextStringOnCreature" or "SendMessageNearbyToPlayers")
             .ToArray();
         messages.Should().HaveCount(expectedMessages, "optional detail must not replace the actual combat outcome or readiness notice");
         messages.Should().NotContain(call => UsesDiagnostics(call));
     }
 
-    [TestCase("Service/Ability.cs", "SendCombatImpactNoTargetsMessage")]
+    // AbilityService: the part files of AbilitySource, wherever the split puts the member.
+    [TestCase("AbilityService", "SendCombatImpactNoTargetsMessage")]
     [TestCase("Feature/AbilityDefinition/Force/ThrowLightsaberAbilityDefinition.cs", "ApplyThrowLightsaber")]
     public void NoTargetOutcomes_ReachTheActorAndNearbyObservers(string relative, string member)
     {
-        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", relative);
-        var messages = ReadCalls(file).Where(call => MethodName(call) == "SendMessageNearbyToPlayers" &&
+        var calls = relative == "AbilityService"
+            ? AbilitySource.Nodes<InvocationExpressionSyntax>()
+            : ReadCalls(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", relative));
+        var messages = calls.Where(call => MethodName(call) == "SendMessageNearbyToPlayers" &&
             call.Ancestors().OfType<MethodDeclarationSyntax>().First().Identifier.ValueText == member).ToArray();
         messages.Should().ContainSingle();
         var message = messages.Single();
         message.ArgumentList.Arguments[0].ToString().Should().Be("activator");
-        message.ArgumentList.Arguments[1].ToString().Should().Contain("Combat.BuildAbilityNoTargetCombatLogMessage");
+        message.ArgumentList.Arguments[1].ToString().Should().Contain("BuildAbilityNoTargetCombatLogMessage");
         message.ArgumentList.Arguments[2].ToString().Should().Be("60f");
         UsesDiagnostics(message).Should().BeFalse();
     }
@@ -118,7 +126,9 @@ public class PlayerMessageAuditTests
                 : "Retained"
         };
         if ((file is "SWLOR.Game.Server/Service/PlayerFeedback.cs" or "SWLOR.Game.Server/Service/Messaging.cs" or
-            "SWLOR.Game.Server/Service/Communication.cs" or "SWLOR.Game.Server/Service/Gui.cs") &&
+            "SWLOR.Game.Server/Domain/Foundation/PlayerFeedbackService.cs" or "SWLOR.Game.Server/Domain/Foundation/MessagingService.cs" or
+            "SWLOR.Game.Server/Service/Communication.cs" or "SWLOR.Game.Server/Domain/Social/CommunicationService.cs" or
+            "SWLOR.Game.Server/Domain/UI/GuiService.cs") &&
             !name.Contains("Diagnostic", StringComparison.OrdinalIgnoreCase))
             delivery = "Shared transport; policy at caller";
 
@@ -146,7 +156,7 @@ public class PlayerMessageAuditTests
     [TestCase("if (!PlayerFeedback.DiagnosticsEnabled || SendMessageToPC()) {}", true)]
     [TestCase("if (PlayerFeedback.DiagnosticsEnabled) Register(() => SendMessageToPC());", false)]
     [TestCase("Register(() => { if (PlayerFeedback.DiagnosticsEnabled) SendMessageToPC(); });", true)]
-    [TestCase("if (global::SWLOR.Game.Server.Service.PlayerFeedback.DiagnosticsEnabled) SendMessageToPC();", true)]
+    [TestCase("if (global::SWLOR.Game.Server.Composition.GameServices.PlayerFeedback.DiagnosticsEnabled) SendMessageToPC();", true)]
     [TestCase("if (unrelated.DiagnosticsEnabled) SendMessageToPC();", false)]
     public void MessageInventory_ClassifiesOnlyBranchesThatRequireDiagnostics(string body, bool diagnosticOnly)
     {
@@ -171,8 +181,7 @@ public class PlayerMessageAuditTests
     [Test]
     public void SkillCapWarnings_ShareOneProductionLimitAcrossSkillsAndOutcomes()
     {
-        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Skill.cs");
-        var keys = ReadCalls(file).Where(call => MethodName(call) == "SendWarningToPlayer")
+        var keys = CharacterCompanionsSource.Skill.Paths().SelectMany(ReadCalls).Where(call => MethodName(call) == "SendWarningToPlayer")
             .Select(call => call.ArgumentList.Arguments[1].Expression.ToString()).ToArray();
         keys.Where(key => key != "\"SKILL_LIMIT\"").Should().HaveCount(2).And.OnlyContain(key => key == "\"SKILL_CAP\"",
             "the same global cap condition must not produce a burst of warnings when one kill awards several skills");
@@ -183,9 +192,8 @@ public class PlayerMessageAuditTests
     [Test]
     public void StatusValidationFailures_RemainVisibleInProduction()
     {
-        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "StatusEffect.cs");
-        var failureCalls = ReadCalls(file).Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>()
-            .First().Identifier.ValueText == "SendStatusEffectFailure").ToArray();
+        var failureCalls = StatusEffectSource.Paths().SelectMany(ReadCalls).Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>()
+            .FirstOrDefault()?.Identifier.ValueText == "SendStatusEffectFailure").ToArray();
         failureCalls.Should().Contain(call => MethodName(call) == "SendMessageToPC");
         failureCalls.Should().NotContain(call => MethodName(call) == "SendDiagnosticToPlayer");
     }
@@ -208,8 +216,7 @@ public class PlayerMessageAuditTests
     [Test]
     public void MimicryFailures_RemainRateLimitedAndObservationsRemainVisible()
     {
-        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Mimicry.cs");
-        var calls = ReadCalls(file).ToArray();
+        var calls = MimicryBeastDroidSource.Paths(MimicryBeastDroidSource.Mimicry).SelectMany(ReadCalls).ToArray();
         var failures = calls.Where(call => MethodName(call) == "SendWarningToPlayer").ToArray();
         failures.Should().HaveCount(2);
         failures.Should().Contain(call => call.ArgumentList.Arguments[1].ToString().Contains("MIMICRY_RANK_"));
@@ -223,8 +230,9 @@ public class PlayerMessageAuditTests
     [Test]
     public void NativeAttackFeedback_RemainsVisibleInProduction()
     {
-        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs");
-        var calls = ReadCalls(file).Where(call => MethodName(call) == "SendFeedbackString").ToArray();
+        var calls = NativeCombatSource.AttackRollFiles
+            .SelectMany(file => ReadCalls(NativeCombatSource.PathOf(file)))
+            .Where(call => MethodName(call) == "SendFeedbackString").ToArray();
         calls.Should().HaveCount(5);
         foreach (var call in calls)
         {
@@ -256,14 +264,14 @@ public class PlayerMessageAuditTests
     public void ParalysisWarnings_ReachNearbyObserversForPcAndNpcAttackers()
     {
         var root = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service");
-        var warning = ReadCalls(Path.Combine(root, "Combat.cs"))
+        var warning = CombatSource.Nodes<InvocationExpressionSyntax>()
             .Single(call => MethodName(call) == "SendWarningNearby" &&
                 call.Ancestors().OfType<MethodDeclarationSyntax>().First().Identifier.ValueText == "HandleParalyze");
         warning.ArgumentList.Arguments[0].ToString().Should().Be("attacker");
-        warning.ArgumentList.Arguments[2].ToString().Should().Contain("PlayerName.GetDisplayName(receiver, attacker)");
+        warning.ArgumentList.Arguments[2].ToString().Should().Contain("_playerName.GetDisplayName(receiver, attacker)");
         warning.ArgumentList.Arguments[3].ToString().Should().Be("5");
 
-        var delivery = ReadCalls(Path.Combine(root, "PlayerFeedback.cs"))
+        var delivery = ReadCalls(Path.Combine(root, "..", "Domain", "Foundation", "PlayerFeedbackService.cs"))
             .Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>().FirstOrDefault()?.Identifier.ValueText == "SendWarningNearby")
             .ToArray();
         delivery.Should().Contain(call => MethodName(call) == "SendMessageNearbyToPlayers");

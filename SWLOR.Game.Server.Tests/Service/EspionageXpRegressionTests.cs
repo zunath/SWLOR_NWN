@@ -1,22 +1,41 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 /// <summary>
 /// Crafting revamp workstream 11 changes how fast the four crafting skills level and leaves Espionage alone. Infiltration, slicing, poison and
-/// trap crafting and the practice XP of Espionage recipes share <c>Skill.GetDeltaXP</c> and <c>Craft.GetBaseRecipeXP</c> with the crafting skills, so
+/// trap crafting and the practice XP of Espionage recipes share <c>SkillXP.GetDeltaXP</c> and <c>Craft.GetBaseRecipeXP</c> with the crafting skills, so
 /// their XP is pinned here: a change to the shared XP code that moves any of these numbers fails this class.
 /// </summary>
 public class EspionageXpRegressionTests
 {
-    // Espionage ranks the slicing grid is read at.
-    private static readonly int[] Ranks = { 0, 10, 15, 20, 22, 28, 30, 40, 42, 45, 48, 50 };
+    // The converted disguise and infiltration facades resolve their instances from a container.
+    private SWLOR.Game.Server.Tests.Support.FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
 
     [OneTimeSetUp]
-    public void LoadTheXpChart() => Skill.CacheXPChartData();
+    public void BuildFacades()
+    {
+        _facades = new SWLOR.Game.Server.Tests.Support.FacadeContainer();
+        using (_facades.Install())
+            Skill.CacheXPChartData();
+    }
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void UninstallFacades() => _facadeScope.Dispose();
+
+    // Espionage ranks the slicing grid is read at.
+    private static readonly int[] Ranks = { 0, 10, 15, 20, 22, 28, 30, 40, 42, 45, 48, 50 };
 
     // npcLevel, espionageRank, undetected, detected (detection pays 15% of the undetected XP, rounded down).
     [TestCase(1, 0, 676, 101)]
@@ -59,7 +78,7 @@ public class EspionageXpRegressionTests
     [TestCase(PerkType.Slicing, 5, new[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 600, 0 })]
     public void EspionageTierXp_IsUnchanged(PerkType profession, int tier, int[] expected)
     {
-        Ranks.Select(rank => Skill.CalculateEspionageXP(profession, tier, rank)).Should().Equal(expected);
+        Ranks.Select(rank => SkillXP.CalculateEspionageXP(profession, tier, rank)).Should().Equal(expected);
     }
 
     // Craft.GetBaseRecipeXP sends practice-limited recipes (Espionage's) through GetPracticeXP: the XP chart with a 150 floor until the limit.
@@ -70,14 +89,14 @@ public class EspionageXpRegressionTests
     [TestCase(30, 40, 35, 0)]
     public void PracticeXp_IsUnchanged(int activityLevel, int rank, int rankLimit, int expected)
     {
-        Skill.GetPracticeXP(activityLevel, rank, rankLimit).Should().Be(expected);
+        SkillXP.GetPracticeXP(activityLevel, rank, rankLimit).Should().Be(expected);
     }
 
     [Test]
     public void TheXpChartTheyShareIsUnchanged()
     {
-        Enumerable.Range(-6, 15).Select(Skill.GetDeltaXP)
+        Enumerable.Range(-6, 15).Select(delta => SkillXP.GetDeltaXP(delta))
             .Should().Equal(0, 0, 76, 150, 300, 450, 600, 676, 750, 900, 976, 1050, 1200, 1200, 1200);
-        Enumerable.Range(0, 50).Sum(Skill.GetRequiredXP).Should().Be(411_125);
+        Enumerable.Range(0, 50).Sum(level => Skill.GetRequiredXP(level)).Should().Be(411_125);
     }
 }

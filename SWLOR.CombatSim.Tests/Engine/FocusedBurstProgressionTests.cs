@@ -5,8 +5,8 @@ using SWLOR.CombatSim.Data;
 using SWLOR.CombatSim.Engine;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Tests.Engine;
@@ -42,15 +42,15 @@ public class FocusedBurstProgressionTests
             var spec = scenario.Teams[0].Members[0];
             spec.WeaponLoadout.MainDamage = spec.WeaponLoadout.OffhandDamage = damage;
             spec.WeaponLoadout.WeaponRank = rank;
-            spec.WeaponLoadout.Attack = Stat.GetAttack(rank, 26, 0);
-            spec.WeaponLoadout.Accuracy = Stat.GetAccuracy(rank, 26, 0);
+            spec.WeaponLoadout.Attack = StatRules.GetAttack(rank, 26, 0);
+            spec.WeaponLoadout.Accuracy = StatRules.GetAccuracy(rank, 26, 0);
             var burst = spec.Abilities.Single(use => use.Feat.StartsWith("FocusedBurst"));
             if (mode == "without Focused Burst") spec.Abilities.Remove(burst);
             if (mode == "first-wave cancel") burst.ChannelInterruptAfterSeconds = .05f;
             if (mode is "one wave" or "two waves") burst.ChannelInterruptAfterSeconds = mode == "one wave" ? .3f : .9f;
             var target = scenario.Teams[1].Members[0];
-            target.Defense = Stat.CalculateDefense(26, rank, 0);
-            target.Evasion = Stat.GetEvasion(rank, 26, 0);
+            target.Defense = StatRules.CalculateDefense(26, rank, 0);
+            target.Evasion = StatRules.GetEvasion(rank, 26, 0);
             var actors = Enumerable.Range(firstSeed, samples)
                 .Select(seed => new Simulation(scenario, RuleSets.Current(), catalog, seed).Run().Combatants[0]).ToArray();
             var damageRolls = actors.Select(actor => actor.Stats.DamageDealt).ToArray();

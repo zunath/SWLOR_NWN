@@ -1,18 +1,22 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService.Research;
+using SWLOR.Game.Server.Domain.Crafting.Research;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service.Research;
 
 /// <summary>Covers the Fabrication XP an experiment and a completed job give, from the recipe level against Fabrication rank.</summary>
-public class ResearchXpRulesTests
+public class ResearchXpRulesTests : SkillFacadeFixture
 {
     [OneTimeSetUp]
     public void LoadTheXpChart()
     {
-        Skill.CacheXPChartData();
+        using (SkillFacades.Install())
+        {
+            Skill.CacheXPChartData();
+        }
     }
 
     [TestCase(30, 30, 600)]

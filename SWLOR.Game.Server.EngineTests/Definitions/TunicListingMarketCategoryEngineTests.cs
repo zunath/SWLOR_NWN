@@ -9,9 +9,8 @@ using StackExchange.Redis;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -167,23 +166,25 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         // Writes the saved record's category without touching its search entry, then drops DB's cached copies.
         private static void SetStoredCategoryOnly(string id, int category)
         {
-            const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
-            var multiplexer = (ConnectionMultiplexer)typeof(DB).GetField("_multiplexer", flags)!.GetValue(null)!;
-            var keyPrefix = ((Dictionary<Type, string>)typeof(DB).GetField("_keyPrefixByType", flags)!.GetValue(null)!)[typeof(MarketItem)];
+            const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
+            var db = DB;
+            var multiplexer = (IConnectionMultiplexer)db.GetType().GetField("_multiplexer", flags)!.GetValue(db)!;
+            var keyPrefix = ((Dictionary<Type, string>)db.GetType().GetField("_keyPrefixByType", flags)!.GetValue(db)!)[typeof(MarketItem)];
             var key = $"{keyPrefix}:{id}";
             var result = multiplexer.GetDatabase().JsonSet(key, category.ToString(), path: $".{nameof(MarketItem.Category)}");
             if (!result.IsSuccess)
                 throw new InvalidOperationException($"Could not set the stored category of {id}.");
-            ((Dictionary<string, EntityBase>)typeof(DB).GetField("_cachedEntities", flags)!.GetValue(null)!).Remove(id);
-            ((Dictionary<string, string>)typeof(DB).GetField("_jsonAcrossFrames", flags)!.GetValue(null)!).Remove(key);
+            ((Dictionary<string, EntityBase>)db.GetType().GetField("_cachedEntities", flags)!.GetValue(db)!).Remove(id);
+            ((Dictionary<string, string>)db.GetType().GetField("_jsonAcrossFrames", flags)!.GetValue(db)!).Remove(key);
         }
 
         // Writes the search entry's category without touching the saved record.
         private static void SetSearchEntryCategoryOnly(string id, int category)
         {
-            const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
-            var multiplexer = (ConnectionMultiplexer)typeof(DB).GetField("_multiplexer", flags)!.GetValue(null)!;
-            var keyPrefix = ((Dictionary<Type, string>)typeof(DB).GetField("_keyPrefixByType", flags)!.GetValue(null)!)[typeof(MarketItem)];
+            const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
+            var db = DB;
+            var multiplexer = (IConnectionMultiplexer)db.GetType().GetField("_multiplexer", flags)!.GetValue(db)!;
+            var keyPrefix = ((Dictionary<Type, string>)db.GetType().GetField("_keyPrefixByType", flags)!.GetValue(db)!)[typeof(MarketItem)];
             multiplexer.GetDatabase().HashSet(SearchIndexDefinition.KeyPrefix(keyPrefix) + id, nameof(MarketItem.Category), category);
         }
 

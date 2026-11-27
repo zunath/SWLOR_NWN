@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -65,14 +66,14 @@ public static class ForceEspionageEngineTests
             "without Cloud Mind the observer spots a player with no Stealth rating");
 
         await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
-            StatusEffect.ApplyStatusEffect<CloudedMindStatusEffect>(player.Creature, observer, 30f));
+            StatusEffectApplication.ApplyStatusEffect<CloudedMindStatusEffect>(player.Creature, observer, 30f));
         ctx.Assert(StatusEffect.HasStatusEffect<CloudedMindStatusEffect>(observer), "the observer is clouded");
         ctx.AssertEqual(0, CountDetections(observer, player.Creature, 40),
             "a clouded NPC never spots anyone in stealth");
         ctx.Assert(GetActionMode(player.Creature, ActionMode.Stealth), "the player stays in stealth");
 
         await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
-            StatusEffect.NotifyDamageStatusEffects(player.Creature, observer, 1, CombatDamageType.Physical));
+            StatusEffectCombatEvent.NotifyDamageStatusEffects(player.Creature, observer, 1, CombatDamageType.Physical));
         ctx.Assert(!StatusEffect.HasStatusEffect<CloudedMindStatusEffect>(observer),
             "taking damage clears the observer's mind");
         ctx.Assert(CountDetections(observer, player.Creature, 20) > 0,
@@ -106,7 +107,7 @@ public static class ForceEspionageEngineTests
         var activated = false;
         await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
             activated = UsePerkFeat.TryUseAbility(player.Creature, guard, FeatType.CloudMind1, GetLocation(guard)));
-        ctx.Assert(activated, $"Cloud Mind activates: {Ability.GetLastActivationDenialReason()}");
+        ctx.Assert(activated, $"Cloud Mind activates: {AbilityActivation.GetLastActivationDenialReason()}");
 
         await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect<CloudedMindStatusEffect>(guard), 10f,
             "Cloud Mind to cloud the guard after its cast");
@@ -140,7 +141,7 @@ public static class ForceEspionageEngineTests
         }
 
         await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
-            StatusEffect.ApplyStatusEffect<CloudedMindStatusEffect>(player.Creature, clouded, 30f));
+            StatusEffectApplication.ApplyStatusEffect<CloudedMindStatusEffect>(player.Creature, clouded, 30f));
         await ctx.DelaySecondsAsync(2f);
         ctx.Assert(!Enmity.GetEnmityTable(clouded).ContainsKey(player.Creature), "the clouded enemy ignores the hidden player");
         ctx.Assert(!Enmity.GetEnmityTable(unclouded).ContainsKey(player.Creature), "the other enemy has not found the hidden player");
@@ -162,10 +163,10 @@ public static class ForceEspionageEngineTests
         var bug = ctx.SpawnCreature("vdathswampland", 3f);
 
         await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
-            StatusEffect.ApplyStatusEffect(player.Creature, bug, new DecoyStatusEffect(8), 30f));
+            StatusEffectApplication.ApplyStatusEffect(player.Creature, bug, new DecoyStatusEffect(8), 30f));
 
-        ctx.AssertEqual(184, Combat.ApplyStatusSourceAccuracyModifiers(bug, player.Creature, 200), "8% off a rating of 200");
-        ctx.AssertEqual(200, Combat.ApplyStatusSourceAccuracyModifiers(bug, other.Creature, 200), "no penalty against anyone else");
+        ctx.AssertEqual(184, GameServices.CombatDamageModifiers.ApplyStatusSourceAccuracyModifiers(bug, player.Creature, 200), "8% off a rating of 200");
+        ctx.AssertEqual(200, GameServices.CombatDamageModifiers.ApplyStatusSourceAccuracyModifiers(bug, other.Creature, 200), "no penalty against anyone else");
     }
 
     [EngineTest("Shared Presence hides a party member without the Stealth perk, without upkeep, for its window",
@@ -278,11 +279,11 @@ public static class ForceEspionageEngineTests
         await ctx.WaitFrameAsync();
         foreach (var enemy in new[] { organic, droid })
         {
-            Enmity.ModifyEnmity(player.Creature, enemy, 100);
-            ctx.AssertEqual(player.Creature, Enmity.GetHighestEnmityAttackTarget(enemy), "the enemy targets the player");
+            EnmityChange.ModifyEnmity(player.Creature, enemy, 100);
+            ctx.AssertEqual(player.Creature, EnmityAttack.GetHighestEnmityAttackTarget(enemy), "the enemy targets the player");
         }
 
-        var ability = Ability.GetAbilityDetail(FeatType.ForceDecoy2);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.ForceDecoy2);
         await ctx.ExecuteInCreatureContextAsync(player.Creature,
             () => ability.ImpactAction(player.Creature, player.Creature, 2, GetLocation(player.Creature)));
 
@@ -308,7 +309,7 @@ public static class ForceEspionageEngineTests
 
     private static async Task CastSharedPresenceAsync(EngineTestContext ctx, uint caster)
     {
-        var ability = Ability.GetAbilityDetail(FeatType.SharedPresence);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.SharedPresence);
         ctx.AssertEqual(string.Empty, ability.CustomValidation(caster, caster, 1, GetLocation(caster)),
             "Shared Presence is usable out of combat");
         await ctx.ExecuteInCreatureContextAsync(caster,
@@ -320,8 +321,8 @@ public static class ForceEspionageEngineTests
     private static async Task JoinPartyAsync(EngineTestContext ctx, uint leader, uint member)
     {
         await ctx.ExecuteInCreatureContextAsync(member, () =>
-            typeof(Party).GetMethod("AddToParty", BindingFlags.NonPublic | BindingFlags.Static)!
-                .Invoke(null, new object[] { leader, member }));
+            typeof(Domain.Social.PartyService).GetMethod("AddToParty", BindingFlags.NonPublic | BindingFlags.Instance)!
+                .Invoke(Party, new object[] { leader, member }));
         ctx.Assert(Party.IsInParty(leader, member), "the member joins the caster's party");
     }
 

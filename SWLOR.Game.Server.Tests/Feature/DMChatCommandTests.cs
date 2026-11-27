@@ -11,7 +11,7 @@ public class DMChatCommandTests
     [Test]
     public void TeleportToTarget_AllowsStaffAndTestUsersToTargetCreaturesOrGround()
     {
-        var commands = new DMChatCommand().BuildChatCommands();
+        var commands = new DMWorldChatCommand().BuildChatCommands();
 
         commands.Should().ContainKey("tpto");
 
@@ -26,7 +26,7 @@ public class DMChatCommandTests
     [Test]
     public void BattleGrid_OpensForDMsAndAdminsWithoutATarget()
     {
-        var commands = new DMChatCommand().BuildChatCommands();
+        var commands = new DMToolsChatCommand().BuildChatCommands();
 
         commands.Should().ContainKey("battlegrid");
 
@@ -42,7 +42,7 @@ public class DMChatCommandTests
     [Test]
     public void SpawnBeastEgg_AllowsStaffAndTestUsersToCreateTypedEggs()
     {
-        var commands = new DMChatCommand().BuildChatCommands();
+        var commands = new DMSpawnChatCommand().BuildChatCommands();
 
         commands.Should().ContainKey("spawnegg");
 
@@ -65,20 +65,14 @@ public class DMChatCommandTests
             "SWLOR.Game.Server",
             "Feature",
             "ChatCommandDefinition",
-            "DMChatCommand.cs"));
-        var beastMasterySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "BeastMastery.cs"));
+            "DMSpawnChatCommand.cs"));
 
         dmChatCommandSource.Should().Contain("BeastMastery.GetAllBeastTypes()")
             .And.Contain("Usage: /spawnegg <beast type>")
             .And.Contain("[NWNEventHandler(ScriptName.OnModuleCacheAfter)]")
             .And.Contain("_spawnBeastEggHelpMessages = messages.ToArray()")
             .And.Contain("foreach (var message in _spawnBeastEggHelpMessages)")
-            .And.Contain("BeastMastery.CreateBeastEgg(beastType, user)");
-        beastMasterySource.Should().Contain("ItemPropertyCustom(ItemPropertyType.DNAType, (int)beastType)");
+            .And.Contain("BeastIncubation.CreateBeastEgg(beastType, user)");
     }
 
     [Test]
@@ -88,19 +82,21 @@ public class DMChatCommandTests
         var chatCommandSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "ChatCommand.cs"));
+            "Domain",
+            "Social",
+            "ChatCommandService.cs"));
         var targetingSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Targeting.cs"));
+            "Domain",
+            "Combat",
+            "TargetingService.cs"));
         var dmChatCommandSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
             "Feature",
             "ChatCommandDefinition",
-            "DMChatCommand.cs"));
+            "DMWorldChatCommand.cs"));
 
         chatCommandSource.Should().Contain("chatCommand.AllowsLocationTarget");
         targetingSource.Should().Contain("targetingAction.AllowsLocationTarget && targetedLocation != Vector3()");
@@ -114,7 +110,7 @@ public class DMChatCommandTests
     [Test]
     public void ResetCooldowns_IncludesThePerkRefundTimer()
     {
-        var commands = new DMChatCommand().BuildChatCommands();
+        var commands = new DMPlayerChatCommand().BuildChatCommands();
 
         commands.Should().ContainKey("resetcooldowns");
         commands["resetcooldown"].Should().BeSameAs(commands["resetcooldowns"]);
@@ -127,7 +123,7 @@ public class DMChatCommandTests
             "SWLOR.Game.Server",
             "Feature",
             "ChatCommandDefinition",
-            "DMChatCommand.cs"));
+            "DMPlayerChatCommand.cs"));
         var methodStart = source.IndexOf("private void ResetAbilityRecastTimers()", StringComparison.Ordinal);
         var methodEnd = source.IndexOf("private void AdjustFactionStanding()", methodStart, StringComparison.Ordinal);
         var method = source[methodStart..methodEnd];

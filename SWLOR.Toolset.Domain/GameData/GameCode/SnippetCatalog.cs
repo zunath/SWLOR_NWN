@@ -1,5 +1,5 @@
 using System.Text;
-using SWLOR.Game.Server.Service.SnippetService;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Toolset.Domain.GameData.GameCode
 {

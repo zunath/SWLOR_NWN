@@ -11,7 +11,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the object is open, false otherwise</returns>
         public static bool GetIsOpen(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetIsOpen(oObject) != 0;
+            return NWScriptRuntime.Current.GetIsOpen(oObject);
         }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oTarget">The target object to unlock (can be a door or a placeable object)</param>
         public static void ActionUnlockObject(uint oTarget)
         {
-            global::NWN.Core.NWScript.ActionUnlockObject(oTarget);
+            NWScriptRuntime.Current.ActionUnlockObject(oTarget);
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oTarget">The target object to lock (can be a door or a placeable object)</param>
         public static void ActionLockObject(uint oTarget)
         {
-            global::NWN.Core.NWScript.ActionLockObject(oTarget);
+            NWScriptRuntime.Current.ActionLockObject(oTarget);
         }
 
 
@@ -39,7 +39,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oDoor">The door to open</param>
         public static void ActionOpenDoor(uint oDoor)
         {
-            global::NWN.Core.NWScript.ActionOpenDoor(oDoor);
+            NWScriptRuntime.Current.ActionOpenDoor(oDoor);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oDoor">The door to close</param>
         public static void ActionCloseDoor(uint oDoor)
         {
-            global::NWN.Core.NWScript.ActionCloseDoor(oDoor);
+            NWScriptRuntime.Current.ActionCloseDoor(oDoor);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The last blocking door. Returns OBJECT_INVALID if the caller is not a valid creature</returns>
         public static uint GetBlockingDoor()
         {
-            return global::NWN.Core.NWScript.GetBlockingDoor();
+            return NWScriptRuntime.Current.GetBlockingDoor();
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the door action can be performed, false otherwise</returns>
         public static bool GetIsDoorActionPossible(uint oTargetDoor, DoorAction nDoorAction)
         {
-            return global::NWN.Core.NWScript.GetIsDoorActionPossible(oTargetDoor, (int)nDoorAction) == 1;
+            return NWScriptRuntime.Current.GetIsDoorActionPossible(oTargetDoor, nDoorAction);
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDoorAction">The door action to perform (DOOR_ACTION_* constants)</param>
         public static void DoDoorAction(uint oTargetDoor, DoorAction nDoorAction)
         {
-            global::NWN.Core.NWScript.DoDoorAction(oTargetDoor, (int)nDoorAction);
+            NWScriptRuntime.Current.DoDoorAction(oTargetDoor, nDoorAction);
         }
     }
 }

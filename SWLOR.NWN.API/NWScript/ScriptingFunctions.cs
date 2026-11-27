@@ -15,7 +15,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The parameter value, or empty string if a parameter with the given name does not exist</returns>
         public static string GetScriptParam(string sParamName)
         {
-            return global::NWN.Core.NWScript.GetScriptParam(sParamName);
+            return NWScriptRuntime.Current.GetScriptParam(sParamName);
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sParamValue">The value to set for the parameter</param>
         public static void SetScriptParam(string sParamName, string sParamValue)
         {
-            global::NWN.Core.NWScript.SetScriptParam(sParamName, sParamValue);
+            NWScriptRuntime.Current.SetScriptParam(sParamName, sParamValue);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The currently executing event or 0 if not determinable</returns>
         public static EventScript GetCurrentlyRunningEvent(bool bInheritParent = true)
         {
-            return (EventScript)global::NWN.Core.NWScript.GetCurrentlyRunningEvent(bInheritParent ? 1 : 0);
+            return NWScriptRuntime.Current.GetCurrentlyRunningEvent(bInheritParent);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The number of script instructions remaining</returns>
         public static int GetScriptInstructionsRemaining()
         {
-            return global::NWN.Core.NWScript.GetScriptInstructionsRemaining();
+            return NWScriptRuntime.Current.GetScriptInstructionsRemaining();
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>Empty string on success or the error on failure</returns>
         public static string CompileScript(string sScriptName, string sScriptData, bool bWrapIntoMain = false, bool bGenerateNDB = false)
         {
-            return global::NWN.Core.NWScript.CompileScript(sScriptName, sScriptData, bWrapIntoMain ? 1 : 0, bGenerateNDB ? 1 : 0);
+            return NWScriptRuntime.Current.CompileScript(sScriptName, sScriptData, bWrapIntoMain, bGenerateNDB);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sError">Optional error message to emit as a script error</param>
         public static void AbortRunningScript(string sError = "")
         {
-            global::NWN.Core.NWScript.AbortRunningScript(sError);
+            NWScriptRuntime.Current.AbortRunningScript(sError);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>JSON object containing debug information</returns>
         public static Json GetScriptBacktrace(bool bIncludeStack = true)
         {
-            return global::NWN.Core.NWScript.GetScriptBacktrace(bIncludeStack ? 1 : 0);
+            return NWScriptRuntime.Current.GetScriptBacktrace(bIncludeStack);
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>0 on initial invocation, but will return nRetVal if jumped-to by LongJmp</returns>
         public static int SetJmp(string sLabel)
         {
-            return global::NWN.Core.NWScript.SetJmp(sLabel);
+            return NWScriptRuntime.Current.SetJmp(sLabel);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nRetVal">The return value to pass to SetJmp (defaults to 1)</param>
         public static void LongJmp(string sLabel, int nRetVal = 1)
         {
-            global::NWN.Core.NWScript.LongJmp(sLabel, nRetVal);
+            NWScriptRuntime.Current.LongJmp(sLabel, nRetVal);
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the label is a valid jump target</returns>
         public static bool GetIsValidJmp(string sLabel)
         {
-            return global::NWN.Core.NWScript.GetIsValidJmp(sLabel) != 0;
+            return NWScriptRuntime.Current.GetIsValidJmp(sLabel);
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The current script recursion level</returns>
         public static int GetScriptRecursionLevel()
         {
-            return global::NWN.Core.NWScript.GetScriptRecursionLevel();
+            return NWScriptRuntime.Current.GetScriptRecursionLevel();
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The script name or empty string on error</returns>
         public static string GetScriptName(int nRecursionLevel = -1)
         {
-            return global::NWN.Core.NWScript.GetScriptName(nRecursionLevel);
+            return NWScriptRuntime.Current.GetScriptName(nRecursionLevel);
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The script chunk or empty string on error / no script chunk attached</returns>
         public static string GetScriptChunk(int nRecursionLevel = -1)
         {
-            return global::NWN.Core.NWScript.GetScriptChunk(nRecursionLevel);
+            return NWScriptRuntime.Current.GetScriptChunk(nRecursionLevel);
         }
     }
 }

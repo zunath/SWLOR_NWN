@@ -3,11 +3,11 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Forge;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -47,7 +47,16 @@ public class CraftingStyleStatusEffectTests
         "RemoveOtherStanceStatuses",
         "RemoveOtherCommandStatuses",
         "RemoveStatusEffectBySourceType",
-        "RemoveCreature"
+        "RemoveCreature",
+        // Part 3: the application replaces what it overrides, a type from one source or any, with no worn-off message.
+        "RemoveStatusEffectForReplacement",
+        // Logout only (the session part): what does not persist through it, and what a leaving source put on others.
+        "RemoveNonPersistentStatusEffects",
+        "RemoveTrackedNWNEffects",
+        "RemoveStatusEffectsFromAllTargetsWhenSourceExits",
+        "RemoveStatusEffectById",
+        // The native part replaces one native effect, named by its tag, and the status effect itself stays.
+        "RemoveNativeStatusEffect"
     };
 
     private sealed class ProbeEffect : StatusEffectBase
@@ -191,15 +200,12 @@ public class CraftingStyleStatusEffectTests
             .OrderBy(name => name)
             .ToList();
 
-        callers.Should().Equal("CharacterFullRebuildViewModel.cs", "Space.cs");
+        callers.Should().Equal("CharacterFullRebuildViewModel.cs", "SpaceService.cs");
     }
 
     private static List<MethodDeclarationSyntax> StatusEffectMethods()
     {
-        var root = FindRepositoryRoot();
-        var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"))).GetRoot();
-        return syntax.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
+        return StatusEffectSource.Nodes<MethodDeclarationSyntax>().ToList();
     }
 
     private static DirectoryInfo FindRepositoryRoot()

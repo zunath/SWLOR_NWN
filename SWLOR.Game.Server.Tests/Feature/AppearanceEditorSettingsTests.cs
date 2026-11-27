@@ -25,24 +25,33 @@ public class AppearanceEditorSettingsTests
         directory.Should().NotBeNull();
         var source = File.ReadAllText(Path.Combine(directory!.FullName,
             "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "AppearanceEditorViewModel.cs"));
-        var names = new[] { "InitializeSettings", "LoadSettings", "LoadDMArmorDisplay", "OnClickSaveSettings", "SendScaleMessage",
+        // The view model keeps the click handlers, the watch registration and the /helm and /cloak refresh; the settings
+        // service (Feature/AppearanceEditing) holds what they do, so each side is compiled from its own source.
+        var names = new[] { "InitializeSettings", "OnClickSaveSettings",
             "OnIncreaseAppearanceScale", "OnDecreaseAppearanceScale", "OnIncreaseHeadScale", "OnDecreaseHeadScale" };
         var methods = string.Concat(CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
             .OfType<MethodDeclarationSyntax>().Where(node => names.Contains(node.Identifier.Text) ||
                 node.Identifier.Text == "Refresh" &&
                 node.ParameterList.Parameters.Single().Type!.ToString() == "ArmorDisplayChangedRefreshEvent")
             .Select(node => node.ToFullString()));
+        var serviceNames = new[] { "InitializeSettings", "LoadSettings", "LoadDMArmorDisplay", "SaveSettings", "SendScaleMessage",
+            "IncreaseAppearanceScale", "DecreaseAppearanceScale", "IncreaseHeadScale", "DecreaseHeadScale" };
+        var serviceMethods = string.Concat(CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(directory.FullName,
+                "SWLOR.Game.Server", "Feature", "AppearanceEditing", "AppearanceSettingsService.cs"))).GetRoot().DescendantNodes()
+            .OfType<MethodDeclarationSyntax>().Where(node => serviceNames.Contains(node.Identifier.Text))
+            .Select(node => node.ToFullString()));
         var armorDisplaySource = File.ReadAllText(Path.Combine(directory.FullName,
             "SWLOR.Game.Server", "Feature", "ArmorDisplay.cs"));
         var getDMArmorDisplay = CSharpSyntaxTree.ParseText(armorDisplaySource).GetRoot().DescendantNodes()
             .OfType<MethodDeclarationSyntax>().Single(node => node.Identifier.Text == "GetDMArmorDisplay").ToFullString();
-        var dmPresence = DMPossessionHarness.Method("Service/DMPresence.cs", "GetControlledCreature") +
-                         DMPossessionHarness.Method("Service/DMPresence.cs", "SendMessage");
+        var dmPresence = DMPossessionHarness.InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetControlledCreature") +
+                         DMPossessionHarness.InstanceMethod("Domain/Administration/DMPresenceService.cs", "SendMessage");
         var harness = $$"""
             using System;
             using System.Linq.Expressions;
-            using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
+            using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
             using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+            using SWLOR.Game.Server.Domain.UI;
             using SWLOR.NWN.API.NWScript.Enum;
             using DMPreferences = SWLOR.Game.Server.Entity.DMPreferences;
             using Player = SWLOR.Game.Server.Entity.Player;
@@ -109,16 +118,37 @@ public class AppearanceEditorSettingsTests
             {
                 {{dmPresence}}
             }
-            public class Harness
+            public sealed class EditorSession { public uint Target = 2; public bool IsDMArmorDisplay; }
+            public interface IAppearanceEditorHost
             {
-                private uint _target = 2;
+                EditorSession Session { get; }
+                uint Player { get; }
+                bool IsSettingsVisible { get; set; }
+                bool IsPlayerSettingsVisible { get; set; }
+                bool IsArmorDisplayVisible { get; set; }
+                bool ShowHelmet { get; set; }
+                bool ShowCloak { get; set; }
+            }
+            public sealed class SettingsService
+            {
+                private void UpdateArmorDisplay(IAppearanceEditorHost host) { }
+                private void CloseForUnsupportedAppearance(IAppearanceEditorHost host) => throw new Exception("Unexpected unsupported appearance");
+                {{serviceMethods}}
+            }
+            public class Harness : IAppearanceEditorHost
+            {
+                private readonly EditorSession _session = new();
+                public SettingsService AppearanceSettingsService { get; } = new();
+                public EditorSession Session => _session;
+                uint IAppearanceEditorHost.Player => Player;
                 public uint Player = 1;
-                public bool IsSettingsVisible, IsPlayerSettingsVisible, IsArmorDisplayVisible, ShowHelmet, ShowCloak;
-                private bool _isDMArmorDisplay;
+                public bool IsSettingsVisible { get; set; }
+                public bool IsPlayerSettingsVisible { get; set; }
+                public bool IsArmorDisplayVisible { get; set; }
+                public bool ShowHelmet { get; set; }
+                public bool ShowCloak { get; set; }
                 private int _watches;
                 private void WatchOnClient(Expression<Func<Harness, bool>> binding) => _watches++;
-                private void UpdateArmorDisplay() { }
-                private void CloseForUnsupportedAppearance() => throw new Exception("Unexpected unsupported appearance");
                 {{methods}}
                 public static (bool Visible, bool PlayerControls, int Reads, int Writes, int Watches,
                     float Height, float Head, bool Helmet, bool Cloak, bool ArmorDisplay)
@@ -136,7 +166,7 @@ public class AppearanceEditorSettingsTests
                     harness.InitializeSettings();
                     // Selecting the tab reloads settings. Even a forged Save click must
                     // leave NPC/DM targets out of the player database.
-                    harness.LoadSettings();
+                    harness.AppearanceSettingsService.LoadSettings(harness);
                     harness.OnClickSaveSettings()();
                     return (harness.IsSettingsVisible, harness.IsPlayerSettingsVisible,
                         DB.Reads, DB.Writes, harness._watches, DB.Record.AppearanceScale,

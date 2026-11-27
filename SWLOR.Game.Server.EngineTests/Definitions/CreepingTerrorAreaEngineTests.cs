@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 ctx.MakeHostile(hostile);
                 // A 12 HP bandit dies to the first pulse, which clears its statuses.
-                Stat.SetNPCMaxHitPoints(hostile, 1000, true);
+                CreatureStat.SetNPCMaxHitPoints(hostile, 1000, true);
                 SetImmortal(hostile, true);
                 ctx.SuppressNPCNaturalRegen(hostile);
             }
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(GetDistanceBetween(center, outsideNear) > FieldRadius + 0.5f, "the near hostile stands outside the field");
             ctx.Assert(GetDistanceBetween(center, outsideFar) > FieldRadius + 0.5f, "the far hostile stands outside the field");
 
-            var ability = Ability.GetAbilityDetail(FeatType.CreepingTerror3);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.CreepingTerror3);
             ctx.SetNPCPerkLevel(caster, ability.EffectiveLevelPerkType, ability.AbilityLevel);
             ctx.SetNPCResources(caster, 1000, 1000);
             CreaturePlugin.AddFeat(caster, FeatType.CreepingTerror3);
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var fpBefore = Stat.GetCurrentFP(caster);
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 ctx.Assert(UsePerkFeat.TryUseAbility(caster, center, FeatType.CreepingTerror3, GetLocation(center)),
-                    $"Creeping Terror III activates: {Ability.GetLastActivationDenialReason()}"));
+                    $"Creeping Terror III activates: {AbilityActivation.GetLastActivationDenialReason()}"));
 
             var deadline = DateTime.UtcNow.AddSeconds(10);
             while (!StatusEffect.HasStatusEffect<HobbleStatusEffect>(center) && DateTime.UtcNow < deadline)

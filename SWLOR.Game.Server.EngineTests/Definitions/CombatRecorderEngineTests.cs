@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.CombatRecorderService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -59,14 +58,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             SetPlotFlag(doomed, false);
             ctx.SetNPCResources(doomed, ResourcePool, ResourcePool);
             CreaturePlugin.AddFeat(doomed, FeatType.Benevolence1);
-            Stat.SetNPCMaxHitPoints(target, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
             ObjectPlugin.SetCurrentHitPoints(target, 500);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 120f);
             ctx.MakeHostile(attacker);
             ctx.SeedRandom(4242);
 
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             CombatRecordWriter writer;
             int targetHitPointsBeforeDamage;
             try
@@ -130,8 +129,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
                 if (CombatRecorder.IsRecording)
                     CombatRecorder.Stop("engine test", out _);
             }
@@ -229,20 +228,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.MakeHostile(attacker);
             ctx.SeedRandom(4343);
 
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             CombatRecordWriter writer;
             try
             {
                 ctx.Assert(CombatRecorder.Start(arena.Area, "engine test deferred", out var startMessage), startMessage);
                 writer = CombatRecorder.LastWriter;
 
-                ctx.Assert(StatusEffect.ApplyStatusEffect(guarded, guarded, new GuardiansResolveStatusEffect(1000,
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(guarded, guarded, new GuardiansResolveStatusEffect(1000,
                         TemporaryHitPointEffects.GetGrantGeneration(guarded, TemporaryHitPointEffectKey.GuardiansResolve)), 60f),
                     "Guardian's Resolve applies to the guarded creature");
-                ctx.Assert(StatusEffect.ApplyStatusEffect(attacker, burned, new BurnStatusEffect(1), 30f),
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(attacker, burned, new BurnStatusEffect(1), 30f),
                     "Burn applies to the burned creature");
-                ctx.Assert(StatusEffect.ApplyStatusEffect(arsonist, smoldering, new BurnStatusEffect(1), 30f),
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(arsonist, smoldering, new BurnStatusEffect(1), 30f),
                     "Burn applies to the smoldering creature");
                 DestroyObject(arsonist);
 
@@ -263,8 +262,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
                 if (CombatRecorder.IsRecording)
                     CombatRecorder.Stop("engine test", out _);
             }
@@ -376,7 +375,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ChangeToStandardFaction(mark, StandardFaction.Defender);
             ctx.SeedRandom(4444);
 
-            Combat.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             CombatRecordWriter writer;
             int dummyMaxHitPoints;
             var registeredInsideImpact = true;
@@ -386,9 +385,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(CombatRecorder.Start(arena.Area, "engine test weapon", out var startMessage), startMessage);
                 writer = CombatRecorder.LastWriter;
 
-                ctx.Assert(StatusEffect.ApplyStatusEffect(brawler, dummy, typeof(BleedStatusEffect), 30f),
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(brawler, dummy, typeof(BleedStatusEffect), 30f),
                     "Bleed applies to the dummy");
-                ctx.Assert(StatusEffect.ApplyStatusEffect(pyro, dummy, typeof(BlazingSpikesStatusEffect), 60f),
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(pyro, dummy, typeof(BlazingSpikesStatusEffect), 60f),
                     "the pyro's Blazing Spikes applies to the dummy");
                 var startingHitPoints = GetCurrentHitPoints(dummy);
                 AssignCommand(brawler, () => ActionAttack(dummy));
@@ -400,17 +399,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // Bleed ticks every 6 seconds on the shared status interval.
                 await ctx.DelaySecondsAsync(13f);
 
-                Ability.BeginAbilityImpact(brawler, Ability.GetAbilityDetail(FeatType.ForceLightning1));
-                var pulse = Ability.CaptureRepeatedAbilityImpact(brawler, () => Ability.ApplyCombatImpact(
+                AbilityImpactLifecycle.BeginAbilityImpact(brawler, AbilityCatalog.GetAbilityDetail(FeatType.ForceLightning1));
+                var pulse = AbilityImpactLifecycle.CaptureRepeatedAbilityImpact(brawler, () => Ability.ApplyCombatImpact(
                     brawler, dummy, GetLocation(dummy), SkillType.Force, 10, 0, null, false,
                     resolvesHit: false, canCritical: false, useUnscaledDamage: true), baseDamage: 10);
-                Ability.EndAbilityImpact(brawler);
+                AbilityImpactLifecycle.EndAbilityImpact(brawler);
                 await ctx.ExecuteInCreatureContextAsync(brawler, pulse);
                 await ctx.DelaySecondsAsync(1f);
                 dummyMaxHitPoints = GetMaxHitPoints(dummy);
 
                 // A Razor Trap placed on the mark goes off seconds later, outside any scope.
-                Combat.SetAbilityHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
                 var placed = false;
                 await ctx.ExecuteInCreatureContextAsync(brawler, () =>
                 {
@@ -426,18 +425,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // that impact, so it registers nothing; outside an impact it is registered.
                 await ctx.ExecuteInCreatureContextAsync(pyro, () =>
                 {
-                    Ability.BeginAbilityImpact(pyro, Ability.GetAbilityDetail(FeatType.CreepingTerror1));
-                    Combat.ApplyDamageTakenModifiers(dummy, 7, pyro, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime);
+                    AbilityImpactLifecycle.BeginAbilityImpact(pyro, AbilityCatalog.GetAbilityDetail(FeatType.CreepingTerror1));
+                    GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(dummy, 7, pyro, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime);
                     registeredInsideImpact = CombatRecorder.HasPendingDamage(pyro, dummy);
-                    Ability.EndAbilityImpact(pyro);
-                    Combat.ApplyDamageTakenModifiers(dummy, 7, pyro, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime);
+                    AbilityImpactLifecycle.EndAbilityImpact(pyro);
+                    GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(dummy, 7, pyro, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime);
                     registeredOutsideImpact = CombatRecorder.HasPendingDamage(pyro, dummy);
                 });
             }
             finally
             {
-                Combat.SetAutoAttackHitResolutionOverride(null);
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
                 AssignCommand(brawler, () => ClearAllActions());
                 if (CombatRecorder.IsRecording)
                     CombatRecorder.Stop("engine test", out _);
@@ -549,8 +548,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.MakeHostile(attacker);
             ctx.SeedRandom(4545);
 
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             CombatRecordWriter writer;
             var partialHit = 0;
             try
@@ -558,7 +557,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // The mist's pulses are scheduled before the recording exists.
                 await UseAbilityAsync(ctx, medic, medic, FeatType.KoltoMist1);
                 await ctx.WaitUntilAsync(
-                    () => Ability.GetLastCompletedAbilityImpactSummary(medic)?.Ability?.Name == "Kolto Mist I",
+                    () => AbilityImpactState.GetLastCompletedAbilityImpactSummary(medic)?.Ability?.Name == "Kolto Mist I",
                     10f,
                     "Kolto Mist I to land before the recording starts");
                 ctx.Assert(!CombatRecorder.IsRecording, "the mist landed before the recording started");
@@ -566,7 +565,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(CombatRecorder.Start(arena.Area, "engine test reactions", out var startMessage), startMessage);
                 writer = CombatRecorder.LastWriter;
 
-                ctx.Assert(StatusEffect.ApplyStatusEffect(attacker, attacker, typeof(SoulDevourerStanceStatusEffect), 60f),
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(attacker, attacker, typeof(SoulDevourerStanceStatusEffect), 60f),
                     "Soul Devourer Stance applies to the attacker");
                 var attackerHitPoints = GetCurrentHitPoints(attacker);
                 await UseAbilityAsync(ctx, attacker, defender, FeatType.ForceLightning1);
@@ -602,8 +601,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
                 if (CombatRecorder.IsRecording)
                     CombatRecorder.Stop("engine test", out _);
             }
@@ -719,7 +718,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SuppressNPCNaturalRegen(medic);
             SetPlotFlag(medic, false);
             ctx.SetNPCResources(medic, 9999, 9999);
-            Stat.SetNPCMaxHitPoints(medic, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(medic, 1000, true);
             ctx.SetNPCPerkLevel(medic, PerkType.Resuscitation, 1);
             CreaturePlugin.AddFeat(medic, FeatType.Resuscitation1);
             SetName(body, "Recorder Body");
@@ -742,7 +741,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0, TemporaryHitPointEffects.ApplyFlatFromSource(granter, shielded, "RECORDER_CAP_REFUSED", 50, 60f),
                     "a full cap grants nothing");
                 // The cap drops to 300, so the pool ending soonest loses 200.
-                Stat.SetNPCMaxHitPoints(shielded, 600);
+                CreatureStat.SetNPCMaxHitPoints(shielded, 600);
                 await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(shielded) == 300, 2f, "pools to shrink to the new cap");
 
                 var started = false;
@@ -750,7 +749,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(medic, () =>
                 {
                     started = UsePerkFeat.TryUseAbility(medic, body, FeatType.Resuscitation1, GetLocation(body));
-                    denial = Ability.GetLastActivationDenialReason();
+                    denial = AbilityActivation.GetLastActivationDenialReason();
                 });
                 ctx.Assert(started, $"the revive cast starts: {denial}");
                 await ctx.DelaySecondsAsync(1f);
@@ -841,7 +840,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SuppressNPCNaturalRegen(creature);
             SetPlotFlag(creature, false);
             ctx.SetNPCResources(creature, ResourcePool, ResourcePool);
-            Stat.SetNPCMaxHitPoints(creature, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(creature, 1000, true);
             ObjectPlugin.SetCurrentHitPoints(creature, hitPoints);
         }
 
@@ -956,7 +955,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
                     activated = UsePerkFeat.TryUseAbility(player, player, FeatType.ReviveBeast1, GetLocation(player));
-                    denial = Ability.GetLastActivationDenialReason();
+                    denial = AbilityActivation.GetLastActivationDenialReason();
                 });
                 ctx.Assert(activated, $"Revive Beast activates: {denial}");
                 await ctx.WaitUntilAsync(() => BeastMastery.IsPlayerBeast(GetAssociate(AssociateType.Henchman, player)), 12f,
@@ -1024,10 +1023,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(CombatRecorder.Start(arena.Area, "engine test refresh", out var startMessage), startMessage);
                 writer = CombatRecorder.LastWriter;
 
-                ctx.Assert(StatusEffect.ApplyStatusEffect(caster, ally, type, 3.2f), "the zone buff applies");
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, ally, type, 3.2f), "the zone buff applies");
                 var applied = StatusEffect.GetStatusEffect(ally, type);
                 await ctx.DelaySecondsAsync(1f);
-                ctx.Assert(StatusEffect.ApplyStatusEffect(caster, ally, type, 3.2f), "the next pulse re-applies the zone buff");
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, ally, type, 3.2f), "the next pulse re-applies the zone buff");
                 ctx.Assert(ReferenceEquals(applied, StatusEffect.GetStatusEffect(ally, type)), "the pulse restarts the active buff in place");
                 await ctx.DelaySecondsAsync(0.5f);
             }
@@ -1085,7 +1084,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             CombatRecordWriter placementWriter = null;
             CombatRecordWriter writer;
             // The trap's one detonation must land.
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 ctx.Assert(CombatRecorder.Start(arena.Area, "engine test trap placed", out var placedMessage), placedMessage);
@@ -1109,7 +1108,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 if (CombatRecorder.IsRecording)
                     CombatRecorder.Stop("engine test", out _);
                 Traps.ClearTraps(owner);
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
 
             await ctx.WaitUntilAsync(() => writer.Completion.IsCompleted && placementWriter.Completion.IsCompleted, 10f,
@@ -1207,7 +1206,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 used = UsePerkFeat.TryUseAbility(caster, target, feat, GetLocation(target));
                 if (!used)
-                    denial = Ability.GetLastActivationDenialReason();
+                    denial = AbilityActivation.GetLastActivationDenialReason();
             });
             ctx.Assert(used, $"{feat} activation was denied: {denial}");
         }

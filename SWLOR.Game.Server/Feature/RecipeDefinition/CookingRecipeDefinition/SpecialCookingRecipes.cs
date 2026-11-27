@@ -1,5 +1,6 @@
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition

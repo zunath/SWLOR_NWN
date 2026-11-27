@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Core
 {
     public static class Scheduler
     {
+        private static int _clearCount;
         private static double Time { get; set; }
         private static double DeltaTime { get; set; }
 
@@ -48,6 +49,18 @@ namespace SWLOR.Game.Server.Core
             return item;
         }
 
+        /// <summary>
+        /// Cancels every scheduled item, repeating ones included, so none runs again. Called by <see cref="ServerTeardown"/>;
+        /// an item already due in the frame being processed is skipped because it is marked cancelled.
+        /// </summary>
+        public static void Clear()
+        {
+            // An item running right now is not in the list; the counter keeps it from being queued again.
+            _clearCount++;
+            foreach (var item in _scheduledItems.ToArray())
+                item.Dispose();
+        }
+
         internal static void Unschedule(ScheduledItem scheduledItem)
         {
             _scheduledItems.Remove(scheduledItem);
@@ -75,13 +88,15 @@ namespace SWLOR.Game.Server.Core
                     continue;
 
                 _scheduledItems.Remove(item);
+                var clearCount = _clearCount;
                 try
                 {
                     item.Execute();
                 }
                 finally
                 {
-                    if (item.Repeating && !item.IsCancelled)
+                    // A callback that cleared the scheduler cancelled everything, this running item included.
+                    if (item.Repeating && !item.IsCancelled && clearCount == _clearCount)
                     {
                         item.Reschedule(Time + item.Schedule);
                         _scheduledItems.InsertOrdered(item, _comparer);

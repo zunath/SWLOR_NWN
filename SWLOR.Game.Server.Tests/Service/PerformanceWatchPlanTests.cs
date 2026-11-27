@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.PerformanceService;
+using SWLOR.Game.Server.Domain.Social;
 using static SWLOR.Game.Server.Tests.Service.PerformanceTestSnapshots;
 
 namespace SWLOR.Game.Server.Tests.Service;

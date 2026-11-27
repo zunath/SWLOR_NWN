@@ -12,7 +12,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The length of the string, or -1 on error</returns>
         public static int GetStringLength(string sString)
         {
-            return global::NWN.Core.NWScript.GetStringLength(sString);
+            return NWScriptRuntime.Current.GetStringLength(sString);
         }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The string in upper case, or empty string on error</returns>
         public static string GetStringUpperCase(string sString)
         {
-            return global::NWN.Core.NWScript.GetStringUpperCase(sString);
+            return NWScriptRuntime.Current.GetStringUpperCase(sString);
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The string in lower case, or empty string on error</returns>
         public static string GetStringLowerCase(string sString)
         {
-            return global::NWN.Core.NWScript.GetStringLowerCase(sString);
+            return NWScriptRuntime.Current.GetStringLowerCase(sString);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The rightmost characters, or empty string on error</returns>
         public static string GetStringRight(string sString, int nCount)
         {
-            return global::NWN.Core.NWScript.GetStringRight(sString, nCount);
+            return NWScriptRuntime.Current.GetStringRight(sString, nCount);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The leftmost characters, or empty string on error</returns>
         public static string GetStringLeft(string sString, int nCount)
         {
-            return global::NWN.Core.NWScript.GetStringLeft(sString, nCount);
+            return NWScriptRuntime.Current.GetStringLeft(sString, nCount);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The resulting string, or empty string on error</returns>
         public static string InsertString(string sDestination, string sString, int nPosition)
         {
-            return global::NWN.Core.NWScript.InsertString(sDestination, sString, nPosition);
+            return NWScriptRuntime.Current.InsertString(sDestination, sString, nPosition);
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The substring, or empty string on error</returns>
         public static string GetSubString(string sString, int nStart, int nCount)
         {
-            return global::NWN.Core.NWScript.GetSubString(sString, nStart, nCount);
+            return NWScriptRuntime.Current.GetSubString(sString, nStart, nCount);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The position of the substring, or -1 on error</returns>
         public static int FindSubString(string sString, string sSubString, int nStart = 0)
         {
-            return global::NWN.Core.NWScript.FindSubString(sString, sSubString, nStart);
+            return NWScriptRuntime.Current.FindSubString(sString, sSubString, nStart);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the string matches the pattern</returns>
         public static bool TestStringAgainstPattern(string sPattern, string sStringToTest)
         {
-            return global::NWN.Core.NWScript.TestStringAgainstPattern(sPattern, sStringToTest) != 0;
+            return NWScriptRuntime.Current.TestStringAgainstPattern(sPattern, sStringToTest);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The appropriate matched string, otherwise returns empty string</returns>
         public static string GetMatchedSubstring(int nString)
         {
-            return global::NWN.Core.NWScript.GetMatchedSubstring(nString);
+            return NWScriptRuntime.Current.GetMatchedSubstring(nString);
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The number of string parameters available, or -1 if no string matched (this could be because of a dialogue event)</returns>
         public static int GetMatchedSubstringsCount()
         {
-            return global::NWN.Core.NWScript.GetMatchedSubstringsCount();
+            return NWScriptRuntime.Current.GetMatchedSubstringsCount();
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace SWLOR.NWN.API.NWScript
             RegularExpressionType nSyntaxFlags = RegularExpressionType.Ecmascript,
             RegularExpressionFormatType nMatchFlags = RegularExpressionFormatType.Default)
         {
-            return global::NWN.Core.NWScript.RegExpReplace(sRegExp, sValue, sReplacement, (int)nSyntaxFlags, (int)nMatchFlags);
+            return NWScriptRuntime.Current.RegExpReplace(sRegExp, sValue, sReplacement, nSyntaxFlags, nMatchFlags);
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sValue">The value to return instead of the TLK file value (empty string to delete override)</param>
         public static void SetTlkOverride(int nStrRef, string sValue = "")
         {
-            global::NWN.Core.NWScript.SetTlkOverride(nStrRef, sValue);
+            NWScriptRuntime.Current.SetTlkOverride(nStrRef, sValue);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The float as a string</returns>
         public static string FloatToString(float fFloat, int nWidth = 18, int nDecimals = 9)
         {
-            return global::NWN.Core.NWScript.FloatToString(fFloat, nWidth, nDecimals);
+            return NWScriptRuntime.Current.FloatToString(fFloat, nWidth, nDecimals);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The integer as a string, or empty string on error</returns>
         public static string IntToString(int nInteger)
         {
-            return global::NWN.Core.NWScript.IntToString(nInteger);
+            return NWScriptRuntime.Current.IntToString(nInteger);
         }
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The string from the talk table</returns>
         public static string GetStringByStrRef(int nStrRef, Gender nGender = Gender.Male)
         {
-            return global::NWN.Core.NWScript.GetStringByStrRef(nStrRef, (int)nGender);
+            return NWScriptRuntime.Current.GetStringByStrRef(nStrRef, nGender);
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>A random name of the specified type</returns>
         public static string RandomName(Name nNameType = Name.FirstGenericMale)
         {
-            return global::NWN.Core.NWScript.RandomName((int)nNameType);
+            return NWScriptRuntime.Current.RandomName(nNameType);
         }
 
         /// <summary>
@@ -213,7 +213,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sTokenValue">The value to set for the token</param>
         public static void SetCustomToken(int nCustomTokenNumber, string sTokenValue)
         {
-            global::NWN.Core.NWScript.SetCustomToken(nCustomTokenNumber, sTokenValue);
+            NWScriptRuntime.Current.SetCustomToken(nCustomTokenNumber, sTokenValue);
         }
     }
 }

@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerformanceService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -25,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         };
 
         // Standing Ovation's ten-minute cooldown is kept by player, so rebuilding or re-banking Inspired does not reset it.
+        [ReloadState(ReloadStateKind.Carried)]
         private static readonly Dictionary<string, DateTime> _lastOvationByPlayer = new();
 
         private bool _requiemUsed;
@@ -165,12 +165,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             var maxHP = GetMaxHitPoints(creature);
             var amount = PerformanceAudienceRules.StandingOvationHeal(maxHP);
-            amount = Stat.ApplyHealingReceivedAdjustment(creature, amount, applyReceivedEffects: false);
-            amount = Stat.CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), maxHP);
+            amount = CombatResources.ApplyHealingReceivedAdjustment(creature, amount, applyReceivedEffects: false);
+            amount = CombatResources.CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), maxHP);
             if (amount <= 0)
                 return;
 
-            Stat.ApplyHealingReceivedEffects(creature, amount);
+            CombatResources.ApplyHealingReceivedEffects(creature, amount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
             SendMessageToPC(creature, "A standing ovation lifts you, restoring your health.");
         }

@@ -5,13 +5,14 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             record.UnallocatedXP = 12000;
             record.UnknownDisplayName = "Grumpy old man";
             DB.Set(record);
-            PlayerName.SetKnownName(observer.Creature, target.Creature, "Examine Test Character");
+            GameServices.PlayerKnownName.SetKnownName(observer.Creature, target.Creature, "Examine Test Character");
             var coloredName = PlayerName.GetDisplayName(observer.Creature, target.Creature);
             var plainName = UtilPlugin.StripColors(coloredName);
             ctx.Assert(coloredName != plainName, "fixture must exercise an inline-colored descriptor");
@@ -51,8 +52,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             model.Geometry = new GuiRectangle(35f, 20f, 640f, 660f);
             // Headless fixtures do not pass through OnModuleEnter. Register this window so
             // native watch events use the same event routing as a connected player's UI.
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var windows = GuiInternals.PlayerWindows();
             ctx.Assert(!windows.ContainsKey(observer.Id), "fixture GUI registration must be isolated");
             windows.Add(observer.Id, new Dictionary<GuiWindowType, GuiPlayerWindow>
             {
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                              .AddFieldSearch(nameof(PlayerNote.PlayerId), target.Id, false).AddPaging(50, 0)))
                     DB.Delete<PlayerNote>(note.Id);
                 foreach (var names in DB.Search(new DBQuery<PlayerKnownName>()
-                             .AddFieldSearch(nameof(PlayerKnownName.ObserverPlayerId), observer.Id, false).AddPaging(50, 0)))
+                             .AddFieldSearch(nameof(Entity.PlayerKnownName.ObserverPlayerId), observer.Id, false).AddPaging(50, 0)))
                     DB.Delete<PlayerKnownName>(names.Id);
                 await ctx.WaitFrameAsync();
             }

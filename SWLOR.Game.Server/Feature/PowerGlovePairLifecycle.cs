@@ -1,18 +1,21 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Feature;
 
 /// <summary>Routes both-hand removal through safe storage before the existing equipment hooks run.</summary>
 public static class PowerGlovePairLifecycle
 {
+    [BootPhase(BootReload.Rerun)]
     [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
     public static void RegisterUnequipGuard() => EquipmentUnequip.RegisterGuard("PowerGlove", TryHandleUnequip);
 
+    [BootPhase(BootReload.Rerun)]
     [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
     public static void RegisterAttackRules()
     {
@@ -45,12 +48,16 @@ public static class PowerGlovePairLifecycle
             PowerGloveEquipment.RemovePair(OBJECT_SELF, item);
     }
 
+    [PlayerSession(PlayerReload.LoginOnly,
+        "Recreates the companion glove at login; the glove stays equipped and the pairs are carried.")]
     [NWNEventHandler(ScriptName.OnModuleEnter)]
     public static void OnEnter() => PowerGloveEquipment.RestorePair(GetEnteringObject());
 
     [NWNEventHandler(ScriptName.OnPlayerSpawn)]
     public static void OnSpawn() => PowerGloveEquipment.RestorePair(OBJECT_SELF);
 
+    [PlayerSession(PlayerReload.LogoutOnly,
+        "Destroys the companion glove at logout; it stays equipped and the pairs are carried.")]
     [NWNEventHandler(ScriptName.OnModuleExit)]
     public static void OnExit() => PowerGloveEquipment.ReleaseCompanions(GetExitingObject());
 
@@ -72,7 +79,7 @@ public static class PowerGlovePairLifecycle
         PowerGloveEquipment.CollectCompanions(item, companions, new HashSet<uint>());
         foreach (var companion in companions)
         {
-            var owner = GetLocalObject(companion, PowerGloveEquipment.OwnerVariable);
+            var owner = GetLocalObject(companion, PowerGloveEquipmentService.OwnerVariable);
             // Module callbacks can arrive after storage relocation and native equip finish.
             // Current linked ownership distinguishes that completed move from a real escape.
             if (PowerGloveEquipment.IsChanging(owner) || PowerGloveEquipment.IsEquippedCompanion(companion))
@@ -93,7 +100,7 @@ public static class PowerGlovePairLifecycle
         var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
         if (!PowerGloveEquipment.IsGeneratedCompanion(item)) return;
         if (PowerGloveEquipment.IsCreatingCompanion) return;
-        var owner = GetLocalObject(item, PowerGloveEquipment.OwnerVariable);
+        var owner = GetLocalObject(item, PowerGloveEquipmentService.OwnerVariable);
         if (PowerGloveEquipment.IsChanging(owner) || PowerGloveEquipment.IsDestroyingCompanion(item)) return;
         EventsPlugin.SkipEvent();
         if (!GetIsObjectValid(owner) || PowerGloveEquipment.RemovePair(owner, item))
@@ -129,7 +136,7 @@ public static class PowerGlovePairLifecycle
                 PowerGloveEquipment.SanitizeCompanion(companion);
                 continue;
             }
-            var linkedOwner = GetLocalObject(companion, PowerGloveEquipment.OwnerVariable);
+            var linkedOwner = GetLocalObject(companion, PowerGloveEquipmentService.OwnerVariable);
             if (PowerGloveEquipment.IsEquippedCompanion(companion) ||
                 PowerGloveEquipment.TryRestoreSavedCompanion(companion) ||
                 PowerGloveEquipment.IsChanging(linkedOwner) && GetItemPossessor(companion) == linkedOwner)

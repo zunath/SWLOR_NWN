@@ -11,7 +11,7 @@ public class DiscordWebhookCallerSafetyTests
     [Test]
     public void DMShoutReturnsToGameContextBeforeFailureFeedback()
     {
-        var root = ReadSource("Feature/ChatCommandDefinition/DMChatCommand.cs");
+        var root = ReadSource("Feature/ChatCommandDefinition/DMCommunicationChatCommand.cs");
         var method = FindMethod(root, "SendDMShoutWebhookAsync");
         method.ReturnType.ToString().Should().Be("Task");
         var guardedBody = method.Body!.Statements.OfType<TryStatementSyntax>().Single();
@@ -48,7 +48,7 @@ public class DiscordWebhookCallerSafetyTests
     [Test]
     public void HostedEventPostContinuationsOnlyUseManagedLogging()
     {
-        var method = FindMethod(ReadSource("Service/HostedEvents.cs"), "PostToDiscordAsync");
+        var method = FindMethod(ReadSource("Domain/Social/HostedEventsService.cs"), "PostToDiscordAsync");
         var enqueue = method.DescendantNodes().OfType<AwaitExpressionSyntax>().Single();
         var callsAfterEnqueue = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
             .Where(call => call.SpanStart > enqueue.Span.End)
@@ -60,7 +60,7 @@ public class DiscordWebhookCallerSafetyTests
     [Test]
     public void PropertyBroadcastDoesNotMoveItsCallerOntoAnAsyncContinuation()
     {
-        var method = FindMethod(ReadSource("Service/Property.cs"), "BroadcastPropertyEvent");
+        var method = FindMethod(ReadSource("Domain/World/PropertyCityGovernanceService.cs"), "BroadcastPropertyEvent");
         method.DescendantNodes().OfType<AwaitExpressionSyntax>().Should().BeEmpty();
         method.ReturnType.ToString().Should().Be("void");
         method.ToString().Should().Contain(".GetResult()");
@@ -73,12 +73,12 @@ public class DiscordWebhookCallerSafetyTests
         foreach (var path in Directory.EnumerateFiles(ServerRoot(), "*.cs", SearchOption.AllDirectories))
         {
             var source = File.ReadAllText(path);
-            if (!source.Contains("BackgroundJob.EnqueueDiscordWebhook", StringComparison.Ordinal))
+            if (!source.Contains(".EnqueueDiscordWebhook", StringComparison.Ordinal))
                 continue;
 
             var root = CSharpSyntaxTree.ParseText(source).GetRoot();
             foreach (var call in root.DescendantNodes().OfType<InvocationExpressionSyntax>()
-                         .Where(call => call.Expression.ToString() == "BackgroundJob.EnqueueDiscordWebhook"))
+                         .Where(call => call.Expression.ToString() is "BackgroundJob.EnqueueDiscordWebhook" or "_backgroundJob.EnqueueDiscordWebhook"))
             {
                 var method = call.Ancestors().OfType<MethodDeclarationSyntax>().First();
                 callers.Add(Path.GetFileNameWithoutExtension(path) + "." + method.Identifier.ValueText);
@@ -89,9 +89,9 @@ public class DiscordWebhookCallerSafetyTests
         {
             "BugReportViewModel.SubmitBugReportToDiscord",
             "HoloNetViewModel.SubmitBroadcastAsync",
-            "DMChatCommand.SendDMShoutWebhookAsync",
-            "HostedEvents.PostToDiscordAsync",
-            "Property.BroadcastPropertyEvent",
+            "DMCommunicationChatCommand.SendDMShoutWebhookAsync",
+            "HostedEventsService.PostToDiscordAsync",
+            "PropertyCityGovernanceService.BroadcastPropertyEvent",
             "ServerTasks.SendServerLifecycleNotification"
         }, "each new caller must be checked for native calls after its asynchronous enqueue");
     }

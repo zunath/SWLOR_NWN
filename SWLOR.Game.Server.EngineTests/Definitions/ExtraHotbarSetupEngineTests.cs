@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.ExtraHotbarService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -23,14 +23,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var player = await PlayerAbilityFixture.CreateAsync(ctx);
             var record = DB.Get<Player>(player.Id);
-            var bars = ExtraHotbars.GetBars(record);
+            var bars = ExtraHotbarsWindow.GetBars(record);
             bars[0].SlotCount = 8;
             bars[0].Layout = ExtraHotbarLayout.Stacked;
             DB.Set(record);
 
             // Headless fixtures skip OnModuleEnter, so their windows are registered here.
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(SWLOR.Game.Server.Domain.UI.GuiService)
+                .GetField("_playerWindows", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(Gui)!;
             ctx.Assert(!windows.ContainsKey(player.Id), "fixture GUI registration must be isolated");
             var playerWindows = new Dictionary<GuiWindowType, GuiPlayerWindow>();
             foreach (var type in new[] { GuiWindowType.ExtraHotbarSetup, GuiWindowType.ExtraHotbar1,
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             void AssertSavedBar(int expectedSlots, ExtraHotbarLayout expectedLayout, string when)
             {
-                var bar = ExtraHotbars.GetBars(DB.Get<Player>(player.Id))[0];
+                var bar = ExtraHotbarsWindow.GetBars(DB.Get<Player>(player.Id))[0];
                 ctx.AssertEqual(expectedSlots, bar.SlotCount, $"saved slot count {when}");
                 ctx.AssertEqual(expectedLayout, bar.Layout, $"saved layout {when}");
             }

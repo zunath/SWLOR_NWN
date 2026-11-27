@@ -6,11 +6,12 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -22,14 +23,10 @@ public class CombatUpgradeMigrationCoverageTests
     public void LoggedOutStatusEffects_RemainProcessLocalRuntimeState()
     {
         var root = FindRepositoryRoot();
-        var statusEffectService = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "StatusEffect.cs"));
+        var statusEffectService = StatusEffectSource.Read();
 
-        statusEffectService.Should().Contain("private static readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();");
-        statusEffectService.Should().Contain("_loggedOutPlayerEffects[playerId] = new LoggedOutStatusEffects(player, effects, DateTime.UtcNow);");
+        statusEffectService.Should().Contain("private readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();");
+        statusEffectService.Should().Contain("_loggedOutPlayerEffects[playerId] = new LoggedOutStatusEffects(player, effects, Clock.UtcNow);");
         statusEffectService.Should().NotContain("ClearLoggedOutPlayerEffects");
     }
 
@@ -40,8 +37,9 @@ public class CombatUpgradeMigrationCoverageTests
         var migrationService = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Migration.cs"));
+            "Domain",
+            "Foundation",
+            "MigrationService.cs"));
 
         migrationService.Should().Contain("ConsoleProgressMigrationVersion = 22");
         migrationService.Should().Contain("Starting server migration");

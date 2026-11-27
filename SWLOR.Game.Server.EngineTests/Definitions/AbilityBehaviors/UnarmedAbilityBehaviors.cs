@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
@@ -226,12 +226,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         {
             foreach (var feat in new[] { FeatType.Jab1, FeatType.PalmStrike1 })
             {
-                var ability = Ability.GetAbilityDetail(feat);
-                Ability.ClearLastCompletedAbilityImpactSummary(caster);
+                var ability = AbilityCatalog.GetAbilityDetail(feat);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
                     ctx.Assert(UsePerkFeat.TryUseAbility(caster, target, feat, GetLocation(target)),
-                        $"{ability.Name} starts: {Ability.GetLastActivationDenialReason()}"));
-                await ctx.WaitUntilAsync(() => Ability.GetLastCompletedAbilityImpactSummary(caster)?.Ability == ability,
+                        $"{ability.Name} starts: {AbilityActivation.GetLastActivationDenialReason()}"));
+                await ctx.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster)?.Ability == ability,
                     6f, $"{ability.Name} to complete its actual activation");
                 // The next technique waits out the one-second technique lock.
                 await ctx.DelaySecondsAsync(1.05f);

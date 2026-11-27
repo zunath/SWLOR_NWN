@@ -21,14 +21,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.MakeHostile(target);
             }
 
-            ctx.Assert(!StatusEffect.ApplyStatusEffect(caster, droid, typeof(BleedStatusEffect), 30f),
+            ctx.Assert(!StatusEffectApplication.ApplyStatusEffect(caster, droid, typeof(BleedStatusEffect), 30f),
                 "a droid must refuse Bleed");
-            ctx.Assert(!StatusEffect.ApplyStatusEffect(caster, droid, typeof(HemorrhageStatusEffect), 30f),
+            ctx.Assert(!StatusEffectApplication.ApplyStatusEffect(caster, droid, typeof(HemorrhageStatusEffect), 30f),
                 "a droid must refuse Hemorrhage");
-            ctx.Assert(StatusEffect.ApplyStatusEffect(caster, droid, typeof(SunderStatusEffect), 30f),
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, droid, typeof(SunderStatusEffect), 30f),
                 "a droid must take Sunder");
             ctx.Assert(StatusEffect.HasStatusEffect(droid, typeof(SunderStatusEffect)), "Sunder must remain on the droid");
-            ctx.Assert(StatusEffect.ApplyStatusEffect(caster, rat, typeof(BleedStatusEffect), 30f),
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, rat, typeof(BleedStatusEffect), 30f),
                 "a living enemy must still bleed");
         }
     }

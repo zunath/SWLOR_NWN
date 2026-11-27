@@ -1,14 +1,22 @@
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class MarketDialog: ConversationMenuDefinition
     {
+        private IGuiService Gui { get; }
+        private IPlayerMarketService PlayerMarket { get; }
+
+        public MarketDialog(IGuiService gui, IPlayerMarketService playerMarket)
+        {
+            Gui = gui;
+            PlayerMarket = playerMarket;
+        }
+
         private const string MainPageId = "MAIN_PAGE";
 
         public override ConversationMenuSpec Build()

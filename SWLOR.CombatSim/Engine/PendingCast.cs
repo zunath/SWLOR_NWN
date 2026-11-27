@@ -18,9 +18,9 @@ namespace SWLOR.CombatSim.Engine
         public int FpCost { get; init; }
         public int StmCost { get; set; }
         public TechniqueActivation Technique { get; set; }
-        public SWLOR.Game.Server.Service.CombatService.PairedRangedAbilityTraitsSnapshot WeaponTraits { get; set; }
+        public SWLOR.Game.Server.Domain.Combat.PairedRangedAbilityTraitsSnapshot WeaponTraits { get; set; }
         public IReadOnlyList<int> WeaponDamages { get; init; }
-        public SWLOR.Game.Server.Service.CombatService.WeaponAbilityTraitActivation WeaponActivation { get; set; }
+        public SWLOR.Game.Server.Domain.Combat.WeaponAbilityTraitActivation WeaponActivation { get; set; }
         public double ChannelStartedAt { get; init; }
         public double ChannelEndsAt { get; init; }
         public double AttackReadyBeforeChannel { get; init; }

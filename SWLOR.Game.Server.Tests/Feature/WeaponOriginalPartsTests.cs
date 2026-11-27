@@ -2,7 +2,7 @@ using System.Collections;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.Preview;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -49,10 +49,8 @@ public class WeaponOriginalPartsTests
     public void OnlyTheRareWeaponTypesKeepTheirOwnParts()
     {
         // Other types, such as the training sabers, refuse a weapon whose part is missing from their lists.
-        var editor = typeof(AppearanceEditorViewModel);
-        editor.GetMethod("LoadWeaponAppearances", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, null);
-        var loaded = (IDictionary)editor.GetField("_weaponAppearances", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
-        loaded.Keys.Cast<BaseItem>().Where(type => ((WeaponAppearanceBaseDefinition)loaded[type]!).KeepsOwnParts)
+        var definitions = new WeaponAppearanceCatalog().Definitions;
+        definitions.Keys.Where(type => definitions[type].KeepsOwnParts)
             .Should().BeEquivalentTo(new[]
             {
                 BaseItem.Longsword, BaseItem.GreatSword, BaseItem.Dagger,

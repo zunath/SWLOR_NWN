@@ -4,7 +4,7 @@ using Avalonia.Headless.NUnit;
 using Avalonia.VisualTree;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
@@ -68,11 +68,11 @@ public sealed class ConversationEditorOpeningTests
                 Path.Combine(dialogDirectory, id + ".dlg.json")))
             .ToArray();
 
-        routes.Should().HaveCount(345);
+        routes.Should().HaveCount(386);
         routes.Should().NotContain(route => route.Kind == ConversationEditorRouteKind.Missing);
         routes.Should().OnlyContain(route => route.OpensEditor,
             "every authored conversation shown in Module Contents must open an editor");
-        routes.Count(route => route.Kind == ConversationEditorRouteKind.NuiGraph).Should().Be(343);
+        routes.Count(route => route.Kind == ConversationEditorRouteKind.NuiGraph).Should().Be(384);
         routes.Where(route => route.Kind == ConversationEditorRouteKind.LegacyException)
             .Select(route => Path.GetFileName(route.Path))
             .Should().BeEquivalentTo(new[] { "dmfi_universal.dlg.json", "x0_skill_ctrap.dlg.json" },

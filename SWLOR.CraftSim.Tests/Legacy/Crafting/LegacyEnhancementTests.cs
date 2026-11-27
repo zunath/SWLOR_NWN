@@ -5,8 +5,9 @@ using SWLOR.CraftSim.Legacy;
 using SWLOR.CraftSim.Legacy.Crafting;
 using SWLOR.CraftSim.Rng;
 using SWLOR.CraftSim.Tests.Support;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.CraftSim.Tests.Legacy.Crafting
 {

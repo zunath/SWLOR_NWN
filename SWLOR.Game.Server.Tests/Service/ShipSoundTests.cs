@@ -2,8 +2,9 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -71,9 +72,13 @@ public class ShipSoundTests
     public void SharedAbilityVisuals_GoThroughVisualEffectPlayback()
     {
         var root = FindRepositoryRoot();
-        foreach (var file in new[] { "Service/Ability.cs", "Feature/AbilityDefinition/NPC/InnateAbility.cs" })
+        var sources = new[]
         {
-            var source = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", file));
+            ("AbilityService", AbilitySource.Read()),
+            ("Feature/AbilityDefinition/NPC/InnateAbility.cs", File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature/AbilityDefinition/NPC/InnateAbility.cs")))
+        };
+        foreach (var (file, source) in sources)
+        {
             source.Should().NotMatchRegex(@"EffectVisualEffect\((areaVisualEffect|targetVisualEffect)\b",
                 $"{file} must route definition-supplied effects through VisualEffectPlayback");
         }

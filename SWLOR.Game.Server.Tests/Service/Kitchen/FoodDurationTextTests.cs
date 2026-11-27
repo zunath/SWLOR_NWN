@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
 
 namespace SWLOR.Game.Server.Tests.Service.Kitchen;
 
@@ -67,7 +67,7 @@ public class FoodDurationTextTests
         directory.Should().NotBeNull();
 
         var source = File.ReadAllText(Path.Combine(
-            directory!.FullName, "SWLOR.Game.Server", "Service", "CraftService", "Minigame", "NwnCraftSessionWorld.cs"));
+            directory!.FullName, "SWLOR.Game.Server", "Domain", "Crafting", "Minigame", "NwnCraftSessionWorld.cs"));
 
         source.Should().Contain("SetDescription(item, FoodDurationText.AppendTo(GetDescription(item), durationSeconds))");
     }

@@ -292,6 +292,18 @@ directories, and their parent paths must be on the same filesystem. This makes
 the cutover and rollback directory moves atomic. The independent server copy
 is completed and checksum-verified before downtime.
 
+`SERVER_DOTNET_ENTRY` picks the NWNX .NET entry. `native`, the default and
+production's value, deploys `SWLOR.Game.Server` into `SERVER_DOTNET_ROOT` as
+before and leaves the env file's `NWNX_DOTNET_*` lines alone. `host` deploys
+`SWLOR.Game.Host` into `SERVER_DOTNET_ROOT` and the game into its `game/`
+folder, and writes `SWLOR_DOTNET_ENTRY` and the host's `NWNX_DOTNET_*` lines
+into `SERVER_ENV_FILE`. Changing the setting rebuilds the .NET layout on the
+next deployment; switching back to `native` writes the native lines again.
+Production stays `native` until the host is measured no slower. Both layouts
+carry `SWLOR.Game.NativeHooks.dll` (the native hook trampolines) beside the
+entry assembly in `SERVER_DOTNET_ROOT`, and the deployer refuses an output
+without it.
+
 Keep `COMPOSE_PROJECT_NAME` equal to the host's established Compose project
 name. Changing it selects different project-scoped containers, networks, and
 named volumes. The test host uses `nwnserver`.

@@ -11,7 +11,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nNumHenchmen">The maximum number of henchmen to allow</param>
         public static void SetMaxHenchmen(int nNumHenchmen)
         {
-            global::NWN.Core.NWScript.SetMaxHenchmen(nNumHenchmen);
+            NWScriptRuntime.Current.SetMaxHenchmen(nNumHenchmen);
         }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The maximum number of henchmen allowed</returns>
         public static int GetMaxHenchmen()
         {
-            return global::NWN.Core.NWScript.GetMaxHenchmen();
+            return NWScriptRuntime.Current.GetMaxHenchmen();
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The associate type. Returns ASSOCIATE_TYPE_NONE if the creature is not the associate of anyone</returns>
         public static AssociateType GetAssociateType(uint oAssociate)
         {
-            return (AssociateType)global::NWN.Core.NWScript.GetAssociateType(oAssociate);
+            return NWScriptRuntime.Current.GetAssociateType(oAssociate);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace SWLOR.NWN.API.NWScript
             bool bReadyAllSpells = false,
             Package nPackage = Package.Invalid)
         {
-            return global::NWN.Core.NWScript.LevelUpHenchman(oCreature, (int)nClass, bReadyAllSpells ? 1 : 0, (int)nPackage);
+            return NWScriptRuntime.Current.LevelUpHenchman(oCreature, nClass, bReadyAllSpells, nPackage);
         }
 
         /// <summary>
@@ -57,9 +57,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oTarget">The target to initialize (default: OBJECT_SELF)</param>
         public static void SetAssociateListenPatterns(uint oTarget = OBJECT_INVALID)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetAssociateListenPatterns(oTarget);
+            NWScriptRuntime.Current.SetAssociateListenPatterns(oTarget);
         }
 
         /// <summary>
@@ -69,9 +67,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oAssociate">The associate to remove (default: OBJECT_SELF)</param>
         public static void RemoveSummonedAssociate(uint oMaster, uint oAssociate = OBJECT_INVALID)
         {
-            if (oAssociate == OBJECT_INVALID)
-                oAssociate = OBJECT_SELF;
-            global::NWN.Core.NWScript.RemoveSummonedAssociate(oMaster, oAssociate);
+            NWScriptRuntime.Current.RemoveSummonedAssociate(oMaster, oAssociate);
         }
 
         /// <summary>
@@ -81,7 +77,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The familiar creature type (FAMILIAR_CREATURE_TYPE_*). Returns FAMILIAR_CREATURE_TYPE_NONE if the creature is invalid or does not currently have a familiar</returns>
         public static int GetFamiliarCreatureType(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetFamiliarCreatureType(oCreature);
+            return NWScriptRuntime.Current.GetFamiliarCreatureType(oCreature);
         }
 
         /// <summary>
@@ -91,7 +87,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The animal companion creature type (ANIMAL_COMPANION_CREATURE_TYPE_*). Returns ANIMAL_COMPANION_CREATURE_TYPE_NONE if the creature is invalid or does not currently have an animal companion</returns>
         public static int GetAnimalCompanionCreatureType(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetAnimalCompanionCreatureType(oCreature);
+            return NWScriptRuntime.Current.GetAnimalCompanionCreatureType(oCreature);
         }
 
         /// <summary>
@@ -101,7 +97,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The familiar's name. Returns empty string if the creature is invalid, does not currently have a familiar, or if the familiar's name is blank</returns>
         public static string GetFamiliarName(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetFamiliarName(oCreature);
+            return NWScriptRuntime.Current.GetFamiliarName(oCreature);
         }
 
         /// <summary>
@@ -111,7 +107,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The animal companion's name. Returns empty string if the creature is invalid, does not currently have an animal companion, or if the animal companion's name is blank</returns>
         public static string GetAnimalCompanionName(uint oTarget)
         {
-            return global::NWN.Core.NWScript.GetAnimalCompanionName(oTarget);
+            return NWScriptRuntime.Current.GetAnimalCompanionName(oTarget);
         }
 
         /// <summary>
@@ -123,9 +119,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The associate object. Returns OBJECT_INVALID if no such associate exists</returns>
         public static uint GetAssociate(AssociateType nAssociateType, uint oMaster = OBJECT_INVALID, int nTh = 1)
         {
-            if (oMaster == OBJECT_INVALID)
-                oMaster = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetAssociate((int)nAssociateType, oMaster, nTh);
+            return NWScriptRuntime.Current.GetAssociate(nAssociateType, oMaster, nTh);
         }
 
         /// <summary>
@@ -136,9 +130,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>If the henchman is either a DM or a player character, this will have no effect.</remarks>
         public static void AddHenchman(uint oMaster, uint oHenchman = OBJECT_INVALID)
         {
-            if (oHenchman == OBJECT_INVALID)
-                oHenchman = OBJECT_SELF;
-            global::NWN.Core.NWScript.AddHenchman(oMaster, oHenchman);
+            NWScriptRuntime.Current.AddHenchman(oMaster, oHenchman);
         }
 
         /// <summary>
@@ -148,9 +140,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oHenchman">The henchman to remove (default: OBJECT_SELF)</param>
         public static void RemoveHenchman(uint oMaster, uint oHenchman = OBJECT_INVALID)
         {
-            if (oHenchman == OBJECT_INVALID)
-                oHenchman = OBJECT_SELF;
-            global::NWN.Core.NWScript.RemoveHenchman(oMaster, oHenchman);
+            NWScriptRuntime.Current.RemoveHenchman(oMaster, oHenchman);
         }
 
         /// <summary>
@@ -161,9 +151,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The henchman object. Returns OBJECT_INVALID if the master does not have a henchman</returns>
         public static uint GetHenchman(uint oMaster = OBJECT_INVALID, int nNth = 1)
         {
-            if (oMaster == OBJECT_INVALID)
-                oMaster = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetHenchman(oMaster, nNth);
+            return NWScriptRuntime.Current.GetHenchman(oMaster, nNth);
         }
 
         /// <summary>
@@ -172,9 +160,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oMaster">The master to summon the animal companion for (default: OBJECT_SELF)</param>
         public static void SummonAnimalCompanion(uint oMaster = OBJECT_INVALID)
         {
-            if (oMaster == OBJECT_INVALID)
-                oMaster = OBJECT_SELF;
-            global::NWN.Core.NWScript.SummonAnimalCompanion(oMaster);
+            NWScriptRuntime.Current.SummonAnimalCompanion(oMaster);
         }
 
         /// <summary>
@@ -183,9 +169,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oMaster">The master to summon the familiar for (default: OBJECT_SELF)</param>
         public static void SummonFamiliar(uint oMaster = OBJECT_INVALID)
         {
-            if (oMaster == OBJECT_INVALID)
-                oMaster = OBJECT_SELF;
-            global::NWN.Core.NWScript.SummonFamiliar(oMaster);
+            NWScriptRuntime.Current.SummonFamiliar(oMaster);
         }
 
         /// <summary>
@@ -195,9 +179,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The last command (ASSOCIATE_COMMAND_* constant)</returns>
         public static int GetLastAssociateCommand(uint oAssociate = OBJECT_INVALID)
         {
-            if (oAssociate == OBJECT_INVALID)
-                oAssociate = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetLastAssociateCommand(oAssociate);
+            return NWScriptRuntime.Current.GetLastAssociateCommand(oAssociate);
         }
 
         /// <summary>
@@ -207,9 +189,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The master object</returns>
         public static uint GetMaster(uint oAssociate = OBJECT_INVALID)
         {
-            if (oAssociate == OBJECT_INVALID)
-                oAssociate = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetMaster(oAssociate);
+            return NWScriptRuntime.Current.GetMaster(oAssociate);
         }
     }
 }

@@ -1,35 +1,20 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class CoxxionTerminalDialog: ConversationMenuDefinition
     {
-        private static readonly List<uint> _areaDoors = new List<uint>();
+        private IAreaService Area { get; }
+        private ICoxxionBaseDoorsService CoxxionBaseDoors { get; }
+
+        public CoxxionTerminalDialog(IAreaService area, ICoxxionBaseDoorsService coxxionBaseDoors)
+        {
+            Area = area;
+            CoxxionBaseDoors = coxxionBaseDoors;
+        }
 
         private const string MainPageId = "MAIN_PAGE";
-
-        /// <summary>
-        /// When the module loads, store the doors for the Coxxion Base dungeon into cache.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
-        public static void LoadDoors()
-        {
-            var area = Area.GetAreaByResref("v_cox_base");
-            if (!GetIsObjectValid(area)) return;
-
-            for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
-            {
-                var colorId = GetLocalInt(obj, "DOOR_COLOR");
-
-                if (colorId > 0)
-                {
-                    _areaDoors.Add(obj);
-                }
-            }
-        }
 
         public override ConversationMenuSpec Build()
         {
@@ -68,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 SetLocalInt(area, "DOOR_STATUS", terminalColorId);
 
-                foreach (var door in _areaDoors)
+                foreach (var door in CoxxionBaseDoors.Doors)
                 {
                     if (GetLocalInt(door, "DOOR_COLOR") == terminalColorId)
                     {

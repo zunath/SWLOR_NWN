@@ -14,6 +14,7 @@ using Nwn.Preview.Thumbnails;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Items;
 using SWLOR.Toolset.Viewport;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Toolset.Workspace
 {
@@ -535,7 +536,7 @@ namespace SWLOR.Toolset.Workspace
                 // Only the shared cloak material selects its atlas tile from the bitmap; other
                 // materials would just duplicate cache entries per bitmap.
                 surfaceName.Equals(
-                    SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.CloakTintRenderer.MaterialResref,
+                    SWLOR.Game.Server.Domain.Companions.CloakTintRenderer.MaterialResref,
                     StringComparison.OrdinalIgnoreCase)
                     ? mesh.TextureName
                     : null);

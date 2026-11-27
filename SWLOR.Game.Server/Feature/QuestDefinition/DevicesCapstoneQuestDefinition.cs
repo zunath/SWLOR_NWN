@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string ThermalDetonatorMeasureQuestId = "thermal_detonator_measure";
         internal const string ThermalDetonatorBreachQuestId = "thermal_detonator_breach";
         internal const string ThermalDetonatorCircleQuestId = "thermal_detonator_circle";
-        internal const string ThermalDetonatorMasteryQuestId = "thermal_detonator_mastery";
+        internal const string ThermalDetonatorMasteryQuestId = CapstoneQuestIds.ThermalDetonatorMasteryQuestId;
         internal const string ThermalDetonatorAdeptResref = "cp_thermdet_ad";
         internal const string ThermalDetonatorSpecialistResref = "cp_thermdet_sp";
         internal const string ThermalDetonatorInnerCircleResref = "cp_thermdet_ic";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string OverloadBarrageMeasureQuestId = "overload_barrage_measure";
         internal const string OverloadBarrageBreachQuestId = "overload_barrage_breach";
         internal const string OverloadBarrageCircleQuestId = "overload_barrage_circle";
-        internal const string OverloadBarrageMasteryQuestId = "overload_barrage_mastery";
+        internal const string OverloadBarrageMasteryQuestId = CapstoneQuestIds.OverloadBarrageMasteryQuestId;
         internal const string OverloadBarrageAdeptResref = "cp_overbarr_ad";
         internal const string OverloadBarrageSpecialistResref = "cp_overbarr_sp";
         internal const string OverloadBarrageInnerCircleResref = "cp_overbarr_ic";
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string KillzoneBeaconMeasureQuestId = "killzone_beacon_measure";
         internal const string KillzoneBeaconBreachQuestId = "killzone_beacon_breach";
         internal const string KillzoneBeaconCircleQuestId = "killzone_beacon_circle";
-        internal const string KillzoneBeaconMasteryQuestId = "killzone_beacon_mastery";
+        internal const string KillzoneBeaconMasteryQuestId = CapstoneQuestIds.KillzoneBeaconMasteryQuestId;
         internal const string KillzoneBeaconAdeptResref = "cp_killbeacon_ad";
         internal const string KillzoneBeaconSpecialistResref = "cp_killbeacon_sp";
         internal const string KillzoneBeaconInnerCircleResref = "cp_killbeacon_ic";
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string EmergencyBunkerMeasureQuestId = "emergency_bunker_measure";
         internal const string EmergencyBunkerBreachQuestId = "emergency_bunker_breach";
         internal const string EmergencyBunkerCircleQuestId = "emergency_bunker_circle";
-        internal const string EmergencyBunkerMasteryQuestId = "emergency_bunker_mastery";
+        internal const string EmergencyBunkerMasteryQuestId = CapstoneQuestIds.EmergencyBunkerMasteryQuestId;
         internal const string EmergencyBunkerAdeptResref = "cp_embunker_ad";
         internal const string EmergencyBunkerSpecialistResref = "cp_embunker_sp";
         internal const string EmergencyBunkerInnerCircleResref = "cp_embunker_ic";

@@ -15,7 +15,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nBadTargetCursor">The mouse cursor to display when hovering over invalid targets</param>
         public static void EnterTargetingMode(uint oPC, ObjectType nValidObjectTypes = ObjectType.All, MouseCursor nMouseCursorId = MouseCursor.Magic, MouseCursor nBadTargetCursor = MouseCursor.NoMagic)
         {
-            global::NWN.Core.NWScript.EnterTargetingMode(oPC, (int)nValidObjectTypes, (int)nMouseCursorId, (int)nBadTargetCursor);
+            NWScriptRuntime.Current.EnterTargetingMode(oPC, nValidObjectTypes, nMouseCursorId, nBadTargetCursor);
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The selected target object, or the area object when targeting the ground</returns>
         public static uint GetTargetingModeSelectedObject()
         {
-            return global::NWN.Core.NWScript.GetTargetingModeSelectedObject();
+            return NWScriptRuntime.Current.GetTargetingModeSelectedObject();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The selected target position as a Vector3</returns>
         public static Vector3 GetTargetingModeSelectedPosition()
         {
-            return global::NWN.Core.NWScript.GetTargetingModeSelectedPosition();
+            return NWScriptRuntime.Current.GetTargetingModeSelectedPosition();
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The player object that last selected a target</returns>
         public static uint GetLastPlayerToSelectTarget()
         {
-            return global::NWN.Core.NWScript.GetLastPlayerToSelectTarget();
+            return NWScriptRuntime.Current.GetLastPlayerToSelectTarget();
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nFlags">SPELL_TARGETING_FLAGS_* constants</param>
         public static void SetSpellTargetingData(uint oPlayer, Spell nSpell, int nShape, float fSizeX, float fSizeY, int nFlags)
         {
-            global::NWN.Core.NWScript.SetSpellTargetingData(oPlayer, (int)nSpell, nShape, fSizeX, fSizeY, nFlags);
+            NWScriptRuntime.Current.SetSpellTargetingData(oPlayer, nSpell, nShape, fSizeX, fSizeY, nFlags);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace SWLOR.NWN.API.NWScript
             Spell nSpell = Spell.AllSpells,
             FeatType nFeat = FeatType.Invalid)
         {
-            global::NWN.Core.NWScript.SetEnterTargetingModeData(oPlayer, nShape, fSizeX, fSizeY, nFlags, fRange, (int)nSpell, (int)nFeat);
+            NWScriptRuntime.Current.SetEnterTargetingModeData(oPlayer, nShape, fSizeX, fSizeY, nFlags, fRange, nSpell, nFeat);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The duration in seconds. Returns 0.0f if no duration is stored or if no sound is attached</returns>
         public static float GetStrRefSoundDuration(int nStrRef)
         {
-            return global::NWN.Core.NWScript.GetStrRefSoundDuration(nStrRef);
+            return NWScriptRuntime.Current.GetStrRefSoundDuration(nStrRef);
         }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Only works for sounds used for dialog.</remarks>
         public static float GetDialogSoundLength(int nStrRef)
         {
-            return global::NWN.Core.NWScript.GetDialogSoundLength(nStrRef);
+            return NWScriptRuntime.Current.GetDialogSoundLength(nStrRef);
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nRunAsAction">If false, the sound is forced to play instantly (default: true)</param>
         public static void PlaySoundByStrRef(int nStrRef, bool nRunAsAction = true)
         {
-            global::NWN.Core.NWScript.PlaySoundByStrRef(nStrRef, nRunAsAction ? 1 : 0);
+            NWScriptRuntime.Current.PlaySoundByStrRef(nStrRef, nRunAsAction);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sSoundName">The name of the sound to play</param>
         public static void PlaySound(string sSoundName)
         {
-            global::NWN.Core.NWScript.PlaySound(sSoundName);
+            NWScriptRuntime.Current.PlaySound(sSoundName);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fFadeTime">The fade time in seconds (default: 0.0f)</param>
         public static void SetAudioStreamPaused(uint oPlayer, int nStreamIdentifier, bool bPaused, float fFadeTime = 0.0f)
         {
-            global::NWN.Core.NWScript.SetAudioStreamPaused(oPlayer, nStreamIdentifier, bPaused ? 1 : 0, fFadeTime);
+            NWScriptRuntime.Current.SetAudioStreamPaused(oPlayer, nStreamIdentifier, bPaused, fFadeTime);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fFadeTime">The fade time in seconds (default: 0.0f)</param>
         public static void SetAudioStreamVolume(uint oPlayer, int nStreamIdentifier, float fVolume = 1.0f, float fFadeTime = 0.0f)
         {
-            global::NWN.Core.NWScript.SetAudioStreamVolume(oPlayer, nStreamIdentifier, fVolume, fFadeTime);
+            NWScriptRuntime.Current.SetAudioStreamVolume(oPlayer, nStreamIdentifier, fVolume, fFadeTime);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fSeconds">The offset in seconds to seek to</param>
         public static void SeekAudioStream(uint oPlayer, int nStreamIdentifier, float fSeconds)
         {
-            global::NWN.Core.NWScript.SeekAudioStream(oPlayer, nStreamIdentifier, fSeconds);
+            NWScriptRuntime.Current.SeekAudioStream(oPlayer, nStreamIdentifier, fSeconds);
         }
     }
 }

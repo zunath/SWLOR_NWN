@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The settings a plain `dotnet test SWLOR.Game.Host.Tests` uses (RunSettingsFilePath in the project). A run given a
+  settings file of its own (the coverage runs) does not read them, so scripts/ci/run-unit-tests.sh sets the same
+  variable for this project itself.
+
+  DOTNET_JITMinOpts: RealBuildReloadTests loads the real game build into a collectible context 25 times. The runtime never
+  tiers code of a collectible context, so without this every method a generation runs is compiled fully optimized at its
+  first call (about 25 s of JIT per generation); MinOpts compiles it as tier 0 would. Unoptimized code only keeps locals
+  alive longer, so it can make a generation look retained, never hide one that is.
+-->
+<RunSettings>
+  <RunConfiguration>
+    <EnvironmentVariables>
+      <DOTNET_JITMinOpts>1</DOTNET_JITMinOpts>
+    </EnvironmentVariables>
+  </RunConfiguration>
+</RunSettings>

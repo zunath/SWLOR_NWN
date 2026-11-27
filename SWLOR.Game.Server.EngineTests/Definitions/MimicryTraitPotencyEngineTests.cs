@@ -3,9 +3,11 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -20,25 +22,25 @@ public static class MimicryTraitPotencyEngineTests
         record.EquippedTechniques.AddRange(new[] { FeatType.IronCarapaceTechnique, FeatType.ChitinGuardTechnique });
         DB.Set(record);
         AssertDefense(ctx, player, 12, 20, 15);
-        var physicalBefore = Stat.GetDefense(player, CombatDamageType.Physical, AbilityType.Vitality);
-        var forceBefore = Stat.GetDefense(player, CombatDamageType.Force, AbilityType.Willpower);
+        var physicalBefore = CombatRating.GetDefense(player, CombatDamageType.Physical, AbilityType.Vitality);
+        var forceBefore = CombatRating.GetDefense(player, CombatDamageType.Force, AbilityType.Willpower);
         var fireBefore = Resistance.GetResistance(player, ResistanceType.Fire);
 
-        var overload = Ability.GetAbilityDetail(FeatType.Overload);
+        var overload = AbilityCatalog.GetAbilityDetail(FeatType.Overload);
         await ctx.ExecuteInCreatureContextAsync(player, () => overload.ImpactAction(player, player, 1, GetLocation(player)));
         ctx.Assert(StatusEffect.HasStatusEffect<OverloadStatusEffect>(player), "the real capstone applies Overload");
         AssertDefense(ctx, player, 18, 30, 23);
-        ctx.Assert(Stat.GetDefense(player, CombatDamageType.Physical, AbilityType.Vitality) > physicalBefore,
+        ctx.Assert(CombatRating.GetDefense(player, CombatDamageType.Physical, AbilityType.Vitality) > physicalBefore,
             "the character sheet's Physical DEF getter increases");
-        ctx.Assert(Stat.GetDefense(player, CombatDamageType.Force, AbilityType.Willpower) > forceBefore,
+        ctx.Assert(CombatRating.GetDefense(player, CombatDamageType.Force, AbilityType.Willpower) > forceBefore,
             "the character sheet's Force DEF getter increases");
         ctx.AssertEqual(fireBefore + 10, Resistance.GetResistance(player, ResistanceType.Fire), "boost reaches total resistance");
         ctx.AssertEqual(50, Stat.GetStatAdjustment(player, StatType.MimicryPotencyPercent), "direct damage potency remains 50%");
 
         await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect<OverloadStatusEffect>(player), 16f, "12-second Overload expiry");
         AssertDefense(ctx, player, 12, 20, 15);
-        ctx.AssertEqual(physicalBefore, Stat.GetDefense(player, CombatDamageType.Physical, AbilityType.Vitality), "Physical DEF is restored");
-        ctx.AssertEqual(forceBefore, Stat.GetDefense(player, CombatDamageType.Force, AbilityType.Willpower), "Force DEF is restored");
+        ctx.AssertEqual(physicalBefore, CombatRating.GetDefense(player, CombatDamageType.Physical, AbilityType.Vitality), "Physical DEF is restored");
+        ctx.AssertEqual(forceBefore, CombatRating.GetDefense(player, CombatDamageType.Force, AbilityType.Willpower), "Force DEF is restored");
         ctx.SetResultDetail("Actual Overload impact and expiry: Iron Carapace + Chitin Guard defense 12% -> 18% -> 12%, Fire/Poison 20 -> 30 -> 20, Trauma 15 -> 23 -> 15; total defense and resistance getters verified.");
     }
 
@@ -50,11 +52,11 @@ public static class MimicryTraitPotencyEngineTests
         var record = DB.Get<Player>(fixture.Id);
         record.EquippedTechniques.AddRange(new[] { FeatType.IronCarapaceTechnique, FeatType.MaulingBiteTechnique });
         DB.Set(record);
-        var iron = Ability.GetAbilityDetail(FeatType.IronCarapaceTechnique);
+        var iron = AbilityCatalog.GetAbilityDetail(FeatType.IronCarapaceTechnique);
         var before = Stat.GetStatSources(player, StatType.PhysicalDefensePercentAdjustment)
             .Single(source => source.Key == $"trait:{(int)FeatType.IronCarapaceTechnique}");
-        StatusEffect.ApplyStatusEffect(player, player, new OverloadStatusEffect(), 30f);
-        ctx.AssertEqual(12, Mimicry.GetStatBonus(player, StatType.PhysicalDefensePercentAdjustment), "only equipped Iron Carapace contributes");
+        StatusEffectApplication.ApplyStatusEffect(player, player, new OverloadStatusEffect(), 30f);
+        ctx.AssertEqual(12, TraitStatBonus(player, StatType.PhysicalDefensePercentAdjustment), "only equipped Iron Carapace contributes");
         var boosted = Stat.GetStatSources(player, StatType.PhysicalDefensePercentAdjustment)
             .Single(source => source.Key == before.Key);
         ctx.AssertEqual(12, boosted[StatType.PhysicalDefensePercentAdjustment], "source payload agrees with aggregate");
@@ -70,15 +72,18 @@ public static class MimicryTraitPotencyEngineTests
         record.EquippedTechniques.Add(FeatType.IronCarapaceTechnique);
         DB.Set(record);
         StatusEffect.RemoveStatusEffect<OverloadStatusEffect>(player);
-        ctx.AssertEqual(8, Mimicry.GetStatBonus(player, StatType.PhysicalDefensePercentAdjustment), "removal restores base trait stats immediately");
+        ctx.AssertEqual(8, TraitStatBonus(player, StatType.PhysicalDefensePercentAdjustment), "removal restores base trait stats immediately");
     }
+
+    // The trait stat read takes the stat reader it scales Trait Potency with; the stat service passes itself.
+    private static int TraitStatBonus(uint player, StatType stat) => GameServices.MimicryTraitStats.GetStatBonus(player, stat, Stat);
 
     private static void AssertDefense(EngineTestContext ctx, uint player, int defense, int elementalResistance, int trauma)
     {
-        ctx.AssertEqual(defense, Mimicry.GetStatBonus(player, StatType.PhysicalDefensePercentAdjustment), "trait Physical DEF percent");
-        ctx.AssertEqual(defense, Mimicry.GetStatBonus(player, StatType.ForceDefensePercentAdjustment), "trait Force DEF percent");
-        ctx.AssertEqual(elementalResistance, Mimicry.GetResistanceBonus(player, ResistanceType.Fire), "trait Fire Resistance");
-        ctx.AssertEqual(elementalResistance, Mimicry.GetResistanceBonus(player, ResistanceType.Poison), "trait Poison Resistance");
-        ctx.AssertEqual(trauma, Mimicry.GetResistanceBonus(player, ResistanceType.Trauma), "trait Trauma Resistance");
+        ctx.AssertEqual(defense, TraitStatBonus(player, StatType.PhysicalDefensePercentAdjustment), "trait Physical DEF percent");
+        ctx.AssertEqual(defense, TraitStatBonus(player, StatType.ForceDefensePercentAdjustment), "trait Force DEF percent");
+        ctx.AssertEqual(elementalResistance, GameServices.Mimicry.GetResistanceBonus(player, ResistanceType.Fire), "trait Fire Resistance");
+        ctx.AssertEqual(elementalResistance, GameServices.Mimicry.GetResistanceBonus(player, ResistanceType.Poison), "trait Poison Resistance");
+        ctx.AssertEqual(trauma, GameServices.Mimicry.GetResistanceBonus(player, ResistanceType.Trauma), "trait Trauma Resistance");
     }
 }

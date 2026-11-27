@@ -24,7 +24,7 @@ public class ActiveAttackTargetAbilityTests
             source.IndexOf("private static (uint Target, Location TargetLocation) ResolveAbilityTarget", StringComparison.Ordinal));
 
         var resolveIndex = tryUseBody.IndexOf("ResolveAbilityTarget(", StringComparison.Ordinal);
-        var canUseIndex = tryUseBody.IndexOf("Ability.CanUseAbility", StringComparison.Ordinal);
+        var canUseIndex = tryUseBody.IndexOf("AbilityActivation.CanUseAbility", StringComparison.Ordinal);
 
         resolveIndex.Should().BeGreaterThanOrEqualTo(0);
         canUseIndex.Should().BeGreaterThanOrEqualTo(0);

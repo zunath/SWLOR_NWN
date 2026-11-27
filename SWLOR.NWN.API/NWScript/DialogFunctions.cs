@@ -11,7 +11,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the object is in conversation, false otherwise</returns>
         public static bool IsInConversation(uint oObject)
         {
-            return global::NWN.Core.NWScript.IsInConversation(oObject) != 0;
+            return NWScriptRuntime.Current.IsInConversation(oObject);
         }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nTalkVolume">The talk volume (TALKVOLUME_* constants) (default: TalkVolume.Talk)</param>
         public static void ActionSpeakString(string sStringToSpeak, TalkVolume nTalkVolume = TalkVolume.Talk)
         {
-            global::NWN.Core.NWScript.ActionSpeakString(sStringToSpeak, (int)nTalkVolume);
+            NWScriptRuntime.Current.ActionSpeakString(sStringToSpeak, nTalkVolume);
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Use this in a conversation script.</remarks>
         public static uint GetLastSpeaker()
         {
-            return global::NWN.Core.NWScript.GetLastSpeaker();
+            return NWScriptRuntime.Current.GetLastSpeaker();
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Use this in an OnDialog script.</remarks>
         public static int BeginConversation(string sResRef = "", uint oObjectToDialog = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.BeginConversation(sResRef, oObjectToDialog);
+            return NWScriptRuntime.Current.BeginConversation(sResRef, oObjectToDialog);
         }
     }
 }

@@ -3,10 +3,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -50,8 +50,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var fighting = await SpawnHeldCreatureAsync(ctx, 6f, 0f);
                 var aggroOnly = await SpawnHeldCreatureAsync(ctx, 6f, 3f);
                 var idle = await SpawnHeldCreatureAsync(ctx, 6f, -3f);
-                Enmity.ModifyEnmity(ally, fighting, 100);
-                Enmity.ModifyProximityEnmity(ally, aggroOnly, 1);
+                EnmityChange.ModifyEnmity(ally, fighting, 100);
+                EnmityChange.ModifyProximityEnmity(ally, aggroOnly, 1);
 
                 await UseAbilityAsync(ctx, allyCasts ? ally : supporter.Creature, feat, ally);
                 if (settleSeconds > 0f)
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var lateEnemy = await SpawnHeldCreatureAsync(ctx, 6f, 0f);
                 ctx.AssertEqual(0, Points(healer.Creature, lateEnemy, skill), $"{name} cannot credit an enemy before it engages");
 
-                Enmity.ModifyEnmity(ally, lateEnemy, 100);
+                EnmityChange.ModifyEnmity(ally, lateEnemy, 100);
                 await ctx.WaitUntilAsync(() => Points(healer.Creature, lateEnemy, skill) > 0, 5f,
                     $"a {name} tick to credit the enemy that engaged after the cast");
                 await ctx.DelaySecondsAsync(3.5f);
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(ally, () =>
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(Math.Max(1, GetCurrentHitPoints(ally) - 300)), ally));
                 var fightingSupporter = await SpawnHeldCreatureAsync(ctx, 6f, 0f);
-                Enmity.ModifyEnmity(supporter.Creature, fightingSupporter, 100);
+                EnmityChange.ModifyEnmity(supporter.Creature, fightingSupporter, 100);
 
                 await UseAbilityAsync(ctx, supporter.Creature, feat, ally);
 
@@ -149,13 +149,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var leader = await PlayerAbilityFixture.CreateAsync(ctx);
             var ally = await SpawnPartyAllyAsync(ctx, leader.Creature);
-            Ability.ReapplyPlayerAuraAOE(leader.Creature);
-            await ctx.WaitUntilAsync(() => Ability.GetSelfAndPartyAuraRecipients(leader.Creature).Contains(ally), 10f,
+            AbilityAura.ReapplyPlayerAuraAOE(leader.Creature);
+            await ctx.WaitUntilAsync(() => AbilityAura.GetSelfAndPartyAuraRecipients(leader.Creature).Contains(ally), 10f,
                 "the party ally to enter the leader's aura");
 
             TemporaryStatModifier.Add(leader.Creature, StatType.ChargeOrderAuraLevel, 1, 60f);
             var fighting = await SpawnHeldCreatureAsync(ctx, 6f, 0f);
-            Enmity.ModifyEnmity(ally, fighting, 100);
+            EnmityChange.ModifyEnmity(ally, fighting, 100);
             try
             {
                 await UseAbilityAsync(ctx, leader.Creature, FeatType.ChargeOrder1, leader.Creature);
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Ability.RemoveAura(leader.Creature, typeof(ChargeOrder1StatusEffect));
+                AbilityAura.RemoveAura(leader.Creature, typeof(ChargeOrder1StatusEffect));
                 ClearCombatPoints(leader.Creature);
             }
         }
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
             var ally = await SpawnPartyAllyAsync(ctx, medic.Creature);
             var fighting = await SpawnHeldCreatureAsync(ctx, 6f, 0f);
-            Enmity.ModifyEnmity(ally, fighting, 100);
+            EnmityChange.ModifyEnmity(ally, fighting, 100);
 
             await UseAbilityAsync(ctx, medic.Creature, FeatType.MedKit1, ally);
             await ctx.ExecuteInCreatureContextAsync(fighting, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), fighting));
@@ -213,24 +213,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var creature = ctx.SpawnCreature(CreatureResref, xOffset, yOffset);
             await ctx.WaitFrameAsync();
             ctx.SuppressNPCNaturalRegen(creature);
-            Stat.SetNPCMaxHitPoints(creature, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(creature, 1000, true);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), creature, 600f);
             return creature;
         }
 
         private static async Task UseAbilityAsync(EngineTestContext ctx, uint caster, FeatType feat, uint target)
         {
-            var ability = Ability.GetAbilityDetail(feat);
+            var ability = AbilityCatalog.GetAbilityDetail(feat);
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {
-                Ability.BeginAbilityImpact(caster, ability);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                 try
                 {
                     ability.ImpactAction(caster, target, 1, GetLocation(target));
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(caster);
+                    AbilityImpactLifecycle.EndAbilityImpact(caster);
                 }
             });
         }
@@ -249,8 +249,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static int Points(uint player, uint creature, SkillType skill)
         {
-            var tracker = (Dictionary<uint, Dictionary<uint, Dictionary<SkillType, int>>>)typeof(CombatPoint)
-                .GetField("_creatureCombatPointTracker", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            var tracker = CombatInternals.CombatPointTracker();
             return tracker.TryGetValue(creature, out var byPlayer) &&
                    byPlayer.TryGetValue(player, out var bySkill) &&
                    bySkill.TryGetValue(skill, out var points)
@@ -260,8 +259,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static void ClearCombatPoints(uint player)
         {
-            typeof(CombatPoint).GetMethod("ClearPlayerCombatPoints", BindingFlags.NonPublic | BindingFlags.Static)
-                .Invoke(null, new object[] { player });
+            CombatInternals.ClearPlayerCombatPoints(player);
         }
     }
 }

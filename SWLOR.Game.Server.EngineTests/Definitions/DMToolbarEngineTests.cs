@@ -5,20 +5,23 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using NWN.Native.API;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.DMToolService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.PlayerListService;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Social;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -121,7 +124,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Capture(player.Creature, GuiWindowType.DMAdminTools, "admin-tools");
 
                 // /resetwindows closes other windows but keeps the toolbar, which stands in for the hidden native taskbar.
-                var resetWindows = new CharacterChatCommand().BuildChatCommands()["resetwindows"];
+                var resetWindows = new CharacterInfoChatCommand().BuildChatCommands()["resetwindows"];
                 await InContext(ctx, player.Creature, () =>
                     resetWindows.DoAction(player.Creature, OBJECT_INVALID, GetLocation(player.Creature)));
                 ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.DMToolbar), "/resetwindows keeps the DM toolbar open");
@@ -150,7 +153,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await InContext(ctx, player.Creature, () => BattleGrid.Remove(area));
                 await InContext(ctx, player.Creature, () => BattleGrid.SetSettings(area, BattleGrid.DefaultSettings));
 
-                var command = new DMChatCommand().BuildChatCommands()["battlegrid"];
+                var command = new DMToolsChatCommand().BuildChatCommands()["battlegrid"];
                 ctx.Assert(command.ValidateArguments == null, "/battlegrid adds no check beyond the DM and Admin permission");
                 await InContext(ctx, player.Creature, () =>
                     command.DoAction(player.Creature, OBJECT_INVALID, GetLocation(player.Creature)));
@@ -225,8 +228,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         // A headless fixture cannot click, so run the handler Place at Target registered for its next pick.
         private static Action<uint> PendingTargetAction(uint creature)
         {
-            var actions = (System.Collections.IDictionary)typeof(Targeting)
-                .GetField("_playerTargetingActions", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var actions = CombatInternals.PendingTargetingActions();
             var detail = actions[creature] ?? throw new InvalidOperationException("No targeting action is pending.");
             return (Action<uint>)detail.GetType().GetProperty("SelectionAction")!.GetValue(detail)!;
         }
@@ -236,7 +238,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var anchors = new List<uint>();
             for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
             {
-                if (GetTag(obj) == BattleGrid.AnchorTag)
+                if (GetTag(obj) == BattleGridService.AnchorTag)
                     anchors.Add(obj);
             }
 
@@ -389,7 +391,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 var arenaRow = GetChooserResults(model).FindIndex(result => result.Object == ctx.Arena);
                 ctx.AssertEqual(string.Empty, model.ResultInfo[arenaRow], "an area with no players leaves the Players column empty");
-                ctx.AssertEqual(DMObjectDetails.NoSelectionIcon, model.DetailIcon, "icon with nothing selected");
+                ctx.AssertEqual(DMObjectDetailsService.NoSelectionIcon, model.DetailIcon, "icon with nothing selected");
                 ctx.AssertEqual(ctx.Arena, GetAreaFromLocation(DMObjectSearch.GetAreaJumpLocations(ctx.Arena).First()), "area jump location");
                 Capture(dm.Creature, GuiWindowType.DMChooser, "chooser-areas");
 
@@ -432,7 +434,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 do
                 {
                     sliceWatch.Restart();
-                    isScanComplete = scan.Continue(DMObjectSearch.ObjectsPerSlice);
+                    isScanComplete = scan.Continue(DMObjectSearchService.ObjectsPerSlice);
                     slowestSlice = Math.Max(slowestSlice, sliceWatch.ElapsedMilliseconds);
                     slices++;
                 } while (!isScanComplete);
@@ -477,8 +479,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task CreatorListsAndCreatesBlueprints(EngineTestContext ctx)
         {
             // Custom palettes are read while the module loads, so no DM's click waits on hundreds of template reads.
-            var loadedPalettes = (System.Collections.IDictionary)typeof(DMBlueprintCatalog)
-                .GetField("_palettes", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var catalog = CompositionRoot.ServerHost.Provider.GetService(typeof(IDMBlueprintCatalogService))!;
+            var loadedPalettes = (System.Collections.IDictionary)catalog.GetType()
+                .GetField("_palettes", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(catalog)!;
             ctx.Assert(Enum.GetValues<DMBlueprintCategory>().All(category => loadedPalettes.Contains((category, DMBlueprintSource.Custom))),
                 "every custom palette is loaded before a DM opens the Creator");
 
@@ -593,7 +596,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Track(bag);
             var store = CreateObject(ObjectType.Store, "nw_storemagic001", GetLocation(dm.Creature));
             ctx.Track(store);
-            ctx.Assert(new[] { bag, store, dm.Creature }.All(DMBlueprintCatalog.CanReceiveItems),
+            ctx.Assert(new[] { bag, store, dm.Creature }.All(item => DMBlueprintCatalog.CanReceiveItems(item)),
                 "creatures, stores and container items receive created items");
             await InContext(ctx, dm.Creature, () =>
             {
@@ -834,7 +837,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
 
             // More offline matches than the search shows.
-            var bulkIds = Enumerable.Range(0, DMPlayerDirectory.MaxResults + 1)
+            var bulkIds = Enumerable.Range(0, DMPlayerDirectoryService.MaxResults + 1)
                 .Select(_ => Guid.NewGuid().ToString())
                 .ToList();
             foreach (var bulkId in bulkIds)
@@ -912,8 +915,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ClearAllActions();
                     JumpToLocation(ctx.GetArenaLocation(6f, 0f));
                 });
-                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) > 10f, 10f, "the DM to move away from the first player");
-                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, second.Creature) > 10f, 10f, "the DM to move away from the second player");
+                // The jump targets are 12 m and 14 m from the DM's, but the engine settles each jump on walkable
+                // ground, so the gap can land just under 10 m (9.9 m seen). Anything past 5 m shows the move; the
+                // bring-here wait below then proves both players reached the DM (< 3 m).
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) > 5f, 10f, "the DM to move away from the first player");
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, second.Creature) > 5f, 10f, "the DM to move away from the second player");
                 await InContext(ctx, dm.Creature, model.OnClickBringSelected());
                 await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) < 3f &&
                                                GetDistanceBetween(dm.Creature, second.Creature) < 3f, 5f, "both selected players to be brought to the DM");
@@ -966,7 +972,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     "a word the index cannot query does not stop the other words from finding offline characters");
 
                 var bulk = DMPlayerDirectory.Search("Bulkprobe", DMPlayerSearchScope.Offline, out var bulkTruncated);
-                ctx.AssertEqual(DMPlayerDirectory.MaxResults, bulk.Count, "offline search returns up to the result limit");
+                ctx.AssertEqual(DMPlayerDirectoryService.MaxResults, bulk.Count, "offline search returns up to the result limit");
                 ctx.Assert(bulkTruncated, "offline search reports matches beyond the result limit");
 
                 ctx.AssertEqual(0, DMPlayerDirectory.Search(", . *", DMPlayerSearchScope.All, out _).Count,
@@ -1077,8 +1083,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         // directly. Native watch events then route like a connected player's UI.
         private static WindowRegistration RegisterWindows(EngineTestContext ctx, PlayerAbilityFixture player)
         {
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var windows = GuiInternals.PlayerWindows();
             ctx.Assert(!windows.ContainsKey(player.Id), "fixture GUI registration must be isolated");
             var registered = DMWindowTypes.ToDictionary(type => type, type =>
             {

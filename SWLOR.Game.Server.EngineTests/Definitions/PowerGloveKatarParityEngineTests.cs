@@ -4,12 +4,14 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using static SWLOR.Game.Server.EngineTests.Definitions.PowerGlovePairEngineTests;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -44,7 +46,7 @@ public static class PowerGloveKatarParityEngineTests
                 Upgrade(item);
         });
         // The fixture's oversized STM pool is rebuilt from worn gear on the first equip; start from the rebuilt record.
-        await ctx.ExecuteInCreatureContextAsync(actor, () => Stat.RefreshPlayerEquipmentStats(actor));
+        await ctx.ExecuteInCreatureContextAsync(actor, () => StatRecord.RefreshPlayerEquipmentStats(actor));
         var baseline = Totals(player);
 
         await EquipExisting(ctx, actor, katars[0], InventorySlot.RightHand);
@@ -123,9 +125,9 @@ public static class PowerGloveKatarParityEngineTests
             var totals = Totals(player);
             result = new Measurement(EquipmentPredicates.HasDualWield(actor), totals.Attack, totals.MaxHP, totals.MaxStamina,
                 WeaponDamage.GetAbilityDMG(actor, main, SkillType.Unarmed),
-                Stat.GetAccuracyNative(native, WeaponAttackCycle.GetAttackWeapon(native, 1)),
-                Stat.GetAccuracyNative(native, WeaponAttackCycle.GetAttackWeapon(native, 2)),
-                Sample(0), Sample(1), Combat.CalculateAttackDelay(actor));
+                CombatRating.GetAccuracyNative(native, WeaponAttackCycle.GetAttackWeapon(native, 1)),
+                CombatRating.GetAccuracyNative(native, WeaponAttackCycle.GetAttackWeapon(native, 2)),
+                Sample(0), Sample(1), GameServices.CombatAttackTiming.CalculateAttackDelay(actor));
         });
         return result;
     }

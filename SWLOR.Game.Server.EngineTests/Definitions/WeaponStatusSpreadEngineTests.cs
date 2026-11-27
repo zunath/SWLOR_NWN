@@ -4,10 +4,11 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber;
 using SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -39,26 +40,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             // Shattering Strike I strength, below the 15% default.
-            ctx.Assert(StatusEffect.ApplyStatusEffect(caster, source, new SunderStatusEffect(12), 60f), "setup Sunder must apply");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, source, new SunderStatusEffect(12), 60f), "setup Sunder must apply");
             var ability = new SunderingSweepAbilityDefinition().BuildAbilities()[FeatType.SunderingSweep1];
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
-                Ability.BeginAbilityImpact(caster, ability);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, source, 1, GetLocation(source)));
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(caster);
+                    AbilityImpactLifecycle.EndAbilityImpact(caster);
                 }
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             }
 
             ctx.Assert(StatusEffect.HasStatusEffect(recipient, typeof(SunderStatusEffect)), "the recipient must receive Sunder");
@@ -117,8 +118,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.MakeHostile(enemy);
             }
 
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 for (var rank = 1; rank <= feats.Length; rank++)
@@ -128,7 +129,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     if (!testsHitProc)
                     {
                         foreach (var source in sources)
-                            ctx.Assert(StatusEffect.ApplyStatusEffect(caster, source, statusEffect, 60f), "setup status must apply");
+                            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, source, statusEffect, 60f), "setup status must apply");
                         ctx.Assert(GetDistanceBetween(sources[0], sources[1]) < GetDistanceBetween(sources[0], recipients[0]),
                             "the nearest neighbor must already carry the status, ahead of the clean recipient");
                     }
@@ -137,14 +138,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var feat = feats[rank - 1];
                     var ability = abilities[feat];
                     var impactedTargetCount = 0;
-                    Ability.BeginAbilityImpact(caster, ability);
+                    AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                     try
                     {
                         await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, sources[0], rank, GetLocation(sources[0])));
                     }
                     finally
                     {
-                        impactedTargetCount = Ability.EndAbilityImpact(caster).ImpactedTargetCount;
+                        impactedTargetCount = AbilityImpactLifecycle.EndAbilityImpact(caster).ImpactedTargetCount;
                     }
 
                     ctx.AssertEqual(expectedImpacts, impactedTargetCount, $"{feat}: primary area targets");
@@ -163,8 +164,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             }
         }
     }

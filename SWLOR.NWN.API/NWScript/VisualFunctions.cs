@@ -16,7 +16,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void FloatingTextStrRefOnCreature(int nStrRefToDisplay, uint oCreatureToFloatAbove,
             bool bBroadcastToFaction = true)
         {
-            global::NWN.Core.NWScript.FloatingTextStrRefOnCreature(nStrRefToDisplay, oCreatureToFloatAbove, bBroadcastToFaction ? 1 : 0);
+            NWScriptRuntime.Current.FloatingTextStrRefOnCreature(nStrRefToDisplay, oCreatureToFloatAbove, bBroadcastToFaction);
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void FloatingTextStringOnCreature(string sStringToDisplay, uint oCreatureToFloatAbove,
             bool bBroadcastToFaction = true)
         {
-            global::NWN.Core.NWScript.FloatingTextStringOnCreature(sStringToDisplay, oCreatureToFloatAbove, bBroadcastToFaction ? 1 : 0);
+            NWScriptRuntime.Current.FloatingTextStringOnCreature(sStringToDisplay, oCreatureToFloatAbove, bBroadcastToFaction);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void PostString(uint PC, string Msg, int X = 0, int Y = 0, ScreenAnchor anchor = ScreenAnchor.TopLeft,
             float life = 10.0f, int RGBA = 2147418367, int RGBA2 = 2147418367, int ID = 0, string font = "")
         {
-            global::NWN.Core.NWScript.PostString(PC, Msg, X, Y, (int)anchor, life, RGBA, RGBA2, ID, font);
+            NWScriptRuntime.Current.PostString(PC, Msg, X, Y, anchor, life, RGBA, RGBA2, ID, font);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nColor">Color in 0xRRGGBB format; -1 clears the color override</param>
         public static void SetObjectHiliteColor(uint oObject, int nColor = -1)
         {
-            global::NWN.Core.NWScript.SetObjectHiliteColor(oObject, nColor);
+            NWScriptRuntime.Current.SetObjectHiliteColor(oObject, nColor);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nCursor">The mouse cursor type to use when hovering over the object</param>
         public static void SetObjectMouseCursor(uint oObject, MouseCursor nCursor = MouseCursor.Invalid)
         {
-            global::NWN.Core.NWScript.SetObjectMouseCursor(oObject, (int)nCursor);
+            NWScriptRuntime.Current.SetObjectMouseCursor(oObject, nCursor);
         }
 
         /// <summary>
@@ -85,9 +85,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="PC">The player character to apply the override to. If OBJECT_SELF, applies to all active players</param>
         public static void SetTextureOverride(string OldName, string NewName = "", uint PC = OBJECT_INVALID)
         {
-            if (PC == OBJECT_INVALID)
-                PC = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetTextureOverride(OldName, NewName, PC);
+            NWScriptRuntime.Current.SetTextureOverride(OldName, NewName, PC);
         }
 
         /// <summary>
@@ -104,7 +102,7 @@ namespace SWLOR.NWN.API.NWScript
             bool bCurrentLerp = false,
             ObjectVisualTransformDataScopeType nScope = ObjectVisualTransformDataScopeType.Base)
         {
-            return global::NWN.Core.NWScript.GetObjectVisualTransform(oObject, (int)nTransform, bCurrentLerp ? 1 : 0, (int)nScope);
+            return NWScriptRuntime.Current.GetObjectVisualTransform(oObject, nTransform, bCurrentLerp, nScope);
         }
 
         /// <summary>
@@ -131,7 +129,7 @@ namespace SWLOR.NWN.API.NWScript
             ObjectVisualTransformBehaviorType nBehaviorFlags = ObjectVisualTransformBehaviorType.Default,
             int nRepeats = 0)
         {
-            return global::NWN.Core.NWScript.SetObjectVisualTransform(oObject, (int)nTransform, fValue, (int)nLerpType, fLerpDuration, bPauseWithGame ? 1 : 0, (int)nScope, (int)nBehaviorFlags, nRepeats);
+            return NWScriptRuntime.Current.SetObjectVisualTransform(oObject, nTransform, fValue, nLerpType, fLerpDuration, bPauseWithGame, nScope, nBehaviorFlags, nRepeats);
         }
 
         /// <summary>
@@ -143,7 +141,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nValue">Integer value to set</param>
         public static void SetMaterialShaderUniformInt(uint oObject, string sMaterial, string sParam, int nValue)
         {
-            global::NWN.Core.NWScript.SetMaterialShaderUniformInt(oObject, sMaterial, sParam, nValue);
+            NWScriptRuntime.Current.SetMaterialShaderUniformInt(oObject, sMaterial, sParam, nValue);
         }
 
         /// <summary>
@@ -159,7 +157,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void SetMaterialShaderUniformVec4(uint oObject, string sMaterial, string sParam, float fValue1,
             float fValue2 = 0.0f, float fValue3 = 0.0f, float fValue4 = 0.0f)
         {
-            global::NWN.Core.NWScript.SetMaterialShaderUniformVec4(oObject, sMaterial, sParam, fValue1, fValue2, fValue3, fValue4);
+            NWScriptRuntime.Current.SetMaterialShaderUniformVec4(oObject, sMaterial, sParam, fValue1, fValue2, fValue3, fValue4);
         }
 
         /// <summary>
@@ -170,7 +168,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sParam">Supply a parameter to only reset shader uniforms of that name. Supply both to only reset shader uniforms of that name on meshes with that material</param>
         public static void ResetMaterialShaderUniforms(uint oObject, string sMaterial = "", string sParam = "")
         {
-            global::NWN.Core.NWScript.ResetMaterialShaderUniforms(oObject, sMaterial, sParam);
+            NWScriptRuntime.Current.ResetMaterialShaderUniforms(oObject, sMaterial, sParam);
         }
 
         /// <summary>
@@ -184,7 +182,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bFlashing">TRUE to force an existing icon to flash, FALSE to stop</param>
         public static void SetEffectIconFlashing(uint oCreature, int nIconId, bool bFlashing = true)
         {
-            global::NWN.Core.NWScript.SetEffectIconFlashing(oCreature, nIconId, bFlashing ? 1 : 0);
+            NWScriptRuntime.Current.SetEffectIconFlashing(oCreature, nIconId, bFlashing);
         }
 
         /// <summary>
@@ -195,7 +193,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE only if transforms were successfully removed (valid object, transforms existed)</returns>
         public static bool ClearObjectVisualTransform(uint oObject, ObjectVisualTransformDataScopeType nScope = ObjectVisualTransformDataScopeType.Invalid)
         {
-            return global::NWN.Core.NWScript.ClearObjectVisualTransform(oObject, (int)nScope) != 0;
+            return NWScriptRuntime.Current.ClearObjectVisualTransform(oObject, nScope);
         }
 
         /// <summary>
@@ -209,7 +207,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fDistance">Distance in meters (default 45.0)</param>
         public static void SetObjectVisibleDistance(uint oObject, float fDistance = 45.0f)
         {
-            global::NWN.Core.NWScript.SetObjectVisibleDistance(oObject, fDistance);
+            NWScriptRuntime.Current.SetObjectVisibleDistance(oObject, fDistance);
         }
 
         /// <summary>
@@ -219,7 +217,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The visible distance in meters, or -1.0f on error</returns>
         public static float GetObjectVisibleDistance(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetObjectVisibleDistance(oObject);
+            return NWScriptRuntime.Current.GetObjectVisibleDistance(oObject);
         }
 
         /// <summary>
@@ -230,7 +228,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sNew">The new animation name. Specifying empty string will restore the original animation</param>
         public static void ReplaceObjectAnimation(uint oObject, string sOld, string sNew = "")
         {
-            global::NWN.Core.NWScript.ReplaceObjectAnimation(oObject, sOld, sNew);
+            NWScriptRuntime.Current.ReplaceObjectAnimation(oObject, sOld, sNew);
         }
     }
 }

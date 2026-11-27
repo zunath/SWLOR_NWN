@@ -1,26 +1,37 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.DisguiseWindow;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class DisguiseViewModel: GuiViewModelBase<DisguiseViewModel, GuiPayloadBase>,
         IGuiRefreshable<PerkAcquiredRefreshEvent>,
-        IGuiRefreshable<PerkRefundedRefreshEvent>
+        IGuiRefreshable<PerkRefundedRefreshEvent>,
+        IDisguiseHost
     {
+        private ICacheService Cache { get; }
+        private IDBService DB { get; }
+        private IDisguiseService Disguise { get; }
+
+        public DisguiseViewModel(ICacheService cache, IDBService db, IDisguiseService disguise)
+        {
+            Cache = cache;
+            DB = db;
+            Disguise = disguise;
+        }
+
         public const string ContentPartialElement = "DISGUISE_CONTENT_PARTIAL";
         public const string ContentAvailablePartial = "DISGUISE_CONTENT_AVAILABLE";
         public const string ContentRetiredPartial = "DISGUISE_CONTENT_RETIRED";
         public const string ContentEditPartial = "DISGUISE_CONTENT_EDIT";
         public const string ContentEmptyPartial = "DISGUISE_CONTENT_EMPTY";
-
-        private const int SoundSetPageSize = 25;
 
         private static readonly GuiColor _rowActiveColor = new(120, 210, 140);
         private static readonly GuiColor _rowNormalColor = new(224, 220, 192);
@@ -31,15 +42,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static readonly GuiColor _slotFullColor = new(200, 100, 70);
 
         private readonly List<string> _disguiseIds = new();
-        private readonly List<int> _soundSetIds = new();
-        private readonly Dictionary<int, int> _soundSetIndexesById = new();
-        private readonly List<GuiBindingList<GuiComboEntry>> _soundSetOptionPages = new();
-        private bool _suppressSoundSetPageChange;
         private int _selectedDisguiseIndex = -1;
         private string _selectedDisguiseId = string.Empty;
         private int _activePortraitInternalId = 1;
-        private int _soundSetPageIndex;
-        private int _selectedSoundSetId = -1;
+        private DisguiseSoundSetPicker _soundSets;
 
         public GuiBindingList<string> DisguiseNames
         {
@@ -106,9 +112,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<int>();
             set
             {
-                var sanitizedIndex = SanitizeSoundSetIndex(value);
+                var sanitizedIndex = _soundSets.SanitizeSoundSetIndex(value);
                 Set(sanitizedIndex);
-                SetSelectedSoundSetFromPageIndex(sanitizedIndex);
+                _soundSets.SetSelectedSoundSetFromPageIndex(sanitizedIndex);
 
                 if (sanitizedIndex != value)
                     DelayCommand(0.0f, () => SelectedSoundSetIndex = sanitizedIndex);
@@ -126,17 +132,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<int>();
             set
             {
-                var sanitizedIndex = SanitizeSoundSetPageIndex(value);
+                var sanitizedIndex = _soundSets.SanitizeSoundSetPageIndex(value);
                 Set(sanitizedIndex);
 
-                if (_suppressSoundSetPageChange)
+                if (_soundSets.IsPageChangeSuppressed)
                     return;
 
                 if (sanitizedIndex != value)
                     DelayCommand(0.0f, () => SelectedSoundSetPageIndex = sanitizedIndex);
 
-                _soundSetPageIndex = sanitizedIndex;
-                LoadSoundSetPageOptions(GetSelectedSoundSetIndexOnCurrentPage(), true);
+                _soundSets.SoundSetPageIndex = sanitizedIndex;
+                _soundSets.LoadSoundSetPageOptions(_soundSets.GetSelectedSoundSetIndexOnCurrentPage(), true);
             }
         }
 
@@ -317,8 +323,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DisguiseColors = new GuiBindingList<GuiColor>();
             SoundSetPageNumbers = new GuiBindingList<GuiComboEntry>();
 
-            LoadSoundSetOptions();
-            SelectSoundSet(GetDefaultSoundSetId());
+            _soundSets = new DisguiseSoundSetPicker(Cache, this);
+            _soundSets.LoadSoundSetOptions();
+            _soundSets.SelectSoundSet(_soundSets.GetDefaultSoundSetId());
             LoadList();
             RefreshLayoutPartials();
 
@@ -414,7 +421,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Descriptor,
                 Biography,
                 _activePortraitInternalId,
-                _selectedSoundSetId,
+                _soundSets.SelectedSoundSetId,
                 ScrambleAccountId);
 
             if (!result.IsSuccessful)
@@ -554,20 +561,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedSoundSetPageIndex = newPage;
         };
 
-        public Action OnClickPreviewSoundSet() => () =>
-        {
-            if (_selectedSoundSetId < 0)
-                return;
-
-            var previewSoundResref = Cache.GetSoundSetPreviewSoundResref(_selectedSoundSetId);
-            if (string.IsNullOrWhiteSpace(previewSoundResref))
-            {
-                SendMessageToPC(Player, ColorToken.Red("No preview sound is available for this sound set."));
-                return;
-            }
-
-            PlayerPlugin.PlaySound(Player, previewSoundResref, OBJECT_INVALID);
-        };
+        public Action OnClickPreviewSoundSet() => () => _soundSets.PreviewSelectedSoundSet(Player);
 
         private void LoadList(string selectedDisguiseId = "")
         {
@@ -679,7 +673,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Biography = disguise.Biography ?? string.Empty;
             PortraitInternalId = disguise.PortraitInternalId.ToString();
             ScrambleAccountId = disguise.ScrambleAccountId;
-            SelectSoundSet(disguise.SoundSetId);
+            _soundSets.SelectSoundSet(disguise.SoundSetId);
             Instructions = string.Empty;
             EmptyStateTitle = string.Empty;
             EmptyStateText = string.Empty;
@@ -701,7 +695,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PortraitInternalId = "1";
             SoundSetName = string.Empty;
             PortraitResref = string.Empty;
-            SelectSoundSet(GetDefaultSoundSetId());
+            _soundSets.SelectSoundSet(_soundSets.GetDefaultSoundSetId());
             ScrambleAccountId = true;
             RefreshActionVisibility();
             RefreshLayoutPartials();
@@ -790,7 +784,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ChangePartialView(ContentPartialElement, GetContentPartialName());
 
             if (HasSelection)
-                RefreshSoundSetBindings();
+                _soundSets.RefreshSoundSetBindings();
         }
 
         private Action WithLayoutRestore(Action action)
@@ -843,177 +837,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return dbPlayer?.ActiveDisguiseId == _selectedDisguiseId;
         }
 
-        private void LoadSoundSetOptions()
-        {
-            _soundSetIds.Clear();
-            _soundSetIndexesById.Clear();
-            _soundSetOptionPages.Clear();
-
-            var currentPage = new GuiBindingList<GuiComboEntry>();
-            var optionIndex = 0;
-
-            foreach (var (soundSetId, label) in Cache.GetSoundSets())
-            {
-                var absoluteIndex = _soundSetIds.Count;
-                _soundSetIds.Add(soundSetId);
-                _soundSetIndexesById[soundSetId] = absoluteIndex;
-
-                if (currentPage.Count >= SoundSetPageSize)
-                {
-                    _soundSetOptionPages.Add(currentPage);
-                    currentPage = new GuiBindingList<GuiComboEntry>();
-                    optionIndex = 0;
-                }
-
-                currentPage.Add(new GuiComboEntry(label, optionIndex));
-                optionIndex++;
-            }
-
-            _soundSetOptionPages.Add(currentPage);
-            _soundSetPageIndex = 0;
-            LoadSoundSetPageOptions(0);
-        }
-
-        private void SelectSoundSet(int soundSetId)
-        {
-            if (!_soundSetIndexesById.TryGetValue(soundSetId, out var absoluteIndex))
-                absoluteIndex = _soundSetIds.Count > 0 ? 0 : -1;
-
-            if (absoluteIndex < 0)
-            {
-                _selectedSoundSetId = -1;
-                _soundSetPageIndex = 0;
-                LoadSoundSetPageOptions(-1);
-                return;
-            }
-
-            _selectedSoundSetId = _soundSetIds[absoluteIndex];
-            _soundSetPageIndex = absoluteIndex / SoundSetPageSize;
-            LoadSoundSetPageOptions(absoluteIndex % SoundSetPageSize);
-        }
-
-        private int GetDefaultSoundSetId()
-        {
-            return _soundSetIds.Count > 0
-                ? _soundSetIds[0]
-                : -1;
-        }
-
-        private int SanitizeSoundSetIndex(int index)
-        {
-            if (index < 0)
-                return -1;
-
-            var pageCount = GetCurrentSoundSetPageSize();
-            if (pageCount == 0)
-                return -1;
-
-            return Math.Clamp(index, 0, pageCount - 1);
-        }
-
-        private int SanitizeSoundSetPageIndex(int index)
-        {
-            return Math.Clamp(index, 0, GetSoundSetPageCount() - 1);
-        }
-
-        private int GetCurrentSoundSetPageSize()
-        {
-            if (_soundSetPageIndex < 0 || _soundSetPageIndex >= _soundSetOptionPages.Count)
-                return 0;
-
-            return _soundSetOptionPages[_soundSetPageIndex].Count;
-        }
-
-        private int GetSoundSetPageCount()
-        {
-            return Math.Max(1, _soundSetOptionPages.Count);
-        }
-
-        private void LoadSoundSetPageNumbers()
-        {
-            var pageNumbers = new GuiBindingList<GuiComboEntry>();
-
-            for (var pageIndex = 0; pageIndex < GetSoundSetPageCount(); pageIndex++)
-            {
-                pageNumbers.Add(new GuiComboEntry($"Page {pageIndex + 1}", pageIndex));
-            }
-
-            SoundSetPageNumbers = pageNumbers;
-        }
-
-        private void LoadSoundSetPageOptions(int selectedPageIndex)
-        {
-            LoadSoundSetPageOptions(selectedPageIndex, false);
-        }
-
-        private void LoadSoundSetPageOptions(int selectedPageIndex, bool selectFirstWhenInvalid)
-        {
-            _soundSetPageIndex = Math.Clamp(_soundSetPageIndex, 0, GetSoundSetPageCount() - 1);
-            LoadSoundSetPageNumbers();
-
-            SoundSetOptions = _soundSetOptionPages[_soundSetPageIndex];
-            _suppressSoundSetPageChange = true;
-            SelectedSoundSetPageIndex = _soundSetPageIndex;
-            _suppressSoundSetPageChange = false;
-
-            if (selectFirstWhenInvalid &&
-                (selectedPageIndex < 0 || selectedPageIndex >= GetCurrentSoundSetPageSize()))
-            {
-                selectedPageIndex = GetCurrentSoundSetPageSize() > 0 ? 0 : -1;
-            }
-
-            SelectedSoundSetIndex = selectedPageIndex;
-        }
-
-        private int GetSelectedSoundSetIndexOnCurrentPage()
-        {
-            if (!_soundSetIndexesById.TryGetValue(_selectedSoundSetId, out var absoluteIndex))
-                return -1;
-
-            if (absoluteIndex / SoundSetPageSize != _soundSetPageIndex)
-                return -1;
-
-            return absoluteIndex % SoundSetPageSize;
-        }
-
-        private void SetSelectedSoundSetFromPageIndex(int pageIndex)
-        {
-            var absoluteIndex = _soundSetPageIndex * SoundSetPageSize + pageIndex;
-            if (pageIndex < 0 || absoluteIndex < 0 || absoluteIndex >= _soundSetIds.Count)
-            {
-                _selectedSoundSetId = -1;
-                SoundSetName = string.Empty;
-                return;
-            }
-
-            _selectedSoundSetId = _soundSetIds[absoluteIndex];
-            SoundSetName = _soundSetOptionPages[_soundSetPageIndex][pageIndex].Label;
-        }
-
-        private void RefreshSoundSetBindings()
-        {
-            if (_selectedSoundSetId < 0)
-            {
-                LoadSoundSetPageOptions(-1);
-                return;
-            }
-
-            if (!_soundSetIndexesById.TryGetValue(_selectedSoundSetId, out var absoluteIndex))
-            {
-                SelectSoundSet(GetDefaultSoundSetId());
-                return;
-            }
-
-            _soundSetPageIndex = absoluteIndex / SoundSetPageSize;
-            LoadSoundSetPageOptions(absoluteIndex % SoundSetPageSize);
-        }
-
-        private static int GetMaxPortraitCount()
+        private int GetMaxPortraitCount()
         {
             return Math.Max(1, Cache.PortraitCount);
         }
 
-        private static string ResolvePortraitResref(int portraitInternalId)
+        private string ResolvePortraitResref(int portraitInternalId)
         {
             try
             {
@@ -1024,5 +853,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return string.Empty;
             }
         }
+
+        GuiBindingList<GuiComboEntry> IDisguiseHost.SoundSetOptions { get => SoundSetOptions; set => SoundSetOptions = value; }
+        GuiBindingList<GuiComboEntry> IDisguiseHost.SoundSetPageNumbers { get => SoundSetPageNumbers; set => SoundSetPageNumbers = value; }
+        int IDisguiseHost.SelectedSoundSetIndex { get => SelectedSoundSetIndex; set => SelectedSoundSetIndex = value; }
+        int IDisguiseHost.SelectedSoundSetPageIndex { get => SelectedSoundSetPageIndex; set => SelectedSoundSetPageIndex = value; }
+        string IDisguiseHost.SoundSetName { get => SoundSetName; set => SoundSetName = value; }
     }
 }

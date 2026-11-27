@@ -1,9 +1,11 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -13,6 +15,22 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public class GuildTaskBoardTests
 {
+    // Guild reaches the guild service through its static facade, which resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private static readonly DateTime TasksLoaded = new(2026, 10, 1, 12, 0, 0, DateTimeKind.Utc);
 
     private static readonly GuildType[] CraftingGuilds =
@@ -106,7 +124,7 @@ public class GuildTaskBoardTests
     private static PlayerQuest InProgress() => new() { CurrentState = 1 };
 
     private static List<string> Board(Dictionary<string, PlayerQuest> quests) =>
-        Guild.SelectPlayerTaskIds(Rotation, BoardSize, quests, TasksLoaded);
+        GuildService.SelectPlayerTaskIds(Rotation, BoardSize, quests, TasksLoaded);
 
     [Test]
     public void CraftingBoard_OffersTheSharedTenTasksToAPlayerWhoHasCompletedNone()
@@ -189,7 +207,7 @@ public class GuildTaskBoardTests
         var rotation = Rotation.Take(BoardSize).ToArray();
         var quests = new Dictionary<string, PlayerQuest> { [rotation[0]] = Completed(TasksLoaded.AddMinutes(1)) };
 
-        Guild.SelectPlayerTaskIds(rotation, BoardSize, quests, TasksLoaded).Should().Equal(rotation.Skip(1).Append(rotation[0]));
+        GuildService.SelectPlayerTaskIds(rotation, BoardSize, quests, TasksLoaded).Should().Equal(rotation.Skip(1).Append(rotation[0]));
     }
 
     [Test]

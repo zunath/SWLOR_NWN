@@ -1,16 +1,16 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Quests;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public sealed class TwinPistolCapstoneQuestDefinition : IQuestListDefinition
     {
-        internal const string TwinSunsMasteryQuestId = "twin_suns_mastery";
-        internal const string FinalSalvoMasteryQuestId = "final_salvo_mastery";
+        internal const string TwinSunsMasteryQuestId = CapstoneQuestIds.TwinSunsMasteryQuestId;
+        internal const string FinalSalvoMasteryQuestId = CapstoneQuestIds.FinalSalvoMasteryQuestId;
         internal const string TrialAreaResref = "pw_sc_canyonrng";
         private readonly QuestBuilder _builder = new();
 

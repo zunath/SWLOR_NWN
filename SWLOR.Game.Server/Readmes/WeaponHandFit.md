@@ -11,7 +11,7 @@ How a held pistol or rifle is seated in each playable hand, and how to change it
 - `WeaponHandFit` applies the move to pistols held in either hand and to a held rifle or cannon whenever the creature's appearance is refreshed (equip, spawn, area entry, appearance edits). It looks up the hand model the creature shows, so a glove that replaces the natural hand is used. An unequipped weapon carries no move. The move is added to the item's base transform and tracked on the item, so a transform something else set on the item survives.
 - The move depends on the hand only, never on the weapon. Do not add per-weapon or per-player moves. A weapon that sits wrong on the male human is a model fault; fix the model.
 
-Playable bodies: `h` human frame (most species), `e` elf frame (Bothan, Rodian, Wookiee), `d` dwarf frame (Ugnaught, Ewok), `o` half-orc frame (Cathar), `z` droid frame; `m` and `f`; normal phenotype only. A species' natural hand is the first entry of its `RightHand` list in `Feature/AppearanceDefinition/RacialAppearance`.
+Playable bodies: `h` human frame (most species), `e` elf frame (Bothan, Rodian, Wookiee), `d` dwarf frame (Ugnaught, Ewok), `o` half-orc frame (Cathar), `z` droid frame; `m` and `f`; normal phenotype only. A species' natural hand is the first entry of its `RightHand` list in `Feature/AppearanceDefinition/Species`.
 
 ## Where the moves come from
 

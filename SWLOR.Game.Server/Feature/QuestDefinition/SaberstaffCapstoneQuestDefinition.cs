@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string SaberCycloneMeasureQuestId = "saber_cyclone_measure";
         internal const string SaberCycloneBreachQuestId = "saber_cyclone_breach";
         internal const string SaberCycloneCircleQuestId = "saber_cyclone_circle";
-        internal const string SaberCycloneMasteryQuestId = "saber_cyclone_mastery";
+        internal const string SaberCycloneMasteryQuestId = CapstoneQuestIds.SaberCycloneMasteryQuestId;
         internal const string SaberCycloneAdeptResref = "cp_sabcycl_ad";
         internal const string SaberCycloneSpecialistResref = "cp_sabcycl_sp";
         internal const string SaberCycloneInnerCircleResref = "cp_sabcycl_ic";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string InfiniteConduitMeasureQuestId = "infinite_conduit_measure";
         internal const string InfiniteConduitBreachQuestId = "infinite_conduit_breach";
         internal const string InfiniteConduitCircleQuestId = "infinite_conduit_circle";
-        internal const string InfiniteConduitMasteryQuestId = "infinite_conduit_mastery";
+        internal const string InfiniteConduitMasteryQuestId = CapstoneQuestIds.InfiniteConduitMasteryQuestId;
         internal const string InfiniteConduitAdeptResref = "cp_infconduit_ad";
         internal const string InfiniteConduitSpecialistResref = "cp_infconduit_sp";
         internal const string InfiniteConduitInnerCircleResref = "cp_infconduit_ic";

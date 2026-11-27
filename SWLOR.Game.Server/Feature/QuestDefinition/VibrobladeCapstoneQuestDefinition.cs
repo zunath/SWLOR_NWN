@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string InvincibleMeasureQuestId = "invincible_measure";
         internal const string InvincibleBreachQuestId = "invincible_breach";
         internal const string InvincibleCircleQuestId = "invincible_circle";
-        internal const string InvincibleMasteryQuestId = "invincible_mastery";
+        internal const string InvincibleMasteryQuestId = CapstoneQuestIds.InvincibleMasteryQuestId;
         internal const string InvincibleAdeptResref = "cp_invinc_ad";
         internal const string InvincibleSpecialistResref = "cp_invinc_sp";
         internal const string InvincibleInnerCircleResref = "cp_invinc_ic";

@@ -1,8 +1,8 @@
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.StatusEffectService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(
                          creature, GetLocation(creature), AuraRadius, includeActivator: false))
             {
-                StatusEffect.ApplyStatusEffect(creature, ally, new WardenWallStanceAuraStatusEffect
+                StatusEffectApplication.ApplyStatusEffect(creature, ally, new WardenWallStanceAuraStatusEffect
                 {
                     OriginatingAbility = OriginatingAbility,
                     AnnouncesApplication = !StatusEffect.HasStatusEffect(ally, typeof(WardenWallStanceAuraStatusEffect), creature)

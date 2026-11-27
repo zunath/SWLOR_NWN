@@ -1,0 +1,2022 @@
+# Maintainability Refactor: Combat Services Split (P5-7 part map)
+
+The plan for splitting the Combat services that are over the Phase 5 limits: `CombatHitEffectsService`, `CombatDamageTakenService`,
+`CombatAbilityImpactService`, `CombatRecorderService` (with `CombatRecordSerializer.Write`), `CombatDamageModifiersService`,
+`CombatAbilityActivationService`, `CombatAbilityBonusService`, `CombatAbilityHitService`, `CombatService`, `EnmityService` and
+`DeathService`. Status lives in [MaintainabilityRefactorStatus.md](MaintainabilityRefactorStatus.md) (row P5-7). Targets and rules:
+[MaintainabilityRefactorPhase5.md](MaintainabilityRefactorPhase5.md) (target 2: at most 10 services per type and under 1,000 lines;
+target 3: no method over 150 lines; target 4: no deferred resolution) and
+[MaintainabilityRefactorDomainOrder.md](MaintainabilityRefactorDomainOrder.md). The model is the
+[StatusEffect split](MaintainabilityRefactorStatusEffectSplit.md), with the [Stat split](MaintainabilityRefactorStatSplit.md), the
+[Ability split](MaintainabilityRefactorAbilitySplit.md) and the [Creatures split](MaintainabilityRefactorCreaturesSplit.md) (D1, D3 and the
+P5-8e ports) beside it. This file goes away at cutover. The older [Combat split](MaintainabilityRefactorCombatSplit.md) is the P2 plan that
+converted the static `Combat` class; it is finished and this file does not replace it.
+
+Measured at `c2a30aae0` (`feature/maintainability-refactor`). Line counts are `wc -l` of the files; member line counts come from a scan
+of member declarations (a member starts at its doc comment and attributes). A part's size adds the usings, class header, constructor and
+promoted members to its member lines, so part sizes and service counts are estimates (about 10%); each PR re-measures. Service counts come
+from a scan of which injected fields each moved member uses, plus the parts it calls. Call counts are regex counts of the receiver names
+(`_damageTaken.X`, `CombatDamageTaken.X` and the like) over server, content, tests and engine tests, so they are approximate. Holder counts
+(constructor services, `Lazy<>` included) come from a scan of every constructor in `ServiceRegistrations`; a scan can count one more than the
+guard (for example when a constructor also takes an observer list). Master facts come from the local `origin/master` ref (`ca97d5ddc`,
+2026-11-17); no `git fetch` was run, so master may have moved. Everything here is the graph at `c2a30aae0`; P5-7k re-scans the real graph after P5-8.
+
+## Decisions
+
+Proposed for the coordinator's review; the coordinator's review decisions are folded in. Change only on a finding in review.
+
+- **Split by what each job does, layered by who calls what, with a stay-part per service.** The stay-part keeps the original class and
+  interface name and the most-called members, so the fewest callers change. The other parts are new services behind new interfaces.
+  Reject chunks: every part below is one responsibility (the effects of a critical hit, the guard memory, the retaliation damage).
+- **No part is over a limit.** Every part is at or under 10 services and 1,000 lines, and every method is at or under 150 lines (the one
+  method over, `CombatRecordSerializer.Write`, is cut). No exception is asked for. Five parts sit at exactly 10 services and each has a
+  fallback that lowers the count (Risks). The largest part is the recorder's stay-part at about 830 lines.
+- **Moved code stays verbatim** except for how it reaches its state and dependencies. The text changes are listed per part: the orchestrator
+  cuts, the Start and Stop cuts of the recorder, promoted private members, the one reorder in `ModifyEnmity`, and the receivers of calls into
+  other parts.
+- **Pure code moves down, queries a lower domain cannot name use ports Combat owns, notices use listeners.** Combat's ports already
+  exist where P5-3c and P5-15a made them (`IPartyRoster`, `IAreaLookup`, `ICityUpgradeLookup`). This split adds two one-member ports for
+  the remaining upward edges (below) and the listener lists in "Cycles".
+- **No `Lazy<>`, `Func<>` or late lookup is added.** Three `Lazy<>` parameters inside Combat go (DamageModifiers, DamageTaken, HitEffects).
+- **Orchestrators call their steps in the original order, one public member per step.** Where one method runs a fixed sequence of effects
+  that now live in several parts (`ApplyDamageDealtEffects`, `ApplyAbilityActivatedEffects`, `ApplySuccessfulAbilityImpactRiders`), the
+  stay-part keeps the method and the order, and every step it calls becomes a public member of its part with the name it has today (the
+  24 steps of `ApplyAbilityActivatedEffects` are 24 public members; there are no grouped runs). Random draws and recorder events keep their
+  order. The ordered transcripts of P5-7b pin it (Tests).
+- **Carried keys stay where they can.** `EnmityService` keeps its three carried tables under the same key. A part never caches a carried
+  dictionary: adoption replaces the field, so every access goes through the owner's members. Nothing else here is carried.
+- **Content references are not removed here.** They move with the code and stay behind their existing seams; P5-2 removes them (the
+  `LogicToContent.txt` lines are counted in "What the code is"). The "effect keys for Combat" of the StatusEffect guide (settled
+  decision 3) are therefore P5-2's, not this item's: P5-7 moves the `typeof(...StatusEffect)` text unchanged.
+- **The accepted service growth from P5-5c to P5-5h is removed here.** `CombatHitEffectsService` 20 -> 8, `CombatDamageTakenService` 20 -> 8,
+  `CombatAbilityImpactService` 16 -> 10, `CombatAbilityActivationService` 14 -> 7. `DeathService` stays at 10 by the guard (11
+  constructor parameters with the listener list); it is one of the five parts at 10 and is flagged.
+
+## What the code is
+
+Eleven files, 12,729 lines (13,026 with the serializer), 5 `Lazy<>` parameters, 22 script handler lines (15 of them move), 3 carried fields,
+no static state (the only `static` members are constants and `DeathService.IsWalkable`).
+
+| Service | Lines | Services | Injected (distinct services) | `Lazy<>` | Handlers (`ScriptHandlerOrder.txt`) | Longest methods |
+|---|---:|---:|---|---|---|---|
+| `CombatHitEffectsService` | 1,716 | 20 | queries, resources, attackTiming, suppression, combatActivity, damageModifiers, abilityHit, stat, statusEffect, statusEffectApplication, statusEffectCombatEvents, statusEffectDuration, temporaryStatModifier, impactState, pairedRangedTraits, combatRecorder, capstoneProof, resistance, party | damageTaken | none | `ApplyCriticalHitEffects` 124, `ApplyAutoAttackDamageModifiers` 80, `ApplyNonCriticalAbilityEffects` 79 |
+| `CombatDamageTakenService` | 1,649 | 20 | feedback, queries, resources, attackTiming, combatActivity, damageModifiers, abilityHit, hitEffects, stat, combatRating, statusEffect, statusEffectApplication, statusEffectCombatEvents, temporaryStatModifier, combatRecorder, pvpCombat, enmity, messaging, playerName | combat | `ApplyDamageTakenEffects` (`OnCreatureDamagedAfter`, line 344) | `ApplyDamageTakenModifiers` 72, `TryPreventFatalDamage...` 63, `ApplyIncomingPhysicalToForceConversion` 59 |
+| `CombatAbilityImpactService` | 1,720 | 16 | queries, resources, attackTiming, combatActivity, hitEffects, damageTaken, stat, statusEffect, statusEffectApplication, statusEffectDuration, temporaryStatModifier, impactState, enmity, party, combatRecorder, pairedRangedTraits | none | `RegisterStatusEffectListener` (boot, `OnModuleCacheBefore`, line 58) | `GetAbilityImpactBaseDamageBonus` 61, `ApplyAreaAbilityImpactEffects` 63 |
+| `CombatRecorderService` | 1,691 | 6 | dmPresence, db, catalog, impactState | stat, queries | `StopOnShutdown` (149), `RecordCreatureDeath` (369), `RecordPlayerDeath` (713) | `Start` 75, `ExpectDeferredDamage` 50 |
+| `CombatDamageModifiersService` | 1,436 | 9 | queries, resources, stat, statusEffect, statusEffectApplication, temporaryStatModifier, impactState, playerFeedback | damageTaken | none | `ApplyTargetStatusDamageModifiers` 138, `ApplyDamageDealtModifiers` 90 |
+| `CombatAbilityActivationService` | 1,203 | 14 | queries, resources, attackTiming, combatActivity, damageTaken, stat, statusEffect, statusEffectApplication, temporaryStatModifier, impactState, perk, recast, enmity, combatRecorder | none | none | `ApplyAbilityActivatedEffects` 46 |
+| `CombatAbilityBonusService` | 1,061 | 9 | queries, resources, combatActivity, attackTiming, stat, statusEffect, temporaryStatModifier, enmity, db | none | none | `ConsumeNextSkillAbilityBonuses` 50 |
+| `CombatAbilityHitService` | 426 | 12 | queries, resources, suppression, combatActivity, damageModifiers, stat, combatRating, statusEffect, temporaryStatModifier, impactState, perk, pairedRangedTraits | none | none | `TryResolveAbilityHit` 59 |
+| `CombatService` | 198 | 12 | resources, suppression, combatActivity, attackTiming, damageModifiers, hitEffects, damageTaken, abilityActivation, abilityImpact, stat, statusEffect, temporaryStatModifier | none | `ApplyDefeatedEnemyEffects` (368), `ClearCombatState` (600), `ClearStatTriggerState` (816) | `RefreshStatDrivenTrackerEffects` 48 |
+| `EnmityService` | 1,244 | 12 | ai, activity, party, holoCom, companions, stat, stealth, companionControl, statusEffect, combatActivity, attackTiming, queries | none | ten lines: `CreatureDamaged`, `HealingStarted`, `HealingCompleted`, `CreatureAttacked`, `CreatureDeath`, `CreatureDestroyed`, `PlayerDeath`, `PlayerExit` (twice, `OnModuleExit` and `OnAreaExit`), `CreatureLimbo` | `ModifyEnmity` 73, `IssueAttackCommand` 46 |
+| `DeathService` | 385 | 10 (11 parameters) | db, namedAnimation, messaging, playerName, property (`ICityUpgradeLookup`), area (`IAreaLookup`), statusEffect, statusEffectApplication, combatRecorder, damageTaken, plus the revived-listener list | none | `OnPlayerDying`, `OnPlayerDeath`, `OnPlayerRespawn`, `InitializeRespawnPoint` (`LoginOnly`) | `OnPlayerDeath` 53 |
+| `CombatRecordSerializer` | 297 | - | none (static) | - | none | `Write` **198** (the one method over 150) |
+
+Every other method in these files is at or under 138 lines (`LongMethods.txt` lists only `Write`).
+
+**State.** No static fields.
+- **Carried:** `EnmityService._enemyEnmityTables`, `_creatureToEnemies`, `_proximityEnmityAmounts` (`ReloadAdoption.txt`, `ReloadCarryHistory.txt`).
+- **Runtime:** HitEffects `_criticalHitSequenceStates`, `_autoAttackCycleCounts`, `_sourceStatusAutoAttackCycleCounts`, `_meleeAutoAttackCycleCounts`;
+  DamageTaken `_recentGuardedHits`, `_recentDeflections`; Impact `_sameTargetHostileAbilityHitCounts`, `_areaAbilityTargetHitSequences`;
+  DamageModifiers `_autoAttackCycleCriticalCounts` and four repeated-target and pressure tables; Activation `_hostileAbilitySequenceStates`;
+  Enmity `_attackCommandTimes`, `_attackCommandTargets`, `_healingHitPoints`; the recorder's attribution stack, participants, pending damage,
+  heal and damage applications, held events and writer (a reload ends a recording cleanly at quiescence, `HotReload.md`).
+- `CombatAbilityImpactService` is the only one of the eleven that owns a `Rerun` boot handler today.
+
+**Content, Native and tests that reach them.** Counts are call sites by receiver name (approximate).
+
+| Service | Content | Domain | Native and sinks | Tests | Engine tests |
+|---|---:|---:|---:|---:|---:|
+| `CombatHitEffects` | 3 | 21 | 5 | 26 | 30 |
+| `CombatDamageTaken` | 37 | 19 | 11 | 65 | 19 |
+| `CombatAbilityImpact` | 3 | 7 | 0 | 23 | 10 |
+| `CombatRecorder` | 71 | 88 | 18 | 27 | 102 |
+| `CombatDamageModifiers` | 5 | 29 | 16 | 61 | 21 |
+| `CombatAbilityActivation` | 5 | 1 | 0 | 13 | 6 |
+| `CombatAbilityBonus` | 26 | 20 | 9 | 76 | 48 |
+| `CombatAbilityHit` | 3 | 4 | 3 | 18 | 330 (the two resolution overrides, 326 sites) |
+| `Combat` | 10 | 0 | 2 | 21 | 1 |
+| `Enmity` | 51 | 34 | 0 | 306 | 147 |
+| `Death` | 0 | 0 | 0 | 34 | 6 |
+
+CombatSim (`SWLOR.CombatSim`) reads `CombatRules`, `StatusEffectRules` and `StatRules`, and reflects `GameServices.Ability` and the
+`<ConfigureWeaponAbility>` closure in `WeaponImpactReader`. It names none of the eleven services, so the readings test that nothing else
+changed; they cannot drift from a move inside these files. `SWLOR.CLI` and `SWLOR.CraftSim` use none of them.
+
+**Logic-to-content lines that move with the code** (P5-2 removes them): HitEffects `Feature/StatusEffectDefinition` 17, DamageTaken 5 plus
+`UsePerkFeat` 1 and `AbilityDefinition` 1, Impact 28 plus 2, Activation 12 plus 1, DamageModifiers 14, Bonus 7, Hit 2, `CombatService` 3,
+Death 5 (`StatusEffectDefinition` 2, `PlayerTemporaryEffects`, `UsePerkFeat`, `AbilityDefinition`), Recorder `AbilityDefinition` 1.
+
+**Upward edges** (`UpwardEdges.txt`) this item closes: HitEffects -> Quests 3 (`ICapstoneProofService`) and -> Social 3 (`IPartyService`),
+Impact -> Social 3, Enmity -> Social 3 and -> World 3 (`IHoloComService`). Enmity -> Creatures 13 goes in P5-8e. HitEffects, Impact and
+Enmity switch `IPartyService` to `IPartyRoster` (every member they call is on it: `GetAllPartyMembersWithinRange`, `IsInParty`). The two new
+ports are `IBeastDamageRecording` (`RecordBeastDamage`, one member, implemented by `CapstoneProofService`) and `IHologramQuery`
+(`IsHologram`, one member, implemented by `HoloComService`). `CombatAbilityActivationService -> Abilities` (2 members, vocabulary types)
+stays for P5-15.
+
+**Source-reading tests.** 31 test files read combat source through `CombatSource` (`Tests/Support/CombatSource.cs`), which combines
+every `Domain/Combat/Combat*Service.cs` except the names in `CombatParts.OtherServices`
+(`SWLOR.Game.Server.EngineTests/Framework/CombatParts.cs`) and strips the receiver of a call on an injected `ICombat*Service` field. New
+parts named `Combat*Service` are therefore found with no change, except the recorder parts (below), which join `OtherServices`. Tests
+that name a file by path: `EnmityService.cs` (7: `AIModelTests`, `EnmityAdjustmentTests`, `EnmityTests`, `EspionageSystemTests`,
+`NPCChaseTests`, `RealEnmityTables`, `ReloadStateCarrierTests`), `DeathService.cs` (5: `AuthoredCombatAnimationTests`,
+`ForceLightGuardianTests`, `PerformanceAudienceCostTests`, `PerformanceAudienceStateTests`, `StatusEffectDeliveryTests`),
+`CombatRecorderService.cs` (3: `CombatParts`, `CombatSourceTests`, `DMPossessionPlayerLoopTests`), `CombatDamageModifiersService.cs`
+(`MeleeRepeatedTargetStackTests`), and the snapshot and baseline files in "Baselines".
+
+## Parts
+
+Folder: all parts go in `Domain/Combat/` (the flat layout every Combat service uses) in namespace `SWLOR.Game.Server.Domain.Combat`, domain
+Combat. New names are listed in `ConvertedServices.json` and `DomainMap.json` (Combat `services`) in the PR that adds them. Each new part
+has its own interface and a `GameServices` property (derived from the interface name). Line counts are estimates of the whole class.
+
+### CombatHitEffectsService (1,716 lines, 20 services) -> six parts
+
+What the file does: it applies what a landed hit sets off for the attacker, in groups (the hit itself, the auto-attack riders, the
+critical hit, the defeated enemy), plus the triggered-damage pipeline. The recursion `ApplyDamageDealtEffects` -> splash ->
+`ApplyTriggeredDamage` -> `ApplyDamageDealtEffects` is not a runtime cycle (the splash runs in a `DelayCommand`, and a triggered hit never
+reaches the splash because `deliveryType` is not `Direct`), but it is a static call cycle, so it is cut as the orchestrator cut says.
+
+| Part | Responsibility | Members that move (by name) | Lines | Services | Callers that change |
+|---|---|---|---:|---:|---|
+| `CombatHitEffectsService` (stay) | The orchestrator of a direct hit: tracking call, gates, splash, the effect steps in order; the auto-attack cycle damage (it draws from the cycle tables) | stays: `ApplyDamageDealtEffects`, `ApplyAutoAttackSplashEffects`, `ApplyAutoAttackCycleDamage`, `ApplySourceStatusAutoAttackCycleDamage`, `ConsumeAutoAttackCycleDamageBonus`, `ConsumeMeleeAutoAttackCycleDamageBonus`, `ForgetHitEffectState` | ~300 | 8 | none (23 sites of `ApplyDamageDealtEffects`) |
+| `CombatDealtEffectsService` | The steps a landed direct hit grants the attacker: the tracking block, stamina and HP restore, delay reduction, hamstring, force erosion, mimicry procs, predator's mark, toxic rush, bleed effects | `ApplyHeavyVibrobladeDefenseDamageRecovery`, `ApplyPredatorsMarkEffects`, `ApplyPredatorsMarkFollowUp`, `ApplyLowHPDamageDealtHPRestore`, `ApplyBleedingTargetStaminaRestore`(+`Channel`), `ApplyDamageDealtForceErosionEffect`, `ApplyDamageDealtHamstringEffect`, `ApplyDamageDealtMimicryTraitProcs`, `MimicryTraitProcs`, `ApplySideAttackDamageEffects`, `ApplyDamageDealtStaminaRestore`, `ApplyDamageDealtAttackDelayReduction`, `ApplyNextDamageDealtBleedEffect`, `ApplyFrenzySlashHasteRefresh`, `ApplyToxicRushDamageDealtEffects`, `HasPositiveDirectDamageAfterNativeMitigation`; new public members cut from `ApplyDamageDealtEffects` (the tracking block, the two HP-restore blocks) | ~500 | 9 | none (no external caller) |
+| `CombatTriggeredDamageService` | Damage a trigger deals: outgoing modifiers, target adjustment, resistance, taken modifiers, queue or apply the effect | `ApplyTriggeredDamage` (+ `ApplyTriggeredDamageTargetAdjustment`) | ~110 | 8 | 23 sites (13 domain, 2 content, 5 tests, 3 engine) |
+| `CombatAutoAttackEffectsService` | What an auto-attack adds: damage modifiers per attack, suppressed bonuses, master resource restore, hamstring, source status stacks, sundered-target FP restore | `ApplyAutoAttackDamageModifiers`, `ConsumeSuppressedAutoAttackDamageBonuses`, `ApplyAutoAttackMasterResourceRestore`, `ApplyAutoAttackHamstringEffect`, `ConsumeNextSkillAutoAttackDamageBonus`, `ApplySourceStatusStackEffects`, `ApplyInfectionStack`, `ApplyAutoAttackSunderedTargetFPRestore` | ~280 | 9 | 9 sites (2 native, 6 tests, 1 domain) |
+| `CombatCriticalHitEffectsService` | What a critical hit sets off, and the non-critical ability riders | `ApplyCriticalHitEffects` (124 lines), `ApplyNonCriticalAbilityEffects`, the `ApplyCritical*` helpers, `CriticalHitSequenceState` and its table | ~465 | **10** | 14 sites (2 domain, 1 native, 5 tests, 6 engine) |
+| `CombatDefeatedEnemyEffectsService` | What a kill sets off: spreads, nearby ally defense, cruel momentum, recent damagers | `ApplyDefeatedEnemyEffects`, `ApplyRecentDamagerDefeatedEnemyEffects`, `SpreadPoisonFromTarget` and their helpers | ~255 | 9 | 12 sites (3 domain, 3 tests, 6 engine) plus `CombatService` |
+
+Cuts: (1) `ApplyDamageDealtEffects` keeps its text except that the tracking block (capstone proof, paired-ranged record, activity tracking)
+and the two inline HP-restore blocks become calls to `CombatDealtEffectsService` (about 40 lines move; the statements and their order are
+unchanged). (2) `ApplyTriggeredDamage` calls the tracking member of `CombatDealtEffectsService` where it called
+`ApplyDamageDealtEffects(..., Triggered)`: for a non-direct delivery the original runs exactly that block and returns, so the call is
+equal. That removes the static cycle. (3) The seam `ApplyDamageTakenModifiers` (the `Lazy<>` wrapper) is a plain call to
+`CombatDamageTakenService` in the triggered part.
+
+The critical part is at 10 services (abilityHit, attackTiming, impactState, queries, resources, stat, statusEffect, statusEffectApplication,
+statusEffectDuration, temporaryStatModifier). The duration service is used only by `ApplyCriticalBleedingStatusDurationExtension`, but
+`ApplyCriticalHitEffects` calls that member, so moving it to a neighbour swaps one service for one part and the count stays 10. The fallback
+that lowers it moves the three members that use attackTiming and impactState (`ApplyCriticalNextAbilityDamageBonus`,
+`ApplyCriticalNextAutoAttackNoDelay`, `ApplyCriticalHitLimitedHaste`, about 70 lines) to a new `CombatCriticalHitTimingEffectsService` (5
+services: attackTiming, impactState, resources, stat, statusEffectApplication). The critical part then drops two services and gains one
+part: 9.
+
+### CombatDamageTakenService (1,649 lines, 20 services) -> seven parts and `CombatDamageRollService`
+
+What the file does: the modifiers applied before damage lands (percent, leadership, redirect, share, fatal prevention), the effects
+after damage (low-HP riders, melee poison, avoided attacks, deflections), the guard (reduction, retaliation, next-skill effects) and
+the reflections. Pre-damage modifiers are the most called family (94 sites: `ApplyDamageTakenModifiers` 37, `ApplyDamageOverTimeTakenModifiers`
+19), so they stay.
+
+`ApplyIncomingPhysicalToForceConversion` cannot stay with `ApplyDamageTakenModifiers`. It calls `ApplyTriggeredDamage`, and the triggered part
+calls `ApplyDamageTakenModifiers`, so one class holding both is a constructor cycle (Triggered -> stay -> Triggered). It goes with the
+reflections. Its two callers, `AbilityDamageInputService` and `AbilityDamageStageService`, therefore take two damage taken parts (Holders).
+`ApplyIncomingPhysicalToForceDefenseConversion` (stat only) stays.
+
+| Part | Responsibility | Members that move | Lines | Services | Callers that change |
+|---|---|---|---:|---:|---|
+| `CombatDamageTakenService` (stay) | Damage taken modifiers: percent, typed leadership, redirect and share to a status source, damage over time, fatal prevention, the physical-to-force defense conversion, guard reduction reads | stays: `ApplyDamageTakenModifiers`, `ApplyDamageTakenPercentageModifiers`, the leadership members, `ApplyDamageTakenRedirectToStatusSource`, `ApplyDamageTakenShareToStatusSource`, `ApplyDamageOverTimeTakenModifiers`, `TryPreventFatalDamageAndGrantTemporaryHP`, `ApplyLowHPTemporaryHPBeforeFatalDamage`, `ApplyIncomingPhysicalToForceDefenseConversion`, `IsHostileAttackSource`, `GetGuardDamageReductionPercent`, constants | ~490 | 8 (7 plus the recorder damage part, for `KeepLethalHitPoints` and `RecordTemporaryHitPointsGranted`) | none |
+| `CombatDefenseMemoryService` | Who was guarded or deflected recently: the two tables and their reads, no dependencies | `HasRecentGuardedHit`, `HasRecentDeflection`, new `NoteGuardedHit`, `NoteDeflection` (the table writes cut out of `TrackGuardedHit` and `TrackDeflection`), `ForgetDefenseMemory` | ~70 | 0 | 10 sites (4 content, 4 tests, 2 engine) |
+| `CombatDamageTakenEffectsService` | The after-damage handler and reactions: low-HP effects, reversal cut, melee damage taken and poison, avoided attacks, attack deflection | `ApplyDamageTakenEffects` (the handler), `ApplyLowHP*`, `ApplyReversalCutReady`, `ApplyDamageTakenNextSkillAbilityDamage`, `ApplyRecentDamageTargetHitEffects`, `ApplyMeleeDamageTaken*`, `TrackAvoidedAttack` and `ApplyAvoided*`, `TrackDeflection`, `ApplyDeflectionNearbyAllyGuard`, `ApplyAbilityUsedAttackDeflection`, `ApplyAbilityGrantedAttackDeflectionEffects` | ~575 | **10** | 44 sites (6 content, 18 tests, 10 engine, 3 native, 7 domain) |
+| `CombatGuardedHitService` | A guarded hit: reduction, recovery, enmity, then retaliation and next-skill effects | `ApplyGuardedHitModifiers`, `ApplyGuardedHitRecovery`, `ApplyGuardedHitEnmity` | ~110 | 9 | 3 sites |
+| `CombatGuardedHitEffectsService` | The effects a guarded hit grants the guard | `TrackGuardedHit`, `ApplyGuardedHitNextSkillAbilityEffects`, `ApplyGuardedHitNextSkillAbilityStatusEffects`, `ConsumeGuardedHitNextSkillAbilityExposedDamageBonus`, and `ApplyGuardedHitNextAttackEffects` from `CombatAbilityHitService` (its only caller is `TrackGuardedHit`) | ~240 | 5 | 7 sites plus 2 |
+| `CombatGuardRetaliationService` | The damage a guard returns | `ApplyGuardedHitRetaliation`, `ApplyGuardedHitRetaliationPulse`, `ResolveGuardRetaliationDamage`, `GetGuardRetaliationDamageAbility` | ~190 | 9 | none |
+| `CombatDamageReflectionService` | Damage given back: reflection, force conversion, ranged deflection reflection | `ApplyDamageReflectionEffects`, `ApplyForceDamageTakenEffects`, `ApplyIncomingPhysicalToForceConversion`, `ApplyRangedDeflectionReflection`, `BuildDeflectingReturnCombatLogMessage` | ~220 | 8 | 17 sites (3 domain, 3 native, 11 tests) |
+| `CombatDamageRollService` (from `CombatService`) | The random damage roll (`CalculateDamage`: the range from `CombatRules`, then `Random`) | `CalculateDamage` (31 lines, no services) | ~50 | 0 | 10 content, 2 native, 11 tests |
+
+The effects part is at 10 services (attackTiming, combatActivity, recorder, resources, stat, statusEffect, statusEffectApplication,
+temporaryStatModifier, triggered damage, defense memory). The fallback that lowers it moves `ApplyMeleeDamageTakenEffects` and
+`ApplyMeleeDamageTakenPoisonDamage` (29 + 24 lines; recorder, triggered damage, resources, stat, temporaryStatModifier) to
+`CombatDamageReflectionService`: nothing in the effects part calls them (they are called from the native hook), so the effects part drops
+the triggered-damage service (9), and the reflection part gains temporaryStatModifier (9).
+
+Handler: `ApplyDamageTakenEffects` moves to the effects part (`ScriptHandlerOrder.txt` line 344, `HandlerRenames.txt` line 146, renamed in place).
+
+### CombatAbilityImpactService (1,720 lines, 16 services) -> six parts
+
+What the file does: the effects of an ability hit (riders), the area impacts, the damage bonus reads, and the status-applied listener.
+
+| Part | Responsibility | Members that move | Lines | Services | Callers that change |
+|---|---|---|---:|---:|---|
+| `CombatAbilityImpactService` (stay) | The orchestrator of a successful ability hit: the step order, status riders dispatch, and the attacking-ally check that `AbilityHostileImpactService` calls | stays: `ApplySuccessfulAbilityImpactRiders`, `ApplyAbilityStatusRiders`, `IsTargetAttackingAllyForStatusAppliedRiders`, `IsAttackingAllyOf` | ~200 | **10** | 6 sites (4 tests, 2 domain) |
+| `CombatAbilityDamageBonusService` | Damage bonus reads before the hit | `GetAbilityImpactBaseDamageBonus`, `GetHighResourceAbilityDamageBonus`, `GetCostlyAbilityDamageBonus` | ~145 | 7 | 16 sites (2 domain, 9 tests, 5 engine) |
+| `CombatAbilityHitRidersService` | Hit-time effects of a hostile ability: costly, near-target, same-target, next auto-attack delay, and the impact effects entry with its area, spear, throwing and reward helpers | `ApplyCostlyAbilityHitEffects`, `ApplyRangedAbilityHitNearTargetEffects`, `ApplySameTargetHostileAbilityHitEffects`, `ApplyHostileAbilityHitNextAutoAttackNoDelay`, `ApplyAbilityImpactEffects`, `ApplyAreaAbilityImpactEffects`, `ApplySpearAbilityImpactEffects`, `ApplyThrowingAreaAbilityImpactEffects`, `ApplyAreaHitRewards`, `ApplyAreaHitHaste`, `ApplyStackingAttackBoost` and the same-target table | ~380 | 6 | 12 sites (2 domain, 2 content, 3 tests, 5 engine) |
+| `CombatAbilityAreaImpactService` | Area abilities and the damage riders: pulse, fragmentation, ricochet, cluster storm, splash, saturation toss, bleed refresh and spread, the area hit sequence | `ApplyAbilityDamageRiders`, `ApplyFoggyMindResourceDrain`, `ApplyAreaAbilityPulse`, `ApplyAreaAbilityFragmentation`, `ApplyRicochetDamage`, `ApplyClusterStormDamage`, `ApplyBleedingTargetAbilitySplash`, `ApplySaturationToss`, `ApplyBleedingTargetAbilityBleedRefresh`, `ApplyBleedingTargetAbilityBleedSpread`, `ApplyAreaAbilityTargetHitSequenceEffects` and the sequence table | ~410 | 9 | none |
+| `CombatAbilityWeaponRidersService` | Weapon-family impact riders (heavy vibroblade, force dark, lightsaber, pistol, rifle, saberstaff, spear, staff, throwing, twin blade, vibroknife, katar venom) | the `Apply*ImpactRiders` family, `ApplyAbilityUsedPerkCategoryTargetEnmityToSourceStatus` (922; it uses enmity, which only this part has), `HasSunderPenaltyAtLeast`, `ApplySpearDisablerSuppressionRiders`, `ApplyGuardedHitNextSkillAbilityExposedStatus` | ~440 | 8 | 1 site |
+| `CombatAbilityStatusAppliedService` | The status-applied listener, target status effects and the hostile-debuff party buff | `RegisterStatusEffectListener` (the boot handler), `OnStatusApplied`, `OnHostileDebuffApplied`, `OnApplicationCompleted`, `ApplyHostileAbilityPartyBuff`, `ApplyStatusApplied*`, `ApplyAbilityTargetStatusEffects`, `ReplaceTemporaryStat` (with its callers) | ~320 | 8 | 6 sites (5 tests, 1 content) |
+
+The stay-part is at 10 services (combatActivity, enmity, hitEffects, pairedRangedTraits, party, stat and the four parts). The fallback that
+lowers it moves `IsTargetAttackingAllyForStatusAppliedRiders` and `IsAttackingAllyOf` (29 lines; enmity, party, stat) to
+`CombatAbilityWeaponRidersService` (which already has enmity and stat and gains party: 9). The stay-part is then 7. The cost is that
+`AbilityHostileImpactService` takes the weapon riders part for that one call (9 -> 10, Holders). `IsAttackingAllyOf` is not a candidate for
+the hit-riders part.
+
+`RegisterStatusEffectListener` keeps its event and position; it is renamed in place (`ScriptHandlerOrder.txt` line 58, `HandlerRenames.txt`
+line 320 with the branch name, `BootHandlerClassification.txt`).
+
+### CombatRecorderService (1,691 lines, 6 services) -> four parts, bottom-up; `CombatRecordSerializer.Write` cut
+
+What the file does: the recording session (start, stop, status, snapshots, the event queue and participant ids), the attribution stack, and
+47 `Record*`, `Begin*` and `Expect*` event methods. Lower domains reach it through `ICombatRecordingState`, `ICombatRecording` and
+`ICharacterRecording` (21 holders); the stay-part keeps implementing those, and `ICombatRecorderService` and `IShutdownStep`. The members
+those interfaces name (attribution, healing reaction, resource and item records, status records) stay.
+
+The stay-part and a damage part cannot be split by member ranges alone: they share state and private members (about 98 calls from the
+damage and ability members into 14 private members of the stay-part, among them `Enqueue` 18, `GetParticipantId` 29, `IsRecorded` 11,
+`IsInRecordedArea` 10, `CurrentFrame` 6 and the attribution resolvers). The structure is therefore layered from the bottom:
+
+| Layer | Part | Responsibility | Members | Lines | Services |
+|---|---|---|---|---:|---:|
+| 0 | `CombatRecordSessionCore` | State and queue, no services: event queue, held events, the damage and heal application scopes, participants, recorded area, pending damage table, `IsRecording`, the clock and log seams | `Enqueue`, `Write`, `WriteHeldEvents`, `GetParticipantId`, `IsRecorded`, `IsInRecordedArea`, `AnyInRecordedArea`, `WithTargetLocation`, `BeginDamageApplication`, `EndDamageApplication`, `BeginHealApplication`, `EndHealApplication`, `FindDamageApplication`, `KeepHitPointsLeftByHit`, `ReleaseAwaitingHeal`, `AddPendingDamage`, `CurrentFrame`, `UnixTimeMilliseconds`, `UtcNow`, `WriteLog`, `LastWriter`, new `Reset` and `Flush` (the clears and the held-event flush cut out of `Start` and `Stop`) | ~340 | 0 |
+| 1 | `CombatRecorderService` (stay) | Session control (`Start`, `Stop`, `GetStatus`, `StopOnShutdown`, snapshots, `RegisterPlayersInArea`), the attribution stack and the resolvers, the healing reaction, the resource, item and status records, the pending-damage entry members and the three small entry members lower domains call | stays: `Start`, `Stop`, `GetStatus`, `StopOnShutdown`, `TakeSnapshots`, every `Begin*Attribution`, `Capture*`, `Push*`, `Resolve*`, `GetFeatCode`, `BeginHealingReaction`, `EndHealingReaction`, `RecordResourceChange`, `RecordResourceReduction`, `RecordItem*`, `RecordStatusApplied`, `RecordStatusRemoved`, `ExpectDeferredDamage`, `ExpectHitPointCost`, `ExpectWeaponDamage`, `HasPendingDamage`, `RecordPvpHealingReduced`, `RecordAttack`, `RecordRecurringAbilityImpact`; `IsRecording` is one line that returns the core's | ~830 | 7 (core, dmPresence, db, catalog, impactState, `Lazy<IStatService>`, `Lazy<ICombatQueriesService>`) |
+| 2 | `CombatRecordAbilityService` | Ability records: cast, denied, interrupted, queued, impact, cost, toggle notes | `RecordAbilityCast`, `RecordAbilityDenied`, `RecordAbilityInterrupted`, `RecordAbilityQueued`, `RecordAbilityImpact`, `BeginAbilityCost`, `CompleteAbilityCost`, `NoteToggleDeactivated`, `TakeToggleDeactivation` | ~230 | 3 (core, the stay-part, `IStatService` plain) |
+| 2 | `CombatRecordDamageService` | Damage, healing, temporary hit point and death records, with the death handlers | `RecordDamageApplied`, `RecordDamageEvents`, `ResolveDamageAttribution`, `RecordHealingApplied`, the temporary hit point records, `RecordCreatureDeath` and `RecordPlayerDeath` (handlers), `RecordRespawn`, `RecordResurrection`, `RecordSubdual`, `KeepLethalHitPoints`, `RecordDeath` and its helpers, and the tables `_temporaryHitPointGrants`, `_lastDamageSources`, `_deathFrames` | ~480 | 3 (core, the stay-part, impactState) |
+
+- **`Enqueue` and the other core members are not on any interface the 21 holders see.** The core has its own interface
+  `ICombatRecordSession`, held only by the stay-part and the two layer 2 parts. `ICombatRecordingState` (held by Platform) is registered to the
+  core instance.
+- **The ability part needs `IStatService` plain.** It reads FP and stamina (`GetCurrentFP`, `GetCurrentStamina`) for the ability cost records.
+  Nothing it reaches depends back on it (`StatService` holds the stay-part, never the ability part), so plain is safe; the build scan
+  confirms it. The stay-part keeps its `Lazy<IStatService>` and `Lazy<ICombatQueriesService>` (Cycles).
+- **The one forwarding member** is the stay-part's `IsRecording` (`ICombatRecording` inherits it, so the stay-part must implement it). It is a
+  one-line getter over the core's field, on a hot path (88 call sites), and `CombatLoad` and the allocation pins measure it.
+- **`ExpectHitPointCost`, `RecordPvpHealingReduced`, `RecordAttack` and `RecordRecurringAbilityImpact` stay in the stay-part** (with the
+  `Expect*` family and `HasPendingDamage`, which use the core's pending table). They are the members `AbilityDarkForceService`,
+  `PvpCombatService`, `AbilityImpactMessageService` and `AbilityImpactLifecycleService` call, so those four holders keep one recorder service.
+- **Start and Stop cut.** `Start` (75 lines) and `Stop` (36) keep their text except that the clears of the core's tables become `Reset()` and
+  `Flush()` calls on the core, and the clears of the damage part's three tables become a notice (below). The statement order is unchanged.
+- **Notice.** The stay-part holds a list of `ICombatRecordingSessionListener` (`OnRecordingStarted`, `OnRecordingStopped`). `OnRecordingStarted`
+  fires where `Start` clears its tables (after `_recording++`, before the writer is created and before `TakeSnapshots` reaches
+  `RegisterPlayersInArea`); `OnRecordingStopped` fires where `Stop` clears them (after `IsRecording = false` and the message, as today). The
+  damage part registers from a `Rerun` boot handler in `OnModuleCacheBefore`; a notice with an empty list throws `InvalidOperationException`
+  (the P5-5d pattern). The ability part's toggle notes are not cleared by `Start` or `Stop` today, so it registers nothing.
+- **Callers that change:** core 17 sites (4 native, 13 tests: the scope members), ability part 16 (15 content, 1 domain), damage part 17 (12
+  content, 3 domain, 2 native). The two layer 2 parts join `CombatParts.OtherServices` so `CombatSource` does not absorb them. The stay-part
+  ends near 830 lines (83%); if it measures over about 950, the resource, item and status records move to a new layer 2 part.
+
+`CombatRecordSerializer.Write` (198 lines): one `switch` over 23 case labels. It becomes a dispatcher of about 30 lines that calls four
+static methods, each holding the original `case` bodies verbatim: `WriteLifecycleEvent` (started, stopped, participant), `WriteAbilityEvent`
+(cast, queued, denied, interrupted, impact, cost), `WriteDamageEvent` (attack, damage, temporary hit points, healing) and `WriteStateEvent`
+(resource, status applied, refreshed and removed, death, resurrection, subdual, snapshot); each stays under 70 lines. One golden JSON line
+per label proves it (Tests).
+
+### CombatDamageModifiersService (1,436 lines, 9 services) -> three parts
+
+Regrouped so the two common holders need one part: the critical damage side stays with `ApplyDamageDealtModifiers` (`AbilityDamageStageService`
+calls `ApplyDamageDealtModifiers`, `ApplyCriticalDamageModifier` and `CalculateDamageWithCriticalMitigation`), and the rate reads that the
+character sheet and `AbilityDamageInputService` call (`GetSkillCriticalRatePercentAdjustment`, `GetLowHPAttackAdjustment`,
+`GetNearbyStatusTargetAttackAdjustment`, `ApplyStatusSourceDefenseModifiers`) stay too.
+
+| Part | Responsibility | Members that move | Lines | Services | Callers that change |
+|---|---|---|---:|---:|---|
+| `CombatDamageModifiersService` (stay) | Damage dealt modifiers: the orchestrator, critical damage, ability shape, status source, attack adjustments | stays: `ApplyDamageDealtModifiers`, `ApplyOrdinaryAttackDamageMultiplier`, `CalculateDamageWithCriticalMitigation`, `TryUseIncomingCriticalHitDowngrade`, `ApplyCriticalDamageModifier`, `GetSkillCriticalRatePercentAdjustment`, the `Apply*ShapeDamageModifier` family, `ApplyTargetStatusDamageModifiers` (138 lines), `ApplyDamageTypeDealtModifiers`, `GetLow*AttackAdjustment`, `GetNearbyStatusTargetAttackAdjustment`, `ApplyStatusSource*Modifiers`, `ApplyTargetStatusAttackModifiers`, `ApplyAreaAbilityAfterDeflectionDamageModifier` | ~840 | **10** | none |
+| `CombatRateModifiersService` | Critical rate and positional rate modifiers: auto-attack and status critical rate, the auto-attack cycle critical tracker, side and back attack | `GetAutoAttackCriticalRateAdjustment`, `GetTargetStatusCriticalRateAdjustment`, `PrepareAutoAttackCycleCriticalRate`, `ClearAutoAttackCycleCriticalRateTracker` and its table, `ApplySideAttack*`, `GetSideAttack*Adjustment`, `ApplyBackAttack*`, `GetBackAttackCriticalRateAdjustment` | ~210 | 6 | 25 sites (6 native, 13 tests, 6 domain) |
+| `CombatRepeatedTargetService` | Repeated-target and same-target pressure state and effects | `ApplyRepeatedTargetDamageModifier`, the melee and ranged variants, `ClearRangedRepeatedTargetDamageTracker`, `ApplySameTargetPressureDamageEffects`, the `SameTargetPressure*` members, the four state tables, `ForgetDamageModifierState` | ~410 | 3 | 10 sites (5 domain, 5 tests) |
+
+The stay-part's `Lazy<ICombatDamageTakenService>` (only for `HasRecentDeflection`) becomes a plain `ICombatDefenseMemoryService` parameter. The
+stay-part is at 10 services (damage memory, impactState, playerFeedback, queries, resources, stat, statusEffect, temporaryStatModifier and
+the two parts). The fallback that lowers it moves `GetHighHPTargetCriticalDamageAdjustment` (24 lines; the only user of `IPlayerFeedbackService`
+in the stay-part) to `CombatRateModifiersService`, which already holds playerFeedback: the stay-part drops it (9).
+
+### CombatAbilityActivationService (1,203 lines, 14 services) -> five parts
+
+`ApplyAbilityActivatedEffects` runs 24 steps. The orchestrator stays and calls each step as a public member of the part that owns it, in the
+original order. The parts are split by what the effect is for, not by position in the sequence.
+
+| Part | Responsibility | Members that move | Lines | Services | Callers that change |
+|---|---|---|---:|---:|---|
+| `CombatAbilityActivationService` (stay) | The step order, queued weapon ability tracking | stays: `ApplyAbilityActivatedEffects`, `TrackQueuedWeaponAbilityUse`, `ResolveActivatedAbilitySkillType` | ~115 | 7 | none (19 sites) |
+| `CombatAbilityCostEffectsService` | Effects tied to what an ability costs or primes: recast reduction, next-skill bonuses, hit point spend, force FP cost | `ApplyHitPointSpendAbilityEffects` (public), `ApplyAbilityUsedRecastReduction`, `ApplyAbilityUsedNextSkill*`, `ApplyAbilityUsedMasterAbilityHitChance`, `ApplyForceFPCostActivatedEffects`, `ApplyHitPointSpend*` | ~220 | 8 | 4 sites (2 content, 2 tests) |
+| `CombatAbilityDefenseEffectsService` | Evasion, deflection and ally-defense effects | `ApplyAbilityUsedSkillEvasion`, `ApplyHostileAbilityUsedEvasion`, `ApplyCostlyAbilityUsedEvasion`, `ApplyAreaAbilityUsedEvasion`, `ApplyAbilityUsed*Deflection`, `ApplyAbilityUsedNearbyAllyDefense`, `ApplyAbilityUsedPerkCategory*`, `ApplyAbilityUsedEvasion` | ~400 | 7 | none |
+| `CombatAbilityOffenseEffectsService` | Hostile ability effects: movement speed, area rewards, force attack, attack adjustment, sequence and resource restore | `ApplyAbilityUsedMovementSpeed`, `ApplyAreaAbilityUsedRewards`, `ApplyHostileAbility*`, `ApplyNextAutoAttackDamageBonus`, `ForgetActivationState`, the sequence table | ~285 | 7 | 2 sites |
+| `CombatAbilityWeaponActivationService` | Weapon-family activation riders | `ApplyAbilityActivatedRiders`, `ApplyHeavyVibrobladeActivatedEffects`, `ApplyGuardiansResolve`, `ApplyBeastBalancedAbilityRecovery`, `ApplyVibroknifeShadowActivatedEffects`, `ApplyPistolSkirmisherActivatedEffects`, the three lightsaber members | ~345 | 9 | none |
+
+### CombatAbilityBonusService (1,061 lines, 9 services) -> two parts
+
+The service is stateless (the bonuses live in `ITemporaryStatModifierService`), so the split is by what the bonus is for.
+
+| Part | Responsibility | Members that move | Lines | Services | Callers that change |
+|---|---|---|---:|---:|---|
+| `CombatAbilityBonusService` (stay) | Next-ability and next-skill bonuses and the ability adjustment reads | stays: `ConsumeNextSkillAbilityBonuses`, `GrantNext*`, `ConsumeNext*`, `GetNext*`, persistent critical rate, guarded-hit and status-applied bonuses, `GetAbility*Adjustment`, `ApplyAbilityRecastDelayModifiers`, `GetAbilityDamageBonus` | ~540 | 9 | none |
+| `CombatQueuedAbilityBonusService` | Opening auto-attack, queued weapon ability and idle activation bonuses | `PrepareOpeningAutoAttack`, `PrepareQueuedWeaponAbilityOpeningAttackAtActivation`, `Store*`, `Clear*`, `Has*`, `ConsumeQueuedWeaponAbilityBonuses`, `GetQueuedWeaponAbilityActivationHitChanceAdjustment`, the idle snapshot reads | ~455 | 6 | 67 sites (22 content, 28 tests, 12 engine, 5 native) |
+
+### CombatAbilityHitService (426 lines, 12 services) -> two parts
+
+| Part | Responsibility | Members that move | Lines | Services | Callers that change |
+|---|---|---|---:|---:|---|
+| `CombatAbilityHitService` (stay) | Resolving an ability hit and the two resolution overrides the engine tests set | stays: `TryResolveAbilityHit`, `GetAbilityAccuracy`, `GetIncomingAbilityHitChanceAdjustment`, `Set*HitResolutionOverride`, `GetAutoAttackHitResolutionOverride` | ~180 | 9 | none (340 sites, 326 of them the overrides) |
+| `CombatAbilityHitAdjustmentService` | Critical rate and hit adjustments, evaded effects | `CalculateAbilityCriticalRating`, `GetAbilityCriticalRate`, `GetAbilityHitOrCriticalAdjustment`, the sundered target reads, `ApplyRangedAbilityTargetDefenseReduction`, `ApplyForceAbilityEvadedEffects` | ~225 | 7 | 16 sites (2 domain, 3 content, 2 native, 7 tests, 2 engine) |
+
+`ApplyGuardedHitNextAttackEffects` (58 lines) leaves for `CombatGuardedHitEffectsService` (above).
+
+### CombatService (198 lines, 12 services) -> stay-part and `CombatDamageRollService`
+
+It keeps its three handlers, `RefreshStatDrivenTrackerEffects` and the cleanup, and loses `CalculateDamage`. The cleanup
+(`RemoveStatTriggerCooldowns`) calls twelve forgets in a fixed order; after the splits it would need about fifteen services. The order
+matters: the forgets have side effects that other forgets observe (`CombatSuppressionService.cs:447-461` removes the overwatch status,
+`CombatDamageModifiersService.cs:1423` clears the ranged repeated-target tracker and its status, `TemporaryStatModifierService.cs:311-316`
+publishes refresh notices), and `CombatActivity` and `CombatResources` each appear twice in it (`CombatService.cs:84-98`).
+
+So the cleanup takes `IEnumerable<ICombatCreatureStateOwner>` and walks a phase list that is today's order exactly:
+`ForgetCreatureState(creature, CombatForgetPhase phase)`, with `CombatForgetPhase` (its own enum file) numbering 1 resource triggers, 2 activity,
+3 defense memory, 4 suppression, 5 activation, 6 hit effects, 7 ability impact, 8 opening activity, 9 ability stamina cost, 10 attack timing,
+11 damage modifiers. Each owner handles the phases it owns and ignores the rest; resources owns 1 and 9, activity owns 2 and 8, the new parts
+own one phase each (the hit effects stay-part and the critical part both own 6, the hit riders and area parts both own 7, the repeated-target
+and rate parts both own 11, adjacent in registration order as the forgets are adjacent today). `CombatService` loops phases 1 to 11 over the
+owners and then calls `_temporaryStatModifier.Clear(creature)` directly as the last call: `TemporaryStatModifierService` is Character, and
+implementing a Combat interface would be an upward edge. Nothing holds `CombatService` plainly after the `Lazy<>` goes (only
+`PerkService`'s `Lazy<>`, which stays), so the owner list is plain. P5-7b writes the order test against the current code (Tests).
+
+`CombatService` after: stay-part ~200 lines, 8 services (the defeated-enemy part, suppression, combatActivity, stat, statusEffect,
+temporaryStatModifier, the rate part and the repeated-target part, the last two for the two tracker clears in
+`RefreshStatDrivenTrackerEffects`; the owner list is a list, not a service). `RefreshStatDrivenTrackerEffects` stays on `ICombatService`, so
+`PerkService` (P5-10's file) is not edited.
+
+### EnmityService (1,244 lines, 12 services) -> three parts
+
+This is the D1 split of the Creatures guide: the part the AI core calls (the table reads and removals) must never call the leash, so the
+table and the changes that call the leash are separate parts, and the AI core's call to `AttackHighestEnmityTarget` becomes a notice. It
+builds on the P5-8e ports (`ICombatLeash`, `ICompanionTargetQuery`); service counts below are after them (the counts do not change:
+`IAIService` becomes `ICombatLeash`, `ICompanionControlService` becomes `ICompanionTargetQuery`).
+
+| Part | Responsibility | Members that move | Lines | Services | Callers that change |
+|---|---|---|---:|---:|---|
+| `EnmityService` (stay) | The tables and their reads: the three carried tables, the attack-command memory, reads, threat checks, removal and clearing; implements `IEnmityTargetQuery` and `IEspionageEnmityQuery` | stays: `GetEnmityTable`, `GetEnmityTowardsAllEnemies`, `GetHighestEnmityTarget`, `HasEnmity`, `HasProximityEnmity`, `HasNonProximityEnmity*`, `HasOnlyProximityEnmity`, `IsThreatSecured`, `IsThreatLeadSecure`, `RemoveEnmity`, `RemoveProximityEnmity`, `ClearEnmityTable`, `ClearEnmityTables`, the raw reads, the tracking removals; new mutation members (below) | ~350 | 0 | none (about 240 sites) |
+| `EnmityChangeService` | Changes to enmity and the handlers that cause them | `CreatureDamaged`, `CalculateDamageEnmity`, `HealingStarted`, `HealingCompleted`, `CalculateHealingEnmity`, `CreatureAttacked`, `ModifyEnmity` (both), `CalculateAdjustedEnmity`, `TryTaunt`, `CalculateTauntEnmity`, `ModifyEnmityOnAll`, `ReduceEnmity`, `ReduceEnmityOnAll`, `CalculateReducedEnmity`, `ModifyProximityEnmity`, `RemoveCreatureEnmity`, `CreatureDeath`, `CreatureDestroyed`, `PlayerDeath`, `PlayerExit`, `CreatureLimbo`, the healing table | ~465 | 8 | about 260 sites (`ModifyEnmity` 138: 16 content, 63 tests, 50 engine, 9 domain) |
+| `EnmityAttackService` | Choosing and commanding the attack target | `GetHighestEnmityAttackTarget`, `IsEligibleAttackTarget`, `ReevaluateEnemyAttackTargets`, `AttackHighestEnmityTarget`, `ResumeAttackAfterActionsCleared`, `IssueAttackCommand` and the stale-attack, hold and move-range helpers | ~375 | 8 | 54 sites (7 content, 41 tests, 4 engine, 2 domain) |
+
+**The table part exposes mutation members, not dictionaries.** The change part never touches the tables directly:
+- `AddEnmity(creature, enemy, amount)`: the block of `ModifyEnmity` from "retrieve the creature's list of associated enemies" to "update this
+  creature's list of enemies". One reorder: `ModifyEnmity` calls `CalculateAdjustedEnmity(amount, CalculateEnmityAdjustment(...))` after the
+  table entries are created and before the clamp; the adjustment reads stats and status effects, never the tables, so the change part
+  computes it first and passes the adjusted amount. A transcript test proves the result and the call order are the same.
+- `ReduceEnmityEntry(creature, enemy, percent)` (the table and proximity update of `ReduceEnmity`, returning whether it changed),
+  `AddProximityEnmity(creature, enemy, appliedAmount)` (the tail of `ModifyProximityEnmity`), `GetEnemiesOf(creature)` (a copy, as every
+  caller already used `ToArray()`), `RemoveEnmityTableEntry` and `RemoveProximityEnmityTracking` (promoted), and
+  `TryGetAttackCommand`, `RecordAttackCommand`, `ForgetAttackCommand` for the attack-command memory, which lives in the table part because
+  `ClearEnmityTables` and `RemoveCreatureEnmity` clear it.
+- `GetEnmityTable` already hands out the live dictionary and is called 96 times; it stays as it is. No part stores the result of a table
+  member in a field: adoption replaces the carried fields, so a cached reference would point at the old build's table.
+
+The ten handlers move to `EnmityChangeService` (the eight events and `PlayerExit` twice); one `PlayerSession` classification line
+(`PlayerExit`, `LogoutOnly`) moves with them. The carried keys do not change, because the tables stay in `EnmityService`; no
+`[ReloadCarriedFrom]` and no `ReloadAdoption.txt` change. Hot path: `ModifyEnmity` runs per damage event; it gains two interface calls
+(the table and the attack part), which `CombatLoad` measures.
+
+**The 13 seams of `AIService` on `_enmity.Value` (`Creatures/AIService.cs:1818-1842`).** After P5-8h each seam moves with its caller into
+the AI part that uses it; this is where each Enmity member lands.
+
+| # | Seam | Used by (AI part after P5-8; line today) | Enmity part | After P5-7k |
+|---|---|---|---|---|
+| 1 | `GetHighestEnmityTarget` | core (480), events (163, 872), aggro (340, 1009), action (1749) | table | plain |
+| 2 | `GetHighestEnmityAttackTarget` | action (1627) | attack | plain (action is above Enmity) |
+| 3 | `GetEnmityTable` | core (833) | table | plain |
+| 4 | `AttackHighestEnmityTarget` | core (510, 845); events (133, 170, 208, 228, 252); aggro (1012); decision (1222); action (1548) | attack | core: the retarget notice; the others plain |
+| 5 | `ResumeAttackAfterActionsCleared` | events (311) | attack | plain |
+| 6 | `IssueAttackCommand` | action (1633) | attack | plain |
+| 7 | `ClearEnmityTable` | core (723) | table | plain |
+| 8 | `RemoveEnmity` | core (842) | table | plain |
+| 9 | `ModifyEnmity` | decision (1720) | change | plain |
+| 10 | `HasProximityEnmity` | aggro (994) | table | plain |
+| 11 | `ModifyProximityEnmity` | aggro (997) | change | plain |
+| 12 | `RemoveTrackedProximityEnmity` (`RemoveProximityEnmity`) | aggro (1006) | table | plain |
+| 13 | `RestoreNPCStats(outOfCombatRegen, _enmity.Value)` | events (131) | table | passes the table part as `IEnmityTargetQuery` (one member, `GetHighestEnmityTarget`) |
+
+Six of the 13 reach members that call the leash back (`EnmityService.cs:369, 391, 448-449, 848, 862, 884, 936, 945, 959, 1044`): seams 2, 4,
+5, 6 (the attack part) and 9, 11 (the change part). After P5-8h the AI core (the leash) uses only seams 1, 3, 7 and 8, which are table reads
+and removals that never call the leash, and the one retarget call of seam 4 (two sites, 510 and 845), which becomes `ILeashRetargetListener`.
+That is why P5-7k waits for P5-8h (Order). P5-7k runs the constructor scan on the real graph after P5-8 before any `Lazy<>` is made plain.
+
+### DeathService (385 lines, 10 services) -> two parts
+
+| Part | Responsibility | Members that move | Lines | Services | Callers that change |
+|---|---|---|---:|---:|---|
+| `DeathService` (stay) | Dying, death and the respawn handler | stays: `OnPlayerDying`, `OnPlayerDeath`, `IsSubdualDeath`, `RecordDeathDebtWaiver`, `OnPlayerRespawn` | ~250 | **10** (db, namedAnimation, messaging, playerName, statusEffect, statusEffectApplication, recorder, recorder damage part, damage taken, respawn) | none |
+| `DeathRespawnService` | Respawn points, locations and penalties | `InitializeRespawnPoint` (the `OnModuleEnter` handler, `LoginOnly`), `GetRespawnLocation`, `HasRespawnArea`, `IsWalkable`, `SendToHomePoint`, `ApplyPenalties`, `WriteAudit` | ~170 | 4 (db, area, property, playerName) | 20 sites (`GetRespawnLocation` 10, `InitializeRespawnPoint` 5, `HasRespawnArea` 5; 16 tests, 4 engine) |
+
+The stay-part is 10, not 9: it holds the recorder stay-part and the recorder damage part (`RecordSubdual`, `RecordRespawn`). Flagged; the
+fallback that lowers it moves the `OnPlayerDying` handler (9 lines, the only use of damage taken) to `DeathRespawnService`, which takes damage
+taken (5) and becomes the dying-to-respawn part: the stay-part is then 9. It costs one more handler rename (`OnModuleDying`).
+
+### Totals
+
+| Service | Lines before | Services before | Parts (lines, services) |
+|---|---:|---:|---|
+| `CombatHitEffectsService` | 1,716 | 20 | stay 300/8, Dealt 500/9, Triggered 110/8, AutoAttack 280/9, Critical 465/**10**, Defeated 255/9 |
+| `CombatDamageTakenService` | 1,649 | 20 | stay 490/8, Effects 575/**10**, Memory 70/0, GuardedHit 110/9, GuardedHitEffects 240/5, Retaliation 190/9, Reflection 220/8 |
+| `CombatAbilityImpactService` | 1,720 | 16 | stay 200/**10**, DamageBonus 145/7, HitRiders 380/6, AreaImpact 410/9, WeaponRiders 440/8, StatusApplied 320/8 |
+| `CombatRecorderService` | 1,691 | 6 | core 340/0, stay 830/7, Ability 230/3, Damage 480/3 |
+| `CombatDamageModifiersService` | 1,436 | 9 | stay 840/**10**, Rate 210/6, RepeatedTarget 410/3 |
+| `CombatAbilityActivationService` | 1,203 | 14 | stay 115/7, Cost 220/8, Defense 400/7, Offense 285/7, Weapon 345/9 |
+| `CombatAbilityBonusService` | 1,061 | 9 | stay 540/9, Queued 455/6 |
+| `CombatAbilityHitService` | 426 | 12 | stay 180/9, Adjustment 225/7 |
+| `CombatService` | 198 | 12 | stay 200/8, DamageRoll 50/0 |
+| `EnmityService` | 1,244 | 12 | Tables (stay) 350/0, Change 465/8, Attack 375/8 |
+| `DeathService` | 385 | 10 | stay 250/**10**, Respawn 170/4 |
+| `CombatRecordSerializer.Write` | 198 | - | dispatcher 30 and four methods under 70 |
+
+New services: 31 (HitEffects 5, DamageTaken 6, `CombatDamageRollService` 1, Impact 5, Recorder 3, DamageModifiers 2, Activation 4, Bonus 1,
+Hit 1, Enmity 2, Death 1). Each has an interface, a `ServiceRegistrations` line and a `GameServices` property. By comparison the StatusEffect
+split added six. The count is driven by the 10-service limit (20 injected services in each of two files), not by the line limit.
+
+**Parts at exactly 10 services, and the fallback that lowers each** (each fallback is a real reduction, not a swap): `CombatCriticalHitEffectsService`
+(the timing members to `CombatCriticalHitTimingEffectsService`: 9), `CombatDamageTakenEffectsService` (melee members to the reflection part:
+9), `CombatAbilityImpactService` (the attacking-ally members to the weapon riders part: 7), `CombatDamageModifiersService`
+(`GetHighHPTargetCriticalDamageAdjustment` to the rate part: 9), `DeathService` (`OnPlayerDying` to `DeathRespawnService`: 9). The recorder's
+stay-part is the largest part left (about 830 lines, 83% of the limit). The first PR of each service re-measures; a part that measures over a
+limit moves the member group named in its row to its lower neighbour, never a new numbered type.
+
+## Holders
+
+The services that hold a split service, before and after, as the StatusEffect guide does. "Before" is the constructor scan; "after" replaces
+each split service the holder holds by the parts of it that the holder's calls reach (calls resolved by member name against the tables above).
+Holders that hold a split service and do not change: the Abilities parts `AbilityDamageDeliveryService` 8, `AbilityHitRollService` 10,
+`AbilityImpactLifecycleService` 10, `AbilityImpactMessageService` 3, `AbilityDarkForceService` 4, `AbilityService` 10,
+`AbilityStatusApplicationService` 5, `AbilityTargetImpactService` 9; `PvpCombatService` 3, `MeleeTechniqueService` 7, `CombatRatingService` 7,
+`CombatDeflectionReactionService` 7, `CombatPointService` 7, `CombatResourcesService` 8, `PerkService` 7, `StatService` 10, `CreatureStatService` 5,
+`StatusEffectDurationService` 6, `ItemService` 9, `TrapsService` 10, `WeatherService` 7, `EspionageInfiltrationService` 6, `QuestService` 8,
+`BeastMasteryService` 14, `DroidService` 14 (each reaches one part of each split service it holds, because the regrouping above put the
+members they call in the stay-part: the recorder's four small entry members, the critical damage side, the rate reads).
+
+| Holder (owner) | Before | After | Change | Why, and the remover of any growth |
+|---|---:|---:|---:|---|
+| `AbilityDamageInputService` (P5-3) | 11 (guard) | 13 | +2 | damage taken: stay and reflection (the force conversion); damage modifiers: stay and repeated target (`GetSameTargetPressureWeaponAbilityDamageBonus`, whose state is in the repeated part). Already over by accepted growth (Stat split, "removed by P5-16"); the entry grows from 11 to 13 and **P5-16 removes it** |
+| `AbilityDamageStageService` (P5-3) | 10 | 11 | +1 | damage taken: stay and reflection (the force conversion). A new breach; **P5-16 removes it** (open question 4) |
+| `AbilityHostileImpactService` (P5-3) | 9 | 9, or 10 with the impact fallback | 0 | calls the impact stay-part only (`IsTargetAttackingAllyForStatusAppliedRiders` is on it); 10 only if the fallback moves that member |
+| `SpaceService` (P5-6) | 18 | 19 | +1 | enmity: table (`GetHighestEnmityTarget`) and change (`RemoveCreatureEnmity`). **P5-6 removes it** (it splits `SpaceService` last; its map must count this part) |
+| `QuestEncounterService` | 4 | 5 | +1 | enmity: table and change. Within the limit |
+| `StealthService` | 7 | 7 | 0 | enmity: the table part only once the two retarget calls become the notice |
+| `DeathService` (this item) | 10 | 10 | 0 | see its section |
+| `AIService` core after P5-8h | 7 | 7 | 0 | enmity: the table part plain; the retarget notice has its list in the core and takes no service |
+| AI events part after P5-8g (`AICreatureEventService`) | 7 | 8 | +1 | enmity: table and attack |
+| AI aggro part after P5-8g (`AIAggroService`) | 5 | 7 | +2 | enmity: table, attack (`AttackHighestEnmityTarget` 1012) and change (`ModifyProximityEnmity`) |
+| AI decision part after P5-8h (`AIDecisionService`) | 4 | 6 | +2 | enmity: table, attack, change (`ModifyEnmity` 1720) |
+| AI action part after P5-8h (`AIActionService`) | 7 | 8 | +1 | enmity: attack and table |
+
+The AI parts take their counts from the Creatures guide; P5-7k re-measures each on the post-P5-8h code (the decision and action parts may share
+`ModifyEnmity`). All stay at or under 10.
+
+**Content and the other split maps** (injected counts grow as P5-13 and P5-14 convert the lookups; the lookup counts of today are in
+`StaticLookups.txt`). From a scan of the current text:
+- `Feature/UsePerkFeat.cs`: 5 Combat services now, 7 after (recorder: stay and ability part, 13 sites each; ability bonus: stay and queued, 2 and 6
+  sites). P5-16 splits it and removes the growth.
+- `WeaponActiveAbilityDefinitionBase.cs` (the P5-16f map: 11 parts, none over 9 services): 6 now, 8 after for the whole file (damage taken: defense
+  memory 4 sites and effects 2; recorder: stay 3 and ability part 1). Per part the growth is at most +1, so no part passes 10; the parts that
+  hold the guarded-hit and deflection checks (`WeaponAbilityDamageModifiers`, `WeaponAbilityStatusRiders`) and the part that records ability
+  riders recount at the P5-7c and P5-7j2 PRs. `HeavyVibrobladeActiveAbilityDefinitionBase` 3 -> 4 (recorder ability part).
+- `CharacterSheetViewModel` (the P5-16h sheet parts): 4 -> 4 after the regrouping (the rate reads and the damage reads are on the damage modifiers
+  stay-part; `GetAbilityCriticalRate` is on the hit adjustment part, which the sheet reaches instead of the hit stay-part). Without the
+  regrouping it would be 5. The sheet parts `CharacterSheetDamageEstimate`, `SurvivalRows` and `AccuracyRows` keep their counts (9, 4 and 8).
+
+## Cycles
+
+`LazyDependencyCycleTests` fails on a needless `Lazy<>`, and a plain cycle deadlocks the container build (P5-5g). The scan (a reading of
+every constructor in `ServiceRegistrations` with `Lazy<>` edges kept apart) finds one strongly connected group of 68 services (with the
+`Lazy<>` edges counted) that holds every Combat `Lazy<>` below. Plain paths were checked for each `Lazy<>` this split removes, on this
+graph; each PR re-scans the real one.
+
+**Broken by this split (three `Lazy<>` leave `DeferredResolution.txt`):**
+
+| Today | Why it exists | How it goes |
+|---|---|---|
+| `CombatDamageModifiersService -> Lazy<ICombatDamageTakenService>` | one read, `HasRecentDeflection` | the read moves to `CombatDefenseMemoryService`, which takes no service; plain |
+| `CombatHitEffectsService -> Lazy<ICombatDamageTakenService>` | `ApplyTriggeredDamage` calls `ApplyDamageTakenModifiers`, and damage taken calls hit effects back (reflection, retaliation, poison) | the damage taken stay-part keeps only the pre-damage modifiers, whose seven dependencies (recorder, pvpCombat, queries, resources, stat, enmity, statusEffect) reach no hit effects part by plain edges; the triggered part takes it plain, and every part that calls hit effects is above it |
+| `CombatDamageTakenService -> Lazy<ICombatService>` | one call, `CalculateDamage` (guard retaliation) | `CalculateDamage` moves to `CombatDamageRollService` (no services) |
+
+**Broken in the Enmity PR (P5-7k), on the real graph after P5-8h:**
+- `AIService -> Lazy<IEnmityService>` (the D1 cycle). The core reads and removes through `EnmityService` (the table part, which never calls the
+  leash) and its call to `AttackHighestEnmityTarget` (seam 4, sites 510 and 845) becomes the Combat-owned notice `ILeashRetargetListener`, with
+  the list in the AI core and the registration from `EnmityAttackService` in a `Rerun` boot handler; an empty list throws. The core loses the
+  `Lazy<>` (the Creatures guide expects this: D1, risks).
+- `StealthService -> Lazy<IEnmityService>`. Stealth makes two retarget calls (`ReevaluateEnemyAttackTargets`, `AttackHighestEnmityTarget`) and one
+  table read (`GetEnmityTable(...).Count`, plain once the table part has no path to stealth: `IsEligibleAttackTarget` and its `IsHiddenFrom` call
+  live in the attack part). The two calls become a Combat-owned notice `IStealthRetargetListener`, with the list in `StealthService` and the
+  registration from `EnmityAttackService` (the same boot handler). The edit to `StealthService.cs` is about 15 lines.
+
+**Not broken here, routed:**
+
+| Cycle | Why it stays | Goes to |
+|---|---|---|
+| `CombatRecorderService -> Lazy<IStatService>` | `StatService` takes the recorder (10 uses) and the stay-part reads FP and stamina for snapshots | P5-15: Foundation-owned reader for the resource reads |
+| `CombatRecorderService -> Lazy<ICombatQueriesService>` | `CombatQueriesService` reaches the recorder by plain edges; the attribution resolver reads the equipped weapon skill (via `SkillService`) | P5-15: the same reader or a Character-owned weapon skill read |
+| `PerkService -> Lazy<ICombatService>` (up) | one call, `RefreshStatDrivenTrackerEffects`; the refresh's dependencies (stat, activity, suppression) reach `PerkService` by plain edges | P5-10 or P5-15: a Character-owned perk-change notice that Combat registers with; P5-7 leaves the method on `ICombatService` so the file is not edited |
+| `StealthService -> Lazy<IPerkService, IStatService, IStatusEffectService, IStatusEffectApplicationService, IEspionageInfiltrationService>` | `StatusEffectService -> MessagingService -> StealthService`, and `MessagingService` takes `IStealthService` only for `IsConcealed` | P5-15: `MessagingService` takes `IConcealmentQuery` from a no-dependency provider; then P5-8e's and P5-5h's notes shrink |
+| `MessagingService -> StealthService` | as above | P5-15 |
+| `AIService -> Lazy<IStatusEffectService>` and the other P5-8 ones | same Messaging path (the Creatures guide lists them) | P5-8e, P5-8f, P5-8g, P5-15 as that guide says |
+| `StatusEffectDurationService` and `StatusEffectCombatEventService -> Lazy<IStatService>` | `StatService -> ResourceRestoredEffectsService -> StatusEffectApplicationService -> the part` | P5-15: a listener inversion at `ResourceRestoredEffectsService` |
+| `ItemService -> Lazy<ITwinPistolEquipmentService>` | unchanged | P5-9 / P5-15 |
+
+**New edges and why they are plain.** The layering, bottom to top: recorder core, defense memory, damage roll and the damage taken stay-part;
+dealt effects; triggered damage; hit effects stay-part; the auto-attack, critical and defeated parts and the guard, reflection and taken-effects
+parts; the recorder stay-part sits above the core and below its two layer 2 parts; the ability impact and activation parts; `CombatService`.
+The impact and activation parts call hit effects and damage taken, never the reverse. The recorder stay-part reaches its damage part only
+through the listener list, so there is no cycle. Each PR runs `LazyDependencyCycleTests`, the container validation (`ValidateOnBuild`) and, for
+every constructor change, the engine start (a plain cycle hangs the build; a hung run means a new cycle, dump with `dotnet-dump collect`).
+
+## Hot reload and handlers
+
+- **Handlers that move** (`ScriptHandlerOrder.txt`, `HandlerRenames.txt`, renamed in place, event and position unchanged): `ApplyDamageTakenEffects` to
+  the effects part; `RegisterStatusEffectListener` to the status-applied part; the ten Enmity lines to `EnmityChangeService`;
+  `InitializeRespawnPoint` to `DeathRespawnService`; `RecordCreatureDeath` and `RecordPlayerDeath` to `CombatRecordDamageService`. 15 lines in all.
+  `StopOnShutdown`, the three `CombatService` handlers and the other Death handlers stay.
+- **Classification files:** `BootHandlerClassification.txt` (the impact registration moves; new `Rerun` registrations for the recorder damage
+  part and the enmity attack part), `PlayerSessionClassification.txt` (`PlayerExit` of Enmity, `InitializeRespawnPoint`).
+- **Rule 3 (mark state that boot or reload owns)**, applied where the new code owns a `Rerun` handler or a list:
+  - Each new listener list field (`AIService`'s retarget list, `StealthService`'s retarget list, the recorder stay-part's session list) is
+    `[ReloadState(ReloadStateKind.Runtime)]`, a repeat registration keeps one entry, and the lists are filled by the `Rerun` registration
+    before the first notice (the P5-5d lists are the model; a reload reruns the handlers before it adopts carried state).
+  - `CombatAbilityStatusAppliedService` and `CombatRecordDamageService` own a `Rerun` handler, so every field of theirs that is not a plain cache
+    is marked: the recorder damage part's three tables are `Runtime`; the status-applied part has no field. `EnmityAttackService` owns the
+    registration handler and has no field of its own (the attack-command memory is in the table part).
+  - `EnmityService` owns the carried tables (adoption), so its other fields are marked: the attack-command memory is `Runtime` (today unmarked;
+    the change is the attribute only). Its carried keys do not change.
+  - The AI core's list is part of the AI parts' marking in P5-8; P5-7k adds the one attribute.
+- **Carried state:** none new. `ReloadAdoption.txt` and `ReloadCarryHistory.txt` do not change. `ReloadStateCarrierTests` keeps the Enmity names.
+- **Reload checks:** run `scripts/run-hot-reload-check.sh --engine-filter HotReloadPlayers --reloads 2` on the PRs that move handlers or
+  registrations (P5-7h2, j3, k, l). The Enmity PR also runs the carried-table round trip in `ReloadStateCarrierTests` and an engine run
+  that reloads with an enemy holding enmity.
+
+## Tests and the proof plan
+
+**P5-7b (tests only, before any code moves).** It writes the proof against the current code, through the public interfaces of the real
+container with recording fakes at the leaves, and every later PR runs it unchanged except for receivers (`GameServices.X.` and `_x.` text that
+the facade tool rewrites):
+- **An ordered call-and-draw transcript per orchestrator and handler**: `ApplyDamageDealtEffects`, `ApplyTriggeredDamage`,
+  `ApplyCriticalHitEffects`, `ApplyAutoAttackDamageModifiers`, `ApplyDefeatedEnemyEffects`, `ApplyDamageTakenModifiers`,
+  `ApplyDamageTakenEffects` (the handler), `ApplyGuardedHitModifiers`, `ApplyAbilityActivatedEffects` (24 steps),
+  `ApplySuccessfulAbilityImpactRiders`, `ApplyAbilityImpactEffects`, the status-applied listener notices, `ApplyDamageDealtModifiers`,
+  `TryResolveAbilityHit`, `DeathService`'s three handlers, and each `CombatService` handler. A transcript records every call into a leaf
+  service (stat, status effects, temporary modifiers, resources, recorder, enmity, activity), its arguments, and every `Random` draw.
+- **The cleanup order test**: a populated bench cleared by the current `RemoveStatTriggerCooldowns`, recording not only the tables but every
+  status removal and refresh notice the forgets cause (the overwatch removal at `CombatSuppressionService.cs:447-461`, the repeated-target
+  clear at `CombatDamageModifiersService.cs:1423`, the refresh notices at `TemporaryStatModifierService.cs:311-316`), in order. P5-7l's phase
+  list must produce the same transcript.
+- **A recorder transcript for a scripted fight**: a `Start`, a fight (ability cast and impact, damage with temporary hit points, a heal with a
+  nested heal, a status applied and removed, a death, a respawn, a resurrection, a `Stop`), with every `CombatRecordEvent` and the file lines
+  the writer receives, byte for byte. It is the proof for the three recorder PRs.
+- **An enmity table transcript**: a scripted sequence of damage, healing, taunt, reduce, proximity, removal, limbo and exit events, with the
+  tables, `_creatureToEnemies` and the attack commands compared after each step, and a reload round trip through the carried keys.
+- **One golden JSON line per serializer event type.** `CombatRecordSerializer.Write` has 23 case labels. `CombatRecordSerializerTests` builds 19
+  event types (`AbilityQueued`, `AbilityCost`, `Attack` and `StatusRefreshed` never appear) and mostly asserts parsed fields, so P5-7b adds a
+  whole-line golden for all 23.
+- **An engine test that fires the stealth retarget notice.** None exists: no engine test mentions `ReevaluateEnemyAttackTargets`, and
+  `GhostProtocolStealthEngineTests`, `StealthedPlayerAreaAbilityEngineTests` and `ForceEspionageEngineTests` enter and leave stealth without
+  asserting the enemy's attack target. P5-7b adds `StealthRetargetEngineTests`: an enemy attacking a player who stealths, and again when the
+  player is revealed, with the attack target and the enmity table asserted. P5-7k runs it for the notice.
+- **Groundwork as in P5-5b:** `CombatParts.OtherServices` gains the recorder parts; `EnmitySource` and `DeathSource` (like `StatusEffectSource`)
+  so the 12 path-reading tests (Enmity 7, Death 5) read through one place; each of the 11 unit test classes (`CombatHitEffectsServiceTests` 1,860
+  lines, `CombatDamageTakenServiceTests` 2,130, `CombatAbilityImpactServiceTests` 2,008, `CombatAbilityActivationServiceTests` 1,639,
+  `CombatRecorderServiceTests` 1,342, `CombatDamageModifiersServiceTests` 1,168, `EnmityServiceTests` 1,124, `CombatAbilityBonusServiceTests` 730,
+  `DeathServiceTests` 596, `CombatAbilityHitServiceTests` 568, `CombatServiceTests` 377; about 14,000 lines) subclasses its service to override
+  the `protected virtual` seams, so each double becomes partial files by part, and each test is pointed at the part that owns its member;
+  `CombatPartForwardingTests.Parts()` and `CombatFacadeAllocationTests` (the allocation pins) gain the new interfaces.
+
+**Per PR** (build once with `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`, then `dotnet test <project> --no-build --filter`):
+- **CombatSim readings byte-identical** to the base: `team-fight`, `twin-pistol-barrage`, `twin-pistol-crossfire`, `solo-boss`; seed 1, 50 runs, Markdown
+  and JSON, plus the ability table. CombatSim reads `CombatRules`, `StatusEffectRules` and `StatRules` only, so a difference means a rule changed, not a move.
+- **Characterization and parity.** `SWLOR.Game.Server.CharacterizationTests` (148 tests; the `Combat*CharacterizationTests` files) run with no
+  expectation changed. They do change in text at P5-7c: `CombatDamageCharacterizationTests`, `CombatResourceCharacterizationTests` and
+  `SeededRandom` call `GameServices.Combat.CalculateDamage`, which becomes `GameServices.CombatDamageRoll.CalculateDamage`; the facade tool makes
+  that edit and the snapshots stay as they are. `ScriptHandlerOrderTests`, `ParityHandlerMappingTests`, `BootHandlerClassificationTests`,
+  `PlayerSessionClassificationTests`, `ReloadStateCarrierTests`, `ReloadCarryHistoryTests`, `ReloadDigestTests`, `ClockSeamSourceGuardTests`,
+  `LazyDependencyCycleTests`, `ConvertedServiceRulesTests`, `PlayerMessageAuditTests` also run.
+- **New tests per PR:** `CombatDefenseMemoryServiceTests` (window and purge behaviour copied from the damage taken tests), the listener-empty
+  tests, `CombatStateOwnerTests` (every table-holding part is registered, the phase list equals the old order, an empty list throws), and the
+  tests of each new part's seams.
+- **Unit filters** per PR: `FullyQualifiedName~` the service the PR moves (`CombatHitEffects`, `CombatDamageTaken`, `CombatAbilityImpact`,
+  `CombatRecorder`, `CombatDamageModifiers`, `CombatAbilityActivation`, `CombatAbilityBonus`, `CombatAbilityHit`, `CombatService`, `EnmityService`,
+  `DeathService`) with `CombatPartForwarding`, `CombatSource`, `CombatFacadeAllocation` and the P5-7b transcripts; `Phase5DebtTests`, `DomainMapTests`
+  and the rest of `SWLOR.Architecture.Tests` with the baselines regenerated each PR.
+- **Engine tests** (filter by area, host entry): `CombatRecorderEngineTests` (recorder), `TankEnmityEngineTests` and `DMLimboEnmityEngineTests` (Enmity),
+  `DeathRespawnPointEngineTests` (Death), `MarkedForDeathEngineTests`, `StealthRetargetEngineTests` (new), and `Characterization/` scenarios for hit,
+  damage and ability impact; the 326 override sites in engine tests exercise `CombatAbilityHitService`.
+- **Coverage.** `Domain/Combat` is at 96 in `CoverageFloors.json` (overall 73). Each new part ships with its tests in its own PR and the gate runs with
+  coverage; the moved code keeps its existing tests, so the floor holds. Native reads (`CombatRecorderEffectHooks`) run only in the engine.
+- **Client evidence:** none. The split changes no in-game surface (code moves only); the engine runs and the transcripts are the evidence, as for P5-5.
+
+**Baselines each PR changes** (regenerate with `SWLOR_UPDATE_SNAPSHOTS=1`, review the diff): `ServicesPerType.txt` (the seven lines leave as each service
+reaches 10: HitEffects 20, DamageTaken 20, Impact 16, Activation 14, AbilityHit 12, `CombatService` 12, Enmity 12; `AbilityDamageStageService` may gain
+a line and `AbilityDamageInputService` changes from 11 to 13 until P5-16), `LargeTypes.txt` (eight lines: Impact 1,720, HitEffects 1,716, Recorder
+1,691, DamageTaken 1,649, DamageModifiers 1,436, Enmity 1,244, Activation 1,203, Bonus 1,061), `LongMethods.txt` (`CombatRecordSerializer.Write`),
+`DeferredResolution.txt` (the three `Combat` lines, plus Enmity's holders in the Enmity PR), `UpwardEdges.txt` (Quests 3, Social 3 + 3 + 3, World 3),
+`LogicToContent.txt` (lines re-keyed to the part files), `DebtReport.md`; `ConvertedServices.json`, `DomainMap.json`, `RemovedFacades.json` (the facade
+tool's names per owner), `ServiceRegistrations.cs`, `GameServices.Combat.cs`, `HandlerRenames.txt`, `ScriptHandlerOrder.txt`, `ClockSeamFiles.txt`
+(eight entries, plus each new part that reads the clock), `PlayerMessageAudit.json` (18 rows keyed by these files: DamageModifiers 6, DamageTaken 4,
+Death 4, HitEffects 2, Hit 1, Impact 1). `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` change only in member counts; revert them as P5-5g did.
+
+## Order
+
+Bottom-up where a part needs a lower one, otherwise independent. A moved part calls the members still on its old service through the old
+interface, promoted from private to public for that PR; the next PR moves them. Moved lines are member lines (about 90% of the part sizes);
+callers are rewritten by `Apply-FacadeRemoval.ps1` (receiver name only), and the 15 or so instance call sites in holders by hand.
+
+| PR | Contents | Moved lines | Files touched (beyond tests and baselines) | Needs |
+|---|---|---:|---|---|
+| P5-7a | This guide | 0 | the guide, README, Phase 5 link | - |
+| P5-7b | The proof of "Tests and the proof plan"; no production code | 0 | `Tests/Support/*`, source-reading tests, `CombatParts.cs`, the 11 `*Tests` doubles, the new transcript and engine tests | P5-7a |
+| P5-7c | `CombatDamageRollService` (from `CombatService`), `CombatDefenseMemoryService` with the two `Lazy<>` (damage modifiers, damage taken) gone, the serializer `Write` cut | ~90 moved, ~200 re-cut | `CombatService`, `CombatDamageTakenService`, `CombatDamageModifiersService`, `CombatRecordSerializer`, 10 content and 2 native call sites of `Combat.CalculateDamage`, the 10 external defense memory sites (below), `ServiceRegistrations`, `GameServices.Combat.cs` | P5-7b |
+| P5-7d | `CombatRateModifiersService`, `CombatRepeatedTargetService` | ~530 | `CombatDamageModifiersService`, 8 holders, 35 call sites | P5-16h PRs 7 and 8; P5-7c |
+| P5-7e1 | `CombatDamageTakenEffectsService` (handler renamed), `CombatDamageReflectionService` | ~680 | `CombatDamageTakenService`, `ScriptHandlerOrder.txt`, `HandlerRenames.txt`, `CombatDeflectionReactionService`, `CombatAbilityActivationService`, `AbilityDamageInputService`, `AbilityDamageStageService`, 60 call sites | P5-7c; P5-16f first (recommended) |
+| P5-7e2 | `CombatGuardedHitService`, `CombatGuardedHitEffectsService` (with `ApplyGuardedHitNextAttackEffects` from `CombatAbilityHitService`), `CombatGuardRetaliationService`; the damage taken stay-part is now the modifiers only | ~380 | `CombatDamageTakenService`, `CombatAbilityHitService`, 12 call sites | P5-7e1 |
+| P5-7f1 | `CombatDealtEffectsService`, `CombatTriggeredDamageService` with the orchestrator cuts; `Lazy<ICombatDamageTakenService>` plain; `IBeastDamageRecording` and `IPartyRoster` swaps | ~510 | `CombatHitEffectsService`, `CapstoneProofService`, 25 call sites (13 domain) | P5-7e2 |
+| P5-7f2 | `CombatAutoAttackEffectsService`, `CombatCriticalHitEffectsService`, `CombatDefeatedEnemyEffectsService` | ~845 | `CombatHitEffectsService`, `CombatService`, 35 call sites | P5-7f1 |
+| P5-7g | `CombatQueuedAbilityBonusService`, `CombatAbilityHitAdjustmentService` | ~650 | `CombatAbilityBonusService`, `CombatAbilityHitService`, `Feature/UsePerkFeat.cs` (8 sites), 70 call sites (22 content) | P5-7e2 |
+| P5-7h1 | `CombatAbilityDamageBonusService`, `CombatAbilityHitRidersService`, `CombatAbilityAreaImpactService` | ~785 | `CombatAbilityImpactService`, `Feature/UsePerkFeat.cs` (2 sites), 25 call sites | P5-7f2 |
+| P5-7h2 | `CombatAbilityWeaponRidersService`, `CombatAbilityStatusAppliedService` (listener registration, `IPartyRoster`) | ~670 | `CombatAbilityImpactService`, handler lines, `BootHandlerClassification.txt` | P5-7h1 |
+| P5-7i1 | `CombatAbilityDefenseEffectsService`, `CombatAbilityCostEffectsService` | ~520 | `CombatAbilityActivationService`, 6 call sites | P5-7e1 |
+| P5-7i2 | `CombatAbilityOffenseEffectsService`, `CombatAbilityWeaponActivationService` | ~530 | `CombatAbilityActivationService` | P5-7i1 |
+| P5-7j1 | `CombatRecordSessionCore`; the `Start` and `Stop` cuts; the `IsRecording` getter | ~250 | `CombatRecorderService`, `ServiceRegistrations` (the four registrations point at the core or the stay-part), `ServerTeardown` unchanged | P5-7b |
+| P5-7j2 | `CombatRecordAbilityService` (`IStatService` plain) | ~170 | `CombatRecorderService`, `CombatParts.cs`, `Feature/UsePerkFeat.cs` (13 sites), 16 call sites | P5-7j1 |
+| P5-7j3 | `CombatRecordDamageService` (handlers renamed), the session notice | ~480 | `CombatRecorderService`, handler lines, `Feature/ChatCommandDefinition/DMWorldChatCommand.cs` (`RecordResurrection`), 17 call sites | P5-7j2 |
+| P5-7k | Enmity: `EnmityChangeService`, `EnmityAttackService`; `ILeashRetargetListener`, `IStealthRetargetListener`, `IHologramQuery`; two `Lazy<>` go; runs the constructor scan on the real graph before making any `Lazy<>` plain | ~720 | `EnmityService`, `StealthService`, `AIService` (the one call and the list), `HoloComService`, `Feature/UsePerkFeat.cs` (4 sites), 10 handler lines, 300 call sites (about 250 of them tests) | **P5-8h merged** (the AI core left with the table reads and the one retarget call), P5-8e, P5-7f2, P5-7h2 |
+| P5-7l | `DeathRespawnService`; `CombatService` takes the state owner list with the phase order; close-out: README, Status, the guide's Progress | ~140 + 80 | `DeathService`, `CombatService`, every part that holds a table (one interface), `ServiceRegistrations`, `PlayerSessionClassification.txt` | all |
+
+**P5-7c's defense memory call sites** (the 10 sites outside the damage taken service that change from `CombatDamageTaken` to
+`CombatDefenseMemory`, plus the one `Lazy<>` use): `WeaponActiveAbilityDefinitionBase.cs` 386, 487, 714 and 1154 (`HasRecentGuardedHit`,
+`HasRecentDeflection`); `CombatPerkRegressionEngineTests.cs:202`; `TwinPistolEngineTests.cs:563`; `CombatFacadeAllocationTests.cs:993` and `994`;
+`CombatSourceTests.cs:399` and `404`; and `CombatDamageModifiersService.cs:62` (the `Lazy<>`).
+
+P5-7 ends with the 11 services at or under 10 services and 1,000 lines, no method over 150 lines, three fewer `Lazy<>` in Combat, the
+`Lazy<IEnmityService>` of `AIService` and `StealthService` gone, and the Combat -> Social, Quests and World edges named above closed. 17 pull
+requests after this guide; about 8,000 lines move in total. Each PR is one branch from the refactor branch's tip, gets a Codex review of the
+current head, and runs the full gate with coverage. Parallelism (rule 4: no two items on the same files): c and j1 can run together; d, e1, g, i1
+after c; j2 and j3 follow j1; h and f follow the chain above. At most three agents.
+
+## Conflicts
+
+- **P5-8e (`AIService`, `CompanionControlService`, the Combat ports).** It edits `EnmityService.cs` (parameter types, six leash call sites) and
+  `StealthService.cs`. P5-7k waits for it (the Creatures guide's D3 already says P5-8e runs before P5-7 starts on Enmity). P5-7a to P5-7j
+  do not touch either file.
+- **P5-8h (the AI core).** P5-7k depends on the P5-8 PR that leaves the AI core with only the table reads and the one retarget call, which the
+  Creatures guide puts at P5-8h (its dependency table, line 127, and the order table, line 466). Until then the core still holds all 13 seams.
+  P5-7k edits `AIService.cs` (the one call and the list, about 15 lines), so it also waits until no P5-8 PR is open on that file.
+- **P5-10 (`PerkService`, `SkillService`, `MimicryService`, `DroidService`, `BeastMasteryService`).** No P5-7 PR edits these files:
+  `RefreshStatDrivenTrackerEffects` stays on `ICombatService`, and `BeastMasteryService` and `DroidService` call only `BeginSetupAttribution`
+  (the recorder stay-part). `MimicryService` holds a `Lazy<>` for `ICombatPointService`, which this split does not touch.
+- **P5-16f (`WeaponActiveAbilityDefinitionBase`).** Its parts call `CombatAbilityActivation`, `CombatAbilityBonus`, `CombatAbilityHit`,
+  `CombatDamageTaken`, `CombatRecorder` and `Enmity` through `GameServices`. The overlap starts at P5-7c, not at P5-7e1: `HasRecentGuardedHit`
+  and `HasRecentDeflection` at `WeaponActiveAbilityDefinitionBase.cs` 386, 487, 714 and 1154 change receiver in P5-7c (listed in the P5-7c row).
+  Later PRs change the others (`CombatQueuedAbilityBonus` 16 sites at P5-7g, the ability recorder part at P5-7j2). Rule 4 keeps hand edits out
+  of P5-16 types, but the facade tool already rewrote this file in P5-5f and P5-5g (22 -> 24 lookups), so a scripted receiver rewrite is the
+  accepted route. Recommendation: P5-16f lands first (its code starts now that P5-5h is merged), so P5-7 rewrites the new parts; if P5-16f slips,
+  P5-7 rewrites the base and P5-16f re-measures. Either way the lookup counts of that type grow by the number of new parts it names (Holders).
+- **`Feature/UsePerkFeat.cs`** (a P5-16 type that P5-8f also edits, 9 scripted sites, decision D2). P5-7g (queued ability bonus, 8 sites), P5-7h1
+  (`ApplyAbilityImpactEffects`, 2 sites), P5-7j2 (ability records, 13 sites) and P5-7k (attack part, 4 sites) change receiver text in it. All four
+  are scripted receiver edits, like P5-8f's; none is a hand edit, and each merges with the others because they touch different lines. The PRs
+  that touch it name it in their file list.
+- **`Feature/ChatCommandDefinition/DMWorldChatCommand.cs`** calls `CombatRecorder.RecordResurrection` (line 124); it changes receiver in P5-7j3.
+- **P5-16h PRs 7 and 8 (the character sheet).** `CharacterSheetViewModel` reaches `CombatAbilityBonus`, `CombatAbilityHit`, `CombatAttackTiming`,
+  `CombatDamageModifiers`, `CombatDamageTaken` and `CombatResources`; the view model guide says both PRs merge before P5-7 starts. They must be
+  merged before P5-7d (the first PR that changes a receiver the sheet uses); P5-7b and P5-7c touch no sheet file. The sheet's
+  `CharacterSheetDamageEstimate`, `SurvivalRows` and `AccuracyRows` parts are the files P5-7 would edit.
+- **P5-2 (follows P5-7).** It removes the `LogicToContent.txt` lines this guide leaves (counts in "What the code is"), now keyed to the part files.
+- **P5-16b (hook logic out of `NativeSinks`).** The homes after P5-7: the attack roll reads `CombatAbilityHitService` and its adjustment part, and
+  the stat adjustments in `CombatDamageModifiersService` and `CombatRateModifiersService`; the damage roll reads `CombatDamageModifiersService`,
+  `CombatDamageTakenService` (pre-damage), `CombatDamageTakenEffectsService`, `CombatDamageReflectionService` and the hit effects parts; the
+  deflection hooks read the damage taken effects part. About 60 call sites in `Native/` and `NativeSinks/` change receivers by the tool.
+- **Domain order.** All new parts are Combat. The edges they add point down (Character, Foundation) or to ports Combat owns.
+
+**Master.** Master still holds this logic in `Service/Combat.cs` (13,240 lines), `Service/CombatRecorder.cs` (1,641), `Service/Enmity.cs` (1,142) and
+`Service/Death.cs` (340). Commits to them since 2026-10-01 (`origin/master` at `ca97d5ddc`), 112 distinct in all, by period and file:
+
+| File | 1 to 31 October | 1 to 17 November (of which since 10 November) |
+|---|---:|---:|
+| `Service/Combat.cs` | 66 | 9 (0) |
+| `Service/CombatRecorder.cs` | 25 | 0 (0) |
+| `Service/Enmity.cs` | 10 | 1 (0) |
+| `Service/Death.cs` | 11 | 2 (1) |
+| distinct commits | 101 | 11 (2) |
+
+November's rate is 11 commits in 17 days, about 4 a week, but front-loaded: 9 in the first nine days and 2 in the last eight. One of the
+latest (`cb465ec15`, "Show the respawn panel after a lethal PvP death") is not yet on the branch, and touches `Death.cs`. Tests that read these files by
+path on master: 27 for `Combat.cs`, 5 for `Enmity.cs`, 5 for `Death.cs`, 1 for `CombatRecorder.cs`. The per-service share of master's commits cannot
+be read from the diffs (master's hunks name call sites in other files), so only the totals are given. For comparison the StatusEffect freeze
+covered one file with 27 commits since 2026-10-10.
+
+**Freeze windows, per file** (owner decision, 2026-11-18: "Yes, per-file windows"; open question 1). A master edit to a moved range must be ported by hand to whichever part owns it
+and the ranges change with each PR, so each file is frozen only while its code moves:
+- `Service/Combat.cs`: P5-7c to P5-7i2 (the Combat parts d to i; P5-7l's `CombatService` edit is small and ported by hand if master touched
+  the handler or cleanup ranges). 9 November commits and 66 in October make this the file that matters.
+- `Service/CombatRecorder.cs`: P5-7j1 to P5-7j3 (no November commits).
+- `Service/Enmity.cs`: P5-7k only (one PR).
+- `Service/Death.cs`: P5-7l only (one PR; `cb465ec15` must be on the branch first).
+The 38 tests that read these files by path are in the same windows. A master edit inside a window waits for the window to close, or is
+ported by hand with a Port log row.
+
+## Open questions
+
+All six are closed. Question 1 is the owner's decision; question 4 is the coordinator's decision (2026-11-18); the other four are
+coordinator decisions that take this guide's recommendation.
+
+1. **Master freeze, per file?** Closed, owner decision (2026-11-18): "Yes, per-file windows". `Service/Combat.cs` is frozen from P5-7c to
+   P5-7i2, `Service/CombatRecorder.cs` from P5-7j1 to P5-7j3, `Service/Enmity.cs` for P5-7k, and `Service/Death.cs` for P5-7l (`cb465ec15`
+   synced first). The 38 tests that read these files by path follow the same windows.
+2. **Enmity part names and which part keeps `IEnmityService`.** Closed, coordinator decision: `EnmityService` stays the table part (carried
+   keys unchanged, no `[ReloadCarriedFrom]`, the AI core's reads stay), and the writes (`ModifyEnmity`, 138 sites) move to
+   `EnmityChangeService`.
+3. **The Stealth notice.** Closed, coordinator decision: a separate `IStealthRetargetListener` in P5-7k, not a widening of P5-8e's
+   `IStealthAggroListener`. If P5-8e has not landed when P5-7k starts, P5-7k waits (it depends on P5-8h anyway).
+4. **Holder growth that regrouping cannot remove.** Closed, coordinator decision (2026-11-18): accepted with the named removers.
+   `AbilityDamageInputService` goes to 13 and `AbilityDamageStageService` to 11, both removed by P5-16; `SpaceService` goes to 19, removed by
+   P5-6. Stage is a new `ServicesPerType.txt` line until then.
+5. **The recorder's two `Lazy<>`.** Closed, coordinator decision: left to P5-15 (they need a Foundation-owned reader for FP, stamina and the
+   weapon skill, which is a design decision of its own).
+6. **Cleanup by owner list with phases.** Closed, coordinator decision: the phase-numbered owner list for `CombatService`, as above; it keeps
+   today's order exactly, including the second `CombatActivity` and `CombatResources` calls, and the direct last call to
+   `TemporaryStatModifierService`.
+
+## Progress
+
+P5-7a: this guide (2026-11-18), revised after the coordinator's review. P5-7b: the proof (2026-11-18, "P5-7b as built" below). P5-7c: the damage roll, the defense memory and the serializer cut (2026-11-18, "P5-7c as built" below). P5-7d: the rate and repeated-target parts (2026-11-21, "P5-7d as built" below). P5-7e1: the damage taken effects and reflection parts (2026-11-23, "P5-7e1 as built" below). P5-7j1: the recorder session core (2026-11-23, "P5-7j1 as built" below). P5-7i1: the ability activation defense and cost parts (2026-11-23, "P5-7i1 as built" below). P5-7e2: the guarded hit, its effects and the guard retaliation parts (2026-11-24, "P5-7e2 as built" below). P5-7j2: the recorder ability records (2026-11-24, "P5-7j2 as built" below). P5-7f1: the dealt effects and triggered damage parts (2026-11-24, "P5-7f1 as built" below). P5-7i2: the ability activation offense and weapon parts (2026-11-24, "P5-7i2 as built" below). P5-7g: the queued ability bonus and ability hit adjustment parts (2026-11-24, "P5-7g as built" below). P5-7f2: the auto-attack, critical hit and defeated enemy parts (2026-11-24, "P5-7f2 as built" below). P5-7j3: the recorder damage records and the session notice (2026-11-24, "P5-7j3 as built" below). P5-7h1: the ability damage bonus, hit riders and area impact parts (2026-11-25, "P5-7h1 as built" below). P5-7h2: the weapon riders and status-applied parts (2026-11-25, "P5-7h2 as built" below). P5-7k: the enmity change and attack parts and the two retarget notices (2026-11-26, "P5-7k as built" below). P5-7l: the death respawn part and the cleanup owner list (2026-11-26, "P5-7l as built" below). P5-7 is complete: its close-out checks the end conditions of "Order" there, and all are met.
+
+### P5-7b as built (2026-11-18)
+
+Tests only; no production file changed. Later PRs run every test below unchanged except for receivers (`bench.Get<I...>()` types and the casts to a
+concrete class where a handler is not on an interface).
+
+- **The bench** (`Tests/Support/CombatTranscriptBench.cs`, `TranscriptLeaf.cs`, `ForwardingRecorder.cs`, `CombatTableState.cs`): the real container
+  (`FacadeContainer`) with recording stand-ins at its leaves (`CombatTranscriptBench.DefaultLeaves`: stat, the four status effect services, temporary
+  stat modifiers, resources, the recorder and its three interfaces, enmity, activity, attack timing, suppression, paired ranged traits, capstone proof,
+  resistance, party, rating), an engine fake whose writes are recorded in order (`DelayCommand` and `ActionDoCommand` run after the step's own calls),
+  an in-memory database with two players, the `Clock` held still, and `Random` replaced by a seeded generator that records every draw. A leaf answers
+  from a table or with the empty value of its return type; a step that throws fails the test, except at the native library (the transcript ends there
+  with a marker). Every other Combat service is real, so a transcript crosses the seams the split moves. The recorder's `get_IsRecording` reads are
+  left out (the split changes how they are served). Fixtures are in `Tests/Fixtures/CombatTranscripts/*.txt`, `-text` in `.gitattributes`, LF.
+- **Transcripts** (each with every stat at zero and again at 5, so the gates and every rider are pinned; weapon-family riders once per weapon skill):
+  `CombatHitEffectsTranscriptTests` (`ApplyDamageDealtEffects`, `ApplyTriggeredDamage`, `ApplyCriticalHitEffects`, `ApplyNonCriticalAbilityEffects`,
+  `ApplyAutoAttackDamageModifiers`, the cycle bonus, `ApplyDefeatedEnemyEffects`), `CombatDamageTakenTranscriptTests` (`ApplyDamageTakenModifiers`,
+  the damage-over-time and fatal-damage members, `ApplyGuardedHitModifiers`, the `ApplyDamageTakenEffects` handler, reflection and force conversion),
+  `CombatAbilityTranscriptTests` (`ApplyAbilityActivatedEffects` for 15 skills, `ApplySuccessfulAbilityImpactRiders` for 15 skills,
+  `ApplyAbilityImpactEffects`, the status-applied listener notices through the registered listener, `ApplyDamageDealtModifiers` for 15 skills,
+  `TryResolveAbilityHit` with the overrides, the bonus reads), `CombatDeathTranscriptTests` (the three `DeathService` handlers, the login handler,
+  `CombatService`'s three handlers and the tracker refresh).
+- **Cleanup order** (`CombatCleanupOrderTests`): ten real parts decorated to record their forgets and the temporary modifier clear, a bench with 34 tables populated for
+  four creatures, the exit and the death path. The transcript shows the tables before and after, the forgets in order including the second
+  `CombatActivity` and `CombatResources` calls, the two overwatch removals of the suppression forget, the `SpottersRhythm` removal of the damage
+  modifiers forget and the refresh notice of the final `TemporaryStatModifier.Clear`. Two tables are not cleared today (`_containmentNormalizationTargets`,
+  `_damageDerivedHealingStates`); the transcript pins that.
+- **Recorder** (`CombatRecorderTranscriptTests`): a scripted fight of 20 steps through the real writer, 42 event lines compared byte for byte. The
+  double `Probe` names the recorder's constructor; P5-7j1 updates it. The summary file is not compared (the writer stamps `DateTime.UtcNow`, no seam).
+  **Serializer** (`CombatRecordSerializerGoldenTests`): one golden line for each of the 23 event types plus 13 variants of the other branch.
+- **Enmity** (`EnmityTranscriptTests`): 31 steps (damage, attack, heals with a nested heal, taunts, reduces, proximity, removal, limbo, death, destroy,
+  player death and exit, the attack command, the hidden-target hold, the stale proximity target, the leash starting and already running), the six
+  tables dumped after each, and a reload round trip of the carried keys through `ReloadStateCarrier`.
+- **Engine test** (`StealthRetargetEngineTests`, two tests): an enemy attacking a player who enters stealth (through Ghost Protocol, the engine refuses
+  stealth in combat otherwise) drops the player and keeps the enmity, and attacks again when the player is revealed; two enemies do the same. It passed
+  on a full engine hak set built in a throwaway worktree.
+- **Clock seams (behaviour-neutral, the P5-16h PR 0 precedent).** `TemporaryHitPointEffects` stamped the pool expiry
+  `TEMPORARY_HP_POOLS_ACTIVE_UNTIL` with `DateTimeOffset.UtcNow`, and `CombatRecordWriter` stamped the summary file with `DateTime.UtcNow`. Both read
+  `Clock.UtcNow` now (`new DateTimeOffset(Clock.UtcNow)` by hand, because `Apply-ClockSeam.ps1` does not rewrite `DateTimeOffset`; the writer's
+  `Clock.UtcNow` is the tool's own form, written by hand), and both files are in `ClockSeamFiles.txt` (`-Check` stays clean). That put the raised-stat hit point spend back into the
+  activation transcript and the summary file into the recorder transcript. Only `AbilityActivation.txt` and `Recorder.txt` changed.
+- **Not covered, and why.** Paths that reach the native library (`ActionInterruption`, the rifle pacification rider) end their transcript at a
+  marker in two impact steps.
+- **Groundwork (the "Groundwork as in P5-5b" bullet).** `Tests/Support/PartSourceFiles.cs` is the reading half of `StatusEffectSource`; `EnmitySource` and
+  `DeathSource` hold one file list and one part-interface set each, so a PR that moves a part edits one list. The 12 path-reading tests read through
+  them (Enmity: `AIModelTests`, `EnmityAdjustmentTests`, `EnmityTests`, `EspionageSystemTests`, `NPCChaseTests` through
+  `DMPossessionHarness.InstanceMethod(roots, name)`; Death: `AuthoredCombatAnimationTests`, `ForceLightGuardianTests`, `PerformanceAudienceCostTests`,
+  `PerformanceAudienceStateTests`, `StatusEffectDeliveryTests`); `RealEnmityTables` and `ReloadStateCarrierTests` read no path (the tables stay in
+  `EnmityService`). `CombatParts.OtherServices` names `CombatRecordAbilityService` and `CombatRecordDamageService`
+  (the session core is not named `Combat*Service`); `CombatSourceTests` lets a name without a file yet stand if it starts with `CombatRecord`. The
+  doubles are `partial` files in `Tests/Support/`: `TestHitEffects`, `TestDamageTaken`, `TestDamageModifiers`, `TestEnmity`, `TestDeath` (with
+  `TestDeathWaiver` and `DeathScope`, which the test and the double share), `TestRecorder` (`PlainRecorder`, `RecorderProbe`, `ScheduledTask`); a PR
+  that splits a service adds one partial file per part. **The map was wrong that all 11 unit test classes subclass their service:** six do
+  (eight doubles); `CombatAbilityImpactServiceTests`, `CombatAbilityActivationServiceTests`, `CombatAbilityBonusServiceTests`,
+  `CombatAbilityHitServiceTests` and `CombatServiceTests` construct the real class with scripted neighbours, so they have no double to move; the PR
+  that splits each still re-points its constructor calls. The path-reading tests of `CombatRecorderService.cs` (`CombatSourceTests`,
+  `DMPossessionPlayerLoopTests`) and `CombatDamageModifiersService.cs` (`MeleeRepeatedTargetStackTests`) were not re-pointed here: the coordinator's list for this PR was the Enmity and Death readers, and the
+  recorder and damage modifiers readers move with their PRs (P5-7j1, P5-7d).
+
+### P5-7c as built (2026-11-18)
+
+- **`CombatDamageRollService`** (`ICombatDamageRollService`, 45 lines, 0 services): `CalculateDamage` verbatim, with its default `deltaCap = 0`.
+  `ICombatService` loses the member; `CombatService` loses the `CombatRules` and `Random` usings and 36 lines (198 to 162).
+- **`CombatDefenseMemoryService`** (`ICombatDefenseMemoryService`, 67 lines, 0 services): the two tables `_recentGuardedHits` and `_recentDeflections`,
+  `HasRecentGuardedHit` and `HasRecentDeflection` verbatim, `NoteGuardedHit` and `NoteDeflection` (the one table write cut out of `TrackGuardedHit`
+  and `TrackDeflection`), and `ForgetDefenseMemory` (the body of `ForgetDamageTakenState`, which is gone). It reads the clock, so it is in `ClockSeamFiles.txt`.
+- **`Lazy<>` parameters removed (2):** `CombatDamageModifiersService -> Lazy<ICombatDamageTakenService>` (plain `ICombatDefenseMemoryService`) and
+  `CombatDamageTakenService -> Lazy<ICombatService>` (plain `ICombatDamageRollService`). The third of the three (`CombatHitEffectsService ->
+  Lazy<ICombatDamageTakenService>`) is P5-7f1's, as the map says.
+- **Departure: `CombatDamageTakenService` is at 21 services, not 20.** It swaps the `Lazy<ICombatService>` for the roll part and also takes the
+  defense memory (the two writes of `TrackGuardedHit` and `TrackDeflection`). The `ServicesPerType.txt` line goes from 20 to 21; the guarded-hit
+  effects part (P5-7e2) and the effects part (P5-7e1) take the two parts and the count falls with those moves. `CombatService` stays at 12
+  (the defense memory replaces damage taken, which it held only for the forget; the roll was never a field of it).
+- **Cleanup order unchanged.** `CombatService` calls `_defenseMemory.ForgetDefenseMemory` where it called `_damageTaken.ForgetDamageTakenState` (third).
+  `CombatCleanupOrderTests` decorates the defense memory part instead of damage taken and lists it in the same table slot; its fixture changes in the three
+  lines that name the call (`DefenseMemory.ForgetDefenseMemory`), every other line is byte-identical.
+- **`CombatRecordSerializer.Write` cut:** a dispatcher of 44 lines (the three header writes, then one `switch` that sends each of the 23 labels to a
+  method) and four private static methods, each holding the original `case` bodies verbatim: `WriteLifecycleEvent` (3 labels, 24 lines), `WriteAbilityEvent` (6, 54),
+  `WriteDamageEvent` (6, 69, with the temporary hit point and healing events) and `WriteStateEvent` (8, 62). The dispatcher is 44 lines, not the
+  map's 30, because it lists the 23 labels. The 23 goldens and the 13 variants pass unchanged.
+- **Call sites.** By hand, with `sed` on the exact text (the facade tool only rewrites the removed facade's own `Combat.X` text, not the
+  `GameServices.Combat.X` that earlier PRs wrote; `RemovedFacades.json` is updated and `-Check` is clean): `GameServices.Combat.CalculateDamage` to
+  `GameServices.CombatDamageRoll.CalculateDamage` in 10 ship module definitions, `Native/GetDamageRoll.cs` (2) and the two characterization test
+  files (text only, snapshots untouched); `GameServices.CombatDamageTaken.HasRecent*` to `GameServices.CombatDefenseMemory.HasRecent*` in
+  `WeaponActiveAbilityDefinitionBase.cs` (4), `CombatPerkRegressionEngineTests`, `TwinPistolEngineTests`, `CombatSourceTests` (2) and
+  `CombatFacadeAllocationTests` (2). Holders: `CombatDamageModifiersService` (9 services, unchanged: the `Lazy<>` became the plain part),
+  `CombatService` (12, unchanged), `CombatDamageTakenService` (20 to 21).
+- **Tests.** `CombatDamageRollServiceTests` and `CombatDefenseMemoryServiceTests` are new (the window, purge and forget tests moved out of
+  `CombatDamageTakenServiceTests` and `CombatServiceTests`); the doubles `TestDamageTaken` and `TestDamageModifiers` take the new parts; the
+  allocation pins keep their bytes (`ForgetDefenseMemory` 184); `CombatPartForwardingTests` lists the two new interfaces.
+
+### P5-7d as built (2026-11-21)
+
+Branch `claude/mr-p5-7d`, base `38311bdeb` (P5-16f PR 2).
+
+- **`CombatRateModifiersService`** (`ICombatRateModifiersService`, 220 lines, 6 services: queries, stat, statusEffect, statusEffectApplication,
+  temporaryStatModifier, playerFeedback): `GetAutoAttackCriticalRateAdjustment`, `GetTargetStatusCriticalRateAdjustment`,
+  `PrepareAutoAttackCycleCriticalRate`, `ClearAutoAttackCycleCriticalRateTracker`, the side attack members (`ApplySideAttackDamageModifier`,
+  `GetSideAttackHitChanceAdjustment`, `GetSideAttackCriticalRateAdjustment`, `ApplySideAttackEvasionIgnore`), the back attack members and the
+  `_autoAttackCycleCriticalCounts` table. One new member, `ForgetAutoAttackCycleCriticalRateCount` (the one table line cut out of
+  `ForgetDamageModifierState`).
+- **`CombatRepeatedTargetService`** (`ICombatRepeatedTargetService`, 427 lines, 4 services: stat, statusEffect, statusEffectApplication and
+  `ICombatRateModifiersService`): the repeated-target, melee, ranged and same-target pressure members, the four state tables, their two nested
+  state classes and `ForgetDamageModifierState`. It reads the clock, so it is in `ClockSeamFiles.txt`.
+- **`CombatDamageModifiersService`** (stay, 875 lines, 1,436 before; 10 services): the two parts are plain parameters; it keeps
+  `GetHighHPTargetCriticalDamageAdjustment` and `IPlayerFeedbackService`, so the map's fallback (which would move it) was not needed.
+  `ICombatDamageModifiersService` loses the moved members. `LargeTypes.txt` loses its line (20 to 19 types over 1,000 lines).
+- **Departures from the plan.** `CombatRepeatedTargetService` is at 4 services, not 3, because `ForgetDamageModifierState` calls the rate part
+  first. Four holders grow by one in `ServicesPerType.txt`: `CombatHitEffectsService` 20 to 21, `CombatAbilityHitService` 12 to 13,
+  `CombatService` 12 to 13 and `AbilityDamageInputService` 11 to 12 (each takes the part its calls moved to; `CombatService` takes both and drops
+  the damage modifiers). The later splits of those services lower the counts again. `CombatHitEffectsService` is 3 lines longer (1,716 to 1,719).
+  `LogicToContent.txt` re-keys the `StatusEffectDefinition` lines (stay 14 to 9, rate 2, repeated target 3).
+- **Cleanup order unchanged.** `ForgetDamageModifierState` clears the auto-attack cycle table first, then the repeated-target tables and the
+  pressure states, in the old order. `CombatCleanupOrderTests` decorates the repeated-target part; its fixture changes only in the three lines that
+  name the call (`RepeatedTarget.ForgetDamageModifierState`).
+- **Call sites** by hand with `sed` on the exact text, as in P5-7c: the native attack roll (`AttackRollAccuracy`, `AttackRollCritical`,
+  `AttackRollDefense`, `ResolveAttackRoll`), `AbilityDamageDeliveryService`, `AbilityDamageInputService`, `CombatAbilityHitService`,
+  `CombatHitEffectsService`, `CombatService`, `RemovedFacades.json` (and the registrations and `GameServices.Combat.cs` for the two parts). The player
+  message audit rows moved with the code (6 rows: stay 1, rate 1, repeated target 4).
+- **Tests.** `CombatDamageModifiersServiceTests` splits into `CombatModifierTestBase` (the shared bench, 231 lines) and three classes: the stay-part
+  24 tests, `CombatRateModifiersServiceTests` 6 and `CombatRepeatedTargetServiceTests` 8. All 37 old test names are kept (the four helper
+  methods moved to the base) and `ForgettingTheCycleCountRestartsTheCycleWithoutTouchingOtherCreatures` is new. The doubles `TestDamageModifiers` and
+  `TestHitEffects`, `CombatAbilityTranscriptTests`, the allocation pins (`CombatFacadeAllocationTests` re-pointed, bytes unchanged) and
+  `CombatPartForwardingTests` take the new interfaces. The transcript fixtures are unchanged except `CleanupOrder.txt`.
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored) of every member of the old class against the three
+    parts: 80 members identical, the two nested state classes identical, one different. The difference is `ForgetDamageModifierState`, whose first
+    statement `_autoAttackCycleCriticalCounts.Remove(creature)` is now `_rateModifiers.ForgetAutoAttackCycleCriticalRateCount(creature)`.
+  - *Unit tests* (`SWLOR.Game.Server.Tests`, filters `Combat`, `DamageModifiers`, `RepeatedTarget`, `RateModifiers`, `PlayerMessageAudit`,
+    `ConvertedServiceContainer`, `AbilityDamage`, `MeleeRepeated`, `AttackRoll`): 3,196 tests, 3,195 pass and 1 skipped (the walkmesh test needs the
+    `sw_t_office` hak folder, which a checkout without the submodule lacks; it passes with the folder). `SWLOR.Architecture.Tests`: 297 pass.
+  - *Engine tests* at `38311bdeb` and at the head, host entry, filter `Characterization|RepeatedTargetDamage|StealthRetarget|TwinPistolCompanionArrival|CombatPerkRegression|PerkTracker|TwinPistolPvpCombat|TwinPistolConversion`:
+    104 tests each, 104 pass each, identical per-test outcomes, no snapshot file changed.
+  - *Client evidence* (map "Tests and the proof plan" said none; taken anyway): one NWN client, the same module, haks and steps at the base and the head,
+    a Vibroknife and a rifle against a hostile Outlaw in `veles_sewers`: plain melee, auto-attack cycle critical rate, side attack, back attack, melee
+    repeated target, plain rifle, ranged repeated target (Sustained Fire), same-target pressure (Spotter's Rhythm) and rifle cycle critical. Per phase the
+    message kinds and counts, and the damage ranges, match (side and back attacks double the plain hit, Repeated Target 1/5 to 5/5 adds +10 per stack,
+    Sustained Fire stacks 1/5 to 4/5, the critical rate notice appears 6 and 4 times in both); attack rolls differ by at most two per phase
+    from timing. A second run drove the pressure bonus on a weapon ability (`ConsumeSameTargetPressureWeaponAbilityDamageBonus`), same setup at
+    the base and the head: with the ready notice up, Aimed Shot I hit with "Spotter's Rhythm (+25 DMG)" (29 and 26 damage), and Crippling Shot I about
+    8 s later hit with no bonus (15 and 16 damage, then Hamstring) on both. Near the second cast the base showed a fresh plain "Spotter's Rhythm" ready
+    notice, because the pressure had built again since the first hit, and the head did not yet; neither carries a bonus. Takes where a cast missed were
+    dropped on both sides, since a miss leaves the bonus in place.
+
+### P5-7e1 as built (2026-11-23)
+
+Branch `claude/mr-p5-7e1`, base `34c3373a0` (the P5-19 record).
+
+- **`CombatDamageTakenEffectsService`** (`ICombatDamageTakenEffectsService`, 599 lines, **10 services**: resources, attackTiming, combatActivity,
+  hitEffects, stat, statusEffect, statusEffectApplication, temporaryStatModifier, recorder, defenseMemory): 24 methods, verbatim. The handler
+  `ApplyDamageTakenEffects` (both overloads), `ApplyDamageTakenNextSkillAbilityDamage`, `ApplyReversalCutReady`, `ApplyRecentDamageTargetHitEffects`, the low HP
+  members (`ApplyLowHPDamageTakenEffects`, the physical defense, evasion, next-ability, temporary HP, no-save temporary HP and guard effects,
+  `ApplyLowHPGuardEffectFromProtectedTarget`; `ApplyLowHPTemporaryHPBeforeFatalDamage` stays, as the map's stay list says), `TrackAvoidedAttack` with its three
+  helpers, `ApplyMeleeDamageTakenEffects` with the poison, `TrackDeflection` with `ApplyDeflectionNearbyAllyGuard`, `ApplyAbilityUsedAttackDeflection` and
+  `ApplyAbilityGrantedAttackDeflectionEffects`. It reads the clock, so it is in `ClockSeamFiles.txt`. The map's fallback (the melee members to the reflection part) was
+  not needed.
+- **`CombatDamageReflectionService`** (`ICombatDamageReflectionService`, 222 lines, **8 services**: queries, resources, hitEffects, stat, statusEffectApplication,
+  recorder, messaging, playerName): 5 methods, verbatim: `ApplyDamageReflectionEffects`, `ApplyForceDamageTakenEffects`, `ApplyIncomingPhysicalToForceConversion`,
+  `ApplyRangedDeflectionReflection`, `BuildDeflectingReturnCombatLogMessage`.
+- **`CombatDamageTakenService`** (stay, 885 lines, 1,609 before; **17 services**, 21 before): it drops the four services only the moved members used (combatActivity,
+  statusEffectApplication, messaging, playerName). 28 methods stay. `LargeTypes.txt` loses its line (19 to 18 types over 1,000 lines). The `ICombatDamageTakenService`
+  summary and the two `<see cref>` that named moved members are re-pointed.
+- **Handler.** `ApplyDamageTakenEffects` is renamed in place: `ScriptHandlerOrder.txt` line 345 and `HandlerRenames.txt` line 146 now name
+  `CombatDamageTakenEffectsService` (event `OnCreatureDamagedAfter` and position unchanged). The map's "line 344" is 345 on this base. No classification file names the class.
+  `RemovedFacades.json` re-points the 11 moved member names to the new owners (`CombatDamageTakenEffects` 7, `CombatDamageReflection` 4).
+- **Departures from the map.**
+  - `CombatAbilityImpactService` goes from 16 to 17 services: it reads both the stay-part (`ConsumeGuardedHitNextSkillAbilityExposedDamageBonus`) and the effects part
+    (`ApplyAbilityGrantedAttackDeflectionEffects`). The map's holder table does not list it. The impact split (P5-7h1 and P5-7h2) takes it to 10.
+  - `Native.ResolveAttackRoll` is a new line in `ServicesPerType.txt` at 11 (lookup): it called `CombatDamageTaken` twice (`TrackAvoidedAttack`,
+    `ApplyRangedDeflectionReflection`) and now calls the effects part and the reflection part. P5-16b (hook logic out of the native sinks) removes it.
+  - `AbilityDamageInputService` is 13 and `AbilityDamageStageService` 11, as the map's holder table says (the reflection part for the force conversion); P5-16 removes both.
+  - Swaps with no change in count: `AbilityDamageDeliveryService` (8, the reflection part replaces damage taken), `CombatAbilityActivationService` (14) and
+    `CombatDeflectionReactionService` (7) and `WeaponAbilitySelfEffects` (the effects part replaces damage taken).
+  - `PlayerMessageAudit.json`: 4 rows keyed by the old file are re-keyed by hand (Guardian Reflexes to the effects part, Deflecting Return to the reflection part, the two
+    guard rows keep the stay-part with their new lines) and sorted into place; `ExportPlayerMessageAudit.ps1 -Check` was not run by the agent.
+- **Call sites** by hand with a literal receiver rewrite (`CombatDamageTaken.X` to `CombatDamageTakenEffects.X` or `CombatDamageReflection.X`, 43 in production, engine and
+  unit test code) and constructor edits: `AbilityDamageDeliveryService`, `AbilityDamageInputService`, `AbilityDamageStageService`, `CombatAbilityActivationService`,
+  `CombatAbilityImpactService`, `CombatDeflectionReactionService`, `WeaponAbilitySelfEffects`, the native hooks (`AttackRollSettlement`, `DamageRollCreature`,
+  `DamageRollMitigation`, `GetDamageRoll`, `ResolveAttackRoll`), `PlayerStatusWindow`, `GuardedStatusEffect`, `HeavyVibrobladeActiveAbilityDefinitionBase`.
+  Registrations and `GameServices.Combat.cs` for the two parts; `ConvertedServices.json` lists them (22 parts).
+- **Tests.** `CombatDamageTakenServiceTests` splits into `CombatDamageTakenTestBase` (the shared bench: tables, fakes, the three services, 434 lines) and three classes:
+  the stay-part (57 test methods), `CombatDamageTakenEffectsServiceTests` (27) and `CombatDamageReflectionServiceTests` (9). All 93 old test names are kept (the fixture
+  methods moved to the base), and `Private` gains a target for the one private member the effects tests reach. `TestDamageTaken` loses the four parameters. The ability,
+  deflection and stat doubles take the new parts; `CombatPartForwardingTests` lists the two interfaces and re-points the moved defaults, the activity-table and handler checks;
+  `CombatFacadeAllocationTests` re-points the part side (every pinned byte count is unchanged); `CombatDamageTakenTranscriptTests` calls the effects and reflection parts and its
+  fixture is unchanged.
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored) of every method of the old class at `34c3373a0` against the three classes: 57
+    methods, 57 identical, 0 different, 0 missing (24 in the effects part, 5 in the reflection part, 28 in the stay-part).
+  - *Unit tests* (`SWLOR.Game.Server.Tests`, one filter on `CombatDamageTaken`, `CombatDamageReflection`, `CombatDeflection`, `CombatPartForwarding`, `CombatFacadeAllocation`,
+    `CombatSource`, `PlayerMessageAudit`, `ConvertedServiceContainer`, `AbilityDamage`, `Combat`, `ScriptHandlerOrder`, `Handler`, `Reflection`, `Deflection`,
+    `AbilityServiceDefaultSeams` and `StatServiceDefaultSeams`): 3,420 tests, 3,417 pass, 2 fail and 1 skipped after the hak data the tests read was copied read-only from the main
+    checkout (`sw_2da`, `sw_tlk`, `sw_ability`, `sw_shader`, `sw_ui`, `sw_tint_mtr`, `sw_item`, `sw_weapon`, `sw_t_office`). The two failures read hak data that is not the pin's:
+    the two `CombatUpgradeBibleSyncTests` (Beast Mastery stance and Focus Attention TLK text against the Bible) fail on the main checkout's newer hak data, not on code this item
+    touches (`FightClubArena_HasAContinuousCombatFloorThroughTheFormerPit` needs `sw_t_office` and passes with it). A second run of the handler, reload, classification,
+    cycle, audit and cleanup order guards (`ParityHandlerMapping`, `BootHandlerClassification`, `PlayerSessionClassification`, `ReloadStateCarrier`, `ReloadCarryHistory`,
+    `ReloadDigest`, `ClockSeamSourceGuard`, `LazyDependencyCycle`, `PlayerMessageAudit`, `ScriptHandlerOrder`, `CombatCleanupOrder`, `FightClubArena`): 143 tests, 143 pass.
+    `SWLOR.Architecture.Tests`: 297 tests, 3 baseline tests failed before the regeneration (`LargeTypes`, `ServicesPerType`, `LogicToContent`) and every test passes after it
+    (`ConvertedServiceRulesTests` and the edge files included; `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` did not change).
+  - *Baselines changed:* `LargeTypes.txt` (`CombatDamageTakenService` 1,609 leaves; `CombatAbilityImpactService` 1,720 to 1,723), `ServicesPerType.txt` (`CombatDamageTakenService`
+    21 to 17, `CombatAbilityImpactService` 16 to 17, `AbilityDamageInputService` 12 to 13, new `AbilityDamageStageService` 11 and `Native.ResolveAttackRoll` 11), `LogicToContent.txt`
+    (106 to 108 lines: the stay-part loses its `Feature.UsePerkFeat` and `Feature/StatusEffectDefinition` lines; the effects part gains `Feature.UsePerkFeat` 1,
+    `Feature/AbilityDefinition` 1 and `Feature/StatusEffectDefinition` 4; the reflection part `Feature/StatusEffectDefinition` 2), `DebtReport.md`.
+  - *Engine tests* at `34c3373a0` and at the head, host entry, filter
+    `Characterization|CombatPerkRegression|PerkTracker|ReviveRules|UnarmedMastery|DualWield|SaberWard|TwinPistol|StealthRetarget|Deflection|Reflection`: 187 tests each. Head: 187 pass.
+    Base: 186 pass and 1 fails, `A nonhostile Twin stance starts during the hostile delay and keeps its normal cast time` (a timing assertion, 614 ms into a delay it expects to be
+    inside, in a run that shared the machine with the head run, and the hot reload check later); the category (`TwinPistolHostileDelay`, 4 tests) rerun alone at the base passed 3 of 4 the first time (another test of it hit the same timing assertion) and 4 of 4 the second time, so every per-test outcome is identical once the load is off. No characterization snapshot was written on either side.
+  - *Hot reload:* `run-hot-reload-check.sh --engine-filter HotReloadPlayers --reloads 2` at the head (the handler moved): both reloads applied, the engine run of every generation passed
+    (`A player online across hot reloads keeps HP, effects, status effects, cooldowns and position`), 253 cache digests matched the boot and 86 adopted and world digests matched the
+    build each reload replaced, for each reload. Not run at the base.
+  - *Client evidence* (map "Tests and the proof plan" said none; taken anyway because the parts drive combat messages and effects): one NWN client, the same module, haks, build
+    flags, character and driver steps at the base (a Release build of `34c3373a0`) and the head, in `veles_sewers` at `SEWERS_GATE` after a jump from `ooc_area`, with spawned hostile
+    Outlaws (`looter_1`, ranged rifle attackers) and Bandits (`nw_bandit001` with a katar, melee). A temporary driver built outside the repository (`CustomAfterMicrosoftCommonTargets`)
+    gave the player a katar and, per step, temporary stats for 36 s; it healed the player between steps except in the low HP step. Eight steps of 40 s: damage taken riders (attack
+    percent, Reversal Cut), low HP (physical defense, temporary hit points, evasion at 60 percent), melee damage taken (poison back, stamina restore), avoided attacks (evasion),
+    melee deflection, physical damage reflection (60 percent), the physical-to-Force conversion (50 percent) and ranged deflection with Deflecting Return. The client chat log is split
+    by step and compared by message kind (digits removed). The kinds match step for step; the only differences are two critical-hit lines (one on each side). Counts differ by the dice, as in
+    the earlier captures: low HP shows "Unbreakable" 10 and 7 times and temporary-hit-point absorption 18 and 14 (base and head); melee damage taken shows the poison damage to the
+    Bandit 15 and 17 times; melee deflection negates 4 and 8 attacks; physical reflection damages the Outlaw 13 and 13 times; the conversion adds Force damage lines 19 and 16 times;
+    ranged deflection negates 4 and 3 attacks and Deflecting Return reflects Force damage to the Outlaw 3 and 2 times (the same line on both sides). No step differs in kind. The damage-taken handler runs for a player through `PlayerStatusWindow` (a player's damage-taken effects come from that window's
+    hook), so the driver's own damage counters read 0 for the player on both sides; the effects were read from the chat. The screenshots show a two-line chat panel; the
+    normalized chat is the evidence for counts. Screenshots and the normalized chat are in `C:/Temp/mr-p5-7e1/evidence/{base,head}/` (kept outside the repository).
+  - *Not run:* the `-Check` scripts (content, facade, clock) and `ExportPlayerMessageAudit.ps1 -Check`, which the agent rules leave to the owner; `CombatSim` (this change touches no rule).
+
+### P5-7j1 as built (2026-11-23)
+
+Branch `claude/mr-p5-7j1`, base `34c3373a0` (the comment label sweep).
+
+- **`CombatRecordSessionCore`** (`ICombatRecordSession`, 381 lines, 0 services) and **`CombatRecorderService`** (stay, 1,417 lines, 1,691 before; 7 services:
+  session, dmPresence, db, catalog, impactState, `Lazy<IStatService>`, `Lazy<ICombatQueriesService>`). `ICombatRecordSession` is 147 lines.
+  The core holds the event queue and the held events, the participants, the recorded area and writer, the pending damage table, the damage and heal
+  application scopes, the awaiting-heal events and the healing reaction flag, `IsRecording`, `LastWriter`, and the seams `CurrentFrame`,
+  `UnixTimeMilliseconds`, `UtcNow` and `WriteLog` (public virtual on the core, so a test double subclasses the core). Members moved: `Enqueue`, `Write`,
+  `WriteHeldEvents`, `GetParticipantId`, `IsRecorded`, `IsInRecordedArea`, `AnyInRecordedArea`, `WithTargetLocation`, `BeginDamageApplication`,
+  `EndDamageApplication`, `BeginHealApplication`, `EndHealApplication`, `FindDamageApplication`, `KeepHitPointsLeftByHit(int, int)`,
+  `ReleaseAwaitingHeal`, `AddPendingDamage` and the four seams, with the new `Reset` and `Flush`.
+- **Registration.** `ICombatRecordSession` is registered to `CombatRecordSessionCore` and `ICombatRecordingState` to that instance (the platform's
+  `ManagedEntryDepth` read goes to the core). `ICombatRecorderService`, `ICombatRecording`, `ICharacterRecording` and `IShutdownStep` stay on the
+  stay-part. `ServerTeardown` is unchanged. `GameServices.CombatRecordSession` is new (hand-written; the native damage and heal hooks reach the scopes
+  through it). The stay-part's `IsRecording` and `LastWriter` are one-line forwards of the core's.
+- **Start and Stop.** `Start`: the core's clears become one `_session.Reset()` (the damage part's `_temporaryHitPointGrants` and `_deathFrames` clears stay
+  as statements after it; the clears are of independent tables, so their relative order is not observable). `Stop`: the first four statements
+  (`_damageApplications.Clear()`, the healing reaction flag, `ReleaseAwaitingHeal()`, `WriteHeldEvents()`) become `_session.Flush()`; the closing clears
+  become `_session.Reset()` plus the two stay-part clears. `Reset` also clears the held events, the awaiting events and the heal frames, which are
+  empty by then except the heal frames: a heal frame still open at `Stop` is now dropped (before, it lived until the next `Start` cleared it; nothing
+  reads it while no recording runs). Every other statement keeps its text and order; the receivers of the core's state and members are `_session.`.
+- **Departures from the map.**
+  - `_lastDamageSources` lives in the core, not in the damage part: `BeginDamageApplication` (a core member, called by the native hook) writes it and the
+    core has no way to reach a damage part. `Reset` clears it. P5-7j3's notice therefore clears two tables (`_temporaryHitPointGrants`, `_deathFrames`),
+    not three.
+  - The `KeepHitPointsLeftByHit(int, uint)` overload stays in the stay-part (it reads the native hit point seam `GetHitPointsExcludingTemporary`, which the
+    core has no seam for); it calls the core's `(int, int)` overload. The damage part (P5-7j3) takes it with the death members.
+  - The core exposes its state as properties and lists (`Writer`, `Area`, `EventsEnqueued`, `Participants`, `ParticipantIds`, `PendingDamage`,
+    `LastDamageSources`, `HealApplications`, `DamageApplications`, `HeldInsertIndex`, `HeldTimestampMs`, `AwaitingHealCount`, `AwaitingHealTarget`,
+    `AwaitingHealFrame`, `IsInHealingReaction`) because the damage, healing and death members stay in the stay-part until P5-7j2 and P5-7j3 move them.
+  - `CombatRecordDamageApplication` is `public` (the interface exposes the list of it).
+  - The core is 381 lines, not about 250: the properties above are 90 of them.
+  - `ConvertedServices.json`, `DomainMap.json`, `RemovedFacades.json`, `ClockSeamFiles.txt`, `HandlerRenames.txt` and `ScriptHandlerOrder.txt` do not change:
+    the core is not named `...Service`, no handler moves and no clock read is rewritten (the recorder's own seams still read `DateTime.UtcNow`).
+    `ConvertedServiceContainerTests` lists `ICombatRecordSession` among the interfaces that are not services and the accessor `GameServices.CombatRecordSession`.
+  - `[ReloadState]` marks nothing here: neither the core nor the stay-part owns a rerun handler or adoption (`StopOnShutdown` is `Retire`), so the
+    fields are plain state of a singleton the reload rebuilds. The hot reload check below passed.
+  - The stay-part's `#region Participants` is gone and `RegisterPlayersInArea` and `TakeSnapshots` sit before `#region Attribution`:
+    `DMPossessionHarness.InstanceMethod` returns a method with its leading trivia, and a `#region` or `#endregion` line there does not compile.
+- **Tests.** `CombatRecordSessionCoreTests` is new (18 tests: the flag on both interfaces, immediate and held writes, held events ahead of a damage event,
+  the last damage source, the outer hit's hit points, the participant ids, the recorded area, the awaiting heal events, the heal frames, `Reset`,
+  `Flush`, the pending table and the default seams). `RecorderProbe` and the transcript `Probe` take a core double (`RecorderProbeCore`, `ProbeCore`) for the
+  frame, the clock in milliseconds and the log; the old tests of the four scope members call the core (`_recorder.Core.BeginDamageApplication` and the like,
+  `GameServices.CombatRecordSession` in `CombatRecorderHealApplicationTests`); the transcript registers the core double beside the recorder double.
+  `DMPossessionPlayerLoopTests` models the injected session. `HostedEntryDepthTests` replaces the session core with a recording one.
+  `GameServicesAllocationTests` gains `The_recording_flag_the_platform_and_the_native_hooks_read_allocates_nothing` (0 bytes through `CombatRecordingState`,
+  the core and the recorder's forward); the old pin is unchanged. All old test names are kept; the transcript fixture, the 23 serializer goldens and the
+  recorder tests pass unchanged.
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored, names compared without a leading underscore and case) of the 156
+    members of the old class against the new class and the core: 151 identical, 5 different. The five: the constructor (takes the session), `IsRecording` and
+    `LastWriter` (auto properties are now one-line forwards), `Start` and `Stop` (the edits above). `BeginDamageApplication`, `EndDamageApplication` and the
+    other moved members are identical, including their `_lastDamageSources` write.
+  - *Unit tests* (`SWLOR.Game.Server.Tests`, filter `Combat|Recorder|Serializer|Allocation|Transcript|Handler|Teardown|PlayerMessageAudit|ConvertedServiceContainer|ReloadState|BootHandler|ScriptHandler|ClockSeam|LazyDependency|HostedEntry|DMPossession|ReloadDigest|ReloadCarry|PlayerSession|ParityHandler`): 3,501 tests; 3,498 pass, 1 skipped and
+    2 fail. The two are `CombatUpgradeBibleManifest_GrantedFeatDescriptionsMatchBibleRows` and `..._WritesLineByLineImplementationReview`, which compare the
+    Beast Mastery feat text in the hak `feat.2da` and TLK with the Bible and fail the same way at `34c3373a0`; they read hak data only (the submodule was empty, so `sw_2da`, `sw_t_office`,
+    `sw_tlk` and `sw_ability` were copied from the main checkout and removed after) and no file of this change. `SWLOR.Architecture.Tests`: 297 pass.
+  - *Baselines changed* (`SWLOR_UPDATE_SNAPSHOTS=1`): `LargeTypes.txt` (`CombatRecorderService` 1,691 to 1,417), `StaticLookups.txt` (the allocation tests file 11
+    to 15 uses), `DebtReport.md` (the same two figures and the large type total). `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` moved in member
+    counts only and were reverted; the two member count lines of the debt report that follow them were reverted too.
+  - *Engine tests* at `34c3373a0` and at the head, host entry, filter `CombatRecorder|Characterization|BossMinimumHitChance|HostileAbilityDelay|TwinPistolConversion|PvpCombat|TwinPistolCancellation|TwinPistolCompanionArrival|TwinPistolHostileDelay|StealthRetarget|CombatPerkRegression`:
+    111 tests each, 111 pass each, identical per-test outcomes (names and outcomes compared from the two reports), no snapshot file changed. The
+    recorder tests (`CombatRecorder`, 9) are in the set; the characterization scenarios run with no recording, so they pin that the idle path is unchanged.
+  - *Hot reload* (`scripts/run-hot-reload-check.sh --engine-filter HotReloadPlayers --reloads 2`, head): two reloads applied, the cache digests (253 after each reload) and the adopted and world digests (86 per generation) match, and the server is still running.
+  - *Client evidence* (the map said none; taken anyway): one NWN client, the same module, haks, character and steps at the base and the head. The real
+    command `/combatrecord` typed in the client (the test environment's staff authorization came from an `AuthorizedDM` record the harness wrote to Redis for the
+    public key; the driver, compiled in from outside the repository, only jumps to `veles_sewers` `SEWERS_GATE`, sets the plot flag, spawns `looter_1`
+    hostiles, hurts and heals the character). Steps: status before, start, start again, status while running, fight one Outlaw (hover and click to attack),
+    fight two Outlaws, hurt and heal, stop, status after, stop again. Result: the six recorder messages the player sees are the same text at the base and the head (not
+    running, started with the file path, already running, status while running, stopped with the two file paths, status after with the last file and
+    "finished", stop with none running); the base chat shows two more "Invalid chat command" lines from the first two attempts, made before the
+    authorization record was written there. The written events have the same kinds in every step (start: recording started, participant, snapshots;
+    fights: attack, damage, ability cast, cost and impact, resource, status applied and removed, participant, death; hurt and heal: two heals; stop: recording
+    stopped) and the same counts where nothing is random: 4 participants numbered 1 to 4, each declared before an event names it, 3 deaths (1 in fight one, 2 in
+    fight two), 2 heals, statuses applied equal to statuses removed. The counts that follow the Outlaws' dice and timing differ: fight one had 160 attacks, 47 damage and 20 ability
+    casts at the base against 102, 38 and 13 at the head; fight two 166, 66 and 25 against 179, 66 and 27. Snapshots are one per second, so their number follows
+    the run's length (the recording ran 621 s at the base and 441 s at the head). Kept under `C:/Temp/mr-p5-7j1/evidence/{base,head}/`: the screenshots,
+    `recorder-messages.txt`, `kinds-by-step.txt`, `events-normalized.txt` (timestamps and frames dropped, numbers masked), the raw record and summary files, the
+    client chat and the driver output.
+
+### P5-7i1 as built (2026-11-23)
+
+Branch `claude/mr-p5-7i1`, base `766f0475d` (the P5-7e1 record).
+
+- **`CombatAbilityDefenseEffectsService`** (`ICombatAbilityDefenseEffectsService`, 403 lines, 7 services: queries, resources, damageTakenEffects, stat,
+  statusEffectApplication, temporaryStatModifier, perk): 13 methods, verbatim. The 11 steps the orchestrator calls are public: `ApplyAbilityUsedSkillEvasion`,
+  `ApplyHostileAbilityUsedEvasion`, `ApplyCostlyAbilityUsedEvasion`, `ApplyAreaAbilityUsedEvasion`, `ApplyAbilityUsedSkillRangedDeflection`,
+  `ApplyAbilityUsedSkillAttackDeflection`, `ApplyAbilityUsedPerkCategoryAttackDeflection`, `ApplySingleTargetAbilityUsedAttackDeflection`,
+  `ApplyAbilityUsedNearbyAllyDefense`, `ApplyAbilityUsedPerkCategoryNearbyAllyAttackDeflection` and `ApplyAbilityUsedPerkCategorySelfDefense`. The two helpers
+  (`ApplyAbilityUsedSkillEvasionChannel`, `ApplyAbilityUsedEvasion`) stay private. It holds no state and reads no clock.
+- **`CombatAbilityCostEffectsService`** (`ICombatAbilityCostEffectsService`, 222 lines, 8 services: queries, resources, attackTiming, stat, statusEffectApplication,
+  temporaryStatModifier, recast, combatRecorder): 9 methods, verbatim. Public: `ApplyHitPointSpendAbilityEffects`, `ApplyAbilityUsedRecastReduction` (the
+  `AbilityDetail` overload; the `RecastGroup` overload is private), `ApplyAbilityUsedNextSkillAutoAttackDamageBonus`, `ApplyAbilityUsedNextSkillFPCostAdjustment`,
+  `ApplyAbilityUsedMasterAbilityHitChance` and `ApplyForceFPCostActivatedEffects`. Private: the HP spend stamina restore and temporary hit points. It holds no state and
+  reads no clock.
+- **`CombatAbilityActivationService`** (stay, 675 lines, 1,203 before; **14 services**, 14 before): the orchestrator `ApplyAbilityActivatedEffects` keeps its 24 steps in
+  the original order and calls 5 of them on the cost part and 11 on the defense part; the other 8 members still run here until P5-7i2. It drops the two services only
+  the moved members used (perk, recast) and takes the two parts, so the count does not move; the map's 7 is reached when P5-7i2 moves the rest. `LargeTypes.txt` loses
+  its line (18 to 17 types over 1,000 lines). `ICombatAbilityActivationService` loses `ApplyHitPointSpendAbilityEffects` and its summary is re-pointed.
+- **Handlers and state.** None moved: no `[NWNEventHandler]`, no `[ReloadState]` field and no carried key is in either part, so `ScriptHandlerOrder.txt`,
+  `HandlerRenames.txt`, `BootHandlerClassification.txt`, `PlayerSessionClassification.txt`, `ClockSeamFiles.txt` (neither part reads the clock) and the reload files do
+  not change, and the hot reload check was not run.
+- **Departures from the map.** The stay-part stays at 14 services (see above). The map's "6 call sites" are the two `ApplyHitPointSpendAbilityEffects` callers
+  (`HeavyVibrobladeActiveAbilityDefinitionBase`, `WeaponAbilitySelfEffects`, which now injects the cost part instead of the activation part) and four test sites;
+  `ApplyAbilityActivatedEffects` and `TrackQueuedWeaponAbilityUse` callers (`UsePerkFeat`, engine tests) do not change. `RemovedFacades.json` gains the owner
+  `CombatAbilityCostEffects` (`ApplyHitPointSpendAbilityEffects`) and loses that name from `CombatAbilityActivation`. No holder grows.
+- **Tests.** `CombatAbilityActivationServiceTests` splits into `CombatAbilityActivationTestBase` (the shared bench, 327 lines; the two parts are real and built
+  from the same scripted leaves, so the order test still goes through them) and three classes: the stay-part 26 tests, `CombatAbilityCostEffectsServiceTests`
+  9 plus a construction test, `CombatAbilityDefenseEffectsServiceTests` 9 plus a construction test. All 44 old test names are kept (`Private` takes a target). Both new
+  interfaces are in `CombatPartForwardingTests.Parts()` (the HP spend default moved to the cost part), `WeaponAbilityTraceBench.Leaves`, and `CombatAbilityTranscriptTests` and
+  `CombatFacadeAllocationTests` call the cost part for the HP spend (every pinned byte count is unchanged). `WeaponAbilityCallTrace.txt.gz` is regenerated: 208 lines
+  change, all the label `AbilityActivation.ApplyHitPointSpendAbilityEffects` to `AbilityCostEffects.ApplyHitPointSpendAbilityEffects` (arguments and line count identical).
+  Source readers that searched for `private static void <member>` (`GeneratedWeaponPerkBehaviorTests`, `CrossSkillPerkInteractionSafetyTests`,
+  `ForceSensitiveEspionageTests`) search `static void <member>`, because the moved steps are public and `CombatSource` restores `static` only. `ConvertedServicesTests`,
+  `ConvertedServices.json` and `ConvertedServiceContainerTests` list 24 parts (the container test is renamed from twenty_two to twenty_four).
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored) of every method of the old class at `766f0475d` against the three
+    classes: 45 methods, 45 identical, 0 different, 0 missing (13 in the defense part, 9 in the cost part, 23 in the stay-part; the orchestrator is identical because only its receivers changed).
+  - *Unit tests:* `SWLOR.Game.Server.Tests`, one filter on `Combat`, `AbilityActivation`, `Ability`, `Evasion`, `Deflection`, `CallTrace`, `Handler`,
+    `PlayerMessageAudit`, `ConvertedServiceContainer`, `ScriptHandlerOrder` and `Reflection` (it takes in `CombatPartForwarding`, `CombatFacadeAllocation`, `CombatSource`, the
+    transcripts and `CombatCleanupOrder`): 4,292 tests, 4,287 pass, 1 skipped and 4 failed on the first run. The four were this change's own reader edits and one data gap:
+    `ConvertedServiceContainerTests` (22 parts, now 24), `WeaponAbilityCallTraceTests` (the labels above), `GeneratedWeaponPerkBehaviorTests.SnapRoll_...` (it searched for
+    `private static void`) and `AbilityImpactVisualEffectTests` (needs `sw_vfx`). After the edits and the hak data, those classes and the other source readers
+    (`CrossSkillPerkInteractionSafetyTests`, `ForceSensitiveEspionageTests`, `LeadershipOffensivePartyBuffTests`) pass: 841 tests. The unfiltered run of the whole project (19,957
+    tests, 21 minutes) has 19,887 passing, 2 skipped and 68 failing. Sixty of the 68 read hak folders that were not in the nine copied for the first runs (`sw_t_*`, `sw_pt_*`,
+    `sw_cr_creature`, `sw_plc*`, `sw_tint0`, `SWLOR_Haks/tools`) and pass once the main checkout's whole hak set is copied read-only (a different, newer haks commit than the pin;
+    the folders were copied for the run and removed). The other 8 fail with that data and fail identically at `766f0475d`, run in a scratch worktree with the same data:
+    `EshanBlueprints_AreDiscoverableInTheirToolsetPalettes("uti","itempalcus")` (`esh_captain_o` is not in the palette), `KillRewards_FollowExistingBountyRatesRatherThanIntroducingAHigherTier`
+    (12 quests expected, 32 found), `EveryTileModelShipsAWalkmesh("sw_t_duct","nac01")`, three `LargeBodyRobeModelsRemainAvailable` cases (this hak set has fewer than 1,241
+    phenotype-22 robe models) and two `SeatsOpeningTowardModelPlusY_SeatSittersFacingTheSeatFront` cases (`AshmarkWorkStool`, `CommandlineWorkStool`: no use node in the walkmesh).
+    None of the 68 touches the moved code.
+  - *Architecture:* `SWLOR.Architecture.Tests`: 297 tests; `LargeTypes`, `LogicToContent` and `UpwardEdges` failed before the regeneration with `SWLOR_UPDATE_SNAPSHOTS=1` and every test
+    passes after it. Baselines changed: `LargeTypes.txt` (`CombatAbilityActivationService` 1,203 leaves; 18 to 17 types), `LogicToContent.txt` (107 to 110 lines: the stay-part
+    `Feature/StatusEffectDefinition` 12 to 5; the cost part `Feature/AbilityDefinition` 1 and `Feature/StatusEffectDefinition` 3; the defense part `Feature/StatusEffectDefinition` 4),
+    `UpwardEdges.txt` (115 to 116: the stay-part `Combat -> Abilities` 2 to 1, the cost part 1) and `DebtReport.md` (the same figures). `ServicesPerType.txt` does not change (the
+    stay-part is at 14 before and after; the new parts are at 7 and 8). The regeneration also rewrote member counts in `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt`
+    (every changed line is an unchanged edge with a new count; no edge appears or goes); both are reverted, and the two `DebtReport.md` figures that come from them are kept at the committed values.
+  - *Engine tests:* host entry, filter `Characterization|CombatPerkRegression|PerkTracker|RifleIdleReadiness|AbilityAttackResume|ReviveRules|SaberWard|TwinPistol|StealthRetarget|Deflection|Evasion|HitPoint|Stance|UnarmedMastery|DualWield|Reflection`
+    (it takes in the ability activation riders through `PerkTracker`, `Stance` (the Vigor and Tempest Stance riders), `HitPoint` (HP-cost abilities), `RifleIdleReadiness` and the
+    characterization scenarios), run from scratch copies of the runner with a scratch server home, at `766f0475d` (a scratch worktree) and at the head: 240 tests each, 239 pass and 1 fails
+    on each side. The failures differ: the head failed `Dual wield commanded attacks resolve both hands on one shared cadence` (the off-hand hit does not follow the main-hand swing inside the
+    delay cycle, a timing assertion) and the base timed out `Twin Pistol stance damage costs and Haste reach native saber and rifle attacks without paired handling` (180 s) while another
+    session's stack was running. The two tests rerun alone on each side: Twin Pistol passes on both, Dual wield fails on both with the same message (it passed in the base's first run), so
+    the per-test outcomes are identical and the Dual wield failure is the test's timing on this machine, not a difference. No characterization snapshot changed on either side. A wider
+    first run (the substring `Ability`, which takes in every ability behavior case) was stopped after 319 passes and no failure, because it would have taken about 80 minutes a side. The hot
+    reload check was not run (no handler or reload state moved).
+  - *Client evidence:* one NWN client, the same module (`Star Wars LOR v2.mod` of the main checkout's deploy home), haks, build flags, character (Agan Tarn) and driver steps at the base (a Release
+    build of `766f0475d`) and the head, in `veles_sewers` at `SEWERS_GATE` after a jump, with the player set plot. A temporary driver built outside the repository
+    (`CustomAfterMicrosoftCommonTargets`; the base copy differs only in the receiver of the HP spend call) takes steps from a command file. The test character owns none of the perks that
+    set these riders up, so the driver sets the stats those perks set (temporary stat modifiers for 90 s) and calls the activation entry `UsePerkFeat` calls, `ApplyAbilityActivatedEffects`,
+    with the catalog abilities Aimed Shot I (rifle, hostile, single target, stamina cost) and Force Spark I (a Force power with an FP cost), and `ApplyHitPointSpendAbilityEffects`; it
+    reads the stats and status effects back into the chat. Hostile Outlaws (`looter_1`, ranged) and Bandits (`nw_bandit001`, melee) attack the player (the enemies are plot flagged), and one
+    Bandit joins the party as the ally. Steps: D1 evasion (hostile, costly and skill evasion), D2 deflection (attack, single-target, ranged with its icon, perk category), D3 nearby ally defense,
+    self guard and nearby ally deflection, C1 recast reduction, C2 next-skill auto-attack bonus, C3 the Force FP cost riders, C4 the HP spend riders. Of the 19 driver readouts, 13 are identical
+    on both sides, among them every one taken right after an activation: evasion 0 to 50 (Evasive Footwork), melee deflection 0 to 120 with the Ranged Deflection effect, the ally's physical
+    defense 0 to 25 and Force defense 0 to 15 with Guarding Step and Sentinel Guard, the recast of 1 minute 58 seconds at 22 seconds after two 40-second reductions, Danger Sense and Force
+    Convergence (evasion 25, ability hit chance 5), and the HP spend (hit points 190 to 210, the 50 percent temporary hit points of 40 spent; stamina 0 to 13; Soul Sacrifice). The six that differ
+    (`D2_end`, `C1_before`, `C1_after`, `C4_before`, `C4_after`, `C4_end`) differ only in which effects of the previous step had expired (the steps were fed with different pauses) and in the recast
+    countdown. `C1_after` was read before the activation ran (the driver runs it in a module script context), so the recast reduction shows in `C2_after_attacks`, which is identical.
+    The combat lines match by kind step for step apart from dice: Outlaw and Bandit misses, hits and critical hits, "ranged deflect negates" (2 and 6 over the run), the five effect icons,
+    "worn off" lines (20 and 23); the screenshots show the same five status icons on both sides. Not covered in the client: the master hit chance rider (it needs a companion activator) and the
+    area evasion step (no area ability was driven); both have unit tests. The driver source, the steps, the readouts, the normalized chat and the screenshots are in
+    `C:/Temp/mr-p5-7i1/evidence/{base,head,driver,proof}/` (kept outside the repository).
+  - *Not run:* the `-Check` scripts (content, facade, clock) and `ExportPlayerMessageAudit.ps1 -Check`, which the agent rules leave to the owner; `CombatSim`
+    (this change touches no rule); the hot reload check (no handler or reload state moved). `PlayerMessageAudit.json` has no row for the activation files and the moved code sends no player message, so it is unchanged.
+
+### P5-7e2 as built (2026-11-24)
+
+Branch `claude/mr-p5-7e2`, base `766f0475d` (the P5-7e1 record).
+
+- **`CombatGuardedHitService`** (`ICombatGuardedHitService`, 112 lines, **9 services**: feedback, combatRating, statusEffectCombatEvents, damageTaken, guardedHitEffects, retaliation, stat,
+  resources, enmity): `ApplyGuardedHitModifiers`, `ApplyGuardedHitRecovery`, `ApplyGuardedHitEnmity`, verbatim. It calls `IsHostileAttackSource` and `GetGuardDamageReductionPercent` on the stay-part
+  (already public), so nothing is promoted there.
+- **`CombatGuardedHitEffectsService`** (`ICombatGuardedHitEffectsService`, 249 lines, **5 services**: queries, attackTiming, stat, temporaryStatModifier, defenseMemory): `TrackGuardedHit`,
+  `ApplyGuardedHitNextSkillAbilityEffects` with its bonuses helper and `ApplyGuardedHitNextSkillAbilityStatusEffects`, `ConsumeGuardedHitNextSkillAbilityExposedDamageBonus`, and
+  `ApplyGuardedHitNextAttackEffects` from `CombatAbilityHitService`, verbatim (public on the interface, as it was on the hit interface; the unit tests and the allocation test call it).
+- **`CombatGuardRetaliationService`** (`ICombatGuardRetaliationService`, 200 lines, **9 services**: queries, damageModifiers, hitEffects, stat, combatRating, combatRecorder, enmity, damageRoll,
+  damageTaken): `ApplyGuardedHitRetaliation` (promoted from private to public: `CombatGuardedHitService` calls it), `ApplyGuardedHitRetaliationPulse`, `ResolveGuardRetaliationDamage`,
+  `GetGuardRetaliationDamageAbility`, and the `CalculateDamage` wrapper over the damage roll part (it moves with its one caller and stays `protected virtual`). None of the three reads the clock, so
+  `ClockSeamFiles.txt` is unchanged.
+- **`CombatDamageTakenService`** (stay, 504 lines, 885 before; **7 services**: queries, resources, stat, statusEffect, combatRecorder, pvpCombat, enmity; 17 before): modifiers only, as the map says.
+  The map counts 8 (a recorder damage part that does not exist yet). `CombatAbilityHitService` is 370 lines (429) with the same 12 services.
+- **Handlers and state:** none move (`ScriptHandlerOrder.txt`, `HandlerRenames.txt`, the classification files and `ReloadAdoption.txt` are unchanged, no `[ReloadState]` field). `RemovedFacades.json`:
+  `ApplyGuardedHitModifiers` re-points to `CombatGuardedHit`, `TrackGuardedHit` to `CombatGuardedHitEffects`. `ConvertedServices.json` lists them (25 parts).
+- **Departures from the map.**
+  - `CombatHitEffectsService` takes `ICombatDamageTakenService` plainly now (the map's P5-7f1 row). With the guard code gone the stay-part reaches no hit effects part through its constructor, so the
+    `Lazy<>` is needless and `LazyDependencyCycleTests` fails on it. `DeferredResolution.txt` loses the line (32 to 31 files); P5-7f1 no longer has this edit.
+  - `CombatAbilityImpactService` keeps 17 services: `ICombatGuardedHitEffectsService` replaces `ICombatDamageTakenService` (it called only `ConsumeGuardedHitNextSkillAbilityExposedDamageBonus`).
+  - `StaticLookups.txt` moves with the tests (one lookup in the retaliation test class instead of the damage taken test class). `ServicesPerType.txt` loses the `CombatDamageTakenService` line (17 to 7).
+  - `PlayerMessageAudit.json` is left for the owner (agent rules): three rows are keyed by moved files. `ApplyGuardedHitNextAttackEffects` becomes `CombatGuardedHitEffectsService.cs` line 105,
+    `ApplyGuardedHitNextSkillAbilityEffects` `CombatGuardedHitEffectsService.cs` line 167, `ApplyGuardedHitRetaliationPulse` `CombatGuardRetaliationService.cs` line 149 (the audit's `File` and `Line`,
+    sorted into place). `PlayerMessageAuditTests.MessageInventory_CoversEveryRuntimeCallSite` fails until `ExportPlayerMessageAudit.ps1` is run.
+- **Call sites** by hand with a literal receiver rewrite: `DamageRollMitigation` (`ApplyGuardedHitModifiers`), `GuardedStatusEffect` and three engine tests in `CombatPerkRegressionEngineTests`
+  (`TrackGuardedHit`), `CombatAbilityImpactService` (constructor and the one `Consume` call). Registrations and `GameServices.Combat.cs` for the three parts.
+- **Tests.** `CombatDamageTakenServiceTests` gives 24 test methods to `CombatGuardedHitServiceTests` (5), `CombatGuardRetaliationServiceTests` (10, with the damage roll wrapper checks) and
+  `CombatGuardedHitEffectsServiceTests` (9, plus the two `AGuardedHit...NextAttack` tests of `CombatAbilityHitServiceTests`); every old test name is kept. The shared `CombatDamageTakenTestBase` builds
+  the three parts, and `TestDamageTaken` becomes `TestGuardRetaliation` (it overrides `CalculateDamage` on the retaliation part). Two expectations changed with where the call is made: the guarded hit part now
+  runs `ApplyGuardedHitNextAttackEffects` for real (zero stats read nothing and log nothing), so the `GuardedNextAttack` log line of the fake is gone and `_log.Skip(2)` is `Skip(1)` in the counter tests.
+  `CombatPartForwardingTests` lists the three interfaces; `CombatFacadeAllocationTests` re-points the part side (no pinned byte count changed); `WeaponAbilityTraceBench.Leaves` gains the three interfaces
+  and the weapon ability call trace is unchanged; the damage taken and ability transcripts call the new parts and their fixtures are unchanged. Source readers needed no change but two needles
+  (`public static void ApplyGuardedHitRetaliation`, `GameServices.CombatGuardedHit.ApplyGuardedHitModifiers(`).
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored) of the 14 moved members at `766f0475d` against the three new classes: 14 identical, 0 different, 0 missing.
+  - *Unit tests* (`SWLOR.Game.Server.Tests`), unfiltered, with the hak folders the tests read copied read-only from the main checkout (nine folders; the main checkout's haks are not the pin's): 19,959 tests,
+    19,887 pass, 70 fail, 2 skipped. The same run at `766f0475d` in a scratch worktree with the same nine folders: 19,947 tests, 70 fail. 69 failures are the same on both sides and need hak or
+    Module data a checkout without the submodule lacks (missing `sw_*` folders, walkmesh, models, icon sources). One differs each way: `ReopeningAfterWardrobeOrSettingsLoadsThePartPictures` fails at the base only
+    and passes at the head; `MessageInventory_CoversEveryRuntimeCallSite` fails at the head only (the audit rows above). `SWLOR.Architecture.Tests`: 297 pass.
+  - *Baselines changed:* `ServicesPerType.txt` (`CombatDamageTakenService` leaves), `StaticLookups.txt`, `DeferredResolution.txt`, `DebtReport.md`. `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` moved by member counts only and were reverted.
+  - *Engine tests* at `766f0475d` and at the head, host entry, filter `Characterization|CombatPerkRegression|PerkTracker|ReviveRules|UnarmedMastery|DualWield|SaberWard|TwinPistol|StealthRetarget|Deflection|Reflection|Guard|Retaliation|TankEnmity|DMLimboEnmity`:
+    199 tests each, no characterization snapshot written. Base: 197 pass and 2 fail (`Dual wield commanded animation sequence delivers main then off before the next cycle` and `Dual wield temporary off-hand no-delay proc grants a matching bonus once`, both timing assertions). Head, on the final code: 198 pass and 1 fail (`Area taunts recover multiple enemies and replace pending approaches`, a 10 s wait for the enemy's attack target). An earlier head run before the plain `CombatHitEffectsService` parameter had one other timing failure (`Twin Pistol actual mastery trials save and reload independent proof and unlocks`); it passed on a rerun on both sides. The three tests that differed in the final pair were rerun together on a quiet machine at the base and the head: the same per-test outcomes on both (`Dual wield commanded animation sequence...` and `Area taunts recover multiple enemies...` fail on both, `Dual wield temporary off-hand no-delay proc...` passes on both), so no per-test difference is left that the load does not explain. The reports are in the evidence folder. No hot reload run: no handler moved.
+  - *Client evidence:* one NWN client, the same module, haks, build flags, character and driver steps at the base and the head, in `veles_sewers` at `SEWERS_GATE` after a jump from `ooc_area`, a Training Katar
+    equipped, the player immortal, hostile Bandits (`nw_bandit001`) spawned beside the player. A temporary driver built outside the repository (`CustomAfterMicrosoftCommonTargets`) gave temporary stats for 60 s per step:
+    guarded hit (reduction 10, stamina 4, enmity +50 percent), retaliation (8 DMG plus a 6 DMG pulse, radius 8, enmity 50 percent), counters (next attack, next skill and the Guard Reversal exposed rider), then a seeded
+    direct run of `ApplyGuardedHitModifiers` six times against a frozen Bandit. The chat log is split by step and compared by message kind (digits removed). The guard, counters and direct steps show the same kinds on both
+    sides; the direct step is identical (the same six returns of 69, the same enmity 150 per hit, 12 lines of retaliation damage, 6 guards, 6 pulses, 6 counter lines of each kind and one Guard Reversal line);
+    the live counts differ by the dice (guard lines 42 and 48, 28 and 28, pulses 66 and 56). The retaliation step shows one more kind at the head ("damages Someone", 4 lines: a Bandit out of the player's sight; the same line
+    appears on both sides in the direct step). The head capture was taken before the plain `CombatHitEffectsService` parameter; that change is a container edit with no behavior.
+    Screenshots and the normalized chat are in `C:/Temp/mr-p5-7e2/evidence/{base,head}/` (kept outside the repository).
+  - *Not run:* the `-Check` scripts (content, facade, clock), `ExportPlayerMessageAudit.ps1`, `CombatSim` (this change touches no rule) and the hot reload check (no handler or `[ReloadState]` field moved).
+
+### P5-7j2 as built (2026-11-24)
+
+Branch `claude/mr-p5-7j2`, base `97958db3c` (the P5-10b2 record).
+
+- **`CombatRecordAbilityService`** (`ICombatRecordAbilityService`, 206 lines, interface 80, **3 services**: the session core, the recorder stay-part, `IStatService`, all
+  plain) and **`CombatRecorderService`** (stay, 1,267 lines, 1,417 before; 7 services, unchanged). Members moved, bodies as they were: `RecordAbilityCast`,
+  `RecordAbilityDenied`, `RecordAbilityInterrupted`, `RecordAbilityQueued`, `RecordAbilityImpact`, `BeginAbilityCost`, `CompleteAbilityCost`, `NoteToggleDeactivated`,
+  `TakeToggleDeactivation`, with the two toggle fields. `RecordRecurringAbilityImpact` stays (the map's stay list). The part keeps two `protected virtual` seams
+  (`GetCurrentFP`, `GetCurrentStamina`, bodies over `IStatService`) so a test double answers them as it answered the recorder's.
+- **Cycles.** The constructor scan finds no service that holds the part except `StatusAbilityEffects` (below), so no path leads back to it from `IStatService`: the plain edge
+  cannot close a cycle. `LazyDependencyCycleTests` and the container build (`ConvertedServiceContainerTests`) pass. The recorder keeps its two `Lazy<>` (map, "Cycles").
+- **Registration.** `ICombatRecordAbilityService` is registered beside the recorder; `GameServices.CombatRecordAbility` is new. No handler moves, no state is carried and the
+  part registers no session listener (`Start` and `Stop` never cleared the toggle notes, and a test pins that a note survives a stop and a start), so
+  `ScriptHandlerOrder.txt`, `HandlerRenames.txt`, `BootHandlerClassification.txt`, `ClockSeamFiles.txt` and `[ReloadState]` do not change (the part reads no clock).
+- **Departures from the map.**
+  - The part is listed in `ConvertedServices.json` and `DomainMap.json` as a service of its own (`CombatRecordAbility`), not as a part of `CombatRecorder`: the domain map rule
+    counts a part whose class does not start with the service name under `Combat`. `CombatParts.OtherServices` already named it.
+  - The recorder promotes `ResolveOwnAttribution` and `GetFeatCode` from private to public on `ICombatRecorderService`, as the map's "Order" says, and gains one member the map
+    did not name, `TryGetInnermostAttribution(out CombatRecordAttribution)`: `RecordAbilityInterrupted` read the attribution stack (`_attributionDepth`, `_attributions`) directly.
+    The body of that one method changes in that condition only (an open scope exists and its actor is not the activator).
+  - `StatusAbilityEffects` (content, instance) is one of the 15 content call sites and a holder: it takes the part as a new constructor parameter (6 to 7 services).
+  - `RemovedFacades.json`: `CombatRecorder` becomes a split facade with its names per owner: 47 stay on `CombatRecorder`, 9 go to `CombatRecordAbility`, and the 4 scope members
+    (`BeginDamageApplication`, `EndDamageApplication`, `BeginHealApplication`, `EndHealApplication`) go to `CombatRecordSession`, which P5-7j1 moved without updating the file.
+  - The 13 sites of `Feature/UsePerkFeat.cs`, `HeavyVibrobladeActiveAbilityDefinitionBase` and `CombatRecordAbilityCostScope` (the one domain site) are receiver edits.
+- **Tests.** New `CombatRecordAbilityServiceTests` (6: the three constructor services and no `Lazy<>`, the default seams reading `IStatService`, the toggle notes as the part's own
+  state with no listener, the recorder no longer declaring the nine members, one singleton that is not the recorder) and four tests in `CombatRecorderServiceTests` (the innermost
+  scope read as it is, `ResolveOwnAttribution`, `GetFeatCode`, a toggle note surviving a stop and a start). The old recorder tests call the part (`_recorder.Ability`, a
+  `RecorderProbeAbility` that answers FP and stamina from the probe's dictionaries); the transcript registers a `ProbeAbility` and its fixture is unchanged; the 23 serializer goldens are
+  unchanged. `CombatPartForwardingTests` lists the interface and pins its three defaults; `GameServicesAllocationTests` pins the idle cost scope at 0 bytes through the accessor and the
+  instance. `WeaponAbilityTraceBench.Leaves` gains the interface and the call trace is regenerated: 130 lines change, all `Recorder.NoteToggleDeactivated(...)` to
+  `RecordAbility.NoteToggleDeactivated(...)`, nothing else. `ConvertedServicesTests` gains one test; `PlayerMessageAudit.json` has no row for a moved line (unchanged).
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored) of the 121 members of the old class at `97958db3c` against the stay-part and the part:
+    120 identical, 1 different (`RecordAbilityInterrupted`, the condition above), 0 missing.
+  - *Unit tests* (`SWLOR.Game.Server.Tests`, filter `Combat|Recorder|Serializer|Allocation|Transcript|Handler|Teardown|PlayerMessageAudit|ConvertedServiceContainer|ReloadState|BootHandler|ScriptHandler|ClockSeam|LazyDependency|HostedEntry|DMPossession|ReloadDigest|ReloadCarry|PlayerSession|ParityHandler|Ability|CallTrace|FacadeRemoval|ConvertedService`):
+    4,521 tests, 4,519 pass, 1 skipped, 1 fails: `AbilityImpactVisualEffectTests.EveryActiveAbilityRank_BindsItsDeclaredImpactEffect` needs the compiled model `vx_callbeast` from a hak folder that was
+    not copied (only `sw_2da`, `sw_t_office`, `sw_tlk` and `sw_ability` were, read-only, from the main checkout, a different haks commit than the pin; removed after). After the
+    `ConvertedServices.json` change, `ConvertedService|FacadeRemoval|DomainMap|CombatPartForwarding|GameServices|CombatRecordAbility|PlayerMessageAudit`: 936 tests, all pass. The whole of `SWLOR.Game.Server.Tests`, unfiltered: 20,009 tests, 19,894 pass, 3 skipped, 112 fail. 110 of the 112 read hak folders that were not copied (`sw_cr_creature`, `sw_weapon`, `sw_shader`, `sw_tint_mtr`, `sw_ui`, `sw_item`, the tilesets, `sw_pt_robe`, the haks builder file and the like) or source art under `SWLOR_Haks` and fail on the missing data; the two others, `EshanBlueprints_AreDiscoverableInTheirToolsetPalettes` and `KillRewards_FollowExistingBountyRatesRatherThanIntroducingAHigherTier`, fail the same way at `97958db3c` (run there alone), as does `EveryActiveAbilityRank_BindsItsDeclaredImpactEffect` above. No failure touches the recorder, its parts or a file of this change.
+    `SWLOR.Architecture.Tests`: 297 pass, 1 skipped.
+  - *Baselines changed* (`SWLOR_UPDATE_SNAPSHOTS=1`): `LargeTypes.txt` (`CombatRecorderService` 1,417 to 1,267), `ServicesPerType.txt` (`UsePerkFeat` 32 to 33 and
+    `HeavyVibrobladeActiveAbilityDefinitionBase` 11 to 12: each looks up the part besides the recorder; P5-16 types), `StaticLookups.txt` (the allocation tests 15 to 17, the new test class 1),
+    `DebtReport.md`. `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` moved in member counts only and were reverted, with the two debt report lines that follow them.
+  - *Engine tests* at `97958db3c` and at the head, host entry, filter `CombatRecorder|Characterization|CombatPerkRegression|TwinPistol|BossMinimumHitChance|HostileAbilityDelay|PvpCombat|StealthRetarget`
+    (162 tests: the characterization scenarios and ability categories, `CombatPerkRegression` and `TwinPistol`): base 162 pass; head 161 pass and 1 fails, `Focused Burst keeps its fixed commitment and preserves an armed next-cast speed bonus`
+    ("The three volleys resolve in separate timed waves rather than one instant attack"). It is a timing test: alone, it fails the same way at the base and at the head; the whole `TwinPistol`
+    category (79 tests) passed 79 of 79 at the base and at the head on a second run, while the head's first category run failed a different timing test (`Walking interrupts Focused Burst ...`, "Timed out waiting for the first paired
+    volley") on a machine shared with other sessions' engine runs. No snapshot file was written on either side, and the per-test outcomes of the two full reports differ in that one test only.
+  - *Hot reload:* not run, no handler or registration moves (the map asks for it on P5-7j3).
+  - *Client evidence* (the map said none; taken anyway): one NWN client, the same module, haks, character (`agantarn`) and steps at the base (`97958db3c`) and the head, Release builds with a temporary driver
+    compiled in from outside the repository, in `veles_sewers` at `SEWERS_GATE`, the player immortal (plot), one frozen immortal Outlaw (`looter_1`, paralyzed) as the target. The real command `/combatrecord` was
+    typed in the client (staff authorization from an `AuthorizedDM` record seeded in each stack's Redis for the public key; the first status of each side, typed before the seed, shows one "Invalid chat command").
+    Steps: status before, start, status while running, Force Lightning I (cast, FP cost, impact), the same ability again during its recast (denied), Force Lightning I and a walk 0.4 s later (interrupted by moving),
+    Headshot I queued with a rifle and an attack (queued), Berserker Stance on and, 33 s later, off (weapon stance, `StatusAbilityEffects`), Bastion Stance on and off (heavy vibroblade stance), status, stop, status, stop.
+    The driver never calls a moved member; the abilities run through `UsePerkFeat.TryUseAbility`. Result: the recorder messages the player sees are the same kinds at the base and the head (not running, started with the file,
+    status while running, stopped with the two files, status after, "This ability can be used in N seconds", "ability has been interrupted", "queues Headshot I", "Bastion/Berserker Stance deactivated"). The head
+    run was recorded three times (an attempt in which a harness call was dropped, and one in which the scripted walk left the player where it could not move further, so no cast was interrupted), so its message counts are triple; the kinds match. The events written
+    for the player's abilities (the Outlaw's own Suppressing Shot casts, costs and impacts are left out, they follow the AI) are identical in kind and count in the base recording and in the last head recording: `ability_cast` Force Lightning I 2,
+    Berserker Stance 2 (one `toggled_off`), Bastion Stance 2 (one `toggled_off`); `ability_cost` Force Lightning I, Headshot I, Berserker Stance, Bastion Stance; `ability_impact` Force Lightning I, Berserker Stance, Bastion Stance;
+    `ability_denied` 1 (recast); `ability_interrupted` 1 (`moved`); `ability_queued` Headshot I 1. The queued Headshot's own impact did not occur on either side (the rifle attacks missed, dice). Other event counts
+    follow the Outlaw's dice and the length of the run (snapshots one per second). Kept under `C:/Temp/mr-p5-7j2/evidence/{base,head}/`: the screenshots, `kinds.txt`, `recorder-messages.txt`, the raw records and
+    summaries, the client chat and the driver output.
+  - *Not run:* the `-Check` scripts (content, facade, clock) and `ExportPlayerMessageAudit.ps1 -Check`, which the agent rules leave to the owner; `CombatSim` (no rule changes); hot reload.
+
+### P5-7f1 as built (2026-11-24)
+
+Branch `claude/mr-p5-7f1`, base `199fbab08` (the P5-7e2 record).
+
+- **`CombatDealtEffectsService`** (`ICombatDealtEffectsService`, 521 lines, **9 services**: queries, resources, combatActivity, stat, statusEffect, statusEffectApplication, temporaryStatModifier,
+  pairedRangedTraits, and `IBeastDamageRecording`): the 16 members of the map's list, verbatim, plus the field `MimicryTraitProcs`. The 13 members the orchestrator calls are public on the interface
+  (`ApplyHeavyVibrobladeDefenseDamageRecovery`, `ApplyPredatorsMarkEffects`, `ApplyLowHPDamageDealtHPRestore`, `ApplyBleedingTargetStaminaRestore`, `ApplyDamageDealtForceErosionEffect`,
+  `ApplyDamageDealtHamstringEffect`, `ApplyDamageDealtMimicryTraitProcs`, `ApplySideAttackDamageEffects`, `ApplyDamageDealtStaminaRestore`, `ApplyDamageDealtAttackDelayReduction`,
+  `ApplyNextDamageDealtBleedEffect`, `ApplyFrenzySlashHasteRefresh`, `ApplyToxicRushDamageDealtEffects`); `ApplyPredatorsMarkFollowUp`, `ApplyBleedingTargetStaminaRestoreChannel`,
+  `HasPositiveDirectDamageAfterNativeMitigation` and the proc table stay private. Three new public members are the cuts: `ApplyDamageDealtTracking` (the tracking block),
+  `ApplyDamageDealtHPPercentRestore` and `ApplyPhysicalDamageDealtHPPercentRestore` (the two inline restore blocks). It reads no clock, so `ClockSeamFiles.txt` is unchanged.
+- **`CombatTriggeredDamageService`** (`ICombatTriggeredDamageService`, 127 lines, **8 services**: damageModifiers, damageTaken, dealtEffects, stat, statusEffectCombatEvents, impactState, recorder,
+  resistance): `ApplyTriggeredDamage` and the `protected virtual ApplyDamageTakenModifiers` wrapper (a plain call to `ICombatDamageTakenService`, the test seam kept as it was).
+  `ApplyTriggeredDamageTargetAdjustment` is a static member of `CombatRules` and stays there.
+- **`CombatHitEffectsService`** (stay, 1,191 lines, 1,719 before; **17 services**, 21 before): it drops damageModifiers, statusEffectCombatEvents, pairedRangedTraits, capstoneProof, resistance and
+  damageTaken, and gains the two parts. `IPartyService` becomes `IPartyRoster`, and `ICapstoneProofService` is not held at all. The map's 8 services are reached after P5-7f2. `LargeTypes.txt` keeps its line (1,719 to 1,191) until then.
+- **The cuts.** `ApplyDamageDealtEffects` keeps its text except the three calls (`ApplyDamageDealtTracking`, then `ApplyDamageDealtHPPercentRestore` and
+  `ApplyPhysicalDamageDealtHPPercentRestore` in the place of the two blocks); it keeps the line `var appliesDirectDamageEffects = ...` because the gates after the tracking read it, and the new
+  tracking member declares its own copy. `ApplyTriggeredDamage` calls `ApplyDamageDealtTracking(activator, target, damage, skillType, damageType, Triggered, false)` where it called
+  `ApplyDamageDealtEffects(..., Triggered)`. `ApplyTriggeredDamage` no longer reaches the stay-part, so the static call cycle is gone and the stay-part calls the triggered part through its interface
+  (4 sites: the cycle damage, the source status cycle damage and the splash). The `Lazy<ICombatDamageTakenService>` was already plain (P5-7e2).
+- **Ports.** `IBeastDamageRecording` (`RecordBeastDamage`, one member, in `Domain/Combat`) is the base of `ICapstoneProofService`, which drops its own declaration, and the container registers it as the
+  same instance (`CapstoneProofService.cs` needed no edit); `IPartyRoster` replaces `IPartyService` in the stay-part (its one read is `GetAllPartyMembersWithinRange`). The two upward edges leave:
+  `UpwardEdges.txt` loses `CombatHitEffectsService.cs` -> Quests 3 and -> Social 3, and `CrossDomainEdges.txt` loses `Combat -> Quests` (`DomainCycles.txt` loses `Combat <-> Quests`).
+- **Handlers and state:** none move (no handler, no `[ReloadState]` field, no classification line), so the hot reload check was not run. `ConvertedServices.json` lists the two parts (29 parts);
+  `RemovedFacades.json` re-points `ApplyTriggeredDamage` to the new owner `CombatTriggeredDamage`; the dealt part has no external caller.
+- **Departures from the map.**
+  - `CombatAbilityImpactService` goes from 17 to 18 services: it keeps the stay-part (`ApplySourceStatusStackEffects`, `SpreadPoisonFromTarget`) and gains the triggered part for its five
+    `ApplyTriggeredDamage` calls. The map's holder table does not list it; P5-7h1 and P5-7h2 take it to 10.
+  - `CombatDamageReflectionService`, `CombatDamageTakenEffectsService` and `CombatGuardRetaliationService` swap the stay-part for the triggered part (no change in count).
+  - The map counts about 510 moved lines; 487 lines of bodies move (471 in the dealt part, 16 in the wrapper), 52 more are the three new members and their documentation.
+  - `CapstoneProofService.cs` is not edited (the interface carries the port). `PlayerMessageAudit.json` is left for the owner (agent rules): the two rows keyed by `CombatHitEffectsService.cs` change only
+    in `Line`, `ApplyCriticalHitEffects` "Weak Points" 899 to 511 and `ApplyNonCriticalAbilityEffects` "Next ranged ability" 1104 to 716; `MessageInventory_CoversEveryRuntimeCallSite` passes with the old lines
+    (it keys by file and member), and `ExportPlayerMessageAudit.ps1` would move the two `Line` values.
+- **Call sites** by hand with a literal receiver rewrite: `ShieldBashAbilityDefinition` and `BlazingSpikesStatusEffect` (`GameServices.CombatTriggeredDamage`), two engine test files, four source-reading
+  tests, and the constructors of the impact, reflection, damage taken effects and guard retaliation parts. Registrations and `GameServices.Combat.cs` for the two parts and the port.
+- **Tests.** `CombatHitEffectsServiceTests` splits into `CombatHitEffectsTestBase` (the shared bench, builds the dealt and triggered parts for real over the same scripted leaves) and three classes: the
+  stay-part (43 test methods), `CombatDealtEffectsServiceTests` (14 moved, 2 new) and `CombatTriggeredDamageServiceTests` (5 moved, 1 new). All 61 old test names are kept. New tests: the tracking for a direct,
+  triggered and self hit; the two HP restores; and `ATriggeredHitRunsExactlyTheTrackingTheDealtEffectsRanForItBeforeTheCut` (the triggered path's log tail equals what `ApplyDamageDealtEffects` logged for the
+  triggered delivery), plus the container test for the parts and the port. `TestHitEffects` loses the damage taken override (it moves to `TestTriggeredDamage`); `TestGuardRetaliation`, the impact and damage taken
+  benches script `ICombatTriggeredDamageService`. `CombatPartForwardingTests` lists the two interfaces (and the `ApplyTriggeredDamage` defaults on the triggered one), `CombatFacadeAllocationTests` re-points the
+  triggered reads (no pinned byte count changed), `WeaponAbilityTraceBench.Leaves` gains `ICombatTriggeredDamageService` and the weapon ability call trace is unchanged (no label changed), the hit transcript calls the
+  triggered part and its fixture is unchanged (the bench gains an `IPartyRoster` leaf labelled `Party`). Source readers needed four needles (`CrossSkillPerkInteractionSafetyTests` 3, `CombatDamageTests` 1).
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored) of the 79 members of the old class at `199fbab08` (methods, fields and the nested type) against the head:
+    **75 identical, 3 different, 1 missing** (the `_capstoneProof` field, which the stay-part no longer holds). Identical: the 16 moved methods and the proc table field (dealt part), the damage taken wrapper (triggered part), and every member that stays. Different: `_party` (the type is
+    `IPartyRoster`), and the two cut members, shown statement by statement below.
+  - *`ApplyDamageDealtEffects`:* its 29 top-level statements. The head's statements, with each of the three calls replaced by the statements of the member (the tracking member without its first statement, which repeats the
+    local the orchestrator keeps; the second restore block with its `var hpRestorePercent` read as the original's assignment), are 29 and **all 29 are identical, in the same order** to the base's.
+  - *`ApplyTriggeredDamage`:* 14 statements, 13 identical, 1 different: statement 12, `ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, Triggered)` becomes `ApplyDamageDealtTracking(..., Triggered, false)`.
+    For that call the base ran: `damage > 0` holds (checked at the top of `ApplyTriggeredDamage`), `appliesDirectDamageEffects` is false, so the beast record and the paired record are skipped, `TrackCombatActivity` and
+    `TrackRecentDamageTarget` run, and `if (!appliesDirectDamageEffects) return`. The tracking member runs the same four statements for that delivery. The test above and the transcript step "triggered damage" (stats 0 and 5)
+    pin it.
+  - *Unit tests* (`SWLOR.Game.Server.Tests`, one filter on `Combat`, `HitEffects`, `TriggeredDamage`, `DamageTaken`, `CapstoneProof`, `Beast`, `Party`, `Ability`, `CallTrace`, `Handler`, `PlayerMessageAudit`,
+    `ConvertedServiceContainer`, `LazyDependencyCycle`, `ClockSeam`, `ScriptHandlerOrder`, `Reload` and `Classification`, with nine hak folders copied read-only from the main checkout, which are not the pin's): 4,859 tests,
+    4,856 pass, 2 fail, 1 skipped. One failure was a source reader of this item (`DamageDealtForceErosion_OnlyAppliesFromDirectDamage`, a needle for the triggered call), fixed and rerun (`CombatDamageTests` 95 of 95);
+    the other, `EveryActiveAbilityRank_BindsItsDeclaredImpactEffect`, needs the compiled model `vx_callbeast` that the copied folders lack. Unfiltered, once, at the head: 20,027 tests, 19,956 pass, 69 fail, 2 skipped (20 minutes). Every failure is a test that reads hak or Module data this checkout lacks (the submodule is empty apart from the nine copied folders): 30 `DirectoryNotFoundException` under `SWLOR_Haks`, 13 walkmesh `.pwk` scans, missing models, sounds, textures and `hakbuilder.json`, plus four that read content: `EveryActiveAbilityRank_BindsItsDeclaredImpactEffect` (model `vx_callbeast`), `ActionArtwork_CoversAllModuleDefinitionsAndAgreesWithInventoryRoles`, `EshanBlueprints_AreDiscoverableInTheirToolsetPalettes("uti","itempalcus")` (`esh_captain_o`) and `KillRewards_FollowExistingBountyRatesRatherThanIntroducingAHigherTier` (12 quests expected, 32 found). Those four were rerun in the base worktree and fail there too. No failure names a hit effects, triggered damage, damage taken, capstone proof, party, beast or message test; `PlayerMessageAudit` passes.
+  - *CombatSim:* `team-fight`, `twin-pistol-barrage`, `twin-pistol-crossfire` and `solo-boss` (seed 1, 50 runs, Markdown and JSON) and the ability table (`abilities`), built at the base and at the head: all nine files are
+    byte-identical. `SWLOR.CombatSim.Tests`: 895 of 895 pass at the base and at the head.
+  - *Architecture:* `SWLOR.Architecture.Tests` 297 tests; six baseline tests failed before the regeneration (`LargeTypes`, `ServicesPerType`, `LogicToContent`, `DomainCycles`, `UpwardEdges`, and
+    `No_new_cross_domain_dependency_and_none_has_disappeared`) and all pass after it. *Baselines changed:* `LargeTypes.txt` (`CombatHitEffectsService` 1,719 to 1,191; `CombatAbilityImpactService` 1,723 to 1,726),
+    `ServicesPerType.txt` (`CombatHitEffectsService` 21 to 17, `CombatAbilityImpactService` 17 to 18), `LogicToContent.txt` (110 to 111 lines: the stay-part 17 to 12 `StatusEffectDefinition` names, the dealt part 10),
+    `UpwardEdges.txt` (the two lines above), `DomainCycles.txt` (`Combat <-> Quests`), `CrossDomainEdges.txt` (the `Combat -> Quests` edge only), `DebtReport.md`. `EdgesIntoCoreAndPlatform.txt` and the member counts of
+    `CrossDomainEdges.txt` moved by counts only and were reverted.
+  - *Engine tests* at `199fbab08` and at the head, host entry, filter `Characterization|CombatPerkRegression|PerkTracker|TwinPistol|DualWield|UnarmedMastery|SaberWard|Capstone|Splash`: 196 tests each. No characterization snapshot was written on either side. Base: 194 pass, 2 fail (`Any owned beast can prove all six Beast Mastery lines` and `Capstone adept spawn points are nearer the entrance than specialist and inner circle spawn points`). Head: 194 pass, 2 fail (the capstone test and `Twin Pistol companion queued hit keeps the main gun profile and original skill credit`, a shot-charge assertion). Two per-test outcomes differed in that pair, so those two and the capstone test were rerun alone at each side with the machine otherwise idle: the beast and the Twin Pistol tests pass on both sides, and the capstone test fails on both (module spawn data: `pw_sc_emfbackr` adept point 135 m from the entrance against 94 m for the specialist point, no combat code). With the load off, every per-test outcome is identical. The reports are in the evidence folder (`engine-{base,head}-results.json`, `engine3-{base,head}-results.json`).
+  - *Client evidence* (the map said none; taken as the brief asked): one NWN client, the same module, haks, build flags, character (`agantarn.bic`) and command file at the base and the head, in `veles_sewers` at
+    `SEWERS_GATE` after a jump from the entry area, a Training Katar equipped, the player immortal, three frozen Bandits (`nw_bandit001`) with temporary hit points beside the player. A temporary driver built outside the
+    repository (`CustomAfterMicrosoftCommonTargets`; a `P57F1HEAD` constant selects the triggered damage entry) gave temporary stats and ran: seeded direct `ApplyDamageDealtEffects` runs (stamina restore, attack delay
+    reduction, hamstring and force erosion, the next-damage bleed and the bleeding-target stamina restore, Predator's Mark and its follow-ups, Toxic Rush against a poisoned target), four `ApplyTriggeredDamage` calls (Physical,
+    Force, Fire, Poison), and two live auto-attack runs of 20 s with every stat set (the second with the player wounded, so the HP restores show). Every status effect list, every stat read and every returned damage is
+    identical between the two sides (the triggered returns are 30, 30, 30 and 45 on both, and the Predator's Mark follow-up haste reads 3, 6 and 9). The numbers of the player's HP, FP and stamina and of the target's hit
+    points differ by one heartbeat regeneration tick and by the bleed and poison ticks (for example `restore_after_1` reads HP 95 and 111). In the live runs the chat shows the same kinds on both sides: "Restored N STM",
+    "Healed N hit points", "Force Erosion" and "Bleed" applied, Predator's Mark, temporary hit point absorption and the damage lines; the counts differ by the dice (Physical damage lines 14 and 12, poison 9 and 6, one
+    critical line only at the base, two worn-off lines only at the base because that capture ran 3 s longer). **The auto-attack splash was not seen in the live runs on either side** (no `AutoAttackSplashDamage`
+    triggered line stands apart from the bleed ticks); the temporary stat group for the splash was set, the cause was not isolated, and it is unverified in the client. The engine tests of the `Splash` category and the
+    triggered damage transcript cover it. The player's own damage taken is not exercised. Screenshots (`live-6s.png`, `live2-7s.png`), the raw and normalized chat and the driver lines are in
+    `C:/Temp/mr-p5-7f1/evidence/{base,head}/` (kept outside the repository).
+  - *Not run:* the `-Check` scripts (content, facade, clock), `ExportPlayerMessageAudit.ps1` and the hot reload check (no handler or `[ReloadState]` field moved).
+
+### P5-7i2 as built (2026-11-24)
+
+Branch `claude/mr-p5-7i2`, base `b7313553f` (the P5-7i1 record).
+
+- **`CombatAbilityOffenseEffectsService`** (`ICombatAbilityOffenseEffectsService`, 296 lines, 7 services: queries, resources, damageTakenEffects, stat, statusEffect,
+  statusEffectApplication, temporaryStatModifier): 9 methods, verbatim. The seven steps the orchestrator calls are public: `ApplyAbilityUsedMovementSpeed`,
+  `ApplyAreaAbilityUsedRewards`, `ApplyHostileAbilityForceAttack`, `ApplyHostileAbilityFPSpendForceAttack`, `ApplyHostileAbilityUsedAttackAdjustment`,
+  `ApplyHostileAbilitySequenceEffects` and `ApplyHostileAbilityResourceRestoreEffects`. `ApplyNextAutoAttackDamageBonus` is public too (the weapon part calls it) and so is
+  `ForgetActivationState`. The hostile ability sequence table (`_hostileAbilitySequenceStates` and its record class) moves with it under the same field name; it reads the clock, so it
+  takes the `ClockSeamFiles.txt` line the stay-part had.
+- **`CombatAbilityWeaponActivationService`** (`ICombatAbilityWeaponActivationService`, 348 lines, 9 services: queries, resources, attackTiming, stat,
+  statusEffectApplication, temporaryStatModifier, enmity, combatRecorder, offenseEffects): 11 methods, verbatim. `ApplyAbilityActivatedRiders` is the one public member; the Heavy
+  Vibroblade, Guardian's Resolve, Beast balanced recovery, Vibroknife Shadow, Pistol Skirmisher and the three Lightsaber members (offense, defense, ward) stay
+  private. It holds no state and reads no clock.
+- **`CombatAbilityActivationService`** (stay, 103 lines, 675 before; **7 services**, 14 before: queries, combatActivity, impactState and the cost, defense, offense and weapon parts):
+  `ApplyAbilityActivatedEffects` keeps its 24 steps in the original order and now calls all of them on the parts (5 cost, 11 defense, 7 offense, 1 weapon); `TrackQueuedWeaponAbilityUse`
+  and `ResolveActivatedAbilitySkillType` stay. `ServicesPerType.txt` loses its line.
+- **Cleanup order.** `ForgetActivationState` is combat state that `CombatService.RemoveStatTriggerCooldowns` clears fifth, after the suppression forget. `CombatService` takes
+  `ICombatAbilityOffenseEffectsService` in the parameter that held the activation part (the activation part had no other use there, so its 12 services do not change) and the call
+  stays in the same place; the clear order is unchanged. `CombatCleanupOrderTests` decorates and reads the table on the offense part (tables are found by field name), and
+  `CleanupOrder.txt` changes in three lines, the label `Activation.ForgetActivationState` to `OffenseEffects.ForgetActivationState`; every table dump and the order are identical.
+  `ICombatAbilityActivationService` loses `ForgetActivationState`. No `[ReloadState]` field, carried key or handler is in either part (the table was unmarked in the stay-part too),
+  so `ScriptHandlerOrder.txt`, `HandlerRenames.txt`, `BootHandlerClassification.txt`, `PlayerSessionClassification.txt` and the reload files do not change and the hot reload check was not run.
+- **Departures from the map.** The map's "2 sites" are `CombatService` and the tests (`UsePerkFeat` and the engine tests call the orchestrator, which stays). `RemovedFacades.json`
+  does not change: none of the moved members was on the removed facade. `ConvertedServices.json` lists 26 parts. No holder grows and no baseline line is added.
+- **Tests.** `CombatAbilityActivationServiceTests` splits further: the shared bench `CombatAbilityActivationTestBase` builds the offense and weapon parts as real parts from the same
+  scripted leaves, and the classes are the stay-part (6 test methods), `CombatAbilityOffenseEffectsServiceTests` (11) and `CombatAbilityWeaponActivationServiceTests` (11). All 26 old test
+  names are kept; each new part adds one construction test (container instance, injected parts, no static state; the offense part's only state is the sequence table). `Private` also finds
+  public members. Both new interfaces are in `CombatPartForwardingTests.Parts()` and `WeaponAbilityTraceBench.Leaves`; `WeaponAbilityCallTrace.txt.gz` regenerated with
+  `SWLOR_UPDATE_SNAPSHOTS=1` is byte-identical (no label of a moved member appears in it). `CombatCleanupOrderTests`, `CombatServiceTests`, `CombatAbilityTranscriptTests`,
+  `CombatFacadeAllocationTests` (every pinned byte count unchanged) and `CombatSourceTests` call the offense part for the forget. `CrossSkillPerkInteractionSafetyTests` searches `static void
+  ApplyHostileAbilityResourceRestoreEffects(` (the step is public now). `ConvertedServiceContainerTests` and `ConvertedServicesTests` list 26 parts.
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored) of every member of the old class at `b7313553f` against the three classes: 40 members (23
+    methods, the sequence record class, 15 fields, the constructor), 39 identical, 1 different, 0 missing. The one difference is the constructor (its parameters, by design).
+  - *Unit tests:* `SWLOR.Game.Server.Tests`, one filter on `Combat`, `AbilityActivation`, `Ability`, `Evasion`, `Deflection`, `CallTrace`, `Handler`, `PlayerMessageAudit`,
+    `ConvertedServiceContainer`, `ScriptHandlerOrder` and `Reflection`: 4,330 tests, 4,323 pass, 1 skipped, and 6 failed only because the hak data they read (`sw_2da`, `sw_t_office`) was copied after the
+    run started; the 6 pass with it. A second run of the source readers and guards (`CrossSkillPerk`, `GeneratedWeaponPerk`, `ForceSensitiveEspionage`, `LeadershipOffensive`, `ClockSeam`,
+    `LazyDependency`, `ConvertedService`, `BootHandler`, `PlayerSession`, `ParityHandler`, `ReloadState`, `ReloadCarry`, `ReloadDigest`): 943 tests, 1 failed (the `CrossSkillPerkInteractionSafetyTests`
+    reader above, fixed) and the rest pass. The unfiltered run of the whole project: 20,011 tests, 19,994 pass, 2 skipped, 15 failed. Seven of the failures
+    (`EveryCatalogArmorPartHasAModelOnEveryPlayableBody`, `EveryPackedTintMaskDeclaresItsFullAti2MipChain`, `RodianMusicianPartsBindTheConvertedHumanFallbackMaterials`,
+    `BeaconShotSounds_ExistInDeployedSoundResources`, `OriginalItemArtwork_IsCompleteUniqueAndUsesGameTgaLayout`, `ActionArtwork_CoversAllModuleDefinitionsAndAgreesWithInventoryRoles`,
+    `EveryShipSound_HasItsSoundFile`) read hak folders that were not in the set copied for the run (`hakbuilder.json`, `sw_tint1`, `sw_tint2`, `sw_sound` and the icon source folders) and pass once
+    those are copied (8 test cases, 0 failures). The other 8 are the 8 that also fail at P5-7i1 with the copied hak data, and none touches the moved code: `EshanBlueprints_AreDiscoverableInTheirToolsetPalettes("uti","itempalcus")`
+    (`esh_captain_o` is not in the palette), `KillRewards_FollowExistingBountyRatesRatherThanIntroducingAHigherTier` (12 quests expected, 32 found), `EveryTileModelShipsAWalkmesh("sw_t_duct","nac01")`, three
+    `LargeBodyRobeModelsRemainAvailable` cases (fewer than 1,241 phenotype-22 robe models in this hak set) and two `SeatsOpeningTowardModelPlusY_SeatSittersFacingTheSeatFront` cases (no use node in the
+    walkmesh). The Eshan and KillRewards tests were also run at `b7313553f` in a scratch worktree and fail there with the same messages. The hak folders were copied read-only from the main checkout (a different,
+    newer haks commit than the pin) and removed after the run.
+  - *Architecture:* `SWLOR.Architecture.Tests`: 297 tests; `ServicesPerType`, `LogicToContent` and `UpwardEdges` failed before the regeneration with `SWLOR_UPDATE_SNAPSHOTS=1` and every test passes after it.
+    Baselines changed: `ServicesPerType.txt` (the stay-part's line leaves: 14 to 7; the new parts are at 7 and 9), `LogicToContent.txt` (110 to 111 lines: the stay-part's `Feature/AbilityDefinition` 1 and
+    `Feature/StatusEffectDefinition` 5 leave; the offense part `Feature/StatusEffectDefinition` 2, the weapon part `Feature/AbilityDefinition` 1 and `Feature/StatusEffectDefinition` 3), `UpwardEdges.txt` (the
+    `Combat -> Abilities` edge of the stay-part is now the offense part's) and `DebtReport.md` (17 to 16 types over 10 services, 110 to 111 content lines, and the tables that list them).
+    `LargeTypes.txt` does not change (no type is over 1,000 lines). The regeneration also rewrote member counts in `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` (every changed line is an unchanged edge
+    with a new count); both are reverted, and the two `DebtReport.md` member figures that come from them are kept at the committed values.
+  - *Engine tests:* host entry, filter `Characterization|CombatPerkRegression|PerkTracker|RifleIdleReadiness|AbilityAttackResume|ReviveRules|SaberWard|StealthRetarget|Deflection|Evasion|HitPoint|Stance|UnarmedMastery|DualWield|Reflection|TwinPistol|activation`
+    plus the ability behavior tests of the families the parts drive (`Heavy Vibroblade`, `Vibroknife`, `Pistol`, `Lightsaber` and `Beastmaster ability behaviors`), at `b7313553f` and at the head, with a scratch server
+    home each, the two runs side by side: 253 tests each, 249 with identical outcomes and 4 different, all Twin Pistol timing tests (`Twin Pistol physical and elemental native immunity mitigate each hand once`
+    and `Focused Burst shares direct-damage and ability-hit proc limits across all six impacts` failed at the base only; `Twin Pistol stance damage costs and Haste reach native saber and rifle attacks without paired
+    handling` and `Focused Burst channels three paired volleys and pauses ordinary attacks` failed at the head only). The four were rerun alone on each side, alternating base and head with one stack of mine at a time (other sessions' engine and live stacks were up during every run; each run's `docker ps` is kept): `Focused Burst channels three paired volleys and pauses ordinary attacks`, 6 runs a side: 0 of 6 pass at the base and 0 of 6 at the head. Every failure is the same assertion family, a late first wave: the waves land at about 610-630 and 1210-1370 ms after the press on both sides, and the first lands at 310 to 840 ms instead of about 60 (head 510, 460, 550, 310, 420, 320; base 390, 510, 440, 840, 750, 340), so either the 500 ms limit on the first wave or the 400 ms gap to the second fails (the head fails the gap 4 times and the limit 2; the base the gap 3 times and the limit 3). The other three, 2 runs a side: the immunity and stance tests pass 2 of 2 on both sides; `Focused Burst shares direct-damage and ability-hit proc limits across all six impacts` fails 2 of 2 on both sides with the same late first wave (head 240, 220 ms; base 240, 440 ms). Head and base behave the same on all four tests, and the earlier split came from machine load moving the first wave across the thresholds; no activation step or rider that moved is involved, so no code changed. The wave offsets come from a scratch edit of the test's assertion messages, applied identically to both scratch worktrees and not committed. Every Ability behavior, Characterization, perk regression, stance and weapon family test passes on both sides. No characterization snapshot was written on either side (both scratch
+    worktrees are clean). The hot reload check was not run (no handler or reload state moved). The first full-run engine JSON reports were deleted by a cleanup mistake and are not kept (the outcomes above are quoted from them); the reruns and the token comparison (`tokcmp.txt`) are in `C:/Temp/mr-p5-7i2/evidence/proof/`.
+  - *Client evidence:* one NWN client, the same module (`Star Wars LOR v2.mod` of the main checkout's deploy home), haks, build flags, character (Agan Tarn) and driver steps at the base (a Release build of
+    `b7313553f`) and the head (`17dc9c8dd`), in `veles_sewers` at `SEWERS_GATE` after a jump, with the player set plot and two spawned Bandits (`nw_bandit001`) held still and immortal. A temporary driver built outside the repository
+    (`CustomAfterMicrosoftCommonTargets`; one source for both sides; it calls only the orchestrator `ApplyAbilityActivatedEffects` through `GameServices.CombatAbilityActivation`, the entry `UsePerkFeat` calls) sets the stats the
+    perks set (temporary stat modifiers for 90 s) on made-up abilities of the skill under test, runs the activation and reads the stats, resources and status effects back into the chat one second later. 12 steps, 28 readouts each:
+    movement speed (0 to 25), area ability rewards (FP 13 to 28; the deflection grant is not covered, because a temporary modifier is not a stat source), hostile Force Attack stacks (15, 30, then 40 at the cap with the FP spend rider),
+    the attack adjustment with Butcher's Tempo (4, 8), hostile FP and stamina restore (13 to 19 FP, 0 to 6 stamina), the ability sequence (the bleed arms only when a different ability follows inside the window: 0, 0, 6),
+    Heavy Vibroblade (next auto-attack bonus 0 to 7 and Guardian's Resolve), Beast balanced recovery (stamina 0 to 10), Vibroknife Shadow (evasion 0 to 20 and Evasive Combat), Pistol Skirmisher (evasion 0 to 15) and the Lightsaber
+    riders (Centering, the ward defenses 10 and 8, second wind stamina). 26 of the 28 readouts are identical on both sides. The two that differ (`rs_after` and `bb_after`) read stamina 8 and 12 at the base against 6 and 10 at the head: a stamina regeneration tick of 2 inside the one-second window, on top of the same restore (6 and 10), which both sides apply. The Lightsaber step run four more times on each side reads stamina 3 every time on both. The capture was run three times (the first two sets of files were lost to a cleanup mistake); the earlier pairs differed only in the same kind of regeneration tick and in a Guardian's Resolve of the previous step that had not yet worn off. The evidence kept is the third pair of runs. The chat lines match by kind apart from the dice and login noise (the random player name, the loading-screen tips, the reboot notice, the Centering expiry); the screenshots show the same effect icons (two
+    after the Heavy Vibroblade step: Guardian's Resolve and its temporary hit points). Not covered: the area deflection grant (it needs a stat source; the unit test covers it) and the Lightsaber defense step (it needs a nearby ally).
+    The driver source, the commands, the readouts, the normalized chat and the screenshots are in `C:/Temp/mr-p5-7i2/evidence/{base,head,driver}/` (kept outside the repository).
+  - *Not run:* the `-Check` scripts (content, facade, clock) and `ExportPlayerMessageAudit.ps1 -Check`, which the agent rules leave to the owner; `CombatSim` (this change touches no rule); the hot reload check.
+    `PlayerMessageAudit.json` has no row for the activation files and the moved code sends no player message, so it is unchanged.
+
+### P5-7g as built (2026-11-24)
+
+Branch `claude/mr-p5-7g`, base `ab3e43129` (the P5-8g record).
+
+- **`CombatQueuedAbilityBonusService`** (`ICombatQueuedAbilityBonusService`, 525 lines, **6 services**: queries, combatActivity, stat, statusEffect, temporaryStatModifier and
+  the stay-part `ICombatAbilityBonusService`): 19 methods, verbatim (17 public, 2 private helpers): `PrepareOpeningAutoAttack`, `PrepareQueuedWeaponAbilityOpeningAttackAtActivation`,
+  `ConsumeOpeningAutoAttackCriticalDamageAdjustment`, `ClearOpeningAutoAttackModifiers`, `StoreQueuedWeaponAbilityCriticalRateBonus` and
+  `StoreQueuedWeaponAbilityActivationCriticalRateBonus` with their two private store helpers, `StoreQueuedWeaponAbilityActivationIdleBonuses`, `StoreWeaponAbilityActivationIdleBonuses`,
+  `HasWeaponAbilityActivationIdleSnapshot`, the three `GetWeaponAbilityActivationIdle*` reads, `ClearWeaponAbilityActivationIdleBonuses`,
+  `GetQueuedWeaponAbilityActivationHitChanceAdjustment`, `ClearQueuedWeaponAbilityActivationBonuses`, `ConsumeQueuedWeaponAbilityBonuses` and `ClearQueuedWeaponAbilityAttemptBonuses`.
+  It calls `GetAbilityStatusCategoryHitChancePercentAdjustment` on the stay-part (already public), so nothing is promoted there. It reads the clock (`PrepareOpeningAutoAttack`), so
+  `ClockSeamFiles.txt` names it instead of the stay-part, which reads none.
+- **`CombatAbilityHitAdjustmentService`** (`ICombatAbilityHitAdjustmentService`, 225 lines, **8 services**: queries, resources, suppression, damageModifiers, rateModifiers, stat, statusEffect,
+  temporaryStatModifier): 7 methods, verbatim: `CalculateAbilityCriticalRating`, `GetAbilityCriticalRate`, `GetAbilityHitOrCriticalAdjustment`, `ApplyRangedAbilityTargetDefenseReduction`,
+  `GetHitChanceAgainstSunderedTargetAdjustment`, `GetCriticalRateAgainstSunderedTargetAdjustment` and `ApplyForceAbilityEvadedEffects`. The stay-part's `TryResolveAbilityHit` calls two of them, so
+  `GetAbilityHitOrCriticalAdjustment` and `ApplyForceAbilityEvadedEffects` are promoted from private to public and join the new interface (the map's promotion goes the other way: the stay-part
+  calls the new part, never the reverse).
+- **`CombatAbilityBonusService`** (stay, 576 lines, 1,061 before; **9 services**, unchanged) and **`CombatAbilityHitService`** (stay, 184 lines, 370 before; **10 services**: its nine own plus the
+  adjustment part; 13 before). `LargeTypes.txt` loses the bonus service (15 to 14 types over 1,000 lines). The two interfaces and class summaries are re-pointed.
+- **Handlers and state:** none move (`ScriptHandlerOrder.txt`, `HandlerRenames.txt`, the classification files and `ReloadAdoption.txt` are unchanged, no `[ReloadState]` field). `RemovedFacades.json`:
+  the 17 queued members re-point to `CombatQueuedAbilityBonus`, the 5 public hit members to `CombatAbilityHitAdjustment`. `ConvertedServices.json` lists them (29 parts).
+- **Departures from the map.**
+  - The adjustment part has 8 services, not 7: `ApplyForceAbilityEvadedEffects` reads the resources part (`TryUseStatTrigger`, `RestoreStaminaFromStat`) and nothing else in the part does.
+    The hit stay-part has 10, not 9, for the same count the other way (the map's 9 left out the new part it now holds).
+  - `AbilityImpactLifecycleService` goes from 10 to **11** services: it reads `ConsumeQueuedWeaponAbilityBonuses` (queued part) and six next-ability members (stay-part). The map's holder table says it
+    reaches one part. A new breach in `ServicesPerType.txt`; P5-16 removes it (as for `AbilityDamageStageService` in P5-7e1).
+  - `Native.AttackRollCritical` and `Native.DamageRollCreature` are new lines in `ServicesPerType.txt` at 11 (lookup): each named the bonus part once and now names the stay-part, the queued part and the hit
+    adjustment part. P5-16b (hook logic out of the native sinks) removes them. `Feature.UsePerkFeat` goes from 32 to 33 lookups (the map says 5 to 7 combat services for it; this item adds the queued part).
+  - The holders that read only moved members change type and keep their count: `AbilityDamageStageService` 11, `CombatHitEffectsService`, `WeaponAbilityActivations`, `WeaponAbilityDamageModifiers`,
+    `WeaponAbilityImpacts`; `CharacterSheetAccuracyRows` swaps the hit service for the adjustment part (4). The map counted 16 sites for `WeaponActiveAbilityDefinitionBase`; they are the 15 in
+    `WeaponAbilityDamageModifiers` and the one in `WeaponAbilityActivations` (the base's parts), rewritten by a literal receiver edit.
+  - `PlayerMessageAudit.json` needs no change: no moved line is a player message (`PlayerMessageAuditTests` pass).
+- **Call sites** by a literal receiver rewrite (`CombatAbilityBonus.X` to `CombatQueuedAbilityBonus.X`, `CombatAbilityHit.X` to `CombatAbilityHitAdjustment.X`) and constructor edits: 25 content sites
+  (`UsePerkFeat` 6, `WeaponAbilityDamageModifiers` 15, `WeaponAbilityActivations` 1, `WeaponAbilityImpacts` 2, `CharacterSheetAccuracyRows` 1), 7 native (`AttackRollAccuracy`, `AttackRollCritical`,
+  `AttackRollSettlement`, `DamageRollCreature`), 2 domain (`AbilityDamageStageService`, `CombatHitEffectsService`), `AbilityImpactLifecycleService`, 14 engine test and 37 unit test sites.
+  Registrations and `GameServices.Combat.cs` for the two parts.
+- **Tests.** `CombatAbilityBonusServiceTests` splits into `CombatAbilityBonusTestBase` (the shared bench, 139 lines) with `CombatAbilityBonusServiceTests` (16 test methods) and
+  `CombatQueuedAbilityBonusServiceTests` (13); `CombatAbilityHitServiceTests` splits into `CombatAbilityHitTestBase` (206 lines) with `CombatAbilityHitServiceTests` (7) and
+  `CombatAbilityHitAdjustmentServiceTests` (8, one of them new: the container builds the adjustment part). All 43 old test names are kept (29 + 14). Source readers changed by needle only:
+  `CombatDamageTests`, `GeneratedWeaponPerkBehaviorTests`, `WeaponAbilityActivationsTests` (the new receiver text), `SkillSelectorStackingTests` and `TriggeredResourceRestoreGateTests`
+  (`GetAbilityHitOrCriticalAdjustment` and `ApplyForceAbilityEvadedEffects` are now `public static` after `CombatSource`'s normalisation). `ConvertedServiceContainerTests` counts 29 parts
+  (`Combat_lists_its_twenty_nine_parts...`). `CombatPartForwardingTests` lists the two interfaces and re-points the moved defaults (the hit list is 9 members: the promoted
+  `GetAbilityHitOrCriticalAdjustment` has a default); `CombatFacadeAllocationTests` re-points the part side (no pinned byte count changed); `WeaponAbilityTraceBench.Leaves` gains the two
+  interfaces; the ability transcript calls the new parts and its fixture is unchanged.
+- **Weapon ability call trace.** Regenerated (`SWLOR_UPDATE_SNAPSHOTS=1`): 15,066 of its 133,544 lines change and every one is a receiver label (`AbilityBonus.` to `QueuedAbilityBonus.`, `AbilityHit.` to
+  `AbilityHitAdjustment.`): the head file with the two labels mapped back is byte-identical to the base file (both in the evidence folder).
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, field receivers and the namespace ignored) of every method of the two old classes at `ab3e43129` against the four classes at the head: 64 methods,
+    64 identical, 0 different, 0 missing (26 moved: 19 to the queued part, 7 to the adjustment part; 38 stay). Output in the evidence folder (`token-compare.txt`).
+  - *Unit tests* (`SWLOR.Game.Server.Tests`), after the hak folders the tests read were copied read-only from the main checkout (nine folders: `sw_2da`, `sw_tlk`, `sw_ability`, `sw_shader`, `sw_ui`,
+    `sw_tint_mtr`, `sw_item`, `sw_weapon`, `sw_t_office`; the main checkout's haks are not the pin's): one filter on `Combat`, `AbilityBonus`, `AbilityHit`, `QueuedAbility`, `OpeningAttack`, `Critical`, `Ability`,
+    `WeaponAbility`, `CallTrace`, `Handler`, `PlayerMessageAudit`, `ConvertedServiceContainer`, `CrossSkillPerk`, `GeneratedWeaponPerk`, `SkillSelector` and `TriggeredResource` found 65 failures of 4,349
+    before the needle fixes above and the hak data (4,283 pass, 1 skipped); the 45 distinct failing tests rerun after the fixes pass except `EveryActiveAbilityRank_BindsItsDeclaredImpactEffect` (needs the `vx_callbeast`
+    model, not in the nine folders; fails at the base too). The unfiltered run: 20,036 tests, 19,964 pass, 70 fail, 2 skipped. 69 failures need hak or Module data the checkout lacks (walkmesh, models, textures,
+    sounds, icon sources) and fail identically at `ab3e43129` (same nine folders, a scratch worktree). The 70th, `TheReadsThatBuildAnNpcsStatsAllocateTheSameThroughTheFacadeAsTheInstance`, is a 32-byte allocation
+    difference in `StatFacadeAllocationTests`, a Stat class this item does not touch: run alone, a different member of that class fails on every run at the head and at the base (`TheCreatureStatReadsAllocateNothing`,
+    `TheHealingAdjustmentsAllocateNothing`), so those tests are load and order sensitive. `SWLOR.Architecture.Tests`: 297 pass after the baselines below. The failure list is in the evidence folder.
+  - *Baselines changed:* `LargeTypes.txt` (`CombatAbilityBonusService` 1,061 leaves), `ServicesPerType.txt` (`CombatAbilityHitService` 13 leaves; new `AbilityImpactLifecycleService` 11, `Native.AttackRollCritical` 11,
+    `Native.DamageRollCreature` 11; `UsePerkFeat` 32 to 33), `LogicToContent.txt` (the bonus part and the adjustment part carry the `Feature/StatusEffectDefinition` lines of the members they took: bonus stay 7 to 6, queued
+    part 1, adjustment part 2 replacing the hit service's 2), `DebtReport.md`. `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` moved by member counts only (no edge appeared or went) and were reverted.
+  - *Engine tests* at `ab3e43129` and at the head, host entry, filter `Characterization|AbilityAttackResume|RifleIdleReadiness|CombatPerkRegression|TwinPistol|DualWield|ritical|SingleWeapon|DoubleWeapon|WeaponCrossSkill|WeaponOpeningBalance|WeaponAbilityDamageType|PairedRanged`:
+    199 tests each, one after the other on a busy machine, no characterization snapshot written. Head: 199 pass. Base: 198 pass and 1 fails, `Native stun interrupts Focused Burst before its remaining volleys` ("Timed
+    out waiting for the first paired volley before interruption"). Run alone it fails the same way at the base and at the head, so it is a timing failure of that test in a lone run that the full run's
+    warm state hides, not a difference (the head's full-run report was overwritten by the single-test rerun; the per-test PASS and FAIL lines of both full runs are kept, and they differ in that one test only). The
+    weapon-rotation balance category (480 s tests) was left out. No hot reload run: no handler or `[ReloadState]` field moved.
+  - *Client evidence:* one NWN client per side (a Release build of `ab3e43129` and of the head, `native` entry, the same module, haks, character and driver steps; `SWLOR_ENVIRONMENT=test`) in `veles_sewers` at
+    `SEWERS_GATE` after the first-login jump, a Training Katar equipped, the player plot-protected and immortal, frozen immortal Bandits with temporary hit points as targets. A temporary driver built outside the repository
+    (`CustomAfterMicrosoftCommonTargets`, one source for both sides with a `#if` for the receiver) ran five scenes: (1) *opening auto-attack*: the player's real native auto-attacks after 3 s idle with the Opening Auto-Attack
+    stats (damage +25, critical rate +100, critical damage +50): the first swing after each idle gap deals 30 against 4 to 6 for the others and "Opening Attack Ready" shows between the gaps, on both sides; (2) *sundered target*:
+    the player's stats give +40 hit chance and +100 critical rate against a Sundered target: the client shows "95% chance to hit" against the Sundered Bandit and "79%" against the plain one, the readouts
+    `GetHitChanceAgainstSunderedTargetAdjustment` 40 and 0 and `GetCriticalRateAgainstSunderedTargetAdjustment` 100 and 0 match, and the criticals on the Sundered target show the "Weak Points" rider (a further base pass
+    of the same build, `chat-sunder-second-pass.txt`, has the same swing order as the head's run and gives the same sequence and damage: 9, 14, 8, 12 on both sides; the kept base pass `chat.txt` had its first round start
+    late, so its seeded rolls fell on other swings and drew no critical on the Sundered target); (3) *queued weapon ability and idle activation bonus* (the rifle idle readiness path): a Bandit rifleman casts Aimed Shot twice at a frozen Rat
+    through the real feat pipeline with the ability hit forced and the seed fixed: 15 damage after a recent attack and 37 after idle on both sides, with the idle snapshot consumed; (4) *seeded direct runs* of the moved
+    members: stored queued bonuses consumed once (25/18/40 then 0/0/0, idle 13/17/19, snapshot cleared), `GetAbilityCriticalRate` 25 and 20 for an area ability for Katar, Rifle and Force and 14 of 40 seeded
+    `CalculateAbilityCriticalRating` criticals, the ranged defense reduction (-15 to -35) and a Force ability that misses (hit rate 75, the defender's Force defense -15 to 0 from the evaded-Force effect, no second grant
+    inside the cooldown): every readout is identical at the base and the head. The chat log is split by scene and compared by message kind (digits removed): DIRECT and OPEN identical in kinds and counts, SUNDER
+    the same kinds apart from the dice-dependent "Weak Points" lines (explained above), AIMED the same 15 kinds (the unfrozen rifleman's own attacks on the immortal player differ in count: 6 and 4). One readout of scene (3)
+    is left out: the opening readout after the second cast (12 or 0 next-swing damage) depends on whether the rifleman resumed auto-attacking inside the 3 s idle window and flips between runs of the same build (it read 12 or 0 on
+    both sides). The headless NPC rifleman and the direct runs stand in for a queued ability on a player character, whose perks the test character lacks. Screenshots, the normalized chat and the driver readouts
+    are in `C:/Temp/mr-p5-7g/evidence/{base,head}/` (kept outside the repository).
+  - *Not run:* the `-Check` scripts (content, facade, clock), `ExportPlayerMessageAudit.ps1`, `CombatSim` (this change touches no rule) and the hot reload check (no handler or `[ReloadState]` field moved).
+
+### P5-7f2 as built (2026-11-24)
+
+Branch `claude/mr-p5-7f2`, base `d76899ff0` (the P5-7f1 record).
+
+- **`CombatAutoAttackEffectsService`** (`ICombatAutoAttackEffectsService`, 280 lines, **9 services**: queries, resources, combatActivity, stat, statusEffect, statusEffectApplication, statusEffectDuration,
+  temporaryStatModifier and the stay-part `ICombatHitEffectsService`): the 8 members of the map's list, verbatim. Public on the interface: `ApplyAutoAttackDamageModifiers`,
+  `ConsumeSuppressedAutoAttackDamageBonuses`, `ApplySourceStatusStackEffects`; the other five stay private. The auto-attack riders end with the two cycle damage calls
+  (`ApplyAutoAttackCycleDamage`, `ApplySourceStatusAutoAttackCycleDamage`), which draw from the cycle tables the stay-part owns, so they are promoted to public on `ICombatHitEffectsService` and called
+  through it (the map's "Order" rule); that is the part's one text change (a receiver).
+- **`CombatCriticalHitEffectsService`** (`ICombatCriticalHitEffectsService`, 484 lines, **10 services**: queries, resources, attackTiming, abilityHit, stat, statusEffect, statusEffectApplication,
+  statusEffectDuration, temporaryStatModifier, impactState): `ApplyCriticalHitEffects`, `ApplyNonCriticalAbilityEffects`, the nine `ApplyCritical*`/single-target helpers, the nested
+  `CriticalHitSequenceState` and the `_criticalHitSequenceStates` table, verbatim. The part is at 10, which the limit allows, so the map's fallback (the timing part) is **not** taken. It reads the clock
+  (`ClockSeamFiles.txt` lists it). One new public member, `ForgetCriticalHitSequenceState`, is the table's clear (below).
+- **`CombatDefeatedEnemyEffectsService`** (`ICombatDefeatedEnemyEffectsService`, 255 lines, **9 services**: queries, resources, combatActivity, stat, statusEffect, statusEffectApplication,
+  temporaryStatModifier, combatRecorder, `IPartyRoster`): `ApplyDefeatedEnemyEffects`, `ApplyRecentDamagerDefeatedEnemyEffects`, `SpreadPoisonFromTarget` (public) and their six helpers, verbatim. It reads
+  the clock (`ClockSeamFiles.txt` lists it).
+- **`CombatHitEffectsService`** (stay, 308 lines, 1,191 before; **9 services**, 17 before): the direct-hit orchestrator (`ApplyDamageDealtEffects`, the splash), the three cycle tables and their damage,
+  `ConsumeAutoAttackCycleDamageBonus` and `ForgetHitEffectState`. It drops resources, attackTiming, abilityHit, statusEffect, statusEffectApplication, statusEffectDuration, temporaryStatModifier, impactState
+  and party, and gains the critical part. It leaves `LargeTypes.txt` and `ServicesPerType.txt`.
+- **The critical sequence table and the cleanup order.** `CombatService.RemoveStatTriggerCooldowns` still calls `_hitEffects.ForgetHitEffectState(creature)` in the same place (phase 6 of the map's order);
+  that member now begins with `_criticalHitEffects.ForgetCriticalHitSequenceState(creature)`, which is the statement it began with before (`_criticalHitSequenceStates.Remove(creature)`), and then clears the three
+  cycle tables as before. `CombatCleanupOrderTests` passes with its golden transcript unchanged (the bench adds the critical part to the tables it fills and reads, so `_criticalHitSequenceStates` is
+  still populated and cleared by name). No state owner list exists yet (P5-7l) and no field carries `[ReloadState]`, so nothing there moves; the map's phase 6 owner list will take the critical part as a second
+  phase 6 owner then, and drop the forward.
+- **Handlers and state:** none move (no handler, no `[ReloadState]` field, no classification line), so the hot reload check was not run. `ConvertedServices.json` lists the three parts (32 parts);
+  `RemovedFacades.json` re-points `ApplyAutoAttackDamageModifiers`, `ConsumeSuppressedAutoAttackDamageBonuses` (to `CombatAutoAttackEffects`), `ApplyCriticalHitEffects`, `ApplyNonCriticalAbilityEffects`
+  (`CombatCriticalHitEffects`) and `ApplyDefeatedEnemyEffects` (`CombatDefeatedEnemyEffects`). `ClockSeamFiles.txt` swaps the stay-part (no longer reads the clock) for the critical and defeated parts.
+- **Departures from the map.**
+  - The stay-part ends at **9 services**, not 8: it holds the critical part for the table forward above. The map's 8 is reached when P5-7l's owner list replaces the forward.
+  - `CombatService` goes from 13 to **14** services (it takes the defeated part for its death handler and keeps the stay-part for the forget); the map expected the defeated part to replace the stay-part there. P5-7l
+    takes it to 8 with the owner list.
+  - `CombatAbilityImpactService` goes from 18 to **19** services: its stay-part call (`ApplySourceStatusStackEffects`) moves to the auto-attack part and its `SpreadPoisonFromTarget` call to the defeated part.
+    P5-7h1 and P5-7h2 take it to 10.
+  - `Native/DamageRollCreature` goes from 10 to **11** lookup services (`GameServices.CombatAutoAttackEffects` is added beside `GameServices.CombatHitEffects`, whose `ConsumeAutoAttackCycleDamageBonus` it still
+    calls). The map's holder table does not list the native hooks. It is a new breach in `ServicesPerType.txt` for P5-16 to remove, like the ones the map lists for `AbilityDamageStageService`.
+  - `AbilityDamageStageService` and `AbilityImpactLifecycleService` swap the stay-part for the critical part (no change in count). The critical part stays at the limit (10), so the timing fallback was not needed.
+  - The map counts about 845 moved lines; 850 lines move (228 auto-attack, 420 critical including the nested type, 202 defeated, blank lines between members counted), plus the constructors and documentation.
+  - `PlayerMessageAudit.json` is left for the owner (agent rules): the two rows keyed by `CombatHitEffectsService.cs` now sit in `CombatCriticalHitEffectsService.cs` (`ApplyCriticalHitEffects` "Weak Points" and
+    `ApplyNonCriticalAbilityEffects` "Next ranged ability"). `MessageInventory_CoversEveryRuntimeCallSite` keys by file, so it **fails until `ExportPlayerMessageAudit.ps1` is run** (two `File` values and two `Line`
+    values change, nothing else).
+  - `ICombatDamageReflectionService`'s summary still names `ICombatHitEffectsService.ApplyTriggeredDamage` (a stale cref from P5-7f1); not changed here.
+- **Call sites** by hand with a literal receiver rewrite: `AbilityDamageStageService`, `AbilityImpactLifecycleService`, `CombatAbilityImpactService`, `CombatService`, three native hooks (`DamageRollCreature`,
+  `DamageRollHitEffects`, `GetDamageRoll`), `CombatHealingBudgetEngineTests` (14 sites), and the test doubles and benches that build those services. Registrations and `GameServices.Combat.cs` for the three parts.
+- **Tests.** `CombatHitEffectsServiceTests` splits again: `CombatHitEffectsTestBase` builds the three new parts for real over the same scripted leaves (the stay-part over the critical part, the auto-attack part
+  over the stay-part), and the classes are the stay-part (14 test methods: the cycles, the direct hit, the splash, the forget and the container tests), `CombatAutoAttackEffectsServiceTests` (12),
+  `CombatCriticalHitEffectsServiceTests` (12) and `CombatDefeatedEnemyEffectsServiceTests` (6). All 43 old test names are kept; one test is new (`TheContainerBuildsTheAutoAttackCriticalAndDefeatedParts`).
+  `CombatCleanupOrderTests` adds the critical part to the tables it fills and reads (its golden transcript is unchanged), `CombatServiceTests` scripts the defeated part (its log labels change from
+  `HitEffects.` to `DefeatedEnemyEffects.` for the two defeated calls), `CombatAbilityImpactServiceTests` scripts the auto-attack and defeated parts, `CombatPartForwardingTests` lists the three interfaces
+  (the moved defaults are re-pointed, the PR's default count stays 8), `CombatFacadeAllocationTests` re-points the moved reads (no pinned byte count changed), `WeaponAbilityTraceBench.Leaves` gains the three
+  interfaces and the weapon ability call trace golden is **unchanged** (the test passes without a regeneration, so there is no diff to show), the hit transcript calls the three parts and its fixture is
+  unchanged. Source readers needed four needles (`CombatDamageTests` 2, `CombatAttackDelayTests` 1, `CrossSkillPerkInteractionSafetyTests` 1).
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored) of the 56 members of the old class at `d76899ff0` (methods, fields and the nested type) against the head:
+    **55 identical, 1 different, 0 missing.** Identical: the 8 auto-attack members (the receiver rewrite of the two cycle calls is ignored by the comparison), the 11 critical members, the nested
+    `CriticalHitSequenceState`, the 8 defeated enemy members, and every member that stays (the cycle members, `ApplyDamageDealtEffects`, the splash); the fields match by type and name. Different: `ForgetHitEffectState`,
+    whose first statement `_criticalHitSequenceStates.Remove(creature)` is now `_criticalHitEffects.ForgetCriticalHitSequenceState(creature)`, a call to the new member whose body is that statement; the other
+    statements are identical and in the same order. The output is `token-comparison.txt` in the evidence folder.
+  - *Unit tests* (`SWLOR.Game.Server.Tests`): one filter on `Combat`, `HitEffects`, `AutoAttack`, `Critical`, `Defeated`, `Poison`, `CleanupOrder`, `Ability`, `CallTrace`, `Handler`, `PlayerMessageAudit`,
+    `ConvertedServiceContainer`, `TriggeredDamage`, `DamageTaken`, `CapstoneProof`, `Beast`, `Party`, `LazyDependencyCycle`, `ClockSeam`, `ScriptHandlerOrder`, `Reload` and `Classification`: 4,935 tests, 4,885 pass,
+    49 fail, 1 skipped. Of the 49, 44 read hak data the checkout lacks (`SWLOR_Haks` is empty; three of them resolved the main checkout's path), 2 were source readers of this item (needles for
+    `GameServices.CombatHitEffects.ConsumeSuppressedAutoAttackDamageBonuses` and `...ApplyCriticalHitEffects`; fixed, and `CombatDamageTests`, `CombatAttackDelayTests`, `CrossSkillPerkInteractionSafetyTests` and
+    `CombatSourceTests` rerun: 227 tests, the only 4 failures read `sw_2da`), 2 read the main checkout's older source (`FirstAidSources_IncludeBibleBehavior`,
+    `ReportedLeadershipFailPerks_UseDynamicRadiusAndTemporaryHitPoints`; they pass once `sw_2da` is present and the worktree is the root), and 1 is `MessageInventory_CoversEveryRuntimeCallSite` (the audit rows
+    above). The weapon ability call trace, the hit transcripts, the cleanup order transcript, the forwarding tests and the allocation tests pass with their fixtures unchanged. Unfiltered, once, at the head (with
+    `sw_2da` copied read-only from the main checkout, which is not the pin's): **20,075 tests, 19,908 pass, 164 fail, 3 skipped (36 minutes).** No failure names a hit effects, auto-attack, critical, defeated enemy,
+    cleanup, call trace, forwarding, allocation, transcript, poison, container, cycle, clock or handler test. 163 failures read hak or Module data this checkout lacks (icons, models, sounds, walkmeshes, `.pwk` files, the
+    `SWLOR_Haks` folders other than `sw_2da`, the compiled model `vx_callbeast`, `KillRewards_FollowExistingBountyRatesRatherThanIntroducingAHigherTier` with 12 quests expected and 32 found,
+    `EshanBlueprints_AreDiscoverableInTheirToolsetPalettes` with `esh_captain_o`; the last three also fail at the base per P5-7f1), and the 164th is `MessageInventory_CoversEveryRuntimeCallSite`, as described. The
+    list is `unit-full-failures.txt`.
+  - *CombatSim:* `team-fight`, `twin-pistol-barrage`, `twin-pistol-crossfire` and `solo-boss` (seed 1, 50 runs, Markdown and JSON) and the ability table, built at the base and at the head: all nine files are
+    byte-identical. `SWLOR.CombatSim.Tests`: 895 of 895 pass at the head (not run at the base).
+  - *Architecture:* `SWLOR.Architecture.Tests` 298 tests; three baseline tests failed before the regeneration (`LargeTypes`, `ServicesPerType`, `LogicToContent`) and all pass after it.
+    *Baselines changed:* `LargeTypes.txt` (`CombatHitEffectsService` 1,191 leaves the list; `CombatAbilityImpactService` 1,726 to 1,729), `ServicesPerType.txt` (`CombatHitEffectsService` 17 leaves the list,
+    `CombatAbilityImpactService` 18 to 19, `CombatService` 13 to 14, `Native.DamageRollCreature` enters at 11), `LogicToContent.txt` (111 to 113 lines: the stay-part's 12 `StatusEffectDefinition` names move to the
+    critical part 7, the defeated part 4 and the auto-attack part 3), `DebtReport.md`. `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` moved by member counts only (the edge sets are identical) and were reverted.
+  - *Engine tests* at `d76899ff0` and at the head, host entry, filter `Characterization|CombatPerkRegression|PerkTracker|TwinPistol|DualWield|UnarmedMastery|SaberWard|Critical|Defeat|Poison|Capstone|Splash|CombatHealing`:
+    215 tests each, no characterization snapshot written on either side. Base: 214 pass, 1 fail (`Capstone adept spawn points are nearer the entrance than specialist and inner circle spawn points`, module spawn data, the
+    same failure as in P5-7f1). Head: 211 pass, 4 fail: the capstone test and three that differed from the base (`Dual wield commanded attacks resolve both hands on one shared cadence`, and the two Twin Pistol timeout tests
+    `Twin Pistol stance damage costs and Haste reach native saber and rifle attacks without paired handling` and `Twin Pistol generated Basic and Veteran guns retain native attribute damage caps`, timed out at 180 s and 65 s while a
+    unit run and live clients shared the machine). The three were rerun alone at each side one after the other: the two Twin Pistol tests pass on both sides, and the Dual wield test fails on both sides with the same message
+    (`The off-hand hit follows the completed main-hand swing inside the same delay cycle`), so it is not a difference. With the load off, every per-test outcome is identical. The reports are in the evidence folder
+    (`engine-{base,head}-results.json`, `engine2-{base,head}-results.json`, and the two comparison files).
+  - *Client evidence* (one NWN client, the same module, haks, build flags, character `agantarn.bic` and command file at the base and the head, in `veles_sewers` at `SEWERS_GATE` after a jump from the entry area, a Training Katar
+    equipped, the player immortal and plot-flagged, frozen Bandits (`nw_bandit001`) with temporary hit points beside the player). A temporary driver built outside the repository (`CustomAfterMicrosoftCommonTargets`; a `P57F2HEAD`
+    constant selects the three new interfaces) set temporary stats and ran four scenes, each starting from a cleared area and ending by consuming its temporary stats: (1) **auto-attack effects**, seeded direct
+    `ApplyAutoAttackDamageModifiers` calls (the stored, next-attack and suppressed bonuses, the stamina and FP restores, the master's restores through a henchman, the accuracy penalty, the hamstring, the sundered-target FP
+    restore, a bleed-gated infection stack that reaches 3, and the radius cycle damage); (2) **critical hit**, seeded `ApplyCriticalHitEffects` (limited haste with a zero-damage critical, the stamina, HP, FP and stamina-loss
+    riders, the Weak Points text, the evasion, accuracy and defense changes, the next-ability and no-delay grants, the sequence reward, then `ForgetHitEffectState` and the restarted sequence) and
+    `ApplyNonCriticalAbilityEffects` (the stacking critical rate rider, its tracker and the wrong-skill case); (3) **a kill**, seeded `ApplyDefeatedEnemyEffects` with a party ally (restores, attack and haste grants, ally defense,
+    the poison and bleed spreads), `ApplyRecentDamagerDefeatedEnemyEffects` (cruel momentum) and `SpreadPoisonFromTarget`; (4) **live native auto-attacks** for up to 24 s on a wounded Bandit (a real kill with the poison spread,
+    ally defense and cruel momentum) and 12 s on a sundered, bleeding one, with a forced hit and a 100% critical rate. The driver lines of the three direct scenes are **identical at both sides** (every status effect list, stat
+    read and returned damage) except the player's stamina and FP numbers, which differ by regeneration ticks (for example `stm=10 fp=15` against `stm=12 fp=15` in the third auto-attack call). In the live scene the kinds of
+    lines are the same ("Restored N STM/FP", "Healed", Weak Points 5 and 5, Next ranged ability 3 and 3, Bleed, Hamstring, Infection, Exposed, Sunder, Cruel Momentum); the counts differ by the dice and by timing (damage
+    lines 47 and 32, Hamstring 18 and 12, Poison 34 and 29), and in the base run the player also started hitting the neighbouring Bandit after the kill. Screenshots (`live-mid.png`), the raw and normalized chat and the
+    driver lines are in `C:/Temp/mr-p5-7f2/evidence/{base,head}/` (kept outside the repository). The "Critical Hit" combat text line is in neither chat log (zero lines each); the critical riders' effects (haste,
+    evasion, stamina) show in the driver lines. Each scene ran once per side.
+  - *Not run:* the `-Check` scripts (content, facade, clock), `ExportPlayerMessageAudit.ps1` and the hot reload check (no handler or `[ReloadState]` field moved).
+- **After the feature merge** (P5-7i2 and P5-7g landed first): the critical part takes `ICombatAbilityHitAdjustmentService` in place of `ICombatAbilityHitService`, because
+  `GetCriticalRateAgainstSunderedTargetAdjustment` moved there in P5-7g (still 10 services). `ConvertedServices.json` lists 36 Combat parts, the moved hit defaults count 9 (P5-7g made one more public),
+  the stale `ICombatDamageReflectionService` cref names `ICombatTriggeredDamageService.ApplyTriggeredDamage`, and `PlayerMessageAudit.json` was regenerated (the two rows above move to
+  `CombatCriticalHitEffectsService.cs`; one `CombatAbilityImpactService.cs` line moves by 3).
+
+### P5-7j3 as built (2026-11-24)
+
+Branch `claude/mr-p5-7j3`, base `d8611b8ab` (the P5-7i2 record).
+
+- **`CombatRecordDamageService`** (`ICombatRecordDamageService` and `ICombatRecordingSessionListener`, 482 lines, interface 91, **2 services**: the session core and the recorder stay-part, both
+  plain) and **`CombatRecorderService`** (stay, 884 lines, 1,267 before; 7 services, unchanged). Members moved, bodies as they were: `RecordDamageApplied`, `RecordDamageEvents`,
+  `ResolveDamageAttribution`, `RecordHealingApplied` (and `ReleaseAwaitingHealFor`), `RecordTemporaryHitPointPoolRemoving`, `RecordTemporaryHitPointsTrimmed`,
+  `RecordTemporaryHitPointsGranted`, the `RecordCreatureDeath` and `RecordPlayerDeath` handlers, `RecordRespawn`, `RecordResurrection`, `RecordSubdual`, `KeepLethalHitPoints`, the `KeepHitPointsLeftByHit(int, uint)`
+  overload, `RecordDeath`, `IsDeathRecorded`, `EnqueueDeath`, `EnqueueSubdual`, the two tables and the two frame-window constants. `RecordPvpHealingReduced` stays (the map's stay list).
+  The part keeps two `protected virtual` native seams (`GetHitPointsExcludingTemporary`, `CaptureTemporaryHitPointPools`), moved from the recorder so a test double answers them as it did.
+- **The session notice.** `ICombatRecordingSessionListener` (`OnRecordingStarted`, `OnRecordingStopped`) has its list in the stay-part (`_sessionListeners`, `[ReloadState(Runtime)]`, a repeat registration keeps one
+  entry, `RegisterSessionListener` on `ICombatRecorderService`). `Start` fires `OnRecordingStarted` where it cleared the part's tables (after `_session.Reset()`, before the writer is created and before `TakeSnapshots`)
+  and `Stop` fires `OnRecordingStopped` where it cleared them (last, after the reset); both call `RequireSessionListeners`, which throws `InvalidOperationException` on an empty list. The damage part registers from
+  `RegisterSessionListener()`, a `Rerun` boot handler on `OnModuleCacheBefore`, and clears its two tables on both notices.
+- **Departures from the map.**
+  - **Two tables, not three, and two services, not three.** P5-7j1 moved `_lastDamageSources` into the core (`Reset` clears it), so the notice clears `_temporaryHitPointGrants` and `_deathFrames` only, and both are
+    `[ReloadState(ReloadStateKind.Runtime)]`. The part needs no `impactState`: the attribution reads it makes go through the recorder stay-part.
+  - **Four members promoted on `ICombatRecorderService`:** `ResolveAttribution`, `ResolveActiveAbilityAttribution` and `IsOwnedBy` (private before) and `RegisterSessionListener` (new). `TryGetInnermostAttribution` (P5-7j2) is
+    used for the two reads of the attribution stack that were direct (`ResolveDamageAttribution`, `RecordResurrection`); those two bodies change in that read only.
+  - **The part is its own service in the registries**, as P5-7j2's: `ConvertedServices.json` and `DomainMap.json` list `CombatRecordDamage`, and `RemovedFacades.json` moves the 11 names (`KeepLethalHitPoints`,
+    `RecordCreatureDeath`, `RecordDamageApplied`, `RecordHealingApplied`, `RecordPlayerDeath`, `RecordRespawn`, `RecordResurrection`, `RecordSubdual`, the three temporary hit point records) from the `CombatRecorder` owner
+    to `CombatRecordDamage`. `GameServices.CombatRecordDamage` is new. `CombatParts.OtherServices` (engine tests) already named `CombatRecordDamageService`, so it is unchanged.
+  - **`DeathService` goes from 10 to 11 services** (it takes the part for `RecordSubdual` and `RecordRespawn`, and still holds the recorder stay-part for `IsRecording` and `BeginRespawnAttribution`): a new
+    `ServicesPerType.txt` line, which P5-7l removes (the map expected the stay-part to be at 10 only after the respawn part leaves it). `CombatDamageTakenService` takes the part for `KeepLethalHitPoints` (7 to 8 services, under the limit).
+  - **Handlers.** `RecordCreatureDeath` and `RecordPlayerDeath` are renamed in place in `ScriptHandlerOrder.txt` and `HandlerRenames.txt`; the new `Rerun` handler stands after `CombatDamageCatalogService.LoadDamageTypes` in
+    the `mod_cache_bef` script, and its name is appended to the `Service.Combat.LoadDamageTypes` line of `HandlerRenames.txt` (as `AIAggroService.RegisterStealthAggroListener` was to `CacheAIData`); `SplitBootHandlerTests`
+    lists that master handler as a service split and `BootHandlerClassification.txt` gains the `Rerun` line (49 to 50 handlers in the bucket). `ScriptHandlerOrder.EngineTests.txt` is unchanged and no engine test script handler was added.
+  - **`LargeTypes.txt`:** the recorder leaves the list (884 lines). `PlayerMessageAudit.json` has no row for a moved line (unchanged).
+  - 14 call sites changed receiver: 12 content (`ReviveBeastAbilityDefinition` 3, `ResuscitationAbilityDefinition` 2, `TemporaryHitPointEffects` 6, `DMWorldChatCommand` 1), 2 native (`CombatRecorderEffectHooksSink`), and 3 domain holders by
+    constructor (`CombatDamageTakenService` 1, `DeathService` 2).
+- **Tests.** New `CombatRecordDamageServiceTests` (7: constructor services and no `Lazy<>`, the two tables, the `Runtime` marks, the `Rerun` registration handler, the death handlers' events, the recorder no longer declaring the
+  moved members, one container singleton) and `CombatRecordingSessionNoticeTests` (10: both empty-list throws, one notice per listener in order, a repeat registration keeping one entry, the registration handler run twice, the
+  tables cleared at the same point of `Start` and of `Stop` (the writer, flag and participants seen from a listener), a grant and a death frame not carrying into the next recording). The old recorder tests call the part
+  (`_recorder.Damage`, a `RecorderProbeDamage` that answers hit points and pools from the probe's dictionaries, registered for the notices as the boot handler registers the real part); the transcript registers a `ProbeDamage`;
+  `CombatTranscriptBench.DefaultLeaves` gains the interface, so `Death.txt` changes `Recorder.RecordSubdual` and `Recorder.RecordRespawn` to `RecordDamage.` (the label only); `CombatDamageTakenTestBase`, `TestDeath` and
+  `ReviveProbe` take the part. `CombatPartForwardingTests` lists the interface, pins its two defaults and the two death handlers; `GameServicesAllocationTests` pins `KeepLethalHitPoints` at 0 bytes through the accessor and the
+  instance. `WeaponAbilityTraceBench.Leaves` gains the interface and the call trace is regenerated: 152 lines change, all `Recorder.RecordTemporaryHitPointPoolRemoving(...)` (77) and
+  `Recorder.RecordTemporaryHitPointsGranted(...)` (75) to `RecordDamage.`, nothing else (with the label put back, the new trace equals the old one). The 23 serializer goldens and the recorder transcript fixture are unchanged.
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored, names without a leading underscore and case) of the 111 members of the old class at `d8611b8ab` (fields, constructor, methods) against
+    the stay-part, the part, the session core and the ability part: 105 identical, 6 different, 0 missing. The six: `_temporaryHitPointGrants` and `_deathFrames` (the `ReloadState` attribute), `ResolveDamageAttribution` and
+    `RecordResurrection` (the stack read above), `Start` and `Stop` (statement by statement: each of the two statements `_temporaryHitPointGrants.Clear(); _deathFrames.Clear();` becomes `NotifyRecordingStarted();` in `Start`
+    and `NotifyRecordingStopped();` in `Stop`, in the same place; every other statement is untouched).
+  - *Unit tests* (`SWLOR.Game.Server.Tests`, filter `Combat|Recorder|Serializer|Allocation|Transcript|Death|Respawn|Resurrection|Subdual|Healing|TemporaryHitPoint|CallTrace|Handler|Boot|Reload|DMPossession|HostedEntry|PlayerMessageAudit|ConvertedService|LazyDependency|ClockSeam|Teardown|PlayerSession|ParityHandler|FacadeRemoval|Ability|SplitBootHandler`):
+    4,860 tests, 4,858 pass, 1 skipped, 1 fails: `AbilityImpactVisualEffectTests.EveryActiveAbilityRank_BindsItsDeclaredImpactEffect` needs the compiled model `vx_callbeast` from a hak folder that was not copied (only `sw_2da`,
+    `sw_t_office`, `sw_tlk` and `sw_ability` were, read-only, from the main checkout, a different haks commit than the pin; removed after). The whole of `SWLOR.Game.Server.Tests`, unfiltered: 20,094 tests, 19,979 pass, 3 skipped, 112 fail.
+    95 of the 112 read hak folders or source art that were not copied (`sw_cr_creature`, `sw_item`, the tilesets, `sw_pt_robe`, the model sources and the like) and fail on the missing data; the other 17 (the call-beast model
+    above, the placeable and wall walkmesh lookups, robe parts, icons and source art, and `EshanBlueprints_AreDiscoverableInTheirToolsetPalettes` and `KillRewards_FollowExistingBountyRatesRatherThanIntroducingAHigherTier`) fail the same way
+    at `d8611b8ab` (run there alone, with the same four hak folders). No failure touches the recorder, its parts or a file of this change. `SWLOR.Architecture.Tests`: 298 pass.
+  - *Baselines changed* (`SWLOR_UPDATE_SNAPSHOTS=1`): `ServicesPerType.txt` (`DeathService` 11, new), `LargeTypes.txt` (`CombatRecorderService` leaves), `StaticLookups.txt` (the allocation tests 17 to 19, the new part's tests 1),
+    `DebtReport.md` (the same figures). `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` moved in member counts only and were reverted, with the two debt report lines that follow them.
+    `BootHandlerClassification.txt`, `ScriptHandlerOrder.txt`, `HandlerRenames.txt`, `ConvertedServices.json`, `DomainMap.json` and `RemovedFacades.json` changed as above.
+  - *Engine tests* at `d8611b8ab` and at the head, host entry, filter `CombatRecorder|Characterization|CombatPerkRegression|TwinPistol|BossMinimumHitChance|HostileAbilityDelay|PvpCombat|StealthRetarget|Death|Respawn|DMPossession`
+    (171 tests): base 171 pass; head 170 pass and 1 timed out on its first run, `Twin Pistol generated Basic and Veteran guns retain native attribute damage caps` ("Timed out after 65 seconds"), while a 50-minute unit run shared the
+    machine; alone, at the head, it passed. The per-test outcomes of the two reports are otherwise identical (names and outcomes compared), and no snapshot file changed.
+  - *Hot reload* (`scripts/run-hot-reload-check.sh --engine-filter HotReloadPlayers --reloads 2`, head, with a temporary uncommitted engine test in the `HotReloadPlayers` category that ran in every generation): both reloads
+    applied (pauses 128 s and 141 s, a fresh home bakes its walkmeshes), the engine run of each of the three generations passed (2 of 2), and the probe passed in each: with a recording running, one temporary hit point grant and a lethal hit
+    on a creature wrote one `temp_hp_grant` and one `death`, so the moved death handler fires once per generation and the part is registered once. The cache digests (257 after each reload) and the adopted and world digests (86) match.
+    The check's own 300-second wait for the first digest set was too short on a busy machine (it failed twice before the module finished loading), so it ran from a scratch copy of the script with 1,800 s.
+  - *Client evidence* (the map said none; taken anyway): one NWN client, the same module, haks, character (`agantarn`) and steps at the base (`d8611b8ab`) and the head, Release builds with a temporary driver compiled in from
+    outside the repository, in `veles_sewers` at `SEWERS_GATE`. The real command `/combatrecord` was typed in the client (staff authorization from an `AuthorizedDM` record seeded in each stack's Redis for the public key, the
+    same way on both sides). The driver never calls a moved member: it spawns two frozen hostile Outlaws (`looter_1`, one immortal, one mortal) and applies damage and heals through the engine, grants a temporary hit point pool
+    through `TemporaryHitPointEffects`, and the death handlers, the respawn panel and the chat command are the real ones. Steps: status, start `p57j3a`, the Outlaw hurt (damage dealt), the character hurt by it (damage taken), a heal, a
+    40-point temporary hit point grant, a 30-point hit absorbed by it, the mortal Outlaw killed (creature death), status, stop, start `p57j3b` at once (a second hit lands in the 10 points left of the first recording's pool), the
+    character killed (player death), the respawn panel (respawn), back to the area, a second Outlaw killed, status, stop, status, stop again. Result: the recorder messages the player sees are the same at both (not running, started with the file, status while running,
+    stopped with the two files, started again, status, stopped, "last recording (finished)", "not running"); the written events are identical in kind, count and normalized content in both recordings (first: 4 damage,
+    1 heal, 1 grant, 1 absorb, 1 death; second: 3 damage, 8 regeneration heals, 1 absorb, 2 deaths, 1 respawn resurrection), apart from the snapshots (one per second, so their number follows the length of the run) and the
+    regeneration heals. The absorb in the second recording names no granter at both (`granted_by` null, `granted_kind` unattributed): the first recording's grant did not carry over, which is the notice clearing the tables,
+    and the second recording's own death after the respawn was recorded. Kept under `C:/Temp/mr-p5-7j3/evidence/{base,head}/`: the screenshots, `steps.log`, `client-chat.txt`, `driver-out.txt`, the raw recordings; and beside them `compare-events.txt`, `events-normalized-base.txt` and `events-normalized-head.txt`.
+  - *Not done:* the resurrection through the DM command (`/rez`, which calls `RecordResurrection`) and a subdual. `/rez` needs a click on a dead target: the dead player's respawn panel covers the world, and a dead
+    creature leaves nothing the targeting cursor takes (two tries, with screenshots in the trial runs), so the respawn path (`RecordRespawn`) was captured instead; `RecordResurrection` and `RecordSubdual` are pinned by the unit tests,
+    the recorder transcript and `CombatRecorderEngineTests` (a Revive Beast resurrection). A subdual needs a second player. The `-Check` scripts (content, facade, clock) and `ExportPlayerMessageAudit.ps1 -Check`, which the agent rules
+    leave to the owner; `CombatSim` (this change touches no rule).
+
+### P5-7h1 as built (2026-11-25)
+
+Branch `claude/mr-p5-7h1`, base `a26222f9b` (the review handoff record on the feature branch, after the master sync to `33d1a0f19`).
+
+- **`CombatAbilityDamageBonusService`** (`ICombatAbilityDamageBonusService`, 135 lines, **7 services**: queries, resources, combatActivity, guardedHitEffects, stat, statusEffect, temporaryStatModifier):
+  `GetAbilityImpactBaseDamageBonus`, `GetHighResourceAbilityDamageBonus` and `GetCostlyAbilityDamageBonus`, verbatim, all public. It holds no state.
+- **`CombatAbilityHitRidersService`** (`ICombatAbilityHitRidersService`, 391 lines, **6 services**: resources, attackTiming, damageTakenEffects, stat, statusEffectApplication, temporaryStatModifier): the four hit riders
+  (`ApplyCostlyAbilityHitEffects`, `ApplyRangedAbilityHitNearTargetEffects`, `ApplySameTargetHostileAbilityHitEffects`, `ApplyHostileAbilityHitNextAutoAttackNoDelay`; promoted from private, the
+  stay-part calls them), `ApplyAbilityImpactEffects` and its five helpers, `ApplyAreaHitHaste` (public) and `ApplyStackingAttackBoost`, verbatim, with the same-target hit count table
+  `_sameTargetHostileAbilityHitCounts` under the same field name. One new public member, `ForgetSameTargetHitState`, is the table's clear (below).
+- **`CombatAbilityAreaImpactService`** (`ICombatAbilityAreaImpactService`, 438 lines, **9 services**: queries, resources, triggeredDamage, stat, statusEffect, statusEffectApplication, statusEffectDuration,
+  temporaryStatModifier, impactState): `ApplyAbilityDamageRiders`, `ApplyAreaAbilityPulse` and `ApplyAreaAbilityTargetHitSequenceEffects` (public, the stay-part calls them) and the Foggy Mind drain, pulse
+  sources, fragmentation and its stat read, ricochet, cluster storm, bleeding target splash, saturation toss, bleed refresh and bleed spread (private), verbatim, with the area hit sequence table
+  `_areaAbilityTargetHitSequences` and its nested `TargetHitSequenceState` under the same names. It reads the clock (`ClockSeamFiles.txt` swaps the stay-part for it). One new public member,
+  `ForgetAreaAbilityTargetHitSequences`, is the table's clear (below).
+- **`CombatAbilityImpactService`** (stay, 913 lines, 1,729 before; **17 services**, 19 before): the orchestrator `ApplySuccessfulAbilityImpactRiders` (it calls the seven moved steps through the two new
+  parts in the same order), the weapon riders, the status-applied listener and its members, the party buff, the attacking-ally checks and `ForgetImpactState`. It drops triggeredDamage, guardedHitEffects,
+  damageTakenEffects and statusEffectDuration and gains the hit riders and area impact parts. It leaves `LargeTypes.txt` (913 lines) and `ServicesPerType.txt` stays listing it at 17 until P5-7h2 takes it to the map's 10.
+- **The two tables and the cleanup order.** `CombatService.RemoveStatTriggerCooldowns` still calls `_abilityImpact.ForgetImpactState(creature)` in the same place. That member now calls
+  `_hitRiders.ForgetSameTargetHitState(creature)` and then `_areaImpact.ForgetAreaAbilityTargetHitSequences(creature)`, the two statements it held in the same order (the same-target counts, then the area
+  hit sequences). `CombatCleanupOrderTests` passes with its golden transcript unchanged (the bench adds the two parts to the tables it fills and reads, so both tables are still populated and cleared by
+  name). No state owner list exists yet (P5-7l) and no field carries `[ReloadState]`, so nothing there moves; P5-7l's owner list takes the two parts as phase owners and drops the forwards.
+- **Handlers and state:** none move (`RegisterStatusEffectListener` and the status-applied members stay for P5-7h2), so the hot reload check was not run. `ConvertedServices.json` lists the three parts (39 Combat parts);
+  `RemovedFacades.json` re-points `GetAbilityImpactBaseDamageBonus`, `GetCostlyAbilityDamageBonus`, `GetHighResourceAbilityDamageBonus` (to `CombatAbilityDamageBonus`) and `ApplyAbilityImpactEffects`,
+  `ApplyAreaHitHaste` (`CombatAbilityHitRiders`).
+- **Departures from the map.**
+  - The stay-part ends at **17 services**, not the map's 10 (the 10 is the end state after P5-7h2 moves the weapon riders and the status-applied part); it holds both new parts for the orchestrator's seven
+    calls and the forget. P5-7f2's expectation that P5-7h1 and P5-7h2 take it to 10 stands.
+  - The damage bonus part is held by `AbilityDamageInputService` and `AbilityTargetImpactService` and the hit riders part by `AbilityImpactLifecycleService` and `AbilityService`, each in place of the stay-part
+    (no change in any holder's count: 13, 9, 11 and 10). The stay-part holds no damage bonus part (it makes no call to it), so the map's four-part wording for it is three.
+  - The two tables' clears are new public members of the parts (`ForgetSameTargetHitState`, `ForgetAreaAbilityTargetHitSequences`), as P5-7f2 did for the critical table. The map did not list them.
+  - `GameServices` gains three lookup properties (`CombatAbilityDamageBonus`, `CombatAbilityHitRiders`, `CombatAbilityAreaImpact`), which takes the type to 1,007 lines: it enters `LargeTypes.txt` (P5-16 deletes
+    the type). `UsePerkFeat.cs` takes the two `ApplyAbilityImpactEffects` sites by a literal receiver edit and its lookup count is unchanged (the two sites swap one lookup for another).
+  - The map counts about 785 moved lines (145, 380 and 410 by part); the parts are 135, 391 and 438 lines with their constructors, usings and documentation.
+  - The `ForgetImpactState` allocation pin in `CombatFacadeAllocationTests` goes from 344 to **368 bytes**: the two forget queries held one closure over the creature and hold two now (one per part), 24 bytes;
+    no other pinned byte count changed.
+  - `PlayerMessageAudit.json` needs no change: `MessageInventory_CoversEveryRuntimeCallSite` passes (no message line is in the moved code).
+- **Call sites** by hand with a literal receiver rewrite: `AbilityDamageInputService`, `AbilityTargetImpactService`, `AbilityImpactLifecycleService`, `AbilityService`, `UsePerkFeat` (2), the three engine test classes
+  (`CombatPerkRegressionEngineTests` 4, `PerkTrackerRegressionEngineTests` 5, `StaminaRecoveryEngineTests` 1), the test doubles and benches that build those services, and `StatAdjustmentSourceTests`.
+  Registrations and `GameServices.Combat.cs` for the three parts.
+- **Tests.** `CombatAbilityImpactServiceTests` (2,010 lines) splits as P5-7f2's hit effects tests did: `CombatAbilityImpactTestBase` builds the three parts and the stay-part for real over the same scripted
+  leaves (the stay-part over the two parts), and the classes are the stay-part (30 test methods), `CombatAbilityDamageBonusServiceTests` (9), `CombatAbilityHitRidersServiceTests` (13) and
+  `CombatAbilityAreaImpactServiceTests` (18). All 70 old test names are kept (the four set-up and tear-down methods moved to the base) and none is new. `CombatCleanupOrderTests` adds the two parts to the
+  tables it fills and reads (its golden transcript is unchanged), `CombatAbilityTranscriptTests` reads the bonus and the impact effects through the parts (its fixture is unchanged),
+  `CombatPartForwardingTests` lists the three interfaces (the moved `GetHighResourceAbilityDamageBonus` default is re-pointed; the PR's default count stays 2), `CombatFacadeAllocationTests` re-points the moved
+  reads, `WeaponAbilityTraceBench.Leaves` gains the three interfaces and the weapon ability call trace golden is **unchanged** (the test passes without a regeneration, so there is no diff to show),
+  `ConvertedServiceContainerTests` counts 39 parts (the test is renamed from `..._thirty_six_parts_...` to `..._thirty_nine_parts_...`). Source readers needed three edits: `CombatSourceTests` (the table and
+  helper reflection tests name the new declaring types and the public pulse), and the `GeneratedWeaponPerkBehaviorTests` method-end needle (`ForgetImpactState` now follows the stamina drain).
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers and receivers ignored) of the 87 members of the old class at `a26222f9b` (methods, fields and the nested type) against the head:
+    **86 identical, 1 different, 0 missing.** The difference is `ForgetImpactState`, whose two loops over the tables are now the two calls described above (the loops themselves are the bodies of the two new
+    members, with the same query and the same order). The output is `token-comparison.txt` in the evidence folder.
+  - *Unit tests* (`SWLOR.Game.Server.Tests`): one filter on `Combat`, `AbilityImpact`, `DamageBonus`, `HitRiders`, `AreaImpact`, `Splash`, `Ricochet`, `Bleed`, `CleanupOrder`, `Ability`, `CallTrace`, `Handler`, `PlayerMessageAudit`,
+    `ConvertedServiceContainer`, `Clock`, `Facade` and `LazyDependencyCycle`: 4,591 tests, 4,536 pass, 54 fail, 1 skipped. Of the 54, 42 read hak or other files the checkout lacks (`SWLOR_Haks` is sparse), 2 read the main
+    checkout's older source (`FirstAidSources_IncludeBibleBehavior`, `ReportedLeadershipFailPerks_UseDynamicRadiusAndTemporaryHitPoints`, as in P5-7f2), and 10 were this item's: the container's part count, the forget test
+    (a `Private` call on the stay-part for a moved member), the cleanup order bench (it fills the tables by part), the `ForgetImpactState` allocation pin, the `EventDrivenWeaponPromises` method-end needle and
+    five reflection tests of `CombatSourceTests`; all fixed, and the classes of the combat, impact, forwarding, allocation, cleanup, call trace and source tests then pass (`CombatCleanupOrder`, `CombatFacadeAllocation`,
+    `CombatSourceTests`, `ConvertedServiceContainer`, `CombatAbility*`, `EventDrivenWeaponPromises`, `CombatPartForwarding`, `CallTrace`: 1,034 tests, 0 fail). Unfiltered, once, at the head (`sw_2da` absent, as for the
+    filtered run): **20,179 tests, 19,925 pass, 251 fail, 3 skipped (15.5 minutes).** 234 of the failures read hak or Module files this checkout lacks (icons, models, sounds, walkmeshes, `.2da` and `.pwk` files; the
+    list is `unit-full-failures.txt`), 14 more read hak folders or the main checkout's older source (`Walkmeshes_HaveEveryDeclaredVertexAndFaceOnItsOwnLine`, `HeadquartersFloors_AreNotLaidOverVoidFillerTiles`,
+    `StaticPlaceables_AreAnchoredInTheRoomTheyAreSeenFrom` 2, `LargeBodyRobeModelsRemainAvailable` 3, `AreaShots_ShareOneImpactBatchAcrossAllProjectileCallbacks`, `FirstAidSources_IncludeBibleBehavior`,
+    `ForceDarkManipulatorSources_IncludeBibleBehavior`, `ForceDarkRavagerSources_IncludeBibleBehavior`, `SereneFocus_SurvivesRepeatedSanctuaryPulsesWithoutLosingItsTick`,
+    `ReportedLeadershipFailPerks_UseDynamicRadiusAndTemporaryHitPoints`, `MimicryStatusDurationsAndDetonationOrderMatchTheReviewedBiblePayloads`), and 3 were source readers of this item (the method-signature needles
+    of `DirectDamageRiders_RunOnlyForTheirIntendedDeliveryPath`, `ReportedKatarAndSpearPerks_KeepIndependentTriggerChannelsAndBoundedDamage` and `SharedImpactAndDirectDebuffPaths_UseTheSamePartyBuffGate`, which
+    name `ApplyAbilityDamageRiders`, `ApplyCostlyAbilityHitEffects` and the next member after the orchestrator); fixed, and a rerun of `CrossSkillPerkInteractionSafetyTests`, `LeadershipOffensivePartyBuffTests`,
+    `GeneratedWeaponPerkBehaviorTests`, `AreaAbilityFragmentationTests` and `StatAdjustmentSourceTests` (104 tests) leaves only 3 failures, all of which read `sw_2da`. No failure names an impact, damage bonus, hit riders,
+    area impact, cleanup, call trace, forwarding, allocation, transcript, container, clock or handler test, and `MessageInventory_CoversEveryRuntimeCallSite` passes.
+  - *CombatSim:* `team-fight`, `twin-pistol-barrage`, `twin-pistol-crossfire` and `solo-boss` (seed 1, 50 runs, Markdown and JSON) and the ability table, built at the base and at the head: all nine files are
+    byte-identical.
+  - *Architecture:* `SWLOR.Architecture.Tests` 298 tests; three baseline tests failed before the regeneration (`LargeTypes`, `ServicesPerType`, `LogicToContent`) and all pass after it. *Baselines changed:*
+    `LargeTypes.txt` (`CombatAbilityImpactService` 1,729 leaves the list; `GameServices` 1,007 enters it), `ServicesPerType.txt` (`CombatAbilityImpactService` 19 to 17), `LogicToContent.txt` (117 lines from 115:
+    the stay-part's `StatusEffectDefinition` names go from 28 to 24, the area impact part names 6 and the hit riders part 2), `DebtReport.md`. `CrossDomainEdges.txt` and
+    `EdgesIntoCoreAndPlatform.txt` moved by member counts only (the edge sets are identical) and were reverted.
+  - *Engine tests* at `a26222f9b` and at the head, host entry, filter `Characterization|CombatPerkRegression|PerkTracker|StaminaRecovery|TwinPistol|AreaAbility|Splash|Bleed`: 181 tests each (Characterization 41, CombatPerkRegression 16, PerkTracker 26, StaminaRecovery 7, the Twin Pistol categories 79, StatusEffect 6, the lone-target and stealthed area ability categories 4,
+    DevicesDamage 1, ThrowingStance 1): **181 pass at both sides, every per-test outcome identical**, and no characterization snapshot was written on either side (both worktrees clean afterwards). The reports are in the
+    evidence folder (`engine-{base,head}-results.json`).
+  - *Client evidence* (one NWN client, the same module, haks, character `agantarn.bic` and command file at the base and the head, in `veles_sewers` at `SEWERS_GATE` after a jump from the entry area, the player
+    immortal and plot-flagged, frozen Bandits (`nw_bandit001`) with 1,000 hit points, created 3 s before each scene so the area search sees them; one stack, with the server build swapped between the sides). A temporary
+    driver built outside the repository (`CustomAfterMicrosoftCommonTargets`; a `P57H1HEAD` constant selects the three new interfaces for the bonus and impact effects calls) set temporary stats and ran 11 seeded
+    scenes (`Random` seed 7), each starting from a cleared area and ending by consuming its stats: **bonus** (the skill bonuses of Lightsaber area, Vibroknife, Staff and Saberstaff abilities, a non-hostile ability,
+    the high resource bonus alone and in the base bonus, the costly bonus untracked, paid at the minimum and below it); **costly** (a costly Rifle hit: the stamina restore once and Exposed on the target);
+    **near** (Duelist's Distance from a Pistol hit, none from a Lightsaber hit); **same** (the same-target stamina restore at the 2nd and 4th hit, the count reset by another target); **nodelay** (the next
+    auto-attack with no delay for the selected skill, then for every skill); **areafx** (the area rewards and haste, the saberstaff restore and haste, the throwing restore and attack boost, the spear restore,
+    through `ApplyAbilityImpactEffects` and `ApplyAreaHitHaste`); **pulse**, **ricochet** (Pistol and Throwing), **fragment**, **bleed** (splash, spread and refresh on a bleeding target) and **sequence** (the area hit
+    sequence reaches Exposed on the third hit); every hit is a real `ApplySuccessfulAbilityImpactRiders` call. The driver lines of the 11 scenes (102 lines: every returned bonus, stamina, haste, attack, status
+    effect and hit point reading) are **identical at both sides** except the stamina number of four scene-end lines, which differs by regeneration ticks (for example `stm=8` against `stm=11`). The normalized client
+    chat (the combat log: "Restored N STM", the effects received and worn off, the ricochet, pulse, splash and fragmentation damage lines, the bleeds) is identical line for line except those four lines and one
+    `Bandit's Exposed effect has worn off.` that the base chat has and the head chat lacks (the base capture was slower, so the next scene removed the Bandit later and its 12 s Exposed effect ran out first; a timing
+    difference, not a behavior one). Screenshots (one per scene and side), the raw and normalized chat and the driver lines are in `C:/Temp/mr-p5-7h1/evidence/{base,head}/` (kept outside the repository).
+    The first stack run showed no area damage in the pulse, ricochet and splash scenes because the Bandits were created in the same call; the driver then created them 3 s ahead and read the hit points again 3.5 s
+    after each scene, which is how the shown run was taken. A server crash during one swap (the NWNX watchdog killed a module load that stalled 10 minutes under machine load) was fixed by raising
+    `NWNX_THREADWATCHDOG_KILL_THRESHOLD` in the run's own environment file.
+  - *Not run:* the `-Check` scripts (content, facade, clock), `ExportPlayerMessageAudit.ps1` and the hot reload check (no handler or `[ReloadState]` field moved).
+
+### P5-7h2 as built (2026-11-25)
+
+Branch `claude/mr-p5-7h2`, base `1496f66a5` (the P5-7h1 record on the feature branch).
+
+- **`CombatAbilityWeaponRidersService`** (`ICombatAbilityWeaponRidersService`, 455 lines, interface 63, **8 services**: queries, resources, defeatedEnemyEffects, stat, statusEffect, statusEffectApplication,
+  temporaryStatModifier, enmity): the 15 weapon family `Apply*ImpactRiders` (heavy vibroblade, force dark, katar venom, lightsaber, pistol, rifle, saberstaff conduit and tempest, spear damage and disabler, staff, throwing, twin
+  blade, vibroknife shadow and saboteur), `ApplyLightsaberOffenseSunder`, `HasSunderPenaltyAtLeast` and `ApplyLightsaberOffensePurify` (private), `ApplyAbilityUsedPerkCategoryTargetEnmityToSourceStatus`,
+  `ApplySpearDisablerSuppressionRiders` and `ApplyGuardedHitNextSkillAbilityExposedStatus`, verbatim. The 17 members the orchestrator calls (the 15 family riders, the enmity status and the guarded hit status) are promoted from
+  private to public on the interface; `ApplySpearDisablerSuppressionRiders` was public already. It holds no state and no handler.
+- **`CombatAbilityStatusAppliedService`** (`ICombatAbilityStatusAppliedService`, which extends `IStatusEffectAppliedListener`; 332 lines, interface 28, **8 services**: resources, attackTiming, stat, statusEffect,
+  statusEffectApplication, temporaryStatModifier, impactState, combatRecorder): the boot handler `RegisterStatusEffectListener` (still a `Rerun` handler on `OnModuleCacheBefore`) and the three listener notices
+  (`OnStatusApplied`, `OnHostileDebuffApplied`, `OnApplicationCompleted`), `ApplyHostileAbilityPartyBuff`, `ApplyStatusAppliedEffects` and its three stages (`ApplyStatusAppliedSelfEffects`,
+  `ApplyStatusAppliedTargetEffects`, `ApplyStatusAppliedTargetAttackingAllyEnmity`), `ReplaceTemporaryStat`, `ApplyAbilityTargetStatusEffects` and `ApplyStatusAppliedTargetStaminaDrain`, verbatim. The orchestrator calls
+  `ApplyHostileAbilityPartyBuff`, `ApplyStatusAppliedEffects` and `ApplyAbilityTargetStatusEffects` (promoted to public). The part holds no field of its own, so the boot handler owns nothing to mark `[ReloadState]`.
+- **`CombatAbilityImpactService`** (stay, 208 lines, 913 before; **10 services**: combatActivity, hitRiders, areaImpact, autoAttackEffects, stat, enmity, party, pairedRangedTraits, weaponRiders, statusApplied, 17 before):
+  `ApplySuccessfulAbilityImpactRiders` (the same calls in the same order, three of them through the status-applied part), `ApplyAbilityStatusRiders` (the skill switch, calling the weapon riders part), the two
+  attacking-ally checks and `ForgetImpactState`. It no longer implements `IStatusEffectAppliedListener` and owns no handler. It leaves `ServicesPerType.txt` (10 is at the limit).
+- **Departures from the map.**
+  - **No fallback.** The stay-part ends at 10 services without moving `IsTargetAttackingAllyForStatusAppliedRiders` and `IsAttackingAllyOf`, so `AbilityHostileImpactService` is unchanged (9) and neither check moved. The weapon
+    riders part is at 8, as the map says.
+  - **The three moved public members change interface:** `ApplyHostileAbilityPartyBuff` and `ApplyStatusAppliedTargetStaminaDrain` are on `ICombatAbilityStatusAppliedService`, `ApplySpearDisablerSuppressionRiders` on
+    `ICombatAbilityWeaponRidersService`; they are no longer on `ICombatAbilityImpactService`. The map's "6 sites" are 5 tests and one content site (`BreakMoraleAbilityDefinition`), which changed receiver by hand.
+  - **`GameServices` gains two lookup properties** (`CombatAbilityWeaponRiders`, `CombatAbilityStatusApplied`), each with a summary. The type stays exempt from the size measure until P5-14.
+  - **`ICombatAbilityStatusAppliedService` extends `IStatusEffectAppliedListener`** (the map says only that the part registers itself); the notices are then reachable through the interface, which the transcript uses.
+  - **`PlayerMessageAudit.json` needs a regeneration** (left for the owner, as the brief says): the one message line of this change moved. The row `CombatAbilityImpactService.cs`, `ApplyStatusAppliedTargetStaminaDrain`
+    (line 882) is now `CombatAbilityStatusAppliedService.cs` line 326, and `MessageInventory_CoversEveryRuntimeCallSite` fails until `tools/ExportPlayerMessageAudit.ps1` is run.
+- **Handlers and state.** `RegisterStatusEffectListener` is renamed in place: `ScriptHandlerOrder.txt` line 59, `HandlerRenames.txt` (the line of `StatusEffect.CacheData`, whose branch handler list names it) and
+  `BootHandlerClassification.txt` (`Rerun`, the same line). Its event (`OnModuleCacheBefore`) and its position between `MeleeTechniqueService` and `CapstoneProofService` are unchanged. `ClockSeamFiles.txt` needs no
+  entry (neither part reads the clock). `ConvertedServices.json` lists the two parts (41 Combat parts: `ConvertedServicesTests` lists the two names and `ConvertedServiceContainerTests` counts 41; the count test is renamed `..._forty_one_parts_...`);
+  `RemovedFacades.json` moves `ApplyHostileAbilityPartyBuff` and `ApplyStatusAppliedTargetStaminaDrain` to the owner `CombatAbilityStatusApplied` and `ApplySpearDisablerSuppressionRiders` to `CombatAbilityWeaponRiders`.
+- **Tests.** `CombatAbilityImpactServiceTests` splits as P5-7h1's did, over the shared `CombatAbilityImpactTestBase` (which now builds the five parts and the stay-part for real over the same scripted leaves, and answers
+  `RegisterAppliedListener`): the stay-part (6 test methods), `CombatAbilityWeaponRidersServiceTests` (15) and `CombatAbilityStatusAppliedServiceTests` (9). All 30 old test names are kept. New tests: the weapon riders part
+  (4: its eight services and no `Lazy<>`, no state and no handler, the stay-part no longer declaring the 18 members, one container singleton) and the status-applied part (6: its eight services and no `Lazy<>`, no field
+  but services, the `Rerun` handler on `OnModuleCacheBefore` with none left on the stay-part, the handler giving the status effects the part itself once, the three notices, the stay-part no longer declaring the members or
+  being a listener, one container singleton that is the listener). `CombatAbilityTranscriptTests` reads the moved members and the boot registration through the new parts (`AbilityImpact.txt` is unchanged),
+  `CombatPartForwardingTests` lists both interfaces (the default count stays 2), `CombatFacadeAllocationTests` re-points the five moved reads (no pinned byte count changes), `WeaponAbilityTraceBench.Leaves` gains both
+  interfaces and the weapon ability call trace golden is **unchanged** (no regeneration, so no diff). Source readers needed five edits: the `ApplyStatusAppliedEffects` signature needle of
+  `CrossSkillPerkInteractionSafetyTests` (2: `private static` to `public static`, the text `CombatSource` restores), the stamina drain method end of `GeneratedWeaponPerkBehaviorTests`
+  (`EventDrivenWeaponPromises_...`, the method now ends its file), the end of the party buff of `LeadershipOffensivePartyBuffTests` (it ends at the next member of its file), and the receiver text of
+  `LeadershipCombatUpgradeTests` (`GameServices.CombatAbilityStatusApplied...`).
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored; names without a leading underscore and case) of the 56 members of the old class at `1496f66a5` (17 fields, the constructor,
+    38 methods) against the stay-part, the weapon riders part and the status-applied part: **55 identical, 1 different, 0 missing.** The difference is the constructor (the parameter lists change with the services each part
+    holds). `token-comparison.txt` in the evidence folder.
+  - *Unit tests* (`SWLOR.Game.Server.Tests`): one filter on `Combat`, `AbilityImpact`, `WeaponRiders`, `StatusApplied`, `StatusEffectListener`, `PartyBuff`, `CleanupOrder`, `Ability`, `CallTrace`, `Handler`, `BootHandler`, `Reload`, `PlayerMessageAudit`, `ConvertedServiceContainer`, `Clock`, `Facade`, `LazyDependencyCycle` and `Perk`: 6,006 tests, 5,940 pass, 65 fail, 1 skipped. Of the 65, 54 read hak files the checkout lacks (`SWLOR_Haks` is sparse), 6 read the main checkout's older source (`FirstAidSources_IncludeBibleBehavior`, `ReportedLeadershipFailPerks_UseDynamicRadiusAndTemporaryHitPoints` and the like, as in P5-7h1) and 5 were this item's: the audit row below and four source readers (the `ApplyStatusAppliedEffects` needle of two `CrossSkillPerkInteractionSafetyTests` cases, the stamina drain method end of `EventDrivenWeaponPromises_...` and the party buff end of `SharedImpactAndDirectDebuffPaths_...`); fixed, and a rerun of the classes of the five readers, the three new classes and the audit (195 tests) leaves 5 failures: three read `sw_2da`, `ReportedLeadershipFailPerks_UseDynamicRadiusAndTemporaryHitPoints` reads the main checkout's `BreakMoraleAbilityDefinition` (its needle is the new receiver; the worktree file holds it once, after the target guard), and `MessageInventory_CoversEveryRuntimeCallSite` fails by design until the owner regenerates `PlayerMessageAudit.json`. Unfiltered, once, at the head (`sw_2da` absent): **20,204 tests, 19,952 pass, 249 fail, 3 skipped (35 minutes).** 235 of the failures read hak or Module files this checkout lacks (the `feat.2da`, `baseitems.2da`, `visualeffects.2da` and other `.2da` files, icons, models, sounds, tile sets, walkmeshes, `LargeBodyRobeModelsRemainAvailable` 3, `StaticPlaceables_AreAnchoredInTheRoomTheyAreSeenFrom` 2, `HeadquartersFloors_AreNotLaidOverVoidFillerTiles`, `Walkmeshes_HaveEveryDeclaredVertexAndFaceOnItsOwnLine`), 13 read the main checkout's older source or paths (six `Could not find ... C:\Projects\SWLOR_NWN\SWLOR.Game.Server\...` cases, `AreaShots_ShareOneImpactBatchAcrossAllProjectileCallbacks`, `FirstAidSources_IncludeBibleBehavior`, `ForceDarkManipulatorSources_IncludeBibleBehavior`, `ForceDarkRavagerSources_IncludeBibleBehavior`, `MimicryStatusDurationsAndDetonationOrderMatchTheReviewedBiblePayloads`, `SereneFocus_SurvivesRepeatedSanctuaryPulsesWithoutLosingItsTick` and `ReportedLeadershipFailPerks_UseDynamicRadiusAndTemporaryHitPoints`), and 1 is `MessageInventory_CoversEveryRuntimeCallSite`. No failure names a weapon riders, status applied, impact, cleanup, call trace, forwarding, allocation, transcript, container, clock or handler test.
+  - *CombatSim:* `team-fight`, `twin-pistol-barrage`, `twin-pistol-crossfire` and `solo-boss` (seed 1, 50 runs, Markdown and JSON) and the ability table, built at the base and at the head: all nine files are byte-identical.
+  - *Architecture:* `SWLOR.Architecture.Tests` 298 tests; three baseline tests failed before the regeneration (`StaticLookups`, `ServicesPerType`, `LogicToContent`), and after it 297 pass and 1 is skipped (`The_debt_report_is_current`, as before). *Baselines changed:* `ServicesPerType.txt` (`CombatAbilityImpactService` 17 leaves the list), `LogicToContent.txt` (119 lines from 117: the stay-part's `StatusEffectDefinition` and `AbilityDefinition` names leave; the weapon riders part names 22 status effects and 1 ability definition type, the status-applied part 2 and 1), `StaticLookups.txt` (the two new test classes name `GameServices` once each), `DebtReport.md`. `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` moved by member counts only (every changed line pairs with its old line by edge) and were reverted, with the two debt report lines that follow them. `LargeTypes.txt` did not change.
+  - *Engine tests* at `1496f66a5` and at the head, host entry, Release, filter `Characterization|CombatPerkRegression|PerkTracker|TwinPistol|Heavy Vibroblade ability behaviors|Lightsaber ability behaviors|Pistol ability behaviors|Rifle ability behaviors|Saberstaff ability behaviors|Spear ability behaviors|Staff ability behaviors|Throwing ability behaviors|Twin Blade ability behaviors|Vibroknife ability behaviors|Katar ability behaviors|StatusEffect`:
+    201 tests each. Both sides: 199 pass and 2 time out on a busy machine (`Twin Pistol stance damage costs and Haste reach native saber and rifle attacks without paired handling`, 180 s, and
+    `Twin Pistol generated Basic and Veteran guns retain native attribute damage caps`, 65 s); rerun alone, once, both pass at both sides. The per-test outcomes (names and categories) are identical, and no
+    characterization snapshot changed. Reports: `engine-{base,head}-results.json` and the reruns.
+  - *Hot reload* (`scripts/run-hot-reload-check.sh --engine-filter HotReloadPlayers --reloads 2`, head, with a temporary uncommitted engine test in the `HotReloadPlayers` category that ran in every generation and has no script
+    handler): both reloads applied (pauses 335 s and 389 s on a busy machine), the engine run of each of the three generations passed (4 of 4), the cache digests (257) and the adopted and world digests (86) matched after
+    each reload. The probe reflected the status effect service's applied listeners and applied a Hobble debuff with a temporary stamina drain stat on the source: in every generation the listeners were
+    `CombatAbilityStatusAppliedService, CapstoneProofService`, so the status-applied part is registered once per generation and `CombatAbilityImpactService` is not a listener, and the notice fired each time (target stamina 122 to
+    116). The run's compose copy raised `NWNX_THREADWATCHDOG_KILL_THRESHOLD` (20 to 60) and its script copy waited 1,800 s for the first digest set.
+  - *Client evidence* (one NWN client, the same module, haks, character `agantarn.bic` and driver commands at the base and the head, in `veles_sewers` at `SEWERS_GATE`; a stack per side, Release native builds with a
+    temporary driver compiled in from outside the repository; the build was not swapped inside one stack as P5-7h1's was, so the module load ran twice). The driver set temporary stats on the immortal, plot-flagged character,
+    created two plot-flagged `nw_bandit001` 4 s ahead (a target and a second creature), seeded `Random` with 7 for every scene, and called the real `ApplySuccessfulAbilityImpactRiders`; the three moved public members were
+    called by reflection on `CombatAbilityImpact` at the base and on the new parts at the head. 19 scenes at each side: **lightsaber** (Sunder, Disoriented, Force Disruption), **pistol** (Disoriented), **rifle**
+    (Disoriented, Foggy Mind, Dazed), **staff** (Dazed), **throwing** (Marking Toss), **saberstaff** (Force Disruption, Force Erosion), **spear** (Breach, Crippled Defense, Force Disruption, Forcebane, Fractured Focus) and
+    **spear suppression** called directly (Forcebane, Fractured Focus), **vibroknife** (Marked for Death, Toxin and the stamina drain 122 to 115), **force dark** (Exposed, Force Erosion), **katar** (the target stays poisoned;
+    no spread happened at either side, so the spread effect itself is not shown), **heavy vibroblade** (Crushing Blow and the enmity), **twin blade** (Dazed), the **guarded hit** exposed status, the
+    **stamina drain listener** (a real Dazed application drains 122 to 116 through the registered listener, and the cooldown holds the direct call), the **status-applied stages** (self +10 Defense and +5 Evasion, target
+    -10 Defense and -5 Accuracy, Challenge enmity on the target), the **ability target status** (Physical Defense -15), and the **party buff** through the riders and called directly (the second creature joined as a henchman and
+    both it and the character got Hostile Ability Party Buff). The driver lines are identical at both sides in 18 of 19 scenes; the pistol scene differs in one line (`cleared 2` at the base, `cleared 41` at the head: the
+    pistol scene was the first in a freshly loaded area at the head, so more spawned creatures were cleared; no effect line differs). The normalized client chat (the "receives the effect of" lines; enemy attack and damage
+    lines are dropped as noise) is identical in 17 of 19, and the two others differ by one `worn off` line each (a previous scene's effect running out inside a different scene's window: `guarded` and `drain`). Not captured:
+    the perk category enmity rider (it needs a perk category stat setup; it is pinned by the unit tests), and the status icons (the screenshots show the sewer scene; the proof is the driver and chat lines). Screenshots, the raw
+    chat, the driver lines and `compare.txt` are in `C:/Temp/mr-p5-7h2/evidence/{base,head}/` (kept outside the repository).
+  - *Not run:* the `-Check` scripts (content, facade, clock) and `ExportPlayerMessageAudit.ps1`, which the agent rules leave to the owner (the audit export is needed, above).
+
+### P5-7k as built (2026-11-26)
+
+Branch `claude/mr-p5-7k`, base `0e77bc9f8` (the P5-10d record on the feature branch).
+
+- **`EnmityService`** (stay, `IEnmityService`, 444 lines, interface 132, **0 services**; 1,243 and 12 before): the three carried tables (`_enemyEnmityTables`, `_creatureToEnemies`, `_proximityEnmityAmounts`, still `Carried`, same keys),
+  the attack-command memory (`_attackCommandTimes`, `_attackCommandTargets`, now `[ReloadState(Runtime)]`), the reads (`GetEnmityTable`, `GetEnmityTowardsAllEnemies`, `GetHighestEnmityTarget`, `HasEnmity`, `HasProximityEnmity`, the four
+  `HasNonProximityEnmity*`, `IsThreatSecured`, `IsThreatLeadSecure`) and the removals and clearing (`RemoveEnmity`, `RemoveProximityEnmity`, `ClearEnmityTable`), verbatim. It still implements `IEnmityTargetQuery` and
+  `IEspionageEnmityQuery`. Members promoted from private to public on the interface because a part calls them: `ClearEnmityTables`, `RemoveEnmityTableEntry`, `RemoveProximityEnmityTracking`, `HasOnlyProximityEnmity`,
+  `GetRawEnmityAmount` and `GetProximityEnmityAmount`. New mutation members, each the block of the old method it names and nothing else: `AddEnmity` (the table block of `ModifyEnmity`), `ReduceEnmityEntry` (the table and
+  proximity update of `ReduceEnmity`, returning whether it changed), `AddProximityEnmity` (the tail of `ModifyProximityEnmity`), `GetEnemiesOf` (a copy, as every caller already used `ToArray()`), and `TryGetAttackCommand`,
+  `RecordAttackCommand` and `ForgetAttackCommand` for the attack-command memory. No part touches a table dictionary or stores a table in a field.
+- **`EnmityChangeService`** (`IEnmityChangeService`, 450 lines, interface 117, **8 services**: table, attack, leash, hologram, party roster, companions, stat, statusEffect): `ModifyEnmity` (both), `CalculateAdjustedEnmity`,
+  `CalculateDamageEnmity`, `CalculateHealingEnmity`, `CalculateTauntEnmity`, `ClampEnmityPercentAdjustment` (with the two adjustment constants), `TryTaunt`, `ModifyEnmityOnAll`, `ReduceEnmity`, `ReduceEnmityOnAll`,
+  `ModifyProximityEnmity`, `RemoveCreatureEnmity`, the healing table, and the ten handlers (`CreatureDamaged`, `HealingStarted`, `HealingCompleted`, `CreatureAttacked`, `CreatureDeath`, `CreatureDestroyed`, `PlayerDeath`,
+  `PlayerExit` twice, `CreatureLimbo`). `PlayerExit` keeps its `PlayerSession(LogoutOnly)` mark. The one reorder: `ModifyEnmity` computes the adjusted amount before it writes the table (`AddEnmity` receives the
+  adjusted amount); the adjustment reads stats and status effects, never the tables, and the enmity transcript is unchanged.
+- **`EnmityAttackService`** (`IEnmityAttackService`, `ILeashRetargetListener` and `IStealthRetargetListener`, 447 lines, interface 58, **8 services**: table, leash, activity, stealth, companion target query, combat activity,
+  attack timing, queries): `GetHighestEnmityAttackTarget`, `IsEligibleAttackTarget` (promoted to public: the taunt reads it), `ReevaluateEnemyAttackTargets`, `ResumeAttackAfterActionsCleared`, `AttackHighestEnmityTarget`,
+  `IssueAttackCommand` and the stale-attack, hold and move-range helpers, verbatim, with the one `Rerun` boot handler `RegisterRetargetListeners` (`OnModuleCacheAfter`). It holds no field of its own.
+- **The two retarget notices.** `ILeashRetargetListener` (`AttackHighestEnmityTarget`) has its list in `AIService` (`_retargetListeners`, `[ReloadState(Runtime)]`, `RegisterRetargetListener` on `ICombatLeash`); the AI core's
+  seam `AttackHighestEnmityTarget` (the two core call sites, `ProcessFlags` and `TryKeepFightingWithinLeash`) hands the call to every listener. `IStealthRetargetListener` (`ReevaluateEnemyAttackTargets`,
+  `AttackHighestEnmityTarget`) is a separate interface from `IStealthAggroListener`, with its list in `StealthService` (`RegisterRetargetListener` on `IStealthService`). Both lists keep one entry for a repeat registration and an
+  empty list throws `InvalidOperationException` ("No leash retarget listener is registered with the AI service.", "No stealth retarget listener is registered with the stealth service."). `RegisterRetargetListeners`
+  registers the attack part with both, and is listed in `HandlerRenames.txt` on the `AI.CacheAIData` line (beside `RegisterStealthAggroListener`, which also runs after the module cache), in `ScriptHandlerOrder.txt` right after
+  `RegisterStealthAggroListener`, and in `BootHandlerClassification.txt` as `Rerun`. `AIService` and `StealthService` take `IEnmityService` plainly (the table part, which takes no service); `Lazy<IEnmityService>` is gone from both.
+- **The constructor scan, on the real graph.** `LazyDependencyCycleTests` (the scan of every constructor, `Lazy<>` edges apart) after the change: the table part takes no service, so a plain `IEnmityService` in `AIService` and
+  `StealthService` closes no cycle, and the container validation, the engine start and the hot reload start of the real graph build with them plain. The scan found one more needless `Lazy<>`: **`PartyService -> Lazy<IAbilityAuraService>`**.
+  Its only path back to `PartyService` ran through `EnmityService -> IPartyService`; with `IPartyRoster` there is none, so the guard names it and it is plain now (`PartyServiceTests` use a plain forwarder). It is the one
+  departure from the map's two `Lazy<>`. `DeferredResolution.txt` drops three lines (Stealth, AI core, Party): 30 deferred parameters to 27.
+- **The ports.** `IHologramQuery` (`IsHologram`, Combat-owned, `IHoloComService : IHologramQuery`, registered as the same instance) and `IPartyRoster` (already registered) replace `IHoloComService` and `IPartyService` in the
+  change part: `UpwardEdges.txt` loses Enmity -> Social 3 and Enmity -> World 3 and `DomainCycles.txt` loses `Combat <-> World`. `CrossDomainEdges.txt` loses `Domain/Combat -> Domain/World`, and every other changed line was a member count
+  and was reverted.
+- **Callers.** About 300 sites change receiver by a scripted edit: `ModifyEnmity` and its siblings to `EnmityChange` (`GameServices.EnmityChange`), the attack members to `EnmityAttack`, the reads stay on `Enmity`. 15 server
+  services take the parts they call (`QuestEncounterService`, `SpaceService`, `AIAggroService`, `AIActionService`, `AICreatureEventService`, `AIDecisionService` hold two or three; the ability and guard services hold the change
+  part only), `Feature/UsePerkFeat.cs` has its four sites (decision D2) and `WeaponAbilitySelfEffects` its one injected property (`IEnmityAttackService`). `AIService.cs` gains the list and seam (about 20 lines), `StealthService.cs` the
+  list and two seams. `GameServices` gains `EnmityChange` and `EnmityAttack`, each with a summary (the type stays exempt from the size measure until P5-14). `ConvertedServices.json` and `DomainMap.json` list `EnmityChange` and
+  `EnmityAttack`; `RemovedFacades.json` moves the owners of `MinimumEnmityPercentAdjustment` and `MaximumEnmityPercentAdjustment` to `EnmityChangeService` (`SecureThreatLeadPercent` stays on `EnmityService`);
+  `ClockSeamFiles.txt` swaps `EnmityService.cs` for `EnmityAttackService.cs` (the attack part reads the clock; the table part no longer does). `ReloadAdoption.txt` and `ReloadCarryHistory.txt` do not change.
+- **Departures from the map.**
+  - **`CalculateReducedEnmity` stays on the table part.** `ReduceEnmityEntry` needs the reduction rule, and a change-part rule would make the table call up. The change part has no such member; its call sites (`CombatFacadeAllocationTests`)
+    keep `Enmity.CalculateReducedEnmity`.
+  - **The stay-part is 444 lines, the parts 450 and 447** (map: about 350, 465 and 375): every member keeps its doc comment and the new members have theirs.
+  - **`IEnmityAttackService` does not extend the two listener interfaces**: both declare `AttackHighestEnmityTarget(uint)`, so an interface that inherited both could not call it. The class implements them, and the container's
+    instance is the listener.
+  - **`RecordAttackCommand` takes the time** (`RecordAttackCommand(creature, target, issuedAt)`), so the attack part reads `Clock.UtcNow` as it did and the table part has no clock; `TryGetAttackCommand(creature, out issuedAt, out target)`
+    answers both tables (they are always set and cleared together).
+  - **`AIActionService` holds the change and attack parts, not table and attack** (it makes no table read after P5-8), and `AICreatureEventService` and `AIDecisionService` hold table and attack.
+  - **A third `Lazy<>` goes** (`PartyService`, above).
+  - **`HoloComService` declares nothing new**: `IHoloComService : IHologramQuery` moves `IsHologram` to the port and the class keeps its public method.
+- **Handlers and state.** The ten handler lines are renamed in place in `ScriptHandlerOrder.txt` and `HandlerRenames.txt` (the nine facade names; event and position unchanged), and the `PlayerExit` line of
+  `PlayerSessionClassification.txt` is `EnmityChangeService.PlayerExit`. The healing table stays unmarked (no handler or list that a reload rebuilds owns it). The attack-command memory and the two listener lists are `Runtime`.
+- **Tests.** `EnmityServiceTests` splits as P5-7h2's did, over the shared `EnmityPartsTestBase` (which builds the three parts for real over the same scripted engine, stat, stealth, leash and party stand-ins, with one double per part:
+  `TestEnmity`, `TestEnmityChange`, `TestEnmityAttack`): the table part (10 test methods), `EnmityChangeServiceTests` (31) and `EnmityAttackServiceTests` (18). All 59 old test names are kept. New tests: `EnmityPartsStructureTests` (7:
+  the 0, 8 and 8 services and no deferred parameter in any of the five services the split touches, the carried keys and the `Runtime` marks, the ten handlers and the one boot handler, nothing of the moved members left on the stay-part,
+  one container singleton per part and the ports), `EnmityRetargetNoticeTests` (8: both lists in registration order, one entry for a repeat, the loud failure on an empty list, the attack part's one registration, and two generations of a
+  container each holding it once), `ReloadStateCarrierTests` (the carried-table round trip through the parts and no carried key on the change and attack parts), and `CombatPartForwardingTests` (the three interfaces and the two defaults,
+  `CalculateHealingEnmity(nestedHealing=0)` and `IssueAttackCommand(clearActions=True)`). `EnmityTranscriptTests` runs the P5-7b enmity transcript over the three parts, **the golden `Enmity.txt` unchanged** (the call order and every write
+  of the one reorder are the same); the ability transcripts differ by two label lines (`Enmity.ReduceEnmity` and `Enmity.GetHighestEnmityAttackTarget` become `EnmityChange.` and `EnmityAttack.`) because the bench lists both parts as leaves.
+  `WeaponAbilityTraceBench.Leaves` gains both interfaces and the weapon ability call trace is regenerated: **224 lines differ, all of them `Enmity.ReevaluateEnemyAttackTargets` to `EnmityAttack.ReevaluateEnemyAttackTargets`**
+  (133,545 lines before and after). `EnmitySource` reads the three files; the source readers needed receiver text edits only (`CrossSkillPerkInteractionSafetyTests`, `EspionageSystemTests`, `ForceDarkManipulatorTests`,
+  `ForceSensitiveEspionageTests`, `AIModelTests`, `BeastmasterCombatUpgradeTests`, `CombatUpgradeBibleWorkbookFormattingTests`, and the harness class names of `AbilityAttackResumeTests` and `NPCChaseTests`, whose stand-in compiles
+  the production bodies and gains `ForgetAttackCommand` and `TryGetAttackCommand`).
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored; names without a leading underscore and case) of the 105 members of the old class (fields, constants, the constructor, methods) against the three
+    parts: **87 identical, 16 different, 2 not matched by name and parameter count** (the constructor, and the field `_holoCom`, renamed `_hologram`). The 16: `ModifyEnmity` (the four-parameter overload: the reorder and
+    `AddEnmity`), `TryTaunt` (`_table.GetEnmityTable(...).ContainsKey` and `IsEligibleAttackTarget` through the attack part), `ModifyEnmityOnAll`, `ReduceEnmityOnAll` and `ReevaluateEnemyAttackTargets` (`GetEnemiesOf` for the
+    `TryGetValue` and `ToArray()`), `ReduceEnmity` (`ReduceEnmityEntry`), `ModifyProximityEnmity` (`AddProximityEnmity`), `RemoveCreatureEnmity`, `ResumeAttackAfterActionsCleared` and `HoldForHiddenTargets` (`ForgetAttackCommand`, and for
+    `RemoveCreatureEnmity` the entry removals), and `AttackTargetIfNeeded`, `ShouldRecoverStaleAttack` and `IssueAttackCommand` (`TryGetAttackCommand`, `RecordAttackCommand`). `token-comparison.txt` in the evidence folder.
+  - *Unit tests* (`SWLOR.Game.Server.Tests`): one filter on `Enmity`, `Taunt`, `Threat`, `Leash`, `Stealth`, `AI`, `Companion`, `HoloCom`, `UsePerkFeat`, `Espionage`, `Combat`, `CleanupOrder`, `CallTrace`, `Handler`, `BootHandler`, `SessionClassification`, `Reload`, `PlayerMessageAudit`,
+    `ConvertedServiceContainer`, `LazyDependencyCycle`, `Party`, `Facade` and `Clock`: 5,251 tests, 5,216 pass, 34 fail, 1 skipped. Of the 34, 16 were this item's: 12 cases of the two source-compiling stand-ins (`AbilityAttackResumeTests` and `NPCChaseTests` named the old `Enmity` receiver or lacked the two new memory members), the two ability transcripts (the old leaf label)
+    and two constructor readers (the weapon activation and weapon riders parts named `IEnmityService`); earlier runs of the narrower filters had also surfaced the weapon ability call trace, `ConvertedServiceContainerTests` (the port),
+    `LazyDependencyCycleTests` (the `PartyService` parameter), `PartyServiceTests` and the handler snapshots, fixed and rerun. After the fixes all pass and a rerun of the stand-ins and the transcripts passes. Unfiltered, once, at the head (`SWLOR_Haks` sparse): **20,364 tests, 20,109 pass, 252 fail, 3 skipped (12 minutes 42 seconds).** Every one of the 252 also fails in the same run at the base (a scratch worktree
+    at `0e77bc9f8`: 20,333 tests, 453 fail; the 201 that fail only there say "Could not locate the SWLOR_NWN repository root" because the scratch folder is not named like the repository): 0 fail only at the head. By cause, 242 read hak or module
+    files the checkout lacks (`.2da` files, models, icons, tile sets, `DungeonEncounterWalkmeshTests`), 3 read sparse tile sets (`HeadquartersFloors_AreNotLaidOverVoidFillerTiles`, `StaticPlaceables_AreAnchoredInTheRoomTheyAreSeenFrom` 2), and 7 read the
+    main checkout's older source (`AreaShots_ShareOneImpactBatchAcrossAllProjectileCallbacks`, `FirstAidSources_IncludeBibleBehavior`, `ForceDarkManipulatorSources_IncludeBibleBehavior`, `ForceDarkRavagerSources_IncludeBibleBehavior`,
+    `MimicryStatusDurationsAndDetonationOrderMatchTheReviewedBiblePayloads`, `SereneFocus_SurvivesRepeatedSanctuaryPulsesWithoutLosingItsTick`, `ReportedLeadershipFailPerks_UseDynamicRadiusAndTemporaryHitPoints`), as in P5-7h2.
+  - *CombatSim:* `team-fight`, `twin-pistol-barrage`, `twin-pistol-crossfire` and `solo-boss` (seed 1, 50 runs, Markdown and JSON) and the ability table, built at the base and at the head: **all nine files are byte-identical**.
+  - *Architecture:* `SWLOR.Architecture.Tests` 298 tests; six baseline tests failed before the regeneration (`CrossDomainEdges`, `LargeTypes`, `ServicesPerType`, `DeferredResolution`, `DomainCycles`, `UpwardEdges`), and after it all 298 pass.
+    *Baselines changed:* `ServicesPerType.txt` (`EnmityService` 12 leaves the list; `SpaceService` 18 to 19: its `IEnmityService` is now the table and the change part), `LargeTypes.txt` (`EnmityService` 1,243 leaves; `SpaceService` 2,768 to
+    2,771), `DeferredResolution.txt` (three lines: `StealthService`, `AIService` and `PartyService`), `UpwardEdges.txt` (the two Enmity lines), `DomainCycles.txt` (`Combat <-> World` leaves), `CrossDomainEdges.txt` (`Combat -> World`
+    leaves; the 45 member-count changes were reverted), `DebtReport.md` (the totals that follow, with the two cycle-member lines that follow the reverted counts restored). `EdgesIntoCoreAndPlatform.txt` moved by member counts only and was
+    reverted whole.
+  - *Engine tests* at `0e77bc9f8` and at the head, host entry, Release, filter `Characterization|CombatPerkRegression|TankEnmity|DMLimbo|StealthRetarget|StealthAggro|StealthAreaAbility|GhostProtocolStealth|ForceEspionage|Espionage|HoloCom|SpaceNPCAI|leash|aggro|taunt|threat|enmity|companion|retarget|Marked for Death|NPC AI selects|Droid theft`:
+    122 tests each; **122 pass at both sides, identical per-test outcomes, no characterization snapshot written** (the run's characterization output folder does not exist). Reports: `engine-{base,head}-results.json`.
+  - *Hot reload* (`scripts/run-hot-reload-check.sh --engine-filter HotReloadPlayers --reloads 2`, head, with a temporary uncommitted engine test in the `HotReloadPlayers` category that has no script handler): both reloads applied (pauses
+    62.0 s and 104.4 s on a busy machine), the engine run of each of the three generations passed (8 of 8), the cache digests (256) and the adopted and world digests (87) matched after each reload. The test spawned an enemy and an
+    attacker of its own in the first generation (the context destroys the creatures it spawns, which clears their tables), put enmity on the table, and in each later generation checked that the carried table still held 100, that each
+    retarget list held exactly one listener and that it is that generation's attack part, and that a recording listener added to each list heard the three notices (the AI core's retarget seam, stealth's re-evaluate and its attack seam)
+    and left the table as it was. The run's compose copy raised `NWNX_THREADWATCHDOG_KILL_THRESHOLD` (20 to 60) and its script copy waited 1,800 s for the first digest set; the first two attempts at the test failed on the test's own
+    mistakes (the context's creatures were destroyed with the test, and an assigned command on a creature of a former generation timed out), not on the product. `hot-reload-check.log` in the evidence folder.
+  - *CombatLoad and ModifyEnmity:* `CombatLoad` (`CombatLoadEngineTests`: 20 headless players against 15 NPCs, and two teams of 15 NPCs, 60 s each) at the base and at the head, host entry, Release, in two pairs of parallel runs on two stacks with the sides swapped between the pairs (the
+    machine was busy, so the absolute numbers are noisy; the two sides of one pair ran side by side). LOAD phase, frames per second, frame ms p50 / p95 / p99 / max, frames over 50 ms, managed ms per second:
+
+    | Scenario | Pair | Base | Head |
+    |---|---|---|---|
+    | players | 1 | 33.0 fps, 11.3 / 111.3 / 295.4 / 666.7, 292, 714 | 33.7 fps, 11.0 / 115.6 / 249.4 / 747.2, 294, 705 |
+    | players | 2 | 50.8 fps, 10.7 / 61.1 / 88.3 / 214.4, 251, 561 | 51.1 fps, 10.7 / 59.7 / 97.9 / 215.0, 257, 555 |
+    | NPC teams | 1 | 33.9 fps, 22.4 / 64.6 / 96.3 / 139.9, 203, 307 | 31.1 fps, 22.5 / 75.9 / 108.2 / 231.6, 264, 361 |
+    | NPC teams | 2 | 32.1 fps, 22.3 / 71.5 / 98.8 / 142.3, 268, 339 | 32.7 fps, 22.1 / 70.0 / 100.5 / 154.7, 247, 327 |
+
+    The sides differ by less than the two runs of one side differ from each other (the base's own NPC p95 is 64.6 and 71.5, its player managed time 714 and 561). The `ModifyEnmity` call itself was timed by a temporary, uncommitted engine test
+    (the same file at both sides, `CombatLoad`'s stack, no player): 7 rounds of 4,000 calls between two NPCs after 500 warm-up calls, medians **65.9 and 63.6 microseconds per call at the base, 66.9 and 62.9 at the head** (pairs 1 and 2). The
+    two interface calls the head adds (the table part and the attack part) are not measurable against the engine calls the method makes. `combatload-pair{1,2}.json` in the evidence folder.
+  - *Client evidence* (one NWN client, the same module (packed from this worktree), haks and character `agantarn.bic` and driver commands at the base and the head, in `veles_sewers` at `SEWERS_GATE`; a stack per side, native Release
+    builds with a temporary driver compiled in from outside the repository, `SWLOR_ENVIRONMENT=test`). The driver sets the character plot-flagged, spawns hostile `nw_bandit001` with 20,000 hit points and a standing ally (a henchman
+    that does not move), and calls the real enmity members (`ModifyEnmity`, `ReduceEnmity`, `TryTaunt`, the heal and damage events), the leash check and Ghost Protocol, printing every table, highest target, attack choice, current
+    action and attack target. Eight scenes, each in a cleared area: **1** two enemies attack the player, the player's damage and the henchman's heal raise enmity (the healer enters both tables and one enemy switches to it); **2** a taunt
+    pulls the enemy off the henchman; **3** a 90 percent reduction returns the enemy to the player; **4** one enemy switches to the creature with the most enmity while the other stays; **5** the enemy is pulled past its leash range, drops
+    the player and retargets to the creature still inside the leash, and **5b** with nobody inside the leash starts the evade and runs home with an empty table; **6** the enemies drop the player who goes stealthy (the player keeps its
+    enmity) and attack again when the player is revealed; **7** a creature that dies leaves the enemy's table, and an enemy forgets the player who leaves the area; **8** a hologram flag draws no enmity and the same creature draws it
+    when the flag is off. The 186 driver lines are identical at both sides once the random values are set aside (hit points, positions, enmity amounts that the henchman's own blows move by a few points, creature counts): after
+    that normalization **0 of 186 lines differ**; with the values left in, 38 lines differ, all of them those values (a taunt scene's `h=605` against `h=608`, the leash evade's position in mid-run, hit points one or two apart).
+    The normalized client chat (enemy attack and damage lines counted per scene, the effect lines kept) agrees: attack lines on the player per scene are within a few lines of each other (scene 6, where the enemies stop hitting the stealthy
+    player, 72 against 56), and the stealth scene has one `receives the effect of Stealth` and one `Stealth effect has worn off` line at each side. The scenes were tried on the base first and changed five times before the evidence runs (the enemies' return-home flag for the leash, a standing henchman, spawn points on reachable floor, a killable creature in scene 7, a wait
+    for the area to load); the evidence runs are the last ones at each side, each with a second pass of scenes 7 and 8 (at the base because the first pass still used the plot-flagged henchman that cannot die, at the head because the
+    area load after the player's return outlasted the wait). Not captured: the hologram as a call hologram (the scene sets the same flag `IsHologram` reads on a creature; a real call needs two players). The 42 screenshots, the raw chat, the driver lines and the comparisons are in `C:/Temp/mr-p5-7k/evidence/{base,head}/` (kept outside the repository).
+  - *Not run:* the `-Check` scripts (content, facade, clock) and `ExportPlayerMessageAudit.ps1`, which the agent rules leave to the owner. No `PlayerMessageAudit.json` row moved (neither moved part sends a message).
+
+### P5-7l as built (2026-11-26)
+
+Branch `claude/mr-p5-7l`, base `e4c4d34c2` (the P5-7k record on the feature branch). `cb465ec15` (the respawn panel after a lethal PvP death) was already on the branch, so master's `Service/Death.cs` is not touched by this item (open question 1).
+
+- **`DeathRespawnService`** (`IDeathRespawnService`, 212 lines, interface 57, **4 services**: db, area lookup, city upgrade lookup, player name): `InitializeRespawnPoint` (the `OnModuleEnter` handler, still `PlayerSession(LoginOnly)`), `GetRespawnLocation`,
+  `HasRespawnArea`, `IsWalkable` (private), `SendToHomePoint`, `ApplyPenalties` and both `WriteAudit` overloads, verbatim. `SendToHomePoint`, `ApplyPenalties` and the two `WriteAudit` members are promoted from private to public on the interface because
+  the respawn handler and the death handler of the stay-part call them. The unconverted `Log.Write` sits behind a `protected virtual WriteLog` of the part, as it did on `DeathService`. It holds no state.
+- **`DeathService`** (stay, `IDeathService`, 231 lines, interface 23; 405 and 46 before; **10 services** and the revived listener list: db, namedAnimation, messaging, playerName, statusEffect, statusEffectApplication, combatRecorder, combatRecordDamage, damageTaken, respawn): the
+  three handlers (`OnPlayerDying`, `OnPlayerDeath`, `OnPlayerRespawn`), `IsSubdualDeath` (both overloads) and `RecordDeathDebtWaiver`, and the one-line `protected virtual` seams. The stay-part is at 10, so **the map's fallback was not taken**: `OnPlayerDying` and its use of damage
+  taken stay on `DeathService` and no handler other than `InitializeRespawnPoint` is renamed. It reads the debt waiver variable through a private constant that names the respawn part's public one (`DeathRespawnService.DebtWaivedVariable`), so the bodies of
+  `OnPlayerDeath` and `RecordDeathDebtWaiver` are word for word what they were.
+- **`CombatForgetPhase`** (its own enum file, 11 values numbered as the map lists them: `ResourceTriggers` 1, `Activity` 2, `DefenseMemory` 3, `Suppression` 4, `Activation` 5, `HitEffects` 6, `AbilityImpact` 7, `OpeningActivity` 8, `AbilityStaminaCost` 9, `AttackTiming` 10,
+  `DamageModifiers` 11) and **`ICombatCreatureStateOwner`** (`ForgetCreatureState(creature, phase)`, one member). The twelve services that keep state by creature implement it and ignore the phases they do not own: resources (1 and 9), activity (2 and 8), defense memory (3),
+  suppression (4), ability offense effects (5), the critical hit part and the hit effects stay-part (6), the hit riders and area impact parts (7), attack timing (10), the rate part and the repeated target part (11). The interfaces of the twelve extend `ICombatCreatureStateOwner` (as
+  `IAbilityAuraService` extends `ICreatureRevivedListener`), and `ServiceRegistrations` registers each service again as the owner, in this order: resources, activity, defense memory, suppression, ability offense, critical hit, hit effects, hit riders, area impact, attack timing, rate,
+  repeated target. The owners that share a phase are adjacent and in the order the forgets ran inside the three services that called their neighbours.
+- **What each forget did before, and the three that forwarded.** Read at `e4c4d34c2`, the eleven calls of `RemoveStatTriggerCooldowns` were as the map says, but three of the services they called forwarded to a part: `ForgetHitEffectState` called the critical hit part first, `ForgetImpactState` called the
+  hit riders part then the area impact part, and `ForgetDamageModifierState` called the rate part first. They are the three shared phases, so the forwards are gone: `CombatAbilityImpactService.ForgetImpactState` (and its interface member) is removed, and the other two keep only their own
+  tables. The order inside each phase is unchanged. `CombatHitEffectsService` no longer takes the critical hit part (9 services to 8) and `CombatRepeatedTargetService` no longer takes the rate part (4 to 3): nothing else used them. `_abilityOffense.ForgetActivationState` and
+  `_repeatedTarget.ForgetDamageModifierState` (new since the map's list) are phase 5 and phase 11 exactly where the call order had them.
+- **`CombatService`** (156 lines, 168 before; **8 services** and the owner list: suppression, combatActivity, rate, repeatedTarget, defeatedEnemyEffects, stat, statusEffect, temporaryStatModifier; 14 before): `RemoveStatTriggerCooldowns` loops the phases from `ResourceTriggers` to `DamageModifiers`,
+  hands the creature to every owner for each, and then calls `_temporaryStatModifier.Clear(creature)` directly as the last call (the stat modifier service is Character, so it implements no Combat interface). The constructor copies the list and throws `InvalidOperationException`
+  ("No combat creature state owner is registered with the combat service.") for an empty one. The three handlers, `RefreshStatDrivenTrackerEffects` and `ICombatService` are unchanged, so `PerkService` is not edited. The loop does not allocate.
+- **Callers.** `HostedEventsService` takes `IDeathRespawnService` for its two `GetRespawnLocation` calls (it took `IDeathService`; its service count is unchanged). `GameServices` gains `DeathRespawn` with a summary (the type stays exempt from the size measure until P5-14), and the engine test
+  `DeathRespawnPointEngineTests` and `DeathRespawnPointTests` read the respawn members through it. `ConvertedServices.json` and `DomainMap.json` list `DeathRespawn`; `RemovedFacades.json` needed no change (`Death` has no constants). `ClockSeamFiles.txt`,
+  `BootHandlerClassification.txt`, `ReloadAdoption.txt` and `ReloadCarryHistory.txt` do not change: neither death part reads the clock, the login handler is not a boot handler, and nothing here is carried.
+- **Handlers and state.** `InitializeRespawnPoint` is renamed in place: `ScriptHandlerOrder.txt` (the `OnModuleEnter` line, event and position unchanged), `HandlerRenames.txt` (the branch name of the `Service.Death.InitializeRespawnPoint` line) and
+  `PlayerSessionClassification.txt` (`LoginOnly`, `DeathRespawnService.InitializeRespawnPoint`). The other three death handlers and the three `CombatService` handlers stay. No new field is marked `[ReloadState]`: the respawn part has no field but its services, and the owners' tables are what they were.
+- **Departures from the map.**
+  - **The respawn part is 212 lines, not about 170:** every moved member keeps its doc comment, and the interface has seven members (the three that were on `IDeathService` and the four the stay-part calls).
+  - **The forwards leave three services and two constructor parameters go:** the map names the owners per phase and does not say that the hit effects, impact and repeated target stay-parts forwarded to a neighbour; reading the forgets at the base showed it, and the removal of `ICombatAbilityImpactService.ForgetImpactState` and of the two parameters follows.
+  - **The owner interface is extended by the twelve service interfaces,** not implemented beside them, so the container's registration can hand out the same instance as the service (the map says only that each owner registers).
+  - **`DeathRespawnService.DebtWaivedVariable` is a public constant,** read by the stay-part through a private alias.
+  - **`PlayerMessageAudit.json` needs a regeneration** (left for the owner, as the brief says): the two `ApplyPenalties` rows (the `Requiem spares you any XP debt.` line and the `XP added to your debt` line) are now in `DeathRespawnService.cs`, and the `OnPlayerDeath` rows of `DeathService.cs` have new line numbers, so `MessageInventory_CoversEveryRuntimeCallSite` fails until `tools/ExportPlayerMessageAudit.ps1` is run.
+- **Tests.** `DeathServiceTests` splits as P5-7k's did, over the shared `DeathPartsTestBase` (the engine fake, the in-memory database, the scripted neighbours and the real respawn part over the same stand-ins, with one double per part: `TestDeath` and `TestDeathRespawn`): the stay-part
+  (16 test methods and the debt case method) and `DeathRespawnServiceTests` (the 6 test methods and the case method of the moved members, plus 6 new: `SendToHomePoint` twice, `ApplyPenalties` twice and `WriteAudit` twice). All 24 old test method names are kept. New tests:
+  `DeathPartsStructureTests` (the ten and four services, no deferred parameter, the handlers where they were, nothing of the moved members left on the stay-part, one container singleton of each part and the stay-part holding the respawn part's instance) and `CombatStateOwnerTests` (the phases
+  are 1 to 11 in the old order, the container registers the twelve owners in the order above, every implementer is registered once and shares its instance with its service, the cleanup walks the phases in order with owners of a shared phase in registration order and
+  `Clear` last, every owner gets every phase once, and an empty list throws). `CombatServiceTests` builds the cleanup over nine logging owners that write the line each forget wrote (`ForgetSequence` is unchanged), `CombatCleanupOrderTests` decorates the twelve real owners and writes
+  one line per step through `CombatForgetSteps` (a step two owners share is written by the first of them), and the P5-7b transcripts read the same way: **the `CleanupOrder.txt`, `CombatService.txt` and `Death.txt` goldens are unchanged**. `CombatPartForwardingTests` lists `IDeathRespawnService`,
+  `WeaponAbilityTraceBench.Leaves` gains it, and the regenerated weapon ability call trace is **byte-identical** (no line differs). `CombatFacadeAllocationTests` reads the impact forget through the two owners and no pinned byte count changes (the 192, 256 and 368 byte pins hold).
+  Source readers needed five edits: the container list of non-services (`ICombatCreatureStateOwner`, in `ConvertedServiceContainerTests`), the impact table test of `CombatSourceTests` (it forgets through the two owners), `DeathSource` (reads both files), the receiver text of `DeathRespawnPointTests` and the interface type of the two `HostedEvents` test classes.
+  `TranscriptLeaf` and `ForwardingRecorder` gain an optional `Describe` hook for the lines of an owner step.
+- **Proof.**
+  - *Moved bodies:* a Roslyn token comparison (modifiers, receivers and the namespace ignored; the receivers `_respawn` and `DeathRespawnService` too) of the 42 members of the old `DeathService` (fields, constants, the constructor, methods) at `e4c4d34c2` against the stay-part and the respawn part:
+    **40 identical, 1 different, 1 not matched by name and parameter types.** The different one is the stay-part's `DebtWaivedVariable` (its initializer now names the respawn part's constant); the not matched one is the constructor. Every moved member (the seven methods and `IsWalkable`, both
+    `WriteAudit` overloads, `DefaultRespawnWaypointTag`) is identical. The cleanup side, matched by class and name (425 members of `CombatService` and the twelve owners): **410 identical, 3 different** (`CombatService.RemoveStatTriggerCooldowns`, and `ForgetHitEffectState` and `ForgetDamageModifierState`, which lose
+    the forwarded call), 12 not matched (`CombatService`'s six fields and its constructor, the constructors of the hit effects and repeated target stay-parts with their two dropped fields, and `ForgetImpactState`); the 16 new members are the constructor and field of `CombatService` and the twelve `ForgetCreatureState` members. `token-comparison.txt` in the evidence folder.
+  - *Unit tests* (`SWLOR.Game.Server.Tests`): one filter on `Death`, `Respawn`, `Dying`, `Subdual`, `HomePoint`, `Combat`, `CleanupOrder`, `Forget`, `StateOwner`, `CallTrace`, `Handler`, `SessionClassification`, `Reload`, `PlayerMessageAudit`, `ConvertedServiceContainer`, `LazyDependencyCycle`, `Facade`, `Clock`, `CrossSkill`, `HostedEvents`, `Enmity` and `Transcript`:
+    4,082 tests, 4,062 pass, 19 fail, 1 skipped (the first run, before the fixes). Of the 19, four were this item's and are fixed (the container's list of non-services, the two impact table reflection cases of `CombatSourceTests` and the Requiem source reader, all four pass on a rerun), one is the audit below, and 14 read
+    hak files the checkout lacks or the main checkout's older source (as in P5-7h2 and P5-7k). Unfiltered, once, at the head (`SWLOR_Haks` sparse): **20,386 tests, 20,130 pass, 253 fail, 3 skipped (22 minutes 42 seconds).** At the base (a scratch worktree at `e4c4d34c2`, same sparse haks): 20,364 tests, 453 fail. **One test fails only at the head:**
+    `MessageInventory_CoversEveryRuntimeCallSite` (the audit row below). The 201 that fail only at the base are tests that find the repository by the scratch folder or read hak files the scratch folder lacks (84 say "Could not locate the SWLOR_NWN repository root", 113 read a missing hak path, 4 name sources the scratch folder lacks). Of the 253 at the head, 241 read hak or module files the checkout lacks
+    (`.2da` files, models, tile sets, shaders), 3 read sparse tile sets (`HeadquartersFloors_AreNotLaidOverVoidFillerTiles`, `StaticPlaceables_AreAnchoredInTheRoomTheyAreSeenFrom` 2), 7 read the main checkout's older source (`AreaShots_ShareOneImpactBatchAcrossAllProjectileCallbacks`, `FirstAidSources_IncludeBibleBehavior`,
+    `ForceDarkManipulatorSources_IncludeBibleBehavior`, `ForceDarkRavagerSources_IncludeBibleBehavior`, `MimicryStatusDurationsAndDetonationOrderMatchTheReviewedBiblePayloads`, `SereneFocus_SurvivesRepeatedSanctuaryPulsesWithoutLosingItsTick`,
+    `ReportedLeadershipFailPerks_UseDynamicRadiusAndTemporaryHitPoints`), 1 is `Walkmeshes_HaveEveryDeclaredVertexAndFaceOnItsOwnLine` (a hak checkout check) and 1 is the audit. Every one of the 252 others also fails at the base. The failure lists are `head-failed.txt` and `base-failed.txt` in the evidence folder.
+  - *CombatSim:* `team-fight`, `twin-pistol-barrage`, `twin-pistol-crossfire` and `solo-boss` (seed 1, 50 runs, Markdown and JSON) and the ability table, built at the base and at the head: **all nine files are byte-identical.**
+  - *Architecture:* `SWLOR.Architecture.Tests` 298 tests; two baseline tests failed before the regeneration (`StaticLookups`, `ServicesPerType`), and after it all 298 pass. *Baselines changed:* `ServicesPerType.txt` (`CombatService` 14 and `DeathService` 11 leave the list: both are at or under 10), `StaticLookups.txt`
+    (`CombatFacadeAllocationTests` 307 to 308: the impact forget reads the two parts through `GameServices`), `DebtReport.md` (the totals that follow: 13 types over 10 services become 11, 185 services become 160, one more static use). `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` moved by member counts only
+    (45 and 30 edges, none added or removed: the owner interface and the respawn interface add members to existing edges) and were reverted whole, and the two `DebtReport.md` lines that follow those counts (`Members both ways`, `Combat -> Character`) were restored. `LogicToContent.txt` does not change (the content names stay on the stay-part).
+  - *Engine tests* at `e4c4d34c2` and at the head, host entry, Release, filter `Characterization|CombatPerkRegression|TankEnmity|DMLimbo|Death|Respawn|CombatRecorder|StealthRetarget|subdual|Marked for Death` (97 tests: the characterization scenarios, `DeathRespawnPointEngineTests`, `MarkedForDeathEngineTests`, the recorder, tank enmity,
+    the DM limbo enmity, the stealth retarget notice, the native death and subdual tests): **96 pass and 1 fails at both sides, identical per-test outcomes, no characterization snapshot written** (a changed snapshot fails its scenario; none did). The one that fails at both sides is `Area taunts recover multiple enemies and replace
+    pending approaches` (`TankEnmity`), a 10 s wait for an enemy to turn on the taunter that two engine runs side by side on a busy machine did not meet. Run alone, twice at each side (one pair side by side, then another), it failed once at the base (the same wait) and passed in the other three runs, so it is timing-sensitive at both sides and not a difference of this item. Reports: `engine-{base,head}-results.json` and the four reruns.
+  - *Hot reload* (`scripts/run-hot-reload-check.sh --engine-filter HotReloadPlayers --reloads 2`, head, with a temporary uncommitted engine test in the `HotReloadPlayers` category that has no script handler, `temp-HotReloadDeathCombatEngineTests.cs.txt` in the evidence folder): both reloads applied (pauses 328.3 s and 310.9 s on a busy
+    machine), the engine run of each of the three generations passed (8 of 8), the cache digests (256) and the adopted and world digests (87) matched after each reload. In the first generation and after each reload the test checked that exactly one `DeathRespawnService` handler is registered for the module enter event and that it is bound to
+    that generation's respawn part (and none on `DeathService`), that the three `DeathService` handlers and the one `CombatService` exit handler are registered once and bound to this generation's instances, that the cleanup holds this generation's twelve owners in registration order, and that the cleanup the logout runs (the private
+    `RemoveStatTriggerCooldowns`, which `ClearStatTriggerState` calls) forgets a creature that was put into every creature-keyed table of the twelve owners (every entry to 0; the two tables the cleanup has never cleared, `_containmentNormalizationTargets` and `_damageDerivedHealingStates`, are left out, as the committed cleanup
+    order transcript keeps them). The run's compose copy raised `NWNX_THREADWATCHDOG_KILL_THRESHOLD` (20 to 60) and its script copy waited 1,800 s for the first digest set. The first attempt at the check lost its containers when Docker restarted on the machine (exit 255), and the second failed on the test's own mistakes (the content factory cannot build a
+    test that asks for the owner list, and the two tables above), not on the product. `hot-reload-check.log` in the evidence folder.
+  - *Client evidence* (one NWN client, the same module (packed from this worktree), haks and character `agantarn.bic` and driver commands at the base and the head, in `veles_sewers` at `SEWERS_GATE`; a stack per side, native Release builds with a temporary driver compiled in from outside the repository, `SWLOR_ENVIRONMENT=test`).
+    The driver plot-flags the character, gives it 120 skill points acquired, sets its respawn point, spawns two hostile `nw_bandit001` that cannot die (so their blows do not decide a scene) and has the character attack one, calls `NoteGuardedHit` for the character, prints the creature-keyed tables of the twelve cleanup owners that name a creature,
+    and kills the character with `EffectDeath` applied by a bandit. The Respawn button of the death panel was clicked through the client. **Login:** the new character's login handler wrote the default respawn point (`czs220_hangar`, 25.9, 37.2) at both sides (`DeathService.InitializeRespawnPoint` at the base, `DeathRespawnService.InitializeRespawnPoint` at the head).
+    **Scene 1, a respawn point applies:** the point set to the `SEWERS_MEDICAL` waypoint (`veles_sewers`, 175.0, 85.2) resolves through `GetRespawnLocation` to that place (`HasRespawnArea` true); in combat the character has 5 table entries (four of the activity part, one guarded hit) and the bandit 5 and 2; **killing a bandit empties its 5 entries
+    (the cleanup after a death) and leaves the character's 5**; the other bandit kills the character (`Bandit killed Agan Tarn`, the death panel shows); Respawn puts the character at (175.0, 85.2) in `veles_sewers` with 96 of 190 hit points and `XPDebt` 3000 (120 x 25), and the chat shows `3000 XP added to your debt. (Total: 3000 XP)`. **Scene 2, no respawn point applies:** the record's area blank
+    (`HasRespawnArea` false), the resolved location is the default point in `czs220_hangar` (25.9, 37.2); after the death and Respawn the character is there (area `CZ220Hangar`) with the same debt and chat line. **Scene 3, logout:** 7 table entries name the character in combat; after the server console kicked the player, the driver's exit hook found **0**
+    (right after the exit handlers and 4 s later), so the cleanup the logout runs forgot every owner's entries. The driver lines are identical at both sides after the object ids, hit points, positions and counts of cleared creatures are set aside: **48 of 49 lines identical**; the one that differs (`xpDebt=3000` against `xpDebt=0` on the line that blanks the respawn point
+    in scene 2) is the base pass having started that scene once from a script that was stopped and run again from its start, which had already reset the debt. The client chat lines of the scenes (the kill, the death, the debt line twice) are identical (5 of 5). The 7 screenshots of each side (the login frame, the two fights, the two death panels and the two
+    frames after a respawn) were looked at; the two sides' frames after the respawn at the respawn point are identical to the eye. A scene script was moved to the background by the shell's time limit; it was stopped, and every later scene was run a step at a time in the foreground. Not captured: a **subdual death** (the killer must be a second
+    player with subdual mode on; one client was allowed, and the unit tests pin it), and entries in the tables of the other owners (only the activity and defense memory parts held entries for the character in these fights; `CombatCleanupOrderTests` fills and clears the rest, and the hot reload scenario above filled and cleared every owner's tables). The screenshots, the raw chat, the driver
+    lines and `client-compare.txt` are in `C:/Temp/mr-p5-7l/evidence/{base,head}/` (kept outside the repository).
+  - *Not run:* the `-Check` scripts (content, facade, clock) and `ExportPlayerMessageAudit.ps1`, which the agent rules leave to the owner (the audit export is needed, above).
+- **P5-7 close-out: the end conditions of "Order", at the head.**
+  - *The 11 services at or under 10 services and 1,000 lines: met.* None of the eleven stay-parts, and none of the parts the split made, is in `ServicesPerType.txt` (the guard lists a type over 10 services) or `LargeTypes.txt` (over 1,000 lines). The largest file of the family is `CombatRecorderService` (898 lines), then `CombatDamageModifiersService`
+    (875); `DeathService` and `CombatAbilityImpactService` end at 10 services, the rest below.
+  - *No method over 150 lines: met.* `LongMethods.txt` holds one method (`DroidService.SpawnDroid`, 272 lines), none in Combat; `CombatRecordSerializer.Write` left it at P5-7c.
+  - *The `Lazy<>` count: met.* `DeferredResolution.txt` has no line for `CombatDamageModifiersService`, `CombatDamageTakenService` or `CombatHitEffectsService` (the three the map names), and none for `AIService` or `StealthService`'s `Lazy<IEnmityService>` (P5-7k; `StealthService`'s four other deferred parameters are not Enmity). The recorder's two, which open question 5
+    leaves to P5-15, remain.
+  - *The closed edges: met.* `UpwardEdges.txt` has no line for the hit effects stay-part (Quests 3, Social 3: P5-7f1) or Enmity (Social 3 and World 3: P5-7k), and `CrossDomainEdges.txt` has no `Combat -> Quests` or `Combat -> World`. The last one, `CombatAbilityImpactService.cs: Combat -> Social | 3`, was still open when this item was built: the map says the impact part switches
+    `IPartyService` to `IPartyRoster`, and neither P5-7h2 nor the first commits of this item did it. The coordinator made the swap on this branch (5fc8c06150): the orchestrator's one `IsInParty` call, which `PartyService` forwards to the roster, now reads `IPartyRoster`, so `Combat -> Social` and the `Combat <-> Social` domain cycle are gone (`UpwardEdges.txt`, `DomainCycles.txt`, `CrossDomainEdges.txt`).
+  - `README.md` names the map and needs no change beyond its one line; the status table is the owner's.

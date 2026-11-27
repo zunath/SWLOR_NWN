@@ -1,16 +1,15 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
@@ -94,11 +93,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
             PlayerTemporaryEffects.RestoreGhostAfterRevive(target);
             if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordResurrection(target);
+                CombatRecordDamage.RecordResurrection(target);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             DelayCommand(0.1f, () =>
             {
-                Ability.ReapplyAuraEffectsForCreature(target);
+                AbilityAura.ReapplyAuraEffectsForCreature(target);
                 if (GetIsObjectValid(target) && !GetIsDead(target) && GetCurrentHitPoints(target) > 0)
                     playResurrectionVisual(target);
             });
@@ -116,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
             PlayerTemporaryEffects.RestoreGhostAfterRevive(target);
             if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordResurrection(target);
+                CombatRecordDamage.RecordResurrection(target);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             // Resurrection is not settled until after the current engine command finishes.
             // Healing in the same tick is silently discarded because the target is still dead.
@@ -125,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 using var recorderScope = CombatRecorder.BeginAbilityFeatAttribution(activator, FeatType.Resuscitation2);
                 // A revive restores a share of the target's own HP, so it stays a percent.
                 AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, HealAmount.Percent(20));
-                Ability.ReapplyAuraEffectsForCreature(target);
+                AbilityAura.ReapplyAuraEffectsForCreature(target);
                 if (GetIsObjectValid(target) && !GetIsDead(target) && GetCurrentHitPoints(target) > 0)
                     playResurrectionVisual(target);
             });

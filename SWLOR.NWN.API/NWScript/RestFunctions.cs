@@ -10,7 +10,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oCreature">The creature to force rest</param>
         public static void ForceRest(uint oCreature)
         {
-            global::NWN.Core.NWScript.ForceRest(oCreature);
+            NWScriptRuntime.Current.ForceRest(oCreature);
         }
 
         /// <summary>
@@ -20,9 +20,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the creature is resting</returns>
         public static bool GetIsResting(uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetIsResting(oCreature) != 0;
+            return NWScriptRuntime.Current.GetIsResting(oCreature);
         }
 
         /// <summary>
@@ -31,7 +29,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The last PC that has rested</returns>
         public static uint GetLastPCRested()
         {
-            return global::NWN.Core.NWScript.GetLastPCRested();
+            return NWScriptRuntime.Current.GetLastPCRested();
         }
 
         /// <summary>
@@ -40,7 +38,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The type (REST_EVENTTYPE_REST_*) of the last rest event</returns>
         public static RestEventType GetLastRestEventType()
         {
-            return (RestEventType)global::NWN.Core.NWScript.GetLastRestEventType();
+            return NWScriptRuntime.Current.GetLastRestEventType();
         }
 
         /// <summary>
@@ -54,7 +52,7 @@ namespace SWLOR.NWN.API.NWScript
         /// but is in a different room behind a closed door</param>
         public static void ActionRest(bool bCreatureToEnemyLineOfSightCheck = false)
         {
-            global::NWN.Core.NWScript.ActionRest(bCreatureToEnemyLineOfSightCheck ? 1 : 0);
+            NWScriptRuntime.Current.ActionRest(bCreatureToEnemyLineOfSightCheck);
         }
     }
 }

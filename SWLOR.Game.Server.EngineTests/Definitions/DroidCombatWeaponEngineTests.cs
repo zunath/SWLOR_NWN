@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CompanionControlService;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -294,7 +294,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var controller = OBJECT_INVALID;
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                controller = CreateItemOnObject(Droid.DroidControlItemResref, owner);
+                controller = CreateItemOnObject(DroidService.DroidControlItemResref, owner);
                 ctx.Assert(GetIsObjectValid(controller), "The controller exists");
                 foreach (var (stat, value) in new[]
                          {
@@ -347,7 +347,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var enemy = ctx.SpawnCreature("nar_thief", 5f);
                 await ctx.WaitFrameAsync();
                 SetPlotFlag(enemy, false);
-                Stat.SetNPCMaxHitPoints(enemy, 30000, true);
+                CreatureStat.SetNPCMaxHitPoints(enemy, 30000, true);
                 ObjectPlugin.SetCurrentHitPoints(enemy, 30000);
                 SetImmortal(enemy, true);
                 ctx.MakeHostile(enemy);
@@ -418,7 +418,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             _rifleUnequips.Clear();
             try
             {
-                ctx.Assert(CompanionControl.IsControlledCompanion(droid), "The droid belongs to a real player fixture");
+                ctx.Assert(CompanionControlStore.IsControlledCompanion(droid), "The droid belongs to a real player fixture");
                 var rifle = await CreateEquipment(ctx, owner, "oph_rifle");
                 if (unlimitedAmmo)
                     await ctx.ExecuteInCreatureContextAsync(owner, () =>
@@ -434,7 +434,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await Transfer(ctx, owner, rifle, droid);
                 await Equip(ctx, droid, rifle, InventorySlot.RightHand);
 
-                Stat.SetNPCMaxHitPoints(droid, 30000, true);
+                CreatureStat.SetNPCMaxHitPoints(droid, 30000, true);
                 ObjectPlugin.SetCurrentHitPoints(droid, 30000);
                 SetImmortal(droid, true);
                 SetLocalBool(droid, CombatProbe, true);
@@ -445,7 +445,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     !GetIsObjectValid(GetItemInSlot(InventorySlot.CreatureRight, enemy)))
                     await ctx.EquipItemAsync(enemy, "b_longsword", InventorySlot.RightHand);
                 SetPlotFlag(enemy, false);
-                Stat.SetNPCMaxHitPoints(enemy, 30000, true);
+                CreatureStat.SetNPCMaxHitPoints(enemy, 30000, true);
                 ObjectPlugin.SetCurrentHitPoints(enemy, 30000);
                 SetImmortal(enemy, true);
                 ctx.MakeHostile(enemy);

@@ -1,7 +1,8 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void OnDamageDealt(uint attacker, uint defender, int damage, CombatDamageType damageType)
         {
-            var amount = Stat.ApplyHealingReceivedAdjustment(attacker, GameMath.PercentOf(damage, 2));
+            var amount = CombatResources.ApplyHealingReceivedAdjustment(attacker, GameMath.PercentOf(damage, 2));
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), attacker);
         }
     }

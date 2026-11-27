@@ -1,5 +1,5 @@
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.RecipeParameters;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.RecipeParameters;
 using SWLOR.Game.Server.Tests.Service.RecipeParameters;
 
 namespace SWLOR.Game.Server.Tests.Service.Circuit;

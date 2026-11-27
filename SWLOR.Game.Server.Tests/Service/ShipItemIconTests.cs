@@ -5,7 +5,7 @@ using FluentAssertions;
 using Microsoft.VisualBasic.FileIO;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.Space;
 
 namespace SWLOR.Game.Server.Tests.Service;
 

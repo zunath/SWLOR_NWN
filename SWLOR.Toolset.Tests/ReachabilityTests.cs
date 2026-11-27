@@ -4,6 +4,7 @@ using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -521,7 +522,7 @@ namespace SWLOR.Toolset.Tests
 
             var after = Evaluator.ApplyActions(reply, new PretendPlayer().WithFactionStanding(7, 4900));
 
-            after.GetFactionStanding(7).Should().Be(SWLOR.Game.Server.Service.Faction.MaximumFaction);
+            after.GetFactionStanding(7).Should().Be(FactionService.MaximumFaction);
         }
 
         [Test]
@@ -534,7 +535,7 @@ namespace SWLOR.Toolset.Tests
 
             var after = Evaluator.ApplyActions(reply, new PretendPlayer().WithFactionStanding(7, -4900));
 
-            after.GetFactionStanding(7).Should().Be(SWLOR.Game.Server.Service.Faction.MinimumFaction);
+            after.GetFactionStanding(7).Should().Be(FactionService.MinimumFaction);
         }
 
         [Test]

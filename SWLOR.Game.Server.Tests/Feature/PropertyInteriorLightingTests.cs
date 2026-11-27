@@ -2,7 +2,8 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.PropertyLayoutDefinition;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -18,7 +19,7 @@ public class PropertyInteriorLightingTests
     {
         // The layout list interface is internal, so find its implementations by name.
         var assembly = typeof(HouseLayoutDefinition).Assembly;
-        var definitionInterface = assembly.GetType("SWLOR.Game.Server.Service.PropertyService.IPropertyLayoutListDefinition", true)!;
+        var definitionInterface = assembly.GetType("SWLOR.Game.Server.Domain.World.IPropertyLayoutListDefinition", true)!;
         return assembly.GetTypes()
             .Where(type => definitionInterface.IsAssignableFrom(type) &&
                            type is { IsAbstract: false, IsInterface: false })

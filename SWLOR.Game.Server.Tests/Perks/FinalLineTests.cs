@@ -1,18 +1,35 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class FinalLineTests
 {
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildCombatFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeCombatFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
+
     private static readonly Func<int, int, int, int> Bonus = typeof(FinalLineTechniqueAbilityDefinition).Assembly
         .GetType("SWLOR.Game.Server.Feature.AbilityDefinition.NPC.InnateAbility")!
         .GetMethod("CalculateMissingHpBonus", BindingFlags.NonPublic | BindingFlags.Static)!
         .CreateDelegate<Func<int, int, int, int>>();
-    private static readonly Func<int, int, int> Apply = Combat.ApplyPercentDamageAdjustment;
+    private static readonly Func<int, int, int> Apply = CombatRules.ApplyPercentDamageAdjustment;
 
     [TestCase(100, 0)]
     [TestCase(99, 0)]
@@ -92,7 +109,7 @@ public class FinalLineTests
     {
         var afterOtherBonuses = 200;
         var finisherDamage = Apply(afterOtherBonuses, Bonus(1, 100, 35));
-        Combat.CapOutgoingDamageBonus(100, finisherDamage, 12).Should().Be(212,
+        CombatRules.CapOutgoingDamageBonus(100, finisherDamage, 12).Should().Be(212,
             "the finisher percentage shares the +100% cap while earned flat damage remains separate");
     }
 

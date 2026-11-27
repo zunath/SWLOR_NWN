@@ -1,7 +1,8 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -18,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (StatusEffect.HasStatusEffect(creature, GetType()))
                 return "Target is already confused.";
 
-            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Confused)
+            return AbilityImmunity.HasHardCrowdControlImmunity(creature, ImmunityType.Confused)
                 ? "Target is temporarily immune to confusion."
                 : string.Empty;
         }
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (IsBeingReplaced)
                 return;
 
-            Ability.ApplyPostControlImmunity(
+            AbilityImmunity.ApplyPostControlImmunity(
                 creature,
                 SecondsSinceNaturalExpiration,
                 ImmunityType.Confused);

@@ -8,7 +8,7 @@ using FluentAssertions;
 using Nwn.Formats.NativeModels;
 using NUnit.Framework;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.Formats.TwoDA;
 
 namespace SWLOR.Game.Server.Tests.Service;

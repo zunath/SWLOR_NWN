@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -29,9 +29,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var caster = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
             var invoked = false;
-            Ability.BeginAbilityImpact(caster, Ability.GetAbilityDetail(FeatType.RazorTrap1));
-            var trigger = Ability.CaptureRepeatedAbilityImpact(caster, () => invoked = true, baseDamage: 14);
-            Ability.EndAbilityImpact(caster);
+            AbilityImpactLifecycle.BeginAbilityImpact(caster, AbilityCatalog.GetAbilityDetail(FeatType.RazorTrap1));
+            var trigger = AbilityImpactLifecycle.CaptureRepeatedAbilityImpact(caster, () => invoked = true, baseDamage: 14);
+            AbilityImpactLifecycle.EndAbilityImpact(caster);
             ObjectPlugin.SetCurrentHitPoints(caster, 0);
             ctx.Assert(GetIsObjectValid(caster) && GetCurrentHitPoints(caster) <= 0,
                 "The default recurring impact has a valid dead owner");
@@ -51,10 +51,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             Prepare(ctx, caster, target);
 
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
-                Ability.ClearLastCompletedAbilityImpactSummary(caster);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
                 ctx.SeedRandom(12345);
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
                     ctx.Assert(Traps.TryPlaceKitTrap(caster, GetLocation(target), 1), "The tier-one kit trap is placed"));
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var observed = 1000 - GetCurrentHitPoints(target);
                 AssertPerceptionDamage(ctx, caster, target, 20, CombatDamageType.Physical, observed, null);
                 ctx.AssertEqual(caster, GetLastDamager(target), "Kit damage is attributed to its owner");
-                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(caster) == null,
+                ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster) == null,
                     "The kit exercises the path without a tracked active ability");
                 ctx.Log($"Tier-one kit: native damage={observed}, PER={GetAbilityScore(caster, AbilityType.Perception)}, MGT={GetAbilityScore(caster, AbilityType.Might)}");
             }
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 Traps.ClearTraps(caster);
                 StatusEffect.RemoveAllStatusEffects(target);
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
         }
 
@@ -88,35 +88,35 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var target = ctx.SpawnCreature("nw_rat001", 1f);
             await ctx.WaitFrameAsync();
             Prepare(ctx, caster, target);
-            var trapAbility = Ability.GetAbilityDetail(feat);
-            var renewal = Ability.GetAbilityDetail(FeatType.Renewal1);
+            var trapAbility = AbilityCatalog.GetAbilityDetail(feat);
+            var renewal = AbilityCatalog.GetAbilityDetail(FeatType.Renewal1);
             var trackerOpen = false;
 
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 ctx.SeedRandom(12345);
-                Combat.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Espionage, capturedDamageBonus, 0, 120);
-                Ability.BeginAbilityImpact(caster, trapAbility);
+                GameServices.CombatAbilityBonus.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Espionage, capturedDamageBonus, 0, 120);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, trapAbility);
                 trackerOpen = true;
                 await ctx.ExecuteInCreatureContextAsync(caster,
                     () => trapAbility.ImpactAction(caster, target, trapAbility.AbilityLevel, GetLocation(target)));
-                var placement = Ability.EndAbilityImpact(caster);
+                var placement = AbilityImpactLifecycle.EndAbilityImpact(caster);
                 trackerOpen = false;
                 ctx.AssertEqual(0, placement.AttributedDamage, "Placement queues no immediate damage");
                 ctx.AssertEqual(1000, GetCurrentHitPoints(target), "The trap waits for its arming delay");
 
-                Combat.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Espionage, newerDamageBonus, 0, 120);
-                Ability.BeginAbilityImpact(caster, renewal);
+                GameServices.CombatAbilityBonus.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Espionage, newerDamageBonus, 0, 120);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, renewal);
                 trackerOpen = true;
                 await ctx.ExecuteInCreatureContextAsync(caster,
                     () => renewal.ImpactAction(caster, caster, renewal.AbilityLevel, GetLocation(caster)));
-                Ability.EndAbilityImpact(caster);
+                AbilityImpactLifecycle.EndAbilityImpact(caster);
                 trackerOpen = false;
-                ctx.Assert(ReferenceEquals(renewal, Ability.GetLastCompletedAbilityImpactSummary(caster)?.Ability),
+                ctx.Assert(ReferenceEquals(renewal, AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster)?.Ability),
                     "A different registered ability completes between placement and detonation");
 
-                Ability.BeginAbilityImpact(caster, renewal);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, renewal);
                 trackerOpen = true;
                 if (ownerDiesAfterPlacement)
                 {
@@ -126,10 +126,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         "The trap owner remains valid but is dead before detonation");
                 }
                 await ctx.WaitUntilAsync(
-                    () => ReferenceEquals(trapAbility, Ability.GetLastCompletedAbilityImpactSummary(caster)?.Ability) &&
-                          Ability.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage > 0,
+                    () => ReferenceEquals(trapAbility, AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster)?.Ability) &&
+                          AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage > 0,
                     10f, "the real trap trigger to complete its captured originating impact");
-                var detonation = Ability.GetLastCompletedAbilityImpactSummary(caster);
+                var detonation = AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster);
                 await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) < 1000, 3f,
                     "the trap's attributed damage effect to reach native hit points");
                 StatusEffect.RemoveAllStatusEffects(target);
@@ -142,24 +142,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssertPerceptionDamage(ctx, caster, target, baseDamage + capturedDamageBonus,
                     damageType, detonation.AttributedDamage, detonation.CriticalHitCount > 0);
 
-                var restored = Ability.EndAbilityImpact(caster);
+                var restored = AbilityImpactLifecycle.EndAbilityImpact(caster);
                 trackerOpen = false;
                 ctx.Assert(ReferenceEquals(renewal, restored.Ability),
                     "Detonation restores the newer in-progress ability tracker");
                 ctx.AssertEqual(0, restored.AttributedDamage, "The newer ability does not inherit trap damage");
                 ctx.AssertEqual(newerDamageBonus,
-                    Combat.ConsumeNextSkillAbilityBonuses(caster, SkillType.Espionage).DamageBonus,
+                    GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(caster, SkillType.Espionage).DamageBonus,
                     "The delayed trap does not consume a bonus granted after placement");
                 ctx.Log($"{feat}: native damage={detonation.AttributedDamage}, criticals={detonation.CriticalHitCount}, captured bonus={capturedDamageBonus}; newer tracker and bonus preserved");
             }
             finally
             {
                 if (trackerOpen)
-                    Ability.AbortAbilityImpact(caster);
+                    AbilityImpactLifecycle.AbortAbilityImpact(caster);
                 Traps.ClearTraps(caster);
                 StatusEffect.RemoveAllStatusEffects(caster);
                 StatusEffect.RemoveAllStatusEffects(target);
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
         }
 
@@ -168,20 +168,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             CombatDamageType damageType, int observed, bool? wasCritical)
         {
             var defenseAbility = damageType.GetDefenseAbilityType();
-            var defense = Stat.GetDefense(target, damageType, defenseAbility);
+            var defense = CombatRating.GetDefense(target, damageType, defenseAbility);
             var defenderStat = GetAbilityScore(target, defenseAbility);
-            var damage = baseDamage + Combat.GetAbilityDamageBonus(caster, SkillType.Espionage);
-            var minimumCritical = wasCritical == true ? Combat.StandardCriticalRating : 0;
-            var maximumCritical = wasCritical == false ? 0 : Combat.StandardCriticalRating;
-            var (perceptionMinimum, _) = Combat.CalculateDamageRange(
-                Stat.GetAttack(caster, AbilityType.Perception, SkillType.Espionage), damage,
+            var damage = baseDamage + GameServices.CombatAbilityBonus.GetAbilityDamageBonus(caster, SkillType.Espionage);
+            var minimumCritical = wasCritical == true ? CombatRules.StandardCriticalRating : 0;
+            var maximumCritical = wasCritical == false ? 0 : CombatRules.StandardCriticalRating;
+            var (perceptionMinimum, _) = CombatRules.CalculateDamageRange(
+                CombatRating.GetAttack(caster, AbilityType.Perception, SkillType.Espionage), damage,
                 GetAbilityScore(caster, AbilityType.Perception), defense, defenderStat, minimumCritical);
-            var (_, perceptionMaximum) = Combat.CalculateDamageRange(
-                Stat.GetAttack(caster, AbilityType.Perception, SkillType.Espionage), damage,
+            var (_, perceptionMaximum) = CombatRules.CalculateDamageRange(
+                CombatRating.GetAttack(caster, AbilityType.Perception, SkillType.Espionage), damage,
                 GetAbilityScore(caster, AbilityType.Perception), defense, defenderStat, maximumCritical);
-            var (_, mightMaximum) = Combat.CalculateDamageRange(
-                Stat.GetAttack(caster, AbilityType.Might, SkillType.Espionage), damage,
-                GetAbilityScore(caster, AbilityType.Might), defense, defenderStat, Combat.StandardCriticalRating);
+            var (_, mightMaximum) = CombatRules.CalculateDamageRange(
+                CombatRating.GetAttack(caster, AbilityType.Might, SkillType.Espionage), damage,
+                GetAbilityScore(caster, AbilityType.Might), defense, defenderStat, CombatRules.StandardCriticalRating);
 
             ctx.Assert(perceptionMinimum > mightMaximum,
                 $"The fixture separates PER damage {perceptionMinimum}-{perceptionMaximum} from even critical MGT damage <= {mightMaximum}");
@@ -199,13 +199,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.SuppressNPCNaturalRegen(creature);
                 SetAILevel(creature, AILevel.VeryLow);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), creature, 120f);
-                Stat.SetNPCMaxHitPoints(creature, 1000, true);
+                CreatureStat.SetNPCMaxHitPoints(creature, 1000, true);
             }
             ctx.MakeHostile(target);
             ctx.AssertEqual(0, Stat.GetStatAdjustment(caster, StatType.TrapBonus), "Trap Bonus is isolated");
             ctx.AssertEqual(0, Stat.GetStatAdjustment(caster, StatType.TrapPlacementSpeedPercent), "The actual three-second arming delay is used");
             ctx.AssertEqual(0, Resistance.GetResistance(target, ResistanceType.Electrical), "Electrical resistance is isolated");
-            Ability.ClearLastCompletedAbilityImpactSummary(caster);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
         }
     }
 }

@@ -1,6 +1,5 @@
 using System.Linq;
 using System.Threading.Tasks;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.EngineTests.Framework;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -24,10 +23,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var npc = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
-            StatusEffect.ApplyStatusEffect<KoltoMistHealingStatusEffect>(npc, npc, 2f);
+            StatusEffectApplication.ApplyStatusEffect<KoltoMistHealingStatusEffect>(npc, npc, 2f);
             var effect = StatusEffect.GetStatusEffect(npc, typeof(KoltoMistHealingStatusEffect));
 
-            ctx.Assert(StatusEffect.RefreshStatusEffectDuration(npc, typeof(KoltoMistHealingStatusEffect), npc, 5f),
+            ctx.Assert(StatusEffectDuration.RefreshStatusEffectDuration(npc, typeof(KoltoMistHealingStatusEffect), npc, 5f),
                 "the passive status must accept a duration refresh");
             await ctx.DelaySecondsAsync(3f);
             ctx.Assert(StatusEffect.GetStatusEffect(npc, typeof(KoltoMistHealingStatusEffect)) == effect,
@@ -41,8 +40,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var npc = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
-            StatusEffect.ApplyStatusEffect<KoltoMistHealingStatusEffect>(npc, npc, 60f);
-            StatusEffect.ExtendStatusEffectDuration(npc, typeof(KoltoMistHealingStatusEffect), npc, 6f);
+            StatusEffectApplication.ApplyStatusEffect<KoltoMistHealingStatusEffect>(npc, npc, 60f);
+            StatusEffectDuration.ExtendStatusEffectDuration(npc, typeof(KoltoMistHealingStatusEffect), npc, 6f);
             var effect = StatusEffect.GetStatusEffect(npc, typeof(KoltoMistHealingStatusEffect));
             ctx.Assert(effect != null, "the renewed status must be present before native removal");
             RemoveEffectByTag(npc, effect.Id);
@@ -56,7 +55,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var npc = ctx.SpawnCreature("nw_rat001");
 
-            var applied = StatusEffect.ApplyStatusEffect<RegenerativeHealingStatusEffect>(npc, npc, 5f);
+            var applied = StatusEffectApplication.ApplyStatusEffect<RegenerativeHealingStatusEffect>(npc, npc, 5f);
             ctx.Assert(applied, "ApplyStatusEffect should report success.");
             ctx.Assert(StatusEffect.HasStatusEffect<RegenerativeHealingStatusEffect>(npc), "Status effect should be present immediately after being applied.");
 
@@ -71,7 +70,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var npc = ctx.SpawnCreature("nw_rat001");
 
-            StatusEffect.ApplyStatusEffect<RegenerativeHealingStatusEffect>(npc, npc, 60f);
+            StatusEffectApplication.ApplyStatusEffect<RegenerativeHealingStatusEffect>(npc, npc, 60f);
             ctx.Assert(StatusEffect.HasStatusEffect<RegenerativeHealingStatusEffect>(npc), "Status effect should be present after being applied.");
 
             StatusEffect.RemoveStatusEffect<RegenerativeHealingStatusEffect>(npc);
@@ -89,13 +88,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var npc = ctx.SpawnCreature("nw_rat001");
 
-            var firstApplied = StatusEffect.ApplyStatusEffect<StunnedStatusEffect>(npc, npc, 30f);
+            var firstApplied = StatusEffectApplication.ApplyStatusEffect<StunnedStatusEffect>(npc, npc, 30f);
             ctx.Assert(firstApplied, "the initial Stunned status should apply");
             var original = StatusEffect.GetCreatureStatusEffects(npc)
                 .GetAllEffects()
                 .Single(effect => effect is StunnedStatusEffect);
 
-            var refreshApplied = StatusEffect.ApplyStatusEffect<StunnedStatusEffect>(npc, npc, 30f);
+            var refreshApplied = StatusEffectApplication.ApplyStatusEffect<StunnedStatusEffect>(npc, npc, 30f);
             ctx.Assert(!refreshApplied, "an active hard-control status must reject a same-type refresh");
 
             var activeStuns = StatusEffect.GetCreatureStatusEffects(npc)

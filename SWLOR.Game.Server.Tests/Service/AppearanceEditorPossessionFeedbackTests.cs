@@ -22,18 +22,24 @@ public class AppearanceEditorPossessionFeedbackTests
         _harness = Compile($$"""
             public static class DMPresence
             {
-                {{Method("Service/DMPresence.cs", "GetControlledCreature")}}
-                {{Method("Service/DMPresence.cs", "SendMessage")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetControlledCreature")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "SendMessage")}}
             }
 
-            public sealed class Editor
+            public interface IAppearanceEditorHost { uint Player { get; } }
+
+            public sealed class Editor : IAppearanceEditorHost
             {
-                private readonly uint Player;
+                public uint Player { get; }
                 private Editor(uint player) => Player = player;
 
-                {{Method("Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs", "SendScaleMessage")}}
+                {{Method("Feature/AppearanceEditing/AppearanceSettingsService.cs", "SendScaleMessage")}}
 
-                public static void Report(uint windowOwner, string message) => new Editor(windowOwner).SendScaleMessage(message);
+                public static void Report(uint windowOwner, string message)
+                {
+                    var editor = new Editor(windowOwner);
+                    editor.SendScaleMessage(editor, message);
+                }
             }
             """);
     }

@@ -2,12 +2,14 @@ using NUnit.Framework;
 using System.Numerics;
 using System.Text.Json;
 using FluentAssertions;
-using SWLOR.Game.Server.Service;
+using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 using Nwn.Formats.NativeModels;
-using SWLOR.Game.Server.Service.AnimationService;
 using Nwn.Preview.Scene;
 using SWLOR.Toolset.Domain.Animation;
 using SWLOR.Toolset.Domain.Render;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Toolset.Tests;
 
@@ -51,7 +53,13 @@ public class FishingAnimationTests
     [TestCase(6)] [TestCase(7)] [TestCase(8)]
     public void ActivityDurationMatchesInstalledClipsOnBothHumanoidRigs(int seconds)
     {
-        var clip = Fishing.GetFishingAnimation(seconds);
+        // The server's facades resolve from a container; the toolset test installs the server's registrations.
+        var services = new ServiceCollection();
+        CompositionRoot.RegisterServerServices(services);
+        using var provider = ContainerHost.Create(services);
+        AnimationClip clip;
+        using (CompositionRoot.InstallForTests(provider))
+            clip = Fishing.GetFishingAnimation(seconds);
         clip.Duration.Should().Be(seconds);
         AssertInstalledOnBothHumanoidRigs(clip);
     }

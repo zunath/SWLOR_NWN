@@ -9,11 +9,9 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatRecorderService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -21,6 +19,7 @@ using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
 using DamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
 using NWNXLib = NWN.Native.API.NWNXLib;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -83,7 +82,7 @@ public static class PairedRangedConversionEngineTests
                     SetEventScript(creature, EventScript.Creature_OnNotice, "");
                     SetEventScript(creature, EventScript.Creature_OnMeleeAttacked, "");
                     ctx.SuppressNPCNaturalRegen(creature);
-                    Stat.SetNPCMaxHitPoints(creature, 20000, true);
+                    CreatureStat.SetNPCMaxHitPoints(creature, 20000, true);
                 }
                 ReplaceProperty(companion, ItemPropertyType.DMG, ItemPropertyCustom(ItemPropertyType.DMG, -1, 200));
                 ReplaceProperty(companion, ItemPropertyType.WeaponDamageType,
@@ -102,8 +101,8 @@ public static class PairedRangedConversionEngineTests
                 SetCommandable(false, target);
                 ctx.SetNPCResources(target, 100, 100);
                 ctx.MakeHostile(target);
-                ctx.Assert(StatusEffect.ApplyStatusEffect(actor, target, probe, 60f), "The native reaction probe is active");
-                ctx.Assert(StatusEffect.ApplyStatusEffect(actor, actor, new BloodWeaponStatusEffect(), 60f), "A real direct-hit Blood Weapon rider is active");
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(actor, target, probe, 60f), "The native reaction probe is active");
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(actor, actor, new BloodWeaponStatusEffect(), 60f), "A real direct-hit Blood Weapon rider is active");
                 ObjectPlugin.SetCurrentHitPoints(actor, 10000);
                 ctx.Assert(TwinPistolEquipment.IsActivePair(actor), "The fixture equips a real companion pair");
             });
@@ -111,7 +110,7 @@ public static class PairedRangedConversionEngineTests
             Impacts.Clear();
             _observedActor = actor;
             _observedTarget = target;
-            Combat.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             var resolveCompanion = typeof(PairedRangedAttackCycle).GetMethod("ResolveCompanion", BindingFlags.NonPublic | BindingFlags.Static);
             ctx.Assert(resolveCompanion != null, "The existing production companion resolver is available");
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -223,7 +222,7 @@ public static class PairedRangedConversionEngineTests
             if (writer != null && CombatRecorder.IsRecording) CombatRecorder.Stop("Paired projectile conversion regression", out _);
             if (GetIsObjectValid(actor)) AssignCommand(actor, () => ClearAllActions());
             PairedRangedAttackCycle.Cancel(actor);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             StatusEffect.RemoveStatusEffect(target, typeof(ProjectileConversionProbeStatusEffect), actor, false);
             StatusEffect.RemoveStatusEffect(actor, typeof(BloodWeaponStatusEffect), actor, false);
             ReviveRulesEngineTests.DestroyCorpsePlaceable(target);

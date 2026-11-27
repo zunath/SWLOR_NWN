@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Toolset.Domain.Editors.Items;
 
 namespace SWLOR.Toolset.Tests.Items

@@ -6,7 +6,7 @@ using Microsoft.VisualBasic.FileIO;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Feature;
 
 namespace SWLOR.Game.Server.Tests.Service;

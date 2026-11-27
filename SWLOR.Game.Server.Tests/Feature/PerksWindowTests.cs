@@ -2,10 +2,12 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.PerkDefinition;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -21,14 +23,14 @@ public class PerksWindowTests
             "SWLOR.Game.Server",
             "Feature",
             "GuiDefinition",
-            "PerksDefinition.cs"));
+            "PerksDefinition.cs")).Replace("\r\n", "\n");
         var viewModelSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
             "Feature",
             "GuiDefinition",
             "ViewModel",
-            "PerksViewModel.cs"));
+            "PerksViewModel.cs")).Replace("\r\n", "\n");
 
         definitionSource.Should().Contain(".AddOption(\"Alphabetical (A-Z)\", 0)");
         definitionSource.Should().Contain(".AddOption(\"Alphabetical (Z-A)\", 1)");
@@ -49,7 +51,7 @@ public class PerksWindowTests
             "Feature",
             "GuiDefinition",
             "ViewModel",
-            "PerksViewModel.cs"));
+            "PerksViewModel.cs")).Replace("\r\n", "\n");
 
         viewModelSource.Should().Contain(
             "SelectedSortOrderId = (int)PerkSortOrder.SkillLevelAscending;");
@@ -66,35 +68,32 @@ public class PerksWindowTests
             "SWLOR.Game.Server",
             "Feature",
             "GuiDefinition",
-            "ViewModel",
-            "PerksViewModel.cs"));
-        var perkSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Perk.cs"));
+            "PerksWindow",
+            "PerkDetailText.cs")).Replace("\r\n", "\n");
+        var perkSource = CharacterCompanionsSource.Perk.Read().Replace("\r\n", "\n");
         var recastSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Recast.cs"));
+            "Domain",
+            "Combat",
+            "RecastService.cs")).Replace("\r\n", "\n");
 
         viewModelSource.Should().Contain("selectedDetails += $\"[{categoryDetail.Name}]\\n\";");
         viewModelSource.Should().Contain("var recastGroupText = BuildRecastGroupText(detail);");
         viewModelSource.Should().Contain("selectedDetails += recastGroupText + \"\\n\";");
-        viewModelSource.Should().Contain("Perk.GetActiveAbilityRecastGroup(detail.Type)");
+        viewModelSource.Should().Contain("PerkGrantedFeat.GetActiveAbilityRecastGroup(detail.Type)");
         viewModelSource.Should().Contain("Recast.IsRecastGroupVisible(recastGroup)");
         viewModelSource.Should().Contain("Recast.GetRecastGroupDisplayName(recastGroup)");
         viewModelSource.Should().Contain("recastGroup == RecastGroup.Invalid");
         viewModelSource.Should().NotContain("Recast Groups");
-        var recastMethodStart = viewModelSource.IndexOf("private static string BuildRecastGroupText(", StringComparison.Ordinal);
-        var recastMethodEnd = viewModelSource.IndexOf("private (bool meetsRequirements,", recastMethodStart, StringComparison.Ordinal);
+        var recastMethodStart = viewModelSource.IndexOf("private string BuildRecastGroupText(", StringComparison.Ordinal);
+        var recastMethodEnd = viewModelSource.IndexOf("\n        }\n", recastMethodStart, StringComparison.Ordinal);
         viewModelSource[recastMethodStart..recastMethodEnd].Should().NotContain("string.Join",
             "the recast display must use one active ability group rather than joining every granted feat");
-        perkSource.Should().Contain("private static readonly Dictionary<PerkType, RecastGroup> _activeAbilityRecastGroupByPerk");
-        perkSource.Should().Contain("public static RecastGroup GetActiveAbilityRecastGroup(PerkType perkType)");
-        recastSource.Should().Contain("private static readonly Dictionary<RecastGroup, string> _recastNames");
-        recastSource.Should().Contain("private static readonly HashSet<RecastGroup> _visibleRecastGroups");
+        perkSource.Should().Contain("private readonly Dictionary<PerkType, RecastGroup> _activeAbilityRecastGroupByPerk");
+        perkSource.Should().Contain("public RecastGroup GetActiveAbilityRecastGroup(PerkType perkType)");
+        recastSource.Should().Contain("private readonly Dictionary<RecastGroup, string> _recastNames");
+        recastSource.Should().Contain("private readonly HashSet<RecastGroup> _visibleRecastGroups");
 
         var categoryIndex = viewModelSource.IndexOf("selectedDetails += $\"[{categoryDetail.Name}]\\n\";");
         var recastIndex = viewModelSource.IndexOf("var recastGroupText = BuildRecastGroupText(detail);");
@@ -113,14 +112,8 @@ public class PerksWindowTests
             "SWLOR.Game.Server",
             "Feature",
             "GuiDefinition",
-            "PerksDefinition.cs"));
-        var viewModelSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "GuiDefinition",
-            "ViewModel",
-            "PerksViewModel.cs"));
+            "PerksDefinition.cs")).Replace("\r\n", "\n");
+        var viewModelSource = ReadPerksSources(root, "ViewModel/PerksViewModel.cs", "PerksWindow/PerkListBuilder.cs", "PerksWindow/PerkDetailText.cs");
 
         definitionSource.Should().Contain("model => model.IsForceAffinityVisible");
         definitionSource.Should().Contain("model => model.ForceAffinityHeading");
@@ -134,8 +127,8 @@ public class PerksWindowTests
         viewModelSource.Should().Contain("detail.ForceAffinityType.Value == ForceAffinityType.Light ? \"LIGHT\" : \"DARK\"");
         viewModelSource.Should().Contain("{alignment}-ALIGNED FORCE POWER");
         viewModelSource.Should().Contain("UNIVERSAL FORCE POWER");
-        viewModelSource.Should().Contain("Perk.GetForceAffinityMagnitudeMultiplier(Player, detail.Type)");
-        viewModelSource.Should().Contain("Perk.GetForceAffinityHitChanceAdjustment(Player, detail.Type)");
+        viewModelSource.Should().Contain("PerkForceAffinity.GetForceAffinityMagnitudeMultiplier(host.Player, detail.Type)");
+        viewModelSource.Should().Contain("PerkForceAffinity.GetForceAffinityHitChanceAdjustment(host.Player, detail.Type)");
         viewModelSource.Should().Contain("additional ranks do not add more affinity");
     }
 
@@ -143,22 +136,16 @@ public class PerksWindowTests
     public void NativeStealthMode_IsAddedAndRemovedAsAModeToggle()
     {
         var root = FindRepositoryRoot();
-        var viewModelSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "GuiDefinition",
-            "ViewModel",
-            "PerksViewModel.cs"));
+        var viewModelSource = ReadPerksSources(root, "PerksWindow/PerkHotBarService.cs", "PerksWindow/PerkPurchaseService.cs");
 
         viewModelSource.Should().NotContain("PerkType.Stealth");
         viewModelSource.Should().Contain("Perk.GetPerkDetails(perkType).HotBarActionModes");
-        viewModelSource.Should().Contain("AddModeToggleToHotBar(actionMode);");
+        viewModelSource.Should().Contain("AddModeToggleToHotBar(host, actionMode);");
         viewModelSource.Should().Contain("PlayerQuickBarSlot.ToggleMode((int)mode)");
         viewModelSource.Should().Contain("foreach (var actionMode in perkDetail.HotBarActionModes)");
-        viewModelSource.Should().Contain("RemoveModeToggleFromHotBar(actionMode);");
+        viewModelSource.Should().Contain("PerkHotBarService.RemoveModeToggleFromHotBar(host, actionMode);");
 
-        var matcher = typeof(PerksViewModel).GetMethod(
+        var matcher = typeof(PerkHotBarService).GetMethod(
             "IsModeHotBarSlot",
             BindingFlags.Static | BindingFlags.NonPublic)!;
         var stealthMode = new QuickBarSlot
@@ -224,7 +211,7 @@ public class PerksWindowTests
         var detail = BuildPerkDetail(Enumerable.Range(1, maximumRank)
             .Select(rank => (rank, rank * 10)).ToArray());
 
-        var displayRank = (int)typeof(PerksViewModel)
+        var displayRank = (int)typeof(PerkListBuilder)
             .GetMethod("GetDisplayPerkRank", BindingFlags.Static | BindingFlags.NonPublic)!
             .Invoke(null, new object[] { detail, savedRank })!;
 
@@ -281,9 +268,15 @@ public class PerksWindowTests
 
     private static string BuildStatusEffectDetail(PerkDetail detail, PerkLevel current, PerkLevel next)
     {
-        return (string)typeof(PerksViewModel)
+        return (string)typeof(PerkDetailText)
             .GetMethod("BuildStatusEffectPerkDetailText", BindingFlags.Static | BindingFlags.NonPublic)!
             .Invoke(null, new object[] { detail, current, next })!;
+    }
+
+    private static string ReadPerksSources(DirectoryInfo root, params string[] files)
+    {
+        return string.Join("\n", files.Select(file => File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "GuiDefinition", file.Replace('/', Path.DirectorySeparatorChar))).Replace("\r\n", "\n")));
     }
 
     private static DirectoryInfo FindRepositoryRoot()
@@ -322,7 +315,7 @@ public class PerksWindowTests
 
     private static int GetRequiredSkillLevelSortOrder(PerkDetail detail, int rank)
     {
-        return (int)typeof(PerksViewModel)
+        return (int)typeof(PerkListBuilder)
             .GetMethod(
                 "GetRequiredSkillLevelSortOrder",
                 BindingFlags.Static | BindingFlags.NonPublic)!

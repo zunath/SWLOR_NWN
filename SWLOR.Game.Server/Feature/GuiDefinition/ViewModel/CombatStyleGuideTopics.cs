@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     internal static class CombatStyleGuideTopics
     {
-        public static IReadOnlyList<PlayerGuideViewModel.PlayerGuideTopic> Create()
+        public static IReadOnlyList<PlayerGuideTopic> Create()
         {
             return new[]
             {
@@ -229,20 +229,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             };
         }
 
-        private static PlayerGuideViewModel.PlayerGuideTopic Topic(
+        private static PlayerGuideTopic Topic(
             string family,
             string summary,
-            IReadOnlyList<PlayerGuideViewModel.ArticleBlock> styles,
+            IReadOnlyList<ArticleBlock> styles,
             params string[] related)
         {
             var questions = new[]
             {
-                new PlayerGuideViewModel.QuestionAnswer(
+                new QuestionAnswer(
                     $"What does {family} focus on?",
                     summary)
             };
 
-            return new PlayerGuideViewModel.PlayerGuideTopic(
+            return new PlayerGuideTopic(
                 $"{family} Combat Styles",
                 "Combat Styles",
                 summary,
@@ -256,20 +256,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// A crafting perk tree. The Player Guide lists it with the combat trees so a search for the tree's exact name finds it; the topic is
         /// named for its perk lines and not for combat.
         /// </summary>
-        private static PlayerGuideViewModel.PlayerGuideTopic CraftingTopic(
+        private static PlayerGuideTopic CraftingTopic(
             string family,
             string summary,
-            IReadOnlyList<PlayerGuideViewModel.ArticleBlock> styles,
+            IReadOnlyList<ArticleBlock> styles,
             params string[] related)
         {
             var questions = new[]
             {
-                new PlayerGuideViewModel.QuestionAnswer(
+                new QuestionAnswer(
                     $"What does {family} focus on?",
                     summary)
             };
 
-            return new PlayerGuideViewModel.PlayerGuideTopic(
+            return new PlayerGuideTopic(
                 $"{family} Perk Lines",
                 "Combat Styles",
                 summary,
@@ -279,9 +279,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 related);
         }
 
-        private static PlayerGuideViewModel.ArticleBlock Style(string title, string description)
+        private static ArticleBlock Style(string title, string description)
         {
-            return new PlayerGuideViewModel.ArticleBlock(title, description);
+            return new ArticleBlock(title, description);
         }
     }
 }

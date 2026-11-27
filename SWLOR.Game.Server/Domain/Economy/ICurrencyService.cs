@@ -1,0 +1,42 @@
+using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
+
+namespace SWLOR.Game.Server.Domain.Economy
+{
+    /// <summary>
+    /// The currencies a player holds. Static callers reach the container's instance of
+    /// this interface through <c>GameServices.Currency</c>; the event handler is on <see cref="CurrencyService"/>.
+    /// </summary>
+    public interface ICurrencyService : ICurrencyBalance
+    {
+        /// <summary>
+        /// When the module caches, cache all currency details into memory.
+        /// </summary>
+        void CacheCurrencies();
+
+        /// <summary>
+        /// Retrieves the details about a specific currency type.
+        /// </summary>
+        /// <param name="currencyType">The type of currency to retrieve.</param>
+        /// <returns>The details about a currency.</returns>
+        CurrencyAttribute GetCurrencyDetail(CurrencyType currencyType);
+
+        /// <summary>
+        /// Gives a specific amount of a type of currency to a player.
+        /// </summary>
+        /// <param name="player">The player to give currency</param>
+        /// <param name="type">The type of currency to give</param>
+        /// <param name="amount">The amount of currency to give</param>
+        void GiveCurrency(uint player, CurrencyType type, int amount);
+
+        /// <summary>
+        /// Takes a specific amount of a type of currency from a player.
+        /// If the balance is less than the amount, it is reduced to zero (never below zero).
+        /// </summary>
+        /// <param name="player">The player to take currency from</param>
+        /// <param name="type">The type of currency to take</param>
+        /// <param name="amount">The amount of currency to take</param>
+        void TakeCurrency(uint player, CurrencyType type, int amount);
+    }
+}

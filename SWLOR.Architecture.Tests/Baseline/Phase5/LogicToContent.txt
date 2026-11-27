@@ -1,0 +1,133 @@
+# Phase 5 debt (P5-0): game logic that names content (target 4), in SWLOR.Game.Server.
+# Line: <file> -> <content unit> | <types>. <file> holds code outside Feature (Domain, Native, NativeSinks, Core, ...);
+# <content unit> is a Feature folder (Feature/StatusEffectDefinition) or a type directly in Feature (Feature.UsePerkFeat);
+# <types> counts the distinct types of that unit the file names (in code, attributes and using static directives;
+# constants and nameof included). Names are bound the way the compiler binds them, so the result does not depend on the
+# build configuration. A name of the file's own domain's content counts. The composition root (Composition) registers
+# content and is not listed; the native sinks (NativeSinks) are wiring in the domain order but stay under this rule.
+# A content member reached without naming its type (a variable, an extension method) is not seen.
+#
+# The guard (SWLOR.Architecture.Tests, Phase5DebtTests) fails when a line appears, when a count grows, and when a count
+# shrinks or a line disappears: each Phase 5 item shrinks this file in the same pull request. Plan and targets:
+# SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
+# SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
+
+SWLOR.Game.Server/Domain/Abilities/AbilityActivationService.cs -> Feature.TwinPistolEquipmentValidation | 1
+SWLOR.Game.Server/Domain/Abilities/AbilityActivationStateService.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Feature.PistolAnimationRemap | 1
+SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Abilities/TwinPistolAbilityService.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Domain/Administration/DMBlueprintCatalogService.cs -> Feature.DMActions | 1
+SWLOR.Game.Server/Domain/Character/CreatureStatService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Character/RobeModelRenderer.cs -> Feature/AppearanceDefinition | 1
+SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Combat/AbilityEffectScaling.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Combat/CombatAbilityAreaImpactService.cs -> Feature/StatusEffectDefinition | 6
+SWLOR.Game.Server/Domain/Combat/CombatAbilityBonusService.cs -> Feature/StatusEffectDefinition | 6
+SWLOR.Game.Server/Domain/Combat/CombatAbilityCostEffectsService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Combat/CombatAbilityCostEffectsService.cs -> Feature/StatusEffectDefinition | 3
+SWLOR.Game.Server/Domain/Combat/CombatAbilityDefenseEffectsService.cs -> Feature/StatusEffectDefinition | 4
+SWLOR.Game.Server/Domain/Combat/CombatAbilityHitAdjustmentService.cs -> Feature/StatusEffectDefinition | 2
+SWLOR.Game.Server/Domain/Combat/CombatAbilityHitRidersService.cs -> Feature/StatusEffectDefinition | 2
+SWLOR.Game.Server/Domain/Combat/CombatAbilityOffenseEffectsService.cs -> Feature/StatusEffectDefinition | 2
+SWLOR.Game.Server/Domain/Combat/CombatAbilityStatusAppliedService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Combat/CombatAbilityStatusAppliedService.cs -> Feature/StatusEffectDefinition | 2
+SWLOR.Game.Server/Domain/Combat/CombatAbilityWeaponActivationService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Combat/CombatAbilityWeaponActivationService.cs -> Feature/StatusEffectDefinition | 3
+SWLOR.Game.Server/Domain/Combat/CombatAbilityWeaponRidersService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Combat/CombatAbilityWeaponRidersService.cs -> Feature/StatusEffectDefinition | 22
+SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs -> Feature/StatusEffectDefinition | 2
+SWLOR.Game.Server/Domain/Combat/CombatAutoAttackEffectsService.cs -> Feature/StatusEffectDefinition | 3
+SWLOR.Game.Server/Domain/Combat/CombatCriticalHitEffectsService.cs -> Feature/StatusEffectDefinition | 7
+SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs -> Feature/StatusEffectDefinition | 9
+SWLOR.Game.Server/Domain/Combat/CombatDamageReflectionService.cs -> Feature/StatusEffectDefinition | 2
+SWLOR.Game.Server/Domain/Combat/CombatDamageTakenEffectsService.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Domain/Combat/CombatDamageTakenEffectsService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Combat/CombatDamageTakenEffectsService.cs -> Feature/StatusEffectDefinition | 4
+SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Combat/CombatDealtEffectsService.cs -> Feature/StatusEffectDefinition | 10
+SWLOR.Game.Server/Domain/Combat/CombatDefeatedEnemyEffectsService.cs -> Feature/StatusEffectDefinition | 4
+SWLOR.Game.Server/Domain/Combat/CombatQueuedAbilityBonusService.cs -> Feature/StatusEffectDefinition | 1
+SWLOR.Game.Server/Domain/Combat/CombatRateModifiersService.cs -> Feature/StatusEffectDefinition | 2
+SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Combat/CombatRepeatedTargetService.cs -> Feature/StatusEffectDefinition | 3
+SWLOR.Game.Server/Domain/Combat/CombatResourcesService.cs -> Feature/StatusEffectDefinition | 1
+SWLOR.Game.Server/Domain/Combat/CombatRules.cs -> Feature/StatusEffectDefinition | 1
+SWLOR.Game.Server/Domain/Combat/CombatService.cs -> Feature/StatusEffectDefinition | 3
+SWLOR.Game.Server/Domain/Combat/CombatSuppressionService.cs -> Feature/StatusEffectDefinition | 3
+SWLOR.Game.Server/Domain/Combat/DeathService.cs -> Feature.PlayerTemporaryEffects | 1
+SWLOR.Game.Server/Domain/Combat/DeathService.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Domain/Combat/DeathService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Combat/DeathService.cs -> Feature/StatusEffectDefinition | 2
+SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Combat/OrdinaryAttackTraitsService.cs -> Feature/StatusEffectDefinition | 1
+SWLOR.Game.Server/Domain/Combat/PairedRangedTraitsService.cs -> Feature/StatusEffectDefinition | 5
+SWLOR.Game.Server/Domain/Combat/PoisonsService.cs -> Feature/StatusEffectDefinition | 1
+SWLOR.Game.Server/Domain/Combat/PowerGloveEquipmentService.cs -> Feature/AppearanceDefinition | 2
+SWLOR.Game.Server/Domain/Combat/PowerGloveEquipmentService.cs -> Feature/MigrationDefinition | 1
+SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs -> Feature/StatusEffectDefinition | 6
+SWLOR.Game.Server/Domain/Combat/ResourceRestoredEffectsService.cs -> Feature/StatusEffectDefinition | 2
+SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Feature.LightsaberAudio | 1
+SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Feature/StatusEffectDefinition | 2
+SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs -> Feature/AppearanceDefinition | 1
+SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs -> Feature/MigrationDefinition | 1
+SWLOR.Game.Server/Domain/Combat/TwinPistolMasteryService.cs -> Feature/QuestDefinition | 1
+SWLOR.Game.Server/Domain/Companions/BeastEventService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Companions/BeastEventService.cs -> Feature/StatusEffectDefinition | 1
+SWLOR.Game.Server/Domain/Companions/BeastStableCapacity.cs -> Feature/QuestDefinition | 1
+SWLOR.Game.Server/Domain/Companions/DroidService.cs -> Feature/StatusEffectDefinition | 1
+SWLOR.Game.Server/Domain/Companions/NeckModelRenderer.cs -> Feature/AppearanceDefinition | 2
+SWLOR.Game.Server/Domain/Companions/PartSkinModelRenderer.cs -> Feature/AppearanceDefinition | 2
+SWLOR.Game.Server/Domain/Companions/ShoulderModelRenderer.cs -> Feature/AppearanceDefinition | 2
+SWLOR.Game.Server/Domain/Companions/TintMapApplyService.cs -> Feature/AppearanceDefinition | 3
+SWLOR.Game.Server/Domain/Companions/TintMapModelResolver.cs -> Feature/AppearanceDefinition | 1
+SWLOR.Game.Server/Domain/Companions/TintMapService.cs -> Feature/AppearanceDefinition | 4
+SWLOR.Game.Server/Domain/Crafting/CraftDeviceService.cs -> Feature/GuiDefinition | 2
+SWLOR.Game.Server/Domain/Crafting/Minigame/Circuit/CircuitStyles.cs -> Feature/StatusEffectDefinition | 2
+SWLOR.Game.Server/Domain/Crafting/Minigame/Forge/ForgeStyles.cs -> Feature/StatusEffectDefinition | 2
+SWLOR.Game.Server/Domain/Crafting/Minigame/Gathering/GatheringStyles.cs -> Feature/StatusEffectDefinition | 2
+SWLOR.Game.Server/Domain/Crafting/Minigame/NwnCraftSessionWorld.cs -> Feature.PlayerTemporaryEffects | 1
+SWLOR.Game.Server/Domain/Crafting/NwnProspectingWorld.cs -> Feature/GuiDefinition | 1
+SWLOR.Game.Server/Domain/Crafting/NwnProspectingWorld.cs -> Feature/ItemDefinition | 1
+SWLOR.Game.Server/Domain/Crafting/NwnScavengeWorld.cs -> Feature/GuiDefinition | 1
+SWLOR.Game.Server/Domain/Creatures/AIActionService.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs -> Feature/StatusEffectDefinition | 1
+SWLOR.Game.Server/Domain/Foundation/ConversationService.cs -> Feature/GuiDefinition | 2
+SWLOR.Game.Server/Domain/Foundation/NamedAnimationService.cs -> Feature.PistolAnimationRemap | 1
+SWLOR.Game.Server/Domain/Foundation/SavedCharacter.cs -> Feature/MigrationDefinition | 4
+SWLOR.Game.Server/Domain/Foundation/SavedCharacterDataStore.cs -> Feature/MigrationDefinition | 1
+SWLOR.Game.Server/Domain/Foundation/SavedItem.cs -> Feature/MigrationDefinition | 3
+SWLOR.Game.Server/Domain/Items/WardrobeService.cs -> Feature/AppearanceDefinition | 2
+SWLOR.Game.Server/Domain/Quests/CapstoneProofService.cs -> Feature/QuestDefinition | 1
+SWLOR.Game.Server/Domain/Quests/QuestDetail.cs -> Feature/DialogDefinition | 1
+SWLOR.Game.Server/Domain/Social/ExtraHotbarsEquipService.cs -> Feature/MigrationDefinition | 1
+SWLOR.Game.Server/Domain/Social/ExtraHotbarsService.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Domain/Social/ExtraHotbarsWindowService.cs -> Feature/GuiDefinition | 1
+SWLOR.Game.Server/Domain/Social/HostedEventsService.cs -> Feature/GuiDefinition | 1
+SWLOR.Game.Server/Domain/Social/PerformanceInspiredService.cs -> Feature/StatusEffectDefinition | 1
+SWLOR.Game.Server/Domain/Social/PerformanceService.cs -> Feature/AppearanceDefinition | 1
+SWLOR.Game.Server/Domain/Social/PerformanceWindowsService.cs -> Feature/GuiDefinition | 1
+SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> Feature/GuiDefinition | 1
+SWLOR.Game.Server/Domain/UI/GuiService.cs -> Feature/GuiDefinition | 2
+SWLOR.Game.Server/Domain/World/NwnFishingFightWorld.cs -> Feature/GuiDefinition | 1
+SWLOR.Game.Server/Domain/World/PropertyStructurePlacementService.cs -> Feature/DialogDefinition | 1
+SWLOR.Game.Server/Domain/World/TrapsService.cs -> Feature/AbilityDefinition | 2
+SWLOR.Game.Server/Domain/World/TrapsService.cs -> Feature/StatusEffectDefinition | 1
+SWLOR.Game.Server/Native/AttackRollAccuracy.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Native/AttackRollCritical.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Native/AttackRollDefense.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Native/AttackRollFeedback.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Native/AttackRollSettlement.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Native/AttackRollSettlement.cs -> Feature/StatusEffectDefinition | 1
+SWLOR.Game.Server/Native/CombatRecorderEffectHooks.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Native/GetDamageRoll.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Native/LegacyItemProperties.cs -> Feature/MigrationDefinition | 1
+SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Native/PairedRangedPresentation.cs -> Feature.PistolAnimationRemap | 1
+SWLOR.Game.Server/Native/ResolveAttackRoll.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Native/WeaponAttackCycle.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/NativeSinks/OnAIActionAttackObjectSink.cs -> Feature.TwinPistolEquipmentValidation | 1
+SWLOR.Game.Server/NativeSinks/OnAIActionAttackObjectSink.cs -> Feature.UsePerkFeat | 1

@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using SWLOR.Game.NativeHooks;
 using SWLOR.Game.Server.Native;
 
 namespace SWLOR.Game.Server.Tests.Service;

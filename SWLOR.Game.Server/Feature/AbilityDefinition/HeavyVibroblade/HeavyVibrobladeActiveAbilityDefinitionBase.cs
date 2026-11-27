@@ -1,14 +1,15 @@
 using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 {
@@ -20,22 +21,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 return true;
 
             StatusEffect.RemoveStatusEffect(activator, type, false);
-            SendMessageToPC(activator, $"{StatusEffect.GetStatusEffectName(type)} deactivated.");
+            SendMessageToPC(activator, $"{StatusEffectCatalog.GetStatusEffectName(type)} deactivated.");
             if (CombatRecorder.IsRecording)
-                CombatRecorder.NoteToggleDeactivated(activator);
+                CombatRecordAbility.NoteToggleDeactivated(activator);
             return false;
         }
 
         protected static void ApplySelfStatus(uint activator, Type type)
         {
             StatusEffect.RemoveOtherStanceStatuses(activator, type);
-            if (StatusEffect.ApplyStatusEffect(activator, activator, type, 0f))
+            if (StatusEffectApplication.ApplyStatusEffect(activator, activator, type, 0f))
                 Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
         }
 
         protected static int SoulStrikeImpact(uint activator, uint target, Location targetLocation, int damageBonus, int healingPercent)
         {
-            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
+            using var damageDerivedHealing = GameServices.CombatResources.BeginDamageDerivedHealing(activator, target);
             var damage = Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, damageBonus, 0, null, false);
             if (damage > 0)
             {
@@ -54,12 +55,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 return;
             }
 
-            StatusEffect.ApplyStatusEffect(activator, target, typeof(EssenceDrainStatusEffect), 30f);
+            StatusEffectApplication.ApplyStatusEffect(activator, target, typeof(EssenceDrainStatusEffect), 30f);
         }
 
         protected static void HealFromDamage(uint target, int damage, int healingPercent)
         {
-            var amount = Combat.ApplyDamageDerivedHealing(
+            var amount = GameServices.CombatResources.ApplyDamageDerivedHealing(
                 target,
                 damage,
                 healingPercent,
@@ -89,14 +90,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
             if (payment <= 0)
                 return;
 
-            var hitPointsSpent = Combat.CalculateHitPointsSpentThroughTemporaryHitPoints(
+            var hitPointsSpent = CombatRules.CalculateHitPointsSpentThroughTemporaryHitPoints(
                 payment,
                 TemporaryHitPointEffects.GetRemaining(activator));
             if (CombatRecorder.IsRecording)
                 CombatRecorder.ExpectHitPointCost(activator, payment);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(payment), activator);
-            Combat.ApplyLowHPDamageTakenEffects(activator, payment);
-            Combat.ApplyHitPointSpendAbilityEffects(activator, hitPointsSpent, cost);
+            GameServices.CombatDamageTakenEffects.ApplyLowHPDamageTakenEffects(activator, payment);
+            GameServices.CombatAbilityCostEffects.ApplyHitPointSpendAbilityEffects(activator, hitPointsSpent, cost);
         }
 
         /// <summary>HP-cost abilities can't be used at 1 HP, where there is nothing left to pay.</summary>
@@ -127,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             if (includeSelf)
             {
-                if (StatusEffect.ApplyStatusEffect(activator, activator, type, duration))
+                if (StatusEffectApplication.ApplyStatusEffect(activator, activator, type, duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
                 ApplyVisualEffect(activator, visualEffect);
             }
@@ -140,7 +141,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
                 if (creature != activator && Party.IsInParty(activator, creature))
                 {
-                    if (StatusEffect.ApplyStatusEffect(activator, creature, type, duration))
+                    if (StatusEffectApplication.ApplyStatusEffect(activator, creature, type, duration))
                         Ability.PlaySuccessfulImpactVisualEffect(activator, creature);
                     ApplyVisualEffect(creature, visualEffect);
                 }
@@ -160,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             if (includeSelf)
             {
-                Ability.ApplyTemporaryImmunity(activator, duration, immunity);
+                AbilityImmunity.ApplyTemporaryImmunity(activator, duration, immunity);
             }
 
             var location = GetLocation(activator);
@@ -171,7 +172,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
                 if (creature != activator && Party.IsInParty(activator, creature))
                 {
-                    Ability.ApplyTemporaryImmunity(creature, duration, immunity);
+                    AbilityImmunity.ApplyTemporaryImmunity(creature, duration, immunity);
                 }
 
             }

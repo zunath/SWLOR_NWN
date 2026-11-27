@@ -5,12 +5,14 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -24,7 +26,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task StaggeredQueuedAbility(EngineTestContext ctx)
         {
             var (attacker, target, weapon) = await CreateFixture(ctx, "trn_saberstaff_1");
-            var ability = Ability.GetAbilityDetail(FeatType.ForceSheath1);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.ForceSheath1);
             var originalImpact = ability.ImpactAction;
             var impactCount = 0;
             try
@@ -37,9 +39,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     originalImpact(activator, selectedTarget, level, location);
                 };
                 Observe(attacker);
-                Combat.SetAutoAttackHitResolutionOverride(true);
-                Combat.SetAbilityHitResolutionOverride(true);
-                Ability.ClearLastCompletedAbilityImpactSummary(attacker);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(attacker);
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
                 {
                     ctx.SetNPCResources(attacker, 100, 100);
@@ -57,7 +59,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     "The second callback waits for the first end's complete swing");
                 ctx.AssertEqual(1, impactCount, "Only one end invokes the queued ability's real damage payload");
                 ctx.Assert(!UsePerkFeat.HasQueuedWeaponAbility(attacker), "The first end consumes the queued ability");
-                var summary = Ability.GetLastCompletedAbilityImpactSummary(attacker);
+                var summary = AbilityImpactState.GetLastCompletedAbilityImpactSummary(attacker);
                 ctx.Assert(summary != null && summary.ImpactedTargetCount == 1 && summary.AttributedDamage > 0,
                     "The consumed ability actually damages its selected target");
                 ctx.AssertEqual(1, _hits.Count, "The queued ability replaces one ordinary weapon roll");
@@ -69,7 +71,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 ability.ImpactAction = originalImpact;
                 UsePerkFeat.ClearQueuedAbility(attacker);
-                Ability.ClearLastCompletedAbilityImpactSummary(attacker);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(attacker);
                 Stop(attacker);
                 ResetObservation();
             }
@@ -94,7 +96,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
 
                     Observe(attacker);
-                    Combat.SetAutoAttackHitResolutionOverride(true);
+                    GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                     AssignCommand(attacker, () => ActionAttack(target));
                     await ctx.WaitUntilAsync(() => _hits.Count > 0, 5f, "the first end's damage roll");
                     ctx.AssertEqual(1, _hits.Count, "The second end is still pending");
@@ -155,10 +157,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(53, GetPropertyTotal(weapon, ItemPropertyType.DMG), "The Sentinel's authored DMG budget is preserved");
                     var delayUnits = GetPropertyTotal(weapon, ItemPropertyType.Delay) * 10;
                     ctx.AssertEqual(290, delayUnits, "The Sentinel's explicit delay is preserved");
-                    ctx.AssertEqual(0, Combat.CalculateOffhandAttackDelayReduction(attacker), "An untrained NPC has no Dual Wield reduction");
-                    var formerSingleCycle = Combat.CalculateEffectiveAttackDelay(
-                        Combat.CalculateAttackDelayMilliseconds(delayUnits, 0, 0, 0));
-                    pairedCycle = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(attacker));
+                    ctx.AssertEqual(0, GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(attacker), "An untrained NPC has no Dual Wield reduction");
+                    var formerSingleCycle = CombatRules.CalculateEffectiveAttackDelay(
+                        CombatRules.CalculateAttackDelayMilliseconds(delayUnits, 0, 0, 0));
+                    pairedCycle = CombatRules.CalculateEffectiveAttackDelay(GameServices.CombatAttackTiming.CalculateAttackDelay(attacker));
                     ctx.AssertEqual(2 * formerSingleCycle, pairedCycle,
                         "Two full-damage ends pay twice the former single-roll cycle");
                     ctx.Assert(Math.Abs(2.0 * 53 / pairedCycle - 53.0 / formerSingleCycle) < 0.0001,
@@ -166,7 +168,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
 
                 Observe(attacker);
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 AssignCommand(attacker, () => ActionAttack(target));
                 await ctx.WaitUntilAsync(() => _hits.Count >= 2, 6f, "the NPC's two striking ends");
                 ctx.AssertEqual(2, _hits.Count, "The NPC gets exactly two rolls in its opening cycle");
@@ -206,7 +208,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
                 }
                 ctx.SuppressNPCNaturalRegen(target);
-                Stat.SetNPCMaxHitPoints(target, 20000, true);
+                CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 90f);
                 TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 90f);
                 ctx.MakeHostile(target);
@@ -259,8 +261,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static void ResetObservation()
         {
-            Combat.SetAutoAttackHitResolutionOverride(null);
-            Combat.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             _observedAttacker = OBJECT_INVALID;
             _hits.Clear();
             _itemHits.Clear();

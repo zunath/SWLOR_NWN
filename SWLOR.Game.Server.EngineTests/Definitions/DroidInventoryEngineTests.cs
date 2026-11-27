@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.CompanionControlService;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 return;
 
             var droid = StringToObject(EventsPlugin.GetEventData("ASSOCIATE_OBJECT_ID"));
-            if (GetResRef(droid) != Droid.DroidResref)
+            if (GetResRef(droid) != DroidService.DroidResref)
                 return;
 
             var repository = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid).AsNWSCreature().m_pcItemRepository;
@@ -483,7 +484,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var droid = await Spawn(ctx, owner, controller);
             try
             {
-                ctx.Assert(CompanionControl.IsControlledCompanion(droid), "The droid belongs to a real player fixture");
+                ctx.Assert(CompanionControlStore.IsControlledCompanion(droid), "The droid belongs to a real player fixture");
                 var rifle = await CreateEquipment(ctx, owner, "oph_rifle");
                 await ctx.ExecuteInCreatureContextAsync(owner, () =>
                     AddItemProperty(DurationType.Permanent, ItemPropertyUnlimitedAmmo(), rifle));
@@ -503,15 +504,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(GetObjectSeen(thief, droid), "The droid sees the hostile thief");
 
                 await DispatchHostileInventoryDisturbance(ctx, droid, thief, ammunition, DisturbType.Added);
-                ctx.AssertEqual(OBJECT_INVALID, CompanionControl.PeekAuthorizedTarget(droid), "Adding an item does not register a defensive threat");
+                ctx.AssertEqual(OBJECT_INVALID, CompanionTargetAuthority.PeekAuthorizedTarget(droid), "Adding an item does not register a defensive threat");
                 await Transfer(ctx, droid, ammunition, owner);
                 await DispatchHostileInventoryDisturbance(ctx, droid, thief, ammunition, DisturbType.Removed);
-                ctx.AssertEqual(OBJECT_INVALID, CompanionControl.PeekAuthorizedTarget(droid), "A normal removal does not register a defensive threat");
+                ctx.AssertEqual(OBJECT_INVALID, CompanionTargetAuthority.PeekAuthorizedTarget(droid), "A normal removal does not register a defensive threat");
 
                 await Transfer(ctx, owner, ammunition, droid);
                 await Transfer(ctx, droid, ammunition, thief);
                 await DispatchHostileInventoryDisturbance(ctx, droid, thief, ammunition, DisturbType.Stolen);
-                ctx.AssertEqual(thief, CompanionControl.PeekAuthorizedTarget(droid), "The hostile thief becomes an authorized defensive target");
+                ctx.AssertEqual(thief, CompanionTargetAuthority.PeekAuthorizedTarget(droid), "The hostile thief becomes an authorized defensive target");
                 await ctx.WaitUntilAsync(() => GetAttackTarget(droid) == thief, 5f, "the droid to retaliate against the thief");
                 for (var tick = 0; tick < 12; tick++)
                 {
@@ -573,7 +574,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var controller = OBJECT_INVALID;
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                controller = CreateItemOnObject(Droid.DroidControlItemResref, owner);
+                controller = CreateItemOnObject(DroidService.DroidControlItemResref, owner);
                 ctx.Assert(GetIsObjectValid(controller), "The controller exists");
                 foreach (var stat in new[] { DroidStatSubType.MGT, DroidStatSubType.PER, DroidStatSubType.VIT,
                              DroidStatSubType.WIL, DroidStatSubType.AGI, DroidStatSubType.SOC })

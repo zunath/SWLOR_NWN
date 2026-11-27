@@ -2,16 +2,34 @@ using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.World;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class NotesWindowTests
 {
+    // The usage figures come from the Notes facade, which resolves from the container the fixture installs.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void NoteUsage_TracksAgainstTheHundredNoteCap()
     {
-        Notes.MaxNumberOfNotes.Should().Be(100);
+        NotesService.MaxNumberOfNotes.Should().Be(100);
 
         Notes.GetNoteUsageText(0).Should().Be("0 / 100 Notes");
         Notes.GetNoteUsageText(38).Should().Be("38 / 100 Notes");
@@ -29,7 +47,7 @@ public class NotesWindowTests
     [Test]
     public void CategoryUsage_TracksAgainstTheTwentyFiveCategoryCap()
     {
-        Notes.MaxNumberOfCategories.Should().Be(25);
+        NotesService.MaxNumberOfCategories.Should().Be(25);
 
         Notes.GetCategoryUsageText(0).Should().Be("0 / 25 Categories");
         Notes.GetCategoryUsageText(7).Should().Be("7 / 25 Categories");
@@ -46,11 +64,11 @@ public class NotesWindowTests
     [Test]
     public void UsageColors_ShiftWhenTheLimitIsReached()
     {
-        Notes.GetNoteUsageColor(0).Should().NotBeSameAs(Notes.GetNoteUsageColor(Notes.MaxNumberOfNotes));
+        Notes.GetNoteUsageColor(0).Should().NotBeSameAs(Notes.GetNoteUsageColor(NotesService.MaxNumberOfNotes));
         Notes.GetNoteUsageColor(0).Should().BeSameAs(Notes.GetNoteUsageColor(99));
-        Notes.GetNoteUsageColor(Notes.MaxNumberOfNotes)
+        Notes.GetNoteUsageColor(NotesService.MaxNumberOfNotes)
             .Should()
-            .BeSameAs(Notes.GetCategoryUsageColor(Notes.MaxNumberOfCategories));
+            .BeSameAs(Notes.GetCategoryUsageColor(NotesService.MaxNumberOfCategories));
     }
 
     [Test]
@@ -159,8 +177,8 @@ public class NotesWindowTests
     {
         // A real category sharing a synthetic option's label renders as two identical entries with
         // different meanings, so creation must reject those names in any casing or padding.
-        Notes.IsReservedCategoryName(Notes.UncategorizedLabel).Should().BeTrue();
-        Notes.IsReservedCategoryName(Notes.AllCategoriesLabel).Should().BeTrue();
+        Notes.IsReservedCategoryName(NotesService.UncategorizedLabel).Should().BeTrue();
+        Notes.IsReservedCategoryName(NotesService.AllCategoriesLabel).Should().BeTrue();
         Notes.IsReservedCategoryName("uncategorized").Should().BeTrue();
         Notes.IsReservedCategoryName("  <ALL CATEGORIES>  ").Should().BeTrue();
 
@@ -201,7 +219,7 @@ public class NotesWindowTests
         var body = ExtractMethodBody(viewModel, "private void ApplyEditsToNote(string noteId)");
 
         // Scoped to this method's body so the checks cannot pass on unrelated code elsewhere.
-        body.Should().Contain("Notes.MaxNoteLength");
+        body.Should().Contain("NotesService.MaxNoteLength");
         body.Should().Contain("DB.Set(dbNote);");
     }
 
@@ -211,13 +229,13 @@ public class NotesWindowTests
         // An unpaged DBQuery falls back to a 50 record limit, which is below the note cap. Every
         // query that loads a whole collection must state its own paging or it truncates silently.
         var viewModel = ReadSource("SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "NotesViewModel.cs");
-        var service = ReadSource("SWLOR.Game.Server", "Service", "Notes.cs");
+        var service = ReadSource("SWLOR.Game.Server", "Domain", "World", "NotesService.cs");
 
-        viewModel.Should().Contain("AddPaging(Notes.MaxNumberOfNotes, 0)");
+        viewModel.Should().Contain("AddPaging(NotesService.MaxNumberOfNotes, 0)");
         service.Should().Contain("AddPaging(MaxNumberOfCategories, 0)");
         service.Should().Contain("AddPaging(MaxNumberOfNotes, 0)");
 
-        Notes.MaxNumberOfNotes.Should().BeGreaterThan(
+        NotesService.MaxNumberOfNotes.Should().BeGreaterThan(
             50,
             "the paging above only matters because the cap exceeds the default row limit");
     }

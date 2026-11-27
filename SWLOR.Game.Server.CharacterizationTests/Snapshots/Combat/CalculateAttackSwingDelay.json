@@ -1,0 +1,20 @@
+{
+  "function": "Combat.CalculateAttackSwingDelay",
+  "description": "The time between swing animations: never faster than the base attack delay.",
+  "seed": null,
+  "inputs": "effective delay values around the base delay of 1750 and the minimum delay.",
+  "rowCount": 10,
+  "columns": ["effectiveDelayMilliseconds", "=> swingDelay"],
+  "rows": [
+    [-1, 1750],
+    [0, 1750],
+    [1, 1750],
+    [583, 1750],
+    [584, 1750],
+    [1000, 1750],
+    [1749, 1750],
+    [1750, 1750],
+    [1751, 1751],
+    [3500, 3500]
+  ]
+}

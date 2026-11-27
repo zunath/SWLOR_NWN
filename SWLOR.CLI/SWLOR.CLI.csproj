@@ -17,6 +17,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
+    <!-- The reload command writes the host's reload signal and reads its receipts (SWLOR.Game.Host.Reload). -->
+    <ProjectReference Include="..\SWLOR.Game.Host\SWLOR.Game.Host.csproj" />
     <ProjectReference Include="..\SWLOR.NWN.Formats\SWLOR.NWN.Formats.csproj" />
   </ItemGroup>
 

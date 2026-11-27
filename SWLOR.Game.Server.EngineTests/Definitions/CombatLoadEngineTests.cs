@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -144,7 +143,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var npc in npcs)
             {
                 SetAILevel(npc, AILevel.High);
-                Stat.SetNPCMaxHitPoints(npc, HitPoints, true);
+                CreatureStat.SetNPCMaxHitPoints(npc, HitPoints, true);
                 SetImmortal(npc, true);
                 ctx.SetNPCResources(npc, Resources, Resources);
                 foreach (var (perk, level) in PinnedPerks)
@@ -167,10 +166,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // Players get their aura area on module entry, which headless players never fire. It is applied
             // after the parties form, as when a party walks into range, so members enter as party members.
             foreach (var player in players)
-                Ability.ReapplyPlayerAuraAOE(player);
+                AbilityAura.ReapplyPlayerAuraAOE(player);
             var playerParties = parties.Where(party => GetIsPC(party[0])).ToList();
             await ctx.WaitUntilAsync(() => playerParties.All(party => party.All(member =>
-                    Ability.GetSelfAndPartyAuraRecipients(party[0]).Contains(member))), 10f,
+                    AbilityAura.GetSelfAndPartyAuraRecipients(party[0]).Contains(member))), 10f,
                 "every player party member to enter its leader's aura");
             if (playerParties.Count > 0)
                 await AssertPartySupportReachesMemberAsync(ctx, playerParties[0]);
@@ -179,8 +178,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             teamB.AddRange(playersOfB);
             for (var index = 0; index < Math.Max(teamA.Count, teamB.Count); index++)
             {
-                Enmity.ModifyEnmity(teamA[index % teamA.Count], teamB[index % teamB.Count], 100);
-                Enmity.ModifyEnmity(teamB[index % teamB.Count], teamA[index % teamA.Count], 100);
+                EnmityChange.ModifyEnmity(teamA[index % teamA.Count], teamB[index % teamB.Count], 100);
+                EnmityChange.ModifyEnmity(teamB[index % teamB.Count], teamA[index % teamA.Count], 100);
             }
             KeepPlayersAttacking(players);
 
@@ -290,7 +289,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     return;
                 }
 
-                var reason = Ability.GetLastActivationDenialReason() ?? "unknown";
+                var reason = AbilityActivation.GetLastActivationDenialReason() ?? "unknown";
                 denials[$"{feat}: {reason}"] = denials.GetValueOrDefault($"{feat}: {reason}") + 1;
             });
             return true;
@@ -330,12 +329,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         // the Party service membership.
         private static void FormPlayerParties(List<uint> players)
         {
-            var addToParty = typeof(Party).GetMethod("AddToParty", BindingFlags.NonPublic | BindingFlags.Static);
             foreach (var party in players.Chunk(PartySize))
             {
                 var leader = party[0];
                 foreach (var member in party.Skip(1))
-                    AssignCommand(member, () => addToParty.Invoke(null, new object[] { leader, member }));
+                    AssignCommand(member, () => PartyCaches.Invoke("AddToParty", leader, member));
             }
         }
 
@@ -369,7 +367,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 {
                     used = UsePerkFeat.TryUseAbility(caster, caster, feat, GetLocation(caster));
-                    reason = used ? string.Empty : Ability.GetLastActivationDenialReason();
+                    reason = used ? string.Empty : AbilityActivation.GetLastActivationDenialReason();
                 });
                 if (!used)
                     await ctx.DelaySecondsAsync(0.5f);
@@ -387,12 +385,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             for (var script = EventScript.Creature_OnHeartbeat; script <= EventScript.Creature_OnBlockedByDoor; script++)
                 SetEventScript(player, script, string.Empty);
             // Players regenerate normally; natural regeneration writes the player record.
-            DeleteLocalInt(player, Stat.SuppressNaturalRegenVariable);
+            DeleteLocalInt(player, CreatureStatService.SuppressNaturalRegenVariable);
             fixture.Update(record =>
             {
                 foreach (var (feat, _) in Rotation)
                 {
-                    var ability = Ability.GetAbilityDetail(feat);
+                    var ability = AbilityCatalog.GetAbilityDetail(feat);
                     record.Perks[ability.EffectiveLevelPerkType] =
                         Math.Max(record.Perks.GetValueOrDefault(ability.EffectiveLevelPerkType), ability.AbilityLevel);
                 }
@@ -411,7 +409,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static async Task GiveConsumablesAsync(EngineTestContext ctx, uint player)
         {
             var resrefs = Rotation
-                .SelectMany(entry => Ability.GetAbilityDetail(entry.Feat).Requirements.OfType<AbilityRequirementItem>())
+                .SelectMany(entry => AbilityCatalog.GetAbilityDetail(entry.Feat).Requirements.OfType<AbilityRequirementItem>())
                 .Select(requirement => requirement.ItemResref)
                 .Distinct();
             foreach (var resref in resrefs)

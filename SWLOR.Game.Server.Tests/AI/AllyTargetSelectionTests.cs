@@ -114,7 +114,7 @@ public class AllyTargetSelectionTests
 
     private static string ExtractMethods(string fileName, params string[] names)
     {
-        var source = ReadSource("Service", "AIService", fileName);
+        var source = ReadSource("Domain", "Creatures", fileName);
         var methods = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
             .OfType<MethodDeclarationSyntax>().Where(method => names.Contains(method.Identifier.Text))
             .Select(method => method.WithoutTrivia().ToFullString()).ToArray();

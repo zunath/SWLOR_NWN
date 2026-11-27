@@ -1,5 +1,5 @@
 using Newtonsoft.Json;
-using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Toolset.Tests;
 

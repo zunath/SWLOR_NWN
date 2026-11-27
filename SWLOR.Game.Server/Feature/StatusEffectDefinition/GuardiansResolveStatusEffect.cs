@@ -1,8 +1,9 @@
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var absorbed = Math.Min(_remainingShield, damage);
             _remainingShield -= absorbed;
 
-            var healing = Stat.ApplyHealingReceivedAdjustment(defender, GameMath.PercentOf(absorbed, 15));
+            var healing = CombatResources.ApplyHealingReceivedAdjustment(defender, GameMath.PercentOf(absorbed, 15));
             ApplyEffectToObject(DurationType.Instant, EffectHeal(healing), defender);
 
             if (_remainingShield <= 0)

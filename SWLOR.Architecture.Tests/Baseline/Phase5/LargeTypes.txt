@@ -1,0 +1,17 @@
+# Phase 5 debt (P5-0): logic types of SWLOR.Game.Server over 1,000 lines (target 2).
+# Line: <type> | <lines>. A type is measured by its files, every partial file together: a file that declares only that
+# top-level type counts all its lines (usings and comments included, a final line break not), a file that declares
+# several top-level types counts the lines each declaration spans. Nested types count toward their top-level type.
+# Not measured: GUI window definitions (layout; see LongMethods.txt) and the exemptions in Exemptions.json. The lines
+# of an exempt member are taken out of its type.
+#
+# The guard (SWLOR.Architecture.Tests, Phase5DebtTests) fails when a line appears, when a count grows, and when a count
+# shrinks or a line disappears: each Phase 5 item shrinks this file in the same pull request. Plan and targets:
+# SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
+# SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
+
+SWLOR.Game.Server.Domain.Companions.DroidService | 1194
+SWLOR.Game.Server.Domain.Items.ItemService | 1605
+SWLOR.Game.Server.Domain.Space.SpaceService | 2771
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel | 2081
+SWLOR.Game.Server.Feature.UsePerkFeat | 1687

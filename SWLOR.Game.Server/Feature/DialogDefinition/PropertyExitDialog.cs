@@ -1,12 +1,27 @@
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class PropertyExitDialog: ConversationMenuDefinition
     {
+        private IAreaService Area { get; }
+        private IDBService DB { get; }
+        private IPropertyService Property { get; }
+        private IPropertyAccessService PropertyAccess { get; }
+        private ISpaceService Space { get; }
+
+        public PropertyExitDialog(IAreaService area, IDBService db, IPropertyService property, IPropertyAccessService propertyAccess, ISpaceService space)
+        {
+            Area = area;
+            DB = db;
+            Property = property;
+            PropertyAccess = propertyAccess;
+            Space = space;
+        }
+
         private const string MainPageId = "MAIN_PAGE";
 
         public override ConversationMenuSpec Build()
@@ -98,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     // Otherwise jump the player to their original location.
                     else
                     {
-                        Property.JumpToOriginalLocation(player);
+                        PropertyAccess.JumpToOriginalLocation(player);
                     }
                 });
             }

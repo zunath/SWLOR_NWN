@@ -1,0 +1,19 @@
+{
+  "function": "Stat.AdjustControl / AdjustCPBonus / AdjustCraftsmanship (Player entity, SkillType, int)",
+  "description": "Adds to the per-skill value of a Player record, creating the entry at zero first.",
+  "seed": null,
+  "inputs": "3 methods x skills {Invalid, Armor, Lightsaber}, adjusted by +6 and then by -10 (the second step shows the entry is kept and can go negative).",
+  "rowCount": 9,
+  "columns": ["method", "skill", "=> afterFirst", "=> afterSecond"],
+  "rows": [
+    ["AdjustControl", "Invalid", "{Invalid:6}", "{Invalid:-4}"],
+    ["AdjustControl", "Armor", "{Armor:6}", "{Armor:-4}"],
+    ["AdjustControl", "Lightsaber", "{Lightsaber:6}", "{Lightsaber:-4}"],
+    ["AdjustCPBonus", "Invalid", "{Invalid:6}", "{Invalid:-4}"],
+    ["AdjustCPBonus", "Armor", "{Armor:6}", "{Armor:-4}"],
+    ["AdjustCPBonus", "Lightsaber", "{Lightsaber:6}", "{Lightsaber:-4}"],
+    ["AdjustCraftsmanship", "Invalid", "{Invalid:6}", "{Invalid:-4}"],
+    ["AdjustCraftsmanship", "Armor", "{Armor:6}", "{Armor:-4}"],
+    ["AdjustCraftsmanship", "Lightsaber", "{Lightsaber:6}", "{Lightsaber:-4}"]
+  ]
+}

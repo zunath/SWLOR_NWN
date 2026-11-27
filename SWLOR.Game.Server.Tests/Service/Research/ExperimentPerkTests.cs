@@ -1,10 +1,11 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
-using SWLOR.Game.Server.Service.CraftService.Research;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Experiment;
+using SWLOR.Game.Server.Domain.Crafting.Research;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Service.Research;
 
@@ -429,7 +430,7 @@ public class ExperimentPerkTests
     public void EveryPerformedActionMatchesItsPreview_WithEveryResearcherPerk(int seed)
     {
         var engine = new ExperimentEngine(new SeededMinigameRandom(seed), Setup(Everything, RandomLevel, rank: 40, gearCp: 120));
-        var chooser = new Random(seed);
+        var chooser = new System.Random(seed);
 
         for (var step = 0; step < 60 && engine.Status == MinigameStatus.InProgress; step++)
         {

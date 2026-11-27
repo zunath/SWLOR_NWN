@@ -5,11 +5,11 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -129,12 +129,12 @@ public class ForceDarkRavagerTests
     {
         var root = FindRepositoryRoot();
 
-        var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
+        var ability = AbilitySource.Read();
         ability.Should().Contain("ApplyDarkForceCastConversion(activator, target)");
         ability.Should().Contain("ApplyDarkForceDamageRestoration(activator, damage)");
 
         var forceDamageOverTime = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ForceDamageOverTimeStatusEffectBase.cs").FullName);
-        forceDamageOverTime.Should().Contain("Ability.ApplyDarkForceDamageRestoration(Source, damage)");
+        forceDamageOverTime.Should().Contain("AbilityDarkForce.ApplyDarkForceDamageRestoration(Source, damage)");
 
         var forceLightning = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceLightningAbilityDefinition.cs").FullName);
         forceLightning.Should().Contain("damageType: CombatDamageType.Force");

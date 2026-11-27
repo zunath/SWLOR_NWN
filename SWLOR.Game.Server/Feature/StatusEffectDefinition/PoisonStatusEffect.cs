@@ -1,9 +1,10 @@
-using SWLOR.Game.Server.Service.StatusEffectService;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -37,13 +38,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var agility = GetAbilityModifier(AbilityType.Agility, source);
             var amount = Math.Max(1, Random.Next(3, 7) + agility * level);
             amount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, amount);
-            amount = Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Poison);
-            amount = Combat.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Poison);
+            amount = GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Poison);
+            amount = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Poison);
             if (amount <= 0)
                 return;
 
             AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Acid), creature));
-            StatusEffect.ApplyStatusEffect(source, creature, typeof(PoisonDefensePenaltyStatusEffect), 30f);
+            StatusEffectApplication.ApplyStatusEffect(source, creature, typeof(PoisonDefensePenaltyStatusEffect), 30f);
         }
 
         protected override void Remove(uint creature)

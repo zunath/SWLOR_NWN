@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Domain.Combat;
+
 namespace SWLOR.CombatSim.Scenario;
 
 /// <summary>Explicit stationary weapon calibration; no spatial movement, native animation or deflection model.</summary>
@@ -32,7 +34,7 @@ public sealed class WeaponCombatSpec
     public int AbilityWeaponDamage => PairedHands ? WeaponDamage * 2 : WeaponDamage;
     /// <summary>Raw attack delay before the engine floor, matching Combat.CalculateAttackDelay for this loadout.</summary>
     public int AttackDelayMilliseconds(int hastePercent) =>
-        SWLOR.Game.Server.Service.Combat.CalculateAttackDelayMilliseconds(WeaponDelayUnits, PairedHands ? WeaponDelayUnits : 0,
+        CombatRules.CalculateAttackDelayMilliseconds(WeaponDelayUnits, PairedHands ? WeaponDelayUnits : 0,
             hastePercent, OffhandDelayReductionPercent);
     public void Validate()
     {

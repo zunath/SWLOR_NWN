@@ -1,8 +1,8 @@
 // TEMPLATE: copy to SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/<YourWindow>ViewModel.cs
 // and rename every "TemplateWindow" token. Delete markers as you fill them.
 using System;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {

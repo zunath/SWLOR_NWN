@@ -4,11 +4,28 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class PistolAnimationRemapTests
 {
+    // The Item facade resolves the item service from a container.
+    private FacadeContainer _itemFacades = null!;
+    private IDisposable _itemFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildItemFacades() => _itemFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeItemFacades() => _itemFacades.Dispose();
+
+    [SetUp]
+    public void InstallItemFacades() => _itemFacadeScope = _itemFacades.Install();
+
+    [TearDown]
+    public void RemoveItemFacades() => _itemFacadeScope.Dispose();
+
     /// <summary>
     /// Verifies the native sling carrier and former pistol replacement animation identifiers.
     /// </summary>
@@ -209,11 +226,7 @@ public class PistolAnimationRemapTests
             "SWLOR.Game.Server",
             "Feature",
             "UsePerkFeat.cs"));
-        var impactSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs"));
+        var impactSource = AbilitySource.Read();
 
         activationSource.Should().Contain(
             "PistolAnimationRemap.PlayAnimationPreservingExplicitThrow",
@@ -226,14 +239,8 @@ public class PistolAnimationRemapTests
         impactSource.Should().Contain(
             "PistolAnimationRemap.PlayAnimationPreservingExplicitThrow",
             "fallback impact animations must bypass the persistent pistol remap for explicit throws");
-        var previewSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "NamedAnimation.cs"));
-        previewSource.Should().Contain(
-            "creature, animation, speed, 0f, immediate: true, releaseAuthoredPose: false",
-            "native throw previews must suspend the pistol remap without releasing their new playback token");
+        // Native throw previews suspend the pistol remap without releasing their new playback token: the behaviour is
+        // asserted on the named animation service (NamedAnimationServiceTests).
         System.Text.RegularExpressions.Regex.IsMatch(
             impactSource,
             @"PlayAnimationWithTemporaryReplacementPreservingExplicitThrow\s*\(\s*activator,\s*animation,\s*1\.0f,\s*restoreDelaySeconds,\s*sourceAnimationName,\s*replacementAnimationName,\s*restoreDelaySeconds\s*\)")

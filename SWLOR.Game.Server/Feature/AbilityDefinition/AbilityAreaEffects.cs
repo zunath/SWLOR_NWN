@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition
 {
@@ -82,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         if (firstApplications.Add(friendly))
                             onFirstApplication?.Invoke(friendly, Math.Max(0.1f, durationSeconds - pulseDelay));
 
-                        if (StatusEffect.ApplyStatusEffect(activator, friendly, statusEffect, 3.2f))
+                        if (StatusEffectApplication.ApplyStatusEffect(activator, friendly, statusEffect, 3.2f))
                             playReceipt(friendly);
                         if (visualEffect != VisualEffect.None)
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visualEffect), friendly);
@@ -120,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             playReceipt(friendly);
                         onHealed?.Invoke(friendly, targetWasBelowHalfHP);
 
-                        if (statusEffect != null && StatusEffect.ApplyStatusEffect(activator, friendly, statusEffect, 3.2f))
+                        if (statusEffect != null && StatusEffectApplication.ApplyStatusEffect(activator, friendly, statusEffect, 3.2f))
                             playReceipt(friendly);
 
                         if (visualEffect != VisualEffect.None)

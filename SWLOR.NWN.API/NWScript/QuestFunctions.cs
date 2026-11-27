@@ -14,7 +14,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void AddJournalQuestEntry(string szPlotID, int nState, uint oCreature,
             bool bAllPartyMembers = true, bool bAllPlayers = false, bool bAllowOverrideHigher = false)
         {
-            global::NWN.Core.NWScript.AddJournalQuestEntry(szPlotID, nState, oCreature, bAllPartyMembers ? 1 : 0, bAllPlayers ? 1 : 0, bAllowOverrideHigher ? 1 : 0);
+            NWScriptRuntime.Current.AddJournalQuestEntry(szPlotID, nState, oCreature, bAllPartyMembers, bAllPlayers, bAllowOverrideHigher);
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void RemoveJournalQuestEntry(string szPlotID, uint oCreature, bool bAllPartyMembers = true,
             bool bAllPlayers = false)
         {
-            global::NWN.Core.NWScript.RemoveJournalQuestEntry(szPlotID, oCreature, bAllPartyMembers ? 1 : 0, bAllPlayers ? 1 : 0);
+            NWScriptRuntime.Current.RemoveJournalQuestEntry(szPlotID, oCreature, bAllPartyMembers, bAllPlayers);
         }
     }
 }

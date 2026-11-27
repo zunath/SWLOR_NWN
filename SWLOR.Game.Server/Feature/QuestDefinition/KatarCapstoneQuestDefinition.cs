@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string AdamantineGuardMeasureQuestId = "adamantine_guard_measure";
         internal const string AdamantineGuardBreachQuestId = "adamantine_guard_breach";
         internal const string AdamantineGuardCircleQuestId = "adamantine_guard_circle";
-        internal const string AdamantineGuardMasteryQuestId = "adamantine_guard_mastery";
+        internal const string AdamantineGuardMasteryQuestId = CapstoneQuestIds.AdamantineGuardMasteryQuestId;
         internal const string AdamantineGuardAdeptResref = "cp_adamguard_ad";
         internal const string AdamantineGuardSpecialistResref = "cp_adamguard_sp";
         internal const string AdamantineGuardInnerCircleResref = "cp_adamguard_ic";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string ScrapheapLockdownMeasureQuestId = "scrapheap_lockdown_measure";
         internal const string ScrapheapLockdownBreachQuestId = "scrapheap_lockdown_breach";
         internal const string ScrapheapLockdownCircleQuestId = "scrapheap_lockdown_circle";
-        internal const string ScrapheapLockdownMasteryQuestId = "scrapheap_lockdown_mastery";
+        internal const string ScrapheapLockdownMasteryQuestId = CapstoneQuestIds.ScrapheapLockdownMasteryQuestId;
         internal const string ScrapheapLockdownAdeptResref = "cp_scraplock_ad";
         internal const string ScrapheapLockdownSpecialistResref = "cp_scraplock_sp";
         internal const string ScrapheapLockdownInnerCircleResref = "cp_scraplock_ic";

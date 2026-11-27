@@ -24,7 +24,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int SendMessage(ChatChannel channel, string message, uint sender, uint target)
         {
-            return global::NWN.Core.NWNX.ChatPlugin.SendMessage((int)channel, message, sender, target);
+            return ChatPluginRuntime.Current.SendMessage(channel, message, sender, target);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void RegisterChatScript(string script)
         {
-            global::NWN.Core.NWNX.ChatPlugin.RegisterChatScript(script);
+            ChatPluginRuntime.Current.RegisterChatScript(script);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SkipMessage()
         {
-            global::NWN.Core.NWNX.ChatPlugin.SkipMessage();
+            ChatPluginRuntime.Current.SkipMessage();
         }
 
         /// <summary>
@@ -67,8 +67,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static ChatChannel GetChannel()
         {
-            int result = global::NWN.Core.NWNX.ChatPlugin.GetChannel();
-            return (ChatChannel)result;
+            return ChatPluginRuntime.Current.GetChannel();
         }
 
         /// <summary>
@@ -82,7 +81,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static string GetMessage()
         {
-            return global::NWN.Core.NWNX.ChatPlugin.GetMessage();
+            return ChatPluginRuntime.Current.GetMessage();
         }
 
         /// <summary>
@@ -96,7 +95,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static uint GetSender()
         {
-            return global::NWN.Core.NWNX.ChatPlugin.GetSender();
+            return ChatPluginRuntime.Current.GetSender();
         }
 
         /// <summary>
@@ -110,7 +109,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static uint GetTarget()
         {
-            return global::NWN.Core.NWNX.ChatPlugin.GetTarget();
+            return ChatPluginRuntime.Current.GetTarget();
         }
 
         /// <summary>
@@ -130,8 +129,7 @@ namespace SWLOR.NWN.API.NWNX
             uint? listener = null,
             ChatChannel channel = ChatChannel.PlayerTalk)
         {
-            uint listenerValue = listener ?? OBJECT_INVALID;
-            global::NWN.Core.NWNX.ChatPlugin.SetChatHearingDistance(distance, listenerValue, (int)channel);
+            ChatPluginRuntime.Current.SetChatHearingDistance(distance, listener, channel);
         }
 
         /// <summary>
@@ -149,8 +147,7 @@ namespace SWLOR.NWN.API.NWNX
         public static float GetChatHearingDistance(uint? listener = null,
             ChatChannel channel = ChatChannel.PlayerTalk)
         {
-            uint listenerValue = listener ?? OBJECT_INVALID;
-            return global::NWN.Core.NWNX.ChatPlugin.GetChatHearingDistance(listenerValue, (int)channel);
+            return ChatPluginRuntime.Current.GetChatHearingDistance(listener, channel);
         }
     }
 }

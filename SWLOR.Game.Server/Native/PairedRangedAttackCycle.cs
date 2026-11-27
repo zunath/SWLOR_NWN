@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using NWN.Native.API;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
-using Ability = SWLOR.Game.Server.Service.Ability;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -29,7 +30,7 @@ namespace SWLOR.Game.Server.Native
             var round = creature.m_pcCombatRound;
             // GetAttack owns fifty slots. Keep the post-roll cursor and the borrowed
             // companion slot inside that native buffer, including unusual haste batches.
-            attacks = Math.Clamp(attacks, 0, Combat.MaxAttacksPerSwing * 2);
+            attacks = Math.Clamp(attacks, 0, CombatRules.MaxAttacksPerSwing * 2);
             var mainCapacity = Math.Max(0, 49 - round.m_nCurrentAttack);
             attacks = Math.Min(attacks, mainCapacity * 2);
             // Native ranged ammunition may be debited after ResolveAttack returns.
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.Native
             if (!unlimited)
                 attacks = Math.Min(attacks, GetIsObjectValid(ammunition) ? GetItemStackSize(ammunition) : 0);
             if (attacks == 0) return;
-            StatusEffect.BeginNativeAttackSwing(actor);
+            StatusEffectCombatEvent.BeginNativeAttackSwing(actor);
             try
             {
                 var mainAttacks = (attacks + 1) / 2;
@@ -65,7 +66,7 @@ namespace SWLOR.Game.Server.Native
             catch
             {
                 PendingHands.Remove(actor);
-                StatusEffect.EndNativeAttackSwing(actor);
+                StatusEffectCombatEvent.EndNativeAttackSwing(actor);
                 throw;
             }
         }
@@ -75,13 +76,13 @@ namespace SWLOR.Game.Server.Native
         /// clip position it has at the 1,750 ms floor instead of firing while slower arms still rise.
         /// </summary>
         public static float CompanionDelaySeconds(int swingMilliseconds) =>
-            .45f * Math.Max(Combat.BaseAttackDelayMilliseconds, swingMilliseconds) / Combat.BaseAttackDelayMilliseconds;
+            .45f * Math.Max(CombatRules.BaseAttackDelayMilliseconds, swingMilliseconds) / CombatRules.BaseAttackDelayMilliseconds;
 
         public static bool HasPendingCompanion(uint actor) => PendingHands.ContainsKey(actor);
 
         public static void Cancel(uint actor)
         {
-            if (PendingHands.Remove(actor)) StatusEffect.EndNativeAttackSwing(actor);
+            if (PendingHands.Remove(actor)) StatusEffectCombatEvent.EndNativeAttackSwing(actor);
         }
 
         /// <summary>
@@ -90,7 +91,7 @@ namespace SWLOR.Game.Server.Native
         /// </summary>
         public static void ForgetDestroyed(uint actor)
         {
-            if (PendingHands.Remove(actor)) StatusEffect.ForgetDestroyedNativeAttackSwing(actor);
+            if (PendingHands.Remove(actor)) StatusEffectCombatEvent.ForgetDestroyedNativeAttackSwing(actor);
         }
 
         private static void Finish(uint actor, Pending pending)
@@ -109,7 +110,7 @@ namespace SWLOR.Game.Server.Native
             finally
             {
                 PendingHands.Remove(actor);
-                StatusEffect.EndNativeAttackSwing(actor);
+                StatusEffectCombatEvent.EndNativeAttackSwing(actor);
             }
         }
 
@@ -188,7 +189,7 @@ namespace SWLOR.Game.Server.Native
                 {
                     var applyQueuedHit = UsePerkFeat.CaptureQueuedWeaponAbilityHit(actor, targetId, weaponId, () =>
                     {
-                        Ability.RecordLeadershipWeaponHit(actor, targetId);
+                        GameServices.AbilityAura.RecordLeadershipWeaponHit(actor, targetId);
                         Loot.RecordWeaponHitFindBonuses(actor, targetId);
                     });
                     if (applyQueuedHit != null)
@@ -211,7 +212,7 @@ namespace SWLOR.Game.Server.Native
                         var resolvedDamage = resolveDamageTaken?.Invoke() ?? damage;
                         shot.Damage = resolvedDamage;
                         CombatPoint.RecordWeaponAttackPoint(actor, targetId, weaponId, skill);
-                        Ability.RecordLeadershipWeaponHit(actor, targetId);
+                        GameServices.AbilityAura.RecordLeadershipWeaponHit(actor, targetId);
                         Loot.RecordWeaponHitFindBonuses(actor, targetId);
                         TwinPistolMastery.RecordOrdinaryHit(actor, targetId, true);
                         foreach (var applyImpact in impactActions) applyImpact(resolvedDamage);

@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CombatSim.Data
 {

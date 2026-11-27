@@ -556,7 +556,7 @@ public class AnimationFileSafetyTests
         AnimationInstall.FindTargetSource(_folder, "hero").Should().Be(target);
         AnimationInstall.Prepare(_folder, project, [target]).Apply();
         var bankPath = Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl");
-        var constantsPath = Path.Combine(_folder, "SWLOR.Game.Server", "Service", "AnimationService", "AuthoredAnimation.cs");
+        var constantsPath = Path.Combine(_folder, "SWLOR.Game.Server", "Domain", "Foundation", "AuthoredAnimation.cs");
         var registryPath = Path.Combine(_folder, "design", "animations", "registry.json");
         var projectPath = Path.Combine(_folder, "design", "animations", "uncategorized", "Wave.swlanim");
         project.Duration = 2;
@@ -577,7 +577,7 @@ public class AnimationFileSafetyTests
     {
         var (project, target) = InstallationFixture();
         AnimationInstall.Prepare(_folder, project, [target]).Apply();
-        var path = Path.Combine(_folder, "SWLOR.Game.Server", "Service", "AnimationService", "AuthoredAnimation.cs");
+        var path = Path.Combine(_folder, "SWLOR.Game.Server", "Domain", "Foundation", "AuthoredAnimation.cs");
         File.WriteAllText(path, owned ? File.ReadAllText(path) : "// Hand-written constants", new UTF8Encoding(true));
         project.Duration = 2;
         if (!owned)

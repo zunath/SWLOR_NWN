@@ -1,0 +1,25 @@
+{
+  "function": "Stat (public const fields)",
+  "description": "Every public constant of the Stat class: base pools, deflection and guard caps, the combat readiness and NPC detection caps, the movement speed bounds and the beast regeneration tuning.",
+  "seed": null,
+  "inputs": "All public const fields of Stat, sorted by name.",
+  "rowCount": 15,
+  "columns": ["constant", "=> type", "=> value"],
+  "rows": [
+    ["BaseFP", "Int32", 10],
+    ["BaseHP", "Int32", 70],
+    ["BaseSTM", "Int32", 10],
+    ["BeastNaturalRegenStatDivisor", "Int32", 10],
+    ["BeastNaturalStaminaRegenDelaySeconds", "Single", 6],
+    ["DefaultMeleeDeflectionChanceCap", "Int32", 50],
+    ["DefaultRangedDeflectionChanceCap", "Int32", 50],
+    ["MaximumCombatReadinessPercent", "Int32", 15],
+    ["MaximumDeflectionChanceCap", "Int32", 100],
+    ["MaximumGuardChance", "Int32", 100],
+    ["MaximumMovementSpeedMultiplier", "Single", 1.5],
+    ["MaximumNPCDetection", "Int32", 50],
+    ["MaximumShieldDeflectionChance", "Int32", 75],
+    ["MinimumMovementSpeedMultiplier", "Single", 0],
+    ["SuppressNaturalRegenVariable", "String", "ENGINE_TEST_SUPPRESS_NATURAL_REGEN"]
+  ]
+}

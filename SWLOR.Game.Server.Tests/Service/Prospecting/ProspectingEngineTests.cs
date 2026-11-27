@@ -1,8 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Tests.Service.Prospecting.ProspectingTestData;
 
 namespace SWLOR.Game.Server.Tests.Service.Prospecting;
@@ -693,7 +694,7 @@ public class ProspectingEngineTests
 
         for (var seed = 1; seed <= 200; seed++)
         {
-            var random = new Random(seed);
+            var random = new System.Random(seed);
             var weights = Enumerable.Range(0, random.Next(1, 8)).Select(_ => (long)random.Next(0, 10_000)).ToArray();
             if (weights.All(weight => weight == 0))
                 continue;

@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Forge;
 
 namespace SWLOR.CraftSim.Scenario.Forge
 {

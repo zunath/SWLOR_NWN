@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             VisualEffect visualEffect = VisualEffect.Vfx_Imp_Healing_M_Silent)
         {
             var amount = AbilityEffectScaling.CalculateScaledHeal(source, target, heal, scalingAbility, multiplier);
-            amount = Stat.ApplyOutgoingAbilityHealingAdjustment(source, amount);
-            amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
+            amount = CombatResources.ApplyOutgoingAbilityHealingAdjustment(source, amount);
+            amount = CombatResources.ApplyHealingReceivedAdjustment(target, amount);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyMedicalVisualEffect(target, visualEffect);
@@ -35,9 +35,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             float multiplier = 1f)
         {
             var amount = AbilityEffectScaling.CalculateScaledHeal(source, target, heal, scalingAbility, multiplier);
-            amount = Stat.ApplyOutgoingAbilityHealingAdjustment(source, amount);
-            amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(source, amount);
-            amount = Stat.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);
+            amount = CombatResources.ApplyOutgoingAbilityHealingAdjustment(source, amount);
+            amount = CombatAbilityMagnitude.ApplyCombatReadinessToActivatedAbilityMagnitude(source, amount);
+            amount = CombatResources.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);
 
             var hitPointsBeforeHealing = GetCurrentHitPoints(target);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             if (coagulantRank <= 0)
                 return;
 
-            StatusEffect.ApplyStatusEffect(
+            StatusEffectApplication.ApplyStatusEffect(
                 source,
                 target,
                 coagulantRank >= 2 ? typeof(Coagulant2StatusEffect) : typeof(Coagulant1StatusEffect),
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             if (!removedAilment)
                 return;
 
-            StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);
+            StatusEffectApplication.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);
         }
     }
 }

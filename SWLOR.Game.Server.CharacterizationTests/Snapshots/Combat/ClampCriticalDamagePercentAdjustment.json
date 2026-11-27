@@ -1,0 +1,22 @@
+{
+  "function": "Combat.ClampCriticalDamagePercentAdjustment",
+  "description": "Caps the total critical damage bonus at the maximum; negative adjustments pass through.",
+  "seed": null,
+  "inputs": "Values around the cap of 200 plus the int extremes.",
+  "rowCount": 12,
+  "columns": ["adjustment", "=> clamped"],
+  "rows": [
+    [-2147483648, -2147483648],
+    [-1000, -1000],
+    [-100, -100],
+    [-1, -1],
+    [0, 0],
+    [1, 1],
+    [50, 50],
+    [199, 199],
+    [200, 200],
+    [201, 200],
+    [1000, 200],
+    [2147483647, 200]
+  ]
+}

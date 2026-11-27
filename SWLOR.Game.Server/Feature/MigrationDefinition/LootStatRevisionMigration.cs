@@ -4,12 +4,13 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
@@ -237,7 +238,7 @@ public static class LootStatRevisionMigration
         SetLocalInt(item, revisionVariable, revision);
 
         if (GetIsObjectValid(wearer))
-            Stat.RefreshCombatReadinessEquipment(wearer);
+            StatRecord.RefreshCombatReadinessEquipment(wearer);
         return true;
     }
 

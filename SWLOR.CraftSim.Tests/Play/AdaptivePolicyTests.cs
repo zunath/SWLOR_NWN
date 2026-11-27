@@ -3,7 +3,7 @@ using NUnit.Framework;
 using SWLOR.CraftSim.Play;
 using SWLOR.CraftSim.Rng;
 using SWLOR.CraftSim.Tests.Support;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
 
 namespace SWLOR.CraftSim.Tests.Play
 {

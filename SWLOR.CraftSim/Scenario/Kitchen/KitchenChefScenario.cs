@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Kitchen;
 
 namespace SWLOR.CraftSim.Scenario.Kitchen
 {

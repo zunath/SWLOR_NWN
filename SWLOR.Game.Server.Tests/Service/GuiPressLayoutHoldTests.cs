@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.UI;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -105,9 +105,9 @@ public class GuiPressLayoutHoldTests
     [Test]
     public void NuiEventsRecordThePressBeforeAnyHandlerRuns()
     {
-        var source = ServerSource("Service", "Gui.cs");
-        var handler = source[source.IndexOf("public static void HandleNuiEvents()", StringComparison.Ordinal)..];
-        handler = handler[..handler.IndexOf("public static void HandleNuiWatchEvent()", StringComparison.Ordinal)];
+        var source = ServerSource("Domain", "UI", "GuiService.cs");
+        var handler = source[source.IndexOf("public void HandleNuiEvents()", StringComparison.Ordinal)..];
+        handler = handler[..handler.IndexOf("public void HandleNuiWatchEvent()", StringComparison.Ordinal)];
 
         handler.Should().Contain("eventType == \"click\" || eventType == \"mousedown\"");
         handler.Should().Contain("viewModel.OnPointerPressed()");
@@ -124,7 +124,7 @@ public class GuiPressLayoutHoldTests
     [Test]
     public void RootLayoutIsHeldDuringAPress()
     {
-        var source = ServerSource("Service", "GuiService", "GuiViewModelBase.cs");
+        var source = ServerSource("Domain", "UI", "GuiViewModelBase.cs");
         var apply = source[source.IndexOf("private void ApplyRootLayout(", StringComparison.Ordinal)..];
 
         var hold = apply.IndexOf("_pressHold.Hold()", StringComparison.Ordinal);

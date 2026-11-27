@@ -2,17 +2,30 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.NWN.API.Engine;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class StarportDockDialog: ConversationMenuDefinition
     {
+        private IDBService DB { get; }
+        private IEnmityService Enmity { get; }
+        private IPropertyService Property { get; }
+        private ISpaceService Space { get; }
+
+        public StarportDockDialog(IDBService db, IEnmityService enmity, IPropertyService property, ISpaceService space)
+        {
+            DB = db;
+            Enmity = enmity;
+            Property = property;
+            Space = space;
+        }
+
         private class Model
         {
             public PlanetType Planet { get; set; }

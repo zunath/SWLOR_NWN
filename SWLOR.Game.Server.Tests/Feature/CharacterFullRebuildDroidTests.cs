@@ -13,8 +13,9 @@ public class CharacterFullRebuildDroidTests
         var raceSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Race.cs"));
+            "Domain",
+            "Character",
+            "RaceService.cs"));
         var viewModelSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -29,8 +30,8 @@ public class CharacterFullRebuildDroidTests
             "GuiDefinition",
             "CharacterFullRebuildDefinition.cs"));
 
-        raceSource.Should().Contain("public static bool IsClassAvailableToRace(ClassType classType, RacialType race)");
-        raceSource.Should().Contain("private static readonly Dictionary<RacialType, int> _forceSensitiveRacePrerequisites");
+        raceSource.Should().Contain("public bool IsClassAvailableToRace(ClassType classType, RacialType race)");
+        raceSource.Should().Contain("private readonly Dictionary<RacialType, int> _forceSensitiveRacePrerequisites");
         raceSource.Should().Contain("private const string ForceSensitivePrerequisites2DA = \"cls_pres_force\";");
         raceSource.Should().Contain("private const string RequirementParam1Column = \"ReqParam1\";");
         raceSource.Should().Contain("return GetForceSensitiveRacePrerequisites().ContainsKey(race);");

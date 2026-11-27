@@ -1,13 +1,12 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
 {
@@ -70,11 +69,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                     continue;
 
                 // Each member sees only their own smoke; it would mark them for everyone else.
-                Ability.ShowVisualEffectToPlayer(member, member, VisualEffect.Vfx_Dur_Ghost_Smoke);
+                AbilityImpactVisual.ShowVisualEffectToPlayer(member, member, VisualEffect.Vfx_Dur_Ghost_Smoke);
                 SendMessageToPC(member, $"{PlayerName.GetDisplayName(member, activator)}'s Shared Presence hides you for up to {(int)StealthWindowSeconds} seconds.");
             }
 
-            Ability.ShowVisualEffectToPlayer(activator, activator, Ability.GetSuccessfulImpactVisualEffect(activator));
+            AbilityImpactVisual.ShowVisualEffectToPlayer(activator, activator, Ability.GetSuccessfulImpactVisualEffect(activator));
         }
 
         /// <summary>
@@ -91,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
             {
                 SetActionMode(activator, ActionMode.Stealth, true);
             });
-            Ability.ShowVisualEffectToPlayer(activator, activator, VisualEffect.Vfx_Dur_Ghost_Smoke);
+            AbilityImpactVisual.ShowVisualEffectToPlayer(activator, activator, VisualEffect.Vfx_Dur_Ghost_Smoke);
         }
     }
 }

@@ -1,6 +1,6 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (stacks <= 0 || icon == EffectIconType.Invalid)
                 return;
 
-            StatusEffect.ApplyStatusEffect(
+            StatusEffectApplication.ApplyStatusEffect(
                 attacker,
                 attacker,
                 new MeleeRepeatedTargetDamageStatusEffect(stacks, icon),

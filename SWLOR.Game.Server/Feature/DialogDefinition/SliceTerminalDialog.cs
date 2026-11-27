@@ -1,12 +1,20 @@
 using SWLOR.Game.Server.Core.NWNX.Enum;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class SliceTerminalDialog: ConversationMenuDefinition
     {
+        private IKeyItemService KeyItem { get; }
+        private IObjectVisibilityService ObjectVisibility { get; }
+
+        public SliceTerminalDialog(IKeyItemService keyItem, IObjectVisibilityService objectVisibility)
+        {
+            KeyItem = keyItem;
+            ObjectVisibility = objectVisibility;
+        }
+
         private const string MainPageId = "MAIN_PAGE";
 
         public override ConversationMenuSpec Build()

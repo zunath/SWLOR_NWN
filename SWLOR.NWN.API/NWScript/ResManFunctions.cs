@@ -14,7 +14,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The resource location, or empty string if the resource does not exist in the search space</returns>
         public static string ResManGetAliasFor(string sResRef, ResType nResType)
         {
-            return global::NWN.Core.NWScript.ResManGetAliasFor(sResRef, (int)nResType);
+            return NWScriptRuntime.Current.ResManGetAliasFor(sResRef, nResType);
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The found resref, or empty string if no such resref exists</returns>
         public static string ResManFindPrefix(string sPrefix, ResType nResType, int nNth = 1, bool bSearchBaseData = false, string sOnlyKeyTable = "")
         {
-            return global::NWN.Core.NWScript.ResManFindPrefix(sPrefix, (int)nResType, nNth, bSearchBaseData ? 1 : 0, sOnlyKeyTable);
+            return NWScriptRuntime.Current.ResManFindPrefix(sPrefix, nResType, nNth, bSearchBaseData, sOnlyKeyTable);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The file contents, or empty string if the file does not exist</returns>
         public static string ResManGetFileContents(string sResRef, int nResType)
         {
-            return global::NWN.Core.NWScript.ResManGetFileContents(sResRef, nResType);
+            return NWScriptRuntime.Current.ResManGetFileContents(sResRef, nResType);
         }
 
     }

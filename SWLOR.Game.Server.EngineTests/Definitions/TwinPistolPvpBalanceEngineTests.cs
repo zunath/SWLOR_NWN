@@ -9,18 +9,17 @@ using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -53,8 +52,8 @@ public static class TwinPistolPvpBalanceEngineTests
             await PreparePlayer(ctx, defender.Creature, hostile: true);
             await PreparePlayer(ctx, fresh.Creature, hostile: true);
             await ctx.ExecuteInCreatureContextAsync(actor, () => PrepareNpc(ctx, npc));
-            ctx.AssertEqual(Stat.GetDefense(defender.Creature, CombatDamageType.Physical, AbilityType.Vitality),
-                Stat.GetDefense(fresh.Creature, CombatDamageType.Physical, AbilityType.Vitality),
+            ctx.AssertEqual(CombatRating.GetDefense(defender.Creature, CombatDamageType.Physical, AbilityType.Vitality),
+                CombatRating.GetDefense(fresh.Creature, CombatDamageType.Physical, AbilityType.Vitality),
                 "The original and fresh player targets have identical measured defenses");
 
             PvpCombat.SetCombatSecondsForTesting(actor, 0);
@@ -115,7 +114,7 @@ public static class TwinPistolPvpBalanceEngineTests
         var actor = player.Creature;
         var stamina = 0;
         var health = 0;
-        var ability = Ability.GetAbilityDetail(FeatType.FinalSalvo);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.FinalSalvo);
         var target = ctx.SpawnCreature("nw_rat001", 2f);
         await ctx.DelaySecondsAsync(1f);
         try
@@ -134,17 +133,17 @@ public static class TwinPistolPvpBalanceEngineTests
                 CadenceFixture.Grant(actor, 3);
                 ctx.AssertEqual(3, StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0,
                     "Three Cadence charges were earned through the production landed-hit adapter");
-                Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
                 HostileAbilityDelay.EndForTesting(actor);
                 ctx.SeedRandom(1);
                 stamina = Stat.GetCurrentStamina(actor);
                 health = GetCurrentHitPoints(target);
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.FinalSalvo, GetLocation(target)),
-                    $"The real Cadence finisher begins in the same batch as its earned charges: {Ability.GetLastActivationDenialReason()}");
+                    $"The real Cadence finisher begins in the same batch as its earned charges: {AbilityActivation.GetLastActivationDenialReason()}");
             });
-            await WaitFrames(ctx, () => Ability.GetLastCompletedAbilityImpactSummary(actor) is { AttributedDamage: > 0 } summary &&
+            await WaitFrames(ctx, () => AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) is { AttributedDamage: > 0 } summary &&
                 summary.Ability == ability && !Activity.IsBusy(actor), "Final Salvo's real paid impact", 5f);
-            var impact = Ability.GetLastCompletedAbilityImpactSummary(actor);
+            var impact = AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor);
             await WaitFrames(ctx, () => health - GetCurrentHitPoints(target) == impact.AttributedDamage,
                 "all actual finisher damage to arrive", 2f);
             ctx.AssertEqual(stamina - Cost(FeatType.FinalSalvo) + 3, Stat.GetCurrentStamina(actor),
@@ -269,10 +268,10 @@ public static class TwinPistolPvpBalanceEngineTests
             {
                 SuppressAi(target);
                 ctx.SuppressNPCNaturalRegen(target);
-                Stat.SetNPCMaxHitPoints(target, 30000, true);
+                CreatureStat.SetNPCMaxHitPoints(target, 30000, true);
                 TemporaryStatModifier.Add(target, StatType.PhysicalDefense,
-                    94 - Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), 30f);
-                TemporaryStatModifier.Add(target, StatType.Evasion, 134 - Stat.GetEvasion(target, SkillType.Invalid), 30f);
+                    94 - CombatRating.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), 30f);
+                TemporaryStatModifier.Add(target, StatType.Evasion, 134 - CombatRating.GetEvasion(target, SkillType.Invalid), 30f);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneImmobilize(), target, 30f);
                 SetCommandable(false, target);
                 ctx.MakeHostile(target);
@@ -286,8 +285,8 @@ public static class TwinPistolPvpBalanceEngineTests
                 for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
                     ctx.Assert(GetEffectType(effect) is not EffectTypeScript.DamageReduction and not EffectTypeScript.DamageResistance,
                         "The fresh rotation target has no finite native physical absorption effects");
-                ctx.AssertEqual(94, Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), "Actual rotation defense");
-                ctx.AssertEqual(134, Stat.GetEvasion(target, SkillType.Invalid), "Actual rotation evasion");
+                ctx.AssertEqual(94, CombatRating.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), "Actual rotation defense");
+                ctx.AssertEqual(134, CombatRating.GetEvasion(target, SkillType.Invalid), "Actual rotation evasion");
                 ctx.AssertEqual(30000, GetMaxHitPoints(target), "Actual native rotation HP budget");
                 ctx.AssertEqual(0, TemporaryHitPointEffects.GetRemaining(target), "The fresh rotation target has no reactive shield");
                 ResetShot(ctx, actor, target);
@@ -344,7 +343,7 @@ public static class TwinPistolPvpBalanceEngineTests
                 {
                     // Calibrated actual damage makes this hit fatal precisely at the configured
                     // threshold, with enough real shield capacity to survive the arriving hit.
-                    Stat.SetNPCMaxHitPoints(target, baseline * 5, true);
+                    CreatureStat.SetNPCMaxHitPoints(target, baseline * 5, true);
                     ObjectPlugin.SetCurrentHitPoints(target, baseline);
                     TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPThresholdPercent, 20, 30f);
                     TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPPercent, 50, 30f);
@@ -352,7 +351,7 @@ public static class TwinPistolPvpBalanceEngineTests
                     TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPCooldownSeconds, 30, 30f);
                 }
                 else if (channel == "redirect")
-                    ctx.Assert(StatusEffect.ApplyStatusEffect(protector, target, new ForceIntercept1StatusEffect(), 30f),
+                    ctx.Assert(StatusEffectApplication.ApplyStatusEffect(protector, target, new ForceIntercept1StatusEffect(), 30f),
                         "A real one-use source-owned redirect is active");
                 else
                     ApplyEffectToObject(DurationType.Temporary, EffectDamageReduction(9999, DamagePower.PlusOne, 5), target, 30f);
@@ -429,7 +428,7 @@ public static class TwinPistolPvpBalanceEngineTests
     private static async Task<int> ActivatedDamage(EngineTestContext ctx, uint actor, uint target, uint companion,
         FeatType feat, double playerSeconds)
     {
-        var ability = Ability.GetAbilityDetail(feat);
+        var ability = AbilityCatalog.GetAbilityDetail(feat);
         var health = 0;
         var stamina = 0;
         await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -438,31 +437,31 @@ public static class TwinPistolPvpBalanceEngineTests
             PvpCombat.SetCombatSecondsForTesting(target, playerSeconds);
             Recast.ReduceRecastDelay(actor, ability.RecastGroup, 120f);
             HostileAbilityDelay.EndForTesting(actor);
-            Ability.ClearLastCompletedAbilityImpactSummary(actor);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
             health = GetCurrentHitPoints(target);
             stamina = Stat.GetCurrentStamina(actor);
             ctx.SeedRandom(1);
             ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
-                $"The actual ability is accepted: {Ability.GetLastActivationDenialReason()}");
+                $"The actual ability is accepted: {AbilityActivation.GetLastActivationDenialReason()}");
             if (feat != FeatType.Headshot1) return;
             ctx.AssertEqual(stamina - Cost(feat), Stat.GetCurrentStamina(actor), "Headshot pays exactly once at real queue time");
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
             native.m_pcCombatRound.StartCombatRound(target);
             native.m_pcCombatRound.m_nCurrentAttack = 0;
             native.m_pcCombatRound.GetAttack(0).m_bRangedAttack = 1;
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             native.ResolveAttackRoll(NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(target).AsNWSObject());
             ctx.AssertEqual(4, native.m_pcCombatRound.GetAttack(0).m_nAttackResult, "The actual native main hand misses");
-            Combat.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             LaunchCompanion(ctx, actor, target, companion);
             var shot = RangedWeaponAttackContext.GetRoll(actor, target, 0);
             ctx.Assert(shot is { Ordinary: false, Completed: true, Damage: 0 },
                 "The landed companion reserves Headshot and suppresses ordinary damage");
         });
-        await WaitFrames(ctx, () => Ability.GetLastCompletedAbilityImpactSummary(actor) is { AttributedDamage: > 0 } summary &&
+        await WaitFrames(ctx, () => AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) is { AttributedDamage: > 0 } summary &&
             summary.Ability == ability && !Activity.IsBusy(actor) && !UsePerkFeat.HasQueuedWeaponAbility(actor),
             "the actual activated or queued impact to complete", 4f);
-        var impact = Ability.GetLastCompletedAbilityImpactSummary(actor);
+        var impact = AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor);
         ctx.Assert(health > impact.AttributedDamage, "The native player target survives its complete activated payload");
         await WaitFrames(ctx, () => health - GetCurrentHitPoints(target) == impact.AttributedDamage,
             "the completed impact to reconcile exactly to target HP", 2f);
@@ -498,8 +497,8 @@ public static class TwinPistolPvpBalanceEngineTests
             foreach (var weapon in new[] { main, companion })
                 ReplaceProperty(weapon, ItemPropertyType.DMG, ItemPropertyCustom(ItemPropertyType.DMG, -1, 20));
             TemporaryStatModifier.Add(actor, StatType.CriticalRatePercentAdjustment, -100, 90f);
-            Combat.SetAutoAttackHitResolutionOverride(true);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         });
         return (main, companion);
     }
@@ -527,7 +526,7 @@ public static class TwinPistolPvpBalanceEngineTests
         SuppressAi(npc);
         SetPlotFlag(npc, false);
         ctx.SuppressNPCNaturalRegen(npc);
-        Stat.SetNPCMaxHitPoints(npc, 20000, true);
+        CreatureStat.SetNPCMaxHitPoints(npc, 20000, true);
         PrepareTarget(ctx, npc);
     }
 
@@ -537,7 +536,7 @@ public static class TwinPistolPvpBalanceEngineTests
         SetCommandable(false, target);
         TemporaryStatModifier.Add(target, StatType.RangedDeflection, -100, 90f);
         TemporaryStatModifier.Add(target, StatType.PhysicalDefense,
-            94 - Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), 90f);
+            94 - CombatRating.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), 90f);
         ctx.MakeHostile(target);
     }
 
@@ -555,7 +554,7 @@ public static class TwinPistolPvpBalanceEngineTests
         PairedRangedAttackCycle.Cancel(actor);
         RangedWeaponAttackContext.Clear(actor);
         PairedRangedTraits.ClearActor(actor);
-        Combat.ClearAttackSwingDebt(actor);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(actor);
         ObjectPlugin.SetCurrentHitPoints(target, GetMaxHitPoints(target));
         SetIsTemporaryEnemy(target, actor);
         if (GetIsPC(target))
@@ -578,7 +577,7 @@ public static class TwinPistolPvpBalanceEngineTests
         ResolveCompanion.Invoke(null, new object[] { native, defender, WeaponShotProfile.Capture(actor, companion, SkillType.TwinPistol) });
     }
 
-    private static int Cost(FeatType feat) => Ability.GetAbilityDetail(feat).Requirements
+    private static int Cost(FeatType feat) => AbilityCatalog.GetAbilityDetail(feat).Requirements
         .OfType<AbilityRequirementStamina>().Single().RequiredSTM;
 
     private static void ReplaceProperty(uint item, ItemPropertyType type, ItemProperty replacement)
@@ -592,8 +591,8 @@ public static class TwinPistolPvpBalanceEngineTests
 
     private static void Cleanup(uint actor, params uint[] otherPlayers)
     {
-        Combat.SetAutoAttackHitResolutionOverride(null);
-        Combat.SetAbilityHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         if (GetIsObjectValid(actor))
         {
             AssignCommand(actor, () => ClearAllActions());

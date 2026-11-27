@@ -5,7 +5,7 @@ using Avalonia.VisualTree;
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;

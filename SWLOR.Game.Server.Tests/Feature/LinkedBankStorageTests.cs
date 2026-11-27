@@ -2,10 +2,12 @@ using System.Reflection;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -14,12 +16,14 @@ public class LinkedBankStorageTests
     [Test]
     public void BankService_UsesCanonicalStorageIdAndCap()
     {
-        Bank.GetItemCountText(5).Should().Be("5 / 120 Items");
-        Bank.GetStoragePercentage(240).Should().Be(1f);
+        var bank = new BankService(new InMemoryDBService(), FacadeForwarder.For<IItemService>());
+        bank.GetItemCountText(5).Should().Be("5 / 120 Items");
+        bank.GetStoragePercentage(240).Should().Be(1f);
 
-        var bankType = typeof(Bank);
-        var storageId = bankType.GetField("StorageId", BindingFlags.NonPublic | BindingFlags.Static);
-        var maxItems = bankType.GetField("MaxItems", BindingFlags.NonPublic | BindingFlags.Static);
+        // The constants live on the instance; the static facade is gone.
+        var serviceType = typeof(BankService);
+        var storageId = serviceType.GetField("StorageId", BindingFlags.NonPublic | BindingFlags.Static);
+        var maxItems = serviceType.GetField("MaxItems", BindingFlags.NonPublic | BindingFlags.Static);
 
         storageId.Should().NotBeNull();
         storageId!.IsLiteral.Should().BeTrue();
@@ -27,45 +31,41 @@ public class LinkedBankStorageTests
         maxItems.Should().NotBeNull();
         maxItems!.IsLiteral.Should().BeTrue();
         maxItems.GetRawConstantValue().Should().Be(120);
-        bankType
-            .GetFields(BindingFlags.Public | BindingFlags.Static)
-            .Where(field => field.IsLiteral)
-            .Should()
-            .BeEmpty();
+        serviceType.Assembly.GetType("SWLOR.Game.Server.Service.Bank").Should().BeNull();
     }
 
     [Test]
     public void BankService_OwnsBankOperations()
     {
-        GetPublicBankMethod(nameof(Bank.GetItemCount), typeof(string))
+        GetPublicBankMethod(nameof(BankService.GetItemCount), typeof(string))
             .ReturnType
             .Should()
             .Be(typeof(long));
-        GetPublicBankMethod(nameof(Bank.SearchItems), typeof(string), typeof(string), typeof(int))
+        GetPublicBankMethod(nameof(BankService.SearchItems), typeof(string), typeof(string), typeof(int))
             .ReturnType
             .Should()
             .Be(typeof(BankItemPage));
-        GetPublicBankMethod(nameof(Bank.GetDepositFailure), typeof(uint), typeof(uint))
+        GetPublicBankMethod(nameof(BankService.GetDepositFailure), typeof(uint), typeof(uint))
             .ReturnType
             .Should()
             .Be(typeof(string));
-        GetPublicBankMethod(nameof(Bank.DepositItem), typeof(uint), typeof(uint))
+        GetPublicBankMethod(nameof(BankService.DepositItem), typeof(uint), typeof(uint))
             .ReturnType
             .Should()
             .Be(typeof(InventoryItem));
-        GetPublicBankMethod(nameof(Bank.WithdrawItem), typeof(uint), typeof(string))
+        GetPublicBankMethod(nameof(BankService.WithdrawItem), typeof(uint), typeof(string))
             .ReturnType
             .Should()
             .Be(typeof(string));
-        GetPublicBankMethod(nameof(Bank.GetCityBankAccessFailure), typeof(uint), typeof(uint))
+        GetPublicBankMethod(nameof(BankService.GetCityBankAccessFailure), typeof(uint), typeof(uint))
             .ReturnType
             .Should()
             .Be(typeof(string));
-        GetPublicBankMethod(nameof(Bank.SetCityBankId), typeof(uint), typeof(string))
+        GetPublicBankMethod(nameof(BankService.SetCityBankId), typeof(uint), typeof(string))
             .ReturnType
             .Should()
             .Be(typeof(void));
-        GetPublicBankMethod(nameof(Bank.NormalizeStorageId), typeof(InventoryItem))
+        GetPublicBankMethod(nameof(BankService.NormalizeStorageId), typeof(InventoryItem))
             .ReturnType
             .Should()
             .Be(typeof(bool));
@@ -74,30 +74,38 @@ public class LinkedBankStorageTests
     [Test]
     public void BankService_ConstrainsItemQueriesToGlobalBankStorage()
     {
-        var query = (DBQuery<InventoryItem>)GetPrivateBankMethod("BuildPlayerItemQuery", typeof(string))
-            .Invoke(null, new object[] { "player-id" })!;
+        var db = new InMemoryDBService();
+        var bank = new BankService(db, FacadeForwarder.For<IItemService>());
 
-        var queryString = query.BuildQuery().QueryString;
+        bank.GetItemCount("player-id");
+        bank.SearchItems("player-id", string.Empty, 0);
 
-        queryString.Should().Contain("@StorageId:GLOBAL_BANK");
-        queryString.Should().Contain("@PlayerId:player\\-id");
+        db.Queries.Should().HaveCount(2);
+        foreach (var query in db.Queries.Cast<DBQuery<InventoryItem>>())
+        {
+            var queryString = query.BuildQuery().QueryString;
+
+            queryString.Should().Contain("@StorageId:GLOBAL_BANK");
+            queryString.Should().Contain("@PlayerId:player\\-id");
+        }
     }
 
     [Test]
     public void BankService_SearchQueryFiltersByNameOnlyWhenSearchTextIsGiven()
     {
+        var bank = new BankService(new InMemoryDBService(), FacadeForwarder.For<IItemService>());
         var method = GetPrivateBankMethod("BuildSearchQuery", typeof(string), typeof(string));
 
-        var all = ((DBQuery<InventoryItem>)method.Invoke(null, new object[] { "player-id", string.Empty })!)
+        var all = ((DBQuery<InventoryItem>)method.Invoke(bank, new object[] { "player-id", string.Empty })!)
             .BuildQuery().QueryString;
-        var filtered = ((DBQuery<InventoryItem>)method.Invoke(null, new object[] { "player-id", "Wood" })!)
+        var filtered = ((DBQuery<InventoryItem>)method.Invoke(bank, new object[] { "player-id", "Wood" })!)
             .BuildQuery().QueryString;
 
         all.Should().Contain("@StorageId:GLOBAL_BANK").And.NotContain("@Name:");
         filtered.Should().Contain("@StorageId:GLOBAL_BANK").And.Contain("@Name:");
 
         // Pages need a fixed order: oldest deposit first, so the newest deposit is on the last page.
-        var query = (DBQuery<InventoryItem>)method.Invoke(null, new object[] { "player-id", "Wood" })!;
+        var query = (DBQuery<InventoryItem>)method.Invoke(bank, new object[] { "player-id", "Wood" })!;
         var sortField = typeof(DBQuery<InventoryItem>).GetProperty("SortByField", BindingFlags.NonPublic | BindingFlags.Instance);
         var ascending = typeof(DBQuery<InventoryItem>).GetProperty("IsAscending", BindingFlags.NonPublic | BindingFlags.Instance);
         sortField!.GetValue(query).Should().Be(nameof(InventoryItem.DepositedTicks));
@@ -110,19 +118,20 @@ public class LinkedBankStorageTests
     public void BankService_SearchItemsLoadsOnePageAndClampsThePageIndex()
     {
         // An unpaged DB search stops at 50 rows, which hid the newest deposits in banks holding more than 50 items.
-        var itemsPerPage = typeof(Bank).GetField("ItemsPerPage", BindingFlags.NonPublic | BindingFlags.Static);
+        var itemsPerPage = typeof(BankService).GetField("ItemsPerPage", BindingFlags.NonPublic | BindingFlags.Static);
         itemsPerPage.Should().NotBeNull();
         itemsPerPage!.GetRawConstantValue().Should().Be(20);
 
+        // The code now lives in the instance class; the facade only forwards.
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Bank.cs"));
-        var start = source.IndexOf("public static BankItemPage SearchItems", StringComparison.Ordinal);
-        var end = source.IndexOf("private static DBQuery<InventoryItem> BuildSearchQuery", StringComparison.Ordinal);
+        var source = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Economy", "BankService.cs"));
+        var start = source.IndexOf("public BankItemPage SearchItems", StringComparison.Ordinal);
+        var end = source.IndexOf("private DBQuery<InventoryItem> BuildSearchQuery", StringComparison.Ordinal);
 
         start.Should().BeGreaterThan(0);
         end.Should().BeGreaterThan(start);
         var body = source.Substring(start, end - start);
-        body.Should().Contain("DB.SearchCount(BuildSearchQuery(playerId, searchText))");
+        body.Should().Contain("_db.SearchCount(BuildSearchQuery(playerId, searchText))");
         body.Should().Contain("GuiPaginationState.Create(matchCount, ItemsPerPage, pageIndex)");
         body.Should().Contain(".AddPaging(ItemsPerPage, ItemsPerPage * pagination.SelectedPageIndex)");
     }
@@ -134,7 +143,7 @@ public class LinkedBankStorageTests
     [TestCase(120, 5, 5, 6)]
     public void BankPaging_ClampsToTheLastPageOfTwentyItems(long matchCount, int requested, int expectedPage, int expectedPageCount)
     {
-        var pagination = SWLOR.Game.Server.Service.GuiService.GuiPaginationState.Create(matchCount, 20, requested);
+        var pagination = SWLOR.Game.Server.Domain.UI.GuiPaginationState.Create(matchCount, 20, requested);
 
         pagination.SelectedPageIndex.Should().Be(expectedPage);
         pagination.PageNumbers.Count.Should().Be(expectedPageCount);
@@ -238,8 +247,8 @@ public class LinkedBankStorageTests
             "PropertyLayoutDefinition",
             "BankLayoutDefinition.cs"));
 
-        source.Should().Contain("Service.Bank.GetCityBankAccessFailure(player, bank)");
-        source.Should().Contain("Service.Bank.SetCityBankId(placeable, cityId)");
+        source.Should().Contain("GameServices.Bank.GetCityBankAccessFailure(player, bank)");
+        source.Should().Contain("GameServices.Bank.SetCityBankId(placeable, cityId)");
         source.Should().Contain("SetEventScript(placeable, EventScript.Placeable_OnUsed, ScriptName.OnOpenPropertyBank)");
         source.Should().NotContain("GetLocalString(bank");
         source.Should().NotContain("SetLocalString(placeable");
@@ -360,9 +369,9 @@ public class LinkedBankStorageTests
 
     private static MethodInfo GetPublicBankMethod(string name, params Type[] parameterTypes)
     {
-        var method = typeof(Bank).GetMethod(
+        var method = typeof(BankService).GetMethod(
             name,
-            BindingFlags.Public | BindingFlags.Static,
+            BindingFlags.Public | BindingFlags.Instance,
             null,
             parameterTypes,
             null);
@@ -373,9 +382,9 @@ public class LinkedBankStorageTests
 
     private static MethodInfo GetPrivateBankMethod(string name, params Type[] parameterTypes)
     {
-        var method = typeof(Bank).GetMethod(
+        var method = typeof(BankService).GetMethod(
             name,
-            BindingFlags.NonPublic | BindingFlags.Static,
+            BindingFlags.NonPublic | BindingFlags.Instance,
             null,
             parameterTypes,
             null);

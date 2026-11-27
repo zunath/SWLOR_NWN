@@ -1,46 +1,47 @@
 using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature;
 
 /// <summary>Reconciles restored and completed equipment arrangements, including failed equip attempts.</summary>
 public static class TwinPistolEquipmentValidation
 {
-    private static readonly HashSet<uint> Revalidating = new();
-    private sealed record FailedReturn(uint Item, InventorySlot Slot);
-    private static readonly Dictionary<uint, FailedReturn> FailedReturns = new();
-
     public static string GetUnusableEquipmentError(uint creature)
     {
         if (TwinPistolEquipment.IsPairItem(GetItemInSlot(InventorySlot.RightHand, creature)) &&
             !TwinPistolEquipment.IsActivePair(creature))
             return "Twin Pistols require their generated off-hand pistol. Unequip and re-equip the pair.";
-        if (!FailedReturns.TryGetValue(creature, out var failure)) return string.Empty;
+        if (!TwinPistolEquipment.TryGetFailedReturn(creature, out var failedItem, out var failedSlot)) return string.Empty;
         if (!GetIsObjectValid(creature) || GetIsDead(creature) ||
-            GetItemInSlot(failure.Slot, creature) != failure.Item ||
-            string.IsNullOrEmpty(Item.CanEquip(creature, failure.Item, failure.Slot)))
+            GetItemInSlot(failedSlot, creature) != failedItem ||
+            string.IsNullOrEmpty(Item.CanEquip(creature, failedItem, failedSlot)))
         {
-            FailedReturns.Remove(creature);
+            TwinPistolEquipment.ClearFailedReturn(creature);
             return string.Empty;
         }
         return "Free inventory space or make room in a carried bag, then unequip the unusable weapon.";
     }
 
     [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
-    public static void OnDeath() => FailedReturns.Remove(OBJECT_SELF);
+    public static void OnDeath() => TwinPistolEquipment.ClearFailedReturn(OBJECT_SELF);
 
     // Dismissed droids are destroyed without dying or exiting; forget them before their IDs are reused.
     [NWNEventHandler(ScriptName.OnObjectDestroyed)]
-    public static void OnDestroyed() => FailedReturns.Remove(OBJECT_SELF);
+    public static void OnDestroyed() => TwinPistolEquipment.ClearFailedReturn(OBJECT_SELF);
 
+    [PlayerSession(PlayerReload.LogoutOnly,
+        "Forgets a failed re-equip notice, which goes with the old build.")]
     [NWNEventHandler(ScriptName.OnModuleExit)]
-    public static void OnExit() => FailedReturns.Remove(GetExitingObject());
+    public static void OnExit() => TwinPistolEquipment.ClearFailedReturn(GetExitingObject());
 
+    [PlayerSession(PlayerReload.LoginOnly,
+        "Validates the hands at login; the equipment has not changed.")]
     [NWNEventHandler(ScriptName.OnModuleEnter)]
     public static void OnEnter() => QueueRevalidation(GetEnteringObject());
 
@@ -61,7 +62,7 @@ public static class TwinPistolEquipmentValidation
 
     public static void Revalidate(uint creature)
     {
-        if (Revalidating.Contains(creature) || TwinPistolEquipment.IsChanging(creature) ||
+        if (TwinPistolEquipment.IsRevalidating(creature) || TwinPistolEquipment.IsChanging(creature) ||
             !GetIsObjectValid(creature) || (!GetIsPC(creature) && !Droid.IsDroid(creature)) ||
             GetIsDM(creature) || GetIsDMPossessed(creature)) return;
 
@@ -70,20 +71,20 @@ public static class TwinPistolEquipmentValidation
         if (!TryGetHandErrors(creature, out var mainError, out var companionError)) return;
         if (string.IsNullOrEmpty(mainError) && string.IsNullOrEmpty(companionError))
         {
-            FailedReturns.Remove(creature);
+            TwinPistolEquipment.ClearFailedReturn(creature);
             return;
         }
         // Reserve owned storage before native unequipping can drop a crowded player's item.
         AssignCommand(creature, () =>
         {
-            if (!Revalidating.Add(creature)) return;
+            if (!TwinPistolEquipment.TryBeginRevalidation(creature)) return;
             try
             {
                 ClearAllActions();
                 if (!string.IsNullOrEmpty(companionError)) ReturnEquippedItem(creature, off, InventorySlot.LeftHand);
                 if (!string.IsNullOrEmpty(mainError)) ReturnEquippedItem(creature, main, InventorySlot.RightHand);
             }
-            finally { Revalidating.Remove(creature); }
+            finally { TwinPistolEquipment.EndRevalidation(creature); }
         });
         var observer = Droid.IsDroid(creature) ? GetMaster(creature) : creature;
         SendMessageToPC(observer, ColorToken.Red(!string.IsNullOrEmpty(mainError) ? mainError : companionError));
@@ -128,12 +129,12 @@ public static class TwinPistolEquipmentValidation
             {
                 if (!PlayerEquipmentStorage.TryUnequip(creature, item, slot, allowRecoveryBag: false))
                     throw new InvalidOperationException("No owned storage can hold the returned item.");
-                if (FailedReturns.TryGetValue(creature, out var failure) && failure.Item == item)
-                    FailedReturns.Remove(creature);
+                if (TwinPistolEquipment.TryGetFailedReturn(creature, out var returnedItem, out _) && returnedItem == item)
+                    TwinPistolEquipment.ClearFailedReturn(creature);
             }
             catch (InvalidOperationException) when (GetItemInSlot(slot, creature) == item && GetItemPossessor(item) == creature)
             {
-                FailedReturns[creature] = new FailedReturn(item, slot);
+                TwinPistolEquipment.SetFailedReturn(creature, item, slot);
                 ClearAllActions();
                 SendMessageToPC(Droid.IsDroid(creature) ? GetMaster(creature) : creature, ColorToken.Red(GetUnusableEquipmentError(creature)));
             }

@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.Game.Server.Tests.Service.RecipeParameters;
 

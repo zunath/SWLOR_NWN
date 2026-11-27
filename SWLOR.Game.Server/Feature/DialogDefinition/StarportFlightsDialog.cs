@@ -1,15 +1,28 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Service.ShuttleService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class StarportFlightsDialog: ConversationMenuDefinition
     {
+        private IDBService DB { get; }
+        private IKeyItemService KeyItem { get; }
+        private IPlanetService Planet { get; }
+        private IPropertyService Property { get; }
+        private IShuttleTicketService ShuttleTicket { get; }
+
+        public StarportFlightsDialog(IDBService db, IKeyItemService keyItem, IPlanetService planet, IPropertyService property, IShuttleTicketService shuttle)
+        {
+            DB = db;
+            KeyItem = keyItem;
+            Planet = planet;
+            Property = property;
+            ShuttleTicket = shuttle;
+        }
+
         private class Model
         {
             public PlanetType Origin { get; set; }
@@ -76,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 return;
             }
 
-            var ride = Shuttle.GetRide(GetObjectUUID(player));
+            var ride = ShuttleTicket.GetRide(GetObjectUUID(player));
 
             if (ride == null)
             {
@@ -117,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var fare = GalaxyMap.GetFare(origin, type);
                 var tax = (int)(model.Tax * fare);
                 var price = fare + tax;
-                var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(origin, type) - DateTime.UtcNow, false);
+                var countdown = Time.GetTimeLongIntervals(ShuttleTicket.GetNextDepartureUtc(origin, type) - DateTime.UtcNow, false);
                 var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(GalaxyMap.GetTransitSeconds(origin, type)), false);
 
                 var optionText = $"{planet.Name} [{price} cr] - departs in {countdown}, flight time {transit}";
@@ -135,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private void BuildTicketedPage(ConversationMenuPage page, uint player, PlanetType terminalPlanet, ShuttleRide ride)
         {
             var destinationName = Planet.GetPlanetByType(ride.Destination).Name;
-            var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(ride.Origin, ride.Destination, ride.PlayerId) - DateTime.UtcNow, false);
+            var countdown = Time.GetTimeLongIntervals(ShuttleTicket.GetNextDepartureUtc(ride.Origin, ride.Destination, ride.PlayerId) - DateTime.UtcNow, false);
             var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(GalaxyMap.GetTransitSeconds(ride.Origin, ride.Destination)), false);
 
             page.Header = "Ticketed Flight: " + destinationName + "\n" +
@@ -151,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.AddResponse($"Refund Ticket ({ride.FarePaid} cr)", () =>
             {
-                Shuttle.RefundTicket(player);
+                ShuttleTicket.RefundTicket(player);
                 GoToPage(MainPageId, false);
             });
         }
@@ -167,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var fare = GalaxyMap.GetFare(model.Origin, model.Destination);
             var tax = (int)(model.Tax * fare);
             var price = fare + tax;
-            var countdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(model.Origin, model.Destination) - DateTime.UtcNow, false);
+            var countdown = Time.GetTimeLongIntervals(ShuttleTicket.GetNextDepartureUtc(model.Origin, model.Destination) - DateTime.UtcNow, false);
             var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(GalaxyMap.GetTransitSeconds(model.Origin, model.Destination)), false);
 
             page.Header = "Selected Destination: " + destinationName + "\n" +
@@ -188,10 +201,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 page.AddResponse("Confirm Flight", () =>
                 {
-                    if (!Shuttle.TryPurchaseTicket(player, model.Origin, model.Destination, model.CityPropertyId, model.Tax))
+                    if (!ShuttleTicket.TryPurchaseTicket(player, model.Origin, model.Destination, model.CityPropertyId, model.Tax))
                         return;
 
-                    var confirmedCountdown = Time.GetTimeLongIntervals(Shuttle.GetNextDepartureUtc(model.Origin, model.Destination) - DateTime.UtcNow, false);
+                    var confirmedCountdown = Time.GetTimeLongIntervals(ShuttleTicket.GetNextDepartureUtc(model.Origin, model.Destination) - DateTime.UtcNow, false);
                     SendMessageToPC(player, ColorToken.Green($"Ticket purchased! Your shuttle to {destinationName} departs in {confirmedCountdown}."));
 
                     Close();

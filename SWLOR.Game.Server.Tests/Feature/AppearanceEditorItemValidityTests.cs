@@ -26,12 +26,13 @@ public class AppearanceEditorItemValidityTests
             directory = directory.Parent;
         directory.Should().NotBeNull();
         var source = File.ReadAllText(Path.Combine(directory!.FullName,
-            "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "AppearanceEditorViewModel.cs"));
+            "SWLOR.Game.Server", "Feature", "AppearanceDefinition", "ItemAppearance", "AppearanceItemEligibility.cs"));
         var methods = string.Join(Environment.NewLine, CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
             .OfType<MethodDeclarationSyntax>()
-            .Where(node => node.Identifier.Text is "IsValidItem" or "AllowsItemFlags" or "GetWeaponPartId"
-                or "GetWeaponPartOptions")
-            .Select(node => node.ToFullString().Replace("IWeaponAppearanceDefinition", "WeaponAppearanceBaseDefinition")));
+            .Where(node => node.Identifier.Text is "IsValid" or "AllowsItemFlags" or "GetWeaponPartId" or "GetWeaponPartOptions")
+            .Select(node => node.ToFullString().Replace("IWeaponAppearanceDefinition", "WeaponAppearanceBaseDefinition")
+                .Replace("ArmorAppearanceCatalog.Definitions", "_armorAppearances")
+                .Replace("IWeaponAppearanceCatalog.Definitions", "_weaponAppearances")));
         var harness = $$"""
             using System;
             using System.Collections.Generic;
@@ -76,23 +77,20 @@ public class AppearanceEditorItemValidityTests
                     [BaseItem.Lightsaber] = new LightsaberAppearanceDefinition(),
                     [BaseItem.Saberstaff] = new SaberstaffAppearanceDefinition()
                 };
-                private readonly uint _target = 2;
-                private bool IsAppearanceSelected => false;
-                private int SelectedItemTypeIndex => ItemType switch
-                {
-                    BaseItem.Helmet => 1,
-                    BaseItem.Lightsaber or BaseItem.Saberstaff => 3,
-                    _ => 2
-                };
-                private uint GetItem() => Item;
                 // Armor part validity has its own tests (ArmorPartAppearanceTests).
-                private bool AllowsArmorParts(uint item) => true;
+                private static bool AllowsArmorParts(uint target, uint item) => true;
                 {{methods}}
                 public static bool Run(bool targetDM, bool targetPossessed, bool cursed, bool plot, BaseItem itemType, string resref)
                 {
                     TargetDM = targetDM; TargetPossessed = targetPossessed; Cursed = cursed; Plot = plot;
                     ItemType = itemType; ResRef = resref;
-                    return new Harness().IsValidItem();
+                    var selectedItemTypeIndex = ItemType switch
+                    {
+                        BaseItem.Helmet => 1,
+                        BaseItem.Lightsaber or BaseItem.Saberstaff => 3,
+                        _ => 2
+                    };
+                    return new Harness().IsValid(2, Item, selectedItemTypeIndex);
                 }
             }
             """;

@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -37,7 +38,7 @@ namespace SWLOR.Game.Server.Feature
             var currentAction = GetCurrentAction(creature);
             var inCombat = GetIsInCombat(creature) ||
                            GetIsObjectValid(Enmity.GetHighestEnmityTarget(creature));
-            var available = AI.IsCreatureAIEnabled(creature) && GetCommandable(creature) &&
+            var available = CreatureAIRules.IsCreatureAIEnabled(creature) && GetCommandable(creature) &&
                             !GetIsDead(creature) && GetCurrentHitPoints(creature) > 0;
             if (!available || inCombat)
             {

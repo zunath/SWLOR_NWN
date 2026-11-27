@@ -1,8 +1,9 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.AIService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var unmarked = Hit(marker, target);
             ctx.Assert(unmarked > 0, "the baseline hit must deal damage");
 
-            ctx.Assert(StatusEffect.ApplyStatusEffect(marker, target, typeof(MarkedForDeathStatusEffect), 60f, CombatDamageType.Physical),
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(marker, target, typeof(MarkedForDeathStatusEffect), 60f, CombatDamageType.Physical),
                 "Marked for Death applies");
             var mark = (MarkedForDeathStatusEffect)StatusEffect.GetStatusEffect(target, typeof(MarkedForDeathStatusEffect));
 
@@ -64,7 +65,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static void Prepare(EngineTestContext ctx, uint creature)
         {
             ctx.SuppressNPCNaturalRegen(creature);
-            Stat.SetNPCMaxHitPoints(creature, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(creature, 1000, true);
             SetAILevel(creature, AILevel.VeryLow);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), creature, 120f);
         }

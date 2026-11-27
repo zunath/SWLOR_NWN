@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             if (immobilizeAttacker)
                 ApplyEffectToObject(DurationType.Permanent, EffectCutsceneImmobilize(), attacker);
 
-            await ctx.ExecuteInCreatureContextAsync(attacker, () => Enmity.ModifyEnmity(target, attacker, 100));
+            await ctx.ExecuteInCreatureContextAsync(attacker, () => EnmityChange.ModifyEnmity(target, attacker, 100));
             ctx.AssertEqual(target, Enmity.GetHighestEnmityTarget(attacker), "attacker's highest enmity target");
 
             return (attacker, target);

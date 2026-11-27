@@ -3,9 +3,9 @@ using NUnit.Framework;
 using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Scenario;
 using SWLOR.CraftSim.Search;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Search;
 
 namespace SWLOR.CraftSim.Tests.Search
 {
@@ -93,7 +93,7 @@ namespace SWLOR.CraftSim.Tests.Search
         }
 
         private static double ScavengeQuickRolls(int rank) =>
-            Game.Server.Service.ScavengeService.ScavengeQuickSearch.ExpectedRolls(CraftRankMilestones.HardLookLevelForRank(rank));
+            Game.Server.Domain.Crafting.ScavengeQuickSearch.ExpectedRolls(CraftRankMilestones.HardLookLevelForRank(rank));
 
         [Test]
         public void TheLengthGatePasses_EveryBoardIsAsLongAsTheScavengerHasSearches()

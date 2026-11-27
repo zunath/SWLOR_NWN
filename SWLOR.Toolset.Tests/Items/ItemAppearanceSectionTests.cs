@@ -2,7 +2,8 @@ using Avalonia.Headless.NUnit;
 using Avalonia.Media;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
@@ -699,7 +700,7 @@ namespace SWLOR.Toolset.Tests.Items
 
             private static ISet<string> ExistingEss2Textures() => new HashSet<string>
             {
-                "iit_ess2_001", "iit_ess2_003", "iit_ess2_005"
+                "iit_ess2_001", "iit_ess2_003", "iit_ess2_019"
             };
 
             [Test]
@@ -711,7 +712,7 @@ namespace SWLOR.Toolset.Tests.Items
                 Assert.That(section.Gallery, Is.Not.Null);
                 Assert.That(
                     section.Gallery!.Options.Select(option => option.Display),
-                    Is.EquivalentTo(new[] { "001", "003", "005" }));
+                    Is.EquivalentTo(new[] { "001", "003", "019" }));
             }
 
             [Test]
@@ -720,7 +721,7 @@ namespace SWLOR.Toolset.Tests.Items
                 var section = Open(OpenStore("abdamaryllia"), Ess2Row, ExistingEss2Textures());
 
                 Assert.That(section.Gallery!.Selected, Is.Not.Null);
-                Assert.That(section.Gallery.Selected!.Display, Is.EqualTo("005"));
+                Assert.That(section.Gallery.Selected!.Display, Is.EqualTo("019"));
             }
 
             [Test]
@@ -815,16 +816,16 @@ namespace SWLOR.Toolset.Tests.Items
                 var ess2Row = new BaseItemIconRow(516, 0, "it_ess2", "iinvalid_2x2");
                 var ess3Row = new BaseItemIconRow(517, 0, "it_ess3", "iinvalid_2x2");
                 BaseItemIconRow currentRow = ess2Row;
-                ISet<string> currentTextures = new HashSet<string> { "iit_ess2_001", "iit_ess2_003", "iit_ess2_005" };
+                ISet<string> currentTextures = new HashSet<string> { "iit_ess2_001", "iit_ess2_003", "iit_ess2_019" };
 
                 var section = new ItemAppearanceSectionViewModel(
                     store, RunEdit, _ => currentRow, resRef => currentTextures.Contains(resRef));
 
-                // Stored ModelPart1 is 5 - matches the ess2 gallery's "005" tile.
-                Assert.That(section.Gallery!.Selected!.Display, Is.EqualTo("005"));
+                // Stored ModelPart1 is 19 - matches the ess2 gallery's "019" tile.
+                Assert.That(section.Gallery!.Selected!.Display, Is.EqualTo("019"));
 
                 // Simulate the base-type change: a different row, a different set of textures whose
-                // only part number (10) never matches the still-stored ModelPart1 (5).
+                // only part number (10) never matches the still-stored ModelPart1 (19).
                 currentRow = ess3Row;
                 currentTextures = new HashSet<string> { "iit_ess3_010" };
                 section.Rebuild();

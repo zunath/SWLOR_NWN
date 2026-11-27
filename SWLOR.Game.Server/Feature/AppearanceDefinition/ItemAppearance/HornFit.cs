@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerformanceService;
+using SWLOR.Game.Server.Domain.Social;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 
@@ -143,6 +144,8 @@ public static class HornFit
         return fits;
     }
 
+    [PlayerSession(PlayerReload.LoginOnly,
+        "The horn fit stays in the engine.")]
     [NWNEventHandler(ScriptName.OnModuleEnter)]
     public static void OnModuleEnter() => RefreshInventory(GetEnteringObject());
 
@@ -227,7 +230,7 @@ public static class HornFit
         var item = GetItemInSlot(InventorySlot.RightHand, creature);
         if (!GetIsObjectValid(item))
             return;
-        var performing = Performance.TryGetSession(creature, out var session) && session.Kind == PerformanceKind.Music;
+        var performing = GameServices.PerformanceRegistry.TryGetSession(creature, out var session) && session.Kind == PerformanceKind.Music;
         ApplyFit(item, ResolveFit(GetResRef(item), GetAppearanceType(creature),
             RobeModelRenderer.GetBasePhenotype(creature), GetGender(creature), performing));
     }

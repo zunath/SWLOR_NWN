@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -24,7 +25,7 @@ public static class PropertyDeletionEngineTests
 
         try
         {
-            await RunInScriptContextAsync(ctx, () => Property.DeleteProperty(city));
+            await RunInScriptContextAsync(ctx, () => PropertyMaintenance.DeleteProperty(city));
 
             foreach (var property in created)
             {
@@ -125,7 +126,7 @@ public static class PropertyDeletionEngineTests
 
         try
         {
-            await RunInScriptContextAsync(ctx, () => Property.DeleteProperty(ship));
+            await RunInScriptContextAsync(ctx, () => PropertyMaintenance.DeleteProperty(ship));
 
             ctx.Assert(DB.Get<WorldProperty>(ship.Id) == null, "starship is deleted");
             var dockedShips = DB.Get<WorldProperty>(interior.Id).ChildPropertyIds[PropertyChildType.Starship];

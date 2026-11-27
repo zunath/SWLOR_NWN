@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.EngineTests.Framework

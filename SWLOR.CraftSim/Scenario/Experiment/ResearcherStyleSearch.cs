@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using System.Text;
 using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Report;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Experiment;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 
 namespace SWLOR.CraftSim.Scenario.Experiment

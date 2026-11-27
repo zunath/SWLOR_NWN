@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -26,7 +25,7 @@ public class ShipModuleRangeRuleTests
         [ShipModuleType.LaserBattery] = ShipModuleRangeRule.NoTarget,
     };
 
-    private static IReadOnlyList<ShipModuleDetail> AllModules() => typeof(Space).Assembly.GetTypes()
+    private static IReadOnlyList<ShipModuleDetail> AllModules() => typeof(SWLOR.Game.Server.Domain.Space.ISpaceService).Assembly.GetTypes()
         .Where(type => typeof(IShipModuleListDefinition).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
         .SelectMany(type => ((IShipModuleListDefinition)Activator.CreateInstance(type)).BuildShipModules().Values)
         .ToList();

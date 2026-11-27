@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var target = ctx.SpawnCreature("civilian", 1f);
             await ctx.DelaySecondsAsync(1f);
             ctx.SuppressNPCNaturalRegen(target);
-            Stat.SetNPCMaxHitPoints(target, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
             ObjectPlugin.SetCurrentHitPoints(target, 1);
             CreaturePlugin.SetRawAbilityScore(player, AbilityType.Willpower, 26);
             fixture.Update(record =>
@@ -51,18 +51,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) > before, 5f, "the player's direct heal");
             // Med Kit IV on the 1,000 HP target: 108 HP plus 6% = 168, then x1.25 at 26 Willpower.
             var expected = AbilityEffectScaling.ScaleRestorativeEffect(168, 26);
-            expected = Stat.ApplyOutgoingAbilityHealingAdjustment(player, expected);
-            expected = Stat.ApplyHealingReceivedAdjustment(target, expected, false);
+            expected = CombatResources.ApplyOutgoingAbilityHealingAdjustment(player, expected);
+            expected = CombatResources.ApplyHealingReceivedAdjustment(target, expected, false);
             var observed = GetCurrentHitPoints(target) - before;
             ctx.AssertEqual(expected, observed, "healing includes ordinary WIL, Injector Rig and received-healing bonuses");
             ctx.Assert(observed < 500, "this legal combination restores less than half a health bar per cast");
             ctx.AssertEqual(0, Stat.GetCurrentStamina(player), "one rank-IV heal consumes the eight-STM budget");
             await ctx.WaitUntilAsync(() => !GetIsObjectValid(supplies), 3f, "the medical supply to be consumed");
-            ctx.Assert(!Ability.CanUseAbility(player, target, FeatType.MedKit4, 4, GetLocation(target)), "healing cannot be spammed during recast");
+            ctx.Assert(!AbilityActivation.CanUseAbility(player, target, FeatType.MedKit4, 4, GetLocation(target)), "healing cannot be spammed during recast");
             await ctx.DelaySecondsAsync(11f);
-            ctx.Assert(!Ability.CanUseAbility(player, target, FeatType.MedKit4, 4, GetLocation(target)), "an exhausted medic cannot heal after recast");
+            ctx.Assert(!AbilityActivation.CanUseAbility(player, target, FeatType.MedKit4, 4, GetLocation(target)), "an exhausted medic cannot heal after recast");
             ctx.SetResources(player, 100, 8);
-            ctx.Assert(!Ability.CanUseAbility(player, target, FeatType.MedKit4, 4, GetLocation(target)), "restoring stamina does not replace the consumed supply");
+            ctx.Assert(!AbilityActivation.CanUseAbility(player, target, FeatType.MedKit4, 4, GetLocation(target)), "restoring stamina does not replace the consumed supply");
             ctx.Log($"Med Kit IV: {observed}/1000 HP restored, 8 STM and one supply consumed.");
         }
     }

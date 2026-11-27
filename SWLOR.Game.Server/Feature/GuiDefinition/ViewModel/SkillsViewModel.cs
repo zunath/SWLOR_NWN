@@ -3,10 +3,11 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -176,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 decayLockTexts.Add(GetDecayLockText(playerSkill.IsLocked, skill.ContributesToSkillCap));
                 decayLockColors.Add(GetDecayLockColor(playerSkill.IsLocked, skill.ContributesToSkillCap));
                 decayLockButtonEnabled.Add(skill.ContributesToSkillCap);
-                var rankLimitSelection = GetRankLimitSelection(Skill.GetRankLimit(playerSkill, skill));
+                var rankLimitSelection = GetRankLimitSelection(SkillRank.GetRankLimit(playerSkill, skill));
                 rankLimitSelections.Add(rankLimitSelection);
                 _savedRankLimitSelections.Add(rankLimitSelection);
                 distributeRPXPButtonEnabled.Add(dbPlayer.UnallocatedXP > 0);
@@ -311,7 +312,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     : Math.Clamp(selections[index] - 1, 0, details.MaxRank);
                 changed = true;
 
-                var savedSelection = GetRankLimitSelection(Skill.GetRankLimit(pcSkill, details));
+                var savedSelection = GetRankLimitSelection(SkillRank.GetRankLimit(pcSkill, details));
                 _savedRankLimitSelections[index] = savedSelection;
                 if (selections[index] != savedSelection)
                     selections[index] = savedSelection;

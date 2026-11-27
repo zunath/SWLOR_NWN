@@ -1,24 +1,26 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class PlayerSkillPointAccountingTests
+public class PlayerSkillPointAccountingTests : SkillFacadeFixture
 {
     [Test]
     public void TotalSkillPoints_IncludesStartingPointsAndEarnedSkillPoints()
     {
         var dbPlayer = new Player
         {
-            TotalSPAcquired = Skill.SkillCap
+            TotalSPAcquired = SkillService.SkillCap
         };
 
         Skill.GetTotalSkillPoints(dbPlayer).Should().Be(410);
-        Skill.TotalSkillPointCap.Should().Be(410);
+        SkillService.TotalSkillPointCap.Should().Be(410);
     }
 
     [Test]
@@ -26,10 +28,10 @@ public class PlayerSkillPointAccountingTests
     {
         var dbPlayer = new Player
         {
-            TotalSPAcquired = Skill.SkillCap + 25
+            TotalSPAcquired = SkillService.SkillCap + 25
         };
 
-        Skill.GetTotalSkillPoints(dbPlayer).Should().Be(Skill.TotalSkillPointCap);
+        Skill.GetTotalSkillPoints(dbPlayer).Should().Be(SkillService.TotalSkillPointCap);
     }
 
     [Test]
@@ -40,7 +42,7 @@ public class PlayerSkillPointAccountingTests
             TotalSPAcquired = -25
         };
 
-        Skill.GetTotalSkillPoints(dbPlayer).Should().Be(Skill.StartingSkillPoints);
+        Skill.GetTotalSkillPoints(dbPlayer).Should().Be(SkillService.StartingSkillPoints);
     }
 
     [Test]
@@ -52,24 +54,20 @@ public class PlayerSkillPointAccountingTests
         dbPlayer.Skills[SkillType.Basic] = new PlayerSkill { Rank = 20 };
         dbPlayer.Skills[(SkillType)9999] = new PlayerSkill { Rank = 50 };
 
-        Skill.GetTotalContributingSkillRanks(dbPlayer).Should().Be(20);
+        SkillRank.GetTotalContributingSkillRanks(dbPlayer).Should().Be(20);
     }
 
-    [TestCase(true, Skill.SkillCap - 1, false)]
-    [TestCase(true, Skill.SkillCap, false)]
-    [TestCase(true, Skill.SkillCap + 1, true)]
-    [TestCase(false, Skill.SkillCap + 1, false)]
+    [TestCase(true, SkillService.SkillCap - 1, false)]
+    [TestCase(true, SkillService.SkillCap, false)]
+    [TestCase(true, SkillService.SkillCap + 1, true)]
+    [TestCase(false, SkillService.SkillCap + 1, false)]
     public void SkillRankDecay_OnlyOccursAboveTheContributingSkillCap(
         bool contributesToSkillCap,
         int totalRanks,
         bool expected)
     {
-        var method = typeof(Skill).GetMethod(
-            "ShouldDecaySkillRank",
-            BindingFlags.NonPublic | BindingFlags.Static);
-
-        method.Should().NotBeNull();
-        var result = (bool)method!.Invoke(null, new object[] { contributesToSkillCap, totalRanks })!;
+        var service = SkillFacades.Get<ISkillRankService>();
+        var result = service.ShouldDecaySkillRank(contributesToSkillCap, totalRanks);
 
         result.Should().Be(expected);
     }
@@ -85,10 +83,10 @@ public class PlayerSkillPointAccountingTests
             "GuiDefinition",
             "ViewModel",
             "CharacterFullRebuildViewModel.cs"));
-        var resetAction = ExtractMethod(source, "public Action OnClickResetEverything() => () =>");
+        var resetAction = ExtractMethod(source, "private void ShowResetEverythingModal()");
 
-        resetAction.Should().Contain("void ResetSkillPointPool()");
-        resetAction.Should().Contain("dbPlayer.UnallocatedSP = Skill.GetTotalSkillPoints(dbPlayer);");
+        source.Should().Contain("private void ResetSkillPointPool()");
+        source.Should().Contain("dbPlayer.UnallocatedSP = Skill.GetTotalSkillPoints(dbPlayer);");
         resetAction.IndexOf("RefundAllPerks();", StringComparison.Ordinal)
             .Should()
             .BeLessThan(resetAction.IndexOf("ResetSkillPointPool();", StringComparison.Ordinal));
@@ -119,17 +117,17 @@ public class PlayerSkillPointAccountingTests
             "SWLOR.Game.Server",
             "Feature",
             "GuiDefinition",
-            "ViewModel",
-            "PerksViewModel.cs"));
+            "PerksWindow",
+            "PerkListBuilder.cs"));
 
         characterSheetDefinition.Should().Contain("AddBoundValueRow(resourceCol, \"Ranks\", model => model.SkillRanks");
-        characterSheetDefinition.Should().Contain("$\"Skill ranks contributing to the {Skill.SkillCap}-rank limit.\"");
+        characterSheetDefinition.Should().Contain("$\"Skill ranks contributing to the {SkillService.SkillCap}-rank limit.\"");
         characterSheetDefinition.Should().NotContain("400-rank limit");
         characterSheet.Should().Contain("public bool ShowSkillRanks");
         characterSheet.Should().Contain("public string SkillRanks");
-        characterSheet.Should().Contain("SkillRanks = $\"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {Skill.SkillCap}\";");
-        characterSheet.Should().Contain("Skill.GetTotalSkillPoints(dbPlayer)} / {Skill.TotalSkillPointCap}");
-        perks.Should().Contain("Total SP: {Skill.GetTotalSkillPoints(dbPlayer)} / {Skill.TotalSkillPointCap}");
+        characterSheet.Should().Contain("SkillRanks = $\"{SkillRank.GetTotalContributingSkillRanks(dbPlayer)} / {SkillService.SkillCap}\";");
+        characterSheet.Should().Contain("Skill.GetTotalSkillPoints(dbPlayer)} / {SkillService.TotalSkillPointCap}");
+        perks.Should().Contain("Total SP: {Skill.GetTotalSkillPoints(dbPlayer)} / {SkillService.TotalSkillPointCap}");
     }
 
     private static string ExtractMethod(string source, string signature)

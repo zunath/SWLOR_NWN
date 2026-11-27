@@ -1,13 +1,14 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
-public class CombatDeflectionBudgetTests
+public class CombatDeflectionBudgetTests : SkillFacadeFixture
 {
     private static readonly string[] WeaponCategoryPrefixes =
     {
@@ -103,7 +104,7 @@ public class CombatDeflectionBudgetTests
 
         foreach (var fieldName in fieldNames)
         {
-            var duration = (float)typeof(Stat)
+            var duration = (float)typeof(CombatDeflectionReactionService)
                 .GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static)!
                 .GetRawConstantValue()!;
 

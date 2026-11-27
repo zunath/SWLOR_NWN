@@ -47,6 +47,7 @@ Read the guide before working in its area. `Readmes/README.md` lists every guide
 - Pull requests and code review: `Readmes/PullRequests.md`
 - Worktrees, haks submodule, git network, disk hygiene, builds, local deploy, cloud sessions: `Readmes/AgentEnvironment.md`
 - Client evidence (offline and live server): `Readmes/InEngineVisualVerification.md`
+- Hot reload on dev and test servers (turning it on, what a reload loses, rules for boot and player handlers, threads, timers, static state): `Readmes/HotReload.md`
 - Engine tests: `Readmes/EngineTesting.md`
 - Active abilities and targeting: `Readmes/AbilityTargeting.md`. Icons: `Readmes/IconStandards.md` (check every new or changed icon upright in the client; key items: `Readmes/KeyItemIconStandards.md`). VFX: `Readmes/VisualEffectSelection.md`
 - Quests: `Readmes/QuestContentValidation.md`. Conversations: `Readmes/Conversations.md`. Player names: `Readmes/PlayerIdentity.md`. Player messages: `Readmes/PlayerFeedback.md`
@@ -56,6 +57,7 @@ Read the guide before working in its area. `Readmes/README.md` lists every guide
 - NUI windows: `Readmes/NuiLayoutRules.md`, `Readmes/GuiWindowAuthoring.md`
 - Design Bible workbooks (never edit with `openpyxl`): `Readmes/DesignBibleWorkbookRules.md`
 - Module editor: `SWLOR.Toolset/README.md`
+- Maintainability refactor (branch `feature/maintainability-refactor` only; its owner decisions override rules here where they say so): `Readmes/MaintainabilityRefactorStatus.md`, then `Readmes/MaintainabilityRefactorPlan.md`
 
 ## Skills
 

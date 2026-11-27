@@ -1,6 +1,7 @@
 using System.Reflection;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.TaxiService;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Toolset.Domain.GameData.GameCode
 {

@@ -12,17 +12,17 @@ namespace SWLOR.NWN.API.NWNX
             PlayerNameOverrideType type = PlayerNameOverrideType.Default,
             uint observer = OBJECT_INVALID)
         {
-            global::NWN.Core.NWNX.RenamePlugin.SetPCNameOverride(target, newName, prefix, suffix, (int)type, observer);
+            RenamePluginRuntime.Current.SetPCNameOverride(target, newName, prefix, suffix, type, observer);
         }
 
         public static string GetPCNameOverride(uint target, uint observer = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWNX.RenamePlugin.GetPCNameOverride(target, observer);
+            return RenamePluginRuntime.Current.GetPCNameOverride(target, observer);
         }
 
         public static void ClearPCNameOverride(uint target, uint observer = OBJECT_INVALID, bool clearAll = false)
         {
-            global::NWN.Core.NWNX.RenamePlugin.ClearPCNameOverride(target, observer, clearAll ? 1 : 0);
+            RenamePluginRuntime.Current.ClearPCNameOverride(target, observer, clearAll);
         }
     }
 }

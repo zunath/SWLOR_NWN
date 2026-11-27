@@ -1,10 +1,11 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.AchievementService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Core.NWNX.Enum;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {

@@ -25,7 +25,9 @@ Creates the debug server directory structure:
 ```
 
 ### 2. Binary Deployment
-- Copies files from the initiating build's `TargetDir` to `../debugserver/dotnet/`; standalone deployment defaults to `../SWLOR.Game.Server/bin/Release/net10.0/`. Use `--server-output` to select another output directory.
+- The layout follows `SWLOR_DOTNET_ENTRY` in `../debugserver/swlor.env` (`host` when the file does not name one). `host`: `SWLOR.Game.Host` goes to `../debugserver/dotnet/` and the game to `../debugserver/dotnet/game/`. `native`: the game goes to `../debugserver/dotnet/`. Both outputs carry `SWLOR.Game.NativeHooks.dll` (the native hook trampolines), so it lands beside the entry assembly in either layout. The `NWNX_DOTNET_ASSEMBLY`, `NWNX_DOTNET_ENTRYPOINT` and `NWNX_DOTNET_METHOD` lines of that file are written to match.
+- Copies the game from the initiating build's `TargetDir`; standalone deployment defaults to `../SWLOR.Game.Server/bin/Release/net10.0/`. Use `--server-output` to select another output directory.
+- Copies the host (host entry only) from `--host-output`, which the game's post-build sets to the host build of the same configuration; standalone deployment defaults to `../SWLOR.Game.Host/bin/Release/net10.0/`, which `RunCLI.cmd -o` builds first.
 - Excludes the `swlor.env` file to preserve existing configuration
 - Maintains directory structure during copy operations
 

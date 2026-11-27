@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, configure all custom feats.
         /// </summary>
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "The feat settings stay in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ConfigureFeats()
         {

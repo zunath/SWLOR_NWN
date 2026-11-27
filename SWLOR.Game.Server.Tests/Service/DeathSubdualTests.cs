@@ -1,7 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -12,21 +12,21 @@ public class DeathSubdualTests
     {
         // A player killed by another player with subdual mode off stays dead and gets the
         // respawn panel, like any other death.
-        Death.IsSubdualDeath(hostileIsPlayer: true, hostileIsDM: false, Killer(subdual: false))
+        DeathService.IsSubdualDeath(hostileIsPlayer: true, hostileIsDM: false, Killer(subdual: false))
             .Should().BeFalse();
     }
 
     [Test]
     public void KillByPlayerWithSubdualModeIsSubdual()
     {
-        Death.IsSubdualDeath(hostileIsPlayer: true, hostileIsDM: false, Killer(subdual: true))
+        DeathService.IsSubdualDeath(hostileIsPlayer: true, hostileIsDM: false, Killer(subdual: true))
             .Should().BeTrue();
     }
 
     [Test]
     public void KillByPlayerWithoutRecordIsNotSubdual()
     {
-        Death.IsSubdualDeath(hostileIsPlayer: true, hostileIsDM: false, dbHostilePlayer: null)
+        DeathService.IsSubdualDeath(hostileIsPlayer: true, hostileIsDM: false, dbHostilePlayer: null)
             .Should().BeFalse();
     }
 
@@ -35,21 +35,21 @@ public class DeathSubdualTests
     {
         var killer = new Player("killer") { Settings = null };
 
-        Death.IsSubdualDeath(hostileIsPlayer: true, hostileIsDM: false, killer)
+        DeathService.IsSubdualDeath(hostileIsPlayer: true, hostileIsDM: false, killer)
             .Should().BeFalse();
     }
 
     [Test]
     public void KillByDMIsNotSubdual()
     {
-        Death.IsSubdualDeath(hostileIsPlayer: true, hostileIsDM: true, Killer(subdual: true))
+        DeathService.IsSubdualDeath(hostileIsPlayer: true, hostileIsDM: true, Killer(subdual: true))
             .Should().BeFalse();
     }
 
     [Test]
     public void KillByCreatureIsNotSubdual()
     {
-        Death.IsSubdualDeath(hostileIsPlayer: false, hostileIsDM: false, dbHostilePlayer: null)
+        DeathService.IsSubdualDeath(hostileIsPlayer: false, hostileIsDM: false, dbHostilePlayer: null)
             .Should().BeFalse();
     }
 

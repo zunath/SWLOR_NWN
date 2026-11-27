@@ -1,0 +1,9 @@
+using SWLOR.Game.Server.Domain.Foundation;
+
+namespace SWLOR.Game.Server.Domain.Companions
+{
+    /// <summary>
+    /// One possible result of completing an incubation job and its chance in percent.
+    /// </summary>
+    public readonly record struct IncubationOutcome(BeastType Type, float Percent);
+}

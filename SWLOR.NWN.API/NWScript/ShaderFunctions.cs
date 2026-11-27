@@ -15,7 +15,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fValue">The float value to set</param>
         public static void SetShaderUniformFloat(uint oPlayer, ShaderUniformType nShader, float fValue)
         {
-            global::NWN.Core.NWScript.SetShaderUniformFloat(oPlayer, (int)nShader, fValue);
+            NWScriptRuntime.Current.SetShaderUniformFloat(oPlayer, nShader, fValue);
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nValue">The integer value to set</param>
         public static void SetShaderUniformInt(uint oPlayer, ShaderUniformType nShader, int nValue)
         {
-            global::NWN.Core.NWScript.SetShaderUniformInt(oPlayer, (int)nShader, nValue);
+            NWScriptRuntime.Current.SetShaderUniformInt(oPlayer, nShader, nValue);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fW">The W component of the vec4</param>
         public static void SetShaderUniformVec(uint oPlayer, ShaderUniformType nShader, float fX, float fY, float fZ, float fW)
         {
-            global::NWN.Core.NWScript.SetShaderUniformVec(oPlayer, (int)nShader, fX, fY, fZ, fW);
+            NWScriptRuntime.Current.SetShaderUniformVec(oPlayer, nShader, fX, fY, fZ, fW);
         }
     }
 }

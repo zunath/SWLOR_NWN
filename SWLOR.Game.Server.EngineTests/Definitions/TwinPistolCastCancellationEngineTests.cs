@@ -9,14 +9,12 @@ using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatRecorderService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -43,7 +41,7 @@ public static class TwinPistolCastCancellationEngineTests
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
         var actor = player.Creature;
         var earnedAt = default(DateTime);
-        Combat.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
         try
         {
             var (target, _, _, _) = await Prepare(ctx, player, PerkType.FinalSalvo);
@@ -65,7 +63,7 @@ public static class TwinPistolCastCancellationEngineTests
                 ApplyEffectToObject(DurationType.Instant, EffectResurrection(), actor);
                 ctx.Assert(!GetIsDead(actor) && GetCurrentHitPoints(actor) > 0, "The native resurrection restores a living actor");
                 ctx.MakeHostile(target);
-                StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
+                StatusEffectApplication.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                 ctx.Assert((DateTime.UtcNow - earnedAt).TotalSeconds < 2,
                     "The first revived hit occurs before the original two-second cooldown could expire");
                 OrdinaryAttackTraits.RecordHit(actor, target, long.MaxValue - 10);
@@ -90,9 +88,9 @@ public static class TwinPistolCastCancellationEngineTests
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
         var actor = player.Creature;
         CombatRecordWriter writer = null;
-        var ability = Ability.GetAbilityDetail(feat);
-        Combat.SetAutoAttackHitResolutionOverride(false);
-        Combat.SetAbilityHitResolutionOverride(true);
+        var ability = AbilityCatalog.GetAbilityDetail(feat);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
         {
             var (target, _, _, _) = await Prepare(ctx, player, perk);
@@ -118,11 +116,11 @@ public static class TwinPistolCastCancellationEngineTests
                     ctx.AssertEqual(1, GetCurrentHitPoints(actor), "Native fatal-save setup starts at one HP");
                     ctx.AssertEqual(0, TemporaryHitPointEffects.GetRemaining(actor), "No shield exists before the native dying event");
                 }
-                Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
                 ctx.Assert(CombatRecorder.Start(GetArea(actor), "Twin capstone death regression", out var message), message);
                 writer = CombatRecorder.LastWriter;
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
-                    $"The real two-second cast starts: {Ability.GetLastActivationDenialReason()}");
+                    $"The real two-second cast starts: {AbilityActivation.GetLastActivationDenialReason()}");
                 ctx.Assert(TwinPistolAbility.HasActiveActivation(actor) && Activity.IsBusy(actor),
                     "The captured activation is unpaid and active before death");
                 ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "The cast has not paid its stamina cost");
@@ -160,7 +158,7 @@ public static class TwinPistolCastCancellationEngineTests
             await ctx.DelaySecondsAsync(2.2f);
             ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "The canceled cast never pays stamina");
             ctx.Assert(!Recast.IsOnRecastDelay(actor, ability.RecastGroup).Item1, "The canceled cast starts no capstone recast");
-            ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null, "The canceled cast never resolves an impact");
+            ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) == null, "The canceled cast never resolves an impact");
             ctx.AssertEqual(health, GetCurrentHitPoints(target), "The canceled cast never damages its selected target");
             if (fatalSave)
             {
@@ -218,8 +216,8 @@ public static class TwinPistolCastCancellationEngineTests
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
         var actor = player.Creature;
-        Combat.SetAutoAttackHitResolutionOverride(false);
-        Combat.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
         {
             var (target, main, companion, replacement) = await Prepare(ctx, player, perk);
@@ -234,9 +232,9 @@ public static class TwinPistolCastCancellationEngineTests
                 SeedExistingTraits(actor, target);
                 stamina = Stat.GetCurrentStamina(actor);
                 haste = Stat.GetStatAdjustment(actor, StatType.AttackDelayReductionPercent);
-                Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
-                    $"The real two-second cast starts: {Ability.GetLastActivationDenialReason()}");
+                    $"The real two-second cast starts: {AbilityActivation.GetLastActivationDenialReason()}");
                 ctx.Assert(TwinPistolAbility.HasActiveActivation(actor) && Activity.IsBusy(actor), "The unpaid capture belongs to the active cast");
                 ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "Starting the cast does not pay stamina");
                 ctx.AssertEqual(3, StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0, "Starting the cast only captures Cadence");
@@ -258,9 +256,9 @@ public static class TwinPistolCastCancellationEngineTests
             });
             await ctx.DelaySecondsAsync(2.2f);
             ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "The canceled deadline does not spend stamina");
-            ctx.Assert(!Recast.IsOnRecastDelay(actor, Ability.GetAbilityDetail(feat).RecastGroup).Item1, "The canceled deadline starts no capstone recast");
+            ctx.Assert(!Recast.IsOnRecastDelay(actor, AbilityCatalog.GetAbilityDetail(feat).RecastGroup).Item1, "The canceled deadline starts no capstone recast");
             ctx.AssertEqual(3, StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0, "The canceled deadline spends no Cadence");
-            ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null, "The canceled deadline resolves no ability impact");
+            ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) == null, "The canceled deadline resolves no ability impact");
             ctx.AssertEqual(health, GetCurrentHitPoints(target), "With ordinary misses forced, the canceled cast deals no damage");
             ctx.Assert(StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor) == null, "The canceled cast grants no ordinary-shot capstone bonus");
         }
@@ -278,13 +276,13 @@ public static class TwinPistolCastCancellationEngineTests
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.FinalSalvo, GetLocation(target)),
-                    $"The first cast starts: {Ability.GetLastActivationDenialReason()}");
+                    $"The first cast starts: {AbilityActivation.GetLastActivationDenialReason()}");
                 var oldId = UsePerkFeat.GetActiveAbilityActivationId(actor);
                 ctx.Assert(!string.IsNullOrWhiteSpace(oldId), "The Twin capture has a real shared identity");
                 ctx.Assert(UsePerkFeat.InterruptAbilityActivation(actor), "A generic interruption cancels the first shared cast");
                 ctx.Assert(!TwinPistolAbility.HasActiveActivation(actor), "A stale capture is not an active cast");
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, actor, FeatType.WatchfulPresence1, GetLocation(actor)),
-                    $"The unrelated two-second cast starts: {Ability.GetLastActivationDenialReason()}");
+                    $"The unrelated two-second cast starts: {AbilityActivation.GetLastActivationDenialReason()}");
                 var newId = UsePerkFeat.GetActiveAbilityActivationId(actor);
                 ctx.Assert(!string.IsNullOrWhiteSpace(newId) && newId != oldId, "The later cast owns a distinct identity");
                 ctx.Assert(!UsePerkFeat.InterruptAbilityActivation(actor, oldId, CombatRecordInterruptCause.Died),
@@ -299,9 +297,9 @@ public static class TwinPistolCastCancellationEngineTests
             await ctx.WaitUntilAsync(() => !Activity.IsBusy(actor) &&
                 StatusEffect.GetStatusEffect<WatchfulPresence1StatusEffect>(actor) != null,
                 5f, "the unrelated cast to complete its actual aura impact");
-            ctx.Assert(Recast.IsOnRecastDelay(actor, Ability.GetAbilityDetail(FeatType.WatchfulPresence1).RecastGroup).Item1,
+            ctx.Assert(Recast.IsOnRecastDelay(actor, AbilityCatalog.GetAbilityDetail(FeatType.WatchfulPresence1).RecastGroup).Item1,
                 "The unrelated cast completes its normal recast");
-            ctx.Assert(!Recast.IsOnRecastDelay(actor, Ability.GetAbilityDetail(FeatType.FinalSalvo).RecastGroup).Item1,
+            ctx.Assert(!Recast.IsOnRecastDelay(actor, AbilityCatalog.GetAbilityDetail(FeatType.FinalSalvo).RecastGroup).Item1,
                 "The interrupted Twin cast remains unpaid and without recast");
         }
         finally { Cleanup(actor); }
@@ -341,7 +339,7 @@ public static class TwinPistolCastCancellationEngineTests
             SetEventScript(target, EventScript.Creature_OnMeleeAttacked, "");
             SetPlotFlag(target, false);
             ctx.SuppressNPCNaturalRegen(target);
-            Stat.SetNPCMaxHitPoints(target, 10000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 10000, true);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 45f);
             SetCommandable(false, target);
             ctx.MakeHostile(target);
@@ -354,7 +352,7 @@ public static class TwinPistolCastCancellationEngineTests
 
     private static void SeedExistingTraits(uint actor, uint target)
     {
-        StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
+        StatusEffectApplication.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
         // Controlled event setup isolates cancellation; Cadence generation has its own engine coverage.
         CadenceFixture.Grant(actor, 3);
         for (var index = 0; index < 3; index++)
@@ -371,13 +369,13 @@ public static class TwinPistolCastCancellationEngineTests
         CreaturePlugin.RunUnequip(actor, companion);
         ctx.Assert(CreaturePlugin.RunEquip(actor, replacement, InventorySlot.RightHand), "The actual weapon swap succeeds during casting");
         ctx.AssertEqual(replacement, GetItemInSlot(InventorySlot.RightHand, actor), "The newly equipped rifle is the current attack source");
-        ctx.Assert(Combat.CanItemTriggerWeaponAbility(replacement, SkillType.TwinPistol), "The replacement stays eligible for cross-trained Twin abilities");
+        ctx.Assert(GameServices.CombatQueries.CanItemTriggerWeaponAbility(replacement, SkillType.TwinPistol), "The replacement stays eligible for cross-trained Twin abilities");
     }
 
     private static void Cleanup(uint actor)
     {
-        Combat.SetAutoAttackHitResolutionOverride(null);
-        Combat.SetAbilityHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         if (!GetIsObjectValid(actor)) return;
         AssignCommand(actor, () => ClearAllActions());
         TwinPistolAbility.Cancel(actor);

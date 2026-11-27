@@ -1,0 +1,1257 @@
+== step 1 an enemy is damaged by a creature
+Stat.GetStatAdjustment(Attacker, DamageEnmityPercentAdjustment)
+HoloCom.IsHologram(Attacker)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Attacker, Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stat.GetStatAdjustment(Attacker, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Attacker)
+-- tables
+_enemyEnmityTables: {Defender: {Attacker: 50}}
+_creatureToEnemies: {Attacker: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Defender: 2026-11-18T12:00:05.0000000Z}
+_attackCommandTargets: {Defender: Attacker}
+_healingHitPoints: empty
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stealth.IsHiddenFrom(Defender, Attacker)
+Engine.ActionAttack(Attacker, False)
+== step 2 an enemy is damaged by a creature with a reduced enmity stat
+Stat.GetStatAdjustment(Other, DamageEnmityPercentAdjustment)
+HoloCom.IsHologram(Other)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Other, Defender)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Stat.GetStatAdjustment(Other, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Other)
+-- tables
+_enemyEnmityTables: {Defender: {Attacker: 50, Other: 28}}
+_creatureToEnemies: {Attacker: [Defender], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Defender: 2026-11-18T12:00:10.0000000Z}
+_attackCommandTargets: {Defender: Attacker}
+_healingHitPoints: empty
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stealth.IsHiddenFrom(Defender, Attacker)
+Engine.ActionAttack(Attacker, False)
+== step 3 an enemy is damaged for nothing
+-- tables
+_enemyEnmityTables: {Defender: {Attacker: 50, Other: 28}}
+_creatureToEnemies: {Attacker: [Defender], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Defender: 2026-11-18T12:00:10.0000000Z}
+_attackCommandTargets: {Defender: Attacker}
+_healingHitPoints: empty
+== step 4 an enemy is damaged by something that is gone
+-- tables
+_enemyEnmityTables: {Defender: {Attacker: 50, Other: 28}}
+_creatureToEnemies: {Attacker: [Defender], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Defender: 2026-11-18T12:00:10.0000000Z}
+_attackCommandTargets: {Defender: Attacker}
+_healingHitPoints: empty
+== step 5 a creature attacks an enemy
+HoloCom.IsHologram(Ally)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Ally, Defender)
+AI.TryStartCombatLeashEvade(Defender, Ally)
+Stat.GetStatAdjustment(Ally, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Ally)
+-- tables
+_enemyEnmityTables: {Defender: {Ally: 1, Attacker: 50, Other: 28}}
+_creatureToEnemies: {Ally: [Defender], Attacker: [Defender], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Defender: 2026-11-18T12:00:25.0000000Z}
+_attackCommandTargets: {Defender: Attacker}
+_healingHitPoints: empty
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stealth.IsHiddenFrom(Defender, Attacker)
+Engine.ActionAttack(Attacker, False)
+== step 6 modify enmity directly
+HoloCom.IsHologram(Master)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Master, Defender)
+AI.TryStartCombatLeashEvade(Defender, Master)
+Stat.GetStatAdjustment(Master, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Master)
+AI.TryStartCombatLeashEvade(Defender, Master)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Master)
+AI.TryStartCombatLeashEvade(Defender, Master)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Master)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Master, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Master)
+HoloCom.IsHologram(Master)
+HoloCom.IsHologram(Other)
+Party.IsInParty(Master, Other)
+AI.TryStartCombatLeashEvade(Other, Master)
+Stat.GetStatAdjustment(Master, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Other)
+CompanionTargetAuthority.IsRegisteredCompanion(Other)
+Stealth.IsHiddenFrom(Other, Master)
+AI.TryStartCombatLeashEvade(Other, Master)
+Activity.IsBusy(Other)
+AttackTiming.CalculateAttackDelay(Other)
+Activity.HasRecentAttackActivity(Other, 4.5)
+AttackTiming.CalculateAttackDelay(Other)
+CompanionTargetAuthority.CanIssueAttackCommand(Other, Master)
+AI.TryStartCombatLeashEvade(Other, Master)
+Engine.AssignCommand(Other)
+AI.TryStartCombatLeashEvade(Other, Master)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Other)
+Queries.GetEquippedWeaponSkillType(Other)
+Engine.ActionMoveToObject(Master, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Master)
+HoloCom.IsHologram(Master)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Master, Defender)
+AI.TryStartCombatLeashEvade(Defender, Master)
+Stat.GetStatAdjustment(Master, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Master)
+-- tables
+_enemyEnmityTables: {Defender: {Ally: 1, Attacker: 50, Master: 1, Other: 28}, Other: {Master: 5}}
+_creatureToEnemies: {Ally: [Defender], Attacker: [Defender], Master: [Defender, Other], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Defender: 2026-11-18T12:00:30.0000000Z, Other: 2026-11-18T12:00:30.0000000Z}
+_attackCommandTargets: {Defender: Attacker, Other: Master}
+_healingHitPoints: empty
+delayed run
+delayed run
+AI.TryStartCombatLeashEvade(Other, Master)
+Stealth.IsHiddenFrom(Other, Master)
+Engine.ActionAttack(Master, False)
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stealth.IsHiddenFrom(Defender, Attacker)
+Engine.ActionAttack(Attacker, False)
+== step 7 modify enmity on all
+HoloCom.IsHologram(Attacker)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Attacker, Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stat.GetStatAdjustment(Attacker, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Attacker)
+-- tables
+_enemyEnmityTables: {Defender: {Ally: 1, Attacker: 80, Master: 1, Other: 28}, Other: {Master: 5}}
+_creatureToEnemies: {Ally: [Defender], Attacker: [Defender], Master: [Defender, Other], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Defender: 2026-11-18T12:00:35.0000000Z, Other: 2026-11-18T12:00:30.0000000Z}
+_attackCommandTargets: {Defender: Attacker, Other: Master}
+_healingHitPoints: empty
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stealth.IsHiddenFrom(Defender, Attacker)
+Engine.ActionAttack(Attacker, False)
+== step 8 a heal starts and completes
+HoloCom.IsHologram(Ally)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Ally, Defender)
+AI.TryStartCombatLeashEvade(Defender, Ally)
+Stat.GetStatAdjustment(Ally, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Ally)
+-- tables
+_enemyEnmityTables: {Defender: {Ally: 31, Attacker: 80, Master: 1, Other: 28}, Other: {Master: 5}}
+_creatureToEnemies: {Ally: [Defender], Attacker: [Defender], Master: [Defender, Other], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Defender: 2026-11-18T12:00:40.0000000Z, Other: 2026-11-18T12:00:30.0000000Z}
+_attackCommandTargets: {Defender: Attacker, Other: Master}
+_healingHitPoints: empty
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stealth.IsHiddenFrom(Defender, Attacker)
+Engine.ActionAttack(Attacker, False)
+== step 9 a heal with a nested heal
+HoloCom.IsHologram(Master)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Master, Defender)
+AI.TryStartCombatLeashEvade(Defender, Master)
+Stat.GetStatAdjustment(Master, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Master)
+HoloCom.IsHologram(Ally)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Ally, Defender)
+AI.TryStartCombatLeashEvade(Defender, Ally)
+Stat.GetStatAdjustment(Ally, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+Engine.ExecuteScript(enmity_changed, Ally)
+-- tables
+_enemyEnmityTables: {Defender: {Ally: 56, Attacker: 80, Master: 11, Other: 28}, Other: {Master: 5}}
+_creatureToEnemies: {Ally: [Defender], Attacker: [Defender], Master: [Defender, Other], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Defender: 2026-11-18T12:00:45.0000000Z, Other: 2026-11-18T12:00:30.0000000Z}
+_attackCommandTargets: {Defender: Attacker, Other: Master}
+_healingHitPoints: empty
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stealth.IsHiddenFrom(Defender, Attacker)
+Engine.ActionAttack(Attacker, False)
+== step 10 a heal that reaches nobody
+-- tables
+_enemyEnmityTables: {Defender: {Ally: 56, Attacker: 80, Master: 11, Other: 28}, Other: {Master: 5}}
+_creatureToEnemies: {Ally: [Defender], Attacker: [Defender], Master: [Defender, Other], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Defender: 2026-11-18T12:00:45.0000000Z, Other: 2026-11-18T12:00:30.0000000Z}
+_attackCommandTargets: {Defender: Attacker, Other: Master}
+_healingHitPoints: empty
+== step 11 a taunt
+CompanionLookup.IsPlayerBeast(Defender)
+CompanionLookup.IsDroid(Defender)
+Engine.LineOfSightObject(Other, Defender)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Stealth.IsHiddenFrom(Defender, Attacker)
+Stealth.IsHiddenFrom(Defender, Ally)
+Stealth.IsHiddenFrom(Defender, Master)
+Stat.GetStatAdjustment(Other, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+HoloCom.IsHologram(Other)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Other, Defender)
+AI.TryStartCombatLeashEvade(Defender, Other)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Other, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Other)
+CompanionLookup.IsPlayerBeast(Defender)
+CompanionLookup.IsDroid(Defender)
+Engine.LineOfSightObject(Master, Defender)
+AI.TryStartCombatLeashEvade(Defender, Master)
+Stealth.IsHiddenFrom(Defender, Attacker)
+Stealth.IsHiddenFrom(Defender, Other)
+Stealth.IsHiddenFrom(Defender, Ally)
+Stat.GetStatAdjustment(Master, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+HoloCom.IsHologram(Master)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Master, Defender)
+AI.TryStartCombatLeashEvade(Defender, Master)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Master)
+AI.TryStartCombatLeashEvade(Defender, Master)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Master)
+AI.TryStartCombatLeashEvade(Defender, Master)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Master)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Master, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Master)
+-- tables
+_enemyEnmityTables: {Defender: {Ally: 56, Attacker: 80, Master: 150, Other: 130}, Other: {Master: 5}}
+_creatureToEnemies: {Ally: [Defender], Attacker: [Defender], Master: [Defender, Other], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Defender: 2026-11-18T12:00:55.0000000Z, Other: 2026-11-18T12:00:30.0000000Z}
+_attackCommandTargets: {Defender: Master, Other: Master}
+_healingHitPoints: empty
+delayed run
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Master)
+Stealth.IsHiddenFrom(Defender, Master)
+Engine.ActionAttack(Master, False)
+== step 12 reduce enmity
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Master)
+AI.TryStartCombatLeashEvade(Defender, Master)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Master)
+AI.TryStartCombatLeashEvade(Defender, Master)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Master)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Master, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Attacker)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Other, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Master)
+CompanionTargetAuthority.IsRegisteredCompanion(Other)
+Stealth.IsHiddenFrom(Other, Master)
+AI.TryStartCombatLeashEvade(Other, Master)
+Activity.IsBusy(Other)
+AttackTiming.CalculateAttackDelay(Other)
+Activity.HasRecentAttackActivity(Other, 4.5)
+AttackTiming.CalculateAttackDelay(Other)
+CompanionTargetAuthority.CanIssueAttackCommand(Other, Master)
+AI.TryStartCombatLeashEvade(Other, Master)
+Engine.AssignCommand(Other)
+AI.TryStartCombatLeashEvade(Other, Master)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Other)
+Queries.GetEquippedWeaponSkillType(Other)
+Engine.ActionMoveToObject(Master, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Master)
+-- tables
+_enemyEnmityTables: {Defender: {Ally: 56, Attacker: 40, Master: 112, Other: 130}, Other: {Master: 3}}
+_creatureToEnemies: {Ally: [Defender], Attacker: [Defender], Master: [Defender, Other], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Defender: 2026-11-18T12:01:00.0000000Z, Other: 2026-11-18T12:01:00.0000000Z}
+_attackCommandTargets: {Defender: Other, Other: Master}
+_healingHitPoints: empty
+delayed run
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Other)
+Stealth.IsHiddenFrom(Defender, Other)
+Engine.ActionAttack(Other, False)
+delayed run
+AI.TryStartCombatLeashEvade(Other, Master)
+Stealth.IsHiddenFrom(Other, Master)
+Engine.ActionAttack(Master, False)
+== step 13 proximity enmity
+HoloCom.IsHologram(Attacker)
+HoloCom.IsHologram(Ally)
+Party.IsInParty(Attacker, Ally)
+AI.TryStartCombatLeashEvade(Ally, Attacker)
+Stat.GetStatAdjustment(Attacker, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Ally)
+CompanionTargetAuthority.IsRegisteredCompanion(Ally)
+Stealth.IsHiddenFrom(Ally, Attacker)
+AI.TryStartCombatLeashEvade(Ally, Attacker)
+Activity.IsBusy(Ally)
+AttackTiming.CalculateAttackDelay(Ally)
+Activity.HasRecentAttackActivity(Ally, 4.5)
+AttackTiming.CalculateAttackDelay(Ally)
+CompanionTargetAuthority.CanIssueAttackCommand(Ally, Attacker)
+AI.TryStartCombatLeashEvade(Ally, Attacker)
+Engine.AssignCommand(Ally)
+AI.TryStartCombatLeashEvade(Ally, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Ally)
+Queries.GetEquippedWeaponSkillType(Ally)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Attacker)
+HoloCom.IsHologram(Other)
+HoloCom.IsHologram(Ally)
+Party.IsInParty(Other, Ally)
+AI.TryStartCombatLeashEvade(Ally, Other)
+Stat.GetStatAdjustment(Other, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Ally)
+CompanionTargetAuthority.IsRegisteredCompanion(Ally)
+Stealth.IsHiddenFrom(Ally, Attacker)
+Stealth.IsHiddenFrom(Ally, Other)
+AI.TryStartCombatLeashEvade(Ally, Other)
+Activity.IsBusy(Ally)
+AttackTiming.CalculateAttackDelay(Ally)
+Activity.HasRecentAttackActivity(Ally, 4.5)
+AttackTiming.CalculateAttackDelay(Ally)
+CompanionTargetAuthority.CanIssueAttackCommand(Ally, Other)
+AI.TryStartCombatLeashEvade(Ally, Other)
+Engine.AssignCommand(Ally)
+AI.TryStartCombatLeashEvade(Ally, Other)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Ally)
+Queries.GetEquippedWeaponSkillType(Ally)
+Engine.ActionMoveToObject(Other, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Other)
+HasProximityEnmity False
+HasEnmity True
+HasNonProximityEnmity True
+RemoveProximityEnmity True
+-- tables
+_enemyEnmityTables: {Defender: {Ally: 56, Attacker: 40, Master: 112, Other: 130}, Other: {Master: 3}}
+_creatureToEnemies: {Ally: [Defender], Attacker: [Defender], Master: [Defender, Other], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:01:05.0000000Z, Defender: 2026-11-18T12:01:00.0000000Z, Other: 2026-11-18T12:01:00.0000000Z}
+_attackCommandTargets: {Ally: Other, Defender: Other, Other: Master}
+_healingHitPoints: empty
+delayed run
+delayed run
+AI.TryStartCombatLeashEvade(Ally, Other)
+Stealth.IsHiddenFrom(Ally, Other)
+Engine.ActionAttack(Other, False)
+== step 14 the highest target and the threat reads
+highest Other
+Stealth.IsHiddenFrom(Defender, Other)
+highest attack target Other
+table size 4
+towards all enemies 1
+-- tables
+_enemyEnmityTables: {Defender: {Ally: 56, Attacker: 40, Master: 112, Other: 130}, Other: {Master: 3}}
+_creatureToEnemies: {Ally: [Defender], Attacker: [Defender], Master: [Defender, Other], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:01:05.0000000Z, Defender: 2026-11-18T12:01:00.0000000Z, Other: 2026-11-18T12:01:00.0000000Z}
+_attackCommandTargets: {Ally: Other, Defender: Other, Other: Master}
+_healingHitPoints: empty
+== step 15 the enemy attacks its highest target
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Other, True, 1.5)
+Engine.ActionDoCommand()
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+-- tables
+_enemyEnmityTables: {Defender: {Ally: 56, Attacker: 40, Master: 112, Other: 130}, Other: {Master: 3}}
+_creatureToEnemies: {Ally: [Defender], Attacker: [Defender], Master: [Defender, Other], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:01:05.0000000Z, Defender: 2026-11-18T12:01:15.0000000Z, Other: 2026-11-18T12:01:00.0000000Z}
+_attackCommandTargets: {Ally: Other, Defender: Other, Other: Master}
+_healingHitPoints: empty
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Other)
+Stealth.IsHiddenFrom(Defender, Other)
+Engine.ActionAttack(Other, False)
+== step 16 an attack command is issued and the actions are cleared
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Other, True, 1.5)
+Engine.ActionDoCommand()
+-- tables
+_enemyEnmityTables: {Defender: {Ally: 56, Attacker: 40, Master: 112, Other: 130}, Other: {Master: 3}}
+_creatureToEnemies: {Ally: [Defender], Attacker: [Defender], Master: [Defender, Other], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:01:05.0000000Z, Defender: 2026-11-18T12:01:20.0000000Z, Other: 2026-11-18T12:01:00.0000000Z}
+_attackCommandTargets: {Ally: Other, Defender: Other, Other: Master}
+_healingHitPoints: empty
+delayed run
+delayed run
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Other)
+Stealth.IsHiddenFrom(Defender, Other)
+Engine.ActionAttack(Other, False)
+== step 17 a creature is hidden and its enemies reevaluate
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Other, True, 1.5)
+Engine.ActionDoCommand()
+-- tables
+_enemyEnmityTables: {Defender: {Ally: 56, Attacker: 40, Master: 112, Other: 130}, Other: {Master: 3}}
+_creatureToEnemies: {Ally: [Defender], Attacker: [Defender], Master: [Defender, Other], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:01:05.0000000Z, Defender: 2026-11-18T12:01:25.0000000Z, Other: 2026-11-18T12:01:00.0000000Z}
+_attackCommandTargets: {Ally: Other, Defender: Other, Other: Master}
+_healingHitPoints: empty
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Other)
+Stealth.IsHiddenFrom(Defender, Other)
+Engine.ActionAttack(Other, False)
+== step 18 remove one creature from one enemy
+-- tables
+_enemyEnmityTables: {Defender: {Ally: 56, Master: 112, Other: 130}, Other: {Master: 3}}
+_creatureToEnemies: {Ally: [Defender], Master: [Defender, Other], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:01:05.0000000Z, Defender: 2026-11-18T12:01:25.0000000Z, Other: 2026-11-18T12:01:00.0000000Z}
+_attackCommandTargets: {Ally: Other, Defender: Other, Other: Master}
+_healingHitPoints: empty
+== step 19 remove a creature from every table
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Other, True, 1.5)
+Engine.ActionDoCommand()
+CompanionTargetAuthority.IsRegisteredCompanion(Other)
+-- tables
+_enemyEnmityTables: {Defender: {Ally: 56, Other: 130}}
+_creatureToEnemies: {Ally: [Defender], Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:01:05.0000000Z, Defender: 2026-11-18T12:01:35.0000000Z, Other: 2026-11-18T12:01:00.0000000Z}
+_attackCommandTargets: {Ally: Other, Defender: Other, Other: Master}
+_healingHitPoints: empty
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Other)
+Stealth.IsHiddenFrom(Defender, Other)
+Engine.ActionAttack(Other, False)
+== step 20 clear one enemy's table
+-- tables
+_enemyEnmityTables: empty
+_creatureToEnemies: empty
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:01:05.0000000Z, Other: 2026-11-18T12:01:00.0000000Z}
+_attackCommandTargets: {Ally: Other, Other: Master}
+_healingHitPoints: empty
+== step 21 enmity is built again for the next events
+HoloCom.IsHologram(Attacker)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Attacker, Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stat.GetStatAdjustment(Attacker, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Attacker)
+HoloCom.IsHologram(Other)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Other, Defender)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Stat.GetStatAdjustment(Other, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+Engine.ExecuteScript(enmity_changed, Other)
+HoloCom.IsHologram(Attacker)
+HoloCom.IsHologram(Ally)
+Party.IsInParty(Attacker, Ally)
+AI.TryStartCombatLeashEvade(Ally, Attacker)
+Stat.GetStatAdjustment(Attacker, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Ally)
+CompanionTargetAuthority.IsRegisteredCompanion(Ally)
+Stealth.IsHiddenFrom(Ally, Attacker)
+AI.TryStartCombatLeashEvade(Ally, Attacker)
+Activity.IsBusy(Ally)
+AttackTiming.CalculateAttackDelay(Ally)
+Activity.HasRecentAttackActivity(Ally, 4.5)
+AttackTiming.CalculateAttackDelay(Ally)
+CompanionTargetAuthority.CanIssueAttackCommand(Ally, Attacker)
+AI.TryStartCombatLeashEvade(Ally, Attacker)
+Engine.AssignCommand(Ally)
+AI.TryStartCombatLeashEvade(Ally, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Ally)
+Queries.GetEquippedWeaponSkillType(Ally)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Attacker)
+HoloCom.IsHologram(Attacker)
+HoloCom.IsHologram(Master)
+Party.IsInParty(Attacker, Master)
+AI.TryStartCombatLeashEvade(Master, Attacker)
+Stat.GetStatAdjustment(Attacker, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Master)
+CompanionTargetAuthority.IsRegisteredCompanion(Master)
+Stealth.IsHiddenFrom(Master, Attacker)
+AI.TryStartCombatLeashEvade(Master, Attacker)
+Activity.IsBusy(Master)
+AttackTiming.CalculateAttackDelay(Master)
+Activity.HasRecentAttackActivity(Master, 4.5)
+AttackTiming.CalculateAttackDelay(Master)
+CompanionTargetAuthority.CanIssueAttackCommand(Master, Attacker)
+AI.TryStartCombatLeashEvade(Master, Attacker)
+Engine.AssignCommand(Master)
+AI.TryStartCombatLeashEvade(Master, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Master)
+Queries.GetEquippedWeaponSkillType(Master)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Attacker)
+-- tables
+_enemyEnmityTables: {Ally: {Attacker: 20}, Defender: {Attacker: 70, Other: 30}, Master: {Attacker: 8}}
+_creatureToEnemies: {Attacker: [Defender, Ally, Master], Other: [Defender]}
+_proximityEnmityAmounts: {Master: {Attacker: 8}}
+_attackCommandTimes: {Ally: 2026-11-18T12:01:45.0000000Z, Defender: 2026-11-18T12:01:45.0000000Z, Master: 2026-11-18T12:01:45.0000000Z, Other: 2026-11-18T12:01:00.0000000Z}
+_attackCommandTargets: {Ally: Attacker, Defender: Attacker, Master: Attacker, Other: Master}
+_healingHitPoints: empty
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stealth.IsHiddenFrom(Defender, Attacker)
+Engine.ActionAttack(Attacker, False)
+delayed run
+AI.TryStartCombatLeashEvade(Ally, Attacker)
+Stealth.IsHiddenFrom(Ally, Attacker)
+Engine.ActionAttack(Attacker, False)
+delayed run
+AI.TryStartCombatLeashEvade(Master, Attacker)
+Stealth.IsHiddenFrom(Master, Attacker)
+Engine.ActionAttack(Attacker, False)
+== step 22 a player dies
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Other, True, 1.5)
+Engine.ActionDoCommand()
+CompanionTargetAuthority.IsRegisteredCompanion(Ally)
+CompanionTargetAuthority.IsRegisteredCompanion(Master)
+-- tables
+_enemyEnmityTables: {Defender: {Other: 30}}
+_creatureToEnemies: {Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:01:45.0000000Z, Defender: 2026-11-18T12:01:50.0000000Z, Master: 2026-11-18T12:01:45.0000000Z, Other: 2026-11-18T12:01:00.0000000Z}
+_attackCommandTargets: {Ally: Attacker, Defender: Other, Master: Attacker, Other: Master}
+_healingHitPoints: empty
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Other)
+Stealth.IsHiddenFrom(Defender, Other)
+Engine.ActionAttack(Other, False)
+== step 23 a player exits
+HoloCom.IsHologram(Attacker)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Attacker, Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stat.GetStatAdjustment(Attacker, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Attacker)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Other)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Other, True, 1.5)
+Engine.ActionDoCommand()
+-- tables
+_enemyEnmityTables: {Defender: {Other: 30}}
+_creatureToEnemies: {Other: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:01:45.0000000Z, Defender: 2026-11-18T12:01:55.0000000Z, Master: 2026-11-18T12:01:45.0000000Z, Other: 2026-11-18T12:01:00.0000000Z}
+_attackCommandTargets: {Ally: Attacker, Defender: Other, Master: Attacker, Other: Master}
+_healingHitPoints: empty
+delayed run
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Other)
+Stealth.IsHiddenFrom(Defender, Other)
+Engine.ActionAttack(Other, False)
+== step 24 an enemy dies
+HoloCom.IsHologram(Attacker)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Attacker, Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stat.GetStatAdjustment(Attacker, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Attacker)
+HoloCom.IsHologram(Defender)
+HoloCom.IsHologram(Ally)
+Party.IsInParty(Defender, Ally)
+AI.TryStartCombatLeashEvade(Ally, Defender)
+Stat.GetStatAdjustment(Defender, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Ally)
+CompanionTargetAuthority.IsRegisteredCompanion(Ally)
+Stealth.IsHiddenFrom(Ally, Defender)
+AI.TryStartCombatLeashEvade(Ally, Defender)
+Activity.IsBusy(Ally)
+AttackTiming.CalculateAttackDelay(Ally)
+Activity.HasRecentAttackActivity(Ally, 4.5)
+AttackTiming.CalculateAttackDelay(Ally)
+CompanionTargetAuthority.CanIssueAttackCommand(Ally, Defender)
+AI.TryStartCombatLeashEvade(Ally, Defender)
+Engine.AssignCommand(Ally)
+AI.TryStartCombatLeashEvade(Ally, Defender)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Ally)
+Queries.GetEquippedWeaponSkillType(Ally)
+Engine.ActionMoveToObject(Defender, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Ally)
+-- tables
+_enemyEnmityTables: empty
+_creatureToEnemies: empty
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:02:00.0000000Z, Master: 2026-11-18T12:01:45.0000000Z, Other: 2026-11-18T12:01:00.0000000Z}
+_attackCommandTargets: {Ally: Defender, Master: Attacker, Other: Master}
+_healingHitPoints: empty
+delayed run
+delayed run
+AI.TryStartCombatLeashEvade(Ally, Defender)
+Stealth.IsHiddenFrom(Ally, Defender)
+Engine.ActionAttack(Defender, False)
+== step 25 an enemy is destroyed
+HoloCom.IsHologram(Attacker)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Attacker, Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stat.GetStatAdjustment(Attacker, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Attacker)
+-- tables
+_enemyEnmityTables: empty
+_creatureToEnemies: empty
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:02:00.0000000Z, Master: 2026-11-18T12:01:45.0000000Z, Other: 2026-11-18T12:01:00.0000000Z}
+_attackCommandTargets: {Ally: Defender, Master: Attacker, Other: Master}
+_healingHitPoints: empty
+delayed run
+== step 26 a DM limbos two creatures
+HoloCom.IsHologram(Attacker)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Attacker, Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stat.GetStatAdjustment(Attacker, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Attacker)
+HoloCom.IsHologram(Attacker)
+HoloCom.IsHologram(Other)
+Party.IsInParty(Attacker, Other)
+AI.TryStartCombatLeashEvade(Other, Attacker)
+Stat.GetStatAdjustment(Attacker, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Other)
+CompanionTargetAuthority.IsRegisteredCompanion(Other)
+Stealth.IsHiddenFrom(Other, Attacker)
+AI.TryStartCombatLeashEvade(Other, Attacker)
+Activity.IsBusy(Other)
+AttackTiming.CalculateAttackDelay(Other)
+Activity.HasRecentAttackActivity(Other, 4.5)
+AttackTiming.CalculateAttackDelay(Other)
+CompanionTargetAuthority.CanIssueAttackCommand(Other, Attacker)
+AI.TryStartCombatLeashEvade(Other, Attacker)
+Engine.AssignCommand(Other)
+AI.TryStartCombatLeashEvade(Other, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Other)
+Queries.GetEquippedWeaponSkillType(Other)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Attacker)
+-- tables
+_enemyEnmityTables: empty
+_creatureToEnemies: empty
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:02:00.0000000Z, Master: 2026-11-18T12:01:45.0000000Z}
+_attackCommandTargets: {Ally: Defender, Master: Attacker}
+_healingHitPoints: empty
+delayed run
+delayed run
+== step 27 a proximity-only target out of aggro range is dropped
+HoloCom.IsHologram(Ally)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Ally, Defender)
+AI.TryStartCombatLeashEvade(Defender, Ally)
+Stat.GetStatAdjustment(Ally, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Ally)
+AI.TryStartCombatLeashEvade(Defender, Ally)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Ally)
+AI.TryStartCombatLeashEvade(Defender, Ally)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Ally)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Ally, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Ally)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Ally)
+AI.StopCombatAfterProximityLoss(Defender)
+-- tables
+_enemyEnmityTables: empty
+_creatureToEnemies: empty
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:02:00.0000000Z, Defender: 2026-11-18T12:02:15.0000000Z, Master: 2026-11-18T12:01:45.0000000Z}
+_attackCommandTargets: {Ally: Defender, Defender: Ally, Master: Attacker}
+_healingHitPoints: empty
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Ally)
+Stealth.IsHiddenFrom(Defender, Ally)
+Engine.ActionAttack(Ally, False)
+== step 28 every target is hidden, so the enemy stops attacking
+HoloCom.IsHologram(Attacker)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Attacker, Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stat.GetStatAdjustment(Attacker, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Attacker)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+Activity.IsBusy(Defender)
+Engine.AssignCommand(Defender)
+Engine.ClearAllActions(True, Invalid)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+Activity.IsBusy(Defender)
+Engine.AssignCommand(Defender)
+Engine.ClearAllActions(True, Invalid)
+-- tables
+_enemyEnmityTables: {Defender: {Attacker: 70}}
+_creatureToEnemies: {Attacker: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:02:00.0000000Z, Master: 2026-11-18T12:01:45.0000000Z}
+_attackCommandTargets: {Ally: Defender, Master: Attacker}
+_healingHitPoints: empty
+delayed run
+== step 29 the leash takes the enemy while enmity changes and it is told to attack
+HoloCom.IsHologram(Attacker)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Attacker, Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+CompanionLookup.IsPlayerBeast(Defender)
+CompanionLookup.IsDroid(Defender)
+Engine.LineOfSightObject(Attacker, Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+HoloCom.IsHologram(Attacker)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Attacker, Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stat.GetStatAdjustment(Attacker, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Attacker)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+-- tables
+_enemyEnmityTables: {Defender: {Attacker: 70}}
+_creatureToEnemies: {Attacker: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:02:00.0000000Z, Defender: 2026-11-18T12:02:25.0000000Z, Master: 2026-11-18T12:01:45.0000000Z}
+_attackCommandTargets: {Ally: Defender, Defender: Attacker, Master: Attacker}
+_healingHitPoints: empty
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stealth.IsHiddenFrom(Defender, Attacker)
+Engine.ActionAttack(Attacker, False)
+== step 30 an enemy that is already leashing gains no enmity
+HoloCom.IsHologram(Other)
+HoloCom.IsHologram(Defender)
+CompanionLookup.IsPlayerBeast(Defender)
+CompanionLookup.IsDroid(Defender)
+Engine.LineOfSightObject(Other, Defender)
+-- tables
+_enemyEnmityTables: {Defender: {Attacker: 70}}
+_creatureToEnemies: {Attacker: [Defender]}
+_proximityEnmityAmounts: empty
+_attackCommandTimes: {Ally: 2026-11-18T12:02:00.0000000Z, Defender: 2026-11-18T12:02:25.0000000Z, Master: 2026-11-18T12:01:45.0000000Z}
+_attackCommandTargets: {Ally: Defender, Defender: Attacker, Master: Attacker}
+_healingHitPoints: empty
+== step 31 a reload round trip through the carried keys
+HoloCom.IsHologram(Attacker)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Attacker, Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stat.GetStatAdjustment(Attacker, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+CompanionTargetAuthority.CanIssueAttackCommand(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.AssignCommand(Defender)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Defender)
+Queries.GetEquippedWeaponSkillType(Defender)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Attacker)
+HoloCom.IsHologram(Other)
+HoloCom.IsHologram(Defender)
+Party.IsInParty(Other, Defender)
+AI.TryStartCombatLeashEvade(Defender, Other)
+Stat.GetStatAdjustment(Other, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Defender)
+CompanionTargetAuthority.IsRegisteredCompanion(Defender)
+Stealth.IsHiddenFrom(Defender, Attacker)
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Activity.IsBusy(Defender)
+AttackTiming.CalculateAttackDelay(Defender)
+Activity.HasRecentAttackActivity(Defender, 4.5)
+AttackTiming.CalculateAttackDelay(Defender)
+Engine.ExecuteScript(enmity_changed, Other)
+HoloCom.IsHologram(Attacker)
+HoloCom.IsHologram(Ally)
+Party.IsInParty(Attacker, Ally)
+AI.TryStartCombatLeashEvade(Ally, Attacker)
+Stat.GetStatAdjustment(Attacker, EnmityPercentAdjustment)
+StatusEffect.GetCreatureStatusEffects(Ally)
+CompanionTargetAuthority.IsRegisteredCompanion(Ally)
+Stealth.IsHiddenFrom(Ally, Attacker)
+AI.TryStartCombatLeashEvade(Ally, Attacker)
+Activity.IsBusy(Ally)
+AttackTiming.CalculateAttackDelay(Ally)
+Activity.HasRecentAttackActivity(Ally, 4.5)
+AttackTiming.CalculateAttackDelay(Ally)
+CompanionTargetAuthority.CanIssueAttackCommand(Ally, Attacker)
+AI.TryStartCombatLeashEvade(Ally, Attacker)
+Engine.AssignCommand(Ally)
+AI.TryStartCombatLeashEvade(Ally, Attacker)
+Engine.ClearAllActions(True, Invalid)
+Queries.GetEquippedWeaponSkillType(Ally)
+Queries.GetEquippedWeaponSkillType(Ally)
+Engine.ActionMoveToObject(Attacker, True, 1.5)
+Engine.ActionDoCommand()
+Engine.ExecuteScript(enmity_changed, Attacker)
+carried keys: _creatureToEnemies, _enemyEnmityTables, _proximityEnmityAmounts
+before _creatureToEnemies: {Attacker: [Defender, Ally], Other: [Defender]}
+before _enemyEnmityTables: {Ally: {Attacker: 8}, Defender: {Attacker: 140, Other: 30}}
+before _proximityEnmityAmounts: {Ally: {Attacker: 8}}
+after the reload: the same
+delayed run
+AI.TryStartCombatLeashEvade(Defender, Attacker)
+Stealth.IsHiddenFrom(Defender, Attacker)
+Engine.ActionAttack(Attacker, False)
+delayed run
+AI.TryStartCombatLeashEvade(Ally, Attacker)
+Stealth.IsHiddenFrom(Ally, Attacker)
+Engine.ActionAttack(Attacker, False)

@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.SnippetService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 
 namespace SWLOR.Toolset.Domain.Conversations

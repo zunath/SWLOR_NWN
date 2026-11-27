@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -20,7 +21,7 @@ public class ShipCombatLogTests
             var source = File.ReadAllText(file.FullName);
 
             source.Should().NotContain(
-                "var combatLogMessage = Combat.BuildCombatLogMessage",
+                "var combatLogMessage = GameServices.CombatFeedback.BuildCombatLogMessage",
                 $"{file.Name} should not broadcast one observer's combat-log text to every nearby player");
             source.Should().NotContain(
                 "SendMessageNearbyToPlayers(target, combatLogMessage",
@@ -35,11 +36,7 @@ public class ShipCombatLogTests
     public void CombatLogBuilder_RequiresExplicitObserver()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Combat.cs"));
+        var source = CombatSource.Read();
 
         source.Should().NotContain("return BuildCombatLogMessage(attacker, attacker, defender");
         source.Should().Contain("public static string BuildCombatLogMessage(");

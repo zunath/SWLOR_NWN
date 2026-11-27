@@ -32,12 +32,14 @@ One line per guide. Rule guides are required reading before working in their are
 - [ProjectStructure.md](ProjectStructure.md): solution layout and build setup.
 - [CoreSystems.md](CoreSystems.md): NWScript/NWNX wrappers, async, GUI framework.
 - [Services.md](Services.md): the static game services.
+- [DependencyInjection.md](DependencyInjection.md): the service container, the `GameServices` accessor, and how to convert a service (the recipe, with the pilot as the example).
 - [Entities.md](Entities.md): Redis-persisted entities and queries.
 - [Features.md](Features.md) and [Builders.md](Builders.md): content definitions and their builders.
 - [AbilityDefinitions.md](AbilityDefinitions.md): ability definitions in practice.
 - [DualWieldCombat.md](DualWieldCombat.md): dual-wield and double-weapon attack timing.
 - [Weather.md](Weather.md): the weather service.
-- [Deployment.md](Deployment.md): Docker, environments, monitoring.
+- [Deployment.md](Deployment.md): Docker, environments, the .NET entry, monitoring.
+- [HotReload.md](HotReload.md): replacing the game build of a running development or test server, what a reload keeps and loses, and the rules for code that must survive it.
 
 ## Content pipelines
 
@@ -48,7 +50,11 @@ One line per guide. Rule guides are required reading before working in their are
 
 ## Plans, audits, and data
 
+- [MaintainabilityRefactorPlan.md](MaintainabilityRefactorPlan.md) , [MaintainabilityRefactorStatus.md](MaintainabilityRefactorStatus.md), [MaintainabilityRefactorSpecs.md](MaintainabilityRefactorSpecs.md), [MaintainabilityRefactorFacadeRemoval.md](MaintainabilityRefactorFacadeRemoval.md) and [MaintainabilityRefactorAgentBrief.md](MaintainabilityRefactorAgentBrief.md): the testability, dependency-injection and hot-reload refactor on `feature/maintainability-refactor`, and its progress and handoff. The Phase 5 part maps are [MaintainabilityRefactorAbilitySplit.md](MaintainabilityRefactorAbilitySplit.md), [MaintainabilityRefactorStatSplit.md](MaintainabilityRefactorStatSplit.md), [MaintainabilityRefactorStatusEffectSplit.md](MaintainabilityRefactorStatusEffectSplit.md), [MaintainabilityRefactorCreaturesSplit.md](MaintainabilityRefactorCreaturesSplit.md) and [MaintainabilityRefactorWeaponAbilitySplit.md](MaintainabilityRefactorWeaponAbilitySplit.md) (P5-16f).
 - [CraftingRevampPlan.md](CraftingRevampPlan.md), [PlayerRecognitionAndDisguisesPlan.md](PlayerRecognitionAndDisguisesPlan.md), [BeastMutationExpansionPlan.md](BeastMutationExpansionPlan.md), [VelesTradeConcourse.md](VelesTradeConcourse.md): feature plans.
+- [MaintainabilityRefactorAppearanceEditorSplit.md](MaintainabilityRefactorAppearanceEditorSplit.md): part map for splitting `AppearanceEditorViewModel` (P5-16e), next to the other refactor part maps (`MaintainabilityRefactorCombatSplit.md`, `MaintainabilityRefactorAbilitySplit.md`, `MaintainabilityRefactorStatSplit.md`, `MaintainabilityRefactorCreaturesSplit.md`).
+- [MaintainabilityRefactorViewModelSplit.md](MaintainabilityRefactorViewModelSplit.md): part map for the remaining view models over the limits (`PerksViewModel`, `CharacterSheetViewModel`, `PlayerGuideViewModel`, `IncubatorViewModel`, `DisguiseViewModel`, `DroidAssemblyViewModel`) and `EquipmentStats` (P5-16h), with the proof plan and PR order.
+- [MaintainabilityRefactorCombatServicesSplit.md](MaintainabilityRefactorCombatServicesSplit.md): part map for the Combat services over the limits (`CombatHitEffectsService`, `CombatDamageTakenService`, `CombatAbilityImpactService`, `CombatRecorderService`, `CombatDamageModifiersService`, `CombatAbilityActivationService`, `CombatAbilityBonusService`, `CombatAbilityHitService`, `CombatService`, `EnmityService`, `DeathService`) and `CombatRecordSerializer.Write` (P5-7), with the cycles, the proof plan and the PR order; built (P5-7a to P5-7l).
 - [WeatherAreaAudit.md](WeatherAreaAudit.md): per-area weather audit.
 - [GameplayIconManifest.csv](GameplayIconManifest.csv), [CombatUpgradeBiblePerkManifest.csv](CombatUpgradeBiblePerkManifest.csv), [PlayerMessageAudit.json](PlayerMessageAudit.json): data read by tools and tests.
 

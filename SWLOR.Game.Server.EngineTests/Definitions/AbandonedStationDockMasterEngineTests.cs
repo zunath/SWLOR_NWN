@@ -8,11 +8,11 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.NWN.API;
 using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 
@@ -162,13 +162,12 @@ public static class AbandonedStationDockMasterEngineTests
             if (ownsStationSpawns)
                 ctx.Assert(!GetIsObjectValid(GetObjectByTag("aban_dockmaster")), "station cleanup destroys the previous dock master before another visit");
             if (ship != null) DB.Delete<PlayerShip>(ship.Id);
-            if (property != null) Property.DeleteProperty(property);
+            if (property != null) PropertyMaintenance.DeleteProperty(property);
             if (GetIsObjectValid(interior)) DestroyArea(interior);
         }
     }
 
-    private static object SpawnState(string name) =>
-        typeof(Spawn).GetField(name, BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+    private static object SpawnState(string name) => SpawnInternals.Field(name);
 
     private static void ResetStationSpawns(EngineTestContext ctx, uint station)
     {
@@ -211,8 +210,7 @@ public static class AbandonedStationDockMasterEngineTests
 
     private static Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> InstallWindows(PlayerAbilityFixture actor)
     {
-        var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-            .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+        var windows = GuiInternals.PlayerWindows();
         windows.Add(actor.Id, new Dictionary<GuiWindowType, GuiPlayerWindow>());
         foreach (var type in new[] { GuiWindowType.Conversation, GuiWindowType.ShipManagement })
         {

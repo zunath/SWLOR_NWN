@@ -1,6 +1,6 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             if (!StatusEffect.HasStatusEffect(beast, BeastStatusEffectType, player))
             {
-                StatusEffect.ApplyStatusEffect(player, beast, BeastStatusEffectType, 0f);
+                StatusEffectApplication.ApplyStatusEffect(player, beast, BeastStatusEffectType, 0f);
             }
         }
 

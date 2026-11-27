@@ -1,8 +1,8 @@
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
-using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

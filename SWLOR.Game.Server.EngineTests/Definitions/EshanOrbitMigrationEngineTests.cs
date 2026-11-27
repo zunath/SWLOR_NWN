@@ -5,7 +5,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -104,8 +104,7 @@ public static class EshanOrbitMigrationEngineTests
         return property;
     }
 
-    private static void RunCleanUpData() =>
-        typeof(Property).GetMethod("CleanUpData", BindingFlags.Static | BindingFlags.NonPublic)!.Invoke(null, null);
+    private static void RunCleanUpData() => PropertyMaintenance.CleanUpData();
 
     private static PropertyLocation ToPropertyLocation(uint waypoint)
     {

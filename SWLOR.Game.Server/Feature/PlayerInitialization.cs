@@ -3,14 +3,13 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CurrencyService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using Player = SWLOR.Game.Server.Entity.Player;
-using Race = SWLOR.Game.Server.Service.Race;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -19,6 +18,8 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Handles
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Initializes or upgrades a character at login; the schema gate refuses a build that needs a migration.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void InitializePlayer()
         {
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server.Feature
             if (!dbPlayer.CharacterInitializationPending && (dbPlayer.Version >= 1 || dbPlayer.Version == -1)) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
             {
                 if (PlayerDescriptor.EnsureUnknownDisplayName(player))
-                    PlayerName.RefreshNameOverridesForPlayer(player);
+                    PlayerNameOverride.RefreshNameOverridesForPlayer(player);
 
                 InitializeNativeCombatStats(player);
                 ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
@@ -54,7 +55,7 @@ namespace SWLOR.Game.Server.Feature
                 {
                     InitializeNewCharacter(player, initializing);
                 }, updated => DB.Set(updated),
-                    () => GetLocalInt(player, Migration.PlayerFileVersionVariable),
+                    () => GetLocalInt(player, MigrationService.PlayerFileVersionVariable),
                     version => Migration.SavePlayerFileCheckpoint(player, version));
             }
             catch (Exception exception)
@@ -65,7 +66,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             if (PlayerDescriptor.EnsureUnknownDisplayName(player))
-                PlayerName.RefreshNameOverridesForPlayer(player);
+                PlayerNameOverride.RefreshNameOverridesForPlayer(player);
 
             ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
         }
@@ -98,7 +99,7 @@ namespace SWLOR.Game.Server.Feature
                 GiveStartingTokens(initializing);
             AssignCharacterType(player, initializing);
             RegisterDefaultRespawnPoint(initializing);
-            Stat.ApplyCreatureMovementRate(player);
+            CreatureStat.ApplyCreatureMovementRate(player);
         }
 
         public static void InitializeNativeCombatStats(uint player)
@@ -264,14 +265,14 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="dbPlayer">The player entity.</param>
         private static void AdjustStats(uint player, Player dbPlayer)
         {
-            dbPlayer.UnallocatedSP = Skill.StartingSkillPoints;
+            dbPlayer.UnallocatedSP = SkillService.StartingSkillPoints;
             dbPlayer.Version = Migration.GetLatestPlayerVersion();
             dbPlayer.Name = GetName(player);
             dbPlayer.BAB = 1;
             // A failed first export can retry with an already initialized record.
-            Stat.AdjustPlayerMaxHP(dbPlayer, player, Stat.BaseHP - dbPlayer.MaxHP);
-            Stat.AdjustPlayerMaxFP(dbPlayer, Stat.BaseFP - dbPlayer.MaxFP, player);
-            Stat.AdjustPlayerMaxSTM(dbPlayer, Stat.BaseSTM - dbPlayer.MaxStamina, player);
+            CreatureStat.AdjustPlayerMaxHP(dbPlayer, player, CreatureStatService.BaseHP - dbPlayer.MaxHP);
+            StatRecord.AdjustPlayerMaxFP(dbPlayer, StatRecordService.BaseFP - dbPlayer.MaxFP, player);
+            StatRecord.AdjustPlayerMaxSTM(dbPlayer, StatRecordService.BaseSTM - dbPlayer.MaxStamina, player);
             CreaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
             dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);

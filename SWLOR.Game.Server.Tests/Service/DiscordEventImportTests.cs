@@ -1,10 +1,12 @@
+using SWLOR.Game.Server.Domain.Social;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.HostedEventService;
+using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Service;
 

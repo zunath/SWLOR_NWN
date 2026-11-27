@@ -1,8 +1,8 @@
 using System;
-using SWLOR.Game.Server.Service.StatusEffectService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var requiredStacks = Stat.GetStatAdjustment(Source, StatType.SuppressionStackDamageDealtRequiredStacks);
             var adjustment = Stat.GetStatAdjustment(Source, StatType.SuppressionStackDamageDealtPercentAdjustment);
             if (!ShouldRemainActive(
-                    Combat.GetSuppressionStackCount(creature, Source),
+                    GameServices.CombatSuppression.GetSuppressionStackCount(creature, Source),
                     requiredStacks,
                     adjustment))
             {
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public void AfterRemoved(uint creature)
         {
-            Combat.ReconcileContainmentNetStatuses(creature);
+            GameServices.CombatSuppression.ReconcileContainmentNetStatuses(creature);
         }
 
         public static int GetCappedDamageAdjustment(int adjustment, int remainingPenaltyPercent)

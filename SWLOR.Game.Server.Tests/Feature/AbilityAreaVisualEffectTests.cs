@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -8,12 +9,7 @@ public class AbilityAreaVisualEffectTests
     [Test]
     public void AreaCombatImpactVisualEffects_DoNotRequireHitTargets()
     {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-                root.FullName,
-                "SWLOR.Game.Server",
-                "Service",
-                "Ability.cs"))
+        var source = AbilitySource.Read()
             .Replace("\r\n", "\n");
 
         source.Should().Contain(

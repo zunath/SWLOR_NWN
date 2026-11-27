@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Area;
@@ -24,14 +24,36 @@ namespace SWLOR.Game.Server.EngineTests
     /// NWN server after module load. Results are written to a JSON report and
     /// echoed to the console for CI log parsing, then the server shuts down.
     /// </summary>
-    public static class EngineTest
+    /// <remarks>
+    /// The runner is made content: the bootstrapper builds it with the container's content factory when it loads this assembly
+    /// (<c>EngineTestAssemblyLoader.CreateHandlerOwners</c>), and its handler runs on that instance. A test is a public static
+    /// method, or a public instance method of a class the runner builds with that factory for each run, so the class takes its
+    /// services through its constructor.
+    /// </remarks>
+    public sealed class EngineTest
     {
         private const string ConsolePrefix = "[ENGINE_TESTS]";
         private const string ReportFileName = "engine-test-results.json";
         private const float TimeoutGraceSeconds = 10f;
 
+        /// <summary>
+        /// Set to 1 on the module by a scenario that spans hot reloads: the run keeps its instanced arena (and what the scenario left
+        /// in it) and the next generation's run reuses it (<see cref="ArenaVariable"/>). The scenario's last phase clears it.
+        /// </summary>
+        public const string KeepArenaVariable = "SWLOR_ENGINE_TEST_KEEP_ARENA";
+
+        /// <summary>The kept arena, on the module, for the next generation's run.</summary>
+        public const string ArenaVariable = "SWLOR_ENGINE_TEST_ARENA";
+
         private static bool _hasRun;
         private static bool _suiteAborted;
+
+        public EngineTest(IContentFactory content)
+        {
+            Content = content;
+        }
+
+        private IContentFactory Content { get; }
 
         /// <summary>
         /// Aborts the remainder of the suite after the current test finishes. For test
@@ -50,8 +72,14 @@ namespace SWLOR.Game.Server.EngineTests
             Log.Write(LogGroup.EngineTest, $"Suite abort requested: {reason}", true);
         }
 
+        /// <summary>
+        /// Schedules the suite after the module loads. A hot reload reruns it in the new build (it only reads settings and starts a
+        /// timer, <see cref="BootReload.Rerun"/>), so a server that reloads with engine tests on runs the filtered suite again in each
+        /// generation: the <c>HotReloadPlayers</c> scenario checks its player there. Reload is off in the normal sweep.
+        /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
-        public static void ScheduleEngineTests()
+        public void ScheduleEngineTests()
         {
             var settings = ApplicationSettings.Get();
             if (!settings.EngineTestsEnabled)
@@ -76,12 +104,16 @@ namespace SWLOR.Game.Server.EngineTests
                 return;
             _hasRun = true;
 
+            // Boot-time scheduled work for the frame-delivery scenario; started here rather than from a handler of its
+            // own so the engine-test handler list stays master's.
+            Definitions.FrameDeliveryEngineTests.StartBootProbe();
+
             var delay = settings.EngineTestStartupDelaySeconds;
             Console.WriteLine($"{ConsolePrefix} Engine tests scheduled to start in {delay} seconds.");
             DelayCommand(delay, () => _ = RunAllTestsAsync());
         }
 
-        private static async Task RunAllTestsAsync()
+        private async Task RunAllTestsAsync()
         {
             var settings = ApplicationSettings.Get();
             var report = new EngineTestReport
@@ -172,7 +204,14 @@ namespace SWLOR.Game.Server.EngineTests
                 // case runs in the real starting area, which is never destroyed.
                 if (arenaIsInstanced && GetIsObjectValid(arena))
                 {
-                    DestroyArea(arena);
+                    // A scenario that spans hot reloads keeps its player in the arena for the next generation's run.
+                    if (GetLocalInt(GetModule(), KeepArenaVariable) == 1)
+                        SetLocalObject(GetModule(), ArenaVariable, arena);
+                    else
+                    {
+                        DeleteLocalObject(GetModule(), ArenaVariable);
+                        DestroyArea(arena);
+                    }
                 }
             }
 
@@ -201,7 +240,7 @@ namespace SWLOR.Game.Server.EngineTests
 
         private static List<(MethodInfo Method, EngineTestAttribute Attribute)> DiscoverTests(string filter)
         {
-            var tests = AppDomain.CurrentDomain.GetAssemblies()
+            var tests = GameAssemblies.GetAssemblies()
                 .SelectMany(a =>
                 {
                     try
@@ -252,7 +291,8 @@ namespace SWLOR.Game.Server.EngineTests
                 : GetResRef(startingArea);
 
             var isInstanced = true;
-            var arena = CreateArea(arenaResref);
+            var kept = GetLocalObject(GetModule(), ArenaVariable);
+            var arena = GetIsObjectValid(kept) ? kept : CreateArea(arenaResref);
             if (!GetIsObjectValid(arena))
             {
                 Console.WriteLine($"{ConsolePrefix} WARNING - Could not instance arena from resref '{arenaResref}'. Falling back to the module starting area.");
@@ -277,7 +317,7 @@ namespace SWLOR.Game.Server.EngineTests
             return (arena, spawnLocation, isInstanced);
         }
 
-        private static async Task<EngineTestResult> RunSingleTestAsync(
+        private async Task<EngineTestResult> RunSingleTestAsync(
             MethodInfo method,
             EngineTestAttribute attribute,
             uint arena,
@@ -308,7 +348,7 @@ namespace SWLOR.Game.Server.EngineTests
                 if (!IsValidTestMethod(method))
                 {
                     result.Outcome = EngineTestOutcome.Failed;
-                    result.Message = $"Invalid signature on {method.DeclaringType?.Name}.{method.Name}: engine tests must be public static, take a single EngineTestContext parameter, and return Task (synchronous void bodies run outside the cooperative timeout's reach; async void is not observable).";
+                    result.Message = $"Invalid signature on {method.DeclaringType?.Name}.{method.Name}: engine tests must be public (static, or an instance method of a class the content factory builds), take a single EngineTestContext parameter, and return Task (synchronous void bodies run outside the cooperative timeout's reach; async void is not observable).";
                     return result;
                 }
 
@@ -409,7 +449,11 @@ namespace SWLOR.Game.Server.EngineTests
 
         private static bool IsValidTestMethod(MethodInfo method)
         {
-            if (!method.IsStatic || !method.IsPublic)
+            if (!method.IsPublic)
+                return false;
+
+            // An instance test runs on a new instance of its class, which the content factory builds with its services.
+            if (!method.IsStatic && (method.DeclaringType == null || method.DeclaringType.IsAbstract || method.DeclaringType.ContainsGenericParameters))
                 return false;
 
             var parameters = method.GetParameters();
@@ -425,14 +469,16 @@ namespace SWLOR.Game.Server.EngineTests
             return method.ReturnType == typeof(Task);
         }
 
-        private static async Task InvokeTestAsync(MethodInfo method, EngineTestContext context)
+        private async Task InvokeTestAsync(MethodInfo method, EngineTestContext context)
         {
             // Yield BEFORE invoking so the caller can arm its timeout task first - without
             // this, the test body's synchronous prefix (everything up to its first incomplete
             // await) runs to completion before the timeout task is even created.
             await NwTask.NextFrame();
 
-            var returnValue = method.Invoke(null, new object[] { context });
+            // A static test runs as always; an instance test on a new instance of its class, built with its services.
+            var target = method.IsStatic ? null : Content.Create<object>(method.DeclaringType);
+            var returnValue = method.Invoke(target, new object[] { context });
             if (returnValue is not Task task)
             {
                 // A Task-signature method that returns null (e.g. a non-async body written as

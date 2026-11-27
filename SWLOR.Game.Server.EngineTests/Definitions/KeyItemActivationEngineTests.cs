@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.ItemDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.KeyItemService;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {

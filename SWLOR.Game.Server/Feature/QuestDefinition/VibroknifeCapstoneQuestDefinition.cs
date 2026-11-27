@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string VitalRuptureMeasureQuestId = "vital_rupture_measure";
         internal const string VitalRuptureBreachQuestId = "vital_rupture_breach";
         internal const string VitalRuptureCircleQuestId = "vital_rupture_circle";
-        internal const string VitalRuptureMasteryQuestId = "vital_rupture_mastery";
+        internal const string VitalRuptureMasteryQuestId = CapstoneQuestIds.VitalRuptureMasteryQuestId;
         internal const string VitalRuptureAdeptResref = "cp_vitrupt_ad";
         internal const string VitalRuptureSpecialistResref = "cp_vitrupt_sp";
         internal const string VitalRuptureInnerCircleResref = "cp_vitrupt_ic";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string SystemicShutdownMeasureQuestId = "systemic_shutdown_measure";
         internal const string SystemicShutdownBreachQuestId = "systemic_shutdown_breach";
         internal const string SystemicShutdownCircleQuestId = "systemic_shutdown_circle";
-        internal const string SystemicShutdownMasteryQuestId = "systemic_shutdown_mastery";
+        internal const string SystemicShutdownMasteryQuestId = CapstoneQuestIds.SystemicShutdownMasteryQuestId;
         internal const string SystemicShutdownAdeptResref = "cp_sysshut_ad";
         internal const string SystemicShutdownSpecialistResref = "cp_sysshut_sp";
         internal const string SystemicShutdownInnerCircleResref = "cp_sysshut_ic";

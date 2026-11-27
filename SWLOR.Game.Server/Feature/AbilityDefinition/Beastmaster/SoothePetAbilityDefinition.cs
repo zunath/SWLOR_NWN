@@ -1,12 +1,11 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
@@ -76,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         CountNativeEffects(beast) < nativeEffectsBeforeCleanse)
                     {
                         Ability.PlaySuccessfulImpactVisualEffect(activator, beast);
-                        Enmity.ModifyEnmityOnAll(activator, 500);
+                        EnmityChange.ModifyEnmityOnAll(activator, 500);
                     }
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), beast);
                     CombatPoint.AddSupportCombatPoint(activator, beast, SkillType.BeastMastery);

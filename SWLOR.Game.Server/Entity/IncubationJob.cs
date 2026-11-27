@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -51,8 +51,8 @@ namespace SWLOR.Game.Server.Entity
 
         public IncubationJob()
         {
-            DefensePurities = Combat.CreateDefaultDefenseValues();
-            ResistancePurities = Resistance.CreateDefaultResistanceValues();
+            DefensePurities = DamageTableDefaults.CreateDefaultDefenseValues();
+            ResistancePurities = DamageTableDefaults.CreateDefaultResistanceValues();
             LyaseColors = new Dictionary<EnzymeColorType, int>
             {
                 { EnzymeColorType.Blue, 0 },

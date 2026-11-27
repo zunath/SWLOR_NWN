@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -10,7 +11,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class DestroyedOwnerCleanupTests
 {
     [TestCase("Feature/OrdinaryAttackCombatLifecycle.cs", "OrdinaryAttackTraits.ForgetDestroyed(OBJECT_SELF)")]
-    [TestCase("Feature/UsePerkFeat.cs", "_queuedWeaponTraits.Remove(creature);", "_queuedWeaponAttacks.Remove(creature);")]
+    [TestCase("Feature/UsePerkFeat.cs", "AbilityActivationState.RemoveQueuedWeaponTraits(creature);", "AbilityActivationState.RemoveQueuedWeaponAttack(creature);")]
     [TestCase("Feature/TwinPistolCombatLifecycle.cs", "TwinPistolAbility.ForgetDestroyed(actor);",
         "PairedRangedAttackCycle.ForgetDestroyed(actor);", "PairedRangedPresentation.Release(actor);")]
     public void OwnerKeyedStateIsDroppedWhenTheOwnerIsDestroyed(string file, params string[] expected)
@@ -29,13 +30,13 @@ public class DestroyedOwnerCleanupTests
     public void DestroyedOwnerCleanupOnlyRemovesState()
     {
         var root = FindRepositoryRoot().FullName;
-        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "OrdinaryAttackTraits.cs"))
-            .Should().Contain("public static void ForgetDestroyed(uint actor) => States.Remove(actor);");
+        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Combat", "OrdinaryAttackTraitsService.cs"))
+            .Should().Contain("public void ForgetDestroyed(uint actor) => _states.Remove(actor);");
         File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "PairedRangedAttackCycle.cs"))
-            .Should().Contain("if (PendingHands.Remove(actor)) StatusEffect.ForgetDestroyedNativeAttackSwing(actor);");
-        var statusEffect = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "StatusEffect.cs"))
+            .Should().Contain("if (PendingHands.Remove(actor)) StatusEffectCombatEvent.ForgetDestroyedNativeAttackSwing(actor);");
+        var statusEffect = StatusEffectSource.Read()
             .Replace("\r\n", "\n");
-        var start = statusEffect.IndexOf("public static void ForgetDestroyedNativeAttackSwing(", StringComparison.Ordinal);
+        var start = statusEffect.IndexOf("public void ForgetDestroyedNativeAttackSwing(", StringComparison.Ordinal);
         var body = statusEffect.Substring(start, statusEffect.IndexOf("\n        }", start, StringComparison.Ordinal) - start);
         body.Should().Contain("_nativeAttackSwingDepth.Remove(attacker);");
         body.Should().Contain("_deferredNativeAttackStatusEffects.Remove(attacker);");

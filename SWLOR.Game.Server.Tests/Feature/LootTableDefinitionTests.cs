@@ -3,7 +3,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
-using SWLOR.Game.Server.Service.LootService;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

@@ -3,10 +3,10 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.RecipeParameters;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Crafting.RecipeParameters;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.Formats.TwoDA;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -28,6 +28,8 @@ public class SwtorFurnishingRecipesTests
             .Select(row => placeables.GetValue(row, "ModelName")!)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
         var actual = RecipeDefinitionLoader.LoadGame().Values
             .Where(recipe => recipe.IsActive && recipe.Skill == SkillType.Fabrication &&
                              recipe.Resref.StartsWith("structure_", StringComparison.Ordinal))

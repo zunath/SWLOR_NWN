@@ -8,10 +8,11 @@ using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -30,8 +31,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var playerWindow = template.CreatePlayerWindowAction();
             var editor = (AppearanceEditorViewModel)playerWindow.ViewModel;
             editor.Geometry = new GuiRectangle(25f, 20f, 590f, 660f);
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var windows = GuiInternals.PlayerWindows();
             ctx.Assert(!windows.ContainsKey(player.Id), "fixture GUI registration must be isolated");
             windows.Add(player.Id, new Dictionary<GuiWindowType, GuiPlayerWindow>
             {
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var root = (string)baseType.GetField("_rootPartial", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(editor)!;
                 var window = JObject.Parse(JsonDump(template.Window));
                 window["root"] = JToken.Parse(GuiLayoutComposer.Compose(template.PartialViewLayouts[root], layouts));
-                ctx.Assert(window.SelectTokens("$..id").Any(id => id.Value<string>() == "ae_tile_0"), "the exported production root contains the part browser's nested tile grid");
+                ctx.Assert(window.SelectTokens("$..id").Any(id => id.Value<string>() == "ae_part_preview"), "the exported production root contains the part picture that opens the part browser (its tile grid is a pop-up since #3033)");
                 snapshots.Add(new JObject
                 {
                     ["name"] = name,

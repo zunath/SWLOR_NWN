@@ -1,10 +1,13 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
-using SWLOR.Game.Server.Service.FishingService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service.Line;
 
@@ -12,7 +15,7 @@ namespace SWLOR.Game.Server.Tests.Service.Line;
 /// Covers a bite and its fight from the cast's pick of a fish to the end: what a bite spends and pays, how each ending and each way
 /// of leaving settles, and that nothing a fight does changes the bait, the XP or the fishing point.
 /// </summary>
-public class FishingFightLifecycleTests
+public class FishingFightLifecycleTests : SkillFacadeFixture
 {
     private const uint Player = 11;
     private const uint Rod = 22;
@@ -23,7 +26,10 @@ public class FishingFightLifecycleTests
     [OneTimeSetUp]
     public void LoadTheXpChart()
     {
-        Skill.CacheXPChartData();
+        using (SkillFacades.Install())
+        {
+            Skill.CacheXPChartData();
+        }
     }
 
     [SetUp]
@@ -86,11 +92,11 @@ public class FishingFightLifecycleTests
     }
 
     /// <summary>What the bite itself pays: today's XP for the fish against the rank.</summary>
-    private static int BiteXp(int level, int rank) => Skill.GetDeltaXP(level - rank);
+    private static int BiteXp(int level, int rank) => SkillXP.GetDeltaXP(level - rank);
 
     /// <summary>What a played fight pays in all: today's XP times the multiplier of the fish's level band.</summary>
     private static int FightXp(int level, int rank) =>
-        CraftMinigameXp.ScaleBaseXp(Skill.GetDeltaXP(level - rank), LineRules.XpMultiplierForLevel(level));
+        CraftMinigameXp.ScaleBaseXp(SkillXP.GetDeltaXP(level - rank), LineRules.XpMultiplierForLevel(level));
 
     [Test]
     public void ABite_PaysTodaysDeltaXpOfTheFishAgainstTheRankAtOnce_AndTheFightTheRestOfTheMultipliedXpWhenItEnds()
@@ -106,7 +112,7 @@ public class FishingFightLifecycleTests
         }
 
         FightXp(20, 20).Should().Be(
-            CraftMinigameXp.ScaleBaseXp(Skill.GetDeltaXP(0), LineRules.XpMultiplierLevels11To20),
+            CraftMinigameXp.ScaleBaseXp(SkillXP.GetDeltaXP(0), LineRules.XpMultiplierLevels11To20),
             "the multiplier is the one of the fish's level, not of the angler's rank");
     }
 

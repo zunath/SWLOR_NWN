@@ -40,7 +40,7 @@ public class GameTextEncodingTests
     private static readonly HashSet<(string File, string Member)> CharacterTables = new()
     {
         (Path.Combine("Feature", "GuiDefinition", "ExamineItemText.cs"), "highChannels"),
-        (Path.Combine("Service", "ColorToken.cs"), "ColorArray")
+        (Path.Combine("Domain", "Foundation", "ColorToken.cs"), "ColorArray")
     };
 
     // Existing text left as authored at the owner's request: the Disguise status label and the
@@ -50,8 +50,8 @@ public class GameTextEncodingTests
         (Path.Combine("Feature", "GuiDefinition", "ViewModel", "DisguiseViewModel.cs"), "\u25CF Active"),
         (Path.Combine("Feature", "GuiDefinition", "ViewModel", "DMChooserViewModel.cs"), "Level \u00B7 HP"),
         (Path.Combine("Feature", "GuiDefinition", "ViewModel", "DMCreatorViewModel.cs"), "Level \u00B7 Faction"),
-        (Path.Combine("Service", "DMObjectDetails.cs"), " \u00B7 HP "),
-        (Path.Combine("Service", "DMObjectDetails.cs"), " \u00B7 ")
+        (Path.Combine("Domain", "Administration", "DMObjectDetailsService.cs"), " \u00B7 HP "),
+        (Path.Combine("Domain", "Administration", "DMObjectDetailsService.cs"), " \u00B7 ")
     };
 
     [Test]

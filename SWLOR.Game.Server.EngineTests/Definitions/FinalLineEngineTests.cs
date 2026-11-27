@@ -5,6 +5,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -22,7 +23,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ObjectPlugin.SetPosition(targets[i], GetPositionFromLocation(ctx.GetArenaLocation(-2f + 2f * i)));
                 ctx.MakeHostile(targets[i]);
                 ctx.SuppressNPCNaturalRegen(targets[i]);
-                Stat.SetNPCMaxHitPoints(targets[i], 30000);
+                CreatureStat.SetNPCMaxHitPoints(targets[i], 30000);
                 ctx.AssertEqual(30000, GetMaxHitPoints(targets[i]), "target HP budget");
             }
             foreach (var creature in targets.Append(caster))
@@ -37,8 +38,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var ramp = (Func<uint, int>)field.GetValue(closure);
             ctx.Assert(ramp != null, "Final Line must have a damage bonus");
             ctx.AssertEqual(0, ramp(OBJECT_INVALID), "invalid target bonus");
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 foreach (var percent in new[] { 100, 80, 75, 60, 50, 40, 25, 20, 10, 1, 100 })
@@ -55,7 +56,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         }
                         field.SetValue(closure, pass == 0 ? null : ramp);
                         ctx.SeedRandom(49123);
-                        Ability.BeginAbilityImpact(caster, ability);
+                        AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                         try
                         {
                             await ctx.ExecuteInCreatureContextAsync(caster, () =>
@@ -63,7 +64,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         }
                         finally
                         {
-                            ctx.AssertEqual(2, Ability.EndAbilityImpact(caster).ImpactedTargetCount, "both line targets hit");
+                            ctx.AssertEqual(2, AbilityImpactLifecycle.EndAbilityImpact(caster).ImpactedTargetCount, "both line targets hit");
                         }
                         await ctx.WaitFrameAsync();
                         for (var i = 0; i < targets.Length; i++)
@@ -87,8 +88,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally
             {
                 field.SetValue(closure, ramp);
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             }
         }
     }

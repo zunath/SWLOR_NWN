@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -102,9 +103,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 case AbilitiesCategory:
                     foreach (var feat in ExtraHotbars.GetKnownAbilities(Player)
-                                 .OrderBy(feat => Ability.GetAbilityDetail(feat).Name))
+                                 .OrderBy(feat => AbilityCatalog.GetAbilityDetail(feat).Name))
                     {
-                        var name = Ability.GetAbilityDetail(feat).Name;
+                        var name = AbilityCatalog.GetAbilityDetail(feat).Name;
                         if (!Matches(name))
                             continue;
 
@@ -182,7 +183,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _offHand = OBJECT_INVALID;
 
             // Chosen items stay at the top, whatever the search.
-            var items = ExtraHotbars.GetHandItems(Player)
+            var items = ExtraHotbarsEquip.GetHandItems(Player)
                 .Where(item => item == _mainHand || item == _offHand || matches(GetName(item)))
                 .OrderBy(item => item == _mainHand ? 0 : item == _offHand ? 1 : 2)
                 .ThenBy(item => GetName(item));
@@ -201,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 names.Add(name);
                 tooltips.Add(item == _mainHand || item == _offHand
                     ? "Click to take this item out of the set."
-                    : ExtraHotbars.CanHoldInMainHand(item)
+                    : ExtraHotbarsEquip.CanHoldInMainHand(item)
                         ? "Click to choose this item for your main hand, or your off hand once a main hand is chosen."
                         : "Click to choose this item for your off hand.");
             }
@@ -226,7 +227,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             switch (SelectedCategory)
             {
                 case AbilitiesCategory:
-                    ExtraHotbars.AssignAbility(Player, _barIndex, _slotIndex, entry.Feat);
+                    ExtraHotbarsEdit.AssignAbility(Player, _barIndex, _slotIndex, entry.Feat);
                     Gui.ClosePlayerWindow(Player, GuiWindowType.ExtraHotbarSlotPicker);
                     break;
                 case ItemsCategory:
@@ -237,11 +238,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    ExtraHotbars.AssignItem(Player, _barIndex, _slotIndex, entry.Item);
+                    ExtraHotbarsEdit.AssignItem(Player, _barIndex, _slotIndex, entry.Item);
                     Gui.ClosePlayerWindow(Player, GuiWindowType.ExtraHotbarSlotPicker);
                     break;
                 case CommandsCategory:
-                    ExtraHotbars.AssignChatCommand(Player, _barIndex, _slotIndex, entry.Command);
+                    ExtraHotbarsEdit.AssignChatCommand(Player, _barIndex, _slotIndex, entry.Command);
                     Gui.ClosePlayerWindow(Player, GuiWindowType.ExtraHotbarSlotPicker);
                     break;
                 case EquipmentCategory:
@@ -252,14 +253,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    (_mainHand, _offHand) = ExtraHotbars.PickHandItem(_mainHand, _offHand, entry.Item,
-                        ExtraHotbars.CanHoldInMainHand(entry.Item),
-                        ExtraHotbars.CanHoldInOffHand(entry.Item),
-                        ExtraHotbars.CanPairHands);
+                    (_mainHand, _offHand) = ExtraHotbarsEquip.PickHandItem(_mainHand, _offHand, entry.Item,
+                        ExtraHotbarsEquip.CanHoldInMainHand(entry.Item),
+                        ExtraHotbarsEquip.CanHoldInOffHand(entry.Item),
+                        ExtraHotbarsEquip.CanPairHands);
                     LoadEntries();
                     break;
                 case ActionModesCategory:
-                    ExtraHotbars.AssignActionMode(Player, _barIndex, _slotIndex, entry.ActionMode);
+                    ExtraHotbarsEdit.AssignActionMode(Player, _barIndex, _slotIndex, entry.ActionMode);
                     Gui.ClosePlayerWindow(Player, GuiWindowType.ExtraHotbarSlotPicker);
                     break;
             }
@@ -287,7 +288,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            ExtraHotbars.AssignChatCommand(Player, _barIndex, _slotIndex, command);
+            ExtraHotbarsEdit.AssignChatCommand(Player, _barIndex, _slotIndex, command);
             Gui.ClosePlayerWindow(Player, GuiWindowType.ExtraHotbarSlotPicker);
         };
 
@@ -300,7 +301,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            ExtraHotbars.AssignEquipment(Player, _barIndex, _slotIndex,
+            ExtraHotbarsEdit.AssignEquipment(Player, _barIndex, _slotIndex,
                 IsHeld(_mainHand) ? _mainHand : OBJECT_INVALID,
                 IsHeld(_offHand) ? _offHand : OBJECT_INVALID);
             Gui.ClosePlayerWindow(Player, GuiWindowType.ExtraHotbarSlotPicker);
@@ -308,7 +309,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickClear() => () =>
         {
-            ExtraHotbars.ClearSlot(Player, _barIndex, _slotIndex);
+            ExtraHotbarsEdit.ClearSlot(Player, _barIndex, _slotIndex);
             Gui.ClosePlayerWindow(Player, GuiWindowType.ExtraHotbarSlotPicker);
         };
 

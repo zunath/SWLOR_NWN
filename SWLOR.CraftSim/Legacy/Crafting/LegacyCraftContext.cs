@@ -1,5 +1,4 @@
 using SWLOR.CraftSim.Data;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.CraftSim.Legacy.Crafting
 {
@@ -17,8 +16,8 @@ namespace SWLOR.CraftSim.Legacy.Crafting
             CpBonus = cpBonus;
             Enhancements = enhancements ?? CraftEnhancementConfiguration.None;
 
-            // RecipeLevelChart.cs:13-99, through the server's own Craft.GetRecipeLevelDetail.
-            var level = Craft.GetRecipeLevelDetail(recipeLevel);
+            // RecipeLevelChart.cs:13-99, through ServerRecipeLevels, the server's own chart class.
+            var level = ServerRecipeLevels.For(recipeLevel);
             MaxDurability = level.Durability;
             MaxProgress = LegacyEnhancementRules.MaxProgressWithEnhancements(
                 LegacyCraftRules.MaxProgress(level.Progress, rank, recipeLevel), Enhancements.TotalProgressPenalty);

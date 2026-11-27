@@ -1,15 +1,15 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.CombatAnalyzer;
 using SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Reflection;
 
@@ -79,7 +79,7 @@ public class CapstoneAbilityTests
         perk.GrantedFeats.Should().Equal(FeatType.SoulAscensionBurst);
         perk.StatBonuses.Should().BeEmpty("purchasing the perk must not grant the old HP-spend kill trigger");
         var ability = new SoulAscensionAbilityDefinition().BuildAbilities()[FeatType.SoulAscensionBurst];
-        ability.AIHitPointCostPercent(0).Should().Be(10);
+        ability.GetAIHitPointCostPercent()(0).Should().Be(10);
         ability.Requirements.Should().BeEmpty("Soul Ascension spends HP instead of STM");
         ability.SourceOwnedStatusEffectTypesRemovedOnPerkRefund.Should().Contain(typeof(SoulAscensionBurstStatusEffect));
     }

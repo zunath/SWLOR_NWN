@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
@@ -34,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     var names = ReadLocalizedNames(nameField);
                     var variables = node.Fields.SingleOrDefault(x => x.Name == "VarTable" && x.Type == 15);
                     var noEconomy = variables?.Children.Any(variable =>
-                        ReadVariableName(variable) == Item.NoEconomyVariable && ReadVariableInteger(variable) == 1) == true;
+                        ReadVariableName(variable) == ItemService.NoEconomyVariable && ReadVariableInteger(variable) == 1) == true;
                     var restricted = Item.IsEconomyRestricted((BaseItem)ReadScalar(baseItem),
                         names.FirstOrDefault() ?? "Saved item", noEconomy, hasInventoryIcon: true);
                     if (!restricted)

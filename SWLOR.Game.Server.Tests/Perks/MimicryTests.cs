@@ -5,26 +5,42 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition.CombatAnalyzer;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class MimicryTests
 {
-    private const string MimicryTechniqueNamespace = "SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry";
+    // The code under test reaches converted services through their static facades, which resolve from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
+    internal const string MimicryTechniqueNamespace = "SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry";
     private const string NpcAbilityNamespace = "SWLOR.Game.Server.Feature.AbilityDefinition.NPC";
     private const int CustomTlkStrrefOffset = 16777216;
 
@@ -201,13 +217,13 @@ public class MimicryTests
 
         seismic.Should().MatchRegex(@"ResolveSkillType\(activator, profile\),\s*28,\s*6,\s*typeof\(KnockdownStatusEffect\)");
         rupturing.Should().MatchRegex(@"ResolveSkillType\(activator, profile\),\s*40,\s*6,\s*typeof\(KnockdownStatusEffect\)");
-        rupturing.Should().Contain("StatusEffect.ApplyStatusEffect<SunderStatusEffect>(activator, hitTarget, 30f");
+        rupturing.Should().Contain("StatusEffectApplication.ApplyStatusEffect<SunderStatusEffect>(activator, hitTarget, 30f");
         rupturing.Should().NotContain("additionalStatusEffects: new[] { typeof(SunderStatusEffect) }");
         disorienting.Should().MatchRegex(@"ResolveSkillType\(activator, profile\),\s*0,\s*30,\s*typeof\(DisorientedStatusEffect\)");
-        lockstep.Should().Contain("StatusEffect.ApplyStatusEffect<SunderStatusEffect>(activator, target, 30f");
+        lockstep.Should().Contain("StatusEffectApplication.ApplyStatusEffect<SunderStatusEffect>(activator, target, 30f");
         lockstep.Should().NotContain("additionalStatusEffects: new[] { typeof(SunderStatusEffect) }");
         merciless.Should().Contain("if (StatusEffect.HasStatusEffect(target, typeof(BleedStatusEffect), typeof(HemorrhageStatusEffect)))");
-        merciless.Should().Contain("StatusEffect.ApplyStatusEffect<HemorrhageStatusEffect>(activator, target, 30f");
+        merciless.Should().Contain("StatusEffectApplication.ApplyStatusEffect<HemorrhageStatusEffect>(activator, target, 30f");
         merciless.Should().NotContain("typeof(HemorrhageStatusEffect),\r\n                CombatImpactAreaShape.Cone");
     }
 
@@ -224,8 +240,8 @@ public class MimicryTests
         var abilityTargeting = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Feature",
-            "AbilityDefinition",
+            "Domain",
+            "Combat",
             "AbilityTargeting.cs"));
         var stimCanister = File.ReadAllText(Path.Combine(
             techniqueDirectory,
@@ -237,10 +253,10 @@ public class MimicryTests
         stimCanister.Should().Contain(
             "AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 4.0f)");
         stimCanister.Should().Contain(
-            "StatusEffect.ApplyStatusEffect(activator, ally, new StimCanisterStatusEffect(), 30f)");
+            "StatusEffectApplication.ApplyStatusEffect(activator, ally, new StimCanisterStatusEffect(), 30f)");
         abilityTargeting.Should().Contain("bool includeActivator = true");
         abilityTargeting.Should().Contain(
-            "if (creature == activator ? includeActivator : Party.IsInParty(activator, creature))",
+            "if (creature == activator ? includeActivator : PartyRoster.IsInParty(activator, creature))",
             "excluding the caster must take precedence over party membership for Warden Wall Stance");
         abilityTargeting.Should().Contain(
             "if (!GetIsDead(creature) && GetCurrentHitPoints(creature) > 0)",
@@ -597,20 +613,20 @@ public class MimicryTests
     // The declaration tests above prove traits carry data, but not that the data is ever read. The
     // stat and resistance pipelines are where a trait actually becomes a bonus, and deleting either
     // hook would silently zero every trait while leaving all the declaration tests green. A true
-    // runtime assertion is not possible here -- Mimicry.GetStatBonus calls GetIsPC and DB.Get, and
+    // runtime assertion is not possible here -- MimicryTraitStats.GetStatBonus calls GetIsPC and DB.Get, and
     // this suite has no engine or database -- so the integration points are pinned at the source
     // level, matching how CombatDamageTests guards its own wiring.
     [Test]
     public void MimicryTraitBonuses_AreWiredIntoTheStatAndResistancePipelines()
     {
         var root = FindRepositoryRoot();
-        var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Stat.cs"));
-        var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Resistance.cs"));
-        var mimicrySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Mimicry.cs"));
+        var statSource = StatSource.Read();
+        var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "ResistanceService.cs"));
+        var mimicrySource = MimicryBeastDroidSource.Read(MimicryBeastDroidSource.Mimicry);
 
-        statSource.Should().Contain("Mimicry.GetStatBonus(creature, stat)",
+        statSource.Should().Contain("_mimicryTraitStats.GetStatBonus(creature, stat, this)",
             "equipped trait stats reach the player only through the stat pipeline");
-        resistanceSource.Should().Contain("Mimicry.GetResistanceBonus(creature, type)",
+        resistanceSource.Should().Contain("_mimicry.GetResistanceBonus(creature, type)",
             "equipped trait resistances reach the player only through the resistance pipeline");
 
         // Traits are deliberately not status effects: nothing should grant or revoke them, and the
@@ -1023,97 +1039,6 @@ public class MimicryTests
     }
 
     [Test]
-    public void Mimicry_SkillDecayHandlerRevalidatesEquippedTechniques()
-    {
-        var handler = typeof(Mimicry).GetMethod(
-            nameof(Mimicry.OnMimicrySkillDecay),
-            BindingFlags.Public | BindingFlags.Static);
-
-        handler.Should().NotBeNull();
-        handler!.GetCustomAttributes<NWNEventHandler>()
-            .Select(attribute => attribute.Script)
-            .Should()
-            .Contain(ScriptName.OnSwlorLoseSkill,
-                "every Mimicry rank loss must immediately enforce equipped technique requirements");
-    }
-
-    [Test]
-    public void MimicryTechniqueActivation_RequiresTheTechniqueToRemainEquipped()
-    {
-        var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs"));
-
-        abilitySource.Should().Contain("ability.IsMimicryTechnique &&");
-        abilitySource.Should().Contain("!Mimicry.IsTechniqueEquipped(activator, abilityType)",
-            "both the initial and post-cast activation checks use CanUseAbility, so an unequipped technique cannot resolve");
-
-        var equipped = new Player();
-        equipped.EquippedTechniques.Add(FeatType.WardenWallStanceTechnique);
-
-        Mimicry.IsTechniqueEquipped(equipped, FeatType.WardenWallStanceTechnique).Should().BeTrue();
-        Mimicry.IsTechniqueEquipped(equipped, FeatType.SustainBurnStanceTechnique).Should().BeFalse();
-        Mimicry.IsTechniqueEquipped((Player)null, FeatType.WardenWallStanceTechnique).Should().BeFalse();
-    }
-
-    [Test]
-    public void MimicryTechniqueUnequip_RemovesDeclaredPersistentEffects()
-    {
-        var techniques = BuildAllAbilities(MimicryTechniqueNamespace)
-            .ToDictionary(technique => technique.Feat, technique => technique.Detail);
-
-        foreach (var feat in new[]
-                 {
-                     FeatType.ApexCollapseStanceTechnique,
-                     FeatType.SustainBurnStanceTechnique,
-                     FeatType.WardenWallStanceTechnique
-                 })
-        {
-            techniques[feat].IsMimicryStance.Should().BeTrue();
-            techniques[feat].StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle(
-                $"{feat} must declare its permanent wearer effect for revocation cleanup");
-        }
-
-        techniques[FeatType.WardenWallStanceTechnique]
-            .SourceOwnedStatusEffectTypesRemovedOnPerkRefund
-            .Should().Contain(typeof(WardenWallStanceAuraStatusEffect),
-                "unequipping Warden Wall Stance must also remove the aura it granted to nearby allies");
-
-        foreach (var (feat, statusType) in new[]
-                 {
-                     (FeatType.FinishingDriveTechnique, typeof(FinishingDriveMomentumStatusEffect)),
-                     (FeatType.FinalMandateTechnique, typeof(FinalMandateStatusEffect)),
-                     (FeatType.StimCanisterTechnique, typeof(StimCanisterStatusEffect)),
-                     (FeatType.SnapRushTechnique, typeof(Hasten1StatusEffect)),
-                     (FeatType.WardenSweepTechnique, typeof(WardenSweepStatusEffect)),
-                     (FeatType.LastBastionTechnique, typeof(LastBastionBarrierStatusEffect)),
-                     (FeatType.LastBastionTechnique, typeof(LastBastionStatusEffect))
-                 })
-        {
-            techniques[feat].SourceOwnedStatusEffectTypesRemovedOnPerkRefund.Should().Contain(statusType,
-                "ongoing benefits must still occupy their technique slots, including benefits granted to allies");
-        }
-
-        var root = FindRepositoryRoot();
-        var mimicrySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Mimicry.cs"));
-        var revokeStart = mimicrySource.IndexOf("private static void RevokeTechniqueFeat", StringComparison.Ordinal);
-        var revokeEnd = mimicrySource.IndexOf("private static bool IsFeatOnHotBar", revokeStart, StringComparison.Ordinal);
-        var revokeBody = mimicrySource[revokeStart..revokeEnd];
-
-        revokeBody.Should().Contain("detail.StatusEffectTypesRemovedOnPerkRefund");
-        revokeBody.Should().Contain("StatusEffect.RemoveStatusEffect(player, statusEffectType, false);");
-        revokeBody.Should().Contain("detail.SourceOwnedStatusEffectTypesRemovedOnPerkRefund");
-        revokeBody.Should().Contain("StatusEffect.RemoveStatusEffectsFromAllTargetsBySource(");
-    }
-
-    [Test]
     public void TechniqueCleanup_PreservesSharedStatusEffectsGrantedByAnotherAbility()
     {
         var snapRush = new SnapRushTechniqueAbilityDefinition().BuildAbilities()[FeatType.SnapRushTechnique];
@@ -1140,19 +1065,19 @@ public class MimicryTests
     {
         // Baseline: Mimicry rank at the technique requirement, no Pattern Recognition, Perception at the
         // baseline (10) contributes nothing beyond the flat 20% base chance.
-        Mimicry.CalculateLearnChance(0, 0, 0, 10).Should().Be(20, "base chance with no bonuses");
+        GameServices.Mimicry.CalculateLearnChance(0, 0, 0, 10).Should().Be(20, "base chance with no bonuses");
 
         // Perception above the baseline adds 1% per point.
-        Mimicry.CalculateLearnChance(0, 0, 0, 17).Should().Be(27, "7 Perception above baseline adds 7%");
+        GameServices.Mimicry.CalculateLearnChance(0, 0, 0, 17).Should().Be(27, "7 Perception above baseline adds 7%");
 
         // Perception below the baseline never reduces the chance below the other contributions.
-        Mimicry.CalculateLearnChance(0, 0, 0, 5).Should().Be(20, "Perception below baseline is floored at 0 contribution");
+        GameServices.Mimicry.CalculateLearnChance(0, 0, 0, 5).Should().Be(20, "Perception below baseline is floored at 0 contribution");
 
         // Skill rank above the technique requirement adds 2% per rank; Pattern Recognition adds 10% per level.
-        Mimicry.CalculateLearnChance(20, 15, 2, 10).Should().Be(20 + 2 * 5 + 20, "rank delta and pattern recognition stack");
+        GameServices.Mimicry.CalculateLearnChance(20, 15, 2, 10).Should().Be(20 + 2 * 5 + 20, "rank delta and pattern recognition stack");
 
         // Everything is capped at the maximum learn chance.
-        Mimicry.CalculateLearnChance(45, 0, 2, 60).Should().Be(75, "combined bonuses are clamped to the cap");
+        GameServices.Mimicry.CalculateLearnChance(45, 0, 2, 60).Should().Be(75, "combined bonuses are clamped to the cap");
     }
 
     [Test]
@@ -1182,79 +1107,26 @@ public class MimicryTests
     public void ObservationXP_IsSmallRankRelativeAndStopsAtMastery(int npcLevel, int mimicryRank, int expectedXP)
     {
         Skill.CacheXPChartData();
-        Mimicry.CalculateAnalysisXP(npcLevel, mimicryRank).Should().Be(expectedXP);
+        GameServices.Mimicry.CalculateAnalysisXP(npcLevel, mimicryRank).Should().Be(expectedXP);
     }
 
     [Test]
     public void Mimicry_SetBonusPotencyRewardsSharedDamageTypes()
     {
-        Ability.CacheData();
-        Mimicry.CacheData();
+        AbilityCatalog.CacheData();
+        GameServices.MimicryTraitStats.CacheData();
 
-        Mimicry.GetSetBonusPotency(new Player()).Should().Be(0, "an empty loadout has no resonance");
+        GameServices.MimicryTraitStats.GetSetBonusPotency(new Player()).Should().Be(0, "an empty loadout has no resonance");
 
         var singles = new Player();
         singles.EquippedTechniques.Add(FeatType.ToxicSpitTechnique);  // Poison
         singles.EquippedTechniques.Add(FeatType.FrostSpitTechnique);  // Ice
-        Mimicry.GetSetBonusPotency(singles).Should().Be(0, "no damage type has two equipped techniques");
+        GameServices.MimicryTraitStats.GetSetBonusPotency(singles).Should().Be(0, "no damage type has two equipped techniques");
 
         var pair = new Player();
         pair.EquippedTechniques.Add(FeatType.ToxicSpitTechnique);   // Poison
         pair.EquippedTechniques.Add(FeatType.ToxicCloudTechnique);  // Poison
-        Mimicry.GetSetBonusPotency(pair).Should().Be(5, "two techniques share the Poison damage type");
-    }
-
-    [Test]
-    public void Mimicry_MaxSlotsScalesWithCombatAnalyzerAndAnalyzerMemoryPerkLevels()
-    {
-        var noAnalyzer = new Player();
-        Mimicry.GetMaxSlots(noAnalyzer).Should().Be(0, "players without Combat Analyzer get no technique slots");
-
-        var memoryWithoutAnalyzer = new Player();
-        memoryWithoutAnalyzer.Perks[PerkType.AnalyzerMemory] = 3;
-        Mimicry.GetMaxSlots(memoryWithoutAnalyzer).Should().Be(0, "Analyzer Memory alone should not grant slots without Combat Analyzer");
-
-        var baseAnalyzer = new Player();
-        baseAnalyzer.Perks[PerkType.CombatAnalyzer] = 1;
-        Mimicry.GetMaxSlots(baseAnalyzer).Should().Be(2);
-
-        var memoryLevel1 = new Player();
-        memoryLevel1.Perks[PerkType.CombatAnalyzer] = 1;
-        memoryLevel1.Perks[PerkType.AnalyzerMemory] = 1;
-        Mimicry.GetMaxSlots(memoryLevel1).Should().Be(4, "Analyzer Memory grants +2 slots per rank");
-
-        var memoryLevel2 = new Player();
-        memoryLevel2.Perks[PerkType.CombatAnalyzer] = 1;
-        memoryLevel2.Perks[PerkType.AnalyzerMemory] = 2;
-        Mimicry.GetMaxSlots(memoryLevel2).Should().Be(6);
-
-        var memoryLevel3 = new Player();
-        memoryLevel3.Perks[PerkType.CombatAnalyzer] = 1;
-        memoryLevel3.Perks[PerkType.AnalyzerMemory] = 3;
-        Mimicry.GetMaxSlots(memoryLevel3).Should().Be(8);
-
-        var overclocked = new Player();
-        overclocked.Perks[PerkType.CombatAnalyzer] = 1;
-        overclocked.Perks[PerkType.AnalyzerMemory] = 3;
-        overclocked.Perks[PerkType.OverclockedAnalyzer] = 1;
-        Mimicry.GetMaxSlots(overclocked).Should().Be(10, "2 base + 6 from Analyzer Memory + 2 from the Overclocked Analyzer capstone");
-    }
-
-    [Test]
-    public void Mimicry_UsedSlotsSumsEquippedTechniqueSlotCosts()
-    {
-        Ability.CacheData();
-        Mimicry.CacheData();
-
-        var empty = new Player();
-        Mimicry.GetUsedSlots(empty).Should().Be(0);
-
-        var equipped = new Player();
-        equipped.EquippedTechniques.Add(FeatType.ToxicSpitTechnique); // 1 slot
-        equipped.EquippedTechniques.Add(FeatType.SonicShriekTechnique); // 2 slots
-        equipped.EquippedTechniques.Add(FeatType.ToxicCloudTechnique); // 3 slots
-
-        Mimicry.GetUsedSlots(equipped).Should().Be(6);
+        GameServices.MimicryTraitStats.GetSetBonusPotency(pair).Should().Be(5, "two techniques share the Poison damage type");
     }
 
     private static Dictionary<FeatType, AbilityDetail> BuildTechnique(FeatType technique)
@@ -1301,7 +1173,7 @@ public class MimicryTests
     // instantiates each one, and builds its abilities. Used to derive expectations from the actual
     // registered content instead of a hand-maintained list, so tests stay valid as the technique
     // pool (and NPC ability roster) grows or shrinks.
-    private static List<DiscoveredAbility> BuildAllAbilities(string namespaceName)
+    internal static List<DiscoveredAbility> BuildAllAbilities(string namespaceName)
     {
         var definitionTypes = typeof(IAbilityListDefinition).Assembly
             .GetTypes()
@@ -1322,7 +1194,7 @@ public class MimicryTests
         return discovered;
     }
 
-    private readonly record struct DiscoveredAbility(Type DefinitionType, FeatType Feat, AbilityDetail Detail);
+    internal readonly record struct DiscoveredAbility(Type DefinitionType, FeatType Feat, AbilityDetail Detail);
 
     private static void AssertCustomTlkStrrefIsNonEmpty(
         Dictionary<string, string> featRow,

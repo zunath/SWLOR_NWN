@@ -3,13 +3,14 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using NWN.Native.API;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.PlayerListService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Social;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -94,7 +95,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             try
             {
-                PlayerName.SetKnownName(viewer.Creature, other.Creature, "Engine Testname");
+                GameServices.PlayerKnownName.SetKnownName(viewer.Creature, other.Creature, "Engine Testname");
                 var named = FindEntry(ctx, viewer.Creature, other.Creature);
                 ctx.AssertEqual("Engine Testname", named.Name, "an assigned name is shown");
                 ctx.Assert(PlayerListRules.MatchesSearch("testn", named.Name, named.Descriptor), "the assigned name is searchable");
@@ -126,20 +127,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                PlayerName.ForgetKnownName(viewer.Creature, other.Creature);
+                GameServices.PlayerKnownName.ForgetKnownName(viewer.Creature, other.Creature);
             }
 
             ctx.AssertEqual(string.Empty, FindEntry(ctx, viewer.Creature, other.Creature).Name, "forgetting the name returns the player to Unassigned");
 
-            await ctx.ExecuteInCreatureContextAsync(other.Creature, () => PlayerName.ToggleAfk(other.Creature));
+            await ctx.ExecuteInCreatureContextAsync(other.Creature, () => PlayerNameOverride.ToggleAfk(other.Creature));
             try
             {
                 ctx.Assert(FindEntry(ctx, viewer.Creature, other.Creature).IsAfk, "a player who goes AFK is marked AFK in the list");
             }
             finally
             {
-                if (PlayerName.IsAfk(other.Creature))
-                    await ctx.ExecuteInCreatureContextAsync(other.Creature, () => PlayerName.ToggleAfk(other.Creature));
+                if (PlayerNameOverride.IsAfk(other.Creature))
+                    await ctx.ExecuteInCreatureContextAsync(other.Creature, () => PlayerNameOverride.ToggleAfk(other.Creature));
             }
             ctx.Assert(!FindEntry(ctx, viewer.Creature, other.Creature).IsAfk, "returning from AFK clears the marker");
         }
@@ -202,8 +203,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     $"cycle {cycle}: the member to join the leader's party");
                 // Accepting an invitation fills the Party caches; a script-driven join skips that handler.
                 await ctx.ExecuteInCreatureContextAsync(member.Creature, () =>
-                    typeof(Party).GetMethod("AddToParty", BindingFlags.NonPublic | BindingFlags.Static)
-                        .Invoke(null, new object[] { leader.Creature, member.Creature }));
+                    PartyCaches.Invoke("AddToParty", leader.Creature, member.Creature));
                 ctx.Assert(Party.IsInParty(leader.Creature, member.Creature), $"cycle {cycle}: the Party service groups them");
 
                 var asLeader = PlayerList.GetRelation(leader.Creature, member.Creature);
@@ -303,8 +303,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var other = await PlayerAbilityFixture.CreateAsync(ctx, 2f);
             using var bystander = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
 
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            var windows = GuiInternals.PlayerWindows();
             ctx.Assert(!windows.ContainsKey(bystander.Id), "the bystander has no existing GUI registration");
             var window = Gui.GetWindowTemplate(GuiWindowType.PlayerList).CreatePlayerWindowAction();
             windows.Add(bystander.Id, new Dictionary<GuiWindowType, GuiPlayerWindow> { [GuiWindowType.PlayerList] = window });
@@ -421,7 +420,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var dmRow = PlayerList.BuildEntries(otherDM.Creature, subjects).SingleOrDefault(row => row.Player == dm.Creature);
                 ctx.Assert(dmRow != null, "another DM sees the DM");
                 ctx.AssertEqual(PlayerListStatus.DM, dmRow.Status, "the DM is marked DM for other DMs");
-                ctx.AssertEqual(PlayerList.DMDescriptor, dmRow.Descriptor, "the DM shows the DM descriptor");
+                ctx.AssertEqual(PlayerListService.DMDescriptor, dmRow.Descriptor, "the DM shows the DM descriptor");
                 ctx.AssertEqual(GetName(dm.Creature), dmRow.Name, "other DMs see the DM's real name");
                 ctx.Assert(PlayerList.BuildEntries(otherDM.Creature, subjects).Any(row => row.Player == player.Creature),
                     "DMs still see players");
@@ -452,8 +451,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var dm = await PlayerAbilityFixture.CreateAsync(ctx);
             using var otherDM = await PlayerAbilityFixture.CreateAsync(ctx, 4f);
 
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            var windows = GuiInternals.PlayerWindows();
             ctx.Assert(!windows.ContainsKey(dm.Id) && !windows.ContainsKey(player.Id), "the fixtures have no existing GUI registration");
             var dmWindow = Gui.GetWindowTemplate(GuiWindowType.PlayerList).CreatePlayerWindowAction();
             var examineWindow = Gui.GetWindowTemplate(GuiWindowType.DMPlayerExamine).CreatePlayerWindowAction();
@@ -618,8 +616,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var originalAssociate = nativeNpc.m_nAssociateType;
             var originalMaster = nativeNpc.m_oidMaster;
             var originalPlayerFlag = nativeDM.m_bPlayerCharacter;
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            var windows = GuiInternals.PlayerWindows();
             ctx.Assert(!windows.ContainsKey(dm.Id), "the DM fixture has no existing GUI registration");
             var window = Gui.GetWindowTemplate(GuiWindowType.PlayerList).CreatePlayerWindowAction();
             windows.Add(dm.Id, new Dictionary<GuiWindowType, GuiPlayerWindow> { [GuiWindowType.PlayerList] = window });

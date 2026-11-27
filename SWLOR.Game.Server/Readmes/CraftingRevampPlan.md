@@ -76,11 +76,11 @@ Paths are under `SWLOR.Game.Server/`.
 | Area | Files |
 | --- | --- |
 | Stations and recipe window | `Service/Craft.cs` (`UseCraftingDevice`, `RecipeSkillUnlockOffset = 3`, enhancements, blueprints, research costs `:1147-1195`), `Feature/GuiDefinition/ViewModel/RecipesViewModel.cs` |
-| Minigame (being replaced) | `Feature/GuiDefinition/ViewModel/CraftViewModel.cs` (all rules inline: actions `:1727-1864`, CP `:446-454`, progress/quality `:1354-1384`, success `:1407-1500`, 65% loss on failure `:1601`), `Feature/GuiDefinition/CraftDefinition.cs`, `Service/CraftService/RecipeLevelChart.cs` |
-| Recipes | `Service/CraftService/RecipeBuilder.cs`, `RecipeDetail.cs`, `Feature/RecipeDefinition/<Skill>RecipeDefinition/`. About 3,400 recipes: Engineering 1,826, Smithery 775, Fabrication 456, Agriculture 318, Espionage 15 |
+| Minigame (being replaced) | `Feature/GuiDefinition/ViewModel/CraftViewModel.cs` (all rules inline: actions `:1727-1864`, CP `:446-454`, progress/quality `:1354-1384`, success `:1407-1500`, 65% loss on failure `:1601`), `Feature/GuiDefinition/CraftDefinition.cs`, `Domain/Crafting/RecipeLevelChart.cs` |
+| Recipes | `Domain/Crafting/RecipeBuilder.cs`, `RecipeDetail.cs`, `Feature/RecipeDefinition/<Skill>RecipeDefinition/`. About 3,400 recipes: Engineering 1,826, Smithery 775, Fabrication 456, Agriculture 318, Espionage 15 |
 | Research | `Feature/GuiDefinition/ViewModel/ResearchViewModel.cs`, `Entity/ResearchJob.cs`, `Craft.UseResearchTerminal` (`Craft.cs:980-1034`), `Craft.IsResearchableRecipe` (`:178`) |
 | Gathering | `Feature/ItemDefinition/HarvesterItemDefinition.cs`, `Feature/ScavengePoint.cs`, `Feature/GuiDefinition/ViewModel/RefineryViewModel.cs`, `Feature/LootTableDefinition/HarvestingLootTableDefinition.cs`, `*ResourceSpawnDefinition.cs` |
-| Fishing | `Service/Fishing.cs`, `Service/FishingService/`, `Feature/FishingLocationDefinition/`, `Feature/ItemDefinition/FishingRodItemDefinition.cs`, clips `sw_fishing6/7/8` (`design/animations/fishing/`) |
+| Fishing | `Service/Fishing.cs`, `Domain/World/`, `Feature/FishingLocationDefinition/`, `Feature/ItemDefinition/FishingRodItemDefinition.cs`, clips `sw_fishing6/7/8` (`design/animations/fishing/`) |
 | Perks | `Feature/PerkDefinition/GatheringPerkDefinition.cs`, `FabricationPerkDefinition.cs`, `EngineeringPerkDefinition.cs`; direct `Perk.GetPerkLevel` checks in `Loot.cs`, `ScavengePoint.cs`, `HarvesterItemDefinition.cs`, `RefineryViewModel.cs`, `ResearchViewModel.cs`, `RecipesViewModel.cs:579`, `Craft.cs:553-561,986-992`, `Droid.cs`, `DroidAssemblyViewModel.cs:519`, `DroidAIViewModel.cs:121`, `DroidControlItemDefinition.cs:127`. Smithery and Agriculture have no registered perks today |
 | Gear stats | Item properties Control 88, Craftsmanship 89, CPBonus 115 (subtypes 1-4 = Smithery, Engineering, Fabrication, Agriculture), applied in `Feature/EquipmentStats.cs:929-1075`, stored per skill on `Player.Control`/`Craftsmanship`/`CPBonus` |
 | XP | `Service/Skill.XPChart.cs` (`GetDeltaXP`; 0 XP at 5+ ranks past the activity level) |
@@ -95,7 +95,7 @@ Build this first, because every minigame depends on it. It is a dependency, not 
 
 ### Rules engine and windows
 
-- **One engine per minigame.** Each is a pure C# rules engine under `Service/CraftService/`, unit-testable without NUI.
+- **One engine per minigame.** Each is a pure C# rules engine under `Domain/Crafting/`, unit-testable without NUI.
   - Each engine owns its meters, actions, previews, opportunities and outcome.
   - Its view model only binds and forwards input.
   - Shared pieces live once: session lifecycle, previews, the outcome contract, quick craft, XP settlement and the help page.

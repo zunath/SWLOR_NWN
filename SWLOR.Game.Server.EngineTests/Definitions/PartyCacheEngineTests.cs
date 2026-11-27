@@ -6,7 +6,7 @@ using NWN.Native.API;
 using NWNX.NET;
 using NWNX.NET.Native;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.PlayerListService;
+using SWLOR.Game.Server.Domain.Social;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {

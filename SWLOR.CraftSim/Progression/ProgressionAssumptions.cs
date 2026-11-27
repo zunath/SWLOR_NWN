@@ -100,7 +100,7 @@ namespace SWLOR.CraftSim.Progression
         public int WillpowerScore { get; init; } = 10;
 
         /// <summary>Trials in a research experiment (<c>ExperimentRules.Trials</c>).</summary>
-        public int ResearchTrials { get; init; } = SWLOR.Game.Server.Service.CraftService.Minigame.Experiment.ExperimentRules.Trials;
+        public int ResearchTrials { get; init; } = SWLOR.Game.Server.Domain.Crafting.Minigame.Experiment.ExperimentRules.Trials;
 
         /// <summary>Seconds one experiment trial takes, as an action in the craft window does.</summary>
         public double ResearchSecondsPerTrial { get; init; } = 6.0;

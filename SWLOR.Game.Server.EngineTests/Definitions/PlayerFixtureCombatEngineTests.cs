@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -33,11 +34,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             await ctx.WaitFrameAsync();
             foreach (var enemy in enemies)
-                Enmity.ModifyEnmity(player, enemy, 100);
+                EnmityChange.ModifyEnmity(player, enemy, 100);
             AssignCommand(player, () => ActionAttack(enemies[0]));
 
             await ctx.WaitUntilAsync(
-                () => enemies.All(enemy => GetAttackTarget(enemy) == player && Combat.HasRecentAttackActivity(enemy, 3f)),
+                () => enemies.All(enemy => GetAttackTarget(enemy) == player && GameServices.CombatActivity.HasRecentAttackActivity(enemy, 3f)),
                 15f,
                 "both enemies to swing at the player fixture");
 

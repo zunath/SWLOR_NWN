@@ -1,0 +1,443 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Numerics;
+using System.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Extension;
+
+namespace SWLOR.Game.Server.Core
+{
+    /// <summary>
+    /// Hands the runtime state marked <see cref="ReloadStateKind.Carried"/> from the build a hot reload retires to the build it
+    /// activates (MaintainabilityRefactorHotReload.md). While the old build quiesces, each class's carried fields are written
+    /// as one JSON object (its static fields, and the fields of the container's singleton of the class) and left on the module
+    /// (<see cref="ReloadCarry"/>); after the new build's rerun and adoption steps, each class's object is read back into the same
+    /// fields of the new singleton. A field that moved to another class or was renamed since the old build names where it lived
+    /// (<see cref="ReloadCarriedFromAttribute"/>): when the old build left nothing under the new class's name, the field is read from
+    /// the former class's object. Objects of the game assembly are copied field by field (<see cref="ReloadCarryContractResolver"/>),
+    /// subclasses keep their type (<see cref="ReloadCarryBinder"/>), shared objects stay shared, engine object ids stay valid (the
+    /// engine keeps every object across a reload). A class whose state cannot be written or read is logged and left as the new build
+    /// made it; the other classes still carry. Nothing of it runs unless a reload quiesces or activates a build.
+    /// </summary>
+    public sealed class ReloadStateCarrier
+    {
+        /// <summary>The prefix of a class's key on the module (<see cref="ReloadCarry"/>); the class's full name follows.</summary>
+        public const string KeyPrefix = "state:";
+
+        private readonly Assembly _gameAssembly;
+        private readonly IReadOnlyList<JsonConverter> _converters;
+        private readonly IContentFactory _content;
+        private readonly Func<Type, bool> _isService;
+
+        /// <param name="gameAssembly">The build whose classes carry state.</param>
+        /// <param name="converters">
+        /// Converters for references to definitions the rerun boot handlers rebuild (an ability, say), written as their key and read
+        /// back as the new build's definition.
+        /// </param>
+        /// <param name="content">
+        /// The build's content factory: a carried object whose fields hold services is built through its values-free constructor with
+        /// this build's services before its carried fields are read into it (<see cref="ReloadCarryContractResolver"/>).
+        /// </param>
+        /// <param name="isService">
+        /// True for a type the build's container registers (a service or content singleton): a field of such a type is never carried.
+        /// </param>
+        public ReloadStateCarrier(Assembly gameAssembly, IEnumerable<JsonConverter> converters = null, IContentFactory content = null,
+            Func<Type, bool> isService = null)
+        {
+            _gameAssembly = gameAssembly ?? throw new ArgumentNullException(nameof(gameAssembly));
+            _converters = (converters ?? Enumerable.Empty<JsonConverter>()).ToArray();
+            _content = content;
+            _isService = isService;
+        }
+
+        /// <summary>
+        /// Every class of <paramref name="assembly"/> that declares a <see cref="ReloadStateKind.Carried"/> field, in the order of the
+        /// class names, with those fields in the order of their names.
+        /// </summary>
+        public static IReadOnlyList<(Type Type, IReadOnlyList<FieldInfo> Fields)> CarriedClasses(Assembly assembly)
+        {
+            if (assembly == null)
+                throw new ArgumentNullException(nameof(assembly));
+
+            const BindingFlags flags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+            return assembly.GetTypes()
+                .OrderBy(type => type.FullName, StringComparer.Ordinal)
+                .Select(type => (Type: type, Fields: (IReadOnlyList<FieldInfo>)type.GetFields(flags)
+                    .Where(field => ReloadDigestHasher.StateOf(field) == ReloadStateKind.Carried)
+                    .OrderBy(field => field.Name, StringComparer.Ordinal)
+                    .ToArray()))
+                .Where(entry => entry.Fields.Count > 0)
+                .ToArray();
+        }
+
+        /// <summary>
+        /// Writes every carried class's fields and hands each class's text to <paramref name="put"/> under
+        /// <see cref="KeyPrefix"/> and the class's full name (the server passes <see cref="ReloadCarry.Put"/>). An instance field is
+        /// read from <paramref name="resolveOwner"/>'s instance of the class (the container's singleton). Every class is tried; when
+        /// any fails, this throws after the last one, naming them.
+        /// </summary>
+        public void CarryAll(Func<Type, object> resolveOwner, Action<string, string> put)
+        {
+            if (resolveOwner == null)
+                throw new ArgumentNullException(nameof(resolveOwner));
+            if (put == null)
+                throw new ArgumentNullException(nameof(put));
+
+            var failed = new List<string>();
+            foreach (var (type, fields) in CarriedClasses(_gameAssembly))
+            {
+                try
+                {
+                    put(KeyPrefix + type.FullName, Write(fields, OwnerOf(type, fields, resolveOwner)));
+                }
+                catch (Exception ex)
+                {
+                    failed.Add(type.FullName);
+                    Log.Write(LogGroup.Error, $"Reload could not carry the state of {type.FullName}; the next build starts it empty. " +
+                                              $"Details: {Environment.NewLine}{Environment.NewLine}{ex.ToMessageAndCompleteStacktrace()}", true);
+                }
+            }
+
+            if (failed.Count > 0)
+                throw new InvalidOperationException("Reload could not carry the state of " + string.Join(", ", failed) + ".");
+        }
+
+        /// <summary>
+        /// Reads every carried class's text from <paramref name="take"/> (the server passes <see cref="ReloadCarry.Take"/>, which also
+        /// removes it) back into the class's fields, then lets an <see cref="IReloadStateAdopter"/> owner start its timers again. When
+        /// the old build left nothing under a class's own name (an older build, before a field moved), each former class its fields
+        /// name (<see cref="ReloadCarriedFromAttribute"/>, in the order of their names) is read instead, each field under its former
+        /// name; the former class's other fields are skipped. Each key is taken once, so one former class's text can feed several
+        /// classes, and a class's own text can also feed a class whose field moved from it. A class the old build left nothing for
+        /// keeps what the new build made and is logged. Every class is tried; when any fails, this throws after the last one, naming
+        /// them.
+        /// </summary>
+        public void AdoptAll(Func<Type, object> resolveOwner, Func<string, string> take)
+        {
+            if (resolveOwner == null)
+                throw new ArgumentNullException(nameof(resolveOwner));
+            if (take == null)
+                throw new ArgumentNullException(nameof(take));
+
+            var taken = new Dictionary<string, string>(StringComparer.Ordinal);
+            string TakeOnce(string key)
+            {
+                if (!taken.TryGetValue(key, out var text))
+                    taken[key] = text = take(key);
+                return text;
+            }
+
+            var failed = new List<string>();
+            foreach (var (type, fields) in CarriedClasses(_gameAssembly))
+            {
+                try
+                {
+                    var text = TakeOnce(KeyPrefix + type.FullName);
+                    var reads = new List<(IReadOnlyDictionary<string, FieldInfo> ByName, string Text)>();
+                    if (text != null)
+                    {
+                        reads.Add((ByName(fields), text));
+                    }
+                    else
+                    {
+                        foreach (var former in fields
+                                     .SelectMany(field => field.GetCustomAttributes<ReloadCarriedFromAttribute>(false)
+                                         .Select(from => (From: from, Field: field)))
+                                     .GroupBy(entry => entry.From.FormerOwner, StringComparer.Ordinal)
+                                     .OrderBy(group => group.Key, StringComparer.Ordinal))
+                        {
+                            var formerText = TakeOnce(KeyPrefix + former.Key);
+                            if (formerText != null)
+                                reads.Add((former.ToDictionary(entry => entry.From.FormerField ?? entry.Field.Name, entry => entry.Field,
+                                    StringComparer.Ordinal), formerText));
+                        }
+                    }
+
+                    if (reads.Count == 0)
+                    {
+                        Log.Write(LogGroup.Error, $"Reload found no carried state for {type.FullName}; it starts empty.", true);
+                        continue;
+                    }
+
+                    var owner = OwnerOf(type, fields, resolveOwner);
+                    foreach (var (byName, json) in reads)
+                        Read(byName, owner, json);
+                    (owner as IReloadStateAdopter)?.OnCarriedStateAdopted();
+                }
+                catch (Exception ex)
+                {
+                    failed.Add(type.FullName);
+                    Log.Write(LogGroup.Error, $"Reload could not put back the carried state of {type.FullName}; it starts empty. " +
+                                              $"Details: {Environment.NewLine}{Environment.NewLine}{ex.ToMessageAndCompleteStacktrace()}", true);
+                }
+            }
+
+            if (failed.Count > 0)
+                throw new InvalidOperationException("Reload could not put back the carried state of " + string.Join(", ", failed) + ".");
+        }
+
+        /// <summary>Writes <paramref name="fields"/> (static, or of <paramref name="instance"/>) as one JSON object keyed by field name.</summary>
+        public string Write(IReadOnlyList<FieldInfo> fields, object instance)
+        {
+            if (fields == null)
+                throw new ArgumentNullException(nameof(fields));
+
+            var serializer = CreateSerializer();
+            using var text = new StringWriter(CultureInfo.InvariantCulture);
+            using (var writer = new JsonTextWriter(text))
+            {
+                writer.WriteStartObject();
+                foreach (var field in fields)
+                {
+                    writer.WritePropertyName(field.Name);
+                    serializer.Serialize(writer, field.GetValue(field.IsStatic ? null : instance), field.FieldType);
+                }
+
+                writer.WriteEndObject();
+            }
+
+            return text.ToString();
+        }
+
+        /// <summary>
+        /// Reads what <see cref="Write"/> wrote into <paramref name="fields"/>. A collection the field already holds is refilled in
+        /// place (so it keeps its comparer and whoever else holds it sees the carried content); anything else is replaced. A field
+        /// the text does not name keeps its value; a name the build no longer has is skipped.
+        /// </summary>
+        public void Read(IReadOnlyList<FieldInfo> fields, object instance, string json)
+        {
+            if (fields == null)
+                throw new ArgumentNullException(nameof(fields));
+            if (json == null)
+                throw new ArgumentNullException(nameof(json));
+
+            Read(ByName(fields), instance, json);
+        }
+
+        /// <summary>
+        /// <see cref="Read(IReadOnlyList{FieldInfo}, object, string)"/> with each field found under the name the text gives it
+        /// (<paramref name="byName"/>): its own name, or its name in the earlier build (<see cref="ReloadCarriedFromAttribute"/>).
+        /// </summary>
+        private void Read(IReadOnlyDictionary<string, FieldInfo> byName, object instance, string json)
+        {
+            var serializer = CreateSerializer();
+            using var reader = new JsonTextReader(new StringReader(json));
+            reader.Read();
+            if (reader.TokenType != JsonToken.StartObject)
+                throw new JsonSerializationException("Carried state must be a JSON object.");
+
+            while (reader.Read() && reader.TokenType == JsonToken.PropertyName)
+            {
+                var name = (string)reader.Value;
+                reader.Read();
+                if (!byName.TryGetValue(name!, out var field))
+                {
+                    reader.Skip();
+                    continue;
+                }
+
+                Assign(field, field.IsStatic ? null : instance, serializer.Deserialize(reader, field.FieldType));
+            }
+        }
+
+        /// <summary>
+        /// Why <paramref name="type"/> cannot be carried, one line per problem (empty when it can): a delegate, a member typed
+        /// <see cref="object"/>, a service, or a type that is neither of the game assembly nor a value, a <see cref="Type"/>, a standard
+        /// collection, a tuple or a vector; <paramref name="converted"/> names the types a converter writes (definitions). An interface or
+        /// abstract class of the game assembly is checked through every implementation. A field of an object that holds a service
+        /// (<paramref name="isService"/>, the container's registrations) is left out, as the carry leaves it out.
+        /// </summary>
+        public static IReadOnlyList<string> Problems(Type type, Assembly gameAssembly, Func<Type, bool> converted = null, Func<Type, bool> isService = null)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+            if (gameAssembly == null)
+                throw new ArgumentNullException(nameof(gameAssembly));
+
+            var problems = new List<string>();
+            CheckType(type, type.Name, gameAssembly, converted ?? (_ => false), isService ?? (_ => false), new HashSet<Type>(), problems);
+            return problems;
+        }
+
+        /// <summary>
+        /// The classes of <paramref name="gameAssembly"/> a value of <paramref name="type"/> can hold (as <see cref="Problems"/> walks
+        /// them: itself, its fields' types, the implementations of its interfaces and abstract classes) whose instance fields hold a
+        /// service: the carry builds those through their constructor.
+        /// </summary>
+        public static IReadOnlyList<Type> TypesWithServices(Type type, Assembly gameAssembly, Func<Type, bool> isService)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+            if (gameAssembly == null)
+                throw new ArgumentNullException(nameof(gameAssembly));
+            if (isService == null)
+                throw new ArgumentNullException(nameof(isService));
+
+            var visited = new HashSet<Type>();
+            CheckType(type, type.Name, gameAssembly, _ => false, isService, visited, new List<string>());
+            return visited
+                .Where(candidate => !candidate.IsAbstract && !candidate.IsInterface &&
+                                    ReloadCarryContractResolver.InstanceFields(candidate).Any(field => isService(field.FieldType)))
+                .OrderBy(candidate => candidate.FullName, StringComparer.Ordinal)
+                .ToArray();
+        }
+
+        private static void CheckType(Type type, string path, Assembly gameAssembly, Func<Type, bool> converted, Func<Type, bool> isService,
+            HashSet<Type> visited, List<string> problems)
+        {
+            type = Nullable.GetUnderlyingType(type) ?? type;
+            if (isService(type))
+            {
+                problems.Add($"{path}: a service or content singleton ({type.Name}) is injected, never carried");
+                return;
+            }
+
+            if (converted(type) || IsValue(type) || typeof(Type).IsAssignableFrom(type) ||
+                typeof(SWLOR.NWN.API.Engine.Location).IsAssignableFrom(type) || type == typeof(Vector3) || type == typeof(Vector2))
+                return;
+
+            if (typeof(Delegate).IsAssignableFrom(type))
+            {
+                problems.Add($"{path}: a delegate ({type.Name}) cannot be carried");
+                return;
+            }
+
+            if (type == typeof(object))
+            {
+                problems.Add($"{path}: a member typed object cannot be carried");
+                return;
+            }
+
+            if (type.IsArray)
+            {
+                CheckType(type.GetElementType()!, path + "[]", gameAssembly, converted, isService, visited, problems);
+                return;
+            }
+
+            if (type.IsGenericType && IsStandardGeneric(type.GetGenericTypeDefinition()))
+            {
+                foreach (var argument in type.GetGenericArguments())
+                    CheckType(argument, $"{path}<{argument.Name}>", gameAssembly, converted, isService, visited, problems);
+                return;
+            }
+
+            if (type.Assembly != gameAssembly || type.IsGenericType)
+            {
+                problems.Add($"{path}: {type.FullName} is neither of the game build nor a value or standard collection");
+                return;
+            }
+
+            if (!visited.Add(type))
+                return;
+
+            if (type.IsInterface || type.IsAbstract)
+            {
+                foreach (var implementation in gameAssembly.GetTypes().Where(candidate =>
+                             !candidate.IsInterface && !candidate.IsAbstract && type.IsAssignableFrom(candidate)))
+                    CheckType(implementation, $"{path}({implementation.Name})", gameAssembly, converted, isService, visited, problems);
+                if (!type.IsAbstract || type.IsInterface)
+                    return;
+            }
+
+            foreach (var field in ReloadCarryContractResolver.InstanceFields(type).Where(field => !isService(field.FieldType)))
+                CheckType(field.FieldType, path + "." + field.Name, gameAssembly, converted, isService, visited, problems);
+        }
+
+        private static bool IsValue(Type type)
+        {
+            return type.IsPrimitive || type.IsEnum || type == typeof(string) || type == typeof(decimal) || type == typeof(DateTime) ||
+                   type == typeof(DateTimeOffset) || type == typeof(TimeSpan) || type == typeof(Guid);
+        }
+
+        private static bool IsStandardGeneric(Type definition)
+        {
+            return definition == typeof(List<>) || definition == typeof(HashSet<>) || definition == typeof(Dictionary<,>) ||
+                   definition == typeof(Queue<>) || definition == typeof(SortedDictionary<,>) || definition == typeof(SortedSet<>) ||
+                   definition == typeof(IReadOnlyList<>) || definition == typeof(IReadOnlyCollection<>) || definition == typeof(IList<>) ||
+                   definition == typeof(ICollection<>) || definition == typeof(IEnumerable<>) || definition == typeof(ISet<>) ||
+                   definition == typeof(IDictionary<,>) || definition == typeof(IReadOnlyDictionary<,>) ||
+                   definition == typeof(KeyValuePair<,>) || definition == typeof(Nullable<>) ||
+                   definition.FullName!.StartsWith("System.ValueTuple`", StringComparison.Ordinal);
+        }
+
+        private static IReadOnlyDictionary<string, FieldInfo> ByName(IReadOnlyList<FieldInfo> fields)
+        {
+            return fields.ToDictionary(field => field.Name, StringComparer.Ordinal);
+        }
+
+        private static object OwnerOf(Type type, IReadOnlyList<FieldInfo> fields, Func<Type, object> resolveOwner)
+        {
+            if (fields.All(field => field.IsStatic))
+                return null;
+
+            return resolveOwner(type) ?? throw new InvalidOperationException($"The service container has no instance of {type.FullName}.");
+        }
+
+        private static void Assign(FieldInfo field, object owner, object value)
+        {
+            var current = field.GetValue(owner);
+            if (current != null && value != null && TryRefill(current, value))
+                return;
+
+            if (field.IsStatic && field.IsInitOnly)
+                throw new NotSupportedException($"{field.DeclaringType?.FullName}.{field.Name} is static readonly and not a collection; it cannot be carried.");
+
+            field.SetValue(owner, value);
+        }
+
+        /// <summary>Replaces the content of the collection <paramref name="target"/> with that of <paramref name="source"/>.</summary>
+        private static bool TryRefill(object target, object source)
+        {
+            if (target is IDictionary dictionary && source is IDictionary entries)
+            {
+                dictionary.Clear();
+                foreach (DictionaryEntry entry in entries)
+                    dictionary[entry.Key] = entry.Value;
+                return true;
+            }
+
+            var collection = target.GetType().GetInterfaces()
+                .FirstOrDefault(candidate => candidate.IsGenericType && candidate.GetGenericTypeDefinition() == typeof(ICollection<>));
+            if (collection == null || source is not IEnumerable items || target.GetType() != source.GetType())
+                return false;
+
+            collection.GetMethod(nameof(ICollection<object>.Clear))!.Invoke(target, null);
+            var add = collection.GetMethod(nameof(ICollection<object>.Add))!;
+            foreach (var item in items)
+                add.Invoke(target, new[] { item });
+            return true;
+        }
+
+        private JsonSerializer CreateSerializer()
+        {
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new ReloadCarryContractResolver(_gameAssembly, _isService, _content),
+                SerializationBinder = new ReloadCarryBinder(_gameAssembly),
+                TypeNameHandling = TypeNameHandling.Auto,
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                ObjectCreationHandling = ObjectCreationHandling.Replace,
+                DateParseHandling = DateParseHandling.None,
+                DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind,
+                FloatParseHandling = FloatParseHandling.Double,
+                MaxDepth = 256,
+            };
+            settings.Converters.Add(new StringEnumConverter());
+            settings.Converters.Add(new ReloadCarryPairDictionaryConverter());
+            settings.Converters.Add(new ReloadCarryTypeConverter(_gameAssembly));
+            settings.Converters.Add(new ReloadCarryLocationConverter());
+            foreach (var converter in _converters)
+                settings.Converters.Add(converter);
+
+            var serializer = JsonSerializer.Create(settings);
+            serializer.ReferenceResolver = new ReloadCarryReferenceResolver();
+            return serializer;
+        }
+    }
+}

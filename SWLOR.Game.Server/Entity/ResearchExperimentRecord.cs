@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using SWLOR.Game.Server.Service.CraftService.Research;
+using SWLOR.Game.Server.Domain.Crafting.Research;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Entity
 {

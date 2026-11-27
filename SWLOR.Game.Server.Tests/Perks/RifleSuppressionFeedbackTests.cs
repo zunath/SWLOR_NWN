@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System;
 using System.IO;
 using FluentAssertions;
@@ -5,9 +6,8 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Rifle;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -46,11 +46,11 @@ public sealed class RifleSuppressionFeedbackTests
     public void RifleSuppressionBranches_KeepFeedbackAndTargetingContracts()
     {
         var root = FindRepositoryRoot();
-        var combat = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var combat = CombatSource.Read();
         var killBox = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Rifle", "KillBoxAbilityDefinition.cs"));
         var killBoxStatus = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "KillBoxStatusEffect.cs"));
         var containmentNetStatus = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "ContainmentNetStatusEffect.cs"));
-        var native = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var native = NativeCombatSource.AttackRoll();
 
         combat.Should().Contain("Sustained Fire {state.Stacks}/{maxStacks}");
         combat.Should().Contain("Pinning Fire: Suppression applied.");
@@ -68,7 +68,7 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().Contain("private static void RefreshOverwatchMarker(uint attacker, DateTime now)");
         combat.Should().Contain("if (pending.Expiration > latestExpiration)");
         combat.Should().Contain("RefreshOverwatchMarker(sourceEffects.Key, usedAt);");
-        combat.Should().Contain("RefreshOverwatchMarker(source, DateTime.UtcNow);");
+        combat.Should().Contain("RefreshOverwatchMarker(source, Clock.UtcNow);");
         combat.Should().Contain("RefreshOverwatchMarker(attacker, now);");
         combat.Should().Contain("public static void ReconcileOverwatchStatus(uint source)");
         combat.Should().Contain("ReconcileOverwatchStatus(creature);");
@@ -78,10 +78,10 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().Contain("RangedRepeatedTargetDamageBonusPerHit");
         combat.Should().Contain("RangedRepeatedTargetDamageBonusMax");
         combat.Should().Contain("RangedRepeatedTargetDamageDurationSeconds");
-        combat.Should().Contain("private static void ClearRangedRepeatedTargetDamageTracker(uint creature)");
-        var rangedRepeatedStart = combat.IndexOf("private static int ApplyRangedRepeatedTargetDamageModifier(", StringComparison.Ordinal);
+        combat.Should().Contain("public static void ClearRangedRepeatedTargetDamageTracker(uint creature)");
+        var rangedRepeatedStart = combat.IndexOf("public static int ApplyRangedRepeatedTargetDamageModifier(", StringComparison.Ordinal);
         var rangedRepeatedBody = combat
-            .Substring(rangedRepeatedStart, combat.IndexOf("private static void ClearRangedRepeatedTargetDamageTracker(", rangedRepeatedStart, StringComparison.Ordinal) - rangedRepeatedStart)
+            .Substring(rangedRepeatedStart, combat.IndexOf("public static void ClearRangedRepeatedTargetDamageTracker(", rangedRepeatedStart, StringComparison.Ordinal) - rangedRepeatedStart)
             .Replace("\r\n", "\n");
         rangedRepeatedBody.Should().Contain("if (!IsWeaponSkillType(skillType))\n                return damage;",
             "device and Force damage must not reset Sustained Fire stacks");
@@ -96,33 +96,33 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().Contain("continue;");
         combat.Should().NotContain("new ContainmentNetStatusEffect(adjustment)");
         combat.Should().Contain("int evasionPenaltyAdjustment = 0");
-        combat.Should().Contain("Stat.GetStatAdjustment(");
+        combat.Should().Contain("_stat.GetStatAdjustment(", "the parts read stats through the injected stat service");
         combat.Should().NotContain("OfType<KillBoxStatusEffect>()");
         combat.Should().NotContain("if (killBox.Source == attacker)");
         var suppressionStatus = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SuppressionStatusEffect.cs"));
-        var statusEffectService = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+        var statusEffectService = StatusEffectSource.Read();
         statusEffectService.Should().Contain("RemoveStatusEffectsFromAllTargetsBySource(");
         statusEffectService.Should().Contain("RemoveStatusEffectsFromAllTargetsWhenSourceExits(player);");
         statusEffectService.Should().Contain("effect is IRemoveWhenSourceExits");
-        statusEffectService.Should().Contain("foreach (var loggedOutEffects in _loggedOutPlayerEffects.Values)");
+        statusEffectService.Should().Contain("foreach (var loggedOutEffects in GetLoggedOutEffects())");
         statusEffectService.Should().NotContain("typeof(IRangedHitSuppressionSource)");
         statusEffectService.Should().NotContain("typeof(SuppressionStatusEffect)");
         combat.Should().Contain("var suppressionSourcesToRefresh = _pendingSuppressionAbilityUses.Keys");
-        combat.Should().Contain("RefreshOverwatchMarker(source, DateTime.UtcNow);");
+        combat.Should().Contain("RefreshOverwatchMarker(source, Clock.UtcNow);");
         suppressionStatus.Should().Contain("IStatusEffectRemovedHandler");
         suppressionStatus.Should().Contain("IStatusEffectRestoredHandler");
         suppressionStatus.Should().Contain("IRemoveWhenSourceExits");
         killBoxStatus.Should().Contain("IRemoveWhenSourceExits");
         containmentNetStatus.Should().Contain("IRemoveWhenSourceExits");
         containmentNetStatus.Should().Contain("IStatusEffectRemovedHandler");
-        containmentNetStatus.Should().Contain("Combat.ReconcileContainmentNetStatuses(creature);");
-        suppressionStatus.Should().Contain("Combat.ReconcileContainmentNetStatus(Source, creature);");
-        suppressionStatus.Should().Contain("Combat.ReconcileOverwatchStatus(Source);");
+        containmentNetStatus.Should().Contain("GameServices.CombatSuppression.ReconcileContainmentNetStatuses(creature);");
+        suppressionStatus.Should().Contain("GameServices.CombatSuppression.ReconcileContainmentNetStatus(Source, creature);");
+        suppressionStatus.Should().Contain("GameServices.CombatSuppression.ReconcileOverwatchStatus(Source);");
         suppressionStatus.Should().NotContain("DelayCommand");
         statusEffectService.Should().Contain("NotifyStatusEffectRemoved(creature, statusEffect);");
         statusEffectService.Should().Contain("NotifyStatusEffectsRestored(player, effects);");
         statusEffectService.Should().Contain("OfType<IStatusEffectRestoredHandler>()");
-        statusEffectService.Should().NotContain("Combat.ReconcileContainmentNetStatuses");
+        statusEffectService.Should().NotContain("GameServices.CombatSuppression.ReconcileContainmentNetStatuses");
         killBox.Should().Contain("StatusEffectFactory = () => new KillBoxStatusEffect(0, 3)");
         killBox.Should().Contain("8.0f");
         killBox.Should().Contain("AbilityTargetingFlags.HarmsEnemies");

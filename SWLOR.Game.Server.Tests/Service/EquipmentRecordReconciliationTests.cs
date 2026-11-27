@@ -6,17 +6,35 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class EquipmentRecordReconciliationTests
 {
+    // The Item facade resolves the item service from a container.
+    private FacadeContainer _itemFacades = null!;
+    private IDisposable _itemFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildItemFacades() => _itemFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeItemFacades() => _itemFacades.Dispose();
+
+    [SetUp]
+    public void InstallItemFacades() => _itemFacadeScope = _itemFacades.Install();
+
+    [TearDown]
+    public void RemoveItemFacades() => _itemFacadeScope.Dispose();
+
     // Eight pieces granting 86 Physical, 100 Force, 18 FP and 16 STM, with retired Poison Defense on the boots.
     private static readonly (ItemPropertyType Type, int Subtype, int Amount)[] WornGear =
     {
@@ -69,22 +87,22 @@ public class EquipmentRecordReconciliationTests
     [Test]
     public void DriftedRecord_IsRebuiltFromTheWornGear()
     {
-        var record = Record(physical: 86 - 32, force: 100 - 47, evasion: 0, maxFP: Stat.BaseFP, maxStamina: Stat.BaseSTM + 16);
+        var record = Record(physical: 86 - 32, force: 100 - 47, evasion: 0, maxFP: StatRecordService.BaseFP, maxStamina: StatRecordService.BaseSTM + 16);
 
-        var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(WornGear), EquipmentRecordStats.All);
+        var corrected = StatRecord.ApplyEquipmentStatTotals(record, Totals(WornGear), EquipmentRecordStats.All);
 
         corrected.Should().Be(EquipmentRecordStats.Defense | EquipmentRecordStats.FP | EquipmentRecordStats.Attack);
         record.Defenses[CombatDamageType.Physical].Should().Be(86);
         record.Defenses[CombatDamageType.Force].Should().Be(100);
-        record.MaxFP.Should().Be(Stat.BaseFP + 18);
-        record.MaxStamina.Should().Be(Stat.BaseSTM + 16);
+        record.MaxFP.Should().Be(StatRecordService.BaseFP + 18);
+        record.MaxStamina.Should().Be(StatRecordService.BaseSTM + 16);
         record.Attack.Should().Be(5);
     }
 
     [Test]
     public void NakedRecord_ReturnsToZeroAndTheBases()
     {
-        var record = Record(physical: -32, force: -47, evasion: 7, maxFP: Stat.BaseFP - 18, maxStamina: Stat.BaseSTM + 3);
+        var record = Record(physical: -32, force: -47, evasion: 7, maxFP: StatRecordService.BaseFP - 18, maxStamina: StatRecordService.BaseSTM + 3);
         record.Control[SkillType.Smithery] = -21;
         record.Craftsmanship[SkillType.Smithery] = -6;
         record.CPBonus[SkillType.Smithery] = -5;
@@ -101,14 +119,14 @@ public class EquipmentRecordReconciliationTests
         record.PoisonBonus = 2;
         record.Lockpicking = -4;
 
-        var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(), EquipmentRecordStats.All);
+        var corrected = StatRecord.ApplyEquipmentStatTotals(record, Totals(), EquipmentRecordStats.All);
 
         corrected.Should().Be(EquipmentRecordStats.All);
-        foreach (var type in Combat.GetDefenseDamageTypes())
+        foreach (var type in GameServices.CombatDamageCatalog.GetDefenseDamageTypes())
             record.Defenses[type].Should().Be(0, $"{type} Defense comes only from gear");
         record.Evasion.Should().Be(0);
-        record.MaxFP.Should().Be(Stat.BaseFP);
-        record.MaxStamina.Should().Be(Stat.BaseSTM);
+        record.MaxFP.Should().Be(StatRecordService.BaseFP);
+        record.MaxStamina.Should().Be(StatRecordService.BaseSTM);
         record.Control[SkillType.Smithery].Should().Be(0, "Control comes only from gear");
         record.Craftsmanship[SkillType.Smithery].Should().Be(0, "Craftsmanship comes only from gear");
         record.CPBonus[SkillType.Smithery].Should().Be(0, "CP Bonus comes only from gear");
@@ -170,13 +188,13 @@ public class EquipmentRecordReconciliationTests
     [Test]
     public void DriftedSummedRecords_AreRebuiltFromTheWornGear()
     {
-        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: Stat.BaseFP, maxStamina: Stat.BaseSTM);
+        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: StatRecordService.BaseFP, maxStamina: StatRecordService.BaseSTM);
         record.Attack = -11;
         record.Accuracy = 15;
         record.Stealth = -8;
         record.Resistances[ResistanceType.Fire] = 30;
 
-        var corrected = Stat.ApplyEquipmentStatTotals(record, SummedGearTotals(), EquipmentRecordStats.All);
+        var corrected = StatRecord.ApplyEquipmentStatTotals(record, SummedGearTotals(), EquipmentRecordStats.All);
 
         corrected.Should().Be(EquipmentRecordStats.FPRegen | EquipmentRecordStats.STMRegen | EquipmentRecordStats.Attack |
                               EquipmentRecordStats.Accuracy | EquipmentRecordStats.ForceAttack | EquipmentRecordStats.Resistance |
@@ -196,17 +214,17 @@ public class EquipmentRecordReconciliationTests
         record.Resistances[ResistanceType.Fire].Should().Be(15);
         record.Resistances[ResistanceType.Ice].Should().Be(-5);
 
-        Stat.ApplyEquipmentStatTotals(record, SummedGearTotals(), EquipmentRecordStats.All)
+        StatRecord.ApplyEquipmentStatTotals(record, SummedGearTotals(), EquipmentRecordStats.All)
             .Should().Be(EquipmentRecordStats.None, "a rebuilt record matches the gear");
     }
 
     [Test]
     public void LegacyRecordWithoutAResistanceMap_IsRebuiltInsteadOfThrowing()
     {
-        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: Stat.BaseFP, maxStamina: Stat.BaseSTM);
+        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: StatRecordService.BaseFP, maxStamina: StatRecordService.BaseSTM);
         record.Resistances = null!;
 
-        Stat.ApplyEquipmentStatTotals(record, SummedGearTotals(), EquipmentRecordStats.Resistance)
+        StatRecord.ApplyEquipmentStatTotals(record, SummedGearTotals(), EquipmentRecordStats.Resistance)
             .Should().Be(EquipmentRecordStats.Resistance);
         record.Resistances[ResistanceType.Fire].Should().Be(15);
     }
@@ -263,13 +281,13 @@ public class EquipmentRecordReconciliationTests
     public void NegativeCraftingRecords_AreRebuiltFromTheWornGear()
     {
         // The reported state: one helmet's Smithery Control, Craftsmanship and CP Bonus subtracted without being added.
-        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: Stat.BaseFP, maxStamina: Stat.BaseSTM);
+        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: StatRecordService.BaseFP, maxStamina: StatRecordService.BaseSTM);
         record.Control[SkillType.Smithery] = -21;
         record.Craftsmanship[SkillType.Smithery] = -6;
         record.CPBonus[SkillType.Smithery] = -5;
         record.Control[SkillType.Engineering] = 4;
 
-        var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(CraftingGear), EquipmentRecordStats.All);
+        var corrected = StatRecord.ApplyEquipmentStatTotals(record, Totals(CraftingGear), EquipmentRecordStats.All);
 
         corrected.Should().Be(EquipmentRecordStats.Control | EquipmentRecordStats.Craftsmanship | EquipmentRecordStats.CPBonus);
         record.Control[SkillType.Smithery].Should().Be(7);
@@ -279,16 +297,16 @@ public class EquipmentRecordReconciliationTests
         record.Control[SkillType.Engineering].Should().Be(0, "no worn gear grants Engineering Control");
         record.Craftsmanship.Should().NotContainKey(SkillType.Invalid);
 
-        Stat.ApplyEquipmentStatTotals(record, Totals(CraftingGear), EquipmentRecordStats.All)
+        StatRecord.ApplyEquipmentStatTotals(record, Totals(CraftingGear), EquipmentRecordStats.All)
             .Should().Be(EquipmentRecordStats.None, "a rebuilt record matches the gear");
     }
 
     [Test]
     public void MissingCraftingEntries_ReadAsZeroAndAreNotCorrected()
     {
-        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: Stat.BaseFP, maxStamina: Stat.BaseSTM);
+        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: StatRecordService.BaseFP, maxStamina: StatRecordService.BaseSTM);
 
-        Stat.ApplyEquipmentStatTotals(record, Totals(),
+        StatRecord.ApplyEquipmentStatTotals(record, Totals(),
                 EquipmentRecordStats.Control | EquipmentRecordStats.Craftsmanship | EquipmentRecordStats.CPBonus)
             .Should().Be(EquipmentRecordStats.None);
         record.Control.Should().BeEmpty();
@@ -297,12 +315,12 @@ public class EquipmentRecordReconciliationTests
     [Test]
     public void LegacyRecordWithoutCraftingMaps_IsRebuiltInsteadOfThrowing()
     {
-        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: Stat.BaseFP, maxStamina: Stat.BaseSTM);
+        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: StatRecordService.BaseFP, maxStamina: StatRecordService.BaseSTM);
         record.Control = null!;
         record.Craftsmanship = null!;
         record.CPBonus = null!;
 
-        var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(CraftingGear), EquipmentRecordStats.All);
+        var corrected = StatRecord.ApplyEquipmentStatTotals(record, Totals(CraftingGear), EquipmentRecordStats.All);
 
         corrected.Should().Be(EquipmentRecordStats.Control | EquipmentRecordStats.Craftsmanship | EquipmentRecordStats.CPBonus);
         record.Control[SkillType.Smithery].Should().Be(7);
@@ -313,10 +331,10 @@ public class EquipmentRecordReconciliationTests
     [Test]
     public void LegacyRecordWithoutADefenseMap_IsRebuiltInsteadOfThrowing()
     {
-        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: Stat.BaseFP, maxStamina: Stat.BaseSTM);
+        var record = Record(physical: 0, force: 0, evasion: 0, maxFP: StatRecordService.BaseFP, maxStamina: StatRecordService.BaseSTM);
         record.Defenses = null!;
 
-        var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(WornGear), EquipmentRecordStats.All);
+        var corrected = StatRecord.ApplyEquipmentStatTotals(record, Totals(WornGear), EquipmentRecordStats.All);
 
         corrected.Should().HaveFlag(EquipmentRecordStats.Defense);
         record.Defenses[CombatDamageType.Physical].Should().Be(86);
@@ -326,10 +344,10 @@ public class EquipmentRecordReconciliationTests
     [Test]
     public void MatchingRecord_IsNotCorrected()
     {
-        var record = Record(physical: 86, force: 100, evasion: 0, maxFP: Stat.BaseFP + 18, maxStamina: Stat.BaseSTM + 16);
+        var record = Record(physical: 86, force: 100, evasion: 0, maxFP: StatRecordService.BaseFP + 18, maxStamina: StatRecordService.BaseSTM + 16);
         record.Attack = 5;
 
-        Stat.ApplyEquipmentStatTotals(record, Totals(WornGear), EquipmentRecordStats.All)
+        StatRecord.ApplyEquipmentStatTotals(record, Totals(WornGear), EquipmentRecordStats.All)
             .Should().Be(EquipmentRecordStats.None);
     }
 
@@ -338,10 +356,10 @@ public class EquipmentRecordReconciliationTests
     {
         var record = Record(physical: 0, force: 0, evasion: 5, maxFP: 0, maxStamina: 0);
 
-        var corrected = Stat.ApplyEquipmentStatTotals(record, Totals(WornGear), EquipmentRecordStats.Stamina);
+        var corrected = StatRecord.ApplyEquipmentStatTotals(record, Totals(WornGear), EquipmentRecordStats.Stamina);
 
         corrected.Should().Be(EquipmentRecordStats.Stamina);
-        record.MaxStamina.Should().Be(Stat.BaseSTM + 16);
+        record.MaxStamina.Should().Be(StatRecordService.BaseSTM + 16);
         record.Defenses[CombatDamageType.Physical].Should().Be(0);
         record.Evasion.Should().Be(5);
         record.MaxFP.Should().Be(0);
@@ -351,13 +369,13 @@ public class EquipmentRecordReconciliationTests
     public void EquipChangeEquivalence_RepeatedRebuildsMatchTheRunningSum()
     {
         // A clean running sum after equipping each piece in turn equals the rebuilt totals at every step.
-        var record = Record(0, 0, 0, Stat.BaseFP, Stat.BaseSTM);
+        var record = Record(0, 0, 0, StatRecordService.BaseFP, StatRecordService.BaseSTM);
         var worn = new List<(ItemPropertyType, int, int)>();
         foreach (var property in WornGear)
         {
             worn.Add(property);
-            Stat.ApplyEquipmentStatTotals(record, Totals(worn.ToArray()), EquipmentRecordStats.All);
-            Stat.ApplyEquipmentStatTotals(record, Totals(worn.ToArray()), EquipmentRecordStats.All)
+            StatRecord.ApplyEquipmentStatTotals(record, Totals(worn.ToArray()), EquipmentRecordStats.All);
+            StatRecord.ApplyEquipmentStatTotals(record, Totals(worn.ToArray()), EquipmentRecordStats.All)
                 .Should().Be(EquipmentRecordStats.None, "a second rebuild of the same gear changes nothing");
         }
 
@@ -397,14 +415,6 @@ public class EquipmentRecordReconciliationTests
         var scripts = typeof(EquipmentStats).GetMethod(nameof(EquipmentStats.RefreshEquipmentRecordsAfterEquipmentChange))!
             .GetCustomAttributes<NWNEventHandler>().Select(attribute => attribute.Script).ToArray();
         scripts.Should().BeEquivalentTo([ScriptName.OnItemEquipValidateAfter, ScriptName.OnItemUnequipAfter]);
-
-        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
-            root = root.Parent;
-        var migration = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root!.FullName,
-                "SWLOR.Game.Server", "Service", "Migration.cs"))).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.ValueText == "AfterCharacterInitialization");
-        migration.Body!.Statements.Select(statement => statement.ToString())
-            .Should().Contain("Stat.RefreshPlayerEquipmentStats(player);");
+        // MigrationServiceTests pins that the login runs the equipment stats refresh (after max HP).
     }
 }

@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class CharacterUpgradeCheckpointTests
 {
-    private static readonly Type Upgrade = typeof(Player).Assembly.GetType("SWLOR.Game.Server.Service.MigrationService.CharacterFileUpgrade")!;
+    private static readonly Type Upgrade = typeof(Player).Assembly.GetType("SWLOR.Game.Server.Domain.Foundation.CharacterFileUpgrade")!;
 
     private static int LatestVersion => (int)Upgrade.GetProperty("LatestVersion", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
 

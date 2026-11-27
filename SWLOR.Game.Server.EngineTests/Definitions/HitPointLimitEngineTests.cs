@@ -2,8 +2,9 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -234,7 +235,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryHitPointEffects.ApplyFlat(npc, SecondKey, 3767, 60f);
             ctx.AssertEqual(Limit, GetCurrentHitPoints(npc), "reported HP before the maximum rises");
 
-            Stat.SetNPCMaxHitPoints(npc, MaximumNPCHitPoints);
+            CreatureStat.SetNPCMaxHitPoints(npc, MaximumNPCHitPoints);
             ctx.AssertEqual(MaximumNPCHitPoints, GetMaxHitPoints(npc), "raised HP budget");
             ctx.Assert(GetCurrentHitPoints(npc) > 0 && !GetIsDead(npc), "Raising the maximum must not read the NPC as dead.");
 
@@ -308,10 +309,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             const string key = TemporaryHitPointEffectKey.GuardiansResolve;
             var shield = TemporaryHitPointEffects.ApplyFlat(npc, key, Limit - 25000, 60f);
             ctx.AssertEqual(Limit - 25000, shield, "Guardian's Resolve pool");
-            StatusEffect.ApplyStatusEffect(npc, npc,
+            StatusEffectApplication.ApplyStatusEffect(npc, npc,
                 new GuardiansResolveStatusEffect(shield, TemporaryHitPointEffects.GetGrantGeneration(npc, key)), 60f);
 
-            Stat.SetNPCMaxHitPoints(npc, MaximumNPCHitPoints);
+            CreatureStat.SetNPCMaxHitPoints(npc, MaximumNPCHitPoints);
             await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(npc, key) == Headroom,
                 3f, "the pool to be trimmed under the raised maximum");
             ctx.AssertEqual(Headroom, TemporaryHitPointEffects.GetGrantedAmount(npc, key), "recorded grant after the trim");
@@ -319,14 +320,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // Status hooks see each hit before the pool absorbs it; these notifications drive
             // only the status, so its healing shows how much shield it still tracks.
             var baseHitPoints = ObjectPlugin.GetCurrentHitPoints(npc);
-            StatusEffect.NotifyDamageStatusEffects(attacker, npc, 2000, CombatDamageType.Physical);
+            StatusEffectCombatEvent.NotifyDamageStatusEffects(attacker, npc, 2000, CombatDamageType.Physical);
             await ctx.WaitFrameAsync();
-            var firstHeal = Stat.ApplyHealingReceivedAdjustment(npc, GameMath.PercentOf(2000, 15));
+            var firstHeal = CombatResources.ApplyHealingReceivedAdjustment(npc, GameMath.PercentOf(2000, 15));
             ctx.AssertEqual(baseHitPoints + firstHeal, ObjectPlugin.GetCurrentHitPoints(npc), "healing from a hit inside the trimmed shield");
 
-            StatusEffect.NotifyDamageStatusEffects(attacker, npc, 1000, CombatDamageType.Physical);
+            StatusEffectCombatEvent.NotifyDamageStatusEffects(attacker, npc, 1000, CombatDamageType.Physical);
             await ctx.WaitFrameAsync();
-            var secondHeal = Stat.ApplyHealingReceivedAdjustment(npc, GameMath.PercentOf(Headroom - 2000, 15));
+            var secondHeal = CombatResources.ApplyHealingReceivedAdjustment(npc, GameMath.PercentOf(Headroom - 2000, 15));
             ctx.AssertEqual(baseHitPoints + firstHeal + secondHeal, ObjectPlugin.GetCurrentHitPoints(npc),
                 "healing from a hit that exhausts the trimmed shield");
             ctx.Assert(!StatusEffect.HasStatusEffect<GuardiansResolveStatusEffect>(npc),
@@ -363,7 +364,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var arena = await QuietArena.CreateAsync(ctx);
             var npc = await SpawnNPCAsync(ctx, arena, "nw_bandit001", MaximumNPCHitPoints, immortal: false);
 
-            StatusEffect.ApplyStatusEffect(npc, npc, typeof(DiseaseVitalityPenaltyStatusEffect), 60f);
+            StatusEffectApplication.ApplyStatusEffect(npc, npc, typeof(DiseaseVitalityPenaltyStatusEffect), 60f);
             await ctx.WaitUntilAsync(() => GetMaxHitPoints(npc) < MaximumNPCHitPoints, 3f, "the Vitality penalty to lower maximum HP");
             ctx.Log($"Vitality penalty lowered maximum HP by {MaximumNPCHitPoints - GetMaxHitPoints(npc)}.");
 
@@ -391,7 +392,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             await ctx.ExecuteInCreatureContextAsync(npc, () =>
                 ctx.Assert(UsePerkFeat.TryUseAbility(npc, npc, FeatType.GuardianWard4, GetLocation(npc)),
-                    $"Guardian Ward IV must start on its caster: {Ability.GetLastActivationDenialReason()}"));
+                    $"Guardian Ward IV must start on its caster: {AbilityActivation.GetLastActivationDenialReason()}"));
             await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(npc, TemporaryHitPointEffectKey.GuardianWard) > 0,
                 10f, "Guardian Ward IV's temporary HP to land");
 
@@ -410,7 +411,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var arena = await QuietArena.CreateAsync(ctx);
             var npc = await SpawnNPCAsync(ctx, arena, "nw_rat001", 10000);
 
-            var expected = Ability.ApplyCombatReadinessMagnitude(
+            var expected = CombatAbilityMagnitude.ApplyCombatReadinessMagnitude(
                 npc,
                 AbilityEffectScaling.CalculateScaledHeal(npc, npc, HealAmount.Percent(15f)));
             AbilityEffectScaling.ApplyTemporaryHP(npc, npc, TemporaryHitPointEffectKey.GuardianWard, HealAmount.Percent(15f), 60f);
@@ -437,7 +438,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // Spawn initialization loads skin HP a frame after creation.
             await ctx.WaitFrameAsync();
             ctx.SuppressNPCNaturalRegen(npc);
-            Stat.SetNPCMaxHitPoints(npc, maximumHitPoints, true);
+            CreatureStat.SetNPCMaxHitPoints(npc, maximumHitPoints, true);
             SetImmortal(npc, immortal);
             ctx.AssertEqual(maximumHitPoints, GetMaxHitPoints(npc), "NPC HP budget");
             ctx.AssertEqual(maximumHitPoints, GetCurrentHitPoints(npc), "NPC starts at full HP");

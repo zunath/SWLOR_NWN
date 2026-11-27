@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
 {
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Com_Chunk_Red_Medium,
                 VisualEffect.Vfx_Fnf_Screen_Shake,
                 afterSuccessfulHit: (activator, target) =>
-                    StatusEffect.ApplyStatusEffect<SunderStatusEffect>(activator, target, 30f, CombatDamageType.Physical),
+                    StatusEffectApplication.ApplyStatusEffect<SunderStatusEffect>(activator, target, 30f, CombatDamageType.Physical),
                 maxTargets: 5)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_LockstepCrushTechnique)
                 .SkillType(SkillType.Mimicry)

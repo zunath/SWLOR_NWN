@@ -29,29 +29,29 @@ public class CraftFileSequenceReaderTests
             .ToList();
 
         owners.Should().BeEquivalentTo(
-            "Native/PlayerFileCheckpoint.cs",
-            "Service/CraftService/Minigame/LoadedCraftFileSequences.cs",
-            "Service/CraftService/Minigame/NwnCraftSessionWorld.cs");
+            "NativeSinks/PlayerFileCheckpointSink.cs",
+            "Domain/Crafting/Minigame/LoadedCraftFileSequences.cs",
+            "Domain/Crafting/Minigame/NwnCraftSessionWorld.cs");
     }
 
     [TestCase("public int FileSequence(uint player)")]
     [TestCase("public int AdvanceFileSequence(uint player)")]
     [TestCase("public int LoadedSequence(uint player)")]
     [TestCase("public int ExportedSequence(uint player)")]
-    [TestCase("private static void ExportAndRecord(uint player)")]
+    [TestCase("private void ExportAndRecord(uint player)")]
     public void EveryCraftLocalAccessor_AppliesTheFilesSequenceFirst(string signature)
     {
-        var accessor = Method(Source("Service", "CraftService", "Minigame", "NwnCraftSessionWorld.cs"), signature);
+        var accessor = Method(Source("Domain", "Crafting", "Minigame", "NwnCraftSessionWorld.cs"), signature);
 
         var apply = accessor.IndexOf("ApplyLoadedSequence(player);", StringComparison.Ordinal);
         apply.Should().BeGreaterThan(0, "the accessor applies the loaded file's sequence");
         apply.Should().BeLessThan(accessor.IndexOf("GetLocalInt(", StringComparison.Ordinal), "it applies before it reads");
     }
 
-    [TestCase("Native", "PlayerFileCheckpoint.cs", "public static void ApplyLoadedCraftSequence()")]
+    [TestCase("Domain/Crafting", "CraftService.cs", "public void ApplyLoadedCraftSequence()")]
     public void TheModuleEnterHandler_AppliesTheFilesSequence(string folder, string file, string signature)
     {
-        Method(Source(folder, file), signature).Should().Contain("NwnCraftSessionWorld.ApplyLoadedSequence(GetEnteringObject());");
+        Method(Source(folder, file), signature).Should().Contain("SessionWorld.ApplyLoadedSequence(GetEnteringObject());");
     }
 
     private static string Source(params string[] relative) =>

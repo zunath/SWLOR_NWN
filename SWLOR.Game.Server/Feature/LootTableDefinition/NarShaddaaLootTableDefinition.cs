@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.LootService;
+using SWLOR.Game.Server.Domain.Items;
 using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.LootTableDefinition

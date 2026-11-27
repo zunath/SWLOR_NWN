@@ -5,13 +5,14 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -34,6 +35,8 @@ public static class MeleeTechniqueLifecycleEngineTests
     [EngineTest("Player subdual clears other fighters' setup, Flow and counter references in the native death event", Category = "MeleeTechnique", TimeoutSeconds = 45f)]
     public static async Task PlayerSubdualClearsTargetReferences(EngineTestContext context)
     {
+        // Death.OnPlayerDeath is a method group on the container's DeathService, so it equals the handler the registry bound
+        // to that singleton (a lambda would not).
         AssertObserverOrder(context, ScriptName.OnModuleDeath, ObservePlayerDeath,
             Death.OnPlayerDeath, MeleeTechnique.OnPlayerDeath);
         AssertObserverOrder(context, ScriptName.OnModuleHeartbeat, ObserveHeartbeat, MeleeTechnique.RefreshAll);
@@ -60,7 +63,7 @@ public static class MeleeTechniqueLifecycleEngineTests
             context.SuppressNPCNaturalRegen(creature);
             SetAILevel(creature, AILevel.VeryLow);
         }
-        Stat.SetNPCMaxHitPoints(counterOwner, 20000, true);
+        CreatureStat.SetNPCMaxHitPoints(counterOwner, 20000, true);
         context.SetNPCResources(counterOwner, 100, 100);
         foreach (var perk in new[]
         {
@@ -79,10 +82,10 @@ public static class MeleeTechniqueLifecycleEngineTests
         });
         await context.EquipItemAsync(killer.Creature, "t_pglove", InventorySlot.RightHand);
         await context.EquipItemAsync(counterOwner, "t_pglove", InventorySlot.RightHand);
-        StatusEffect.ApplyStatusEffect(killer.Creature, killer.Creature, new FlowStanceStatusEffect(), -1);
-        StatusEffect.ApplyStatusEffect(counterOwner, counterOwner, new BruiserStanceStatusEffect(), -1);
-        Combat.SetAbilityHitResolutionOverride(true);
-        Combat.SetAutoAttackHitResolutionOverride(false);
+        StatusEffectApplication.ApplyStatusEffect(killer.Creature, killer.Creature, new FlowStanceStatusEffect(), -1);
+        StatusEffectApplication.ApplyStatusEffect(counterOwner, counterOwner, new BruiserStanceStatusEffect(), -1);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
         try
         {
             await Cast(context, counterOwner, victim.Creature, FeatType.Jab1);
@@ -90,7 +93,7 @@ public static class MeleeTechniqueLifecycleEngineTests
             // and the eighteen-second grant gate must keep the counter bound to the victim.
             await context.ExecuteInCreatureContextAsync(victim.Creature, () =>
             {
-                StatusEffect.NotifyPreDamageStatusEffects(victim.Creature, counterOwner, 5, CombatDamageType.Physical);
+                StatusEffectCombatEvent.NotifyPreDamageStatusEffects(victim.Creature, counterOwner, 5, CombatDamageType.Physical);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(5), counterOwner);
             });
             await context.WaitUntilAsync(() => MeleeTechnique.GetPendingRetaliationPower(counterOwner, victim.Creature) == 12,
@@ -152,8 +155,8 @@ public static class MeleeTechniqueLifecycleEngineTests
         {
             _deathObserver = null;
             _watchedVictim = OBJECT_INVALID;
-            Combat.SetAbilityHitResolutionOverride(null);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             AssignCommand(killer.Creature, () => ClearAllActions());
             AssignCommand(counterOwner, () => ClearAllActions());
         }
@@ -174,17 +177,17 @@ public static class MeleeTechniqueLifecycleEngineTests
 
     private static async Task Cast(EngineTestContext context, uint caster, uint target, FeatType feat)
     {
-        var ability = Ability.GetAbilityDetail(feat);
-        Ability.ClearLastCompletedAbilityImpactSummary(caster);
+        var ability = AbilityCatalog.GetAbilityDetail(feat);
+        AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
         await context.ExecuteInCreatureContextAsync(caster, () =>
         {
             // Match the directional hostility check used by ability activation and target-bound technique state.
             context.Assert(GetIsReactionTypeHostile(target, caster),
                 $"{ability.Name}: native target {target} (PC={GetIsPC(target)}) is hostile to caster {caster} (PC={GetIsPC(caster)}).");
             context.Assert(UsePerkFeat.TryUseAbility(caster, target, feat, GetLocation(target)),
-                $"{ability.Name} starts: {Ability.GetLastActivationDenialReason()}");
+                $"{ability.Name} starts: {AbilityActivation.GetLastActivationDenialReason()}");
         });
-        await context.WaitUntilAsync(() => Ability.GetLastCompletedAbilityImpactSummary(caster)?.Ability == ability,
+        await context.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster)?.Ability == ability,
             6f, $"{ability.Name} to complete its actual activation");
         AssignCommand(caster, () => ClearAllActions());
     }

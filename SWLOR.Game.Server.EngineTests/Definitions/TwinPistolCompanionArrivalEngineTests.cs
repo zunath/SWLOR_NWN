@@ -6,22 +6,20 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatRecorderService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
 using NWNXLib = NWN.Native.API.NWNXLib;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -89,6 +87,7 @@ public static class TwinPistolCompanionArrivalEngineTests
         var sampledHaste = -1;
         var sampledConverging = true;
         bool? arrivedConverging = null;
+        var convergingSamplesDone = false;
         PairedRangedTraitState traitState = null;
         HashSet<long> attemptsAfterLaunch = null;
         try
@@ -101,7 +100,7 @@ public static class TwinPistolCompanionArrivalEngineTests
                 TemporaryStatModifier.Add(actor, StatType.PairedRangedRepeatedTargetRequiredHits, 1, 30f);
                 TemporaryStatModifier.Add(actor, StatType.PairedRangedRepeatedTargetDamagePercent, 5, 30f);
                 TemporaryStatModifier.Add(actor, StatType.PairedRangedRepeatedTargetDurationSeconds, 6, 30f);
-                StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
+                StatusEffectApplication.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                 GrantOrdinaryAttempts(ctx, actor);
                 traitState = GetTraitState(ctx, actor);
                 var attemptsBeforeLaunch = AttemptReceipts(ctx, traitState);
@@ -133,8 +132,20 @@ public static class TwinPistolCompanionArrivalEngineTests
                 }));
                 // The six-second idle cleanup can clear Converging Fire again, so read it within a
                 // frame of the arrival this launch scheduled instead of after the test's own wait.
-                AssignCommand(GetModule(), () => DelayCommand(flight + .01f, () =>
-                    arrivedConverging = StatusEffect.GetStatusEffect<ConvergingFireStatusEffect>(actor) != null));
+                // Under load the arrival can land a few frames after its due time, so sample over the half second that
+                // follows (the idle cleanup is six seconds away): a landed hit shows Converging Fire in at least one
+                // sample, a discarded one in none.
+                var arrivalSamples = new[] { .01f, .05f, .1f, .2f, .35f, .5f };
+                foreach (var offset in arrivalSamples)
+                {
+                    var last = offset == arrivalSamples[^1];
+                    AssignCommand(GetModule(), () => DelayCommand(flight + offset, () =>
+                    {
+                        var present = StatusEffect.GetStatusEffect<ConvergingFireStatusEffect>(actor) != null;
+                        arrivedConverging = (arrivedConverging ?? false) || present;
+                        if (last) convergingSamplesDone = true;
+                    }));
+                }
                 DiscardTarget(ctx, actor, target, outcome, departure, flight);
             });
             await WaitFrames(ctx, () => sampledAt > 0, "the native half-flight reward sample");
@@ -149,7 +160,7 @@ public static class TwinPistolCompanionArrivalEngineTests
             ctx.AssertEqual(0, sampledHaste, "Akimbo grants no ordinary-hit Haste before arrival");
             ctx.Assert(!sampledConverging, "Converging Fire grants no landed-hit progress before arrival");
             await ctx.DelaySecondsAsync(flight + .15f);
-            await WaitFrames(ctx, () => arrivedConverging.HasValue, "the Converging Fire sample after arrival");
+            await WaitFrames(ctx, () => convergingSamplesDone, "the Converging Fire samples after arrival");
             var landed = outcome == "arrival";
             ctx.AssertEqual(stamina + (landed ? 1 : 0), Stat.GetCurrentStamina(actor), "Only an arriving hit restores stamina once");
             ctx.AssertEqual(landed ? 1 : 0, Points(actor, target, SkillType.TwinPistol), "Only an arriving hit grants its captured weapon contribution once");
@@ -210,21 +221,21 @@ public static class TwinPistolCompanionArrivalEngineTests
                 writer = CombatRecorder.LastWriter;
                 HostileAbilityDelay.EndForTesting(actor);
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.Headshot1, GetLocation(target)),
-                    $"Headshot queues through its normal paid pipeline: {Ability.GetLastActivationDenialReason()}");
+                    $"Headshot queues through its normal paid pipeline: {AbilityActivation.GetLastActivationDenialReason()}");
                 paidStamina = Stat.GetCurrentStamina(actor);
-                var cost = Ability.GetAbilityDetail(FeatType.Headshot1).Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM;
+                var cost = AbilityCatalog.GetAbilityDetail(FeatType.Headshot1).Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM;
                 ctx.AssertEqual(stamina - cost, paidStamina, "The readied ability pays its authored cost exactly once at queue time");
                 var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
                 var defender = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(target).AsNWSObject();
                 native.m_pcCombatRound.StartCombatRound(target);
                 native.m_pcCombatRound.m_nCurrentAttack = 0;
                 native.m_pcCombatRound.GetAttack(0).m_bRangedAttack = 1;
-                Combat.SetAutoAttackHitResolutionOverride(false);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
                 native.ResolveAttackRoll(defender);
                 ctx.AssertEqual(4, native.m_pcCombatRound.GetAttack(0).m_nAttackResult, "The real main launcher misses before the companion launches");
                 ctx.Assert(UsePerkFeat.HasQueuedWeaponAbility(actor), "The main miss leaves Headshot readied");
                 capturedMainDamage = WeaponDamage.GetEffectiveDMG(actor, main);
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 flight = Launch(ctx, actor, target, companion);
                 var shot = RangedWeaponAttackContext.GetRoll(actor, target, 0);
                 ctx.Assert(shot is { Ordinary: false, Completed: true, Damage: 0 }, "The companion reserves one replacement without ordinary damage");
@@ -233,7 +244,7 @@ public static class TwinPistolCompanionArrivalEngineTests
                 AssignCommand(GetModule(), () => DelayCommand(flight / 2f, () =>
                 {
                     sampledQueued = UsePerkFeat.HasQueuedWeaponAbility(actor);
-                    sampledSummary = Ability.GetLastCompletedAbilityImpactSummary(actor) != null;
+                    sampledSummary = AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) != null;
                     sampledHealth = GetCurrentHitPoints(target);
                     sampledLeadership = Points(actor, target, SkillType.Leadership);
                     sampledRare = GetLocalInt(target, "RARE_BONUS_CHANCE");
@@ -270,7 +281,7 @@ public static class TwinPistolCompanionArrivalEngineTests
             ctx.AssertEqual(paidStamina, Stat.GetCurrentStamina(actor), "Arrival never pays the already readied ability again");
             if (outcome == "arrival")
             {
-                var summary = Ability.GetLastCompletedAbilityImpactSummary(actor);
+                var summary = AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor);
                 ctx.Assert(summary != null && summary.AttributedDamage > 0 && summary.SkillType == SkillType.Rifle,
                     "One arriving companion resolves the original cross-trained ability");
                 ctx.AssertEqual(capturedMainDamage, summary.TriggeringWeaponDamage ?? -1, "Arrival retains the launch-captured main gun damage");
@@ -287,7 +298,7 @@ public static class TwinPistolCompanionArrivalEngineTests
             }
             else
             {
-                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null, "The old projectile cannot resolve a canceled discarded or newer ability");
+                ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) == null, "The old projectile cannot resolve a canceled discarded or newer ability");
                 ctx.AssertEqual(0, _damageEvents, "The old projectile deals no native ability damage");
                 ctx.AssertEqual(0, Points(actor, target, SkillType.Leadership), "The old projectile grants no Leadership");
                 ctx.AssertEqual(0, GetLocalInt(target, "RARE_BONUS_CHANCE"), "The old projectile marks no loot bonus");
@@ -306,7 +317,7 @@ public static class TwinPistolCompanionArrivalEngineTests
                             "Discard releases the captured reservation instead of blocking every later queued roll");
                         Launch(ctx, actor, nextTarget, companion);
                     });
-                    await WaitFrames(ctx, () => Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
+                    await WaitFrames(ctx, () => AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
                         "the next valid companion projectile to consume the retained queue");
                     ctx.Assert(!UsePerkFeat.HasQueuedWeaponAbility(actor), "The next valid hit consumes the retained queue");
                     ctx.AssertEqual(paidStamina, Stat.GetCurrentStamina(actor), "Retrying the retained queue charges no additional stamina");
@@ -370,15 +381,15 @@ public static class TwinPistolCompanionArrivalEngineTests
                 ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)CombatDamageType.Ice));
             CreaturePlugin.AddFeat(actor, FeatType.Headshot1);
             TemporaryStatModifier.Add(actor, StatType.RareItemFindChance, 42, 30f);
-            Ability.ApplyAura(actor, typeof(DeflectingAuraStatusEffect), true, false, false);
-            Ability.ClearLastCompletedAbilityImpactSummary(actor);
+            AbilityAura.ApplyAura(actor, typeof(DeflectingAuraStatusEffect), true, false, false);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
             ctx.Assert(TwinPistolEquipment.IsActivePair(actor), "The fixture uses a real generated companion pair");
         });
         _actor = actor;
         _target = target;
         _damageEvents = 0;
-        Combat.SetAutoAttackHitResolutionOverride(true);
-        Combat.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         return (target, main, companion);
     }
 
@@ -389,7 +400,7 @@ public static class TwinPistolCompanionArrivalEngineTests
         SetEventScript(target, EventScript.Creature_OnMeleeAttacked, "");
         SetPlotFlag(target, false);
         ctx.SuppressNPCNaturalRegen(target);
-        Stat.SetNPCMaxHitPoints(target, 20000, true);
+        CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
         ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 30f);
         SetCommandable(false, target);
         TemporaryStatModifier.Add(target, StatType.RangedDeflection, -100, 30f);
@@ -424,9 +435,8 @@ public static class TwinPistolCompanionArrivalEngineTests
 
     private static PairedRangedTraitState GetTraitState(EngineTestContext ctx, uint actor)
     {
-        var field = typeof(PairedRangedTraits).GetField("States", BindingFlags.NonPublic | BindingFlags.Static);
-        ctx.Assert(field != null, "The production paired trait state registry is available");
-        var states = field.GetValue(null) as Dictionary<uint, PairedRangedTraitState>;
+        var states = CombatHelperInternals.Field<IPairedRangedTraitsService, Dictionary<uint, PairedRangedTraitState>>("_states");
+        ctx.Assert(states != null, "The production paired trait state registry is available");
         var state = states?.GetValueOrDefault(actor);
         ctx.Assert(state != null, "The actor has actual paired trait state after its charge grant");
         return state;
@@ -443,8 +453,7 @@ public static class TwinPistolCompanionArrivalEngineTests
 
     private static int Points(uint actor, uint target, SkillType skill)
     {
-        var tracker = (Dictionary<uint, Dictionary<uint, Dictionary<SkillType, int>>>)typeof(CombatPoint)
-            .GetField("_creatureCombatPointTracker", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+        var tracker = CombatInternals.CombatPointTracker();
         return tracker.TryGetValue(target, out var attackers) && attackers.TryGetValue(actor, out var skills)
             ? skills.GetValueOrDefault(skill) : 0;
     }
@@ -489,8 +498,8 @@ public static class TwinPistolCompanionArrivalEngineTests
     private static void Cleanup(uint actor, uint target)
     {
         _actor = _target = OBJECT_INVALID;
-        Combat.SetAutoAttackHitResolutionOverride(null);
-        Combat.SetAbilityHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         if (GetIsObjectValid(actor))
         {
             AssignCommand(actor, () => ClearAllActions());
@@ -498,7 +507,7 @@ public static class TwinPistolCompanionArrivalEngineTests
             PairedRangedAttackCycle.Cancel(actor);
             PairedRangedTraits.ClearActor(actor);
             OrdinaryAttackTraits.ClearActor(actor);
-            Ability.RemoveAura(actor, typeof(DeflectingAuraStatusEffect));
+            AbilityAura.RemoveAura(actor, typeof(DeflectingAuraStatusEffect));
             StatusEffect.RemoveStatusEffect<AkimboStanceStatusEffect>(actor);
             TemporaryStatModifier.Clear(actor);
             HostileAbilityDelay.EndForTesting(actor);

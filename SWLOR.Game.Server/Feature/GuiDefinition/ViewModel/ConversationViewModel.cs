@@ -1,18 +1,26 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public sealed class ConversationViewModel : GuiViewModelBase<ConversationViewModel, ConversationPayload>
     {
+        private IConversationService Conversation { get; }
+        private IPlayerNameService PlayerName { get; }
+
+        public ConversationViewModel(IConversationService conversation, IPlayerNameService playerName)
+        {
+            Conversation = conversation;
+            PlayerName = playerName;
+        }
+
         private IConversationSession _session;
         private uint _controllerPlayer;
         private bool _hasImplicitCloseChoice;
@@ -60,6 +68,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<GuiBindingList<GuiColor>>();
             set => Set(value);
         }
+
+        /// <summary>The session this window shows, or null once it closed: a hot reload carries it to the next build.</summary>
+        public IConversationSession GetActiveSession() => _session;
 
         protected override void Initialize(ConversationPayload initialPayload)
         {

@@ -2,7 +2,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

@@ -5,6 +5,9 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -69,7 +72,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     ctx.Assert(HoloCom.IsHologram(hologram), "the copy is marked as a hologram");
                     ctx.Assert(!HoloCom.IsHologram(HoloCom.GetHoloGramOwner(hologram)), "the calling player is not marked as a hologram");
-                    ctx.AssertEqual(HoloCom.HologramFactionId, CreaturePlugin.GetFaction(hologram), "hologram faction");
+                    ctx.AssertEqual(HoloComService.HologramFactionId, CreaturePlugin.GetFaction(hologram), "hologram faction");
                     ctx.Assert(!GetIsReactionTypeHostile(hologram, enemy), "the enemy does not treat the hologram as hostile");
                     ctx.Assert(!GetIsReactionTypeHostile(enemy, hologram), "the hologram does not treat the enemy as hostile");
                     ctx.Assert(!GetIsEnemy(hologram, enemy), "the enemy does not consider the hologram an enemy");
@@ -89,10 +92,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 await ctx.ExecuteInCreatureContextAsync(enemy, () =>
                 {
-                    Enmity.ModifyEnmity(enemy, holoReceiver, 100);
-                    Enmity.ModifyEnmity(holoReceiver, enemy, 100);
-                    Enmity.ModifyProximityEnmity(holoReceiver, enemy, 100);
-                    Enmity.ModifyEnmity(bystander, enemy, 10);
+                    EnmityChange.ModifyEnmity(enemy, holoReceiver, 100);
+                    EnmityChange.ModifyEnmity(holoReceiver, enemy, 100);
+                    EnmityChange.ModifyProximityEnmity(holoReceiver, enemy, 100);
+                    EnmityChange.ModifyEnmity(bystander, enemy, 10);
                 });
 
                 ctx.AssertEqual(0, Enmity.GetEnmityTable(holoReceiver).Count, "hologram's enmity table size");
@@ -131,16 +134,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var hologramHP = GetCurrentHitPoints(holoReceiver);
 
                 // Creeping Terror III centers its 8 m field on the targeted creature, the calling player.
-                var ability = Ability.GetAbilityDetail(FeatType.CreepingTerror3);
+                var ability = AbilityCatalog.GetAbilityDetail(FeatType.CreepingTerror3);
                 ctx.SetNPCPerkLevel(caster, ability.EffectiveLevelPerkType, ability.AbilityLevel);
                 ctx.SetNPCResources(caster, 1000, 1000);
                 CreaturePlugin.AddFeat(caster, FeatType.CreepingTerror3);
-                Combat.SetAbilityHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster, () =>
                         ctx.Assert(UsePerkFeat.TryUseAbility(caster, sender.Creature, FeatType.CreepingTerror3, GetLocation(sender.Creature)),
-                            $"Creeping Terror III activates: {Ability.GetLastActivationDenialReason()}"));
+                            $"Creeping Terror III activates: {AbilityActivation.GetLastActivationDenialReason()}"));
 
                     await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect<HobbleStatusEffect>(sender.Creature), 10f,
                         "the first pulse to hobble the calling player");
@@ -149,7 +152,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally
                 {
-                    Combat.SetAbilityHitResolutionOverride(null);
+                    GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
                 }
 
                 ctx.Assert(!StatusEffect.HasStatusEffect<HobbleStatusEffect>(holoReceiver), "the hologram is not hobbled");

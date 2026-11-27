@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Creatures;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -39,28 +40,28 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var closedAt = DateTime.UtcNow;
                 await Close(ctx, node);
                 var leftoverDespawn = Spawn.GetResourceDespawnTimeForTesting(node);
-                var expected = closedAt.AddMinutes(Spawn.LeftoverResourceDespawnMinutes);
+                var expected = closedAt.AddMinutes(SpawnService.LeftoverResourceDespawnMinutes);
                 ctx.Assert(leftoverDespawn.HasValue && Math.Abs((leftoverDespawn.Value - expected).TotalSeconds) < 5,
-                    $"A searched node with items should despawn {Spawn.LeftoverResourceDespawnMinutes} minutes after closing (~{expected:O}), but it was {leftoverDespawn:O}.");
+                    $"A searched node with items should despawn {SpawnService.LeftoverResourceDespawnMinutes} minutes after closing (~{expected:O}), but it was {leftoverDespawn:O}.");
 
                 // Closing it again later does not push the despawn back.
                 await ctx.DelaySecondsAsync(1f);
                 await Close(ctx, node);
                 ctx.AssertEqual(leftoverDespawn, Spawn.GetResourceDespawnTimeForTesting(node), "Despawn time after closing the node again");
 
-                await ctx.ExecuteInCreatureContextAsync(GetModule(), () => Spawn.ProcessResourceDespawnsForTesting(closedAt.AddMinutes(Spawn.LeftoverResourceDespawnMinutes - 1)));
+                await ctx.ExecuteInCreatureContextAsync(GetModule(), () => Spawn.ProcessResourceDespawnsForTesting(closedAt.AddMinutes(SpawnService.LeftoverResourceDespawnMinutes - 1)));
                 await NwTask.NextFrame();
                 ctx.Assert(GetIsObjectValid(node), "The node should remain before the leftover delay passes.");
                 ctx.Assert(Spawn.IsSpawnActiveForTesting(spawnId), "The node should still hold its spawn slot before the leftover delay passes.");
                 ctx.AssertEqual(0, Spawn.GetQueuedSpawnCountForTesting(spawnId), "Queued respawns before the leftover delay passes");
 
-                await ctx.ExecuteInCreatureContextAsync(GetModule(), () => Spawn.ProcessResourceDespawnsForTesting(closedAt.AddMinutes(Spawn.LeftoverResourceDespawnMinutes + 1)));
+                await ctx.ExecuteInCreatureContextAsync(GetModule(), () => Spawn.ProcessResourceDespawnsForTesting(closedAt.AddMinutes(SpawnService.LeftoverResourceDespawnMinutes + 1)));
                 await ctx.WaitUntilAsync(() => !GetIsObjectValid(node), 5f, "the leftover node to be destroyed");
                 ctx.Assert(!Spawn.IsSpawnActiveForTesting(spawnId), "The despawned node should free its spawn slot.");
                 ctx.AssertEqual(1, Spawn.GetQueuedSpawnCountForTesting(spawnId), "Queued respawns after the leftover node despawns");
                 await AssertNoRemainsLeft(ctx, leftoverItem, nodeLocation);
 
-                await ctx.ExecuteInCreatureContextAsync(GetModule(), () => Spawn.ProcessResourceDespawnsForTesting(closedAt.AddMinutes(Spawn.LeftoverResourceDespawnMinutes + 2)));
+                await ctx.ExecuteInCreatureContextAsync(GetModule(), () => Spawn.ProcessResourceDespawnsForTesting(closedAt.AddMinutes(SpawnService.LeftoverResourceDespawnMinutes + 2)));
                 ctx.AssertEqual(1, Spawn.GetQueuedSpawnCountForTesting(spawnId), "Queued respawns after another despawn pass");
             }
             finally
@@ -90,7 +91,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(!Spawn.IsSpawnActiveForTesting(spawnId), "The emptied node should free its spawn slot.");
                 ctx.AssertEqual(1, Spawn.GetQueuedSpawnCountForTesting(spawnId), "Queued respawns after the node is emptied");
 
-                await ctx.ExecuteInCreatureContextAsync(GetModule(), () => Spawn.ProcessResourceDespawnsForTesting(closedAt.AddMinutes(Spawn.LeftoverResourceDespawnMinutes + 1)));
+                await ctx.ExecuteInCreatureContextAsync(GetModule(), () => Spawn.ProcessResourceDespawnsForTesting(closedAt.AddMinutes(SpawnService.LeftoverResourceDespawnMinutes + 1)));
                 await NwTask.NextFrame();
                 ctx.AssertEqual(1, Spawn.GetQueuedSpawnCountForTesting(spawnId), "Queued respawns after the leftover timer would have fired");
                 ctx.Assert(!Spawn.GetResourceDespawnTimeForTesting(node).HasValue, "The emptied node's despawn entry should be cleared.");

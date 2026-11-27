@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.FrameProfilerService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -10,22 +12,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task UnchangedSlotsAreNotResent(EngineTestContext ctx)
         {
             using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+            var telegraphs = Telegraph;
             var caster = ctx.SpawnCreature("nw_bandit001", 2f);
             var players = new[] { player.Creature };
 
-            await CountAsync(ctx, FrameMetric.TelegraphUniform, () => Telegraph.UpdateShadersForPlayers(players));
-            ctx.AssertEqual(0L, await CountAsync(ctx, FrameMetric.TelegraphUniform, () => Telegraph.UpdateShadersForPlayers(players)),
+            await CountAsync(ctx, FrameMetric.TelegraphUniform, () => telegraphs.UpdateShadersForPlayers(players));
+            ctx.AssertEqual(0L, await CountAsync(ctx, FrameMetric.TelegraphUniform, () => telegraphs.UpdateShadersForPlayers(players)),
                 "Uniforms sent when no telegraph changed");
 
             string telegraphId = null;
             var created = await CountAsync(ctx, FrameMetric.TelegraphUniform, () => ctx.ExecuteInCreatureContextAsync(caster, () =>
-                telegraphId = Telegraph.CreateSphereTelegraph(caster, GetPosition(caster), 3f, 10f, true, (_, _) => { })));
+                telegraphId = telegraphs.CreateSphereTelegraph(caster, GetPosition(caster), 3f, 10f, true, (_, _) => { })));
             ctx.Assert(telegraphId != null, "The telegraph was created.");
             ctx.AssertEqual(2L, created, "Uniforms sent for one new telegraph (shape, and position with fill timing)");
 
-            ctx.AssertEqual(0L, await CountAsync(ctx, FrameMetric.TelegraphUniform, () => Telegraph.UpdateShadersForPlayers(players)),
+            ctx.AssertEqual(0L, await CountAsync(ctx, FrameMetric.TelegraphUniform, () => telegraphs.UpdateShadersForPlayers(players)),
                 "Uniforms sent when the telegraph is unchanged");
-            ctx.AssertEqual(1L, await CountAsync(ctx, FrameMetric.TelegraphUniform, () => Telegraph.CancelTelegraph(telegraphId)),
+            ctx.AssertEqual(1L, await CountAsync(ctx, FrameMetric.TelegraphUniform, () => telegraphs.CancelTelegraph(telegraphId)),
                 "Uniforms sent when the telegraph's slot is cleared");
         }
 
@@ -33,6 +36,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task FillClockRunsOnlyWhileAShapeFills(EngineTestContext ctx)
         {
             using var player = await PlayerAbilityFixture.CreateAsync(ctx);
+            var telegraphs = Telegraph;
             var caster = ctx.SpawnCreature("nw_bandit001", 2f);
 
             ctx.AssertEqual(0L, await CountAsync(ctx, FrameMetric.TelegraphFillClock, () => ctx.DelaySecondsAsync(0.5f)),
@@ -42,7 +46,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var whileFilling = await CountAsync(ctx, FrameMetric.TelegraphFillClock, async () =>
             {
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
-                    telegraphId = Telegraph.CreateSphereTelegraph(caster, GetPosition(caster), 3f, 1f, true, (_, _) => { }));
+                    telegraphId = telegraphs.CreateSphereTelegraph(caster, GetPosition(caster), 3f, 1f, true, (_, _) => { }));
                 await ctx.DelaySecondsAsync(0.6f);
             });
             ctx.Assert(telegraphId != null, "The telegraph was created.");
@@ -56,12 +60,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var flash = await CountAsync(ctx, FrameMetric.TelegraphFillClock, async () =>
             {
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
-                    flashId = Telegraph.CreateTelegraph(caster, GetPosition(caster), 0f, new System.Numerics.Vector2(3f, 3f), 2f, true,
-                        SWLOR.Game.Server.Service.TelegraphService.TelegraphType.Sphere, (_, _) => { }, isImpactFlash: true));
+                    flashId = telegraphs.CreateTelegraph(caster, GetPosition(caster), 0f, new System.Numerics.Vector2(3f, 3f), 2f, true,
+                        TelegraphType.Sphere, (_, _) => { }, isImpactFlash: true));
                 await ctx.DelaySecondsAsync(0.5f);
             });
             ctx.AssertEqual(0L, flash, "Fill clock updates sent for an impact flash, which does not fill");
-            Telegraph.CancelTelegraph(flashId);
+            telegraphs.CancelTelegraph(flashId);
         }
 
         private static Task<long> CountAsync(EngineTestContext ctx, FrameMetric metric, Action action) =>

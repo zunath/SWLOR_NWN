@@ -6,7 +6,7 @@ using SWLOR.CombatSim.Engine;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
 using SWLOR.CombatSim.Tests.Support;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CombatSim.Tests.Engine;
 
@@ -165,7 +165,7 @@ public class CrossSkillWeaponProgressionTests
         spec.WeaponLoadout = gear.Weapon(haste);
         spec.Abilities = new() { new() { Feat = Ability(gear.Rank, prefix) } };
         var target = scenario.Teams[1].Members[0];
-        target.Defense = Stat.CalculateDefense(26, gear.Rank, 0); target.Evasion = Stat.GetEvasion(gear.Rank, 26, 0);
+        target.Defense = StatRules.CalculateDefense(26, gear.Rank, 0); target.Evasion = StatRules.GetEvasion(gear.Rank, 26, 0);
         return scenario;
     }
 
@@ -182,7 +182,7 @@ public class CrossSkillWeaponProgressionTests
         {
             MainDamage = Damage, MainDelay = Delay, OffhandDamage = Paired ? Damage : 0, OffhandDelay = Paired ? Delay : 0,
             SingleWeaponDamagePercent = Single ? 60 : 0, OffhandDelayReductionPercent = Paired ? 30 : 0,
-            SkillRank = Rank, WeaponRank = Rank, Attack = Stat.GetAttack(Rank, 26, 0), Accuracy = Stat.GetAccuracy(Rank, 26, 0), HastePercent = haste
+            SkillRank = Rank, WeaponRank = Rank, Attack = StatRules.GetAttack(Rank, 26, 0), Accuracy = StatRules.GetAccuracy(Rank, 26, 0), HastePercent = haste
         };
     }
 

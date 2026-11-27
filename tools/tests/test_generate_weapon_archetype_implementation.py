@@ -158,7 +158,7 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             abilities = output_root / "SWLOR.Game.Server/Feature/AbilityDefinition"
             steel_shoulder = (abilities / "Katar/SteelShoulderAbilityDefinition.cs").read_text()
             gambler_stance = (abilities / "Pistol/GamblerStanceAbilityDefinition.cs").read_text()
-            self.assertIn("using SWLOR.Game.Server.Service.AIService;", steel_shoulder)
+            self.assertIn("using SWLOR.Game.Server.Domain.Creatures;", steel_shoulder)
             self.assertIn(".HasAITarget(AITarget.LowestHealthAlly(includeSelf: false))", steel_shoulder)
             self.assertIn(".HasAIScore(AIScore.SelfBuff<GuardingStatusEffect>(1))", steel_shoulder)
             self.assertNotIn(".HasAITarget", gambler_stance)

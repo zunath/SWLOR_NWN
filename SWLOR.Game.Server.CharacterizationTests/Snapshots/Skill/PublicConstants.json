@@ -1,0 +1,14 @@
+{
+  "function": "Skill (public const fields and APCap)",
+  "description": "The skill point cap, the starting skill points, the total spendable skill points and the ability point cap derived from the skill point cap.",
+  "seed": null,
+  "inputs": "All public const fields of Skill, sorted by name, then the APCap property.",
+  "rowCount": 4,
+  "columns": ["constant", "=> type", "=> value"],
+  "rows": [
+    ["SkillCap", "Int32", 400],
+    ["StartingSkillPoints", "Int32", 10],
+    ["TotalSkillPointCap", "Int32", 410],
+    ["APCap", "Int32", 40]
+  ]
+}

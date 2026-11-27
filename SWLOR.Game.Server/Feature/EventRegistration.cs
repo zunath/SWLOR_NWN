@@ -1,9 +1,9 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -20,9 +20,11 @@ namespace SWLOR.Game.Server.Feature
         };
 
         /// <summary>
-        /// Fires on the module PreLoad event. This event should be specified in the environment variables.
-        /// This will hook all module/global events.
+        /// Fires on the module PreLoad event, after <see cref="StartServerEvents"/>. This event should be specified in the
+        /// environment variables. This will hook all module/global events, which stay bound in the engine, run
+        /// mod_content_chg when the module file changed and run the cache scripts. Boot only: a hot reload never runs it again.
         /// </summary>
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "The module, area and NWNX event bindings and the legacy item property hook stay in the engine; the reload bootstrap reruns the cache scripts' rerun handlers itself.")]
         [NWNEventHandler(ScriptName.OnModulePreload)]
         public static void OnModulePreload()
         {
@@ -75,6 +77,8 @@ namespace SWLOR.Game.Server.Feature
         /// When a player enters the server, hook their event scripts.
         /// Also add them to a UI processor list.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The creature event scripts stay in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void EnterServer()
         {
@@ -147,6 +151,15 @@ namespace SWLOR.Game.Server.Feature
         /// Hooks NWNX scripts.
         /// </summary>
         private static void HookNWNXEvents()
+        {
+            HookChatAndItemEvents();
+            HookDmEvents();
+            HookClientAndCombatEvents();
+            HookTrapToInputEvents();
+            HookRemainingEvents();
+        }
+
+        private static void HookChatAndItemEvents()
         {
             // Chat Plugin Events start here.
             ChatPlugin.RegisterChatScript(ScriptName.OnNWNXChat);
@@ -232,7 +245,10 @@ namespace SWLOR.Game.Server.Feature
             // Feat Use events
             EventsPlugin.SubscribeEvent("NWNX_ON_USE_FEAT_BEFORE", ScriptName.OnUseFeatBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_USE_FEAT_AFTER", ScriptName.OnUseFeatAfter);
+        }
 
+        private static void HookDmEvents()
+        {
             // DM Give events
             EventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_GOLD_BEFORE", ScriptName.OnDMGiveGoldBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_GOLD_AFTER", ScriptName.OnDMGiveGoldAfter);
@@ -330,7 +346,10 @@ namespace SWLOR.Game.Server.Feature
             // Client Disconnect events
             EventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_DISCONNECT_BEFORE", ScriptName.OnClientDisconnectBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_DISCONNECT_AFTER", ScriptName.OnClientDisconnectAfter);
+        }
 
+        private static void HookClientAndCombatEvents()
+        {
             // Client Connect events
             EventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_CONNECT_BEFORE", ScriptName.OnClientConnectBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_CONNECT_AFTER", ScriptName.OnClientConnectAfter);
@@ -430,7 +449,10 @@ namespace SWLOR.Game.Server.Feature
             // Barter End events
             EventsPlugin.SubscribeEvent("NWNX_ON_BARTER_END_BEFORE", ScriptName.OnBarterEndBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_BARTER_END_AFTER", ScriptName.OnBarterEndAfter);
+        }
 
+        private static void HookTrapToInputEvents()
+        {
             // Trap events
             EventsPlugin.SubscribeEvent("NWNX_ON_TRAP_DISARM_BEFORE", ScriptName.OnTrapDisarmBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_TRAP_DISARM_AFTER", ScriptName.OnTrapDisarmAfter);
@@ -519,7 +541,10 @@ namespace SWLOR.Game.Server.Feature
             //EventsPlugin.SubscribeEvent("NWNX_ON_RESOURCE_ADDED", ScriptName.OnResourceAdded);
             //EventsPlugin.SubscribeEvent("NWNX_ON_RESOURCE_REMOVED", ScriptName.OnResourceRemoved);
             //EventsPlugin.SubscribeEvent("NWNX_ON_RESOURCE_MODIFIED", ScriptName.OnResourceModified);
+        }
 
+        private static void HookRemainingEvents()
+        {
             // ELC Events
             EventsPlugin.SubscribeEvent("NWNX_ON_ELC_VALIDATE_CHARACTER_BEFORE", ScriptName.OnELCValidateCharacterBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_ELC_VALIDATE_CHARACTER_AFTER", ScriptName.OnELCValidateCharacterAfter);
@@ -580,17 +605,19 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("NWNX_ON_COMBAT_ATTACK_OF_OPPORTUNITY_AFTER", ScriptName.OnCombatAttackOfOpportunityAfter);
         }
 
+        /// <summary>Runs when the process exits: tells the engine's event system the application is shutting down.</summary>
+        private static void SignalApplicationShutdown()
+        {
+            EventsPlugin.SignalEvent("APPLICATION_SHUTDOWN", GetModule());
+        }
+
         /// <summary>
         /// Hooks all application-specific scripts.
         /// </summary>
         private static void HookApplicationEvents()
         {
-            // Application Shutdown events
+            // Application Shutdown events. StartServerEvents signals the event when the process exits.
             EventsPlugin.SubscribeEvent("APPLICATION_SHUTDOWN", ScriptName.OnSWLORApplicationShutdown);
-            AppDomain.CurrentDomain.ProcessExit += (sender, args) =>
-            {
-                EventsPlugin.SignalEvent("APPLICATION_SHUTDOWN", GetModule());
-            };
 
             EventsPlugin.SubscribeEvent("SWLOR_ITEM_EQUIP_VALID_BEFORE", ScriptName.OnSWLORItemEquipValidBefore);
             EventsPlugin.SubscribeEvent("SWLOR_BUY_PERK", ScriptName.OnSWLORBuyPerk);
@@ -601,6 +628,17 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("SWLOR_SKILL_LOST_BY_DECAY", ScriptName.OnSWLORSkillLostByDecay);
             EventsPlugin.SubscribeEvent("SWLOR_DELETE_PROPERTY", ScriptName.OnSWLORDeleteProperty);
             EventsPlugin.SubscribeEvent("SWLOR_ON_DAMAGE", ScriptName.OnSWLORDamage);
+        }
+
+        /// <summary>
+        /// Fires on the module PreLoad event, before <see cref="OnModulePreload"/>: signals APPLICATION_SHUTDOWN when the
+        /// process exits and starts the 6-second SWLOR heartbeat. Both live in the game build, so a hot reload runs it again.
+        /// </summary>
+        [BootPhase(BootReload.Rerun)]
+        [NWNEventHandler(ScriptName.OnModulePreload)]
+        public static void StartServerEvents()
+        {
+            ServerManager.Bootstrapper.ProcessEvents.SubscribeProcessExit(SignalApplicationShutdown);
 
             Scheduler.ScheduleRepeating(() =>
             {

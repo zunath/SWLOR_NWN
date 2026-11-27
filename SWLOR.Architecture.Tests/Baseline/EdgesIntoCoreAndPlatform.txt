@@ -1,0 +1,410 @@
+# Edges from other domains into the Foundation and Platform domains (infrastructure everyone may use).
+# Recorded for information only: the guard never fails on these, and warns when this file is out of date.
+# Same format as CrossDomainEdges.txt. Regenerate with SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build.
+
+# Abilities -> Foundation (5 edges)
+Domain/Abilities -> Domain/Foundation | 237
+Domain/Abilities -> Platform/Entity | 42
+Domain/Abilities -> Platform/Enumeration | 1
+Feature/AbilityDefinition -> Domain/Foundation | 103
+Feature/AbilityDefinition -> Platform/Entity | 6
+
+# Abilities -> Platform (8 edges)
+Domain/Abilities -> Platform/Composition | 15
+Domain/Abilities -> Platform/Core | 56
+Domain/Abilities -> Platform/Extension | 1
+Domain/Abilities -> Platform/Native | 3
+Domain/Abilities -> Platform/Root | 1
+Feature/AbilityDefinition -> Platform/Composition | 356
+Feature/AbilityDefinition -> Platform/Core | 31
+Feature/AbilityDefinition -> Platform/Native | 1
+
+# Administration -> Foundation (2 edges)
+Domain/Administration -> Domain/Foundation | 88
+Domain/Administration -> Platform/Entity | 21
+
+# Administration -> Platform (1 edge)
+Domain/Administration -> Platform/Core | 10
+
+# Character -> Foundation (8 edges)
+Domain/Character -> Domain/Foundation | 592
+Domain/Character -> Platform/Entity | 187
+Domain/Character -> Platform/Enumeration | 13
+Feature/AppearanceDefinition -> Domain/Foundation | 2
+Feature/PerkDefinition -> Domain/Foundation | 49
+Feature/PerkDefinition -> Platform/Entity | 1
+Feature/StatusEffectDefinition -> Domain/Foundation | 126
+Feature/StatusEffectDefinition -> Platform/Entity | 3
+
+# Character -> Platform (9 edges)
+Domain/Character -> Platform/Composition | 26
+Domain/Character -> Platform/Core | 98
+Domain/Character -> Platform/Extension | 6
+Domain/Character -> Platform/Native | 2
+Feature/AppearanceDefinition -> Platform/Composition | 7
+Feature/AppearanceDefinition -> Platform/Core | 22
+Feature/PerkDefinition -> Platform/Composition | 8
+Feature/StatusEffectDefinition -> Platform/Composition | 115
+Feature/StatusEffectDefinition -> Platform/Core | 5
+
+# Combat -> Foundation (3 edges)
+Domain/Combat -> Domain/Foundation | 802
+Domain/Combat -> Feature/MigrationDefinition | 2
+Domain/Combat -> Platform/Entity | 35
+
+# Combat -> Platform (5 edges)
+Domain/Combat -> Platform/Composition | 21
+Domain/Combat -> Platform/Core | 218
+Domain/Combat -> Platform/Extension | 3
+Domain/Combat -> Platform/Native | 4
+Domain/Combat -> Platform/Root | 1
+
+# Companions -> Foundation (3 edges)
+Domain/Companions -> Domain/Foundation | 194
+Domain/Companions -> Platform/Entity | 49
+Feature/BeastDefinition -> Domain/Foundation | 174
+
+# Companions -> Platform (3 edges)
+Domain/Companions -> Platform/Composition | 33
+Domain/Companions -> Platform/Core | 72
+Domain/Companions -> Platform/Extension | 1
+
+# Crafting -> Foundation (3 edges)
+Domain/Crafting -> Domain/Foundation | 399
+Domain/Crafting -> Platform/Entity | 99
+Feature/RecipeDefinition -> Domain/Foundation | 89
+
+# Crafting -> Platform (4 edges)
+Domain/Crafting -> Platform/Composition | 67
+Domain/Crafting -> Platform/Core | 28
+Domain/Crafting -> Platform/Extension | 2
+Feature/RecipeDefinition -> Platform/Composition | 3
+
+# Creatures -> Foundation (2 edges)
+Domain/Creatures -> Domain/Foundation | 51
+Feature/SpawnDefinition -> Domain/Foundation | 8
+
+# Creatures -> Platform (6 edges)
+Domain/Creatures -> Platform/Composition | 9
+Domain/Creatures -> Platform/Core | 62
+Domain/Creatures -> Platform/Extension | 1
+Domain/Creatures -> Platform/Native | 1
+Feature/AIDefinition -> Platform/Composition | 1
+Feature/SpawnDefinition -> Platform/Composition | 1
+
+# Economy -> Foundation (3 edges)
+Domain/Economy -> Domain/Foundation | 56
+Domain/Economy -> Platform/Entity | 32
+Domain/Economy -> Platform/Enumeration | 34
+
+# Economy -> Platform (2 edges)
+Domain/Economy -> Platform/Core | 16
+Domain/Economy -> Platform/Extension | 8
+
+# Foundation -> Platform (12 edges)
+Domain/Foundation -> Platform/Composition | 9
+Domain/Foundation -> Platform/Core | 68
+Domain/Foundation -> Platform/Extension | 8
+Domain/Foundation -> Platform/Native | 1
+Domain/Foundation -> Platform/Root | 4
+Feature/DialogDefinition -> Platform/Core | 4
+Feature/MigrationDefinition -> Platform/Composition | 25
+Feature/MigrationDefinition -> Platform/Core | 5
+Feature/MigrationDefinition -> Platform/Extension | 1
+Feature/SnippetDefinition -> Platform/Composition | 20
+Feature/SnippetDefinition -> Platform/Core | 26
+Platform/Entity -> Platform/Core | 1
+
+# Gameplay -> Foundation (59 edges)
+Feature.AchievementProgression -> Domain/Foundation | 7
+Feature.AchievementProgression -> Platform/Entity | 6
+Feature.AreaConfiguration -> Domain/Foundation | 1
+Feature.AreaConfiguration -> Platform/Enumeration | 1
+Feature.ArmorDisplay -> Domain/Foundation | 3
+Feature.ArmorDisplay -> Platform/Entity | 4
+Feature.BasicVibrobladeCompatibility -> Domain/Foundation | 8
+Feature.BasicVibrobladeCompatibility -> Feature/MigrationDefinition | 1
+Feature.BuffTimer -> Domain/Foundation | 2
+Feature.CZ220FlightsTerminal -> Domain/Foundation | 1
+Feature.CivilianPatrol -> Domain/Foundation | 2
+Feature.CreatureDeathAnimation -> Domain/Foundation | 1
+Feature.DMActions -> Domain/Foundation | 1
+Feature.DMActions -> Platform/Entity | 1
+Feature.DMAuthorization -> Domain/Foundation | 1
+Feature.DMAuthorization -> Platform/Enumeration | 1
+Feature.DMToolbarWindow -> Domain/Foundation | 2
+Feature.EchaniTempleMonks -> Domain/Foundation | 1
+Feature.EquipmentRestrictions -> Domain/Foundation | 3
+Feature.EquipmentStats -> Domain/Foundation | 2
+Feature.EventRegistration -> Domain/Foundation | 1
+Feature.EventRegistration -> Platform/Entity | 1
+Feature.ExplorationTrigger -> Domain/Foundation | 1
+Feature.LightsaberAudio -> Domain/Foundation | 2
+Feature.MiniMaps -> Domain/Foundation | 2
+Feature.NaturalRegeneration -> Domain/Foundation | 2
+Feature.NaturalRegeneration -> Platform/Entity | 2
+Feature.PersistentHitPoints -> Domain/Foundation | 2
+Feature.PersistentHitPoints -> Platform/Entity | 2
+Feature.PersistentLocation -> Domain/Foundation | 2
+Feature.PersistentLocation -> Platform/Entity | 2
+Feature.PersistentMapPin -> Domain/Foundation | 4
+Feature.PersistentMapPin -> Platform/Entity | 6
+Feature.PersistentMapProgression -> Domain/Foundation | 3
+Feature.PersistentMapProgression -> Platform/Entity | 2
+Feature.PistolAnimationRemap -> Domain/Foundation | 3
+Feature.PlaceableScripts -> Domain/Foundation | 8
+Feature.PlayerAccountRecord -> Domain/Foundation | 1
+Feature.PlayerAccountRecord -> Platform/Entity | 1
+Feature.PlayerInitialization -> Domain/Foundation | 4
+Feature.PlayerInitialization -> Feature/MigrationDefinition | 1
+Feature.PlayerInitialization -> Platform/Entity | 10
+Feature.PlayerStatusWindow -> Domain/Foundation | 17
+Feature.PlayerStatusWindow -> Platform/Entity | 1
+Feature.PlayerTemporaryEffects -> Domain/Foundation | 2
+Feature.PlayerTemporaryEffects -> Platform/Entity | 2
+Feature.RoleplayXP -> Domain/Foundation | 3
+Feature.RoleplayXP -> Platform/Entity | 6
+Feature.ServerTasks -> Domain/Foundation | 4
+Feature.ServerTasks -> Platform/Entity | 2
+Feature.StoreManagement -> Domain/Foundation | 1
+Feature.TlkOverrides -> Domain/Foundation | 2
+Feature.TrashCan -> Domain/Foundation | 1
+Feature.TwinPistolEquipmentValidation -> Domain/Foundation | 3
+Feature.TwinPistolEquipmentValidation -> Feature/MigrationDefinition | 1
+Feature.UnarmedMastery -> Domain/Foundation | 1
+Feature.UsePerkFeat -> Domain/Foundation | 12
+Feature/EquipmentStatActions -> Domain/Foundation | 20
+Feature/EquipmentStatActions -> Platform/Entity | 20
+
+# Gameplay -> Platform (126 edges)
+Domain/Gameplay -> Platform/Composition | 1
+Domain/Gameplay -> Platform/Root | 4
+Feature.AchievementProgression -> Platform/Composition | 7
+Feature.AchievementProgression -> Platform/Core | 7
+Feature.AreaConfiguration -> Platform/Composition | 1
+Feature.AreaConfiguration -> Platform/Core | 2
+Feature.AreaConfiguration -> Platform/Extension | 1
+Feature.ArmorDisplay -> Platform/Composition | 6
+Feature.ArmorDisplay -> Platform/Core | 1
+Feature.Auditing -> Platform/Composition | 3
+Feature.Auditing -> Platform/Core | 3
+Feature.BeastStableTrials -> Platform/Composition | 1
+Feature.BuffTimer -> Platform/Composition | 2
+Feature.BuffTimer -> Platform/Core | 1
+Feature.CZ220FlightsTerminal -> Platform/Composition | 1
+Feature.CZ220FlightsTerminal -> Platform/Core | 1
+Feature.CivilianPatrol -> Platform/Composition | 3
+Feature.CivilianPatrol -> Platform/Core | 2
+Feature.ClientVersionCheck -> Platform/Core | 1
+Feature.CraftingInterruptions -> Platform/Composition | 4
+Feature.CraftingInterruptions -> Platform/Core | 4
+Feature.CreatureDeathAnimation -> Platform/Composition | 1
+Feature.CreatureDeathAnimation -> Platform/Core | 1
+Feature.DMActions -> Platform/Composition | 1
+Feature.DMActions -> Platform/Core | 4
+Feature.DMAuthorization -> Platform/Composition | 1
+Feature.DMAuthorization -> Platform/Core | 2
+Feature.DMToolbarWindow -> Platform/Composition | 6
+Feature.DMToolbarWindow -> Platform/Core | 6
+Feature.DisableAttackOfOpportunity -> Platform/Core | 1
+Feature.DisableDefaultGameWindows -> Platform/Core | 1
+Feature.DoorScripts -> Platform/Core | 3
+Feature.EchaniTempleMonks -> Platform/Composition | 2
+Feature.EchaniTempleMonks -> Platform/Core | 1
+Feature.EquipmentRestrictions -> Platform/Composition | 5
+Feature.EquipmentRestrictions -> Platform/Core | 4
+Feature.EquipmentStats -> Platform/Composition | 8
+Feature.EquipmentStats -> Platform/Core | 6
+Feature.EventRegistration -> Platform/Composition | 2
+Feature.EventRegistration -> Platform/Core | 4
+Feature.EventRegistration -> Platform/Native | 1
+Feature.ExplorationTrigger -> Platform/Core | 1
+Feature.FeatConfiguration -> Platform/Core | 1
+Feature.FeedbackMessageConfiguration -> Platform/Core | 1
+Feature.GameWorldEntry -> Platform/Core | 1
+Feature.HolonetTerminal -> Platform/Composition | 1
+Feature.HolonetTerminal -> Platform/Core | 1
+Feature.InstantItemUse -> Platform/Core | 1
+Feature.Jukebox -> Platform/Composition | 1
+Feature.Jukebox -> Platform/Core | 1
+Feature.KatarAnimationRemap -> Platform/Composition | 5
+Feature.KatarAnimationRemap -> Platform/Core | 4
+Feature.KatarAnimationRemap -> Platform/Native | 1
+Feature.LightsaberAudio -> Platform/Composition | 2
+Feature.LightsaberAudio -> Platform/Core | 3
+Feature.MiniMaps -> Platform/Composition | 1
+Feature.MiniMaps -> Platform/Core | 3
+Feature.NaturalRegeneration -> Platform/Composition | 2
+Feature.NaturalRegeneration -> Platform/Core | 1
+Feature.OrdinaryAttackCombatLifecycle -> Platform/Composition | 7
+Feature.OrdinaryAttackCombatLifecycle -> Platform/Core | 7
+Feature.PersistentHitPoints -> Platform/Composition | 2
+Feature.PersistentHitPoints -> Platform/Core | 2
+Feature.PersistentLocation -> Platform/Composition | 2
+Feature.PersistentLocation -> Platform/Core | 4
+Feature.PersistentMapPin -> Platform/Composition | 4
+Feature.PersistentMapPin -> Platform/Core | 4
+Feature.PersistentMapProgression -> Platform/Composition | 3
+Feature.PersistentMapProgression -> Platform/Core | 2
+Feature.PistolAnimationRemap -> Platform/Composition | 5
+Feature.PistolAnimationRemap -> Platform/Core | 6
+Feature.PistolAnimationRemap -> Platform/Native | 1
+Feature.PistolBaseItemCompatibility -> Platform/Core | 1
+Feature.PlaceableScripts -> Platform/Core | 6
+Feature.PlayerAccountRecord -> Platform/Composition | 1
+Feature.PlayerAccountRecord -> Platform/Core | 1
+Feature.PlayerInitialization -> Platform/Composition | 5
+Feature.PlayerInitialization -> Platform/Core | 2
+Feature.PlayerRest -> Platform/Composition | 1
+Feature.PlayerRest -> Platform/Core | 3
+Feature.PlayerStatusWindow -> Platform/Composition | 15
+Feature.PlayerStatusWindow -> Platform/Core | 13
+Feature.PlayerTemporaryEffects -> Platform/Composition | 4
+Feature.PlayerTemporaryEffects -> Platform/Core | 3
+Feature.PowerGlovePairLifecycle -> Platform/Composition | 15
+Feature.PowerGlovePairLifecycle -> Platform/Core | 14
+Feature.ProceduralTreasure -> Platform/Composition | 1
+Feature.ProceduralTreasure -> Platform/Core | 1
+Feature.ResearchInterruptions -> Platform/Composition | 2
+Feature.ResearchInterruptions -> Platform/Core | 2
+Feature.Resource -> Platform/Core | 2
+Feature.RoleplayXP -> Platform/Composition | 5
+Feature.RoleplayXP -> Platform/Core | 6
+Feature.RoleplayXP -> Platform/Root | 4
+Feature.SaveCharacters -> Platform/Core | 3
+Feature.SavedAnimationMappings -> Platform/Core | 2
+Feature.SavedAnimationMappings -> Platform/Native | 2
+Feature.ScavengePoint -> Platform/Composition | 3
+Feature.ScavengePoint -> Platform/Core | 4
+Feature.ServerTasks -> Platform/Composition | 4
+Feature.ServerTasks -> Platform/Core | 8
+Feature.ServerTasks -> Platform/Root | 1
+Feature.SlicingTerminal -> Platform/Composition | 1
+Feature.SlicingTerminal -> Platform/Core | 1
+Feature.StackDecrementPrevention -> Platform/Core | 1
+Feature.StandardItemConfigurations -> Platform/Core | 2
+Feature.StoreManagement -> Platform/Core | 8
+Feature.TlkOverrides -> Platform/Composition | 1
+Feature.TlkOverrides -> Platform/Core | 1
+Feature.TrashCan -> Platform/Composition | 2
+Feature.TrashCan -> Platform/Core | 4
+Feature.TwinPistolCombatLifecycle -> Platform/Composition | 7
+Feature.TwinPistolCombatLifecycle -> Platform/Core | 9
+Feature.TwinPistolCombatLifecycle -> Platform/Native | 3
+Feature.TwinPistolEquipmentValidation -> Platform/Composition | 7
+Feature.TwinPistolEquipmentValidation -> Platform/Core | 8
+Feature.TwinPistolPairLifecycle -> Platform/Composition | 9
+Feature.TwinPistolPairLifecycle -> Platform/Core | 8
+Feature.UnarmedMastery -> Platform/Composition | 2
+Feature.UnarmedMastery -> Platform/Core | 1
+Feature.UnarmedTechniqueProfile -> Platform/Composition | 1
+Feature.UnarmedTechniqueProfile -> Platform/Core | 1
+Feature.UsePerkFeat -> Platform/Composition | 32
+Feature.UsePerkFeat -> Platform/Core | 12
+Feature/EquipmentStatActions -> Platform/Composition | 20
+Feature/EquipmentStatActions -> Platform/Core | 4
+
+# Items -> Foundation (6 edges)
+Domain/Items -> Domain/Foundation | 81
+Domain/Items -> Platform/Entity | 29
+Feature/ItemDefinition -> Domain/Foundation | 19
+Feature/ItemDefinition -> Platform/Entity | 5
+Feature/ItemDefinition -> Platform/Enumeration | 1
+Feature/LootTableDefinition -> Domain/Foundation | 2
+
+# Items -> Platform (6 edges)
+Domain/Items -> Platform/Composition | 20
+Domain/Items -> Platform/Core | 25
+Domain/Items -> Platform/Extension | 2
+Feature/ItemDefinition -> Platform/Composition | 34
+Feature/ItemDefinition -> Platform/Core | 8
+Feature/LootTableDefinition -> Platform/Core | 1
+
+# Platform -> Foundation (3 edges)
+Platform/Native -> Domain/Foundation | 55
+Platform/Native -> Feature/MigrationDefinition | 1
+Platform/Native -> Platform/Entity | 1
+
+# Quests -> Foundation (5 edges)
+Domain/Quests -> Domain/Foundation | 150
+Domain/Quests -> Platform/Entity | 99
+Domain/Quests -> Platform/Enumeration | 19
+Feature/QuestDefinition -> Domain/Foundation | 45
+Feature/QuestDefinition -> Platform/Entity | 21
+
+# Quests -> Platform (4 edges)
+Domain/Quests -> Platform/Composition | 46
+Domain/Quests -> Platform/Core | 33
+Domain/Quests -> Platform/Extension | 1
+Feature/QuestDefinition -> Platform/Composition | 157
+
+# Social -> Foundation (7 edges)
+Domain/Social -> Domain/Foundation | 173
+Domain/Social -> Feature/MigrationDefinition | 1
+Domain/Social -> Platform/Entity | 111
+Domain/Social -> Platform/Enumeration | 20
+Feature/ChatCommandDefinition -> Domain/Foundation | 44
+Feature/ChatCommandDefinition -> Platform/Entity | 17
+Feature/ChatCommandDefinition -> Platform/Enumeration | 104
+
+# Social -> Platform (6 edges)
+Domain/Social -> Platform/Core | 77
+Domain/Social -> Platform/Extension | 1
+Domain/Social -> Platform/Root | 3
+Feature/ChatCommandDefinition -> Platform/Composition | 74
+Feature/ChatCommandDefinition -> Platform/Core | 14
+Feature/ChatCommandDefinition -> Platform/Root | 7
+
+# Space -> Foundation (5 edges)
+Domain/Space -> Domain/Foundation | 109
+Domain/Space -> Platform/Entity | 30
+Domain/Space -> Platform/Enumeration | 10
+Feature/ShipModuleDefinition -> Domain/Foundation | 43
+Feature/ShipModuleDefinition -> Platform/Entity | 4
+
+# Space -> Platform (4 edges)
+Domain/Space -> Platform/Composition | 4
+Domain/Space -> Platform/Core | 39
+Feature/ShipModuleDefinition -> Platform/Composition | 21
+Feature/ShipModuleDefinition -> Platform/Core | 4
+
+# UI -> Foundation (8 edges)
+Domain/UI -> Domain/Foundation | 169
+Domain/UI -> Platform/Entity | 3
+Domain/UI -> Platform/Enumeration | 7
+Feature/AppearanceEditing -> Domain/Foundation | 34
+Feature/AppearanceEditing -> Platform/Entity | 15
+Feature/GuiDefinition -> Domain/Foundation | 801
+Feature/GuiDefinition -> Platform/Entity | 386
+Feature/GuiDefinition -> Platform/Enumeration | 11
+
+# UI -> Platform (9 edges)
+Domain/UI -> Platform/Composition | 5
+Domain/UI -> Platform/Core | 132
+Domain/UI -> Platform/Properties | 1
+Domain/UI -> Platform/Root | 1
+Feature/AppearanceEditing -> Platform/Core | 3
+Feature/GuiDefinition -> Platform/Composition | 612
+Feature/GuiDefinition -> Platform/Core | 291
+Feature/GuiDefinition -> Platform/Extension | 3
+Feature/GuiDefinition -> Platform/Root | 9
+
+# World -> Foundation (8 edges)
+Domain/World -> Domain/Foundation | 307
+Domain/World -> Platform/Entity | 153
+Domain/World -> Platform/Enumeration | 82
+Feature/FishingLocationDefinition -> Domain/Foundation | 1
+Feature/PropertyLayoutDefinition -> Domain/Foundation | 13
+Feature/PropertyLayoutDefinition -> Platform/Entity | 3
+Feature/PropertyLayoutDefinition -> Platform/Enumeration | 4
+Feature/TrapDefinition -> Domain/Foundation | 1
+
+# World -> Platform (8 edges)
+Domain/World -> Platform/Composition | 13
+Domain/World -> Platform/Core | 122
+Domain/World -> Platform/Extension | 10
+Domain/World -> Platform/Root | 2
+Feature/PropertyLayoutDefinition -> Platform/Composition | 7
+Feature/PropertyLayoutDefinition -> Platform/Core | 2
+Feature/TrapDefinition -> Platform/Composition | 2
+Feature/TrapDefinition -> Platform/Core | 3

@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.SnippetService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.SnippetDefinition
@@ -14,6 +13,15 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
     /// </summary>
     public sealed class ConversationStateSnippetDefinition : ISnippetListDefinition
     {
+        private PlaceableScripts PlaceableScripts { get; }
+        private ISnippetService Snippet { get; }
+
+        public ConversationStateSnippetDefinition(PlaceableScripts placeableScripts, ISnippetService snippet)
+        {
+            PlaceableScripts = placeableScripts;
+            Snippet = snippet;
+        }
+
         private readonly SnippetBuilder _builder = new SnippetBuilder();
 
         public Dictionary<string, SnippetDetail> BuildSnippets()
@@ -105,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                 .Argument("amount", SnippetArgumentType.Amount)
                 .AppearsWhenAction((_, args) =>
                     TryReadAmount("condition-random-chance", args, out var chance) &&
-                    SWLOR.Game.Server.Service.Random.D100(1) <= Math.Clamp(chance, 0, 100));
+                    SWLOR.Game.Server.Domain.Foundation.Random.D100(1) <= Math.Clamp(chance, 0, 100));
         }
 
         private void PlayerClassCondition()
@@ -236,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                 .ActionsTakenAction((player, _) => PlaceableScripts.PurchaseRebuild(player));
         }
 
-        private static bool TryReadLocalArguments(
+        private bool TryReadLocalArguments(
             uint player,
             string[] args,
             out uint target,
@@ -261,7 +269,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
             return true;
         }
 
-        private static bool TryWriteLocalArguments(
+        private bool TryWriteLocalArguments(
             uint player,
             string[] args,
             out uint target,
@@ -283,7 +291,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
             return true;
         }
 
-        private static bool TryResolveScope(uint player, string scope, out uint target)
+        private bool TryResolveScope(uint player, string scope, out uint target)
         {
             var owner = Snippet.GetExecutionOwner();
             target = scope?.Trim().ToLowerInvariant() switch

@@ -4,19 +4,17 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using Activity = SWLOR.Game.Server.Service.Activity;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -220,16 +218,16 @@ public static class WeaponRotationBalanceEngineTests
                 CreaturePlugin.SetRawAbilityScore(target, ability, 26);
             ctx.SuppressNPCNaturalRegen(target);
             // Apply the final NPC HP budget only after its spawn initialization and Vitality settle.
-            Stat.SetNPCMaxHitPoints(target, TargetMaximumHP, true);
+            CreatureStat.SetNPCMaxHitPoints(target, TargetMaximumHP, true);
             ctx.AssertEqual(TargetMaximumHP, GetMaxHitPoints(target), "The NPC has its actual native maximum HP budget");
             ctx.AssertEqual(TargetMaximumHP, GetCurrentHitPoints(target), "The NPC begins at its actual native maximum HP");
             // Preserve the former player defender's measured defense and evasion budgets.
             TemporaryStatModifier.Add(target, StatType.PhysicalDefense,
-                TargetDefense - Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), 180f, "rotation-defense");
+                TargetDefense - CombatRating.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), 180f, "rotation-defense");
             TemporaryStatModifier.Add(target, StatType.Evasion,
-                TargetEvasion - Stat.GetEvasion(target, SkillType.Invalid), 180f, "rotation-evasion");
-            ctx.AssertEqual(TargetDefense, Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), "The NPC preserves the reference defense budget");
-            ctx.AssertEqual(TargetEvasion, Stat.GetEvasion(target, SkillType.Invalid), "The NPC preserves the reference evasion budget");
+                TargetEvasion - CombatRating.GetEvasion(target, SkillType.Invalid), 180f, "rotation-evasion");
+            ctx.AssertEqual(TargetDefense, CombatRating.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), "The NPC preserves the reference defense budget");
+            ctx.AssertEqual(TargetEvasion, CombatRating.GetEvasion(target, SkillType.Invalid), "The NPC preserves the reference evasion budget");
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneImmobilize(), target, 180f);
             SetAILevel(target, AILevel.VeryLow);
             SetCommandable(false, target);
@@ -245,7 +243,7 @@ public static class WeaponRotationBalanceEngineTests
                 ConfigureWeapon(weapon);
             ctx.AssertEqual(pistol ? 36 : 22, WeaponDamage.GetEffectiveDMG(actor, main), "Single Weapon and Doublehand apply once, while paired guns retain their own DMG");
             ctx.AssertEqual(61, Stat.GetMaxStamina(actor), "The real player pool is 10 base +39 Might +12 reference gear");
-            ctx.AssertEqual(pistol ? 0 : 30, Combat.CalculateOffhandAttackDelayReduction(actor), "Armor specialization matches the equipped setup");
+            ctx.AssertEqual(pistol ? 0 : 30, GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(actor), "Armor specialization matches the equipped setup");
             AssertWeaponTiming(ctx, actor, main, companion, pistol);
             VerifyCorridor(ctx, actor, target, center);
         });
@@ -298,8 +296,8 @@ public static class WeaponRotationBalanceEngineTests
         var inputSeconds = opening ? 12 : 120;
         var windows = new Queue<int>(opening ? new[] { 6, 12 } : new[] { 6, 12, 120 });
         var startingHP = GetCurrentHitPoints(target);
-        Combat.SetAutoAttackHitResolutionOverride(null);
-        Combat.SetAbilityHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         _actor = actor;
         _target = target;
         _attributedDamage = 0;
@@ -307,14 +305,14 @@ public static class WeaponRotationBalanceEngineTests
         _ordinaryResolvedDamage = _activatedResolvedDamage = 0;
         ObservedImpacts.Clear();
         ActivatedDamageByAbility.Clear();
-        Ability.ClearLastCompletedAbilityImpactSummary(actor);
+        AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
         var clock = new Stopwatch();
         try
         {
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
                 SetEventScript(actor, EventScript.Creature_OnHeartbeat, "");
-                SetLocalInt(actor, Stat.SuppressNaturalRegenVariable, 1);
+                SetLocalInt(actor, CreatureStatService.SuppressNaturalRegenVariable, 1);
                 SetLocalInt(actor, "NATURAL_REGENERATION_TICK", 0);
                 SetLocalInt(actor, "NATURAL_STAMINA_REGEN_REMAINDER", 0);
                 player.Update(record => record.Stamina = Stat.GetMaxStamina(actor));
@@ -332,9 +330,9 @@ public static class WeaponRotationBalanceEngineTests
                     await ctx.ExecuteInCreatureContextAsync(actor, () =>
                     {
                         var before = Stat.GetCurrentStamina(actor);
-                        SetLocalInt(actor, Stat.SuppressNaturalRegenVariable, 0);
+                        SetLocalInt(actor, CreatureStatService.SuppressNaturalRegenVariable, 0);
                         try { NaturalRegeneration.ProcessRegeneration(); }
-                        finally { SetLocalInt(actor, Stat.SuppressNaturalRegenVariable, 1); }
+                        finally { SetLocalInt(actor, CreatureStatService.SuppressNaturalRegenVariable, 1); }
                         naturalRestored += Math.Max(0, Stat.GetCurrentStamina(actor) - before);
                         naturalTicks++;
                     });
@@ -353,14 +351,14 @@ public static class WeaponRotationBalanceEngineTests
                         armorTrait = armor.Type.ToString(), skillRank = 50, attributeScores = 26,
                         itemDamage = 22, itemDelay = ItemDelayUnits, itemDelayUnit = "custom delay units",
                         itemDelayPropertyCost = ItemDelayPropertyCost, equippedAttackWeapons = pistol ? 1 : 2,
-                        rawAttackDelayMilliseconds = Combat.CalculateAttackDelay(actor),
-                        effectiveAttackDelayMilliseconds = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(actor)),
+                        rawAttackDelayMilliseconds = GameServices.CombatAttackTiming.CalculateAttackDelay(actor),
+                        effectiveAttackDelayMilliseconds = CombatRules.CalculateEffectiveAttackDelay(GameServices.CombatAttackTiming.CalculateAttackDelay(actor)),
                         capstone = capstone.ToString(), acceptedCapstoneCasts = casts[capstone],
                         requestedSeconds = requested, observedSeconds = clock.Elapsed.TotalSeconds,
-                        sourceAttack = Stat.GetAttack(actor, AbilityType.Perception, pistol ? SkillType.Pistol : SkillType.TwinPistol),
-                        targetDefense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality),
-                        sourceAccuracy = Stat.GetAccuracy(actor, main, AbilityType.Agility, pistol ? SkillType.Pistol : SkillType.TwinPistol),
-                        targetEvasion = Stat.GetEvasion(target, SkillType.Invalid),
+                        sourceAttack = CombatRating.GetAttack(actor, AbilityType.Perception, pistol ? SkillType.Pistol : SkillType.TwinPistol),
+                        targetDefense = CombatRating.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality),
+                        sourceAccuracy = CombatRating.GetAccuracy(actor, main, AbilityType.Agility, pistol ? SkillType.Pistol : SkillType.TwinPistol),
+                        targetEvasion = CombatRating.GetEvasion(target, SkillType.Invalid),
                         targetKind = "NPC", targetBlueprint = GetResRef(target),
                         targetMaximumHP = GetMaxHitPoints(target), targetCurrentHP = GetCurrentHitPoints(target),
                         hpDamage = startingHP - GetCurrentHitPoints(target), attributedDamage = _attributedDamage,
@@ -383,9 +381,9 @@ public static class WeaponRotationBalanceEngineTests
                 }
                 for (var index = 0; index < feats.Length; index++)
                 {
-                    if (elapsed < next[index] || Activity.IsBusy(actor)) continue;
+                    if (elapsed < next[index] || GameServices.Activity.IsBusy(actor)) continue;
                     var feat = feats[index];
-                    var ability = Ability.GetAbilityDetail(feat);
+                    var ability = AbilityCatalog.GetAbilityDetail(feat);
                     if (Recast.IsOnRecastDelay(actor, ability.RecastGroup).Item1) continue;
                     await ctx.ExecuteInCreatureContextAsync(actor, () =>
                     {
@@ -398,7 +396,7 @@ public static class WeaponRotationBalanceEngineTests
                         }
                         else
                         {
-                            var reason = $"{feat}: {Ability.GetLastActivationDenialReason()}";
+                            var reason = $"{feat}: {AbilityActivation.GetLastActivationDenialReason()}";
                             denials[reason] = denials.GetValueOrDefault(reason) + 1;
                             if (denials[reason] == 1)
                                 ctx.Log(JsonSerializer.Serialize(new { seed, denied = reason, elapsed,
@@ -407,7 +405,7 @@ public static class WeaponRotationBalanceEngineTests
                         }
                     });
                 }
-                if (Activity.IsBusy(actor))
+                if (GameServices.Activity.IsBusy(actor))
                 {
                     // Let the normal post-cast resume callback settle first.
                     nextAttackResumeCheck = clock.Elapsed.TotalSeconds + .25d;
@@ -465,14 +463,14 @@ public static class WeaponRotationBalanceEngineTests
             PairedRangedAttackCycle.Cancel(actor);
             TwinPistolAbility.Cancel(actor);
             UsePerkFeat.ClearQueuedAbility(actor);
-            SetLocalInt(actor, Stat.SuppressNaturalRegenVariable, 1);
+            SetLocalInt(actor, CreatureStatService.SuppressNaturalRegenVariable, 1);
             if (GetIsObjectValid(target))
             {
                 TemporaryStatModifier.Clear(target);
                 SetCommandable(true, target);
             }
-            Combat.SetAutoAttackHitResolutionOverride(null);
-            Combat.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         }
     }
 
@@ -493,7 +491,7 @@ public static class WeaponRotationBalanceEngineTests
 
     private static void SampleCompletedAbilityDamage(uint actor)
     {
-        var latest = Ability.GetLastCompletedAbilityImpactSummary(actor);
+        var latest = AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor);
         if (latest != null) ObservedImpacts.TryAdd(latest, 0);
         // Delayed pulses may continue updating a completed summary. Keep reference identity
         // and count only new damage; do not count a summary again on every polling frame.
@@ -583,15 +581,15 @@ public static class WeaponRotationBalanceEngineTests
             ctx.AssertEqual(ItemDelayPropertyCost, propertyCost, "Each equipped weapon has native Delay property cost 25");
             ctx.AssertEqual(ItemDelayUnits, propertyCost * 10, "Each equipped weapon has 250 custom delay units after production cost-index conversion");
         }
-        var expectedRawDelay = Combat.CalculateAttackDelayMilliseconds(ItemDelayUnits, pistol ? 0 : ItemDelayUnits,
-            Combat.CalculateAttackDelayReduction(actor), Combat.CalculateOffhandAttackDelayReduction(actor));
-        var actualRawDelay = Combat.CalculateAttackDelay(actor);
+        var expectedRawDelay = CombatRules.CalculateAttackDelayMilliseconds(ItemDelayUnits, pistol ? 0 : ItemDelayUnits,
+            GameServices.CombatAttackTiming.CalculateAttackDelayReduction(actor), GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(actor));
+        var actualRawDelay = GameServices.CombatAttackTiming.CalculateAttackDelay(actor);
         ctx.AssertEqual(expectedRawDelay, actualRawDelay, "Equipped native delay matches the intended weapon and current Haste budgets");
-        var effectiveDelay = Combat.CalculateEffectiveAttackDelay(actualRawDelay);
-        ctx.AssertEqual(Combat.CalculateEffectiveAttackDelay(expectedRawDelay), effectiveDelay,
+        var effectiveDelay = CombatRules.CalculateEffectiveAttackDelay(actualRawDelay);
+        ctx.AssertEqual(CombatRules.CalculateEffectiveAttackDelay(expectedRawDelay), effectiveDelay,
             "The engine cycle uses the intended effective attack delay before timing begins");
         ctx.Log($"Verified weapon timing: propertyCost={ItemDelayPropertyCost}, itemDelayUnits={ItemDelayUnits}, " +
-                $"rawMilliseconds={actualRawDelay}, effectiveMilliseconds={effectiveDelay}, haste={Combat.CalculateAttackDelayReduction(actor)}, " +
-                $"offhandReduction={Combat.CalculateOffhandAttackDelayReduction(actor)}");
+                $"rawMilliseconds={actualRawDelay}, effectiveMilliseconds={effectiveDelay}, haste={GameServices.CombatAttackTiming.CalculateAttackDelayReduction(actor)}, " +
+                $"offhandReduction={GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(actor)}");
     }
 }

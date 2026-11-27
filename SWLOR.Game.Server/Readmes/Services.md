@@ -6,102 +6,23 @@ This document provides an overview of the Service layer in SWLOR.Game.Server, wh
 
 The Service layer contains the main business logic for the game. Services are organized by functionality and provide the core game mechanics that builders and other components use.
 
+Services are instance classes built by a dependency-injection container (the maintainability refactor, Phase 2). A service is an instance class `<Name>Service` behind the interface `I<Name>Service` under `Domain/<Domain>/`; static code reaches it through the property of its name on `GameServices` (`GameServices.Ability`, `GameServices.Craft`), and a class the container builds takes the interface through its constructor. There are no static facades left. See [DependencyInjection.md](DependencyInjection.md).
+
 ## Directory Structure
 
 ```
-Service/
-├── Ability.cs                         # Ability management
-├── Achievement.cs                     # Achievement system
-├── Activity.cs                        # Activity tracking
-├── AI.cs                             # AI behavior
-├── AnimationPlayer.cs                 # Animation system
-├── Area.cs                           # Area management
-├── Authorization.cs                   # Authorization system
-├── BeastMastery.cs                   # Beast companion system
-├── Cache.cs                          # Caching system
-├── ChatCommand.cs                    # Chat command handling
-├── ColorToken.cs                     # Color token system
-├── Combat.cs                         # Combat mechanics
-├── CombatPoint.cs                    # Combat point system
-├── Communication.cs                  # Communication system
-├── Craft.cs                          # Crafting system
-├── Currency.cs                       # Currency management
-├── DB.cs                             # Database operations
-├── Death.cs                          # Death handling
-├── Dialog.cs                         # Dialog system
-├── Droid.cs                          # Droid system
-├── Enmity.cs                         # Enmity system
-├── Faction.cs                        # Faction system
-├── Fishing.cs                        # Fishing system
-├── Guild.cs                          # Guild system
-├── HoloCom.cs                        # HoloCom system
-├── Item.cs                           # Item management
-├── KeyItem.cs                        # Key item system
-├── Language.cs                       # Language system
-├── Loot.cs                           # Loot system
-├── Log.cs                            # Logging system
-├── Menu.cs                           # Menu system
-├── Messaging.cs                      # Messaging system
-├── Migration.cs                      # Migration system
-├── Music.cs                          # Music system
-├── NPCGroup.cs                       # NPC group management
-├── ObjectVisibility.cs               # Object visibility
-├── Party.cs                          # Party system
-├── Perk.cs                           # Perk system
-├── Planet.cs                         # Planet management
-├── PlayerMarket.cs                   # Player market
-├── Property.cs                       # Property system
-├── Quest.cs                          # Quest system
-├── Race.cs                           # Race system
-├── Random.cs                         # Random number generation
-├── Recast.cs                         # Recast timer system
-├── Snippet.cs                        # Snippet system
-├── Space.cs                          # Space combat system
-├── Spawn.cs                          # Spawn system
-├── Stat.cs                           # Stat management
-├── StatusEffect.cs                   # Status effect system
-├── Targeting.cs                      # Targeting system
-├── Taxi.cs                           # Taxi system
-├── TileMagic.cs                      # Tile magic system
-├── Time.cs                           # Time management
-├── Walkmesh.cs                       # Walkmesh system
-├── Weather.cs                        # Weather system
-├── AbilityService/                   # Ability service components
-├── AchievementService/               # Achievement service components
-├── ActivityService/                  # Activity service components
-├── AIService/                        # AI service components
-├── AnimationService/                 # Animation service components
-├── BeastMasteryService/              # Beast mastery service components
-├── ChatCommandService/               # Chat command service components
-├── CombatService/                    # Combat service components
-├── CraftService/                     # Craft service components
-├── CurrencyService/                  # Currency service components
-├── DBService/                        # Database service components
-├── DialogService/                    # Dialog service components
-├── DroidService/                     # Droid service components
-├── FactionService/                   # Faction service components
-├── FishingService/                   # Fishing service components
-├── GuiService/                       # GUI service components
-├── ItemService/                      # Item service components
-├── KeyItemService/                   # Key item service components
-├── LanguageService/                  # Language service components
-├── LogService/                       # Log service components
-├── LootService/                      # Loot service components
-├── MigrationService/                 # Migration service components
-├── NPCService/                       # NPC service components
-├── PerkService/                      # Perk service components
-├── PlayerMarketService/              # Player market service components
-├── PropertyService/                  # Property service components
-├── QuestService/                     # Quest service components
-├── SkillService/                     # Skill service components
-├── SnippetService/                   # Snippet service components
-├── SpaceService/                     # Space service components
-├── SpawnService/                     # Spawn service components
-├── StatService/                      # Stat service components
-├── StatusEffect support              # Status effect support components
-├── TaxiService/                      # Taxi service components
-└── WeatherService/                   # Weather service components
+Domain/                               # Instance services, one folder per domain
+├── Abilities/  Administration/  Character/  Combat/  Companions/
+├── Core/  Crafting/  Creatures/  Economy/  Gameplay/
+└── Items/  Quests/  Social/  UI/  World/
+Composition/                          # The container registrations and the GameServices accessor
+Service/                              # Support types of the services, and the static classes not yet converted
+├── <Name>Service/                    # Builders, definitions, enums and records of one service
+├── Space.cs  Droid.cs                # Unconverted static classes
+└── Log.cs  Menu.cs  Random.cs  Time.cs  GameMath.cs  ColorToken.cs ...   # Static helpers and data types
 ```
+
+`SWLOR.Architecture.Tests/DomainMap.json` says which domain each service is in, and `SWLOR.Architecture.Tests/ConvertedServices.json` lists every converted service with the extra classes and parts it is made of.
 
 ## Core Services
 
@@ -114,7 +35,7 @@ Service/
 - `AbilityDetail` - Stores ability data
 - `AbilityActivationType` - Defines how abilities activate
 
-**Common Usage**: See `Service/Ability.cs` for available methods and usage patterns.
+**Common Usage**: See `Domain/Abilities/IAbilityService.cs` for available methods; static code reaches them through `GameServices.Ability`.
 
 ### 2. CombatService
 
@@ -127,7 +48,7 @@ Service/
 - Combat points
 - Enmity system
 
-**Common Usage**: See `Service/Combat.cs` and `Service/CombatPoint.cs` for combat mechanics.
+**Common Usage**: See `Domain/Combat/ICombatService.cs` and `Domain/Combat/ICombatPointService.cs` for combat mechanics; static code reaches them through `GameServices.Combat` and `GameServices.CombatPoint`.
 
 ### 3. PerkService
 
@@ -138,7 +59,7 @@ Service/
 - `PerkDetail` - Stores perk data
 - Perk requirements and costs
 
-**Common Usage**: See `Service/Perk.cs` for perk management methods.
+**Common Usage**: See `Domain/Character/IPerkService.cs` for perk management methods; static code reaches them through `GameServices.Perk`.
 
 ### 4. ItemService
 
@@ -150,7 +71,7 @@ Service/
 - Use effects
 - Recast timers
 
-**Common Usage**: See `Service/Item.cs` for item management methods.
+**Common Usage**: See `Domain/Items/IItemService.cs` for item management methods; static code reaches them through `GameServices.Item`.
 
 ### 5. QuestService
 
@@ -162,7 +83,7 @@ Service/
 - Quest requirements
 - Quest rewards
 
-**Common Usage**: See `Service/Quest.cs` for quest management methods.
+**Common Usage**: See `Domain/Quests/QuestService.cs` for quest management methods.
 
 ### 6. DialogService
 
@@ -186,7 +107,7 @@ Service/
 - Space combat mechanics
 - Ship navigation
 
-**Common Usage**: See `Service/Space.cs` for space combat methods.
+**Common Usage**: See `Domain/Space/SpaceService.cs` for space combat methods.
 
 ### 8. BeastMasteryService
 
@@ -198,7 +119,7 @@ Service/
 - Beast mutations
 - Beast food and care
 
-**Common Usage**: See `Service/BeastMastery.cs` for beast management methods.
+**Common Usage**: See `Domain/Companions/BeastMasteryService.cs` for beast management methods.
 
 ### 9. CraftService
 
@@ -210,7 +131,7 @@ Service/
 - Resource management
 - Quality system
 
-**Common Usage**: See `Service/Craft.cs` for crafting methods.
+**Common Usage**: See `Domain/Crafting/ICraftService.cs` for crafting methods; static code reaches them through `GameServices.Craft`.
 
 ### 10. PropertyService
 
@@ -222,7 +143,7 @@ Service/
 - Property customization
 - Property management
 
-**Common Usage**: See `Service/Property.cs` for property management methods.
+**Common Usage**: See `Domain/World/IPropertyService.cs` for property management methods; static code reaches them through `GameServices.Property`.
 
 ## Service Patterns
 
@@ -230,12 +151,12 @@ Service/
 
 Most services use builder patterns for complex object creation. See the individual service directories for builder implementations:
 
-- `Service/AbilityService/AbilityBuilder.cs`
-- `Service/PerkService/PerkBuilder.cs`
-- `Service/ChatCommandService/ChatCommandBuilder.cs`
-- `Service/CraftService/RecipeBuilder.cs`
-- `Service/BeastMasteryService/BeastBuilder.cs`
-- `Service/ItemService/ItemBuilder.cs`
+- `Domain/Abilities/AbilityBuilder.cs`
+- `Domain/Character/PerkBuilder.cs`
+- `Domain/Social/ChatCommandBuilder.cs`
+- `Domain/Crafting/RecipeBuilder.cs`
+- `Domain/Companions/BeastBuilder.cs`
+- `Domain/Items/ItemBuilder.cs`
 
 ### 2. Service Integration
 
@@ -249,11 +170,11 @@ Services include comprehensive error handling. See the individual service files 
 
 ### 1. Caching
 
-Services use caching to improve performance. See `Service/Cache.cs` for caching implementations and patterns.
+Services use caching to improve performance. See `Domain/Foundation/ICacheService.cs` for caching implementations and patterns.
 
 ### 2. Database Optimization
 
-Database operations are optimized. See `Service/DB.cs` for database access patterns and optimization strategies.
+Database operations are optimized. See `Domain/Foundation/IDBService.cs` for database access patterns and optimization strategies.
 
 ### 3. Memory Management
 

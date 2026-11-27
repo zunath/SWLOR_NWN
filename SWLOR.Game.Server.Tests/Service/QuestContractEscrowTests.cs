@@ -1,22 +1,29 @@
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.QuestContractService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class QuestContractEscrowTests
 {
+    // These rules touch neither the engine nor the database.
+    private static readonly InMemoryDBService Db = new();
+    private static readonly QuestContractBoardService Board = new(Db, QuestServices.Create(Db), FacadeForwarder.For<IAuthorizationService>(), FacadeForwarder.For<ICacheService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IItemService>());
+
     [Test]
     public void PartialSubmission_CannotBeClaimedByEitherPartyWhileContractIsActive()
     {
         var contract = Contract(QuestContractStatus.Published);
         var delivery = Submission("worker");
-        QuestContractBoard.TryReleaseSubmission(delivery, contract).Should().BeFalse();
+        Board.TryReleaseSubmission(delivery, contract).Should().BeFalse();
         delivery.PlayerId.Should().Be("worker");
-        QuestContractBoard.IsClaimable(delivery).Should().BeFalse();
+        Board.IsClaimable(delivery).Should().BeFalse();
     }
 
     [TestCase(QuestContractStatus.Cancelled)]
@@ -27,9 +34,9 @@ public class QuestContractEscrowTests
         foreach (var playerId in new[] { "worker", "other-worker" })
         {
             var delivery = Submission(playerId);
-            QuestContractBoard.TryReleaseSubmission(delivery, Contract(status)).Should().BeTrue();
+            Board.TryReleaseSubmission(delivery, Contract(status)).Should().BeTrue();
             delivery.PlayerId.Should().Be(playerId);
-            QuestContractBoard.IsClaimable(delivery).Should().BeTrue();
+            Board.IsClaimable(delivery).Should().BeTrue();
         }
     }
 
@@ -40,9 +47,9 @@ public class QuestContractEscrowTests
         foreach (var playerId in new[] { "worker", "other-worker" })
         {
             var delivery = Submission(playerId);
-            QuestContractBoard.TryReleaseSubmission(delivery, contract).Should().BeTrue();
+            Board.TryReleaseSubmission(delivery, contract).Should().BeTrue();
             delivery.PlayerId.Should().Be(playerId == "worker" ? "author" : playerId);
-            QuestContractBoard.TryReleaseSubmission(delivery, contract).Should().BeFalse("settlement is idempotent");
+            Board.TryReleaseSubmission(delivery, contract).Should().BeFalse("settlement is idempotent");
             delivery.Items.Should().ContainSingle();
         }
     }
@@ -53,10 +60,10 @@ public class QuestContractEscrowTests
         var contract = Contract(QuestContractStatus.Published);
         var abandoned = Submission("worker");
         var other = Submission("other-worker");
-        QuestContractBoard.TryReleaseSubmission(abandoned, contract, "worker").Should().BeTrue();
-        QuestContractBoard.TryReleaseSubmission(other, contract, "worker").Should().BeFalse();
+        Board.TryReleaseSubmission(abandoned, contract, "worker").Should().BeTrue();
+        Board.TryReleaseSubmission(other, contract, "worker").Should().BeFalse();
         contract.Status = QuestContractStatus.Fulfilled;
-        QuestContractBoard.TryReleaseSubmission(abandoned, contract).Should().BeFalse();
+        Board.TryReleaseSubmission(abandoned, contract).Should().BeFalse();
         abandoned.PlayerId.Should().Be("worker");
         QuestContractFactory.BuildQuest(contract).OnAbandonActions.Should().ContainSingle();
     }
@@ -65,11 +72,11 @@ public class QuestContractEscrowTests
     public void MissingContract_ReturnsSubmissionsAndLegacyDeliveriesRemainClaimable()
     {
         var delivery = Submission("worker");
-        QuestContractBoard.TryReleaseSubmission(delivery, null).Should().BeTrue();
+        Board.TryReleaseSubmission(delivery, null).Should().BeTrue();
         delivery.PlayerId.Should().Be("worker");
         var legacy = JsonConvert.DeserializeObject<QuestContractDelivery>("{\"PlayerId\":\"worker\",\"Credits\":100}")!;
-        QuestContractBoard.IsClaimable(legacy).Should().BeTrue();
-        QuestContractBoard.IsClaimable(new QuestContractDelivery { IsRewardPayment = true }).Should().BeFalse();
+        Board.IsClaimable(legacy).Should().BeTrue();
+        Board.IsClaimable(new QuestContractDelivery { IsRewardPayment = true }).Should().BeFalse();
     }
 
     private static QuestContract Contract(QuestContractStatus status) => new()

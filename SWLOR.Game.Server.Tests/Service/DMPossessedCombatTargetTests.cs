@@ -4,8 +4,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -25,20 +26,18 @@ public class DMPossessedCombatTargetTests
     [OneTimeSetUp]
     public void CompileProductionTargetStatsWithControlledActorsAndStorage()
     {
-        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
-            root = root.Parent;
-        root.Should().NotBeNull();
-        var stat = ParseService(root, "Stat.cs");
-        var methods = stat.DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(method => StatMethods.Contains(method.Identifier.ValueText) &&
+        var methods = StatHarnessSource.Methods(method => StatMethods.Contains(method.Identifier.ValueText) &&
                              (method.Identifier.ValueText != "GetEvasion" ||
                               method.ParameterList.Parameters[0].Identifier.ValueText == "creature"));
-        var constants = stat.DescendantNodes().OfType<FieldDeclarationSyntax>()
-            .Where(field => field.Declaration.Variables.Any(variable => variable.Identifier.ValueText is
-                "DefenseSkillMultiplier" or "BeastNaturalStaminaRegenDelaySeconds" or "BeastNaturalStaminaRegenAvailableAtVariable"));
-        var resistance = ParseService(root, "Resistance.cs").DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(method => method.Identifier.ValueText is "GetStoredResistance" or "CalculateTotalResistance");
+        var constants = StatHarnessSource.Fields(name => name is
+            "BeastNaturalStaminaRegenDelaySeconds" or "BeastNaturalStaminaRegenAvailableAtVariable");
+        // The resistance logic is the instance class of the converted service; its injected database and mimicry
+        // service and the shared clamp are replaced by this harness's stand-ins.
+        var resistance = new[] { "GetStoredResistance", "CalculateTotalResistance" }
+            .Select(name => DMPossessionHarness.InstanceMethod("Domain/Combat/ResistanceService.cs", name)
+                .Replace("_db.Get<Player>", "DB.Get<Player>")
+                .Replace("_mimicry.GetResistanceBonus", "Mimicry.GetResistanceBonus")
+                .Replace("ResistanceRules.ClampResistance", "ClampResistance"));
 
         // Execute the production target-stat methods; replace only native actor queries,
         // persistence, status-effect modifiers, and observable side effects.
@@ -46,11 +45,13 @@ public class DMPossessedCombatTargetTests
             using System;
             using System.Collections.Generic;
             using System.Globalization;
-            using SWLOR.Game.Server.Service.CombatRecorderService;
-            using SWLOR.Game.Server.Service.CombatService;
-            using SWLOR.Game.Server.Service.SkillService;
+            using SWLOR.Game.Server.Domain.Character;
+            using SWLOR.Game.Server.Domain.Combat;
+            using SWLOR.Game.Server.Domain.Combat;
+            using SWLOR.Game.Server.Domain.Character;
             using SWLOR.NWN.API.NWScript.Enum;
             using Stat = TargetHarness;
+            using SWLOR.Game.Server.Domain.Foundation;
             public static class TargetHarness
             {
                 {{string.Join(Environment.NewLine, constants)}}
@@ -83,7 +84,8 @@ public class DMPossessedCombatTargetTests
                     public static T Get<T>(string id) { Reads++; return (T)(object)Saved; }
                     public static void Set(Player player) { Saved = player; Writes++; }
                 }
-                private static class BeastMastery { public static bool IsPlayerBeast(uint creature) => false; }
+                private static class BeastMastery { public static bool IsPlayerBeast(uint creature) => false; public static bool IsDroid(uint creature) => false; }
+                private static class Clock { public static DateTime UtcNow => DateTime.UtcNow; }
                 private static class CombatRecorder
                 {
                     public static bool IsRecording => false;
@@ -134,7 +136,7 @@ public class DMPossessedCombatTargetTests
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES"))
-            .Split(Path.PathSeparator).Append(typeof(Stat).Assembly.Location)
+            .Split(Path.PathSeparator).Append(typeof(IStatService).Assembly.Location)
             .Append(typeof(AbilityType).Assembly.Location).Distinct()
             .Select(path => MetadataReference.CreateFromFile(path));
         var compilation = CSharpCompilation.Create("DMPossessedCombatTargetHarness",
@@ -172,9 +174,6 @@ public class DMPossessedCombatTargetTests
         Call("EvasionRating").Should().Be(20007);
         Call("ElectricalResistance").Should().Be(75);
     }
-
-    private static SyntaxNode ParseService(DirectoryInfo root, string file) =>
-        CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", file))).GetRoot();
 
     private object Call(string method, params object[] args) => _harness.GetMethod(method).Invoke(null, args);
 }

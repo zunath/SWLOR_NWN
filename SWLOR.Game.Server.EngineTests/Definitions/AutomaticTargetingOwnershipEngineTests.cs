@@ -6,10 +6,12 @@ using NWN.Native.API;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -25,7 +27,7 @@ public static class AutomaticTargetingOwnershipEngineTests
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         var player = fixture.Creature;
         PreparePerks(fixture);
-        Perk.RestorePlayerFeats(player);
+        PerkGrantedFeat.RestorePlayerFeats(player);
         CreaturePlugin.AddFeat(player, FeatType.Alertness);
         PlayerPlugin.SetQuickBarSlot(player, 17, PlayerQuickBarSlot.UseFeat(Support));
         PlayerPlugin.SetQuickBarSlot(player, 18, PlayerQuickBarSlot.UseFeat(Enemy));
@@ -38,8 +40,8 @@ public static class AutomaticTargetingOwnershipEngineTests
             foreach (var enabled in new[] { true, false })
             {
                 SetPreferences(player, enabled, enabled);
-                Perk.RestorePlayerFeats(player);
-                Perk.RestorePlayerFeats(player);
+                PerkGrantedFeat.RestorePlayerFeats(player);
+                PerkGrantedFeat.RestorePlayerFeats(player);
                 AssertOwnership(ctx, player, Support, enabled, $"cycle {cycle}: support");
                 AssertOwnership(ctx, player, Enemy, enabled, $"cycle {cycle}: enemy");
                 AssertSlot(ctx, player, 17, enabled ? Alias(Support) : Support);
@@ -57,19 +59,19 @@ public static class AutomaticTargetingOwnershipEngineTests
         foreach (var rank in new[] { 2, 3 })
         {
             fixture.Update(record => record.Perks[PerkType.RousingShout] = rank);
-            Perk.SyncGrantedFeats(player, PerkType.RousingShout, rank, true);
+            PerkGrantedFeat.SyncGrantedFeats(player, PerkType.RousingShout, rank, true);
             var current = rank == 2 ? FeatType.RousingShout2 : FeatType.RousingShout3;
             AssertOwnership(ctx, player, current, true, $"rank {rank}");
             foreach (var previous in new[] { Support, FeatType.RousingShout2 }.Where(feat => feat != current))
                 ctx.Assert(!QuickCast.KnowsFeat(player, previous), $"rank {rank}: superseded {previous} is revoked in both forms");
             var count = CreaturePlugin.GetFeatCountByLevel(player, 1);
-            Perk.SyncGrantedFeats(player, PerkType.RousingShout, rank, true);
+            PerkGrantedFeat.SyncGrantedFeats(player, PerkType.RousingShout, rank, true);
             ctx.AssertEqual(count, CreaturePlugin.GetFeatCountByLevel(player, 1), "repeated rank sync does not append another level row");
             AssertCanonicalLevelRow(ctx, player, current, 1);
         }
 
         fixture.Update(record => record.Perks.Remove(PerkType.RousingShout));
-        Perk.SyncGrantedFeats(player, PerkType.RousingShout, 0, true);
+        PerkGrantedFeat.SyncGrantedFeats(player, PerkType.RousingShout, 0, true);
         SetPreferences(player, false, false);
         foreach (var feat in new[] { Support, FeatType.RousingShout2, FeatType.RousingShout3 })
             ctx.Assert(!QuickCast.KnowsFeat(player, feat), $"rank-zero revocation cannot be undone by disabling targeting: {feat}");
@@ -83,7 +85,7 @@ public static class AutomaticTargetingOwnershipEngineTests
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         var player = fixture.Creature;
         PreparePerks(fixture);
-        Perk.RestorePlayerFeats(player);
+        PerkGrantedFeat.RestorePlayerFeats(player);
         PlayerPlugin.SetQuickBarSlot(player, 17, PlayerQuickBarSlot.UseFeat(Support));
         PlayerPlugin.SetQuickBarSlot(player, 18, PlayerQuickBarSlot.UseFeat(Enemy));
         PlayerPlugin.SetQuickBarSlot(player, 19, PlayerQuickBarSlot.UseSkill(0));
@@ -123,7 +125,7 @@ public static class AutomaticTargetingOwnershipEngineTests
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         PreparePerks(fixture);
         SetPreferences(fixture.Creature, true, true);
-        Perk.RestorePlayerFeats(fixture.Creature);
+        PerkGrantedFeat.RestorePlayerFeats(fixture.Creature);
         CreaturePlugin.AddFeat(fixture.Creature, FeatType.Alertness);
         PlayerPlugin.SetQuickBarSlot(fixture.Creature, 17, PlayerQuickBarSlot.UseFeat(Alias(Support)));
         PlayerPlugin.SetQuickBarSlot(fixture.Creature, 18, PlayerQuickBarSlot.UseFeat(Alias(Enemy)));
@@ -145,9 +147,9 @@ public static class AutomaticTargetingOwnershipEngineTests
                 player = restored.Creature;
                 id = restored.Id;
                 ctx.Assert(QuickCast.KnowsFeat(player, Support) && QuickCast.KnowsFeat(player, Enemy), "native player stats retain both purchased abilities before login repair");
-                Perk.RestorePlayerFeats(player);
+                PerkGrantedFeat.RestorePlayerFeats(player);
                 QuickCast.ApplyPreferences(player);
-                Perk.RestorePlayerFeats(player);
+                PerkGrantedFeat.RestorePlayerFeats(player);
                 AssertOwnership(ctx, player, Support, true, $"login cycle {cycle}: support");
                 AssertOwnership(ctx, player, Enemy, true, $"login cycle {cycle}: enemy");
                 AssertSlot(ctx, player, 17, Alias(Support));
@@ -189,10 +191,10 @@ public static class AutomaticTargetingOwnershipEngineTests
         for (var cycle = 1; cycle <= 2; cycle++)
         {
             SetPreferences(player, false, true);
-            ctx.Assert(Mimicry.ApplyLoadout(player, targeted.Id, new[] { Technique }, out var applyError), $"apply targeted build: {applyError}");
+            ctx.Assert(GameServices.MimicryLoadout.ApplyLoadout(player, targeted.Id, new[] { Technique }, out var applyError), $"apply targeted build: {applyError}");
             AssertOwnership(ctx, player, Technique, true, $"Mimicry cycle {cycle}");
             PlayerPlugin.SetQuickBarSlot(player, 17, PlayerQuickBarSlot.UseFeat(Alias(Technique)));
-            ctx.Assert(Mimicry.ApplyLoadout(player, empty, Array.Empty<FeatType>(), out var emptyError), $"apply empty build: {emptyError}");
+            ctx.Assert(GameServices.MimicryLoadout.ApplyLoadout(player, empty, Array.Empty<FeatType>(), out var emptyError), $"apply empty build: {emptyError}");
             ctx.Assert(!QuickCast.KnowsFeat(player, Technique), "unequipped technique loses both native variants");
             ctx.AssertEqual(QuickBarSlotType.Empty, PlayerPlugin.GetQuickBarSlot(player, 17).ObjectType, "alias shortcut is removed on unequip");
             await ctx.WaitFrameAsync();
@@ -202,12 +204,12 @@ public static class AutomaticTargetingOwnershipEngineTests
             ctx.Assert(record.LearnedTechniques.ContainsKey(Technique) && !record.LearnedTechniques.Keys.Any(QuickCastFeatMap.IsAlias), "learned ownership remains canonical");
             ctx.Assert(record.MimicryLoadouts.SelectMany(loadout => loadout.Techniques).All(feat => !QuickCastFeatMap.IsAlias(feat)), "all saved builds use canonical IDs");
             DB.Set(record);
-            ctx.Assert(Mimicry.ApplyLoadout(player, targeted.Id, new[] { Technique }, out applyError), $"restore targeted build: {applyError}");
+            ctx.Assert(GameServices.MimicryLoadout.ApplyLoadout(player, targeted.Id, new[] { Technique }, out applyError), $"restore targeted build: {applyError}");
             AssertSlot(ctx, player, 17, Alias(Technique));
             SetPreferences(player, false, false);
             AssertOwnership(ctx, player, Technique, false, "equipped technique follows disabled targeting");
             AssertSlot(ctx, player, 17, Technique);
-            ctx.Assert(Mimicry.UnequipTechnique(player, Technique), "production single-technique unequip succeeds");
+            ctx.Assert(GameServices.MimicryLoadout.UnequipTechnique(player, Technique), "production single-technique unequip succeeds");
             ctx.Assert(!QuickCast.KnowsFeat(player, Technique), "single-technique unequip revokes canonical ownership");
             ctx.AssertEqual(0, DB.Get<Player>(fixture.Id).EquippedTechniques.Count, "unequip clears the canonical equipped list");
             ctx.AssertEqual(levelCount, CreaturePlugin.GetFeatCountByLevel(player, 1), "technique toggles and loadouts do not create level-history entries");

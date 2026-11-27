@@ -3,14 +3,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
 {
@@ -66,8 +67,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             // attack 0.1s after casting, and an ordinary melee hit would satisfy a damage
             // assertion (caster is the last damager) before the ability's own impact lands.
             // Both overrides are always restored afterward.
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 for (var index = 0; index < cases.Count; index++)
@@ -127,15 +128,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             }
 
             var skipped = skippedFeats.Count;
             var passed = passedCount;
             var summary = $"{cases.Count} case(s): {passed} passed, {failures.Count} failed, {skipped} skipped.";
-            if (cases.Any(testCase => Ability.IsFeatRegistered(testCase.Feat) &&
-                                      Ability.GetAbilityDetail(testCase.Feat).IsMimicryTechnique))
+            if (cases.Any(testCase => AbilityCatalog.IsFeatRegistered(testCase.Feat) &&
+                                      AbilityCatalog.GetAbilityDetail(testCase.Feat).IsMimicryTechnique))
                 summary += " Techniques use persisted player loadouts; passive traits are checked while equipped and after removal.";
             if (abortedAsSystemic)
             {
@@ -173,8 +174,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 await PerformanceAbilityEngineTests.RunCaseAsync(ctx, behaviorCase.Feat);
                 return;
             }
-            ctx.Assert(Ability.IsFeatRegistered(behaviorCase.Feat), "feat is not registered to any ability");
-            var ability = Ability.GetAbilityDetail(behaviorCase.Feat);
+            ctx.Assert(AbilityCatalog.IsFeatRegistered(behaviorCase.Feat), "feat is not registered to any ability");
+            var ability = AbilityCatalog.GetAbilityDetail(behaviorCase.Feat);
             var requiresPlayerTechniqueLoadout = ability.IsMimicryTechnique;
 
             using var playerFixture = requiresPlayerTechniqueLoadout
@@ -197,25 +198,25 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             {
                 if (playerFixture != null)
                 {
-                    ctx.Assert(!Mimicry.CanEquip(caster, behaviorCase.Feat, out _), "unlearned techniques cannot be equipped");
+                    ctx.Assert(!GameServices.MimicryLoadout.CanEquip(caster, behaviorCase.Feat, out _), "unlearned techniques cannot be equipped");
                     playerFixture.Update(record => record.LearnedTechniques[behaviorCase.Feat] = DateTime.UtcNow);
-                    ctx.Assert(!Ability.CanUseAbility(caster, caster, behaviorCase.Feat, ability.AbilityLevel, GetLocation(caster)),
+                    ctx.Assert(!AbilityActivation.CanUseAbility(caster, caster, behaviorCase.Feat, ability.AbilityLevel, GetLocation(caster)),
                         "learned but unequipped techniques cannot be activated");
-                    ctx.Assert(Mimicry.CanEquip(caster, behaviorCase.Feat, out var equipError), $"learned technique can equip: {equipError}");
-                    ctx.Assert(Mimicry.EquipTechnique(caster, behaviorCase.Feat), "learned technique equips through the player service");
-                    ctx.Assert(Mimicry.IsTechniqueEquipped(caster, behaviorCase.Feat), "loadout is persisted");
+                    ctx.Assert(GameServices.MimicryLoadout.CanEquip(caster, behaviorCase.Feat, out var equipError), $"learned technique can equip: {equipError}");
+                    ctx.Assert(GameServices.MimicryLoadout.EquipTechnique(caster, behaviorCase.Feat), "learned technique equips through the player service");
+                    ctx.Assert(GameServices.MimicryLoadout.IsTechniqueEquipped(caster, behaviorCase.Feat), "loadout is persisted");
                     if (ability.IsMimicryTrait)
                     {
                         ctx.Assert(!GetHasFeat(behaviorCase.Feat, caster), "passive traits are not granted as active feats");
                         foreach (var stat in ability.MimicryTraitStats)
-                            ctx.AssertEqual(stat.Value, Mimicry.GetStatBonus(caster, stat.Key), $"equipped {stat.Key} bonus");
+                            ctx.AssertEqual(stat.Value, TraitStatBonus(caster, stat.Key), $"equipped {stat.Key} bonus");
                         foreach (var resistance in ability.MimicryTraitResistances)
-                            ctx.AssertEqual(resistance.Value, Mimicry.GetResistanceBonus(caster, resistance.Key), $"equipped {resistance.Key} resistance");
-                        ctx.Assert(Mimicry.UnequipTechnique(caster, behaviorCase.Feat), "passive trait unequips");
+                            ctx.AssertEqual(resistance.Value, GameServices.Mimicry.GetResistanceBonus(caster, resistance.Key), $"equipped {resistance.Key} resistance");
+                        ctx.Assert(GameServices.MimicryLoadout.UnequipTechnique(caster, behaviorCase.Feat), "passive trait unequips");
                         foreach (var stat in ability.MimicryTraitStats)
-                            ctx.AssertEqual(0, Mimicry.GetStatBonus(caster, stat.Key), $"removed {stat.Key} bonus");
+                            ctx.AssertEqual(0, TraitStatBonus(caster, stat.Key), $"removed {stat.Key} bonus");
                         foreach (var resistance in ability.MimicryTraitResistances)
-                            ctx.AssertEqual(0, Mimicry.GetResistanceBonus(caster, resistance.Key), $"removed {resistance.Key} resistance");
+                            ctx.AssertEqual(0, GameServices.Mimicry.GetResistanceBonus(caster, resistance.Key), $"removed {resistance.Key} resistance");
                         return;
                     }
                 }
@@ -280,12 +281,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     // factory-created instance has none until it is assigned.
                     var setupEffect = behaviorCase.TargetSetupStatusEffectFactory();
                     setupEffect.ReassignSource(caster);
-                    StatusEffect.ApplyStatusEffect(caster, target, setupEffect, 60f);
+                    StatusEffectApplication.ApplyStatusEffect(caster, target, setupEffect, 60f);
                 }
 
                 foreach (var setupEffectType in behaviorCase.TargetSetupStatusEffects)
                 {
-                    StatusEffect.ApplyStatusEffect(caster, target, setupEffectType, 60f);
+                    StatusEffectApplication.ApplyStatusEffect(caster, target, setupEffectType, 60f);
                 }
 
                 // Let spawn initialization scripts run before configuring resources - they
@@ -486,7 +487,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                             // (AI, arena bystanders) can overwrite within a frame.
                             if (!used)
                             {
-                                activationDenial = Ability.GetLastActivationDenialReason();
+                                activationDenial = AbilityActivation.GetLastActivationDenialReason();
                                 if (behaviorCase.SearchForSafeMovementLane)
                                     activationDenial += $"; actor={GetPosition(caster)}, target={GetPosition(target)}, cursor={GetPositionFromLocation(activationLocation)}";
                             }
@@ -561,9 +562,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
 
                         // Cleared so a post-consumption observation can only match THIS
                         // ability's completed impact, never an earlier case's.
-                        Ability.ClearLastCompletedAbilityImpactSummary(caster);
+                        AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
 
-                        Combat.SetAutoAttackHitResolutionOverride(true);
+                        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                         try
                         {
                             AssignCommand(caster, () => ActionAttack(hitTarget));
@@ -574,7 +575,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         }
                         finally
                         {
-                            Combat.SetAutoAttackHitResolutionOverride(false);
+                            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
                             AssignCommand(caster, () => ClearAllActions());
                         }
 
@@ -586,7 +587,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                             // (the impact records targets it merely VISITED, even at zero
                             // damage). AttributedDamage counts only damage the ability's own
                             // impact actually queued.
-                            var impactSummary = Ability.GetLastCompletedAbilityImpactSummary(caster);
+                            var impactSummary = AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster);
                             ctx.Assert(
                                 impactSummary is { AttributedDamage: > 0 },
                                 $"the queued ability's completed impact to attribute damage of its own (summary: {(impactSummary == null ? "none" : $"targets={impactSummary.ImpactedTargetCount}, attributedDamage={impactSummary.AttributedDamage}")})");
@@ -750,7 +751,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     {
                         used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, activationLocation);
                         if (!used)
-                            denial = Ability.GetLastActivationDenialReason();
+                            denial = AbilityActivation.GetLastActivationDenialReason();
                     }
                     catch (Exception ex) { error = ex; }
                 });
@@ -938,6 +939,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             }
         }
 
+        // The trait stat read takes the stat reader it scales Trait Potency with; the stat service passes itself.
+        private static int TraitStatBonus(uint caster, StatType stat) => GameServices.MimicryTraitStats.GetStatBonus(caster, stat, Stat);
+
         /// <summary>
         /// Destroys the loot-corpse placeable Loot.ProcessCorpse spawned for a killed
         /// fixture. Matched by the CORPSE_BODY back-reference rather than proximity alone
@@ -951,7 +955,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 if (!GetIsObjectValid(placeable) || GetDistanceBetween(body, placeable) > 10f)
                     break;
 
-                if (GetLocalObject(placeable, Loot.CorpseBodyVariable) == body)
+                if (GetLocalObject(placeable, LootService.CorpseBodyVariable) == body)
                 {
                     DestroyObject(placeable);
                     break;
@@ -1005,7 +1009,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     {
                         var percent = Stat.GetStatAdjustment(caster, StatType.AbilityStaminaCostPercentAdjustment);
                         var cost = (int)Math.Ceiling(stmRequirement.RequiredSTM * (1 + percent / 100f));
-                        cost += Combat.GetAbilityStaminaCostFlatAdjustment(caster, ability);
+                        cost += GameServices.CombatAbilityBonus.GetAbilityStaminaCostFlatAdjustment(caster, ability);
                         expectedSTM += Math.Max(0, cost);
                         break;
                     }

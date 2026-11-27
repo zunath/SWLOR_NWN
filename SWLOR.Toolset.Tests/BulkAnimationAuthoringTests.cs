@@ -153,7 +153,7 @@ public class BulkAnimationAuthoringTests
         if (!File.Exists(model)) Assert.Ignore("Initialize HAK sources.");
         var folder = Path.Combine(Path.GetTempPath(), "swlor-bulk-transaction-" + Guid.NewGuid().ToString("N"));
         var output = Path.Combine(folder, "design/animations");
-        var catalog = Path.Combine(folder, "SWLOR.Game.Server/Service/AnimationService/ActiveAbilityAnimationCatalog.cs");
+        var catalog = Path.Combine(folder, "SWLOR.Game.Server/Domain/Foundation/ActiveAbilityAnimationCatalog.cs");
         Directory.CreateDirectory(Path.GetDirectoryName(catalog)!);
         Directory.CreateDirectory(Path.Combine(output, "pistol"));
         try

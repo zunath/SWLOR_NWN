@@ -2,12 +2,12 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
@@ -81,15 +81,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     DB.Set(dbBeast);
 
                     var previousBeast = GetAssociate(AssociateType.Henchman, activator);
-                    BeastMastery.SpawnBeast(activator, dbBeast.Id, 0);
+                    BeastSpawn.SpawnBeast(activator, dbBeast.Id, 0);
                     var summonedBeast = GetAssociate(AssociateType.Henchman, activator);
                     if (summonedBeast != previousBeast && BeastMastery.IsPlayerBeast(summonedBeast))
                     {
                         Ability.PlaySuccessfulImpactVisualEffect(activator, summonedBeast);
                         if (CombatRecorder.IsRecording)
-                            CombatRecorder.RecordResurrection(summonedBeast);
+                            CombatRecordDamage.RecordResurrection(summonedBeast);
                     }
-                    Enmity.ModifyEnmityOnAll(activator, 500);
+                    EnmityChange.ModifyEnmityOnAll(activator, 500);
                     CombatPoint.AddReviveSupportCombatPoint(activator, activator, SkillType.BeastMastery);
                 });
         }
@@ -121,15 +121,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     var hpPercentage = Math.Min(100, 10 + GetAbilityScore(activator, AbilityType.Social));
                     var previousBeast = GetAssociate(AssociateType.Henchman, activator);
-                    BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
+                    BeastSpawn.SpawnBeast(activator, dbBeast.Id, hpPercentage);
                     var summonedBeast = GetAssociate(AssociateType.Henchman, activator);
                     if (summonedBeast != previousBeast && BeastMastery.IsPlayerBeast(summonedBeast))
                     {
                         Ability.PlaySuccessfulImpactVisualEffect(activator, summonedBeast);
                         if (CombatRecorder.IsRecording)
-                            CombatRecorder.RecordResurrection(summonedBeast);
+                            CombatRecordDamage.RecordResurrection(summonedBeast);
                     }
-                    Enmity.ModifyEnmityOnAll(activator, 500);
+                    EnmityChange.ModifyEnmityOnAll(activator, 500);
                     CombatPoint.AddReviveSupportCombatPoint(activator, activator, SkillType.BeastMastery);
                 });
         }
@@ -161,15 +161,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     var hpPercentage = Math.Min(100, 45 + GetAbilityScore(activator, AbilityType.Social));
                     var previousBeast = GetAssociate(AssociateType.Henchman, activator);
-                    BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
+                    BeastSpawn.SpawnBeast(activator, dbBeast.Id, hpPercentage);
                     var summonedBeast = GetAssociate(AssociateType.Henchman, activator);
                     if (summonedBeast != previousBeast && BeastMastery.IsPlayerBeast(summonedBeast))
                     {
                         Ability.PlaySuccessfulImpactVisualEffect(activator, summonedBeast);
                         if (CombatRecorder.IsRecording)
-                            CombatRecorder.RecordResurrection(summonedBeast);
+                            CombatRecordDamage.RecordResurrection(summonedBeast);
                     }
-                    Enmity.ModifyEnmityOnAll(activator, 500);
+                    EnmityChange.ModifyEnmityOnAll(activator, 500);
                     CombatPoint.AddReviveSupportCombatPoint(activator, activator, SkillType.BeastMastery);
                 });
         }

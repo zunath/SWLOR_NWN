@@ -1,13 +1,18 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class KatarAnimationRemapPlanTests
 {
     private static readonly string[] NoActiveSwing = Array.Empty<string>();
+
+    // The keys belong to a playback instance; none of them is ever started here, so the runtime does nothing.
+    private static readonly IReadOnlyList<string> SwingKeys = new QueuedAttackAnimationPlayback(new UnusedRuntime()).SwingKeys;
 
     private static Dictionary<string, string> FullRemap() =>
         KatarAnimationRemapPlan.Pairs.ToDictionary(pair => pair.Source, pair => pair.Replacement);
@@ -78,7 +83,7 @@ public class KatarAnimationRemapPlanTests
         var current = FullRemap();
         current["1hslashl"] = "sw_doub_stri";
 
-        KatarAnimationRemapPlan.GetChanges(true, false, current, QueuedAttackAnimationPlayback.SwingKeys).Should().BeEmpty();
+        KatarAnimationRemapPlan.GetChanges(true, false, current, SwingKeys).Should().BeEmpty();
     }
 
     [Test]
@@ -98,7 +103,7 @@ public class KatarAnimationRemapPlanTests
     {
         var current = new Dictionary<string, string> { ["1hslashl"] = "sw_doub_stri" };
 
-        var changes = KatarAnimationRemapPlan.GetChanges(true, false, current, QueuedAttackAnimationPlayback.SwingKeys);
+        var changes = KatarAnimationRemapPlan.GetChanges(true, false, current, SwingKeys);
 
         changes.Should().NotContain(change => change.Source == "1hslashl");
         changes.Should().Contain(("1hreadyr", "nwreadyr"));
@@ -124,7 +129,7 @@ public class KatarAnimationRemapPlanTests
         var current = FullRemap();
         current["1hslashl"] = "sw_doub_stri";
 
-        KatarAnimationRemapPlan.GetChanges(true, true, current, QueuedAttackAnimationPlayback.SwingKeys)
+        KatarAnimationRemapPlan.GetChanges(true, true, current, SwingKeys)
             .Should().BeEquivalentTo(KatarAnimationRemapPlan.PowerGloveCarryPairs);
     }
 
@@ -153,5 +158,16 @@ public class KatarAnimationRemapPlanTests
         var changes = KatarAnimationRemapPlan.GetChanges(false, false, current, NoActiveSwing);
 
         changes.Should().HaveCount(current.Count).And.OnlyContain(change => change.Replacement == string.Empty);
+    }
+
+    private sealed class UnusedRuntime : INamedAnimationRuntime
+    {
+        public bool IsValid(uint creature) => false;
+        public string GetToken(uint creature) => string.Empty;
+        public void SetToken(uint creature, string token) { }
+        public void Replace(uint creature, string source, string replacement) { }
+        public ActionType CurrentAction(uint creature) => ActionType.Invalid;
+        public void ClearActions(uint creature) { }
+        public void Schedule(float seconds, Action callback) { }
     }
 }

@@ -1,12 +1,30 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class NaturalStaminaRegenerationTests
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [TestCase(0, 0, 0, 10)]
     [TestCase(10, 0, 0, 12)]
     [TestCase(26, 0, 0, 16)]
@@ -64,13 +82,13 @@ public class NaturalStaminaRegenerationTests
     public void BeastNaturalStaminaRegeneration_WaitsSixSecondsAfterStaminaSpend()
     {
         var spentAt = new DateTime(2026, 8, 25, 12, 0, 0, DateTimeKind.Utc);
-        var availableAt = spentAt.AddSeconds(Stat.BeastNaturalStaminaRegenDelaySeconds);
+        var availableAt = spentAt.AddSeconds(StatService.BeastNaturalStaminaRegenDelaySeconds);
 
-        Stat.IsNaturalStaminaRegenerationAvailable(availableAt.Ticks, spentAt.Ticks)
+        CreatureStat.IsNaturalStaminaRegenerationAvailable(availableAt.Ticks, spentAt.Ticks)
             .Should().BeFalse();
-        Stat.IsNaturalStaminaRegenerationAvailable(availableAt.Ticks, availableAt.AddTicks(-1).Ticks)
+        CreatureStat.IsNaturalStaminaRegenerationAvailable(availableAt.Ticks, availableAt.AddTicks(-1).Ticks)
             .Should().BeFalse();
-        Stat.IsNaturalStaminaRegenerationAvailable(availableAt.Ticks, availableAt.Ticks)
+        CreatureStat.IsNaturalStaminaRegenerationAvailable(availableAt.Ticks, availableAt.Ticks)
             .Should().BeTrue();
     }
 
@@ -82,46 +100,19 @@ public class NaturalStaminaRegenerationTests
     [TestCase(-5, 1)]
     public void BeastNaturalRegeneration_ScalesWithGoverningAttribute(int attribute, int expected)
     {
-        Stat.GetBeastNaturalRegenAmount(attribute).Should().Be(expected);
+        CreatureStat.GetBeastNaturalRegenAmount(attribute).Should().Be(expected);
     }
 
     [Test]
     public void BeastHeartbeat_UsesDelayedStaminaRegenerationWithoutCombatGating()
     {
-        var root = FindRepositoryRoot();
-        var beastMastery = File.ReadAllText(Path.Combine(
-            root,
-            "SWLOR.Game.Server",
-            "Service",
-            "BeastMastery.cs"));
-        var stat = File.ReadAllText(Path.Combine(
-            root,
-            "SWLOR.Game.Server",
-            "Service",
-            "Stat.cs"));
+        var stat = StatSource.Read();
 
-        beastMastery.Should().Contain("Stat.RestoreBeastStats();");
-        stat.Should().Contain("RestoreNPCStats(false, true);");
-        stat.Should().Contain("BeastMastery.IsPlayerBeast(creature)");
+        // That the beast heartbeat calls Stat.RestoreBeastStats is pinned by BeastMasteryServiceTests.
+        stat.Should().Contain("RestoreNPCStats(false, true, null);");
+        stat.Should().Contain("_companions.IsPlayerBeast(creature)");
 
-        var restoreBeastStats = stat.Substring(
-            stat.IndexOf("public static void RestoreBeastStats()", StringComparison.Ordinal),
-            stat.IndexOf("public static bool IsNaturalStaminaRegenerationAvailable", StringComparison.Ordinal) -
-            stat.IndexOf("public static void RestoreBeastStats()", StringComparison.Ordinal));
+        var restoreBeastStats = StatSource.Method("RestoreBeastStats").ToString();
         restoreBeastStats.Should().NotContain("GetIsInCombat");
-    }
-
-    private static string FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-                return directory.FullName;
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 }

@@ -1,11 +1,19 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class XPTomeDialog: ConversationMenuDefinition
     {
+        private ISkillService Skill { get; }
+        private ISkillXPService SkillXP { get; }
+
+        public XPTomeDialog(ISkillService skill, ISkillXPService skillXP)
+        {
+            Skill = skill;
+            SkillXP = skillXP;
+        }
+
         private class Model
         {
             public uint Item { get; set; }
@@ -78,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             page.AddResponse("Select this skill.", () =>
             {
                 var amount = GetLocalInt(model.Item, "XP_TOME_AMOUNT");
-                Skill.GiveSkillXP(player, model.Skill, amount, false, false);
+                SkillXP.GiveSkillXP(player, model.Skill, amount, false, false);
                 DestroyObject(model.Item);
 
                 Close();

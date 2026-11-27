@@ -2,17 +2,15 @@ using SWLOR.Game.Server.Core;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition
 {
@@ -25,106 +23,60 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private const string FieldEngineerPulseMarkerTag = "field_engineer_pulse_marker";
         private const string BeaconShotSound = "cb_sh_blstrfire1";
 
-        private static readonly Dictionary<uint, List<FieldEngineerPulseEmitter>> _activeFieldEngineerPulseEmitters = new();
-
-        private sealed class FieldEngineerPulseEmitter
+        private static FieldEngineerPulseEmitter CreateFieldEngineerPulseEmitter(
+            uint activator,
+            Location location,
+            SkillType skillType,
+            int baseDamage,
+            int statusDuration,
+            Type statusEffect,
+            float radius,
+            float durationSeconds,
+            CombatDamageType damageType,
+            VisualEffect targetVisualEffect,
+            VisualEffect areaVisualEffect,
+            VisualEffect markerVisualEffect,
+            float markerVisualEffectScale,
+            bool isAreaPulse,
+            bool appliesBeaconPulseBonuses,
+            bool showAreaIndicator,
+            VisualEffect projectileVisualEffect = VisualEffect.None,
+            VisualEffect beamVisualEffect = VisualEffect.None)
         {
-            public FieldEngineerPulseEmitter(
-                uint activator,
-                Location location,
-                SkillType skillType,
-                int baseDamage,
-                int statusDuration,
-                Type statusEffect,
-                float radius,
-                float durationSeconds,
-                CombatDamageType damageType,
-                VisualEffect targetVisualEffect,
-                VisualEffect areaVisualEffect,
-                VisualEffect markerVisualEffect,
-                float markerVisualEffectScale,
-                bool isAreaPulse,
-                bool appliesBeaconPulseBonuses,
-                bool showAreaIndicator,
-                VisualEffect projectileVisualEffect = VisualEffect.None,
-                VisualEffect beamVisualEffect = VisualEffect.None)
+            var emitter = new FieldEngineerPulseEmitter(
+                activator, location, skillType, baseDamage, statusDuration, statusEffect, radius, durationSeconds, damageType,
+                targetVisualEffect, areaVisualEffect, markerVisualEffect, markerVisualEffectScale, isAreaPulse,
+                appliesBeaconPulseBonuses, showAreaIndicator, projectileVisualEffect, beamVisualEffect);
+            // The cast's stamina cost context ends with the cast, but its pulses land later: each pulse runs
+            // inside the context of the activation that scheduled it, so its hit rewards share that
+            // activation's paid stamina and a recast of the same ability keeps its own.
+            var inCostContext = CombatResources.CaptureAbilityStaminaCostContext(
+                activator, AbilityImpactState.GetActiveAbilityImpactSummary(activator)?.Ability) ?? (impact => impact());
+            if (emitter.IsAreaPulse && !emitter.HasShotVisual)
             {
-                Activator = activator;
-                Location = location;
-                SkillType = skillType;
-                BaseDamage = baseDamage;
-                StatusDuration = statusDuration;
-                StatusEffect = statusEffect;
-                Radius = radius;
-                RemainingSeconds = durationSeconds;
-                DamageType = damageType;
-                TargetVisualEffect = targetVisualEffect;
-                AreaVisualEffect = areaVisualEffect;
-                MarkerVisualEffect = markerVisualEffect;
-                MarkerVisualEffectScale = markerVisualEffectScale;
-                IsAreaPulse = isAreaPulse;
-                AppliesBeaconPulseBonuses = appliesBeaconPulseBonuses;
-                ShowAreaIndicator = showAreaIndicator;
-                ProjectileVisualEffect = projectileVisualEffect;
-                BeamVisualEffect = beamVisualEffect;
-                MarkerObject = OBJECT_INVALID;
-                AreaIndicatorId = string.Empty;
-                // The cast's stamina cost context ends with the cast, but its pulses land later: each pulse runs
-                // inside the context of the activation that scheduled it, so its hit rewards share that
-                // activation's paid stamina and a recast of the same ability keeps its own.
-                var inCostContext = Combat.CaptureAbilityStaminaCostContext(
-                    activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability) ?? (impact => impact());
-                if (IsAreaPulse && !HasShotVisual)
-                {
-                    var applyAreaPulse = Ability.CaptureRepeatedAbilityImpact(activator,
-                        () => ApplyAreaHostilePulse(this), baseDamage: baseDamage);
-                    ApplyPulse = () => inCostContext(applyAreaPulse);
-                }
-                else if (IsAreaPulse)
-                {
-                    var createBatch = Ability.CaptureRepeatedAbilityImpactBatch<uint>(activator,
-                        target => ApplySingleHostilePulseImpact(this, target), baseDamage: baseDamage);
-                    CreateAreaImpactBatch = count =>
-                    {
-                        var applyShot = createBatch(count);
-                        return target => inCostContext(() => applyShot(target));
-                    };
-                    ApplyPulse = () => ApplyAreaHostileShots(this);
-                }
-                else
-                {
-                    var applyTargetPulse = Ability.CaptureRepeatedAbilityImpact<uint>(activator,
-                        target => ApplySingleHostilePulseImpact(this, target), baseDamage: baseDamage);
-                    ApplyTargetImpact = target => inCostContext(() => applyTargetPulse(target));
-                    ApplyPulse = () => ApplySingleHostilePulse(this);
-                }
+                var applyAreaPulse = AbilityImpactLifecycle.CaptureRepeatedAbilityImpact(activator,
+                    () => ApplyAreaHostilePulse(emitter), baseDamage: baseDamage);
+                emitter.ApplyPulse = () => inCostContext(applyAreaPulse);
             }
-
-            public uint Activator { get; }
-            public Location Location { get; }
-            public SkillType SkillType { get; }
-            public int BaseDamage { get; }
-            public int StatusDuration { get; }
-            public Type StatusEffect { get; }
-            public float Radius { get; }
-            public float RemainingSeconds { get; set; }
-            public CombatDamageType DamageType { get; }
-            public VisualEffect TargetVisualEffect { get; }
-            public VisualEffect AreaVisualEffect { get; }
-            public VisualEffect MarkerVisualEffect { get; }
-            public float MarkerVisualEffectScale { get; }
-            public bool IsAreaPulse { get; }
-            public bool AppliesBeaconPulseBonuses { get; }
-            public bool ShowAreaIndicator { get; }
-            public VisualEffect ProjectileVisualEffect { get; }
-            public VisualEffect BeamVisualEffect { get; }
-            public bool HasShotVisual => ProjectileVisualEffect != VisualEffect.None || BeamVisualEffect != VisualEffect.None;
-            public uint MarkerObject { get; set; }
-            public string AreaIndicatorId { get; set; }
-            public Action ApplyPulse { get; }
-            public Action<uint> ApplyTargetImpact { get; }
-            public Func<int, Action<uint>> CreateAreaImpactBatch { get; }
-            public int PendingProjectileImpacts { get; set; }
+            else if (emitter.IsAreaPulse)
+            {
+                var createBatch = AbilityImpactLifecycle.CaptureRepeatedAbilityImpactBatch<uint>(activator,
+                    target => ApplySingleHostilePulseImpact(emitter, target), baseDamage: baseDamage);
+                emitter.CreateAreaImpactBatch = count =>
+                {
+                    var applyShot = createBatch(count);
+                    return target => inCostContext(() => applyShot(target));
+                };
+                emitter.ApplyPulse = () => ApplyAreaHostileShots(emitter);
+            }
+            else
+            {
+                var applyTargetPulse = AbilityImpactLifecycle.CaptureRepeatedAbilityImpact<uint>(activator,
+                    target => ApplySingleHostilePulseImpact(emitter, target), baseDamage: baseDamage);
+                emitter.ApplyTargetImpact = target => inCostContext(() => applyTargetPulse(target));
+                emitter.ApplyPulse = () => ApplySingleHostilePulse(emitter);
+            }
+            return emitter;
         }
 
         public static void ApplyPowerSurge(uint activator, uint target)
@@ -132,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (Stat.GetStatAdjustment(activator, StatType.PowerCellInitialTargetPowerSurge) <= 0)
                 return;
 
-            StatusEffect.ApplyStatusEffect(activator, target, new PowerSurgeStatusEffect(), 30f);
+            StatusEffectApplication.ApplyStatusEffect(activator, target, new PowerSurgeStatusEffect(), 30f);
         }
 
         public static void ApplyFieldSupportAllyBuffRiders(uint activator, uint target)
@@ -149,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, activator, true))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, new TacticalUplinkStatusEffect(), 30f);
+                StatusEffectApplication.ApplyStatusEffect(activator, friendly, new TacticalUplinkStatusEffect(), 30f);
             }
         }
 
@@ -191,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                     if (evasionPenalty > 0 && durationSeconds > 0)
                     {
-                        StatusEffect.ApplyStatusEffect(
+                        StatusEffectApplication.ApplyStatusEffect(
                             activator,
                             creature,
                             new DiagnosticSweepStatusEffect(evasionPenalty),
@@ -217,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ? new RayshieldScreen2StatusEffect()
                 : new RayshieldScreen1StatusEffect();
 
-            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, durationSeconds);
+            StatusEffectApplication.ApplyStatusEffect(activator, target, statusEffect, durationSeconds);
         }
 
         private static void ApplyDampeningFieldRider(uint activator, uint target)
@@ -235,7 +187,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ? new DampeningField2StatusEffect()
                 : new DampeningField1StatusEffect();
 
-            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, durationSeconds);
+            StatusEffectApplication.ApplyStatusEffect(activator, target, statusEffect, durationSeconds);
         }
 
         private static void ApplyOverclockRoutine(uint activator, uint target)
@@ -243,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (Stat.GetStatAdjustment(activator, StatType.FieldSupportAllyOverclockRoutine) <= 0)
                 return;
 
-            StatusEffect.ApplyStatusEffect(activator, target, new OverclockRoutineStatusEffect(), 30f);
+            StatusEffectApplication.ApplyStatusEffect(activator, target, new OverclockRoutineStatusEffect(), 30f);
         }
 
         public static float ApplyBlastRadiusBonus(uint activator, float baseRadius)
@@ -386,7 +338,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect projectileVisualEffect = VisualEffect.None,
             VisualEffect beamVisualEffect = VisualEffect.None)
         {
-            TrackFieldEngineerPulseEmitter(new FieldEngineerPulseEmitter(
+            TrackFieldEngineerPulseEmitter(CreateFieldEngineerPulseEmitter(
                 activator,
                 location,
                 skillType,
@@ -426,7 +378,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect projectileVisualEffect = VisualEffect.None,
             VisualEffect beamVisualEffect = VisualEffect.None)
         {
-            TrackFieldEngineerPulseEmitter(new FieldEngineerPulseEmitter(
+            TrackFieldEngineerPulseEmitter(CreateFieldEngineerPulseEmitter(
                 activator,
                 location,
                 skillType,
@@ -490,13 +442,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         public static bool ExtendActiveFieldEngineerPulses(uint activator, float seconds)
         {
             if (seconds <= 0f ||
-                !_activeFieldEngineerPulseEmitters.TryGetValue(activator, out var emitters))
+                !FieldEngineerPulseEmitters.TryGetSnapshot(activator, out var emitters))
             {
                 return false;
             }
 
             var extendedAny = false;
-            foreach (var emitter in emitters.ToArray())
+            foreach (var emitter in emitters)
             {
                 if (!IsFieldEngineerEmitterValid(emitter))
                 {
@@ -514,11 +466,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         public static bool TriggerActiveFieldEngineerPulses(uint activator)
         {
-            if (!_activeFieldEngineerPulseEmitters.TryGetValue(activator, out var emitters))
+            if (!FieldEngineerPulseEmitters.TryGetSnapshot(activator, out var emitters))
                 return false;
 
             var triggeredAny = false;
-            foreach (var emitter in emitters.ToArray())
+            foreach (var emitter in emitters)
             {
                 if (!IsFieldEngineerEmitterValid(emitter))
                 {
@@ -538,13 +490,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static void TrackFieldEngineerPulseEmitter(FieldEngineerPulseEmitter emitter)
         {
-            if (!_activeFieldEngineerPulseEmitters.TryGetValue(emitter.Activator, out var emitters))
-            {
-                emitters = new List<FieldEngineerPulseEmitter>();
-                _activeFieldEngineerPulseEmitters[emitter.Activator] = emitters;
-            }
-
-            emitters.Add(emitter);
+            FieldEngineerPulseEmitters.Track(emitter);
             RefreshFieldEngineerPulseEmitterIndicator(emitter);
 
             EnsureFieldEngineerPulseEmitterMarker(emitter);
@@ -621,7 +567,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 : emitter.Radius;
             ApplyDiagnosticSweep(emitter.Activator, emitter.Location, radius);
 
-            var targets = Ability.GetHostileTargetsInSphere(emitter.Activator, emitter.Location, radius);
+            var targets = CombatImpactGeometry.GetHostileTargetsInSphere(emitter.Activator, emitter.Location, radius);
             if (targets.Count == 0)
                 return;
 
@@ -856,8 +802,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static bool IsFieldEngineerEmitterTracked(FieldEngineerPulseEmitter emitter)
         {
-            return _activeFieldEngineerPulseEmitters.TryGetValue(emitter.Activator, out var emitters) &&
-                   emitters.Contains(emitter);
+            return FieldEngineerPulseEmitters.IsTracked(emitter);
         }
 
         private static bool IsFieldEngineerEmitterValid(FieldEngineerPulseEmitter emitter)
@@ -867,20 +812,48 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                    GetIsObjectValid(GetAreaFromLocation(emitter.Location));
         }
 
+        /// <summary>
+        /// While a hot reload quiesces the old build: every Field Engineer emitter ends now. Its pulses and its marker's removal are
+        /// closures the reload drops, and the emitters hold the pulse callbacks, so they cannot be carried; without this each marker
+        /// placeable (and its visual) would stay in the area for good. Markers whose emitter already ended but still waited on a beacon
+        /// in flight are found by their tag.
+        /// </summary>
+        [ReloadHook(ReloadHookPhase.Quiesce)]
+        public static void EndFieldEngineerPulsesForReload(IReadOnlyList<uint> players)
+        {
+            foreach (var emitter in FieldEngineerPulseEmitters.TakeAll())
+            {
+                if (!string.IsNullOrWhiteSpace(emitter.AreaIndicatorId))
+                    Telegraph.CancelTelegraph(emitter.AreaIndicatorId);
+                if (GetIsObjectValid(emitter.MarkerObject))
+                    DestroyObject(emitter.MarkerObject);
+            }
+
+            var markers = new List<uint>();
+            for (var index = 0; ; index++)
+            {
+                var marker = GetObjectByTag(FieldEngineerPulseMarkerTag, index);
+                if (!GetIsObjectValid(marker))
+                    break;
+                markers.Add(marker);
+            }
+
+            foreach (var marker in markers)
+                DestroyObject(marker);
+        }
+
         private static void RemoveFieldEngineerPulseEmitter(FieldEngineerPulseEmitter emitter)
         {
-            if (!_activeFieldEngineerPulseEmitters.TryGetValue(emitter.Activator, out var emitters))
+            if (!FieldEngineerPulseEmitters.TryRemove(emitter))
                 return;
 
-            emitters.Remove(emitter);
             if (!string.IsNullOrWhiteSpace(emitter.AreaIndicatorId))
                 Telegraph.CancelTelegraph(emitter.AreaIndicatorId);
 
             if (emitter.PendingProjectileImpacts == 0 && GetIsObjectValid(emitter.MarkerObject))
                 DestroyObject(emitter.MarkerObject);
 
-            if (emitters.Count <= 0)
-                _activeFieldEngineerPulseEmitters.Remove(emitter.Activator);
+            FieldEngineerPulseEmitters.ReleaseIfEmpty(emitter.Activator);
         }
 
         private static uint GetNearestHostileCreature(uint activator, Location location, float radius)

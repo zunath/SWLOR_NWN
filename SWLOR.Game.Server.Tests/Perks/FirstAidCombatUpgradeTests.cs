@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -6,19 +7,33 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class FirstAidCombatUpgradeTests
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void FirstAidBibleManifest_ContainsBatch()
     {
@@ -107,7 +122,7 @@ public class FirstAidCombatUpgradeTests
         stimPack.Tag.Should().Be("stim_pack");
 
         var requirementSource = File.ReadAllText(
-            (root / "SWLOR.Game.Server" / "Service" / "AbilityService" / "AbilityRequirementItem.cs").FullName);
+            (root / "SWLOR.Game.Server" / "Domain" / "Abilities" / "AbilityRequirementItem.cs").FullName);
         // Supplies match by tag in every stack and bag, so the merchant stacks' tags must be the requirement names.
         requirementSource.Should().Contain("GetTag(item) == ItemResref");
         requirementSource.Should().Contain("total += GetItemStackSize(item)");
@@ -195,7 +210,7 @@ public class FirstAidCombatUpgradeTests
         koltoMist.Should().Contain("var treated = ApplyKoltoMistPulse(activator, location, healPerTick, playPulseVisual);");
         koltoMist.Should().Contain("FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated, credited);");
         koltoMist.Should().Contain("visualEffect: VisualEffect.Vfx_Imp_Head_Heal");
-        koltoMist.Should().Contain("StatusEffect.ApplyStatusEffect(");
+        koltoMist.Should().Contain("StatusEffectApplication.ApplyStatusEffect(");
         koltoMist.Should().Contain("typeof(KoltoMistHealingStatusEffect)");
         koltoMist.Should().Contain("StatusRefreshDurationSeconds");
         koltoMist.Should().NotContain("new KoltoMistHealingStatusEffect(totalPercent, 4)");
@@ -211,10 +226,10 @@ public class FirstAidCombatUpgradeTests
         treatmentAdjustments.Should().Contain("CombatPoint.AddSupportCombatPoint(activator, treated, SkillType.FirstAid");
         treatmentAdjustments.Should().Contain("GrantCombatPoint(uint activator, IReadOnlyCollection<uint> treated");
         treatmentAdjustments.Should().Contain("if (!removedAilment)");
-        treatmentAdjustments.Should().Contain("StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);");
+        treatmentAdjustments.Should().Contain("StatusEffectApplication.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);");
         treatmentAdjustments.IndexOf("if (!removedAilment)", StringComparison.Ordinal)
             .Should()
-            .BeLessThan(treatmentAdjustments.IndexOf("StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);", StringComparison.Ordinal));
+            .BeLessThan(treatmentAdjustments.IndexOf("StatusEffectApplication.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);", StringComparison.Ordinal));
 
         var firstAidSupportFiles = new[]
         {
@@ -267,13 +282,13 @@ public class FirstAidCombatUpgradeTests
         perkSource.Should().Contain(
             ".IncreasesStat(StatType.OutgoingAbilityHealingPercentAdjustment, 10)");
 
-        Stat.CalculateOutgoingAbilityHealingAmount(100, 5).Should().Be(105);
-        Stat.CalculateOutgoingAbilityHealingAmount(101, 10).Should().Be(112);
-        Stat.CalculateOutgoingAbilityHealingAmount(100, 0).Should().Be(100);
+        CombatResources.CalculateOutgoingAbilityHealingAmount(100, 5).Should().Be(105);
+        CombatResources.CalculateOutgoingAbilityHealingAmount(101, 10).Should().Be(112);
+        CombatResources.CalculateOutgoingAbilityHealingAmount(100, 0).Should().Be(100);
 
         var includedSources = new[]
         {
-            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "AbilityEffectScaling.cs",
+            root / "SWLOR.Game.Server" / "Domain" / "Combat" / "AbilityEffectScaling.cs",
             root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "FirstAidTreatmentAdjustments.cs",
             root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "MedKitAbilityDefinition.cs",
             root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "RewardAbilityDefinition.cs",
@@ -286,20 +301,18 @@ public class FirstAidCombatUpgradeTests
             File.ReadAllText(sourcePath.FullName)
                 .Should()
                 .Contain(
-                    "Stat.ApplyOutgoingAbilityHealingAdjustment",
+                    "CombatResources.ApplyOutgoingAbilityHealingAdjustment",
                     $"{Path.GetFileName(sourcePath.FullName)} should apply Medical Injector Rig to eligible ability healing");
         }
 
-        var statSource = File.ReadAllText(
-            (root / "SWLOR.Game.Server" / "Service" / "Stat.cs").FullName);
-        statSource.Should().Contain("BeastMastery.IsPlayerBeast(source)");
+        var statSource = StatSource.Read();
+        statSource.Should().Contain("_companions.IsPlayerBeast(source)");
         statSource.Should().Contain("GetMaster(source)");
 
         var excludedSources = new[]
         {
             root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceDrainAbilityDefinition.cs",
             root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "WeaponActiveAbilityDefinitionBase.cs",
-            root / "SWLOR.Game.Server" / "Service" / "Combat.cs",
             root / "SWLOR.Game.Server" / "Feature" / "NaturalRegeneration.cs",
             root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "RestStatusEffect.cs"
         };
@@ -309,9 +322,18 @@ public class FirstAidCombatUpgradeTests
             File.ReadAllText(sourcePath.FullName)
                 .Should()
                 .NotContain(
-                    "Stat.ApplyOutgoingAbilityHealingAdjustment",
+                    "CombatResources.ApplyOutgoingAbilityHealingAdjustment",
                     $"{Path.GetFileName(sourcePath.FullName)} should not apply Medical Injector Rig to damage-derived or system healing");
         }
+
+        // The adjustment lives in CombatResourcesService since the stat split, so its declaration is the only mention Combat may have.
+        // CombatSource puts static back on member declarations, as they read in the static class.
+        CombatSource.Read()
+            .Replace("public static int ApplyOutgoingAbilityHealingAdjustment(", string.Empty)
+            .Should()
+            .NotContain(
+                "ApplyOutgoingAbilityHealingAdjustment(",
+                "Combat should not apply Medical Injector Rig to damage-derived or system healing");
     }
 
     [Test]

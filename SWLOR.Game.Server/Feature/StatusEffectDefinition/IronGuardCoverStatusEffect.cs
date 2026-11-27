@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             if (GetIsObjectValid(attacker) && GetIsReactionTypeHostile(attacker, Source))
             {
-                Enmity.ModifyEnmity(Source, attacker, Math.Max(1, damage));
+                EnmityChange.ModifyEnmity(Source, attacker, Math.Max(1, damage));
                 RecentGuardedAllyHits[(Source, attacker)] = DateTime.UtcNow;
             }
 
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 _protectedHitDamageBonus,
                 Stat.GetStatAdjustment(Source, StatType.GuardedAllyHitNextSkillAbilityDamageBonus));
             var window = Stat.GetStatAdjustment(Source, StatType.GuardedAllyHitNextSkillAbilityWindowSeconds);
-            Combat.GrantNextSkillAbilityBonuses(Source, SkillType.Katar, damageBonus, 0, window);
+            GameServices.CombatAttackTiming.GrantNextSkillAbilityBonuses(Source, SkillType.Katar, damageBonus, 0, window);
         }
 
         private bool IsSourceInRange(uint creature)

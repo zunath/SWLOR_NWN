@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.UI;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -19,6 +19,21 @@ public class GuiLayoutComposerTests
 
     private const string MetalPalette =
         """{"type":"group","children":[{"type":"label","value":"Metal"}]}""";
+
+    [Test]
+    public void Compose_WritesTheSameTextAsSerializingTheNodeWithTheDeepDepthLimit()
+    {
+        const string layout = """{"type":"group","children":[{"type":"label","value":"café <b> & \"quoted\""}]}""";
+        var expected = JsonNode.Parse(layout)!.ToJsonString(new System.Text.Json.JsonSerializerOptions { MaxDepth = 512 });
+
+        GuiLayoutComposer.Compose(layout, new Dictionary<string, string>()).Should().Be(expected);
+
+        var deep = string.Concat(Enumerable.Repeat("""{"type":"group","children":[""", 100)) + """{"type":"spacer"}""" +
+                   string.Concat(Enumerable.Repeat("]}", 100));
+        GuiLayoutComposer.Compose(deep, new Dictionary<string, string>())
+            .Should().Be(JsonNode.Parse(deep, documentOptions: new System.Text.Json.JsonDocumentOptions { MaxDepth = 512 })!
+                .ToJsonString(new System.Text.Json.JsonSerializerOptions { MaxDepth = 512 }));
+    }
 
     [Test]
     public void Compose_PlacesTheAssignedLayoutAsTheGroupsOnlyChild()

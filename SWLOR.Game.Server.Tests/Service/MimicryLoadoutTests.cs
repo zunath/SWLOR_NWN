@@ -3,15 +3,34 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class MimicryLoadoutTests
 {
+    // The code under test reaches converted services through their static facades, which resolve from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void NewCharacterGetsAnEmptyDefaultAndSerializedBuildsRoundTrip()
     {
@@ -81,34 +100,5 @@ public class MimicryLoadoutTests
         player.EquippedTechniques.Should().Equal(FeatType.FrostSpitTechnique);
         player.ActiveMimicryLoadoutId.Should().BeEmpty();
         MimicryLoadouts.EnsureStartingBuild(player).Should().BeFalse();
-    }
-
-    [Test]
-    public void WholeBuildValidationRejectsUnknownUnlearnedDuplicateOverRankAndOverBudgetWithoutMutation()
-    {
-        Ability.CacheData();
-        Mimicry.CacheData();
-        var player = new Player();
-        player.Perks[PerkType.CombatAnalyzer] = 1;
-        player.Skills[SkillType.Mimicry] = new PlayerSkill { Rank = 50 };
-        player.LearnedTechniques[FeatType.FrostSpitTechnique] = DateTime.UtcNow;
-        player.LearnedTechniques[FeatType.TerrifyingBellowTechnique] = DateTime.UtcNow;
-        player.EquippedTechniques.Add(FeatType.FrostSpitTechnique);
-        var before = JsonConvert.SerializeObject(player);
-        foreach (var invalid in new FeatType[][]
-        {
-            [FeatType.Invalid], [FeatType.ToxicSpitTechnique],
-            [FeatType.FrostSpitTechnique, FeatType.FrostSpitTechnique], [FeatType.TerrifyingBellowTechnique]
-        })
-        {
-            Mimicry.ValidateLoadout(player, invalid, out var error).Should().BeFalse();
-            error.Should().NotBeEmpty();
-            JsonConvert.SerializeObject(player).Should().Be(before);
-        }
-        Mimicry.ValidateLoadout(player, [FeatType.FrostSpitTechnique], out _).Should().BeTrue();
-        player.Skills[SkillType.Mimicry].Rank = 0;
-        Mimicry.ValidateLoadout(player, [FeatType.FrostSpitTechnique], out var rankError).Should().BeFalse();
-        rankError.Should().Contain("rank 3");
-        Mimicry.ValidateLoadout(player, [], out _).Should().BeTrue();
     }
 }

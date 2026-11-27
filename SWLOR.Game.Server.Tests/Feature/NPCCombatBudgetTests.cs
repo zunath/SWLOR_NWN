@@ -4,13 +4,30 @@ using System.Text.Json;
 using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class NPCCombatBudgetTests
 {
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope?.Dispose();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     private const int SkinSlot = 131072;
     private static readonly XNamespace Ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
 
@@ -20,8 +37,8 @@ public class NPCCombatBudgetTests
     [TestCase(-4, 138)]
     public void NpcEvasionBudget_ExcludesNativeArmor(int nativeArmor, int expected)
     {
-        Stat.GetEvasion(46, 30, 8, nativeArmor, true).Should().Be(expected);
-        Stat.GetEvasion(46, 30, 18, nativeArmor, true).Should().Be(expected + 10,
+        CombatRating.GetEvasion(46, 30, 8, nativeArmor, true).Should().Be(expected);
+        CombatRating.GetEvasion(46, 30, 18, nativeArmor, true).Should().Be(expected + 10,
             "stat-driven Evasion effects still apply to NPCs");
     }
 
@@ -29,7 +46,7 @@ public class NPCCombatBudgetTests
     [TestCase(-4, 118)]
     public void PlayerAndUnskinnedEvasion_PreservesNativeArmor(int nativeArmor, int expected)
     {
-        Stat.GetEvasion(46, 30, 8, nativeArmor, false).Should().Be(expected);
+        CombatRating.GetEvasion(46, 30, 8, nativeArmor, false).Should().Be(expected);
     }
 
     [Test]
@@ -189,9 +206,9 @@ public class NPCCombatBudgetTests
             Number(row["N"]).Should().BeGreaterThan(Number(elite["K"]) * 6);
             if (level <= 50)
             {
-                var accuracy = Stat.GetAccuracy(level, 20 + level * 2 / 5, 0);
-                var evasion = Stat.GetEvasion(level, Number(row["M"]), Number(row["T"]));
-                Combat.CalculateHitRate(accuracy, evasion, 0).Should().BeInRange(75, 85);
+                var accuracy = CombatRating.GetAccuracy(level, 20 + level * 2 / 5, 0);
+                var evasion = CombatRating.GetEvasion(level, Number(row["M"]), Number(row["T"]));
+                CombatRules.CalculateHitRate(accuracy, evasion, 0).Should().BeInRange(75, 85);
             }
             count++;
         }
@@ -340,9 +357,9 @@ public class NPCCombatBudgetTests
 
         void Check(string label, int level, int agility, int bonus)
         {
-            var accuracy = Stat.GetAccuracy(level, 20 + level * 2 / 5, 0);
-            var evasion = Stat.GetEvasion(level, agility, bonus);
-            var hitRate = Combat.CalculateHitRate(accuracy, evasion, 0);
+            var accuracy = CombatRating.GetAccuracy(level, 20 + level * 2 / 5, 0);
+            var evasion = CombatRating.GetEvasion(level, agility, bonus);
+            var hitRate = CombatRules.CalculateHitRate(accuracy, evasion, 0);
             if (hitRate < 75 || hitRate > 85)
                 failures.Add($"{label}: {hitRate}% ({accuracy} Accuracy vs {evasion} Evasion)");
             count++;
@@ -432,11 +449,11 @@ public class NPCCombatBudgetTests
         using var sprantalSkin = ReadAsset(root, "uti", "sprantal_sk");
         using var chiro = ReadAsset(root, "utc", "vdathchirodac");
         using var chiroSkin = ReadAsset(root, "uti", "chirodactyl_sk");
-        var evasion = Stat.GetEvasion(Property(sprantalSkin.RootElement, 99),
+        var evasion = CombatRating.GetEvasion(Property(sprantalSkin.RootElement, 99),
             Int(sprantal.RootElement, "Int"), Property(sprantalSkin.RootElement, 117) + Int(sprantal.RootElement, "NaturalAC") * 5);
         evasion.Should().Be(138);
-        Combat.CalculateHitRate(148, evasion, 0).Should().Be(80);
-        Combat.CalculateHitRate(162, evasion, 0).Should().Be(87);
+        CombatRules.CalculateHitRate(148, evasion, 0).Should().Be(80);
+        CombatRules.CalculateHitRate(162, evasion, 0).Should().Be(87);
         Property(chiroSkin.RootElement, 96).Should().BeGreaterThan(Property(sprantalSkin.RootElement, 96) * 10);
         Property(chiroSkin.RootElement, 94, 1).Should().BeGreaterThan(Property(sprantalSkin.RootElement, 94, 1));
         Property(chiroSkin.RootElement, 111).Should().BeGreaterThan(Property(sprantalSkin.RootElement, 111));

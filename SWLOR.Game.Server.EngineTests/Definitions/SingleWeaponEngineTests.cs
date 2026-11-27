@@ -1,17 +1,20 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using NWNXLib = NWN.Native.API.NWNXLib;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -31,7 +34,7 @@ public static class SingleWeaponEngineTests
         }
         ctx.AssertEqual(24, Item.GetDMG(weapon), "The item's persistent DMG is unchanged");
         var description = GetDescription(weapon);
-        var preview = new ExamineItemPayload(weapon);
+        var preview = Content.Create<ExamineItemPayload, uint>(weapon);
         ctx.AssertEqual(24, preview.ItemDMG, "Examine snapshots base DMG for serialized market/storage items");
         ctx.AssertEqual(OBJECT_INVALID, preview.ItemObject, "A serialized preview must not follow a destroyed/reused engine object ID");
         ctx.AssertEqual(description, preview.Description, "Authored description is preserved");
@@ -58,8 +61,8 @@ public static class SingleWeaponEngineTests
         ctx.AssertEqual(24, WeaponDamage.GetEffectiveDMG(npc, npcWeapon), "Authored NPC budgets do not gain either bonus by default");
         ctx.SetNPCPerkLevel(npc, PerkType.Doublehand, 3);
         ctx.AssertEqual(34, WeaponDamage.GetEffectiveDMG(npc, npcWeapon), "An explicitly authored NPC perk applies through its stat");
-        ctx.AssertEqual(0, Combat.GetCombatImpactWeaponDamage(player.Creature, SkillType.Force), "Force damage has no weapon component");
-        ctx.AssertEqual(0, Combat.GetCombatImpactWeaponDamage(player.Creature, SkillType.Devices), "Devices damage has no weapon component");
+        ctx.AssertEqual(0, GameServices.CombatQueries.GetCombatImpactWeaponDamage(player.Creature, SkillType.Force), "Force damage has no weapon component");
+        ctx.AssertEqual(0, GameServices.CombatQueries.GetCombatImpactWeaponDamage(player.Creature, SkillType.Devices), "Devices damage has no weapon component");
     }
 
     [EngineTest("Two-handed weapons never receive Single Weapon or Doublehand", Category = "SingleWeapon", TimeoutSeconds = 60f)]
@@ -82,10 +85,10 @@ public static class SingleWeaponEngineTests
                 player.Update(record => record.Perks[PerkType.Doublehand] = rank);
                 ctx.Assert(!EquipmentPredicates.HasSingleWeapon(player.Creature), $"{resref} does not qualify at Doublehand rank {rank}");
                 ctx.AssertEqual(46, WeaponDamage.GetEffectiveDMG(player.Creature, weapon), $"{resref} retains its base DMG at Doublehand rank {rank}");
-                ctx.AssertEqual(46, Combat.GetCombatImpactWeaponDamage(player.Creature, Skill.GetSkillTypeByBaseItem(GetBaseItemType(weapon))),
+                ctx.AssertEqual(46, GameServices.CombatQueries.GetCombatImpactWeaponDamage(player.Creature, Skill.GetSkillTypeByBaseItem(GetBaseItemType(weapon))),
                     $"{resref} ability damage retains its base weapon rating at Doublehand rank {rank}");
             }
-            var preview = new ExamineItemPayload(weapon);
+            var preview = Content.Create<ExamineItemPayload, uint>(weapon);
             ctx.Assert(!WeaponDamage.IsSingleWeaponType(preview.ItemType), $"{resref} does not display a Single Weapon examine bonus");
             DestroyObject(weapon);
             await ctx.WaitFrameAsync();
@@ -117,7 +120,7 @@ public static class SingleWeaponEngineTests
     public static async Task DroidOwnership(EngineTestContext ctx)
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
-        var droid = ctx.SpawnCreature(Droid.DroidResref, 2f);
+        var droid = ctx.SpawnCreature(DroidService.DroidResref, 2f);
         await ctx.WaitFrameAsync();
         ctx.AssertEqual(0, WeaponDamage.GetNaturalSingleWeaponPercent(droid), "An unowned authored droid has no natural bonus");
         await ctx.ExecuteInCreatureContextAsync(player.Creature, () => AddHenchman(player.Creature, droid));
@@ -164,13 +167,13 @@ public static class SingleWeaponEngineTests
         });
         var weapon = await ctx.EquipItemAsync(player.Creature, "b_longsword", InventorySlot.RightHand);
         await SetDamage(ctx, player.Creature, weapon, 24);
-        var ability = Ability.GetAbilityDetail(FeatType.SavageCleave1);
-        Ability.BeginAbilityImpact(player.Creature, ability);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.SavageCleave1);
+        AbilityImpactLifecycle.BeginAbilityImpact(player.Creature, ability);
         try
         {
-            var getImpact = typeof(Ability).GetMethod("GetTrackedAbilityImpact", BindingFlags.NonPublic | BindingFlags.Static);
-            var impact = getImpact.Invoke(null, new object[] { player.Creature });
-            var capturedDamage = (int?)impact.GetType().GetProperty("TriggeringWeaponDamage").GetValue(impact);
+            var impact = ((IAbilityImpactState)CompositionRoot.ServerHost.Provider.GetService(typeof(IAbilityImpactState)))
+                .GetTrackedAbilityImpact(player.Creature);
+            var capturedDamage = impact.TriggeringWeaponDamage;
             ctx.AssertEqual(39, capturedDamage.Value, "Weapon ability captures combined rating at impact start");
             var getThrowDamage = typeof(ThrowLightsaberAbilityDefinition).GetMethod("GetEquippedWeaponDamageAdjustment",
                 BindingFlags.NonPublic | BindingFlags.Static);
@@ -178,12 +181,12 @@ public static class SingleWeaponEngineTests
             ctx.AssertEqual(39, capturedThrowDamage(player.Creature), "Throw Lightsaber's explicit weapon component receives the same rating");
             var shield = await ctx.EquipItemAsync(player.Creature, "ec_shield", InventorySlot.LeftHand);
             ctx.AssertEqual(24, WeaponDamage.GetEffectiveDMG(player.Creature, weapon), "Live equipment no longer qualifies");
-            ctx.AssertEqual(39, Combat.GetCombatImpactWeaponDamage(player.Creature, SkillType.Vibroblade,
+            ctx.AssertEqual(39, GameServices.CombatQueries.GetCombatImpactWeaponDamage(player.Creature, SkillType.Vibroblade,
                 triggeringWeaponDamage: capturedDamage), "Later targets use the captured rating without applying the percentage twice");
             ctx.AssertEqual(39, capturedThrowDamage(player.Creature), "Throw Lightsaber captures its weapon component once for all path targets");
             DestroyObject(shield);
         }
-        finally { Ability.EndAbilityImpact(player.Creature); }
+        finally { AbilityImpactLifecycle.EndAbilityImpact(player.Creature); }
     }
 
     private static async Task SetDamage(EngineTestContext ctx, uint creature, uint weapon, int damage)

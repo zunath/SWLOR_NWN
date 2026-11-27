@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -267,7 +268,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (ReturnInputs(true) > 0)
             {
-                Instructions = Item.InventoryFullShortMessage;
+                Instructions = ItemService.InventoryFullShortMessage;
                 InstructionsColor = GuiColor.Red;
             }
         };
@@ -366,7 +367,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 DeleteLocalBool(Player, "IS_REFINING");
-                Skill.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);
+                SkillXP.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);
 
                 _inputItemResrefs.Clear();
                 _inputItems.Clear();
@@ -393,7 +394,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public override Action OnWindowClosed() => () =>
         {
             if (ReturnInputs(false) > 0)
-                SendMessageToPC(Player, Item.ItemsHeldMessage);
+                SendMessageToPC(Player, ItemService.ItemsHeldMessage);
         };
 
     }

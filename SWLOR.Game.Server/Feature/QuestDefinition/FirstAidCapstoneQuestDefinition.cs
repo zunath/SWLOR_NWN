@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string EmergencyCocktailMeasureQuestId = "emergency_cocktail_measure";
         internal const string EmergencyCocktailBreachQuestId = "emergency_cocktail_breach";
         internal const string EmergencyCocktailCircleQuestId = "emergency_cocktail_circle";
-        internal const string EmergencyCocktailMasteryQuestId = "emergency_cocktail_mastery";
+        internal const string EmergencyCocktailMasteryQuestId = CapstoneQuestIds.EmergencyCocktailMasteryQuestId;
         internal const string EmergencyCocktailAdeptResref = "cp_emcocktail_ad";
         internal const string EmergencyCocktailSpecialistResref = "cp_emcocktail_sp";
         internal const string EmergencyCocktailInnerCircleResref = "cp_emcocktail_ic";

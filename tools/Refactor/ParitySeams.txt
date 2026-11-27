@@ -1,0 +1,15 @@
+# Behaviour-neutral seams that Test-MaintainabilityParity.ps1 (and the sync, when it needs master's handler order)
+# applies to its throwaway copy of master before running the branch's tests there. Master lacks them because they live
+# only on the refactor branch. Applied in this order, before the mechanical scripts of MechanicalScripts.txt.
+#
+#   commit <sha>   cherry-pick that commit onto the copy (a squash-merged pull request on the refactor branch). It
+#                  must apply cleanly; when master changes the same lines the parity run stops and says which file, and
+#                  this list is updated so the seam applies to master as it is now.
+#   file <path>    copy the file from the branch (repository-relative; it must be absent on master or identical).
+#
+# What is deliberately NOT here: the P0-10 handler manifest (8aead4668). The parity run needs master's own reflection
+# order, and the manifest would impose the branch's order on the copy. The P0-5 commit below brings
+# ScriptRegistry.LoadHandlersFromAssemblies and the boot-order tests (ScriptHandlerOrderTests, which writes the handler
+# order of the compiled master in update mode); the parity script compares that output with the branch's manifest.
+commit a35f770d7572fec99dbcee88e6c6fac4cbdfef78   # P0-5 (#2899): ScriptRegistry.LoadHandlersFromAssemblies, boot-order tests
+file SWLOR.Game.Server/Core/Clock.cs              # P0-4d1 (#2916): the Clock the mechanical clock script rewrites master's code to use

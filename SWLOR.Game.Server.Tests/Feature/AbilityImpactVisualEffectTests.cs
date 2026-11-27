@@ -3,10 +3,13 @@ using NUnit.Framework;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -175,7 +178,7 @@ public class AbilityImpactVisualEffectTests
         lance.Should().Contain("EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_BoltGlory)");
         lance.Should().NotContain("GetPosition(target)");
 
-        var service = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server/Service/Ability.cs"));
+        var service = AbilitySource.Read();
         service.Should().Contain("onGeometryResolved?.Invoke(geometry)");
         service.Should().Contain("if (damage > 0 && trackedImpact?.Ability is { } impactAbility &&");
         service.Should().Contain("EffectVisualEffect(impactAbility.DamageImpactVisualEffect)");

@@ -2,8 +2,8 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.PerkDefinition;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -63,17 +63,13 @@ public class IncubationPerkRegressionTests
     public void DNAManipulation_PreservesIncubatorAccessAndHarvestLevelGates()
     {
         var extractor = ReadSource("Feature", "ItemDefinition", "DNAExtractorItemDefinition.cs");
-        var beastMastery = ReadSource("Service", "BeastMastery.cs");
-        var useIncubator = ExtractMethod(beastMastery, "public static void UseIncubator()");
 
         extractor.Should().Contain("var perkLevel = Perk.GetPerkLevel(user, PerkType.DNAManipulation);");
         extractor.Should().Contain("var maxLevel = perkLevel * 10;");
         extractor.Should().Contain("if (level > maxLevel)");
         extractor.Should().Contain("Insufficient 'DNA Manipulation' perk level.");
 
-        useIncubator.Should().Contain("Perk.GetPerkLevel(player, PerkType.DNAManipulation)");
-        useIncubator.Should().Contain("if (dnaManipulationLevel <= 0)");
-        useIncubator.Should().Contain("Perk 'DNA Manipulation I' is required to use incubators.");
+        // The incubator's own gate (no DNA Manipulation perk, no incubator) is pinned by BeastIncubationServiceTests.
     }
 
     [TestCase(0, 10, 129600)]
@@ -90,36 +86,37 @@ public class IncubationPerkRegressionTests
     {
         CalculateLegacyStageDurationSeconds(rank, socialScore).Should().Be(expectedSeconds);
 
-        var incubator = ReadSource("Feature", "GuiDefinition", "ViewModel", "IncubatorViewModel.cs");
-        var calculation = ExtractMethod(incubator, "private int CalculateIncubationSeconds()");
-        calculation.Should().Contain("Perk.GetPerkLevel(Player, PerkType.IncubationProcessing) * 10 + socialBonus");
+        var calculator = ReadSource("Feature", "GuiDefinition", "IncubatorWindow", "IncubatorJobCalculator.cs");
+        var calculation = ExtractMethod(calculator, "public int CalculateIncubationSeconds(IIncubatorHost host)");
+        calculation.Should().Contain("Perk.GetPerkLevel(host.Player, PerkType.IncubationProcessing) * 10 + socialBonus");
         calculation.Should().Contain("BaseSecondsBetweenStages * timeReductionPercentage");
     }
 
     [Test]
     public void ErraticGenius_PreservesRankBonusesAndFirstStageOnlyApplication()
     {
-        var incubator = ReadSource("Feature", "GuiDefinition", "ViewModel", "IncubatorViewModel.cs");
-        var bonus = ExtractMethod(incubator, "private int GetErraticGeniusBonus()");
-        var startJob = ExtractMethod(incubator, "private void StartJob(IncubationJob job)");
-        var projectedChance = ExtractMethod(incubator, "private int GetProjectedMutationChance(IncubationJob job, bool hasPendingStage)");
+        var calculator = ReadSource("Feature", "GuiDefinition", "IncubatorWindow", "IncubatorJobCalculator.cs");
+        var jobService = ReadSource("Feature", "GuiDefinition", "IncubatorWindow", "IncubatorJobService.cs");
+        var bonus = ExtractMethod(calculator, "public int GetErraticGeniusBonus(IIncubatorHost host)");
+        var startJob = ExtractMethod(jobService, "private void StartJob(IIncubatorHost host, IncubationJob job)");
+        var projectedChance = ExtractMethod(calculator, "public int GetProjectedMutationChance(IIncubatorHost host, IncubationJob job, bool hasPendingStage)");
 
         bonus.Should().Contain("1 => 2,");
         bonus.Should().Contain("2 => 4,");
         bonus.Should().Contain("3 => 8,");
         // Erratic Genius applies only while the job has not started (no job yet, or stage 0).
-        startJob.Should().Contain("GetProjectedMutationChance(job.CurrentStage <= 0 ? null : job");
-        projectedChance.Should().Contain("job == null && IsErraticGeniusChecked ? GetErraticGeniusBonus() * 10 : 0");
+        startJob.Should().Contain("GetProjectedMutationChance(host, job.CurrentStage <= 0 ? null : job");
+        projectedChance.Should().Contain("job == null && host.IsErraticGeniusChecked ? GetErraticGeniusBonus(host) * 10 : 0");
     }
 
     [Test]
     public void IncubationManagement_PreservesOnePlusRankConcurrentJobLimit()
     {
-        var incubator = ReadSource("Feature", "GuiDefinition", "ViewModel", "IncubatorViewModel.cs");
-        var validation = ExtractMethod(incubator, "private string ValidateCreateJob()");
+        var jobService = ReadSource("Feature", "GuiDefinition", "IncubatorWindow", "IncubatorJobService.cs");
+        var validation = ExtractMethod(jobService, "private string ValidateCreateJob(IIncubatorHost host)");
 
-        validation.Should().Contain("Perk.GetPerkLevel(Player, PerkType.IncubationManagement) + 1");
-        validation.Should().Contain("currentJobs.Count(x => x.ParentPropertyId != _incubatorPropertyId)");
+        validation.Should().Contain("Perk.GetPerkLevel(host.Player, PerkType.IncubationManagement) + 1");
+        validation.Should().Contain("currentJobs.Count(x => x.ParentPropertyId != host.Session.IncubatorPropertyId)");
         validation.Should().Contain("if (currentJobCount >= maxConcurrentJobs)");
     }
 
@@ -142,7 +139,7 @@ public class IncubationPerkRegressionTests
         }
 
         // LoadPlayerStats refreshes the stage time, so perk changes update it too.
-        ExtractMethod(incubator, "private void LoadPlayerStats()").Should().Contain("RefreshIncubationTime();");
+        ExtractMethod(incubator, "private void LoadPlayerStats()").Should().Contain("RefreshIncubationTime(this);");
     }
 
     private static int CalculateLegacyStageDurationSeconds(int incubationProcessingRank, int socialScore)

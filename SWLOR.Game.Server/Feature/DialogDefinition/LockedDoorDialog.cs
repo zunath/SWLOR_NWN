@@ -1,13 +1,22 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class LockedDoorDialog: ConversationMenuDefinition
     {
+        private IEnmityService Enmity { get; }
+        private IKeyItemService KeyItem { get; }
+
+        public LockedDoorDialog(IEnmityService enmity, IKeyItemService keyItem)
+        {
+            Enmity = enmity;
+            KeyItem = keyItem;
+        }
+
         private const string MainPageId = "MAIN_PAGE";
 
         public override ConversationMenuSpec Build()

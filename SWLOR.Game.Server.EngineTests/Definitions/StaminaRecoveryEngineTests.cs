@@ -5,13 +5,14 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -37,19 +38,19 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
         CreaturePlugin.SetRawAbilityScore(player, AbilityType.Might, 10);
         CreaturePlugin.SetRawAbilityScore(player, AbilityType.Social, 10);
         fixture.Update(record => record.Stamina = 0);
-        StatusEffect.ApplyStatusEffect(player, player, new RestStatusEffect(), 30f);
+        StatusEffectApplication.ApplyStatusEffect(player, player, new RestStatusEffect(), 30f);
         await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(player) > 0, 7f, "Rest's six-second tick");
         ctx.AssertEqual(11, Stat.GetCurrentStamina(player), "Rest grants 1 + Might");
         StatusEffect.RemoveStatusEffect(player, typeof(RestStatusEffect));
 
         fixture.Update(record => record.Stamina = 0);
-        StatusEffect.ApplyStatusEffect(player, player, new FieldRecovery2StatusEffect(), 30f);
+        StatusEffectApplication.ApplyStatusEffect(player, player, new FieldRecovery2StatusEffect(), 30f);
         await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(player) > 0, 5f, "Field Recovery's four-second tick");
         ctx.AssertEqual(2, Stat.GetCurrentStamina(player), "base Field Recovery II payout used by the group model");
         StatusEffect.RemoveStatusEffect(player, typeof(FieldRecovery2StatusEffect));
 
         fixture.Update(record => record.Stamina = 0);
-        StatusEffect.ApplyStatusEffect(player, player, new AdrenalStimStatusEffect(1), 30f);
+        StatusEffectApplication.ApplyStatusEffect(player, player, new AdrenalStimStatusEffect(1), 30f);
         await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(player) > 0, 4f, "Adrenal Stim's three-second tick");
         ctx.AssertEqual(1, Stat.GetCurrentStamina(player), "the stim's timed payout is independent of natural recovery");
     }
@@ -70,8 +71,8 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
         SetLocalInt(caster, $"PERK_LEVEL_{(int)PerkType.DoubleShot}", 3);
         ctx.SetNPCResources(caster, 100, 25);
         var starting = Stat.GetCurrentStamina(caster);
-        Combat.SetAbilityHitResolutionOverride(false);
-        Combat.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
         try
         {
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
@@ -81,15 +82,15 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
             });
             await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(caster) < starting, 5f, "the missed impact to spend its cost");
             ctx.AssertEqual(starting - 10, Stat.GetCurrentStamina(caster), "both missed shots cost ten with no critical refund");
-            var ability = Ability.GetAbilityDetail(FeatType.DoubleShot3);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.DoubleShot3);
             ctx.Assert(Recast.IsOnRecastDelay(caster, ability.RecastGroup).Item1, "a missed attempt retains its cooldown");
             Stat.ReduceStamina(caster, Stat.GetCurrentStamina(caster) - 9);
             ctx.Assert(!string.IsNullOrWhiteSpace(ability.Requirements.OfType<AbilityRequirementStamina>().Single().CheckRequirements(caster, ability)), "nine stamina cannot fund the next ten-stamina cast");
         }
         finally
         {
-            Combat.SetAbilityHitResolutionOverride(null);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
         }
     }
 
@@ -106,7 +107,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
         {
             SetLocalInt(player, "NATURAL_REGENERATION_TICK", 0);
             SetLocalInt(player, "NATURAL_STAMINA_REGEN_REMAINDER", 0);
-            SetLocalInt(player, Stat.SuppressNaturalRegenVariable, 0);
+            SetLocalInt(player, CreatureStatService.SuppressNaturalRegenVariable, 0);
             try
             {
                 for (var heartbeat = 1; heartbeat <= 5; heartbeat++)
@@ -116,7 +117,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
                     ctx.AssertEqual(heartbeat == 5 ? fpBudget : 0, Stat.GetCurrentFP(player), "FP retains its thirty-second cadence");
                 }
             }
-            finally { SetLocalInt(player, Stat.SuppressNaturalRegenVariable, 1); }
+            finally { SetLocalInt(player, CreatureStatService.SuppressNaturalRegenVariable, 1); }
             NaturalRegeneration.ProcessRegeneration();
             ctx.AssertEqual(20, Stat.GetCurrentStamina(player), "suppressed heartbeats cannot leak recovery into other engine tests");
         });
@@ -131,7 +132,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
         fixture.Update(record => { record.Stamina = 0; record.STMRegen = 0; });
         SetLocalInt(player, "NATURAL_STAMINA_REGEN_REMAINDER", 0);
         SetEventScript(player, EventScript.Creature_OnHeartbeat, ScriptName.OnPlayerHeartbeat);
-        SetLocalInt(player, Stat.SuppressNaturalRegenVariable, 0);
+        SetLocalInt(player, CreatureStatService.SuppressNaturalRegenVariable, 0);
         try
         {
             await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(player) > 0, 7f, "a real native six-second heartbeat");
@@ -139,7 +140,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
         }
         finally
         {
-            SetLocalInt(player, Stat.SuppressNaturalRegenVariable, 1);
+            SetLocalInt(player, CreatureStatService.SuppressNaturalRegenVariable, 1);
             SetEventScript(player, EventScript.Creature_OnHeartbeat, "");
         }
     }
@@ -149,7 +150,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         var player = fixture.Creature;
-        var ability = Ability.GetAbilityDetail(FeatType.DoubleShot3);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.DoubleShot3);
         var profile = new WeaponAbilityProfile { RestoreStaminaIfAnyCriticalHit = 4 };
         var summary = new AbilityImpactSummary { Ability = ability, ImpactedTargetCount = 1, CriticalHitCount = 2 };
         await ctx.ExecuteInCreatureContextAsync(player, () =>
@@ -158,16 +159,16 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
             {
                 ctx.SetResources(player, 100, 25);
                 Stat.ReduceStamina(player, cost);
-                Combat.ApplyAbilityStaminaCostFPRestore(player, ability, cost);
+                GameServices.CombatResources.ApplyAbilityStaminaCostFPRestore(player, ability, cost);
                 try
                 {
                     var before = Stat.GetCurrentStamina(player);
-                    profile.AfterImpact(player, 0, 0, summary);
+                    WeaponAbilityParts.Get<SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbility.WeaponAbilityImpactEffects>().AfterImpact(profile, player, 0, 0, summary);
                     ctx.AssertEqual(before + System.Math.Min(4, System.Math.Max(0, cost - 1)), Stat.GetCurrentStamina(player), "a landed critical refunds once even when damage is fully resisted");
-                    Combat.RestoreAbilityHitStamina(player, ability, 100);
+                    GameServices.CombatResources.RestoreAbilityHitStamina(player, ability, 100);
                     ctx.AssertEqual(cost > 0 ? 24 : 25, Stat.GetCurrentStamina(player), "combined authored and perk refunds leave at least one stamina spent");
                 }
-                finally { Combat.CompleteAbilityStaminaCostContext(player, ability); }
+                finally { GameServices.CombatResources.CompleteAbilityStaminaCostContext(player, ability); }
             }
         });
     }
@@ -177,39 +178,39 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         var player = fixture.Creature;
-        var ability = Ability.GetAbilityDetail(FeatType.BladeVortex2);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.BladeVortex2);
         var targets = Enumerable.Range(1, 3).Select(index => ctx.SpawnCreature("nw_rat001", index)).ToArray();
         await ctx.WaitFrameAsync();
         foreach (var target in targets)
         {
             ctx.SuppressNPCNaturalRegen(target);
             ctx.MakeHostile(target);
-            Stat.SetNPCMaxHitPoints(target, 10000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 10000, true);
             AssignCommand(target, () => ClearAllActions());
             SetCommandable(false, target);
         }
         TemporaryStatModifier.Add(player, StatType.AreaHitStaminaRestorePerTarget, 2, 60f, "stamina-area");
         TemporaryStatModifier.Add(player, StatType.AreaHitStaminaRestoreMaximum, 6, 60f, "stamina-area");
-        Combat.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
         {
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
                 ctx.SetResources(player, 100, 25);
                 ability.Requirements.OfType<AbilityRequirementStamina>().Single().AfterActivationAction(player, ability);
-                Ability.BeginAbilityImpact(player, ability);
+                AbilityImpactLifecycle.BeginAbilityImpact(player, ability);
                 AbilityImpactSummary summary;
                 try { ability.ImpactAction(player, targets[0], 2, GetLocation(player)); }
-                finally { summary = Ability.EndAbilityImpact(player); }
+                finally { summary = AbilityImpactLifecycle.EndAbilityImpact(player); }
                 try
                 {
                     ctx.AssertEqual(3, summary.ImpactedTargetCount, "the real area hits three enemies");
-                    Combat.ApplyAbilityImpactEffects(player, summary);
+                    GameServices.CombatAbilityHitRiders.ApplyAbilityImpactEffects(player, summary);
                     ctx.AssertEqual(24, Stat.GetCurrentStamina(player), "nine paid, six authored plus six passive requested, eight refunded");
                 }
-                finally { Combat.CompleteAbilityStaminaCostContext(player, ability); }
+                finally { GameServices.CombatResources.CompleteAbilityStaminaCostContext(player, ability); }
             });
         }
-        finally { Combat.SetAbilityHitResolutionOverride(null); }
+        finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); }
     }
 }

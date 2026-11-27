@@ -7,7 +7,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <value>This represents the object that the current script is running on.</value>
         // ReSharper disable once InconsistentNaming
-        public static uint OBJECT_SELF => global::NWN.Core.NWScript.OBJECT_SELF;
+        public static uint OBJECT_SELF => NWScriptRuntime.Current.OBJECT_SELF;
 
         /// <summary>
         /// Gets a random integer between 0 and nMaxInteger-1.
@@ -16,7 +16,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>A random integer between 0 and nMaxInteger-1. Returns 0 on error</returns>
         public static int Random(int nMaxInteger)
         {
-            return global::NWN.Core.NWScript.Random(nMaxInteger);
+            return NWScriptRuntime.Current.Random(nMaxInteger);
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The module object. Returns OBJECT_INVALID on error</returns>
         public static uint GetModule()
         {
-            return global::NWN.Core.NWScript.GetModule();
+            return NWScriptRuntime.Current.GetModule();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sString">The string to output to the log</param>
         public static void PrintString(string sString)
         {
-            global::NWN.Core.NWScript.PrintString(sString);
+            NWScriptRuntime.Current.PrintString(sString);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDecimals">The number of decimals should be a value from 0 to 9 inclusive (default: 9)</param>
         public static void PrintFloat(float fFloat, int nWidth = 18, int nDecimals = 9)
         {
-            global::NWN.Core.NWScript.PrintFloat(fFloat, nWidth, nDecimals);
+            NWScriptRuntime.Current.PrintFloat(fFloat, nWidth, nDecimals);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nInteger">The integer to output to the log</param>
         public static void PrintInteger(int nInteger)
         {
-            global::NWN.Core.NWScript.PrintInteger(nInteger);
+            NWScriptRuntime.Current.PrintInteger(nInteger);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oObject">The object whose ID to output to the log</param>
         public static void PrintObject(uint oObject)
         {
-            global::NWN.Core.NWScript.PrintObject(oObject);
+            NWScriptRuntime.Current.PrintObject(oObject);
         }
     }
 }

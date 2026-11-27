@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using AssociateType = SWLOR.NWN.API.NWScript.Enum.Associate.AssociateType;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
@@ -79,15 +79,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             var maxHP = GetMaxHitPoints(beast);
             var baseAmount = baseHealingAmount + (maxHP / 5);
             var amount = Stat.ScaleEffect(baseAmount, GetAbilityScore(activator, AbilityType.Social));
-            amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
-            amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
+            amount = CombatResources.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
+            amount = CombatAbilityMagnitude.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
 
             var hitPointsBeforeHealing = GetCurrentHitPoints(beast);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), beast);
             if (GetCurrentHitPoints(beast) > hitPointsBeforeHealing)
             {
                 Ability.PlaySuccessfulImpactVisualEffect(activator, beast);
-                Enmity.ModifyEnmityOnAll(activator, 300);
+                EnmityChange.ModifyEnmityOnAll(activator, 300);
             }
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), beast);
 

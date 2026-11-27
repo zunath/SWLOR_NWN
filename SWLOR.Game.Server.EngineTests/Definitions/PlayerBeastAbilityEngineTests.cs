@@ -2,9 +2,10 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(Supports(feat), "player beast fixture must have a specific observable outcome for this feat");
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var player = fixture.Creature;
-            var ability = Ability.GetAbilityDetail(feat);
+            var ability = AbilityCatalog.GetAbilityDetail(feat);
             fixture.Update(record => record.Perks[ability.EffectiveLevelPerkType] =
                 Math.Max(record.Perks.GetValueOrDefault(ability.EffectiveLevelPerkType), ability.AbilityLevel));
             CreaturePlugin.AddFeat(player, feat);
@@ -60,7 +61,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     fixture.Update(db => db.ActiveBeastId = beastId);
                     if (!isCall && !isRevive)
                     {
-                        await ctx.ExecuteInCreatureContextAsync(player, () => BeastMastery.SpawnBeast(player, beastId, 100));
+                        await ctx.ExecuteInCreatureContextAsync(player, () => BeastSpawn.SpawnBeast(player, beastId, 100));
                         await ctx.WaitUntilAsync(() => BeastMastery.IsPlayerBeast(GetAssociate(AssociateType.Henchman, player)), 5f, "owned companion to spawn");
                         pet = GetAssociate(AssociateType.Henchman, player);
                         ctx.Track(pet);
@@ -84,7 +85,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             ctx.AssertEqual(2, GetItemStackSize(treat), "two pet treats before Reward");
                         }
                         if (feat == FeatType.SoothePet)
-                            ctx.Assert(StatusEffect.ApplyStatusEffect(player, pet, new PoisonStatusEffect(), 30f), "cleanseable pet poison applies");
+                            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(player, pet, new PoisonStatusEffect(), 30f), "cleanseable pet poison applies");
                     }
                 }
 
@@ -96,7 +97,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var activated = false;
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                     activated = UsePerkFeat.TryUseAbility(player, target, feat, GetLocation(target)));
-                ctx.Assert(activated, $"{feat} activates through the player feat pipeline: {Ability.GetLastActivationDenialReason()}");
+                ctx.Assert(activated, $"{feat} activates through the player feat pipeline: {AbilityActivation.GetLastActivationDenialReason()}");
                 var wait = (ability.ActivationDelay?.Invoke(player, target, ability.AbilityLevel) ?? 0f) + 8f;
                 if (isTame)
                 {

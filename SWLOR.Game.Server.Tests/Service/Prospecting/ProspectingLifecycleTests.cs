@@ -1,12 +1,13 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
-using SWLOR.Game.Server.Service.ProspectingService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
 using static SWLOR.Game.Server.Tests.Service.Prospecting.ProspectingTestData;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service.Prospecting;
 
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Tests.Service.Prospecting;
 /// Covers a session from the use of a harvester to its end: the one-player lock, what each action hands the player and pays, how the
 /// charges and the node are kept, every way of leaving, and Quick Harvest against the harvests it replaces.
 /// </summary>
-public class ProspectingLifecycleTests
+public class ProspectingLifecycleTests : SkillFacadeFixture
 {
     private const uint Player = 11;
     private const uint OtherPlayer = 12;
@@ -30,7 +31,10 @@ public class ProspectingLifecycleTests
     [OneTimeSetUp]
     public void LoadTheXpChart()
     {
-        Skill.CacheXPChartData();
+        using (SkillFacades.Install())
+        {
+            Skill.CacheXPChartData();
+        }
     }
 
     [SetUp]
@@ -70,7 +74,7 @@ public class ProspectingLifecycleTests
         return report;
     }
 
-    private static int XpPerUnit(int tier, int rank) => Skill.GetDeltaXP(GatheringLevels.ForTier(tier) - rank);
+    private static int XpPerUnit(int tier, int rank) => SkillXP.GetDeltaXP(GatheringLevels.ForTier(tier) - rank);
 
     // Beginning a session.
 
@@ -452,10 +456,10 @@ public class ProspectingLifecycleTests
         Do(lifecycle, session, ProspectingActionIds.Strike);
 
         var expected = CraftMinigameXp.ScaleBaseXp(
-            Skill.GetDeltaXP(15 - 12), CraftMinigameXp.MultiplierFor(CraftMinigameType.Prospecting, 15));
+            SkillXP.GetDeltaXP(15 - 12), CraftMinigameXp.MultiplierFor(CraftMinigameType.Prospecting, 15));
         _world.Xp.Should().Equal(expected);
         lifecycle.XpPerItem(session).Should().Be(expected);
-        expected.Should().Be(Skill.GetDeltaXP(3), "the multiplier is 1 until the XP-rate gate asks for more");
+        expected.Should().Be(SkillXP.GetDeltaXP(3), "the multiplier is 1 until the XP-rate gate asks for more");
     }
 
     [Test]
@@ -773,7 +777,7 @@ public class ProspectingLifecycleTests
     [Test]
     public void QuickHarvestPaysExactlyWhatEachOfTodaysHarvestsPaid_AtTheAttributeReference()
     {
-        // Today a node held d4 harvests, each one item (a Might modifier of 0 adds none) and Skill.GetDeltaXP(vein level - rank) XP.
+        // Today a node held d4 harvests, each one item (a Might modifier of 0 adds none) and SkillXP.GetDeltaXP(vein level - rank) XP.
         var lifecycle = Lifecycle();
         _world.SaveNode(NodeId, Node(3, "r").Serialize());
         var session = lifecycle.Begin(Request(tier: 4, rank: 33)).Session;
@@ -784,7 +788,7 @@ public class ProspectingLifecycleTests
             _world.RunNextWork((float)ProspectingRules.HarvestSeconds);
 
         _world.ItemsHarvested.Should().Be(3);
-        _world.Xp.Sum().Should().Be(3 * Skill.GetDeltaXP(10 * (4 - 1) + 5 - 33));
+        _world.Xp.Sum().Should().Be(3 * SkillXP.GetDeltaXP(10 * (4 - 1) + 5 - 33));
         ProspectingQuickHarvest.Seconds(3).Should().Be(3 * 5.0);
         ProspectingQuickHarvest.Charges(3).Should().Be(3);
     }

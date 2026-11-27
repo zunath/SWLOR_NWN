@@ -1,10 +1,11 @@
+using SWLOR.Game.Server.Domain.Creatures;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 {
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .BreaksStealth()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    if (StatusEffect.ApplyStatusEffect(activator, activator, new SoulAscensionBurstStatusEffect(),
+                    if (StatusEffectApplication.ApplyStatusEffect(activator, activator, new SoulAscensionBurstStatusEffect(),
                             CapstoneAbility.ActiveDurationSeconds))
                         SacrificeHitPoints(activator, HitPointCostPercent);
                 });

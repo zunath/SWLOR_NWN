@@ -2,7 +2,8 @@ using System;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.Space;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -112,7 +113,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 friendStatus.Capacitor = 1;
                 var capsule = await GiveFuelCapsuleAsync(ctx, player);
                 var status = await ActivateAsync(ctx, player, "cap_inject1", friend);
-                ctx.AssertEqual(1, friendStatus.Capacitor, "out of range friend's capacitor");
+                // Ships recover 1 capacitor per second, so the friend can hold 2 or 3 by now. The basic injector restores 8,
+                // so a value below 9 still proves the refused injector gave the friend nothing.
+                ctx.Assert(friendStatus.Capacitor >= 1 && friendStatus.Capacitor < 9,
+                    $"out of range friend's capacitor stays near its 1 start and gets no injector charge (was {friendStatus.Capacitor})");
                 ctx.AssertEqual(StartingCapacitor, status.Capacitor, "player's capacitor after the refused injector");
                 ctx.AssertEqual(player.Creature, GetItemPossessor(capsule), "fuel capsule holder after the refused injector");
                 ctx.Assert(!RecastStarted(status), "the refused injector starts no recast");

@@ -3,19 +3,20 @@ using System.Linq;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
-using SWLOR.Game.Server.Service.CraftService.Research;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Experiment;
+using SWLOR.Game.Server.Domain.Crafting.Research;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -217,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // player is paid the next time the window opens.
             if (owned && ResearchExperimentLifecycle.IsExperimentXpOwed(dbJob))
             {
-                ResearchExperimentService.GrantExperimentXp(Player, dbJob);
+                CraftResearchExperiment.GrantExperimentXp(Player, dbJob);
                 jobChanged |= dbJob.Experiment.XpGranted;
             }
 
@@ -327,7 +328,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return $"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(researchJob.RequiredResearchTier)} is required to research this recipe.";
             }
 
-            if (researchJob.CurrentLevel >= Craft.MaxResearchLevel)
+            if (researchJob.CurrentLevel >= CraftService.MaxResearchLevel)
             {
                 return $"Blueprint cannot be researched any further.";
             }
@@ -394,7 +395,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         Experiment = ResearchExperimentLifecycle.Open(
                             targetLevel, trials, researchJob.TimeCost, extraBonus, licensedRunsGrant)
                     };
-                    ResearchExperimentService.StampStart(Player, dbResearchJob);
+                    CraftResearchExperiment.StampStart(Player, dbResearchJob);
 
                     AssignCommand(Player, () => TakeGoldFromCreature(researchJob.CreditCost, Player, true));
                     DestroyObject(_blueprintItem);
@@ -438,11 +439,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (!string.IsNullOrWhiteSpace(dbJob.SerializedItem) &&
                         !Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(dbJob.SerializedItem)))
                     {
-                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false);
                         return;
                     }
 
-                    ResearchExperimentService.FinishDelivery(Player, dbJob);
+                    CraftResearchExperiment.FinishDelivery(Player, dbJob);
                     Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
                     FloatingTextStringOnCreature("Research job cancelled!", Player, false);
                 },
@@ -486,7 +487,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DestroyObject(probe);
                 if (!fits)
                 {
-                    FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                    FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false);
                     return;
                 }
 
@@ -499,7 +500,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 item = ObjectPlugin.Deserialize(dbJob.SerializedItem);
                 if (!Item.TryAcquireItem(Player, item))
                 {
-                    FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                    FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false);
                     return;
                 }
 
@@ -552,9 +553,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Craft.SetBlueprintDetails(item, blueprintDetails);
             Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
 
-            var experimentXp = ResearchExperimentService.GrantExperimentXp(Player, dbJob);
-            var completionXp = ResearchExperimentService.GrantCompletionXp(Player, dbJob, completion.Level);
-            ResearchExperimentService.FinishDelivery(Player, dbJob);
+            var experimentXp = CraftResearchExperiment.GrantExperimentXp(Player, dbJob);
+            var completionXp = CraftResearchExperiment.GrantCompletionXp(Player, dbJob, completion.Level);
+            CraftResearchExperiment.FinishDelivery(Player, dbJob);
 
             SendMessageToPC(Player, DescribeCompletion(completion, experimentXp + completionXp));
         };

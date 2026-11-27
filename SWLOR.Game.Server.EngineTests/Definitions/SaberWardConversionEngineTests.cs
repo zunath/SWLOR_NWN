@@ -4,12 +4,14 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using DamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -56,7 +58,7 @@ public static class SaberWardConversionEngineTests
                     SetEventScript(creature, EventScript.Creature_OnMeleeAttacked, "");
                     SetEventScript(creature, EventScript.Creature_OnEndCombatRound, "");
                     ctx.SuppressNPCNaturalRegen(creature);
-                    Stat.SetNPCMaxHitPoints(creature, 20000, true);
+                    CreatureStat.SetNPCMaxHitPoints(creature, 20000, true);
                 }
                 // Large physical hits, so every hit's 30 percent share is at least one point.
                 BiowareXP2.IPSafeAddItemProperty(weapon, ItemPropertyCustom(ItemPropertyType.DMG, -1, 60),
@@ -65,7 +67,7 @@ public static class SaberWardConversionEngineTests
                     0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
                 TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 60f);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
-                ctx.Assert(StatusEffect.ApplyStatusEffect(target, target, new SaberWardStatusEffect(30, 6, 9), 60f),
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(target, target, new SaberWardStatusEffect(30, 6, 9), 60f),
                     "Saber Ward IV applies to the defender");
                 ctx.MakeHostile(target);
             });
@@ -74,7 +76,7 @@ public static class SaberWardConversionEngineTests
             _observedAttacker = attacker;
             _observedTarget = target;
             ctx.SeedRandom(Seed);
-            Combat.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             AssignCommand(attacker, () => ActionAttack(target));
 
             await ctx.WaitUntilAsync(() => Impacts.Count(impact => impact.Physical > 0) >= 4, 60f,
@@ -102,7 +104,7 @@ public static class SaberWardConversionEngineTests
         }
         finally
         {
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             if (GetIsObjectValid(attacker)) AssignCommand(attacker, () => ClearAllActions(true));
             _observedAttacker = OBJECT_INVALID;
             _observedTarget = OBJECT_INVALID;

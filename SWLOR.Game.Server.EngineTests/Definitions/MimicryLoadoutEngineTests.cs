@@ -9,13 +9,14 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -218,7 +219,7 @@ public static class MimicryLoadoutEngineTests
         await ctx.WaitUntilAsync(() => GetIsInCombat(player), 15f, "the native player to enter combat");
         var before = JsonConvert.SerializeObject(DB.Get<Player>(fixture.Id));
         var slots = Enumerable.Range(0, 36).Select(slot => PlayerPlugin.GetQuickBarSlot(player, slot)).ToArray();
-        ctx.Assert(!Mimicry.ApplyLoadout(player, second, new[] { Wave, Trait }, out var error) && error.Contains("combat"), "native combat denies Apply");
+        ctx.Assert(!GameServices.MimicryLoadout.ApplyLoadout(player, second, new[] { Wave, Trait }, out var error) && error.Contains("combat"), "native combat denies Apply");
         ctx.AssertEqual(before, JsonConvert.SerializeObject(DB.Get<Player>(fixture.Id)), "combat denial leaves the persisted record unchanged");
         ctx.Assert(GetHasFeat(Rush, player) && !GetHasFeat(Wave, player), "combat denial leaves native feats unchanged");
         for (var slot = 0; slot < 36; slot++)
@@ -247,7 +248,7 @@ public static class MimicryLoadoutEngineTests
         Apply(ctx, player, first, Rush, Trait);
         var activated = false;
         await ctx.ExecuteInCreatureContextAsync(player, () => activated = UsePerkFeat.TryUseAbility(player, player, Rush, GetLocation(player)));
-        ctx.Assert(activated, $"the equipped technique activates: {Ability.GetLastActivationDenialReason()}");
+        ctx.Assert(activated, $"the equipped technique activates: {AbilityActivation.GetLastActivationDenialReason()}");
         await ctx.WaitUntilAsync(() => DB.Get<Player>(fixture.Id).RecastTimes.ContainsKey(RecastGroup.SnapRush), 5f, "the actual technique to start its cooldown");
         var expires = DB.Get<Player>(fixture.Id).RecastTimes[RecastGroup.SnapRush];
         ctx.Assert(expires > DateTime.UtcNow, "activation creates a future cooldown");
@@ -256,13 +257,13 @@ public static class MimicryLoadoutEngineTests
         ctx.Assert(StatusEffect.HasStatusEffect<Hasten1StatusEffect>(player), "reapplying a shared technique preserves its active effect");
         Apply(ctx, player, second, Wave, Trait);
         ctx.Assert(!StatusEffect.HasStatusEffect<Hasten1StatusEffect>(player), "removing a technique revokes its source-owned active effect");
-        ctx.Assert(!Ability.CanUseAbility(player, player, Rush, 1, GetLocation(player)) && Ability.GetLastActivationDenialReason().Contains("not equipped"), "removed techniques cannot be used through a stale shortcut");
+        ctx.Assert(!AbilityActivation.CanUseAbility(player, player, Rush, 1, GetLocation(player)) && AbilityActivation.GetLastActivationDenialReason().Contains("not equipped"), "removed techniques cannot be used through a stale shortcut");
         Apply(ctx, player, first, Rush, Trait);
         await ctx.WaitFrameAsync();
         ctx.AssertEqual(expires, DB.Get<Player>(fixture.Id).RecastTimes[RecastGroup.SnapRush], "switching does not reset or extend the cooldown");
-        ctx.Assert(!Ability.CanUseAbility(player, player, Rush, 1, GetLocation(player)) && Ability.GetLastActivationDenialReason().StartsWith("This ability can be used in "), "re-equipped techniques remain blocked by their real cooldown");
+        ctx.Assert(!AbilityActivation.CanUseAbility(player, player, Rush, 1, GetLocation(player)) && AbilityActivation.GetLastActivationDenialReason().StartsWith("This ability can be used in "), "re-equipped techniques remain blocked by their real cooldown");
         await ctx.WaitUntilAsync(() => DateTime.UtcNow > expires, 35f, "the original cooldown to expire");
-        ctx.Assert(Ability.CanUseAbility(player, player, Rush, 1, GetLocation(player)), $"normal use becomes available after expiry: {Ability.GetLastActivationDenialReason()}");
+        ctx.Assert(AbilityActivation.CanUseAbility(player, player, Rush, 1, GetLocation(player)), $"normal use becomes available after expiry: {AbilityActivation.GetLastActivationDenialReason()}");
         ctx.SetResultDetail("Snap Rush activated through TryUseAbility; original cooldown timestamp and activation denials verified across switches through natural expiry.");
     }
 
@@ -273,13 +274,13 @@ public static class MimicryLoadoutEngineTests
         var (first, second) = Prepare(fixture);
         Apply(ctx, fixture.Creature, first, Rush, Trait);
         foreach (var invalid in new[] { new[] { Rush, Rush }, new[] { (FeatType)int.MaxValue } })
-            ctx.Assert(!Mimicry.ApplyLoadout(fixture.Creature, second, invalid, out _), "duplicate or unavailable techniques are denied");
+            ctx.Assert(!GameServices.MimicryLoadout.ApplyLoadout(fixture.Creature, second, invalid, out _), "duplicate or unavailable techniques are denied");
         fixture.Update(record => record.LearnedTechniques.Remove(Wave));
-        ctx.Assert(!Mimicry.ApplyLoadout(fixture.Creature, second, new[] { Wave }, out _), "unlearned techniques are denied");
+        ctx.Assert(!GameServices.MimicryLoadout.ApplyLoadout(fixture.Creature, second, new[] { Wave }, out _), "unlearned techniques are denied");
         fixture.Update(record => { record.LearnedTechniques[Wave] = DateTime.UtcNow; record.Skills[SkillType.Mimicry].Rank = 0; });
-        ctx.Assert(!Mimicry.ApplyLoadout(fixture.Creature, second, new[] { Wave }, out _), "insufficient rank is denied");
+        ctx.Assert(!GameServices.MimicryLoadout.ApplyLoadout(fixture.Creature, second, new[] { Wave }, out _), "insufficient rank is denied");
         fixture.Update(record => { record.Skills[SkillType.Mimicry].Rank = 50; record.Perks.Clear(); });
-        ctx.Assert(!Mimicry.ApplyLoadout(fixture.Creature, second, new[] { Wave }, out _), "insufficient slot budget is denied");
+        ctx.Assert(!GameServices.MimicryLoadout.ApplyLoadout(fixture.Creature, second, new[] { Wave }, out _), "insufficient slot budget is denied");
         await ctx.WaitFrameAsync();
         AssertSet(ctx, new[] { Rush, Trait }, DB.Get<Player>(fixture.Id).EquippedTechniques, "all invalid applies preserve the equipped set");
         ctx.AssertEqual(first, DB.Get<Player>(fixture.Id).ActiveMimicryLoadoutId, "all invalid applies preserve the active ID");
@@ -317,7 +318,7 @@ public static class MimicryLoadoutEngineTests
     }
 
     private static void Apply(EngineTestContext ctx, uint player, string id, params FeatType[] feats)
-        => ctx.Assert(Mimicry.ApplyLoadout(player, id, feats, out var error), $"apply succeeds: {error}");
+        => ctx.Assert(GameServices.MimicryLoadout.ApplyLoadout(player, id, feats, out var error), $"apply succeeds: {error}");
 
     private static void Bind(TechniquesViewModel model, uint player)
     {

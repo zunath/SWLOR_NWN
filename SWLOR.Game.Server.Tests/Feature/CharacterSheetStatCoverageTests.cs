@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -8,75 +10,75 @@ public class CharacterSheetStatCoverageTests
     [Test]
     public void CharacterSheet_DisplaysPercentAdjustmentsForEveryFoldedCombatRating()
     {
-        var viewModel = ReadViewModel();
+        var rows = ReadRows();
 
         // Attack and Force Attack already surfaced their percent adjustments. Accuracy, Evasion and
         // Defense fold theirs into the Attributes tab the same way, so they belong on the Stats tab too.
-        viewModel.Should().Contain("AddStat(\"Accuracy %\", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AccuracyPercentAdjustment))");
-        viewModel.Should().Contain("AddStat(\"Evasion %\", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EvasionPercentAdjustment))");
-        viewModel.Should().Contain("AddStat(\"Physical DEF %\", FormatPercent(Stat.GetDefensePercentAdjustment(_target, CombatDamageType.Physical))");
-        viewModel.Should().Contain("AddStat(\"Force DEF %\", FormatPercent(Stat.GetDefensePercentAdjustment(_target, CombatDamageType.Force))");
+        rows.Should().Contain("addStat(\"Accuracy %\", FormatPercent(Stat.GetStatAdjustment(host.Target, StatType.AccuracyPercentAdjustment))");
+        rows.Should().Contain("addStat(\"Evasion %\", FormatPercent(Stat.GetStatAdjustment(host.Target, StatType.EvasionPercentAdjustment))");
+        rows.Should().Contain("addStat(\"Physical DEF %\", FormatPercent(CombatRating.GetDefensePercentAdjustment(host.Target, CombatDamageType.Physical))");
+        rows.Should().Contain("addStat(\"Force DEF %\", FormatPercent(CombatRating.GetDefensePercentAdjustment(host.Target, CombatDamageType.Force))");
     }
 
     [Test]
     public void CharacterSheet_DistinguishesAccuracyRatingFromDirectAbilityHitChance()
     {
-        var viewModel = ReadViewModel();
+        var rows = ReadRows();
 
-        viewModel.Should().Contain(
+        rows.Should().Contain(
             "Direct percentage-point change to hit chance for weapon-skill and Force-skill ability hit checks only. Does not affect Mimicry abilities or the underlying Accuracy rating.");
-        viewModel.Should().Contain(
+        rows.Should().Contain(
             "Percentage bonus or penalty applied to the underlying Accuracy rating for attacks and ability hit checks, including Force and Mimicry. It is not a direct percentage-point change to hit chance");
-        viewModel.Should().Contain("already included in the Main-hand Accuracy, Off-hand Accuracy, and Force Accuracy ratings shown on the Attributes tab.");
+        rows.Should().Contain("already included in the Main-hand Accuracy, Off-hand Accuracy, and Force Accuracy ratings shown on the Attributes tab.");
     }
 
     [Test]
     public void CharacterSheet_DisplaysGlobalOutputAndSustainStats()
     {
-        var viewModel = ReadViewModel();
+        var rows = ReadRows();
 
-        viewModel.Should().Contain("AddStat(\"Damage Dealt\", FormatPercent(Stat.GetStatAdjustment(_target, StatType.DamageDealtPercentAdjustment))");
-        viewModel.Should().Contain("AddStat(\"Weapon/Force Damage\", FormatPercent(Stat.GetStatAdjustment(_target, StatType.WeaponAndForceDamageDealtPercentAdjustment))");
-        viewModel.Should().Contain("AddStat(\"Healing Received\", FormatPercent(Stat.GetStatAdjustment(_target, StatType.HealingReceivedPercentAdjustment))");
-        viewModel.Should().Contain("AddStat(\"FP Cost\", FormatPercent(Stat.GetStatAdjustment(_target, StatType.FPCostPercentAdjustment))");
-        viewModel.Should().Contain("AddStat(\"STM Cost\", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AbilityStaminaCostPercentAdjustment))");
-        viewModel.Should().Contain("AddStat(\"Experience\", FormatPercent(Stat.GetStatAdjustment(_target, StatType.ExperiencePercentAdjustment))");
+        rows.Should().Contain("addStat(\"Damage Dealt\", FormatPercent(Stat.GetStatAdjustment(host.Target, StatType.DamageDealtPercentAdjustment))");
+        rows.Should().Contain("addStat(\"Weapon/Force Damage\", FormatPercent(Stat.GetStatAdjustment(host.Target, StatType.WeaponAndForceDamageDealtPercentAdjustment))");
+        rows.Should().Contain("addStat(\"Healing Received\", FormatPercent(Stat.GetStatAdjustment(host.Target, StatType.HealingReceivedPercentAdjustment))");
+        rows.Should().Contain("addStat(\"FP Cost\", FormatPercent(Stat.GetStatAdjustment(host.Target, StatType.FPCostPercentAdjustment))");
+        rows.Should().Contain("addStat(\"STM Cost\", FormatPercent(Stat.GetStatAdjustment(host.Target, StatType.AbilityStaminaCostPercentAdjustment))");
+        rows.Should().Contain("addStat(\"Experience\", FormatPercent(Stat.GetStatAdjustment(host.Target, StatType.ExperiencePercentAdjustment))");
     }
 
     [Test]
     public void CharacterSheet_DisplaysOffHandHasteAlongsideMainHandHaste()
     {
-        var viewModel = ReadViewModel();
+        var rows = ReadRows();
 
-        viewModel.Should().Contain("AddStat(\"Haste\", FormatPercent(Combat.CalculateAttackDelayReduction(_target))");
-        viewModel.Should().Contain("AddStat(\"Off-Hand Haste\", FormatPercent(Combat.CalculateOffhandAttackDelayReduction(_target))");
+        rows.Should().Contain("addStat(\"Haste\", FormatPercent(CombatAttackTiming.CalculateAttackDelayReduction(host.Target))");
+        rows.Should().Contain("addStat(\"Off-Hand Haste\", FormatPercent(CombatAttackTiming.CalculateOffhandAttackDelayReduction(host.Target))");
     }
 
     [Test]
     public void CharacterSheet_DisplaysHighResourceAbilityBonusesAndTheirLiveState()
     {
-        var viewModel = ReadViewModel();
+        var rows = ReadRows();
 
-        viewModel.Should().Contain("AddHighResourceAbilityDamageStats(AddStat);");
-        viewModel.Should().Contain("Stat.GetStatSources(_target, payload)");
-        viewModel.Should().Contain("GroupBy(source => source[thresholdStat])");
-        viewModel.Should().NotContain("\"Balanced Current\"");
-        viewModel.Should().NotContain("\"Balanced Attunement\"");
-        viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent");
-        viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent");
-        viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamageBonus");
-        viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustment");
-        viewModel.Should().Contain("Combat.IsCurrentFPAndStaminaAbovePercent(_target, threshold)");
+        rows.Should().Contain("AddHighResourceAbilityDamageStats(host, addStat);");
+        rows.Should().Contain("Stat.GetStatSources(host.Target, payload)");
+        rows.Should().Contain("GroupBy(source => source[thresholdStat])");
+        rows.Should().NotContain("\"Balanced Current\"");
+        rows.Should().NotContain("\"Balanced Attunement\"");
+        rows.Should().Contain("StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent");
+        rows.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent");
+        rows.Should().Contain("StatType.HighFPAndStaminaAbilityDamageBonus");
+        rows.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustment");
+        rows.Should().Contain("CombatResources.IsCurrentFPAndStaminaAbovePercent(host.Target, threshold)");
 
     }
 
     [Test]
     public void CharacterSheet_DisplaysDetectionAndStealth()
     {
-        var viewModel = ReadViewModel();
+        var rows = ReadRows();
 
-        viewModel.Should().Contain("AddStat(\"Detection\", Stat.GetDetection(_target).ToString()");
-        viewModel.Should().Contain("AddStat(\"Stealth\", Stat.GetStealth(_target).ToString()");
+        rows.Should().Contain("addStat(\"Detection\", Stat.GetDetection(host.Target).ToString()");
+        rows.Should().Contain("addStat(\"Stealth\", Stat.GetStealth(host.Target).ToString()");
     }
 
     [Test]
@@ -86,13 +88,13 @@ public class CharacterSheetStatCoverageTests
         var temporaryModifiers = File.ReadAllText(Path.Combine(
             FindRepositoryRoot().FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "CombatService",
-            "TemporaryStatModifier.cs"));
+            "Domain",
+            "Character",
+            "TemporaryStatModifierService.cs"));
 
         viewModel.Should().Contain("IGuiRefreshable<StatAdjustmentRefreshEvent>");
         viewModel.Should().Contain("public void Refresh(StatAdjustmentRefreshEvent payload)");
-        temporaryModifiers.Should().Contain("Gui.PublishRefreshEvent(creature, new StatAdjustmentRefreshEvent())");
+        temporaryModifiers.Should().Contain("_gui.PublishRefreshEvent(creature, new StatAdjustmentRefreshEvent())");
         temporaryModifiers.Should().Contain("if (PurgeExpired(creature))");
     }
 
@@ -100,46 +102,44 @@ public class CharacterSheetStatCoverageTests
     public void CharacterSheet_RefreshesWhenStatusEffectStatsChange()
     {
         var viewModel = ReadViewModel();
-        var statusEffects = ReadService("StatusEffect.cs");
+        var statusEffects = StatusEffectSource.Read();
 
         viewModel.Should().Contain("IGuiRefreshable<StatusEffectReceivedRefreshEvent>");
         viewModel.Should().Contain("IGuiRefreshable<StatusEffectRemovedRefreshEvent>");
         viewModel.Should().Contain("public void Refresh(StatusEffectReceivedRefreshEvent payload)");
         viewModel.Should().Contain("public void Refresh(StatusEffectRemovedRefreshEvent payload)");
         statusEffects.Should().Contain(
-            "Gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectReceivedRefreshEvent())");
+            "_gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectReceivedRefreshEvent())");
         statusEffects.Should().Contain(
-            "Gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectRemovedRefreshEvent())");
+            "_gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectRemovedRefreshEvent())");
         statusEffects.Should().Contain("if (!isReplacement)");
         statusEffects.Should().Contain("isReplacement: true");
         statusEffects.Should().Contain("bool isReplacement = false");
         statusEffects.Should().MatchRegex(@"removeNativeEffect,\s+isReplacement\);");
 
-        var gui = ReadService("Gui.cs");
-        gui.Should().Contain("public static void PublishCharacterSheetRefreshEvent<T>(uint target, T payload)");
-        gui.Should().Contain("for (var observer = GetFirstPC(); GetIsObjectValid(observer); observer = GetNextPC())");
-        gui.Should().Contain("!viewModel.IsViewingTarget(target)");
+        // The refresh itself (only sheets that are open and viewing the target) is covered by GuiServiceTests.
     }
 
     [Test]
     public void CharacterSheet_ReportsGuardReductionInsteadOfHardcodingIt()
     {
-        var viewModel = ReadViewModel();
+        var rows = ReadRows();
 
         // Guard reduction is adjustable via GuardDamageReductionPercentAdjustment, so the tooltip
         // must not claim a fixed 20% and the real value gets its own row.
-        viewModel.Should().Contain("AddStat(\"Guard Reduction\", FormatPercent(Combat.GetGuardDamageReductionPercent(_target))");
-        viewModel.Should().NotContain("Chance to reduce damage by 20% and increase enmity gain.");
+        rows.Should().Contain("addStat(\"Guard Reduction\", FormatPercent(CombatDamageTaken.GetGuardDamageReductionPercent(host.Target))");
+        rows.Should().NotContain("Chance to reduce damage by 20% and increase enmity gain.");
     }
 
     [Test]
     public void StatAndCombatServices_ExposeTheAccessorsTheCharacterSheetConsumes()
     {
-        var stat = ReadService("Stat.cs");
-        var combat = ReadService("Combat.cs");
+        // The sheet reaches the stat service through GameServices.Stat, typed as its interface.
+        var stat = StatSource.ReadInterfaces();
+        var combat = CombatSource.Read();
 
         // The sheet must reuse these rather than re-deriving the shield bonus or the Guard clamp.
-        stat.Should().Contain("public static int GetDefensePercentAdjustment(uint creature, CombatDamageType type)");
+        stat.Should().Contain("int GetDefensePercentAdjustment(uint creature, CombatDamageType type);");
         combat.Should().Contain("public static int GetGuardDamageReductionPercent(uint defender)");
     }
 
@@ -154,13 +154,16 @@ public class CharacterSheetStatCoverageTests
             "CharacterSheetViewModel.cs"));
     }
 
-    private static string ReadService(string fileName)
+    private static string ReadRows()
     {
-        return File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            fileName));
+        return string.Concat(
+            new[] { "Survival", "Accuracy", "Damage", "Utility" }.Select(rows => File.ReadAllText(Path.Combine(
+                FindRepositoryRoot().FullName,
+                "SWLOR.Game.Server",
+                "Feature",
+                "GuiDefinition",
+                "CharacterSheetWindow",
+                $"CharacterSheet{rows}Rows.cs"))));
     }
 
     private static DirectoryInfo FindRepositoryRoot()

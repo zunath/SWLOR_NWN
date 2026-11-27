@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using NWN.Native.API;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -17,10 +17,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var creature = ctx.SpawnCreature("civilian");
             await ctx.DelaySecondsAsync(1f);
-            var baseline = Stat.GetMovementSpeedMultiplier(creature);
+            var baseline = CreatureStat.GetMovementSpeedMultiplier(creature);
             SetLocalInt(creature, "WALK_TOGGLE", 1);
-            ctx.Assert(!Stat.IsWalkModeEnabled(creature), "uncontrolled NPCs cannot retain player walk mode");
-            Stat.ApplyCreatureMovementRate(creature);
+            ctx.Assert(!CreatureStat.IsWalkModeEnabled(creature), "uncontrolled NPCs cannot retain player walk mode");
+            CreatureStat.ApplyCreatureMovementRate(creature);
             ctx.AssertEqual(0, GetLocalInt(creature, "WALK_TOGGLE"), "stale walk marker clears on refresh");
             ctx.Assert(Math.Abs(baseline - CreaturePlugin.GetMovementRateFactor(creature)) < 0.001f,
                 "NPC movement refresh retains its normal movement factor");
@@ -31,20 +31,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var player = fixture.Creature;
-            var command = new CharacterChatCommand().BuildChatCommands()["walk"];
+            var command = new CharacterAppearanceChatCommand().BuildChatCommands()["walk"];
             try
             {
                 for (var cycle = 0; cycle < 2; cycle++)
                 {
                     foreach (var walking in new[] { true, false })
                     {
-                        if (Stat.IsWalkModeEnabled(player) != walking)
+                        if (CreatureStat.IsWalkModeEnabled(player) != walking)
                             await ctx.ExecuteInCreatureContextAsync(player, () => command.DoAction(player, OBJECT_INVALID, null));
                         var savedState = ExportAndReloadWalkState(ctx, player);
                         PlayerPlugin.SetAlwaysWalk(player, false);
                         SetLocalInt(player, "WALK_TOGGLE", savedState);
-                        Stat.ApplyCreatureMovementRate(player);
-                        ctx.Assert(!Stat.IsWalkModeEnabled(player), "temporary walk state does not survive a player export");
+                        CreatureStat.ApplyCreatureMovementRate(player);
+                        ctx.Assert(!CreatureStat.IsWalkModeEnabled(player), "temporary walk state does not survive a player export");
                         ctx.Assert(Math.Abs(1.25f - CreaturePlugin.GetMovementRateFactor(player)) < 0.001f,
                             "entry refresh retains normal movement when the new session is not forced to walk");
                     }
@@ -52,8 +52,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                if (Stat.IsWalkModeEnabled(player))
-                    Stat.ToggleWalkMode(player);
+                if (CreatureStat.IsWalkModeEnabled(player))
+                    CreatureStat.ToggleWalkMode(player);
             }
         }
 
@@ -82,28 +82,28 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var player = fixture.Creature;
-            var commands = new CharacterChatCommand().BuildChatCommands();
+            var commands = new CharacterAppearanceChatCommand().BuildChatCommands();
             var command = commands["walk"];
             ctx.Assert(ReferenceEquals(command, commands["alwayswalk"]), "both walking aliases share the toggle");
 
             try
             {
                 SetActionMode(player, ActionMode.Detect, true);
-                Stat.ApplyCreatureMovementRate(player);
+                CreatureStat.ApplyCreatureMovementRate(player);
                 AssertSpeed(1.25f, "detect mode keeps the default movement bonus");
 
                 for (var cycle = 0; cycle < 2; cycle++)
                 {
                     await ToggleAsync();
-                    ctx.Assert(Stat.IsWalkModeEnabled(player), "walk enabled");
+                    ctx.Assert(CreatureStat.IsWalkModeEnabled(player), "walk enabled");
                     ctx.Assert(IsNativeForcedWalkEnabled(player), "walk enables the native forced-walk flag");
                     AssertSpeed(1.0f, "walk uses normal walking speed");
                     ctx.Assert(GetActionMode(player, ActionMode.Detect), "walk does not disable detect mode");
 
-                    Stat.ApplyCreatureMovementRate(player);
+                    CreatureStat.ApplyCreatureMovementRate(player);
                     AssertSpeed(1.0f, "stat refresh preserves normal walking speed");
                     await ToggleAsync();
-                    ctx.Assert(!Stat.IsWalkModeEnabled(player), "walk disabled");
+                    ctx.Assert(!CreatureStat.IsWalkModeEnabled(player), "walk disabled");
                     ctx.Assert(!IsNativeForcedWalkEnabled(player), "disabling walk clears the native forced-walk flag");
                     AssertSpeed(1.25f, "disabling walk immediately restores the movement bonus");
                 }
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssertSpeed(1.0f, "normal walking also works outside detect mode");
 
                 TemporaryStatModifier.Add(player, StatType.MovementSpeedPercentAdjustment, 50, 30f);
-                Stat.ApplyCreatureMovementRate(player);
+                CreatureStat.ApplyCreatureMovementRate(player);
                 AssertSpeed(1.0f, "movement buffs cannot exceed the walk cap");
                 await ToggleAsync();
                 AssertSpeed(1.5f, "disabling walk restores the buffed movement cap");
@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     TemporaryStatModifier.Add(player, StatType.MovementSpeedPercentAdjustment, -slow, 30f);
                     await ToggleAsync();
                     AssertSpeed(1.0f - slow * 0.01f, $"walking preserves a {slow}% slow");
-                    Stat.ApplyCreatureMovementRate(player);
+                    CreatureStat.ApplyCreatureMovementRate(player);
                     AssertSpeed(1.0f - slow * 0.01f, $"refresh preserves a {slow}% walking slow");
                     await ToggleAsync();
                     AssertSpeed(1.25f - slow * 0.01f, $"disabling walk preserves a {slow}% slow");
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssertSpeed(0.75f, "disabling walk does not clear a movement penalty");
 
                 TemporaryStatModifier.Add(player, StatType.MovementSpeedDisabled, 1, 30f);
-                Stat.ApplyCreatureMovementRate(player);
+                CreatureStat.ApplyCreatureMovementRate(player);
                 var disabledMovementFactor = CreaturePlugin.GetMovementRateFactor(player);
                 await ToggleAsync();
                 AssertSpeed(0f, "walking preserves disabled movement", disabledMovementFactor);
@@ -147,11 +147,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                if (Stat.IsWalkModeEnabled(player))
-                    Stat.ToggleWalkMode(player);
+                if (CreatureStat.IsWalkModeEnabled(player))
+                    CreatureStat.ToggleWalkMode(player);
                 SetActionMode(player, ActionMode.Detect, false);
                 TemporaryStatModifier.Clear(player);
-                Stat.ApplyCreatureMovementRate(player);
+                CreatureStat.ApplyCreatureMovementRate(player);
             }
 
             Task ToggleAsync() => ctx.ExecuteInCreatureContextAsync(player, () =>
@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             void AssertSpeed(float expected, string label, float? expectedNative = null)
             {
-                var calculated = Stat.GetMovementSpeedMultiplier(player);
+                var calculated = CreatureStat.GetMovementSpeedMultiplier(player);
                 var applied = CreaturePlugin.GetMovementRateFactor(player);
                 ctx.Assert(Math.Abs(expected - calculated) < 0.001f,
                     $"{label}: calculated multiplier expected {expected}, got {calculated}");

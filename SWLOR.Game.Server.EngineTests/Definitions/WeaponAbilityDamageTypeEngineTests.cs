@@ -3,12 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -67,11 +68,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(caster, () => ConfigureWeapon(off, CombatDamageType.Ice));
             await ctx.WaitFrameAsync();
 
-            var ability = Ability.GetAbilityDetail(FeatType.PathogenStrike1);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.PathogenStrike1);
             ctx.SetNPCPerkLevel(caster, PerkType.PathogenStrike, 1);
             await ObserveImpact(ctx, target, async () =>
             {
-                Ability.BeginAbilityImpact(caster, ability, triggeringWeapon: off);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, ability, triggeringWeapon: off);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster,
@@ -79,7 +80,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(caster);
+                    AbilityImpactLifecycle.EndAbilityImpact(caster);
                 }
             });
             AssertOnlyDamageType(ctx, CombatDamageType.Ice, "Pathogen Strike delivered by the Cold off-hand knife");
@@ -91,10 +92,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var (caster, target, pistol) = await CreateFixture(ctx, "b_pistol", CombatDamageType.Fire);
             ctx.SetNPCPerkLevel(caster, PerkType.DoubleShot, 1);
-            var ability = Ability.GetAbilityDetail(FeatType.DoubleShot1);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.DoubleShot1);
             await ObserveImpact(ctx, target, async () =>
             {
-                Ability.BeginAbilityImpact(caster, ability);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                 try
                 {
                     // The weapon's element changes after registration, as a weapon swap during a telegraph would.
@@ -106,7 +107,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(caster);
+                    AbilityImpactLifecycle.EndAbilityImpact(caster);
                 }
             });
             AssertOnlyDamageType(ctx, CombatDamageType.Fire, "Double Shot registered while the pistol dealt Fire");
@@ -125,17 +126,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var creature in new[] { beast, target })
             {
                 ctx.SuppressNPCNaturalRegen(creature);
-                Stat.SetNPCMaxHitPoints(creature, 20000, true);
+                CreatureStat.SetNPCMaxHitPoints(creature, 20000, true);
                 SetAILevel(creature, AILevel.VeryLow);
             }
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
             ctx.MakeHostile(target);
             ctx.SetNPCPerkLevel(beast, PerkType.Bite, 1);
 
-            var bite = Ability.GetAbilityDetail(FeatType.Bite1);
+            var bite = AbilityCatalog.GetAbilityDetail(FeatType.Bite1);
             await ObserveImpact(ctx, target, async () =>
             {
-                Ability.BeginAbilityImpact(beast, bite, triggeringWeapon: claw);
+                AbilityImpactLifecycle.BeginAbilityImpact(beast, bite, triggeringWeapon: claw);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(beast,
@@ -143,7 +144,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(beast);
+                    AbilityImpactLifecycle.EndAbilityImpact(beast);
                 }
             });
             AssertOnlyDamageType(ctx, CombatDamageType.Fire, "Bite delivered by a Fire natural weapon");
@@ -157,11 +158,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCResources(caster, 100, 100);
             ctx.SetNPCPerkLevel(caster, PerkType.PathogenStrike, 1);
             ResetDamage(target);
-            Ability.ClearLastCompletedAbilityImpactSummary(caster);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
             _observedAttacker = caster;
             _autoAttackDamageEvents = 0;
-            Combat.SetAutoAttackHitResolutionOverride(true);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
@@ -178,16 +179,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // The consuming swing is replaced by the ability, and attacks stop once it lands. With no
                 // auto-attack damage in the window, every observed point came from Pathogen Strike.
                 ctx.AssertEqual(0, _autoAttackDamageEvents, "Auto-attack damage events while observing the queued ability");
-                var summary = Ability.GetLastCompletedAbilityImpactSummary(caster);
-                ctx.Assert(summary?.Ability == Ability.GetAbilityDetail(FeatType.PathogenStrike1) && summary.AttributedDamage > 0,
+                var summary = AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster);
+                ctx.Assert(summary?.Ability == AbilityCatalog.GetAbilityDetail(FeatType.PathogenStrike1) && summary.AttributedDamage > 0,
                     "Pathogen Strike's own impact dealt damage");
                 AssertOnlyDamageType(ctx, CombatDamageType.Fire, "Pathogen Strike from a Fire knife");
             }
             finally
             {
                 AssignCommand(caster, () => ClearAllActions());
-                Combat.SetAutoAttackHitResolutionOverride(null);
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
                 _observedTarget = OBJECT_INVALID;
                 _observedAttacker = OBJECT_INVALID;
             }
@@ -209,7 +210,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var creature in new[] { caster, target })
             {
                 ctx.SuppressNPCNaturalRegen(creature);
-                Stat.SetNPCMaxHitPoints(creature, 20000, true);
+                CreatureStat.SetNPCMaxHitPoints(creature, 20000, true);
                 SetAILevel(creature, AILevel.VeryLow);
             }
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
@@ -241,10 +242,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             uint impactTarget)
         {
             ctx.SetNPCPerkLevel(caster, perk, 1);
-            var ability = Ability.GetAbilityDetail(feat);
+            var ability = AbilityCatalog.GetAbilityDetail(feat);
             await ObserveImpact(ctx, target, async () =>
             {
-                Ability.BeginAbilityImpact(caster, ability);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster,
@@ -252,7 +253,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(caster);
+                    AbilityImpactLifecycle.EndAbilityImpact(caster);
                 }
             });
         }
@@ -260,7 +261,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static async Task ObserveImpact(EngineTestContext ctx, uint target, Func<Task> impact)
         {
             ResetDamage(target);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 await impact();
@@ -269,7 +270,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
                 _observedTarget = OBJECT_INVALID;
             }
         }

@@ -5,9 +5,10 @@ using System.Linq;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.Formats.TwoDA;
+using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Service;
 

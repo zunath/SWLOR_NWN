@@ -1,13 +1,29 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class CombatHealingBudgetTests
 {
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildCombatFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeCombatFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
+
     [Test]
     public void PassiveHealing_SharesItsWindowAcrossFastAttacksAndAreaTargets()
     {
@@ -17,8 +33,8 @@ public class CombatHealingBudgetTests
             var budget = NewWindow();
             var total = 0;
             for (var i = 0; i < hits; i++)
-                total += budget.Take(Combat.CalculateMaxHPHealingBudget(1000,
-                    Combat.MaximumPassiveDamageHealingMaxHPPercentPerWindow), 24, now.AddMilliseconds(i));
+                total += budget.Take(CombatRules.CalculateMaxHPHealingBudget(1000,
+                    CombatResourcesService.MaximumPassiveDamageHealingMaxHPPercentPerWindow), 24, now.AddMilliseconds(i));
 
             total.Should().Be(240);
         }
@@ -65,8 +81,8 @@ public class CombatHealingBudgetTests
     {
         var now = DateTime.UtcNow;
         var budget = NewWindow();
-        var maximum = Combat.CalculateMaxHPHealingBudget(1000,
-            Combat.MaximumDefeatedEnemyHealingMaxHPPercentPerWindow);
+        var maximum = CombatRules.CalculateMaxHPHealingBudget(1000,
+            CombatResourcesService.MaximumDefeatedEnemyHealingMaxHPPercentPerWindow);
         var healed = Enumerable.Range(0, 5).Sum(_ => budget.Take(maximum, 297, now));
         healed.Should().Be(120);
     }
@@ -78,7 +94,7 @@ public class CombatHealingBudgetTests
     [TestCase(-100, 15, 0)]
     public void MaximumHPCeilings_NeverRoundAboveTheirPercentage(int hp, int percent, int expected)
     {
-        Combat.CalculateMaxHPHealingBudget(hp, percent).Should().Be(expected);
+        CombatRules.CalculateMaxHPHealingBudget(hp, percent).Should().Be(expected);
     }
 
     [TestCase(684, 1000, 0, 684)]
@@ -90,7 +106,7 @@ public class CombatHealingBudgetTests
     public void OverkillAndPreviouslyQueuedDamage_DoNotSupplyHealing(
         int damage, int targetHP, int pendingDamage, int expected)
     {
-        Combat.CalculateDamageEligibleForHealing(damage, targetHP, pendingDamage).Should().Be(expected);
+        CombatRules.CalculateDamageEligibleForHealing(damage, targetHP, pendingDamage).Should().Be(expected);
     }
 
     [Test]
@@ -103,5 +119,5 @@ public class CombatHealingBudgetTests
         budget.Take(60, 100, now.AddSeconds(2)).Should().Be(20);
     }
 
-    private static RollingHealingBudget NewWindow() => new(TimeSpan.FromSeconds(Combat.CombatHealingWindowSeconds));
+    private static RollingHealingBudget NewWindow() => new(TimeSpan.FromSeconds(CombatResourcesService.CombatHealingWindowSeconds));
 }

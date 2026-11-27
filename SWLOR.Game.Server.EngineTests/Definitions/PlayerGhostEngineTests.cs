@@ -1,8 +1,10 @@
 using System.Threading.Tasks;
 using NWN.Native.API;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -24,7 +26,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var caster = ctx.SpawnCreature(ActorResref, -0.5f);
             SetAILevel(caster, AILevel.VeryLow);
             await ctx.WaitFrameAsync();
-            Stat.SetNPCMaxHitPoints(caster, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(caster, 1000, true);
             ctx.SetResources(caster, 9999, 9999);
             ctx.SuppressNPCNaturalRegen(caster);
             ctx.SetNPCPerkLevel(caster, PerkType.Resuscitation, 1);
@@ -51,7 +53,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var activated = false;
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
                     activated = UsePerkFeat.TryUseAbility(caster, player, FeatType.Resuscitation1, GetLocation(player)));
-                ctx.Assert(activated, $"Resuscitation activates: {Service.Ability.GetLastActivationDenialReason()}");
+                ctx.Assert(activated, $"Resuscitation activates: {GameServices.AbilityActivation.GetLastActivationDenialReason()}");
 
                 await ctx.WaitUntilAsync(() => !GetIsDead(player) && GetGhostFlag(player), 15f, "the revived player to be ghosted");
                 ctx.AssertEqual(1, CountGhosts(player), "Revived player's ghost effects");

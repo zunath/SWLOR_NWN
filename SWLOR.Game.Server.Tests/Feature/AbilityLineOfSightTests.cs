@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -8,25 +9,17 @@ public class AbilityLineOfSightTests
     [Test]
     public void TargetedAbilityValidation_RequiresObjectAndVectorLineOfSight()
     {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
-        var validationBody = source.Substring(
-            source.IndexOf("public static bool CanUseAbility", StringComparison.Ordinal),
-            source.IndexOf("private static bool HasAbilityLineOfSight", StringComparison.Ordinal) -
-            source.IndexOf("public static bool CanUseAbility", StringComparison.Ordinal));
-        var helperBody = source.Substring(
-            source.IndexOf("private static bool HasAbilityLineOfSight", StringComparison.Ordinal),
-            source.IndexOf("/// <summary>\n        /// Whenever a weapon's OnHit event is fired", StringComparison.Ordinal) -
-            source.IndexOf("private static bool HasAbilityLineOfSight", StringComparison.Ordinal));
+        var source = AbilitySource.Read().Replace("\r\n", "\n");
+        // The line-of-sight helper moved to the geometry part with the ability split, and CanUseAbility runs its checks
+        // through check methods, so each body is read by member.
+        var validationBody = ValidationChain();
+        var helperBody = AbilitySource.Members("HasAbilityLineOfSight").Replace("\r\n", "\n");
 
         validationBody.Should().Contain("!HasAbilityLineOfSight(activator, target)");
-        // Denials route through the local Deny helper (which both records the reason for the
-        // engine-test harness and sends the player-facing message).
-        validationBody.Should().Contain("return Deny(\"You cannot see your target.\");");
+        // Each check returns its denial, and CanUseAbility routes it through the local Deny helper (which both records the
+        // reason for the engine-test harness and sends the player-facing message).
+        validationBody.Should().Contain("return \"You cannot see your target.\";");
+        validationBody.Should().Contain("return string.IsNullOrEmpty(denial) || Deny(denial);");
         validationBody.Should().Contain("SendMessageToPC(activator, reason);");
         helperBody.Should().Contain("LineOfSightObject(activator, target)");
         helperBody.Should().Contain("LineOfSightVector(GetPosition(activator), GetPosition(target))");
@@ -35,16 +28,10 @@ public class AbilityLineOfSightTests
     [Test]
     public void AimedAreaValidation_UsesLocationWithoutObjectTargetFallback()
     {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
-        var validationBody = source.Substring(
-            source.IndexOf("public static bool CanUseAbility", StringComparison.Ordinal),
-            source.IndexOf("private static bool HasAbilityLineOfSight", StringComparison.Ordinal) -
-            source.IndexOf("public static bool CanUseAbility", StringComparison.Ordinal));
+        var source = AbilitySource.Read().Replace("\r\n", "\n");
+        // The line-of-sight helper moved to the geometry part with the ability split, and CanUseAbility runs its checks
+        // through check methods, so each body is read by member.
+        var validationBody = ValidationChain();
 
         validationBody.Should().Contain("if (ability.RequiresLocationTarget)");
         validationBody.Should().Contain("GetAreaFromLocation(targetLocation)");
@@ -72,7 +59,7 @@ public class AbilityLineOfSightTests
             source.IndexOf("void CompleteActivation", StringComparison.Ordinal));
 
         var canUseIndex = completeBody.IndexOf(
-            "if (!Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))",
+            "if (!AbilityActivation.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))",
             StringComparison.Ordinal);
         var costIndex = completeBody.IndexOf("ApplyRequirementEffects(activator, target, ability, feat);", StringComparison.Ordinal);
         var impactIndex = completeBody.IndexOf(
@@ -94,25 +81,16 @@ public class AbilityLineOfSightTests
     [Test]
     public void HostileAreaAbilityValidation_RejectsBlockedAreaTargetsBeforeRecast()
     {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
-        var validationBody = source.Substring(
-            source.IndexOf("public static bool CanUseAbility", StringComparison.Ordinal),
-            source.IndexOf("private static bool HasAbilityLineOfSight", StringComparison.Ordinal) -
-            source.IndexOf("public static bool CanUseAbility", StringComparison.Ordinal));
-        var areaValidationBody = source.Substring(
-            source.IndexOf("private static string ValidateHostileAreaLineOfSight", StringComparison.Ordinal),
-            source.IndexOf("private static bool TryGetCombatImpactShape", StringComparison.Ordinal) -
-            source.IndexOf("private static string ValidateHostileAreaLineOfSight", StringComparison.Ordinal));
+        var source = AbilitySource.Read().Replace("\r\n", "\n");
+        // The line-of-sight helper moved to the geometry part with the ability split, and CanUseAbility runs its checks
+        // through check methods, so each body is read by member.
+        var validationBody = ValidationChain();
+        var areaValidationBody = AbilitySource.Members("ValidateHostileAreaLineOfSight").Replace("\r\n", "\n");
 
         var areaValidationIndex = validationBody.IndexOf(
             "ValidateHostileAreaLineOfSight(activator, target, targetLocation, ability)",
             StringComparison.Ordinal);
-        var recastIndex = validationBody.IndexOf("Recast.IsOnRecastDelay", StringComparison.Ordinal);
+        var recastIndex = validationBody.IndexOf("_recast.IsOnRecastDelay", StringComparison.Ordinal);
 
         areaValidationIndex.Should().BeGreaterThanOrEqualTo(0);
         recastIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -126,25 +104,25 @@ public class AbilityLineOfSightTests
     [Test]
     public void HostileAreaImpact_FiltersBlockedTargetsAtImpactTime()
     {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
-        var shapeImpactStartIndex = source.IndexOf("private static int ApplyCombatImpactInShape", StringComparison.Ordinal);
+        var source = AbilitySource.Read().Replace("\r\n", "\n");
+        var shapeImpactStartIndex = source.IndexOf("private int ApplyCombatImpactInShape", StringComparison.Ordinal);
         var shapeImpactBody = source.Substring(
             shapeImpactStartIndex,
-            source.IndexOf("private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal) -
+            source.IndexOf("private ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal) -
             shapeImpactStartIndex);
         var telegraphActionBody = source.Substring(
-            source.IndexOf("private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal),
-            source.IndexOf("private static int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
-            source.IndexOf("private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal));
+            source.IndexOf("private ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal),
+            source.IndexOf("private int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
+            source.IndexOf("private ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal));
 
         shapeImpactBody.Should().Contain(".Where(creature => HasAbilityLineOfSight(activator, creature))");
         telegraphActionBody.Should().Contain("HasAbilityLineOfSight(creator, creature)");
     }
+
+    // CanUseAbility and the checks it runs, in the order it runs them (the ability split).
+    private static string ValidationChain() =>
+        AbilitySource.Members("CanUseAbility", "ValidateActivatorState", "ValidateLineOfSight", "ValidateActivatorReadiness", "ValidateTarget")
+            .Replace("\r\n", "\n");
 
     private static DirectoryInfo FindRepositoryRoot()
     {

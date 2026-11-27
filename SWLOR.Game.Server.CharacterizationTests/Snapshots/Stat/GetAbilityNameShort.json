@@ -1,0 +1,19 @@
+{
+  "function": "Stat.GetAbilityNameShort(AbilityType type)",
+  "description": "The three-letter label of an attribute; anything unknown is INV.",
+  "seed": null,
+  "inputs": "Every AbilityType member plus two undefined values.",
+  "rowCount": 9,
+  "columns": ["abilityType", "abilityName", "=> label"],
+  "rows": [
+    [-2, "(undefined)", "INV"],
+    [-1, "Invalid", "INV"],
+    [0, "Might", "MGT"],
+    [1, "Perception", "PER"],
+    [2, "Vitality", "VIT"],
+    [3, "Agility", "AGI"],
+    [4, "Willpower", "WIL"],
+    [5, "Social", "SOC"],
+    [6, "(undefined)", "INV"]
+  ]
+}

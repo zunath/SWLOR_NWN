@@ -1,10 +1,14 @@
+using SWLOR.Game.Server.Domain.Character;
 using System.Reflection;
 using FluentAssertions;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AppearanceEditing;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -23,8 +27,8 @@ public class AppearanceEditorColorStateTests
     public void ArmorSwatchesDistinguishInheritanceFromAuthoredAndCustomPartColors(
         int nativeColor, bool explicitPreset, int baseline, int lastApplied, int? materialColor, int expected)
     {
-        var method = typeof(AppearanceEditorViewModel).GetMethod("ResolveArmorSwatchColorId",
-            BindingFlags.NonPublic | BindingFlags.Static)!;
+        var method = typeof(AppearanceColorService).GetMethod("ResolveArmorSwatchColorId",
+            BindingFlags.Public | BindingFlags.Static)!;
         method.Invoke(null, new object[] { nativeColor, explicitPreset, baseline, lastApplied, materialColor })
             .Should().Be(expected);
     }
@@ -37,9 +41,7 @@ public class AppearanceEditorColorStateTests
     public void InheritedSwatchesUseTheNeutralMarkerInsteadOfARealPaletteColor(
         int colorId, float x, float y, float size)
     {
-        var method = typeof(AppearanceEditorViewModel).GetMethod("BuildPaletteRegion",
-            BindingFlags.NonPublic | BindingFlags.Static)!;
-        var region = (GuiRectangle)method.Invoke(null, new object[] { colorId })!;
+        var region = ArmorColorRegionCatalog.BuildPaletteRegion(colorId);
         region.X.Should().Be(x);
         region.Y.Should().Be(y);
         region.Width.Should().Be(size);
@@ -64,7 +66,7 @@ public class AppearanceEditorColorStateTests
             .BeLessThan(refresh.IndexOf("LoadItemParts()", StringComparison.Ordinal));
         refresh.Should().Contain("if (refreshItemParts)");
         refresh.IndexOf("LoadItemParts()", StringComparison.Ordinal).Should()
-            .BeLessThan(refresh.IndexOf("LoadTintMapEditor()", StringComparison.Ordinal));
+            .BeLessThan(refresh.IndexOf("LoadTintMapEditor(this)", StringComparison.Ordinal));
     }
 
     [Test]
@@ -72,21 +74,24 @@ public class AppearanceEditorColorStateTests
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
         var load = FindMethod(root, "LoadItemParts").ToString();
-        load.IndexOf("SuspendArmorClientWatches()", StringComparison.Ordinal).Should()
-            .BeLessThan(load.IndexOf("PopulateItemParts()", StringComparison.Ordinal));
-        load.IndexOf("_skipAdjustArmorPart = true", StringComparison.Ordinal).Should()
-            .BeLessThan(load.IndexOf("PopulateItemParts()", StringComparison.Ordinal));
+        load.IndexOf("AppearanceTintEditorService.SuspendArmorClientWatches(host)", StringComparison.Ordinal).Should()
+            .BeLessThan(load.IndexOf("PopulateItemParts(host)", StringComparison.Ordinal));
+        load.IndexOf("host.Session.SkipAdjustArmorPart = true", StringComparison.Ordinal).Should()
+            .BeLessThan(load.IndexOf("PopulateItemParts(host)", StringComparison.Ordinal));
         load.Should().Contain("finally");
-        load.Should().Contain("_skipAdjustArmorPart = wasSkipping");
+        load.Should().Contain("host.Session.SkipAdjustArmorPart = wasSkipping");
 
         var setters = root.DescendantNodes().OfType<PropertyDeclarationSyntax>()
             .Where(property => property.Identifier.ValueText.EndsWith("Selection", StringComparison.Ordinal) &&
-                               property.ToString().Contains("AdjustArmorPart", StringComparison.Ordinal))
+                               property.ToString().Contains("AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.", StringComparison.Ordinal))
             .ToArray();
         setters.Should().HaveCount(19);
+        // The 19 setters share one body: the part edit service applies the chosen style only for a client change.
+        FindMethod(root, "ArmorSelectionChanged").ToString().Should().Contain(
+            "host.Session.ArmorClientBindingsWatched && !host.Session.SkipAdjustArmorPart",
+            "a client hydration event must not execute the part-changing setter");
         foreach (var setter in setters)
-            setter.ToString().Should().Contain("_armorClientBindingsWatched && !_skipAdjustArmorPart",
-                "a client hydration event must not execute the part-changing setter");
+            setter.ToString().Should().Contain(", value);", "each setter passes the part it names and the new value, as the inline copy did");
     }
 
     [Test]
@@ -94,10 +99,11 @@ public class AppearanceEditorColorStateTests
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
         var property = root.DescendantNodes().OfType<PropertyDeclarationSyntax>()
-            .Single(node => node.Identifier.ValueText == nameof(AppearanceEditorViewModel.SelectedItemTypeIndex)).ToString();
-        property.IndexOf("value == _loadedItemTypeIndex", StringComparison.Ordinal).Should()
-            .BeLessThan(property.IndexOf("_colorTarget = ColorTarget.Global", StringComparison.Ordinal));
-        property.Should().Contain("_selectedColorChannel = AppearanceArmorColor.Leather1");
+            .Single(node => node.Identifier.ValueText == nameof(AppearanceEditorViewModel.SelectedItemTypeIndex) &&
+                            node.ExplicitInterfaceSpecifier == null).ToString();
+        property.IndexOf("value == _session.LoadedItemTypeIndex", StringComparison.Ordinal).Should()
+            .BeLessThan(property.IndexOf("_session.ColorTarget = AppearanceColorTarget.Global", StringComparison.Ordinal));
+        property.Should().Contain("_session.SelectedColorChannel = AppearanceArmorColor.Leather1");
         var hidePartRows = property.IndexOf("SetIfChanged(nameof(IsPartColorsVisible), false)", StringComparison.Ordinal);
         hidePartRows.Should().BeGreaterThan(property.IndexOf("if (value != 0)", StringComparison.Ordinal),
             "helmets, cloaks and weapons hide the armor part colour rows");
@@ -108,7 +114,7 @@ public class AppearanceEditorColorStateTests
         var select = FindMethod(root, "SelectEditorTab").ToString();
         select.Should().Contain("EditorToggles.SyncTo");
         select.Should().Contain("SettingsToggles.SyncTo");
-        select.Should().Contain("_colorTarget = ColorTarget.Global");
+        select.Should().Contain("_session.ColorTarget = AppearanceColorTarget.Global");
     }
 
     [Test]
@@ -121,8 +127,8 @@ public class AppearanceEditorColorStateTests
         var restored = restoredMethod.ToString();
         var order = new[]
         {
-            "SuspendArmorClientWatches()", "SynchronizeTintControlBindings(", "UpdatePaletteSheetForChannel()",
-            "RepublishBindings()", "ResumeArmorClientWatches()"
+            "AppearanceTintEditorService.SuspendArmorClientWatches(this)", "AppearanceTintEditorService.SynchronizeTintControlBindings(", "AppearanceSwatchService.UpdatePaletteSheetForChannel(this)",
+            "RepublishBindings()", "AppearanceTintEditorService.ResumeArmorClientWatches(this)"
         };
         for (var index = 1; index < order.Length; index++)
         {
@@ -134,12 +140,12 @@ public class AppearanceEditorColorStateTests
         // The palette sheet and the replay happen while the replacement widgets'
         // tint bindings are suppressed, so restoring them cannot edit colours.
         var synchronized = restoredMethod.DescendantNodes().OfType<InvocationExpressionSyntax>()
-            .Single(call => call.Expression.ToString() == "SynchronizeTintControlBindings")
-            .ArgumentList.Arguments.Single().Expression;
+            .Single(call => call.Expression.ToString() == "AppearanceTintEditorService.SynchronizeTintControlBindings")
+            .ArgumentList.Arguments.Last().Expression;
         synchronized.Should().BeAssignableTo<LambdaExpressionSyntax>();
         var calls = synchronized.DescendantNodes().OfType<InvocationExpressionSyntax>()
             .Select(call => call.ToString()).ToArray();
-        calls.Should().Contain(new[] { "UpdatePaletteSheetForChannel()", "RepublishBindings()" });
+        calls.Should().Contain(new[] { "AppearanceSwatchService.UpdatePaletteSheetForChannel(this)", "RepublishBindings()" });
 
         restored.Should().NotContain("RestoreArmorPalette");
         ReadViewModel().Should().NotContain("RestoreArmorPalette", "the nested armor palette partials were removed");
@@ -152,17 +158,17 @@ public class AppearanceEditorColorStateTests
     public void LeavingThePartTabsClosesThePartBrowser()
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
-        var browser = CSharpSyntaxTree.ParseText(ReadViewModel("AppearanceEditorViewModel.PartBrowser.cs")).GetRoot();
+        var browser = root;
         var hidden = FindMethod(root, "SelectEditorTab").DescendantNodes().OfType<IfStatementSyntax>()
             .Single(statement => statement.Condition.ToString() == "IsPartEditorHidden");
-        hidden.Statement.ToString().Should().Contain("ClearBrowser()",
+        hidden.Statement.ToString().Should().Contain("ClearBrowser(this)",
             "Wardrobe and Settings must not leave a browser that can still change parts");
-        FindMethod(browser, "ClearBrowser").ToString().Should().Contain("ClosePartBrowser()");
+        FindMethod(browser, "ClearBrowser").ToString().Should().Contain("ClosePartBrowser(host)");
         var emptySlot = FindMethod(root, "ToggleItemEquippedFlags").DescendantNodes().OfType<IfStatementSyntax>()
             .Single(statement => statement.Condition.ToString() == "!hasItemEquipped");
-        emptySlot.Statement.ToString().Should().Contain("ClearBrowser()",
+        emptySlot.Statement.ToString().Should().Contain("ClearBrowser(this)",
             "an empty Main Hand or Off Hand must not leave the last item's parts in the browser");
-        FindMethod(browser, "ApplyBrowserPart").ToString().Should().Contain("if (IsPartEditorHidden)",
+        FindMethod(browser, "ApplyBrowserPart").ToString().Should().Contain("if (host.IsPartEditorHidden)",
             "a late tile click from the browser does nothing on Wardrobe or Settings");
     }
 
@@ -189,7 +195,7 @@ public class AppearanceEditorColorStateTests
     public void GeometryUpdatesNeverRebuildTheEditor()
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
-        var browser = CSharpSyntaxTree.ParseText(ReadViewModel("AppearanceEditorViewModel.PartBrowser.cs")).GetRoot();
+        var browser = root;
 
         FindMethod(root, "OnClientPropertyUpdated").ToString().Should().NotContain("nameof(Geometry)",
             "the panels follow a resize on their own, so a move or resize rebuilds nothing");
@@ -210,10 +216,10 @@ public class AppearanceEditorColorStateTests
         FindMethod(root, "TryGetEditableTintSelections").ToString()
             .Should().NotContain("selections.Count == 0");
         var load = FindMethod(root, "LoadTintMapEditor").ToString();
-        load.Should().Contain("GetItemAppearance(GetItem(), ItemAppearanceType.ArmorColor, (int)_selectedColorChannel)");
-        load.Should().Contain("GetArmorSwatchColor(GetItem(), GetArmorModelType(_colorTarget), _selectedColorChannel)");
+        load.Should().Contain("GetItemAppearance(host.GetItem(), ItemAppearanceType.ArmorColor, (int)host.Session.SelectedColorChannel)");
+        load.Should().Contain("GetArmorSwatchColor(host, host.GetItem(), AppearancePartEditService.GetArmorModelType(host, host.Session.ColorTarget), host.Session.SelectedColorChannel)");
         load.Should().Contain("if (paletteId == 255)");
-        load.Should().Contain("GetColor(_target, (ColorChannel)SelectedColorCategoryIndex)");
+        load.Should().Contain("GetColor(host.Session.Target, (ColorChannel)host.SelectedColorCategoryIndex)");
         load.IndexOf("var globalColor", StringComparison.Ordinal).Should()
             .BeLessThan(load.IndexOf("var effectiveColors", StringComparison.Ordinal),
                 "armor preview must honor its native explicit or inherited color even without a matching material");
@@ -225,26 +231,29 @@ public class AppearanceEditorColorStateTests
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
         var input = FindMethod(root, "SetCustomTintComponent").ToString();
         input.Should().Contain("DelayCommand(0.4f");
-        input.Should().Contain("generation == _tintEditGeneration");
-        input.Should().Contain("token == WindowToken");
-        input.Should().Contain("Gui.IsWindowOpen(Player, WindowType)");
+        input.Should().Contain("generation == host.Session.TintEditGeneration");
+        input.Should().Contain("token == host.WindowToken");
+        input.Should().Contain("host.IsWindowOpen()");
         input.Should().NotContain("ApplyCustomTintColor(");
-        FindMethod(root, "LoadTintMapEditor").ToString().Should().Contain("_tintEditGeneration++");
+        FindMethod(root, "LoadTintMapEditor").ToString().Should().Contain("host.Session.TintEditGeneration++");
         var closed = FindMethod(root, "OnCloseWindow").ToString();
-        closed.IndexOf("_tintEditGeneration++", StringComparison.Ordinal).Should()
-            .BeLessThan(closed.IndexOf("GetIsDM(_target)", StringComparison.Ordinal),
+        closed.IndexOf("_session.TintEditGeneration++", StringComparison.Ordinal).Should()
+            .BeLessThan(closed.IndexOf("AppearanceSettingsService.RestoreSavedScales(this)", StringComparison.Ordinal),
                 "closing an NPC editor must cancel drafts before the player-only restoration guard");
+        FindMethod(root, "RestoreSavedScales").ToString().Should().Contain("GetIsDM(host.Session.Target)");
         var commit = FindMethod(root, "CommitCustomTintComponents").ToString();
         commit.Should().Contain("synchronizeComponents: false");
         commit.Should().NotContain("OnPropertyChanged");
         var clientUpdate = FindMethod(root, "OnClientPropertyUpdated").ToString();
-        clientUpdate.Should().Contain("_tintComponentCorrection == propertyName");
+        clientUpdate.Should().Contain("_session.TintComponentCorrection == propertyName");
         clientUpdate.Should().Contain("OnPropertyChanged(propertyName)");
         clientUpdate.Should().NotContain("OnPropertyChanged(nameof(CustomTint");
     }
 
     private static MethodDeclarationSyntax FindMethod(Microsoft.CodeAnalysis.SyntaxNode root, string name) =>
-        root.DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.ValueText == name);
+        root.DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Where(method => method.Identifier.ValueText == name && method.ExplicitInterfaceSpecifier == null)
+            .OrderByDescending(method => method.Body != null).First();
 
     private static string ReadViewModel(string fileName = "AppearanceEditorViewModel.cs")
     {
@@ -254,7 +263,9 @@ public class AppearanceEditorColorStateTests
             var path = Path.Combine(directory.FullName, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel",
                 fileName);
             if (File.Exists(path))
-                return File.ReadAllText(path);
+                return fileName == "AppearanceEditorViewModel.cs"
+                    ? Support.AppearanceEditorSource.Read(directory.FullName)
+                    : File.ReadAllText(path);
             directory = directory.Parent;
         }
         throw new DirectoryNotFoundException("Could not find the appearance editor source.");

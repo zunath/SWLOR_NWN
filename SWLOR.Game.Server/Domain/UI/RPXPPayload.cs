@@ -1,0 +1,17 @@
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+
+namespace SWLOR.Game.Server.Domain.UI
+{
+    public class RPXPPayload: GuiPayloadBase
+    {
+        public string SkillName { get; set; }
+        public int MaxRPXP { get; set; }
+        public SkillType Skill { get; set; }
+
+        /// <summary>
+        /// When set, the RP XP goes to this beast instead of a skill.
+        /// </summary>
+        public string BeastId { get; set; }
+    }
+}

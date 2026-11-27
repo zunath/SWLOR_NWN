@@ -1,8 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Forge;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -65,7 +65,7 @@ public class ForgePerkEngineTests
     [Test]
     public void ANewSetupDefaultsToNoPerkStats()
     {
-        new ForgeSetup(new ForgeParameters(50, 30, 3, 50, 50), 20, 20, 0, 0, 0).Perks.Should().BeSameAs(ForgePerkStats.None);
+        new ForgeSetup(new ForgeParameters(50, 30, 3, 50, 50), 20, 20, 0, 0, 0).Perks.Should().Be(ForgePerkStats.None);
     }
 
     [TestCase(ForgeActionIds.OverdrivePress)]

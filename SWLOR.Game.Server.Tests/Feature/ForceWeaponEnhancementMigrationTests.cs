@@ -7,17 +7,34 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.Formats.Gff;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class ForceWeaponEnhancementMigrationTests
 {
+    // The Item facade resolves the item service from a container.
+    private FacadeContainer _itemFacades = null!;
+    private IDisposable _itemFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildItemFacades() => _itemFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeItemFacades() => _itemFacades.Dispose();
+
+    [SetUp]
+    public void InstallItemFacades() => _itemFacadeScope = _itemFacades.Install();
+
+    [TearDown]
+    public void RemoveItemFacades() => _itemFacadeScope.Dispose();
+
     [TestCase(CombatDamageType.Force, CombatDamageType.Physical)]
     [TestCase(CombatDamageType.Fire, CombatDamageType.Fire)]
     [TestCase(CombatDamageType.Ice, CombatDamageType.Ice)]
@@ -25,7 +42,7 @@ public class ForceWeaponEnhancementMigrationTests
     [TestCase(CombatDamageType.Electrical, CombatDamageType.Electrical)]
     public void CraftingRetiresOnlyForceConversion(CombatDamageType input, CombatDamageType expected)
     {
-        Craft.TryGetWeaponDamageTypeForEnhancement(EnhancementSubType.DMG, input, out var actual).Should().BeTrue();
+        CraftEnhancementProperty.TryGetWeaponDamageTypeForEnhancement(EnhancementSubType.DMG, input, out var actual).Should().BeTrue();
         actual.Should().Be(expected);
     }
 
@@ -212,8 +229,11 @@ public class ForceWeaponEnhancementMigrationTests
                 forceItems.Add(Path.GetFileName(path));
         }
         forceItems.Should().BeEmpty("Force conversion belongs to Imbuement Stance, including on NPC weapons");
-        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "CraftService", "BlueprintBonuses.cs"))
-            .Should().NotContain("CombatDamageType.Force");
+        foreach (var file in new[] { "BlueprintBonuses.cs", "BlueprintWeaponBonusTables.cs", "BlueprintArmorBonusTables.cs", "BlueprintFoodBonusTables.cs" })
+        {
+            File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Crafting", file))
+                .Should().NotContain("CombatDamageType.Force");
+        }
         File.ReadAllLines(Path.Combine(root, "SWLOR.CLI", "InputFiles", "enhancement_list.tsv"))
             .Should().NotContain(line => line.Split('\t').Last().Trim() == "Force");
     }

@@ -1177,7 +1177,7 @@ coating. Every generated tint MTR therefore binds `texture8 progfx_coat`
 (`texture4` on `cloaktint`, whose atlases fill 6-9) and declares
 `parameter float progFxCoat 0.0`. Every complete tint refresh writes the active
 coat's atlas cell plus one after its shader reset. When the engine applies or
-removes a coating visual effect or petrification, `ProgFxCoatRenderer` runs a
+removes a coating visual effect or petrification, `TintMapApplyService.QueueCoatRefresh` (the coat itself is `ProgFxCoatService`) runs a
 complete refresh 0.5 s later: the client reloads the creature's materials for
 those effects and drops every shader parameter, dyes included, so writing only
 the coat left parts at their default palette rows. `ProgFxCoatEffectHooks`
@@ -1200,7 +1200,7 @@ forearm 282 draws only glow pixels, which stay lit, so it binds no coat.
 
 `SWLOR_Haks/tools/ProgFxCoatAtlas.py` builds `sw_vfx/progfx_coat.tga` (4 x 2
 cells of 256 texels; hak overrides such as SWLOR's `vdu_tex_grstone` win over
-stock). Its cell order must match `ProgFxCoatRenderer.CoatTextures`; a new
+stock). Its cell order must match `ProgFxCoatService.CoatTextures`; a new
 coating texture needs a cell in both. The coat lines are kept out of material
 profile signatures, so they never rename scoped aliases. Native robe meshes
 and worn helmets that render as separate attachments do not receive creature

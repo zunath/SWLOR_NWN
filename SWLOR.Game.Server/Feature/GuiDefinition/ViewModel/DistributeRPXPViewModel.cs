@@ -3,10 +3,11 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -141,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     // Refuse a skill at its max rank or rank limit, or one the skill cap blocks,
                     // and never send more than the skill can use.
-                    var maxDistributableXP = Skill.GetMaxDistributableXP(dbPlayer, _skillType);
+                    var maxDistributableXP = SkillRank.GetMaxDistributableXP(dbPlayer, _skillType);
                     if (maxDistributableXP <= 0)
                     {
                         FloatingTextStringOnCreature(GetRefusalReason(dbPlayer), Player, false);
@@ -151,7 +152,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     amount = Math.Min(amount, maxDistributableXP);
 
                     // Debit only the XP the award used, so a blocked award keeps the player's RP XP.
-                    var acceptedXP = Skill.GiveSkillXP(Player, _skillType, amount, true, false);
+                    var acceptedXP = SkillXP.GiveSkillXP(Player, _skillType, amount, true, false);
                     if (acceptedXP > 0)
                     {
                         dbPlayer = DB.Get<Player>(playerId);
@@ -197,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int GetMaxDistributableXP()
         {
             if (!IsBeastTarget)
-                return Skill.GetMaxDistributableXP(Player, _skillType);
+                return SkillRank.GetMaxDistributableXP(Player, _skillType);
 
             var dbBeast = DB.Get<Beast>(_beastId);
             if (dbBeast == null || dbBeast.OwnerPlayerId != GetObjectUUID(Player))
@@ -222,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (pcSkill.Rank >= details.MaxRank)
                 return "Skill at max rank - no XP accepted";
 
-            var rankCeiling = Skill.GetRankCeiling(pcSkill, details);
+            var rankCeiling = SkillRank.GetRankCeiling(pcSkill, details);
             if (pcSkill.Rank >= rankCeiling)
                 return $"At your limit of {rankCeiling} - no XP accepted";
 
@@ -235,7 +236,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (dbBeast == null || dbBeast.OwnerPlayerId != GetObjectUUID(Player))
                 return "Beast not found - no XP accepted";
 
-            if (dbBeast.Level >= BeastMastery.MaxLevel)
+            if (dbBeast.Level >= BeastMasteryService.MaxLevel)
                 return "Beast at max level - no XP accepted";
 
             var levelCap = BeastMastery.GetBeastLevelCap(Perk.GetPerkLevel(Player, PerkType.Tame));

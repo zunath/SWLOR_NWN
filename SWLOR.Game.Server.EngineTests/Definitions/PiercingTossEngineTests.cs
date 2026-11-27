@@ -3,10 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Throwing;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -25,8 +26,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var abilities = new PiercingTossAbilityDefinition().BuildAbilities();
             var cases = new List<(uint Target, BleedStatusEffect Bleed, int Ticks, float Seconds, DateTime AppliedAt, string Label, int PostHitHP)>();
 
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 foreach (var extensionSeconds in new[] { 0, 6 })
@@ -55,20 +56,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         var label = $"{feat} (extension {extensionSeconds}s)";
                         var ability = abilities[feat];
                         var appliedAt = DateTime.UtcNow;
-                        Ability.BeginAbilityImpact(source, ability);
+                        AbilityImpactLifecycle.BeginAbilityImpact(source, ability);
                         try
                         {
                             ability.ImpactAction(source, target, rank, GetLocation(target));
                         }
                         finally
                         {
-                            Ability.EndAbilityImpact(source);
+                            AbilityImpactLifecycle.EndAbilityImpact(source);
                         }
 
                         var bleed = StatusEffect.GetStatusEffect(target, typeof(BleedStatusEffect)) as BleedStatusEffect;
                         ctx.Assert(bleed != null, $"{label}: Bleed must remain after the impact.");
                         var ticks = (int)Math.Ceiling(duration / bleed.Frequency) + extensionSeconds / 6;
-                        ctx.Assert(bleed.DurationTicks == ticks, $"{label}: Bleed must have {ticks} damage ticks.");
+                        ctx.Assert(bleed.DurationTicks == ticks, $"{label}: Bleed must have {ticks} damage ticks (had {bleed.DurationTicks}, frequency {bleed.Frequency}).");
                         AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(1), target));
                         // A fractional final interval ends the Bleed at its authored seconds without a bonus tick.
                         cases.Add((target, bleed, ticks, duration + extensionSeconds, appliedAt, label, GetCurrentHitPoints(target)));
@@ -109,8 +110,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             }
         }
     }

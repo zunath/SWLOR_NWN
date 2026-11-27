@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string RainOfSteelMeasureQuestId = "rain_of_steel_measure";
         internal const string RainOfSteelBreachQuestId = "rain_of_steel_breach";
         internal const string RainOfSteelCircleQuestId = "rain_of_steel_circle";
-        internal const string RainOfSteelMasteryQuestId = "rain_of_steel_mastery";
+        internal const string RainOfSteelMasteryQuestId = CapstoneQuestIds.RainOfSteelMasteryQuestId;
         internal const string RainOfSteelAdeptResref = "cp_rainsteel_ad";
         internal const string RainOfSteelSpecialistResref = "cp_rainsteel_sp";
         internal const string RainOfSteelInnerCircleResref = "cp_rainsteel_ic";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string PerfectFlurryMeasureQuestId = "perfect_flurry_measure";
         internal const string PerfectFlurryBreachQuestId = "perfect_flurry_breach";
         internal const string PerfectFlurryCircleQuestId = "perfect_flurry_circle";
-        internal const string PerfectFlurryMasteryQuestId = "perfect_flurry_mastery";
+        internal const string PerfectFlurryMasteryQuestId = CapstoneQuestIds.PerfectFlurryMasteryQuestId;
         internal const string PerfectFlurryAdeptResref = "cp_perflurry_ad";
         internal const string PerfectFlurrySpecialistResref = "cp_perflurry_sp";
         internal const string PerfectFlurryInnerCircleResref = "cp_perflurry_ic";

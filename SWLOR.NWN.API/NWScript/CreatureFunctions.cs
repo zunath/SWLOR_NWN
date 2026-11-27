@@ -14,9 +14,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>The footstep type determines what the creature's footsteps sound like whenever they take a step.</remarks>
         public static FootstepType GetFootstepType(uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return (FootstepType)global::NWN.Core.NWScript.GetFootstepType(oCreature);
+            return NWScriptRuntime.Current.GetFootstepType(oCreature);
         }
 
         /// <summary>
@@ -27,9 +25,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Changing a creature's footstep type will change the sound that its feet make whenever the creature takes a step. By default a creature's footsteps are determined by the appearance type of the creature. SetFootstepType() allows you to make a creature use a different footstep type than it would use by default for its given appearance. Possible values: FOOTSTEP_TYPE_NORMAL, FOOTSTEP_TYPE_LARGE, FOOTSTEP_TYPE_DRAGON, FOOTSTEP_TYPE_SOFT, FOOTSTEP_TYPE_HOOF, FOOTSTEP_TYPE_HOOF_LARGE, FOOTSTEP_TYPE_BEETLE, FOOTSTEP_TYPE_SPIDER, FOOTSTEP_TYPE_SKELETON, FOOTSTEP_TYPE_LEATHER_WING, FOOTSTEP_TYPE_FEATHER_WING, FOOTSTEP_TYPE_DEFAULT (makes the creature use its original default footstep sounds), FOOTSTEP_TYPE_NONE</remarks>
         public static void SetFootstepType(FootstepType nFootstepType, uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetFootstepType((int)nFootstepType, oCreature);
+            NWScriptRuntime.Current.SetFootstepType(nFootstepType, oCreature);
         }
 
         /// <summary>
@@ -40,9 +36,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Possible values: CREATURE_WING_TYPE_NONE, CREATURE_WING_TYPE_DEMON, CREATURE_WING_TYPE_ANGEL, CREATURE_WING_TYPE_BAT, CREATURE_WING_TYPE_DRAGON, CREATURE_WING_TYPE_BUTTERFLY, CREATURE_WING_TYPE_BIRD</remarks>
         public static WingType GetCreatureWingType(uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return (WingType)global::NWN.Core.NWScript.GetCreatureWingType(oCreature);
+            return NWScriptRuntime.Current.GetCreatureWingType(oCreature);
         }
 
         /// <summary>
@@ -53,9 +47,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Only two creature model types will support wings. The MODELTYPE for the part based (playable races) 'P' and MODELTYPE 'W' in the appearance.2da. Possible values: CREATURE_WING_TYPE_NONE, CREATURE_WING_TYPE_DEMON, CREATURE_WING_TYPE_ANGEL, CREATURE_WING_TYPE_BAT, CREATURE_WING_TYPE_DRAGON, CREATURE_WING_TYPE_BUTTERFLY, CREATURE_WING_TYPE_BIRD</remarks>
         public static void SetCreatureWingType(WingType nWingType, uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetCreatureWingType((int)nWingType, oCreature);
+            NWScriptRuntime.Current.SetCreatureWingType(nWingType, oCreature);
         }
 
         /// <summary>
@@ -67,9 +59,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>The model number returned is for the body part when the creature is not wearing armor (i.e. whether or not the creature is wearing armor does not affect the return value). Only works on part based creatures, which is typically restricted to the playable races (unless some new part based custom content has been added to the module). Possible body parts: CREATURE_PART_RIGHT_FOOT, CREATURE_PART_LEFT_FOOT, CREATURE_PART_RIGHT_SHIN, CREATURE_PART_LEFT_SHIN, CREATURE_PART_RIGHT_THIGH, CREATURE_PART_LEFT_THIGH, CREATURE_PART_PELVIS, CREATURE_PART_TORSO, CREATURE_PART_BELT, CREATURE_PART_NECK, CREATURE_PART_RIGHT_FOREARM, CREATURE_PART_LEFT_FOREARM, CREATURE_PART_RIGHT_BICEP, CREATURE_PART_LEFT_BICEP, CREATURE_PART_RIGHT_SHOULDER, CREATURE_PART_LEFT_SHOULDER, CREATURE_PART_RIGHT_HAND, CREATURE_PART_LEFT_HAND, CREATURE_PART_HEAD</remarks>
         public static int GetCreatureBodyPart(CreaturePart nPart, uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetCreatureBodyPart((int)nPart, oCreature);
+            return NWScriptRuntime.Current.GetCreatureBodyPart(nPart, oCreature);
         }
 
         /// <summary>
@@ -81,9 +71,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>The model names for parts need to be in the following format: p&lt;m/f&gt;&lt;race letter&gt;&lt;phenotype&gt;_&lt;body part&gt;&lt;model number&gt;.mdl. Only part based creature appearance types are supported (i.e. The model types for the playable races ('P') in the appearance.2da). Possible body parts: CREATURE_PART_RIGHT_FOOT, CREATURE_PART_LEFT_FOOT, CREATURE_PART_RIGHT_SHIN, CREATURE_PART_LEFT_SHIN, CREATURE_PART_RIGHT_THIGH, CREATURE_PART_LEFT_THIGH, CREATURE_PART_PELVIS, CREATURE_PART_TORSO, CREATURE_PART_BELT, CREATURE_PART_NECK, CREATURE_PART_RIGHT_FOREARM, CREATURE_PART_LEFT_FOREARM, CREATURE_PART_RIGHT_BICEP, CREATURE_PART_LEFT_BICEP, CREATURE_PART_RIGHT_SHOULDER, CREATURE_PART_LEFT_SHOULDER, CREATURE_PART_RIGHT_HAND, CREATURE_PART_LEFT_HAND, CREATURE_PART_HEAD. Possible model types: CREATURE_MODEL_TYPE_NONE, CREATURE_MODEL_TYPE_SKIN (not for use on shoulders, pelvis or head), CREATURE_MODEL_TYPE_TATTOO (for body parts that support tattoos, i.e. not heads/feet/hands), CREATURE_MODEL_TYPE_UNDEAD (undead model only exists for the right arm parts).</remarks>
         public static void SetCreatureBodyPart(CreaturePart nPart, int nModelNumber, uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetCreatureBodyPart((int)nPart, nModelNumber, oCreature);
+            NWScriptRuntime.Current.SetCreatureBodyPart(nPart, nModelNumber, oCreature);
         }
 
         /// <summary>
@@ -94,9 +82,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Possible values: CREATURE_TAIL_TYPE_NONE, CREATURE_TAIL_TYPE_LIZARD, CREATURE_TAIL_TYPE_BONE, CREATURE_TAIL_TYPE_DEVIL</remarks>
         public static TailType GetCreatureTailType(uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return (TailType)global::NWN.Core.NWScript.GetCreatureTailType(oCreature);
+            return NWScriptRuntime.Current.GetCreatureTailType(oCreature);
         }
 
         /// <summary>
@@ -107,9 +93,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Only two creature model types will support tails. The MODELTYPE for the part based (playable) races 'P' and MODELTYPE 'T' in the appearance.2da. Possible values: CREATURE_TAIL_TYPE_NONE, CREATURE_TAIL_TYPE_LIZARD, CREATURE_TAIL_TYPE_BONE, CREATURE_TAIL_TYPE_DEVIL</remarks>
         public static void SetCreatureTailType(TailType nTailType, uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetCreatureTailType((int)nTailType, oCreature);
+            NWScriptRuntime.Current.SetCreatureTailType(nTailType, oCreature);
         }
 
         /// <summary>
@@ -119,7 +103,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The creature's phenotype</returns>
         public static PhenoType GetPhenoType(uint oCreature)
         {
-            return (PhenoType)global::NWN.Core.NWScript.GetPhenoType(oCreature);
+            return NWScriptRuntime.Current.GetPhenoType(oCreature);
         }
 
         /// <summary>
@@ -130,9 +114,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>SetPhenoType will only work on part based creatures (i.e. the starting default playable races). Possible values: PHENOTYPE_NORMAL, PHENOTYPE_BIG, PHENOTYPE_CUSTOM* (custom phenotypes should only be used if you have specifically created your own custom content that requires the use of a new phenotype and you have specified the appropriate custom phenotype in your custom content)</remarks>
         public static void SetPhenoType(PhenoType nPhenoType, uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetPhenoType((int)nPhenoType, oCreature);
+            NWScriptRuntime.Current.SetPhenoType(nPhenoType, oCreature);
         }
 
         /// <summary>
@@ -143,7 +125,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Checks disarm flag on creature, and if the creature actually has a weapon equipped in their right hand that is droppable</remarks>
         public static bool GetIsCreatureDisarmable(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetIsCreatureDisarmable(oCreature) != 0;
+            return NWScriptRuntime.Current.GetIsCreatureDisarmable(oCreature);
         }
 
         /// <summary>
@@ -152,7 +134,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The class type. Returns CLASS_TYPE_INVALID if the caster has no valid class (placeables, etc.)</returns>
         public static ClassType GetLastSpellCastClass()
         {
-            return (ClassType)global::NWN.Core.NWScript.GetLastSpellCastClass();
+            return NWScriptRuntime.Current.GetLastSpellCastClass();
         }
 
         /// <summary>
@@ -163,9 +145,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This function does not work on Player Characters.</remarks>
         public static void SetBaseAttackBonus(int nBaseAttackBonus, uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetBaseAttackBonus(nBaseAttackBonus, oCreature);
+            NWScriptRuntime.Current.SetBaseAttackBonus(nBaseAttackBonus, oCreature);
         }
 
         /// <summary>
@@ -174,9 +154,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oCreature">The creature to restore the base attack bonus for (default: OBJECT_SELF)</param>
         public static void RestoreBaseAttackBonus(uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            global::NWN.Core.NWScript.RestoreBaseAttackBonus(oCreature);
+            NWScriptRuntime.Current.RestoreBaseAttackBonus(oCreature);
         }
 
 
@@ -187,7 +165,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nAppearanceType">The appearance type (APPEARANCE_TYPE_* constants)</param>
         public static void SetCreatureAppearanceType(uint oCreature, AppearanceType nAppearanceType)
         {
-            global::NWN.Core.NWScript.SetCreatureAppearanceType(oCreature, (int)nAppearanceType);
+            NWScriptRuntime.Current.SetCreatureAppearanceType(oCreature, nAppearanceType);
         }
 
         /// <summary>
@@ -197,7 +175,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The starting package. Returns PACKAGE_INVALID if error occurs</returns>
         public static int GetCreatureStartingPackage(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetCreatureStartingPackage(oCreature);
+            return NWScriptRuntime.Current.GetCreatureStartingPackage(oCreature);
         }
 
         /// <summary>
@@ -207,7 +185,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The spell resistance value. Returns 0 if the creature has no spell resistance or an invalid creature is passed in</returns>
         public static int GetSpellResistance(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetSpellResistance(oCreature);
+            return NWScriptRuntime.Current.GetSpellResistance(oCreature);
         }
 
         /// <summary>
@@ -218,7 +196,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This function will not work on players or dead creatures.</remarks>
         public static void SetLootable(uint oCreature, bool bLootable)
         {
-            global::NWN.Core.NWScript.SetLootable(oCreature, bLootable ? 1 : 0);
+            NWScriptRuntime.Current.SetLootable(oCreature, bLootable);
         }
 
         /// <summary>
@@ -228,7 +206,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the creature is lootable, false otherwise</returns>
         public static bool GetLootable(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetLootable(oCreature) != 0;
+            return NWScriptRuntime.Current.GetLootable(oCreature);
         }
 
         /// <summary>
@@ -239,7 +217,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the action mode is active, false otherwise</returns>
         public static bool GetActionMode(uint oCreature, ActionMode nMode)
         {
-            return global::NWN.Core.NWScript.GetActionMode(oCreature, (int)nMode) == 1;
+            return NWScriptRuntime.Current.GetActionMode(oCreature, nMode);
         }
 
         /// <summary>
@@ -250,7 +228,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nStatus">The status to set (true/false)</param>
         public static void SetActionMode(uint oCreature, ActionMode nMode, bool nStatus)
         {
-            global::NWN.Core.NWScript.SetActionMode(oCreature, (int)nMode, nStatus ? 1 : 0);
+            NWScriptRuntime.Current.SetActionMode(oCreature, nMode, nStatus);
         }
 
         /// <summary>
@@ -260,7 +238,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The arcane spell failure factor</returns>
         public static int GetArcaneSpellFailure(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetArcaneSpellFailure(oCreature);
+            return NWScriptRuntime.Current.GetArcaneSpellFailure(oCreature);
         }
 
         /// <summary>
@@ -270,7 +248,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sSubRace">The sub race name to set</param>
         public static void SetSubRace(uint oCreature, string sSubRace)
         {
-            global::NWN.Core.NWScript.SetSubRace(oCreature, sSubRace);
+            NWScriptRuntime.Current.SetSubRace(oCreature, sSubRace);
         }
 
         /// <summary>
@@ -280,7 +258,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sDeity">The deity name to set</param>
         public static void SetDeity(uint oCreature, string sDeity)
         {
-            global::NWN.Core.NWScript.SetDeity(oCreature, sDeity);
+            NWScriptRuntime.Current.SetDeity(oCreature, sDeity);
         }
 
         /// <summary>
@@ -291,7 +269,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>GetIsDMPossessed() will return false if oCreature is the DM character. To determine if oCreature is a DM character use GetIsDM()</remarks>
         public static bool GetIsDMPossessed(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetIsDMPossessed(oCreature) != 0;
+            return NWScriptRuntime.Current.GetIsDMPossessed(oCreature);
         }
 
         /// <summary>
@@ -302,7 +280,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Total number of feats per day cannot exceed the maximum.</remarks>
         public static void IncrementRemainingFeatUses(uint oCreature, FeatType nFeat)
         {
-            global::NWN.Core.NWScript.IncrementRemainingFeatUses(oCreature, (int)nFeat);
+            NWScriptRuntime.Current.IncrementRemainingFeatUses(oCreature, nFeat);
         }
 
         /// <summary>
@@ -312,9 +290,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>One of the following: AI_LEVEL_INVALID, AI_LEVEL_VERY_LOW, AI_LEVEL_LOW, AI_LEVEL_NORMAL, AI_LEVEL_HIGH, AI_LEVEL_VERY_HIGH</returns>
         public static AILevel GetAILevel(uint oTarget = OBJECT_INVALID)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            return (AILevel)global::NWN.Core.NWScript.GetAILevel(oTarget);
+            return NWScriptRuntime.Current.GetAILevel(oTarget);
         }
 
         /// <summary>
@@ -325,7 +301,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Does not work on Players. The game by default will choose an appropriate AI level for creatures based on the circumstances that the creature is in. Explicitly setting an AI level will override the game AI settings. The new setting will last until SetAILevel is called again with the argument AI_LEVEL_DEFAULT. AI_LEVEL_DEFAULT - Default setting. The game will take over setting the appropriate AI level when required. AI_LEVEL_VERY_LOW - Very Low priority, very stupid, but low CPU usage for AI. Typically used when no players are in the area. AI_LEVEL_LOW - Low priority, mildly stupid, but slightly more CPU usage for AI. Typically used when not in combat, but a player is in the area. AI_LEVEL_NORMAL - Normal priority, average AI, but more CPU usage required for AI. Typically used when creature is in combat. AI_LEVEL_HIGH - High priority, smartest AI, but extremely high CPU usage required for AI. Avoid using this. It is most likely only ever needed for cutscenes.</remarks>
         public static void SetAILevel(uint oTarget, AILevel nAILevel)
         {
-            global::NWN.Core.NWScript.SetAILevel(oTarget, (int)nAILevel);
+            NWScriptRuntime.Current.SetAILevel(oTarget, nAILevel);
         }
 
         /// <summary>
@@ -335,7 +311,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the creature is a possessed familiar, false if not or if the creature object is invalid</returns>
         public static bool GetIsPossessedFamiliar(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetIsPossessedFamiliar(oCreature) == 1;
+            return NWScriptRuntime.Current.GetIsPossessedFamiliar(oCreature);
         }
 
         /// <summary>
@@ -345,7 +321,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>It will work if run on the player creature or the possessed familiar. It does not work in conjunction with any DM possession.</remarks>
         public static void UnpossessFamiliar(uint oCreature)
         {
-            global::NWN.Core.NWScript.UnpossessFamiliar(oCreature);
+            NWScriptRuntime.Current.UnpossessFamiliar(oCreature);
         }
 
         /// <summary>
@@ -355,9 +331,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the creature is immortal, false otherwise</returns>
         public static bool GetImmortal(uint oTarget = OBJECT_INVALID)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetImmortal(oTarget) != 0;
+            return NWScriptRuntime.Current.GetImmortal(oTarget);
         }
 
         /// <summary>
@@ -368,7 +342,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>If the attacker has a ranged weapon equipped, this will have no effect. This is meant to be called inside the spell script for whirlwind attack, it is not meant to be used to queue up a new whirlwind attack. To do that you need to call ActionUseFeat(FEAT_WHIRLWIND_ATTACK, oEnemy)</remarks>
         public static void DoWhirlwindAttack(bool bDisplayFeedback = true, bool bImproved = false)
         {
-            global::NWN.Core.NWScript.DoWhirlwindAttack(bDisplayFeedback ? 1 : 0, bImproved ? 1 : 0);
+            NWScriptRuntime.Current.DoWhirlwindAttack(bDisplayFeedback, bImproved);
         }
 
         /// <summary>
@@ -378,7 +352,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The base attack bonus</returns>
         public static int GetBaseAttackBonus(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetBaseAttackBonus(oCreature);
+            return NWScriptRuntime.Current.GetBaseAttackBonus(oCreature);
         }
 
         /// <summary>
@@ -389,7 +363,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This scripting command only works on Creature objects.</remarks>
         public static void SetImmortal(uint oCreature, bool bImmortal)
         {
-            global::NWN.Core.NWScript.SetImmortal(oCreature, bImmortal ? 1 : 0);
+            NWScriptRuntime.Current.SetImmortal(oCreature, bImmortal);
         }
 
         /// <summary>
@@ -401,7 +375,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the skill check succeeds, false otherwise</returns>
         public static bool GetIsSkillSuccessful(uint oTarget, NWNSkillType nSkill, int nDifficulty)
         {
-            return global::NWN.Core.NWScript.GetIsSkillSuccessful(oTarget, (int)nSkill, nDifficulty) != 0;
+            return NWScriptRuntime.Current.GetIsSkillSuccessful(oTarget, nSkill, nDifficulty);
         }
 
         /// <summary>
@@ -411,7 +385,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nFeat">The feat constant (FEAT_* constants)</param>
         public static void DecrementRemainingFeatUses(uint oCreature, int nFeat)
         {
-            global::NWN.Core.NWScript.DecrementRemainingFeatUses(oCreature, nFeat);
+            NWScriptRuntime.Current.DecrementRemainingFeatUses(oCreature, nFeat);
         }
 
         /// <summary>
@@ -421,7 +395,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSpell">The spell constant (SPELL_* constants)</param>
         public static void DecrementRemainingSpellUses(uint oCreature, int nSpell)
         {
-            global::NWN.Core.NWScript.DecrementRemainingSpellUses(oCreature, nSpell);
+            NWScriptRuntime.Current.DecrementRemainingSpellUses(oCreature, nSpell);
         }
 
         /// <summary>
@@ -431,7 +405,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>A constant STEALTH_MODE_*</returns>
         public static StealthMode GetStealthMode(uint oCreature)
         {
-            return (StealthMode)global::NWN.Core.NWScript.GetStealthMode(oCreature);
+            return NWScriptRuntime.Current.GetStealthMode(oCreature);
         }
 
         /// <summary>
@@ -441,7 +415,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>A constant DETECT_MODE_*</returns>
         public static DetectMode GetDetectMode(uint oCreature)
         {
-            return (DetectMode)global::NWN.Core.NWScript.GetDetectMode(oCreature);
+            return NWScriptRuntime.Current.GetDetectMode(oCreature);
         }
 
         /// <summary>
@@ -451,7 +425,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>A constant DEFENSIVE_CASTING_MODE_*</returns>
         public static CastingMode GetDefensiveCastingMode(uint oCreature)
         {
-            return (CastingMode)global::NWN.Core.NWScript.GetDefensiveCastingMode(oCreature);
+            return NWScriptRuntime.Current.GetDefensiveCastingMode(oCreature);
         }
 
         /// <summary>
@@ -461,7 +435,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>A constant APPEARANCE_TYPE_* for valid creatures, APPEARANCE_TYPE_INVALID for non-creatures/invalid creatures</returns>
         public static AppearanceType GetAppearanceType(uint oCreature)
         {
-            return (AppearanceType)global::NWN.Core.NWScript.GetAppearanceType(oCreature);
+            return NWScriptRuntime.Current.GetAppearanceType(oCreature);
         }
 
         /// <summary>
@@ -472,9 +446,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Return values may only ever be: 1) A Creature, 2) Plot Characters will never have this value set, 3) Area of Effect Objects will return the AOE creator if they are registered as this value, otherwise they will return INVALID_OBJECT_ID, 4) Traps will not return the creature that set the trap, 5) This value will never be overwritten by another non-creature object, 6) This value will never be a dead/destroyed creature</remarks>
         public static uint GetLastHostileActor(uint oVictim = OBJECT_INVALID)
         {
-            if (oVictim == OBJECT_INVALID)
-                oVictim = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetLastHostileActor(oVictim);
+            return NWScriptRuntime.Current.GetLastHostileActor(oVictim);
         }
 
         /// <summary>
@@ -485,9 +457,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This will only work on undead creatures.</remarks>
         public static int GetTurnResistanceHD(uint oUndead = OBJECT_INVALID)
         {
-            if (oUndead == OBJECT_INVALID)
-                oUndead = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetTurnResistanceHD(oUndead);
+            return NWScriptRuntime.Current.GetTurnResistanceHD(oUndead);
         }
 
         /// <summary>
@@ -497,7 +467,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The creature size (CREATURE_SIZE_* constants)</returns>
         public static CreatureSize GetCreatureSize(uint oCreature)
         {
-            return (CreatureSize)global::NWN.Core.NWScript.GetCreatureSize(oCreature);
+            return NWScriptRuntime.Current.GetCreatureSize(oCreature);
         }
 
         /// <summary>
@@ -506,7 +476,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Use this on an NPC. If this command is run on a PC or an object that is not a creature, nothing will happen.</remarks>
         public static void SurrenderToEnemies()
         {
-            global::NWN.Core.NWScript.SurrenderToEnemies();
+            NWScriptRuntime.Current.SurrenderToEnemies();
         }
 
         /// <summary>
@@ -518,9 +488,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This depends on the reputation, PVP setting and (if both oSource and oTarget are PCs), oSource's Like/Dislike setting for oTarget. If you just want to know how two objects feel about each other in terms of faction and personal reputation, use GetIsFriend() instead.</remarks>
         public static int GetIsReactionTypeFriendly(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            if (oSource == OBJECT_INVALID)
-                oSource = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetIsReactionTypeFriendly(oTarget, oSource);
+            return NWScriptRuntime.Current.GetIsReactionTypeFriendly(oTarget, oSource);
         }
 
         /// <summary>
@@ -532,9 +500,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This depends on the reputation, PVP setting and (if both oSource and oTarget are PCs), oSource's Like/Dislike setting for oTarget. If you just want to know how two objects feel about each other in terms of faction and personal reputation, use GetIsNeutral() instead.</remarks>
         public static int GetIsReactionTypeNeutral(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            if (oSource == OBJECT_INVALID)
-                oSource = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetIsReactionTypeNeutral(oTarget, oSource);
+            return NWScriptRuntime.Current.GetIsReactionTypeNeutral(oTarget, oSource);
         }
 
         /// <summary>
@@ -546,9 +512,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This depends on the reputation, PVP setting and (if both oSource and oTarget are PCs), oSource's Like/Dislike setting for oTarget. If you just want to know how two objects feel about each other in terms of faction and personal reputation, use GetIsEnemy() instead.</remarks>
         public static bool GetIsReactionTypeHostile(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            if (oSource == OBJECT_INVALID)
-                oSource = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetIsReactionTypeHostile(oTarget, oSource) == 1;
+            return NWScriptRuntime.Current.GetIsReactionTypeHostile(oTarget, oSource);
         }
 
         /// <summary>
@@ -559,7 +523,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bDestroy">If true, the caller will not get the gold. Instead, the gold will be destroyed and will vanish from the game (default: false)</param>
         public static void TakeGoldFromCreature(int nAmount, uint oCreatureToTakeFrom, bool bDestroy = false)
         {
-            global::NWN.Core.NWScript.TakeGoldFromCreature(nAmount, oCreatureToTakeFrom, bDestroy ? 1 : 0);
+            NWScriptRuntime.Current.TakeGoldFromCreature(nAmount, oCreatureToTakeFrom, bDestroy);
         }
 
         /// <summary>
@@ -568,7 +532,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The object that killed the specified object</returns>
         public static uint GetLastKiller()
         {
-            return global::NWN.Core.NWScript.GetLastKiller();
+            return NWScriptRuntime.Current.GetLastKiller();
         }
 
         /// <summary>
@@ -579,7 +543,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This will return false if oCreature is a DM Possessed creature. To determine if oCreature is a DM Possessed creature, use GetIsDMPossessed()</remarks>
         public static bool GetIsDM(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetIsDM(oCreature) != 0;
+            return NWScriptRuntime.Current.GetIsDM(oCreature);
         }
 
         /// <summary>
@@ -589,7 +553,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Use this in an OnRespawnButtonPressed module script.</remarks>
         public static uint GetLastRespawnButtonPresser()
         {
-            return global::NWN.Core.NWScript.GetLastRespawnButtonPresser();
+            return NWScriptRuntime.Current.GetLastRespawnButtonPresser();
         }
 
         /// <summary>
@@ -597,7 +561,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         public static void ActionEquipMostEffectiveArmor()
         {
-            global::NWN.Core.NWScript.ActionEquipMostEffectiveArmor();
+            NWScriptRuntime.Current.ActionEquipMostEffectiveArmor();
         }
 
         /// <summary>
@@ -607,9 +571,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the creature was spawned from an encounter, false otherwise</returns>
         public static int GetIsEncounterCreature(uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetIsEncounterCreature(oCreature);
+            return NWScriptRuntime.Current.GetIsEncounterCreature(oCreature);
         }
 
         /// <summary>
@@ -620,7 +582,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>If no valid melee weapon is found, it will equip the most damaging range weapon. This function should only ever be called in the EndOfCombatRound scripts, because otherwise it would have to stop the combat round to run simulation.</remarks>
         public static void ActionEquipMostDamagingMelee(uint oVersus = OBJECT_INVALID, bool bOffHand = false)
         {
-            global::NWN.Core.NWScript.ActionEquipMostDamagingMelee(oVersus, bOffHand ? 1 : 0);
+            NWScriptRuntime.Current.ActionEquipMostDamagingMelee(oVersus, bOffHand);
         }
 
         /// <summary>
@@ -630,7 +592,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>If no valid range weapon can be found, it will equip the most damaging melee weapon.</remarks>
         public static void ActionEquipMostDamagingRanged(uint oVersus = OBJECT_INVALID)
         {
-            global::NWN.Core.NWScript.ActionEquipMostDamagingRanged(oVersus);
+            NWScriptRuntime.Current.ActionEquipMostDamagingRanged(oVersus);
         }
 
         /// <summary>
@@ -640,7 +602,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nXpAmount">The amount of experience points to give</param>
         public static void GiveXPToCreature(uint oCreature, int nXpAmount)
         {
-            global::NWN.Core.NWScript.GiveXPToCreature(oCreature, nXpAmount);
+            NWScriptRuntime.Current.GiveXPToCreature(oCreature, nXpAmount);
         }
 
         /// <summary>
@@ -650,7 +612,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nXpAmount">The amount of experience points to set</param>
         public static void SetXP(uint oCreature, int nXpAmount)
         {
-            global::NWN.Core.NWScript.SetXP(oCreature, nXpAmount);
+            NWScriptRuntime.Current.SetXP(oCreature, nXpAmount);
         }
 
         /// <summary>
@@ -660,7 +622,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The creature's experience points</returns>
         public static int GetXP(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetXP(oCreature);
+            return NWScriptRuntime.Current.GetXP(oCreature);
         }
 
         /// <summary>
@@ -671,7 +633,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fTimeout">The timeout in seconds (default: 30.0f)</param>
         public static void ActionForceMoveToLocation(Location lDestination, bool bRun = false, float fTimeout = 30.0f)
         {
-            global::NWN.Core.NWScript.ActionForceMoveToLocation(lDestination, bRun ? 1 : 0, fTimeout);
+            NWScriptRuntime.Current.ActionForceMoveToLocation(lDestination, bRun, fTimeout);
         }
 
         /// <summary>
@@ -684,7 +646,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void ActionForceMoveToObject(uint oMoveTo, bool bRun = false, float fRange = 1.0f,
             float fTimeout = 30.0f)
         {
-            global::NWN.Core.NWScript.ActionForceMoveToObject(oMoveTo, bRun ? 1 : 0, fRange, fTimeout);
+            NWScriptRuntime.Current.ActionForceMoveToObject(oMoveTo, bRun, fRange, fTimeout);
         }
 
         /// <summary>
@@ -694,9 +656,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The last creature that opened the object. Returns OBJECT_INVALID if the object is not a valid door, placeable or store</returns>
         public static uint GetLastOpenedBy(uint oObject = OBJECT_INVALID)
         {
-            if (oObject == OBJECT_INVALID)
-                oObject = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetLastOpenedBy(oObject);
+            return NWScriptRuntime.Current.GetLastOpenedBy(oObject);
         }
 
         /// <summary>
@@ -707,9 +667,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The number of times the creature has the spell memorized</returns>
         public static int GetHasSpell(Spell nSpell, uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetHasSpell((int)nSpell, oCreature);
+            return NWScriptRuntime.Current.GetHasSpell(nSpell, oCreature);
         }
 
         /// <summary>
@@ -719,7 +677,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The creature's gender</returns>
         public static Gender GetGender(uint oCreature)
         {
-            return (Gender)global::NWN.Core.NWScript.GetGender(oCreature);
+            return NWScriptRuntime.Current.GetGender(oCreature);
         }
 
         /// <summary>
@@ -730,9 +688,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This will only work for creatures and placeables.</remarks>
         public static DisturbType GetInventoryDisturbType(uint oObject = OBJECT_INVALID)
         {
-            if (oObject == OBJECT_INVALID)
-                oObject = OBJECT_SELF;
-            return (DisturbType)global::NWN.Core.NWScript.GetInventoryDisturbType(oObject);
+            return NWScriptRuntime.Current.GetInventoryDisturbType(oObject);
         }
 
         /// <summary>
@@ -742,9 +698,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The item that caused the disturbance. Returns OBJECT_INVALID if the caller is not a valid object</returns>
         public static uint GetInventoryDisturbItem(uint oObject = OBJECT_INVALID)
         {
-            if (oObject == OBJECT_INVALID)
-                oObject = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetInventoryDisturbItem(oObject);
+            return NWScriptRuntime.Current.GetInventoryDisturbItem(oObject);
         }
 
         /// <summary>
@@ -756,9 +710,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>A creature can have up to three classes. A single-class creature will only have a value in nClassPosition=1.</remarks>
         public static ClassType GetClassByPosition(int nClassPosition, uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return (ClassType)global::NWN.Core.NWScript.GetClassByPosition(nClassPosition, oCreature);
+            return NWScriptRuntime.Current.GetClassByPosition(nClassPosition, oCreature);
         }
 
         /// <summary>
@@ -770,9 +722,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>A creature can have up to three classes. A single-class creature will only have a value in nClassPosition=1.</remarks>
         public static int GetLevelByPosition(int nClassPosition, uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetLevelByPosition(nClassPosition, oCreature);
+            return NWScriptRuntime.Current.GetLevelByPosition(nClassPosition, oCreature);
         }
 
         /// <summary>
@@ -783,9 +733,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The number of levels the creature has in the specified class</returns>
         public static int GetLevelByClass(ClassType nClassType, uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetLevelByClass((int)nClassType, oCreature);
+            return NWScriptRuntime.Current.GetLevelByClass(nClassType, oCreature);
         }
 
         /// <summary>
@@ -796,9 +744,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The ability modifier for the specified ability</returns>
         public static int GetAbilityModifier(AbilityType nAbility, uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetAbilityModifier((int)nAbility, oCreature);
+            return NWScriptRuntime.Current.GetAbilityModifier(nAbility, oCreature);
         }
 
         /// <summary>
@@ -808,9 +754,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the creature is in combat, false otherwise</returns>
         public static bool GetIsInCombat(uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetIsInCombat(oCreature) != 0;
+            return NWScriptRuntime.Current.GetIsInCombat(oCreature);
         }
 
         /// <summary>
@@ -820,7 +764,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nGP">The amount of gold to give</param>
         public static void GiveGoldToCreature(uint oCreature, int nGP)
         {
-            global::NWN.Core.NWScript.GiveGoldToCreature(oCreature, nGP);
+            NWScriptRuntime.Current.GiveGoldToCreature(oCreature, nGP);
         }
 
         /// <summary>
@@ -840,7 +784,7 @@ namespace SWLOR.NWN.API.NWScript
             Location lLocation, int nNth = 1, int nSecondCriteriaType = -1, int nSecondCriteriaValue = -1,
             int nThirdCriteriaType = -1, int nThirdCriteriaValue = -1)
         {
-            return global::NWN.Core.NWScript.GetNearestCreatureToLocation((int)nFirstCriteriaType, nFirstCriteriaValue ? 1 : 0, lLocation, nNth, nSecondCriteriaType, nSecondCriteriaValue, nThirdCriteriaType, nThirdCriteriaValue);
+            return NWScriptRuntime.Current.GetNearestCreatureToLocation(nFirstCriteriaType, nFirstCriteriaValue, lLocation, nNth, nSecondCriteriaType, nSecondCriteriaValue, nThirdCriteriaType, nThirdCriteriaValue);
         }
 
         /// <summary>
@@ -850,7 +794,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The caster level. Returns 0 on error, or if the creature has not yet cast a spell</returns>
         public static int GetCasterLevel(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetCasterLevel(oCreature);
+            return NWScriptRuntime.Current.GetCasterLevel(oCreature);
         }
 
         /// <summary>
@@ -860,7 +804,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The racial type (RACIAL_TYPE_* constants). Returns RACIAL_TYPE_INVALID if the creature is not valid</returns>
         public static RacialType GetRacialType(uint oCreature)
         {
-            return (RacialType)global::NWN.Core.NWScript.GetRacialType(oCreature);
+            return NWScriptRuntime.Current.GetRacialType(oCreature);
         }
 
         /// <summary>
@@ -880,9 +824,7 @@ namespace SWLOR.NWN.API.NWScript
             uint oTarget = OBJECT_INVALID, int nNth = 1, int nSecondCriteriaType = -1, int nSecondCriteriaValue = -1,
             int nThirdCriteriaType = -1, int nThirdCriteriaValue = -1)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetNearestCreature((int)nFirstCriteriaType, nFirstCriteriaValue, oTarget, nNth, nSecondCriteriaType, nSecondCriteriaValue, nThirdCriteriaType, nThirdCriteriaValue);
+            return NWScriptRuntime.Current.GetNearestCreature(nFirstCriteriaType, nFirstCriteriaValue, oTarget, nNth, nSecondCriteriaType, nSecondCriteriaValue, nThirdCriteriaType, nThirdCriteriaValue);
         }
 
         /// <summary>
@@ -894,7 +836,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The ability score. Returns 0 on error</returns>
         public static int GetAbilityScore(uint oCreature, AbilityType nAbilityType, bool nBaseAbilityScore = false)
         {
-            return global::NWN.Core.NWScript.GetAbilityScore(oCreature, (int)nAbilityType, nBaseAbilityScore ? 1 : 0);
+            return NWScriptRuntime.Current.GetAbilityScore(oCreature, nAbilityType, nBaseAbilityScore);
         }
 
         /// <summary>
@@ -904,7 +846,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the creature is dead or dying, false otherwise</returns>
         public static bool GetIsDead(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetIsDead(oCreature) != 0;
+            return NWScriptRuntime.Current.GetIsDead(oCreature);
         }
 
         /// <summary>
@@ -914,7 +856,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The number of hit dice. Returns 0 if the creature is not valid</returns>
         public static int GetHitDice(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetHitDice(oCreature);
+            return NWScriptRuntime.Current.GetHitDice(oCreature);
         }
 
         /// <summary>
@@ -925,7 +867,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This value is cleared out at the end of every combat round and should not be used in any case except when getting a "going to be attacked" shout from the master creature (and this creature is a henchman).</remarks>
         public static uint GetGoingToBeAttackedBy(uint oTarget)
         {
-            return global::NWN.Core.NWScript.GetGoingToBeAttackedBy(oTarget);
+            return NWScriptRuntime.Current.GetGoingToBeAttackedBy(oTarget);
         }
 
         /// <summary>
@@ -935,7 +877,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the creature is a PC, false otherwise</returns>
         public static bool GetIsPC(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetIsPC(oCreature) != 0;
+            return NWScriptRuntime.Current.GetIsPC(oCreature);
         }
 
         /// <summary>
@@ -947,7 +889,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the creature has immunity of the specified type</returns>
         public static bool GetIsImmune(uint oCreature, ImmunityType nImmunityType, uint oVersus = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.GetIsImmune(oCreature, (int)nImmunityType, oVersus) == 1;
+            return NWScriptRuntime.Current.GetIsImmune(oCreature, nImmunityType, oVersus);
         }
 
         /// <summary>
@@ -958,9 +900,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the creature has the feat and it is usable, false otherwise</returns>
         public static bool GetHasFeat(FeatType nFeat, uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetHasFeat((int)nFeat, oCreature) != 0;
+            return NWScriptRuntime.Current.GetHasFeat(nFeat, oCreature);
         }
 
         /// <summary>
@@ -971,9 +911,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the creature has the skill and it is usable, false otherwise</returns>
         public static bool GetHasSkill(NWNSkillType nSkill, uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetHasSkill((int)nSkill, oCreature) != 0;
+            return NWScriptRuntime.Current.GetHasSkill(nSkill, oCreature);
         }
 
         /// <summary>
@@ -985,9 +923,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This only works on creatures, as visibility lists are not maintained for non-creature objects.</remarks>
         public static bool GetObjectSeen(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            if (oSource == OBJECT_INVALID)
-                oSource = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetObjectSeen(oTarget, oSource) != 0;
+            return NWScriptRuntime.Current.GetObjectSeen(oTarget, oSource);
         }
 
         /// <summary>
@@ -999,9 +935,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This only works on creatures, as visibility lists are not maintained for non-creature objects.</remarks>
         public static bool GetObjectHeard(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            if (oSource == OBJECT_INVALID)
-                oSource = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetObjectHeard(oTarget, oSource) != 0;
+            return NWScriptRuntime.Current.GetObjectHeard(oTarget, oSource);
         }
 
         /// <summary>
@@ -1011,7 +945,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the creature is of a playable racial type, false otherwise</returns>
         public static bool GetIsPlayableRacialType(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetIsPlayableRacialType(oCreature) != 0;
+            return NWScriptRuntime.Current.GetIsPlayableRacialType(oCreature);
         }
 
         /// <summary>
@@ -1023,9 +957,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The number of skill ranks. Returns -1 if the target doesn't have the skill, 0 if the skill is untrained</returns>
         public static int GetSkillRank(NWNSkillType nSkill, uint oTarget = OBJECT_INVALID, bool nBaseSkillRank = false)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetSkillRank((int)nSkill, oTarget, nBaseSkillRank ? 1 : 0);
+            return NWScriptRuntime.Current.GetSkillRank(nSkill, oTarget, nBaseSkillRank);
         }
 
         /// <summary>
@@ -1036,9 +968,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This only works when the creature is in combat.</remarks>
         public static uint GetAttackTarget(uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetAttackTarget(oCreature);
+            return NWScriptRuntime.Current.GetAttackTarget(oCreature);
         }
 
         /// <summary>
@@ -1049,9 +979,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This only works when the creature is in combat.</remarks>
         public static SpecialAttack GetLastAttackType(uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return (SpecialAttack)global::NWN.Core.NWScript.GetLastAttackType(oCreature);
+            return NWScriptRuntime.Current.GetLastAttackType(oCreature);
         }
 
         /// <summary>
@@ -1061,7 +989,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nGender">The gender to set (GENDER_* constants)</param>
         public static void SetGender(uint oCreature, Gender nGender)
         {
-            global::NWN.Core.NWScript.SetGender(oCreature, (int)nGender);
+            NWScriptRuntime.Current.SetGender(oCreature, nGender);
         }
 
         /// <summary>
@@ -1071,7 +999,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The soundset. Returns -1 on error</returns>
         public static int GetSoundset(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetSoundset(oCreature);
+            return NWScriptRuntime.Current.GetSoundset(oCreature);
         }
 
         /// <summary>
@@ -1081,7 +1009,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSoundset">The soundset to set (see soundset.2da for possible values)</param>
         public static void SetSoundset(uint oCreature, int nSoundset)
         {
-            global::NWN.Core.NWScript.SetSoundset(oCreature, nSoundset);
+            NWScriptRuntime.Current.SetSoundset(oCreature, nSoundset);
         }
 
         /// <summary>
@@ -1092,7 +1020,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nClassType">A CLASS_TYPE_* constant or CLASS_TYPE_INVALID to ready the spell level for all classes (default: ClassType.Invalid)</param>
         public static void ReadySpellLevel(uint oCreature, int nSpellLevel, ClassType nClassType = ClassType.Invalid)
         {
-            global::NWN.Core.NWScript.ReadySpellLevel(oCreature, nSpellLevel, (int)nClassType);
+            NWScriptRuntime.Current.ReadySpellLevel(oCreature, nSpellLevel, nClassType);
         }
 
         /// <summary>
@@ -1103,7 +1031,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>A creature is only controllable by one player, so if you set oPlayer to a non-Player object (e.g., the module) it will disable regular party control for this creature.</remarks>
         public static void SetCommandingPlayer(uint oCreature, uint oPlayer)
         {
-            global::NWN.Core.NWScript.SetCommandingPlayer(oCreature, oPlayer);
+            NWScriptRuntime.Current.SetCommandingPlayer(oCreature, oPlayer);
         }
 
         /// <summary>
@@ -1113,7 +1041,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The discoverability mask. Returns -1 if the object cannot have a discovery mask</returns>
         public static int GetObjectUiDiscoveryMask(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetObjectUiDiscoveryMask(oObject);
+            return NWScriptRuntime.Current.GetObjectUiDiscoveryMask(oObject);
         }
 
         /// <summary>
@@ -1124,7 +1052,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This allows toggling areahilite (TAB key by default) and mouseover discovery in the area view. Will currently only work on Creatures, Doors (Hilite only), Items and Useable Placeables. Does not affect inventory items.</remarks>
         public static void SetObjectUiDiscoveryMask(uint oObject, ObjectUIDiscoveryType nMask = ObjectUIDiscoveryType.Default)
         {
-            global::NWN.Core.NWScript.SetObjectUiDiscoveryMask(oObject, (int)nMask);
+            NWScriptRuntime.Current.SetObjectUiDiscoveryMask(oObject, nMask);
         }
 
         /// <summary>
@@ -1136,7 +1064,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Will currently only work on Creatures, Items and Useable Placeables.</remarks>
         public static void SetObjectTextBubbleOverride(uint oObject, ObjectUITextBubbleOverrideType nMode, string sText)
         {
-            global::NWN.Core.NWScript.SetObjectTextBubbleOverride(oObject, (int)nMode, sText);
+            NWScriptRuntime.Current.SetObjectTextBubbleOverride(oObject, nMode, sText);
         }
     }
 }

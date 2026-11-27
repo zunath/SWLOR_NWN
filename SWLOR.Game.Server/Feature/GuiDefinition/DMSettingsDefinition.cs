@@ -1,8 +1,8 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.TimeZoneService;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindSelectedIndex(model => model.TimeZoneIndex)
                                     .SetWidth(300f)
                                     .SetHeight(32f);
-                                for (var index = 0; index < PlayerTimeZones.All.Count; index++)
+                                for (var index = 0; index < PlayerTimeZones.All.Length; index++)
                                     timeZones.AddOption(PlayerTimeZones.All[index].Label, index);
                                 r.AddSpacer();
                             });

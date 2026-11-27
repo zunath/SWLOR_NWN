@@ -6,13 +6,12 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -43,11 +42,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             ctx.MakeHostile(target);
             ctx.SuppressNPCNaturalRegen(target);
-            Stat.SetNPCMaxHitPoints(target, 30000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 30000, true);
             SetAILevel(target, AILevel.VeryLow);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 390f);
 
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 var wristRocket = await MeasureAbility(ctx, fixture, target, FeatType.WristRocket3, false);
@@ -67,7 +66,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
                 AssignCommand(player, () => ClearAllActions());
             }
         }
@@ -82,7 +81,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static async Task<IReadOnlyList<int>> MeasureAbility(EngineTestContext ctx, PlayerAbilityFixture fixture, uint target, FeatType feat, bool bleedingTarget)
         {
             var player = fixture.Creature;
-            var ability = Ability.GetAbilityDetail(feat);
+            var ability = AbilityCatalog.GetAbilityDetail(feat);
             var damage = new List<int>();
             for (var sample = 0; sample < Samples; sample++)
             {
@@ -92,20 +91,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 StatusEffect.RemoveStatusEffect(typeof(BleedStatusEffect), target);
                 StatusEffect.RemoveStatusEffect(typeof(BurnStatusEffect), target);
                 if (bleedingTarget)
-                    StatusEffect.ApplyStatusEffect(player, target, new BleedStatusEffect(), 30f);
+                    StatusEffectApplication.ApplyStatusEffect(player, target, new BleedStatusEffect(), 30f);
                 AssignCommand(player, () => ClearAllActions());
                 await ctx.WaitFrameAsync();
                 var hitPoints = GetCurrentHitPoints(target);
-                Ability.ClearLastCompletedAbilityImpactSummary(player);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(player);
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                     ctx.Assert(UsePerkFeat.TryUseAbility(player, target, feat, GetLocation(target)),
-                        $"{ability.Name} starts: {Ability.GetLastActivationDenialReason()}"));
-                await ctx.WaitUntilAsync(() => Ability.GetLastCompletedAbilityImpactSummary(player)?.Ability == ability,
+                        $"{ability.Name} starts: {AbilityActivation.GetLastActivationDenialReason()}"));
+                await ctx.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(player)?.Ability == ability,
                     8f, $"{ability.Name} to complete");
                 // Telegraphed blasts land after the activation completes.
                 await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) < hitPoints, 5f, $"{ability.Name} to damage the target");
                 // Damage over time can tick inside this window, so read the impact's own damage.
-                var dealt = Ability.GetLastCompletedAbilityImpactSummary(player)?.AttributedDamage ?? 0;
+                var dealt = AbilityImpactState.GetLastCompletedAbilityImpactSummary(player)?.AttributedDamage ?? 0;
                 ctx.Assert(dealt > 0, $"{ability.Name} records the damage of its own impact.");
                 damage.Add(dealt);
             }

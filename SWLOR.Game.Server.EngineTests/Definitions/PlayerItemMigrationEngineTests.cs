@@ -3,7 +3,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -29,10 +30,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 var remove = typeof(Feature.LightsaberAudio).GetMethod("RemoveHum", BindingFlags.Static | BindingFlags.NonPublic);
-                remove.Invoke(null, new object[] { owner, OBJECT_INVALID });
+                remove.Invoke(null, new object[] { owner, OBJECT_INVALID, false });
                 ctx.AssertEqual(1, CountSaberHum(owner), "The remaining equipped saber keeps one hum");
                 ctx.AssertEqual(saber, GetItemInSlot(InventorySlot.RightHand, owner), "The event still exposes the removed saber in its old slot");
-                ctx.Assert((bool)remove.Invoke(null, new object[] { owner, saber }), "The unequip event removes stale hum synchronously");
+                ctx.Assert((bool)remove.Invoke(null, new object[] { owner, saber, false }), "The unequip event removes stale hum synchronously");
                 ctx.AssertEqual(0, CountSaberHum(owner), "Removing the last saber clears every hum before saving");
                 var restored = Deserialize(ctx, ObjectPlugin.Serialize(owner));
                 ctx.AssertEqual(0, CountSaberHum(restored), "Event-time export cannot restore stopped audio");
@@ -65,7 +66,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 ctx.Assert(CountSaberHum(owner) >= 2, "The fixture starts with duplicate looping saber audio");
                 typeof(Feature.LightsaberAudio).GetMethod("RemoveHum", BindingFlags.Static | BindingFlags.NonPublic)
-                    .Invoke(null, new object[] { owner, OBJECT_INVALID });
+                    .Invoke(null, new object[] { owner, OBJECT_INVALID, false });
                 ctx.AssertEqual(0, CountSaberHum(owner), "Stopping saber audio removes every stale effect immediately");
                 var restored = Deserialize(ctx, ObjectPlugin.Serialize(owner));
                 ctx.AssertEqual(0, CountSaberHum(restored), "A same-script save and reload cannot restore unequipped saber audio");
@@ -92,7 +93,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 native.m_pcItemRepository.m_bScalable = 0;
                 var carried = CreateItemOnObject(existingBag ? "bag_b" : "nw_maletatcivout", owner);
                 ctx.AssertEqual(owner, GetItemPossessor(carried), "The fixture fills its owned inventory");
-                ctx.Assert((bool)Invoke("PlayerEquipmentStorage", "TryUnequip", owner, weapon, InventorySlot.RightHand),
+                ctx.Assert((bool)Invoke("PlayerEquipmentStorage", "TryUnequip", owner, weapon, InventorySlot.RightHand, true),
                     "The live equipment rules can reserve space for the unequipped weapon");
                 ctx.Assert(GetItemInSlot(InventorySlot.RightHand, owner) != weapon, "The equipment slot is cleared");
                 ctx.AssertEqual(owner, GetItemPossessor(weapon), "The weapon stays owned by the character");

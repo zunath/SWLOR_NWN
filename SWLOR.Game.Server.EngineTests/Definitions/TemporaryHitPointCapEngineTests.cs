@@ -1,7 +1,8 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var target = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
-            Stat.SetNPCMaxHitPoints(target, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
             ctx.AssertEqual(500, TemporaryHitPointEffects.GetMaximumTotal(target), "cap is half of maximum HP");
 
             ctx.AssertEqual(300, TemporaryHitPointEffects.ApplyFlat(target, "CAP_FIRST", 300, 60f), "first pool fits under the cap");
@@ -37,12 +38,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var target = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
-            Stat.SetNPCMaxHitPoints(target, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
             TemporaryHitPointEffects.ApplyFlatFromSource(target, target, "TRIM_SHORT", 200, 20f);
             TemporaryHitPointEffects.ApplyFlatFromSource(target, target, "TRIM_LONG", 300, 60f);
             ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(target), "pools fill the cap");
 
-            Stat.SetNPCMaxHitPoints(target, 600);
+            CreatureStat.SetNPCMaxHitPoints(target, 600);
             // The cap is enforced by the limit check that runs once the change settles.
             await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(target) == 300, 2f, "pools to shrink to the new cap");
             ctx.Assert(!TemporaryHitPointEffects.IsActivePoolFromSource(target, "TRIM_SHORT", target), "the pool ending soonest is trimmed first");
@@ -58,11 +59,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var target = ctx.SpawnCreature("nw_bandit001");
             await ctx.WaitFrameAsync();
-            Stat.SetNPCMaxHitPoints(target, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
             TemporaryHitPointEffects.ApplyFlat(target, "TRIM_VITALITY", 500, 60f);
             ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(target), "the pool fills the cap");
 
-            StatusEffect.ApplyStatusEffect(target, target, typeof(DiseaseVitalityPenaltyStatusEffect), 30f);
+            StatusEffectApplication.ApplyStatusEffect(target, target, typeof(DiseaseVitalityPenaltyStatusEffect), 30f);
             ctx.Assert(GetMaxHitPoints(target) < 1000, $"the penalty lowers max HP (now {GetMaxHitPoints(target)})");
             await ctx.WaitUntilAsync(
                 () => TemporaryHitPointEffects.GetRemaining(target) == TemporaryHitPointEffects.GetMaximumTotal(target),
@@ -75,10 +76,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var target = ctx.SpawnCreature("nw_bandit001");
             await ctx.WaitFrameAsync();
-            Stat.SetNPCMaxHitPoints(target, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
 
             // Food with Vitality and no flat HP: its own Remove does nothing, so the trim has to come from the status removal.
-            StatusEffect.ApplyStatusEffect(target, target, new FoodStatusEffect(new FoodEffectData { Vitality = 10 }), 3f);
+            StatusEffectApplication.ApplyStatusEffect(target, target, new FoodStatusEffect(new FoodEffectData { Vitality = 10 }), 3f);
             await ctx.WaitUntilAsync(() => GetMaxHitPoints(target) > 1000, 2f, "the Vitality food to raise max HP");
             var raisedMaximum = GetMaxHitPoints(target);
             var raisedCap = TemporaryHitPointEffects.GetMaximumTotal(target);
@@ -86,7 +87,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(raisedCap, TemporaryHitPointEffects.GetRemaining(target), "the pool fills the raised cap");
 
             await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect<FoodStatusEffect>(target), 6f, "the food to wear off");
-            ctx.Assert(GetMaxHitPoints(target) < raisedMaximum, $"max HP drops when the food wears off (now {GetMaxHitPoints(target)})");
+            // The max HP recalculation follows the removal a frame or more later, longer under load.
+            await ctx.WaitUntilAsync(() => GetMaxHitPoints(target) < raisedMaximum, 6f,
+                $"max HP to drop when the food wears off (raised to {raisedMaximum}, now {GetMaxHitPoints(target)})");
             // Well inside the 6-second heartbeat that would otherwise catch it.
             await ctx.WaitUntilAsync(
                 () => TemporaryHitPointEffects.GetRemaining(target) == TemporaryHitPointEffects.GetMaximumTotal(target),
@@ -100,15 +103,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var target = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
-            Stat.SetNPCMaxHitPoints(target, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
             TemporaryHitPointEffects.ApplyFlat(target, "TRIM_OTHER", 200, 60f);
             TemporaryHitPointEffects.ApplyFlat(target, TemporaryHitPointEffectKey.GuardiansResolve, 300, 20f);
-            StatusEffect.ApplyStatusEffect(target, target, new GuardiansResolveStatusEffect(300,
+            StatusEffectApplication.ApplyStatusEffect(target, target, new GuardiansResolveStatusEffect(300,
                 TemporaryHitPointEffects.GetGrantGeneration(target, TemporaryHitPointEffectKey.GuardiansResolve)), 20f);
             await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect<GuardiansResolveStatusEffect>(target),
                 5f, "Guardian's Resolve to apply");
 
-            Stat.SetNPCMaxHitPoints(target, 400);
+            CreatureStat.SetNPCMaxHitPoints(target, 400);
             await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(target) == 200, 2f,
                 "the Guardian's Resolve pool, which ends soonest, to be trimmed away");
             ctx.Assert(!StatusEffect.HasStatusEffect<GuardiansResolveStatusEffect>(target),

@@ -25,7 +25,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void AddFeat(uint creature, FeatType feat)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.AddFeat(creature, (int)feat);
+            CreaturePluginRuntime.Current.AddFeat(creature, feat);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void AddFeatByLevel(uint creature, FeatType feat, int level)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.AddFeatByLevel(creature, (int)feat, level);
+            CreaturePluginRuntime.Current.AddFeatByLevel(creature, feat, level);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void RemoveFeat(uint creature, FeatType feat)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.RemoveFeat(creature, (int)feat);
+            CreaturePluginRuntime.Current.RemoveFeat(creature, feat);
         }
 
         /// <summary>
@@ -72,8 +72,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool GetKnowsFeat(uint creature, FeatType feat)
         {
-            var result = global::NWN.Core.NWNX.CreaturePlugin.GetKnowsFeat(creature, (int)feat);
-            return result != 0;
+            return CreaturePluginRuntime.Current.GetKnowsFeat(creature, feat);
         }
 
         /// <summary>
@@ -89,7 +88,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetFeatCountByLevel(uint creature, int level)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetFeatCountByLevel(creature, level);
+            return CreaturePluginRuntime.Current.GetFeatCountByLevel(creature, level);
         }
 
         /// <summary>
@@ -106,8 +105,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static FeatType GetFeatByLevel(uint creature, int level, int index)
         {
-            var result = global::NWN.Core.NWNX.CreaturePlugin.GetFeatByLevel(creature, level, index);
-            return (FeatType)result;
+            return CreaturePluginRuntime.Current.GetFeatByLevel(creature, level, index);
         }
 
         /// <summary>
@@ -122,7 +120,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetFeatCount(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetFeatCount(creature);
+            return CreaturePluginRuntime.Current.GetFeatCount(creature);
         }
 
         /// <summary>
@@ -138,8 +136,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static FeatType GetFeatByIndex(uint creature, int index)
         {
-            var result = global::NWN.Core.NWNX.CreaturePlugin.GetFeatByIndex(creature, index);
-            return (FeatType)result;
+            return CreaturePluginRuntime.Current.GetFeatByIndex(creature, index);
         }
 
         /// <summary>
@@ -155,8 +152,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool GetMeetsFeatRequirements(uint creature, FeatType feat)
         {
-            var result = global::NWN.Core.NWNX.CreaturePlugin.GetMeetsFeatRequirements(creature, (int)feat);
-            return result != 0;
+            return CreaturePluginRuntime.Current.GetMeetsFeatRequirements(creature, feat);
         }
 
         /// <summary>
@@ -172,13 +168,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static SpecialAbilitySlot GetSpecialAbility(uint creature, int index)
         {
-            var coreAbility = global::NWN.Core.NWNX.CreaturePlugin.GetSpecialAbility(creature, index);
-            return new SpecialAbilitySlot
-            {
-                Level = coreAbility.level,
-                Ready = coreAbility.ready,
-                ID = coreAbility.id
-            };
+            return CreaturePluginRuntime.Current.GetSpecialAbility(creature, index);
         }
 
         /// <summary>
@@ -193,7 +183,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetSpecialAbilityCount(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetSpecialAbilityCount(creature);
+            return CreaturePluginRuntime.Current.GetSpecialAbilityCount(creature);
         }
 
         /// <summary>
@@ -208,13 +198,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void AddSpecialAbility(uint creature, SpecialAbilitySlot ability)
         {
-            var coreAbility = new global::NWN.Core.NWNX.SpecialAbility
-            {
-                id = ability.ID,
-                ready = ability.Ready,
-                level = ability.Level
-            };
-            global::NWN.Core.NWNX.CreaturePlugin.AddSpecialAbility(creature, coreAbility);
+            CreaturePluginRuntime.Current.AddSpecialAbility(creature, ability);
         }
 
         /// <summary>
@@ -229,7 +213,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void RemoveSpecialAbility(uint creature, int index)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.RemoveSpecialAbility(creature, index);
+            CreaturePluginRuntime.Current.RemoveSpecialAbility(creature, index);
         }
 
         /// <summary>
@@ -245,13 +229,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetSpecialAbility(uint creature, int index, SpecialAbilitySlot ability)
         {
-            var coreAbility = new global::NWN.Core.NWNX.SpecialAbility
-            {
-                id = ability.ID,
-                ready = ability.Ready,
-                level = ability.Level
-            };
-            global::NWN.Core.NWNX.CreaturePlugin.SetSpecialAbility(creature, index, coreAbility);
+            CreaturePluginRuntime.Current.SetSpecialAbility(creature, index, ability);
         }
 
         /// <summary>
@@ -267,8 +245,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static ClassType GetClassByLevel(uint creature, int level)
         {
-            var result = global::NWN.Core.NWNX.CreaturePlugin.GetClassByLevel(creature, level);
-            return (ClassType)result;
+            return CreaturePluginRuntime.Current.GetClassByLevel(creature, level);
         }
 
         /// <summary>
@@ -283,7 +260,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetBaseAC(uint creature, int ac)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetBaseAC(creature, ac);
+            CreaturePluginRuntime.Current.SetBaseAC(creature, ac);
         }
 
         /// <summary>
@@ -298,7 +275,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetBaseAC(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetBaseAC(creature);
+            return CreaturePluginRuntime.Current.GetBaseAC(creature);
         }
 
         /// <summary>
@@ -314,7 +291,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetRawAbilityScore(uint creature, AbilityType ability, int value)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetRawAbilityScore(creature, (int)ability, value);
+            CreaturePluginRuntime.Current.SetRawAbilityScore(creature, ability, value);
         }
 
         /// <summary>
@@ -330,7 +307,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetRawAbilityScore(uint creature, AbilityType ability)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetRawAbilityScore(creature, (int)ability);
+            return CreaturePluginRuntime.Current.GetRawAbilityScore(creature, ability);
         }
 
         /// <summary>
@@ -346,7 +323,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void ModifyRawAbilityScore(uint creature, AbilityType ability, int modifier)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.ModifyRawAbilityScore(creature, (int)ability, modifier);
+            CreaturePluginRuntime.Current.ModifyRawAbilityScore(creature, ability, modifier);
         }
 
         /// <summary>
@@ -363,7 +340,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetPrePolymorphAbilityScore(uint creature, AbilityType ability)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetPrePolymorphAbilityScore(creature, (int)ability);
+            return CreaturePluginRuntime.Current.GetPrePolymorphAbilityScore(creature, ability);
         }
 
         /// <summary>
@@ -380,7 +357,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetRemainingSpellSlots(uint creature, ClassType classId, int level)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetRemainingSpellSlots(creature, (int)classId, level);
+            return CreaturePluginRuntime.Current.GetRemainingSpellSlots(creature, classId, level);
         }
 
         /// <summary>
@@ -397,7 +374,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetRemainingSpellSlots(uint creature, ClassType classId, int level, int slots)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetRemainingSpellSlots(creature, (int)classId, level, slots);
+            CreaturePluginRuntime.Current.SetRemainingSpellSlots(creature, classId, level, slots);
         }
 
         /// <summary>
@@ -414,7 +391,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void RemoveKnownSpell(uint creature, ClassType classId, int level, int spellId)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.RemoveKnownSpell(creature, (int)classId, level, spellId);
+            CreaturePluginRuntime.Current.RemoveKnownSpell(creature, classId, level, spellId);
         }
 
         /// <summary>
@@ -431,7 +408,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void AddKnownSpell(uint creature, ClassType classId, int level, int spellId)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.AddKnownSpell(creature, (int)classId, level, spellId);
+            CreaturePluginRuntime.Current.AddKnownSpell(creature, classId, level, spellId);
         }
 
         /// <summary>
@@ -448,7 +425,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetMaxSpellSlots(uint creature, ClassType classId, int level)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetMaxSpellSlots(creature, (int)classId, level);
+            return CreaturePluginRuntime.Current.GetMaxSpellSlots(creature, classId, level);
         }
 
         /// <summary>
@@ -464,7 +441,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetMaxHitPointsByLevel(uint creature, int level)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetMaxHitPointsByLevel(creature, level);
+            return CreaturePluginRuntime.Current.GetMaxHitPointsByLevel(creature, level);
         }
 
         /// <summary>
@@ -480,7 +457,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetMaxHitPointsByLevel(uint creature, int level, int value)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetMaxHitPointsByLevel(creature, level, value);
+            CreaturePluginRuntime.Current.SetMaxHitPointsByLevel(creature, level, value);
         }
 
         /// <summary>
@@ -495,7 +472,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetMovementRate(uint creature, MovementRate rate)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetMovementRate(creature, (int)rate);
+            CreaturePluginRuntime.Current.SetMovementRate(creature, rate);
         }
 
         /// <summary>
@@ -511,7 +488,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static float GetMovementRateFactor(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetMovementRateFactor(creature);
+            return CreaturePluginRuntime.Current.GetMovementRateFactor(creature);
         }
 
         /// <summary>
@@ -527,7 +504,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetMovementRateFactor(uint creature, float factor)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetMovementRateFactor(creature, factor);
+            CreaturePluginRuntime.Current.SetMovementRateFactor(creature, factor);
         }
 
         /// <summary>
@@ -542,7 +519,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetAlignmentGoodEvil(uint creature, int value)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetAlignmentGoodEvil(creature, value);
+            CreaturePluginRuntime.Current.SetAlignmentGoodEvil(creature, value);
         }
 
         /// <summary>
@@ -557,7 +534,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetAlignmentLawChaos(uint creature, int value)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetAlignmentLawChaos(creature, value);
+            CreaturePluginRuntime.Current.SetAlignmentLawChaos(creature, value);
         }
 
         /// <summary>
@@ -573,7 +550,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetSkillRank(uint creature, NWNSkillType skill, int rank)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetSkillRank(creature, (int)skill, rank);
+            CreaturePluginRuntime.Current.SetSkillRank(creature, skill, rank);
         }
 
         /// <summary>
@@ -590,7 +567,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetClassByPosition(uint creature, int position, ClassType classId, bool updateLevels = true)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetClassByPosition(creature, position, (int)classId, updateLevels ? 1 : 0);
+            CreaturePluginRuntime.Current.SetClassByPosition(creature, position, classId, updateLevels);
         }
 
         /// <summary>
@@ -607,7 +584,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetBaseAttackBonus(uint creature, int bab)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetBaseAttackBonus(creature, bab);
+            CreaturePluginRuntime.Current.SetBaseAttackBonus(creature, bab);
         }
 
         /// <summary>
@@ -623,7 +600,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetAttacksPerRound(uint creature, bool bBaseAPR)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetAttacksPerRound(creature, bBaseAPR ? 1 : 0);
+            return CreaturePluginRuntime.Current.GetAttacksPerRound(creature, bBaseAPR);
         }
 
         /// <summary>
@@ -637,7 +614,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void RestoreFeats(uint creature)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.RestoreFeats(creature);
+            CreaturePluginRuntime.Current.RestoreFeats(creature);
         }
 
         /// <summary>
@@ -651,7 +628,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void RestoreSpecialAbilities(uint creature)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.RestoreSpecialAbilities(creature);
+            CreaturePluginRuntime.Current.RestoreSpecialAbilities(creature);
         }
 
         /// <summary>
@@ -665,7 +642,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void RestoreItems(uint creature)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.RestoreItems(creature);
+            CreaturePluginRuntime.Current.RestoreItems(creature);
         }
 
         /// <summary>
@@ -683,7 +660,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetSize(uint creature, CreatureSize creatureSize)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetSize(creature, (int)creatureSize);
+            CreaturePluginRuntime.Current.SetSize(creature, creatureSize);
         }
 
         /// <summary>
@@ -698,7 +675,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetSkillPointsRemaining(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetSkillPointsRemaining(creature);
+            return CreaturePluginRuntime.Current.GetSkillPointsRemaining(creature);
         }
 
         /// <summary>
@@ -713,7 +690,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetSkillPointsRemaining(uint creature, int skillpoints)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetSkillPointsRemaining(creature, skillpoints);
+            CreaturePluginRuntime.Current.SetSkillPointsRemaining(creature, skillpoints);
         }
 
         /// <summary>
@@ -731,7 +708,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetRacialType(uint creature, RacialType racialtype)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetRacialType(creature, (int)racialtype);
+            CreaturePluginRuntime.Current.SetRacialType(creature, racialtype);
         }
 
         /// <summary>
@@ -746,8 +723,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static MovementType GetMovementType(uint creature)
         {
-            var result = global::NWN.Core.NWNX.CreaturePlugin.GetMovementType(creature);
-            return (MovementType)result;
+            return CreaturePluginRuntime.Current.GetMovementType(creature);
         }
 
         /// <summary>
@@ -762,7 +738,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetWalkRateCap(uint creature, float fWalkRate)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetWalkRateCap(creature, fWalkRate);
+            CreaturePluginRuntime.Current.SetWalkRateCap(creature, fWalkRate);
         }
 
         /// <summary>
@@ -777,7 +753,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetGold(uint creature, int gold)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetGold(creature, gold);
+            CreaturePluginRuntime.Current.SetGold(creature, gold);
         }
 
         /// <summary>
@@ -793,7 +769,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetCorpseDecayTime(uint creature, int decayTimeMs)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetCorpseDecayTime(creature, decayTimeMs);
+            CreaturePluginRuntime.Current.SetCorpseDecayTime(creature, decayTimeMs);
         }
 
         /// <summary>
@@ -809,7 +785,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetBaseSavingThrow(uint creature, int which)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetBaseSavingThrow(creature, which);
+            return CreaturePluginRuntime.Current.GetBaseSavingThrow(creature, which);
         }
 
         /// <summary>
@@ -825,7 +801,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetBaseSavingThrow(uint creature, SavingThrow which, int value)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetBaseSavingThrow(creature, (int)which, value);
+            CreaturePluginRuntime.Current.SetBaseSavingThrow(creature, which, value);
         }
 
         /// <summary>
@@ -842,7 +818,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void LevelUp(uint creature, ClassType classId, int count = 1)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.LevelUp(creature, (int)classId, count);
+            CreaturePluginRuntime.Current.LevelUp(creature, classId, count);
         }
 
         /// <summary>
@@ -858,7 +834,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void LevelDown(uint creature, int count = 1)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.LevelDown(creature, count);
+            CreaturePluginRuntime.Current.LevelDown(creature, count);
         }
 
         /// <summary>
@@ -873,7 +849,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetChallengeRating(uint creature, float fCR)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetChallengeRating(creature, fCR);
+            CreaturePluginRuntime.Current.SetChallengeRating(creature, fCR);
         }
 
         /// <summary>
@@ -893,7 +869,7 @@ namespace SWLOR.NWN.API.NWNX
         public static int GetAttackBonus(uint creature, bool isMelee = true, bool isTouchAttack = false,
             bool isOffhand = false, bool includeBaseAttackBonus = true)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetAttackBonus(creature, isMelee ? 1 : 0, isTouchAttack ? 1 : 0, isOffhand ? 1 : 0, includeBaseAttackBonus ? 1 : 0);
+            return CreaturePluginRuntime.Current.GetAttackBonus(creature, isMelee, isTouchAttack, isOffhand, includeBaseAttackBonus);
         }
 
         /// <summary>
@@ -909,7 +885,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetHighestLevelOfFeat(uint creature, int feat)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetHighestLevelOfFeat(creature, feat);
+            return CreaturePluginRuntime.Current.GetHighestLevelOfFeat(creature, feat);
         }
 
         /// <summary>
@@ -925,7 +901,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetFeatRemainingUses(uint creature, FeatType feat)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetFeatRemainingUses(creature, (int)feat);
+            return CreaturePluginRuntime.Current.GetFeatRemainingUses(creature, feat);
         }
 
         /// <summary>
@@ -941,7 +917,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetFeatTotalUses(uint creature, FeatType feat)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetFeatTotalUses(creature, (int)feat);
+            return CreaturePluginRuntime.Current.GetFeatTotalUses(creature, feat);
         }
 
         /// <summary>
@@ -957,7 +933,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetFeatRemainingUses(uint creature, FeatType feat, int uses)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetFeatRemainingUses(creature, (int)feat, uses);
+            CreaturePluginRuntime.Current.SetFeatRemainingUses(creature, feat, uses);
         }
 
         /// <summary>
@@ -984,7 +960,7 @@ namespace SWLOR.NWN.API.NWNX
             bool isForceMax = false, int saveType = -1, int saveSpecificType = -1, NWNSkillType skill = NWNSkillType.Invalid,
             int abilityScore = -1, bool isOffhand = false)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetTotalEffectBonus(creature, (int)bonusType, target, isElemental ? 1 : 0, isForceMax ? 1 : 0, saveType, saveSpecificType, (int)skill, abilityScore, isOffhand ? 1 : 0);
+            return CreaturePluginRuntime.Current.GetTotalEffectBonus(creature, bonusType, target, isElemental, isForceMax, saveType, saveSpecificType, skill, abilityScore, isOffhand);
         }
 
         /// <summary>
@@ -1001,7 +977,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetOriginalName(uint creature, string name, bool isLastName)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetOriginalName(creature, name, isLastName ? 1 : 0);
+            CreaturePluginRuntime.Current.SetOriginalName(creature, name, isLastName);
         }
 
         /// <summary>
@@ -1017,7 +993,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static string GetOriginalName(uint creature, bool isLastName)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetOriginalName(creature, isLastName ? 1 : 0);
+            return CreaturePluginRuntime.Current.GetOriginalName(creature, isLastName);
         }
 
         /// <summary>
@@ -1032,7 +1008,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetSpellResistance(uint creature, int sr)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetSpellResistance(creature, sr);
+            CreaturePluginRuntime.Current.SetSpellResistance(creature, sr);
         }
 
         /// <summary>
@@ -1048,7 +1024,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetAnimalCompanionName(uint creature, string name)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetAnimalCompanionName(creature, name);
+            CreaturePluginRuntime.Current.SetAnimalCompanionName(creature, name);
         }
 
         /// <summary>
@@ -1064,7 +1040,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetFamiliarName(uint creature, string name)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetFamiliarName(creature, name);
+            CreaturePluginRuntime.Current.SetFamiliarName(creature, name);
         }
 
         /// <summary>
@@ -1078,8 +1054,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool GetDisarmable(uint creature)
         {
-            var result = global::NWN.Core.NWNX.CreaturePlugin.GetDisarmable(creature);
-            return result != 0;
+            return CreaturePluginRuntime.Current.GetDisarmable(creature);
         }
 
         /// <summary>
@@ -1093,7 +1068,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetDisarmable(uint creature, bool isDisarmable)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetDisarmable(creature, isDisarmable ? 1 : 0);
+            CreaturePluginRuntime.Current.SetDisarmable(creature, isDisarmable);
         }
 
         /// <summary>
@@ -1110,7 +1085,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetDomain(uint creature, ClassType @class, int index, int domain)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetDomain(creature, (int)@class, index, domain);
+            CreaturePluginRuntime.Current.SetDomain(creature, @class, index, domain);
         }
 
         /// <summary>
@@ -1126,7 +1101,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetSpecialization(uint creature, ClassType @class, int school)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetSpecialization(creature, (int)@class, school);
+            CreaturePluginRuntime.Current.SetSpecialization(creature, @class, school);
         }
 
         /// <summary>
@@ -1141,7 +1116,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetFaction(uint creature, int factionId)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetFaction(creature, factionId);
+            CreaturePluginRuntime.Current.SetFaction(creature, factionId);
         }
 
         /// <summary>
@@ -1156,7 +1131,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetFaction(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetFaction(creature);
+            return CreaturePluginRuntime.Current.GetFaction(creature);
         }
 
         /// <summary>
@@ -1170,8 +1145,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool GetFlatFooted(uint creature)
         {
-            var result = global::NWN.Core.NWNX.CreaturePlugin.GetFlatFooted(creature);
-            return result != 0;
+            return CreaturePluginRuntime.Current.GetFlatFooted(creature);
         }
 
         /// <summary>
@@ -1186,7 +1160,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static string SerializeQuickbar(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.SerializeQuickbar(creature);
+            return CreaturePluginRuntime.Current.SerializeQuickbar(creature);
         }
 
         /// <summary>
@@ -1202,8 +1176,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool DeserializeQuickbar(uint creature, string serializedQuickbar)
         {
-            var result = global::NWN.Core.NWNX.CreaturePlugin.DeserializeQuickbar(creature, serializedQuickbar);
-            return result != 0;
+            return CreaturePluginRuntime.Current.DeserializeQuickbar(creature, serializedQuickbar);
         }
 
 
@@ -1219,7 +1192,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetEncounter(uint creature, uint encounter)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetEncounter(creature, encounter);
+            CreaturePluginRuntime.Current.SetEncounter(creature, encounter);
         }
 
         /// <summary>
@@ -1233,7 +1206,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static uint GetEncounter(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetEncounter(creature);
+            return CreaturePluginRuntime.Current.GetEncounter(creature);
         }
 
 
@@ -1250,7 +1223,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void OverrideDamageLevel(uint creature, int damageLevel)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.OverrideDamageLevel(creature, damageLevel);
+            CreaturePluginRuntime.Current.OverrideDamageLevel(creature, damageLevel);
         }
 
         /// <summary>
@@ -1264,8 +1237,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool GetIsBartering(uint creature)
         {
-            var result = global::NWN.Core.NWNX.CreaturePlugin.GetIsBartering(creature);
-            return result != 0;
+            return CreaturePluginRuntime.Current.GetIsBartering(creature);
         }
 
 
@@ -1281,7 +1253,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetLastItemCasterLevel(uint creature, int casterLevel)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetLastItemCasterLevel(creature, casterLevel);
+            CreaturePluginRuntime.Current.SetLastItemCasterLevel(creature, casterLevel);
         }
 
         /// <summary>
@@ -1295,7 +1267,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetLastItemCasterLevel(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetLastItemCasterLevel(creature);
+            return CreaturePluginRuntime.Current.GetLastItemCasterLevel(creature);
         }
 
         /// <summary>
@@ -1312,7 +1284,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetArmorClassVersus(uint attacked, uint versus, bool touch = false)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetArmorClassVersus(attacked, versus, touch ? 1 : 0);
+            return CreaturePluginRuntime.Current.GetArmorClassVersus(attacked, versus, touch);
         }
 
         /// <summary>
@@ -1326,7 +1298,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void JumpToLimbo(uint creature)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.JumpToLimbo(creature);
+            CreaturePluginRuntime.Current.JumpToLimbo(creature);
         }
 
         /// <summary>
@@ -1345,7 +1317,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetCriticalMultiplierModifier(uint creature, int modifier, int hand = 0, bool persist = false, BaseItem baseItemType = BaseItem.Invalid)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetCriticalMultiplierModifier(creature, modifier, hand, persist ? 1 : 0, (int)baseItemType);
+            CreaturePluginRuntime.Current.SetCriticalMultiplierModifier(creature, modifier, hand, persist, baseItemType);
         }
 
         /// <summary>
@@ -1361,7 +1333,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetCriticalMultiplierModifier(uint creature, int hand = 0, BaseItem baseItemType = BaseItem.Invalid)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetCriticalMultiplierModifier(creature, hand, (int)baseItemType);
+            return CreaturePluginRuntime.Current.GetCriticalMultiplierModifier(creature, hand, baseItemType);
         }
 
         /// <summary>
@@ -1379,7 +1351,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetCriticalMultiplierOverride(uint creature, int @override, int hand = 0, bool persist = false, BaseItem baseItemType = BaseItem.Invalid)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetCriticalMultiplierOverride(creature, @override, hand, persist ? 1 : 0, (int)baseItemType);
+            CreaturePluginRuntime.Current.SetCriticalMultiplierOverride(creature, @override, hand, persist, baseItemType);
         }
 
         /// <summary>
@@ -1395,7 +1367,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetCriticalMultiplierOverride(uint creature, int hand = 0, BaseItem baseItemType = BaseItem.Invalid)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetCriticalMultiplierOverride(creature, hand, (int)baseItemType);
+            return CreaturePluginRuntime.Current.GetCriticalMultiplierOverride(creature, hand, baseItemType);
         }
 
         /// <summary>
@@ -1413,7 +1385,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetCriticalRangeModifier(uint creature, int modifier, int hand = 0, bool persist = false, BaseItem baseItemType = BaseItem.Invalid)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetCriticalRangeModifier(creature, modifier, hand, persist ? 1 : 0, (int)baseItemType);
+            CreaturePluginRuntime.Current.SetCriticalRangeModifier(creature, modifier, hand, persist, baseItemType);
         }
 
         /// <summary>
@@ -1429,7 +1401,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetCriticalRangeModifier(uint creature, int hand = 0, BaseItem baseItemType = BaseItem.Invalid)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetCriticalRangeModifier(creature, hand, (int)baseItemType);
+            return CreaturePluginRuntime.Current.GetCriticalRangeModifier(creature, hand, baseItemType);
         }
 
         /// <summary>
@@ -1447,7 +1419,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetCriticalRangeOverride(uint creature, int @override, int hand = 0, bool persist = false, BaseItem baseItemType = BaseItem.Invalid)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetCriticalRangeOverride(creature, @override, hand, persist ? 1 : 0, (int)baseItemType);
+            CreaturePluginRuntime.Current.SetCriticalRangeOverride(creature, @override, hand, persist, baseItemType);
         }
 
         /// <summary>
@@ -1463,7 +1435,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetCriticalRangeOverride(uint creature, int hand = 0, BaseItem baseItemType = BaseItem.Invalid)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetCriticalRangeOverride(creature, hand, (int)baseItemType);
+            return CreaturePluginRuntime.Current.GetCriticalRangeOverride(creature, hand, baseItemType);
         }
 
         /// <summary>
@@ -1479,7 +1451,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void AddAssociate(uint creature, uint associate, int associateType)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.AddAssociate(creature, associate, associateType);
+            CreaturePluginRuntime.Current.AddAssociate(creature, associate, associateType);
         }
 
         /// <summary>
@@ -1494,7 +1466,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetWalkAnimation(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetWalkAnimation(creature);
+            return CreaturePluginRuntime.Current.GetWalkAnimation(creature);
         }
 
         /// <summary>
@@ -1509,7 +1481,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetWalkAnimation(uint creature, int animation)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetWalkAnimation(creature, animation);
+            CreaturePluginRuntime.Current.SetWalkAnimation(creature, animation);
         }
 
         /// <summary>
@@ -1526,7 +1498,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetAttackRollOverride(uint creature, int roll, int modifier)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetAttackRollOverride(creature, roll, modifier);
+            CreaturePluginRuntime.Current.SetAttackRollOverride(creature, roll, modifier);
         }
 
         /// <summary>
@@ -1541,7 +1513,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetParryAllAttacks(uint creature, bool parry)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetParryAllAttacks(creature, parry ? 1 : 0);
+            CreaturePluginRuntime.Current.SetParryAllAttacks(creature, parry);
         }
 
         /// <summary>
@@ -1556,8 +1528,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool GetNoPermanentDeath(uint creature)
         {
-            var result = global::NWN.Core.NWNX.CreaturePlugin.GetNoPermanentDeath(creature);
-            return result != 0;
+            return CreaturePluginRuntime.Current.GetNoPermanentDeath(creature);
         }
 
         /// <summary>
@@ -1572,7 +1543,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetNoPermanentDeath(uint creature, bool noPermanentDeath)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetNoPermanentDeath(creature, noPermanentDeath ? 1 : 0);
+            CreaturePluginRuntime.Current.SetNoPermanentDeath(creature, noPermanentDeath);
         }
 
         /// <summary>
@@ -1591,7 +1562,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static Vector3 ComputeSafeLocation(uint creature, Vector3 position, float radius = 20.0f, bool walkStraightLineRequired = true)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.ComputeSafeLocation(creature, position, radius, walkStraightLineRequired ? 1 : 0);
+            return CreaturePluginRuntime.Current.ComputeSafeLocation(creature, position, radius, walkStraightLineRequired);
         }
 
         /// <summary>
@@ -1606,7 +1577,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void DoPerceptionUpdateOnCreature(uint creature, uint targetCreature)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.DoPerceptionUpdateOnCreature(creature, targetCreature);
+            CreaturePluginRuntime.Current.DoPerceptionUpdateOnCreature(creature, targetCreature);
         }
 
         /// <summary>
@@ -1621,7 +1592,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static float GetPersonalSpace(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetPersonalSpace(creature);
+            return CreaturePluginRuntime.Current.GetPersonalSpace(creature);
         }
 
         /// <summary>
@@ -1636,7 +1607,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetPersonalSpace(uint creature, float personalSpace)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetPersonalSpace(creature, personalSpace);
+            CreaturePluginRuntime.Current.SetPersonalSpace(creature, personalSpace);
         }
 
         /// <summary>
@@ -1650,7 +1621,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static float GetCreaturePersonalSpace(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetCreaturePersonalSpace(creature);
+            return CreaturePluginRuntime.Current.GetCreaturePersonalSpace(creature);
         }
 
         /// <summary>
@@ -1664,7 +1635,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetCreaturePersonalSpace(uint creature, float creaturePersonalSpace)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetCreaturePersonalSpace(creature, creaturePersonalSpace);
+            CreaturePluginRuntime.Current.SetCreaturePersonalSpace(creature, creaturePersonalSpace);
         }
 
         /// <summary>
@@ -1678,7 +1649,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static float GetHeight(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetHeight(creature);
+            return CreaturePluginRuntime.Current.GetHeight(creature);
         }
 
         /// <summary>
@@ -1692,7 +1663,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetHeight(uint creature, float height)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetHeight(creature, height);
+            CreaturePluginRuntime.Current.SetHeight(creature, height);
         }
 
         /// <summary>
@@ -1706,7 +1677,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static float GetHitDistance(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetHitDistance(creature);
+            return CreaturePluginRuntime.Current.GetHitDistance(creature);
         }
 
         /// <summary>
@@ -1720,7 +1691,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetHitDistance(uint creature, float hitDistance)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetHitDistance(creature, hitDistance);
+            CreaturePluginRuntime.Current.SetHitDistance(creature, hitDistance);
         }
 
         /// <summary>
@@ -1734,7 +1705,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static float GetPreferredAttackDistance(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetPreferredAttackDistance(creature);
+            return CreaturePluginRuntime.Current.GetPreferredAttackDistance(creature);
         }
 
         /// <summary>
@@ -1748,7 +1719,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetPreferredAttackDistance(uint creature, float preferredAttackDistance)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetPreferredAttackDistance(creature, preferredAttackDistance);
+            CreaturePluginRuntime.Current.SetPreferredAttackDistance(creature, preferredAttackDistance);
         }
 
         /// <summary>
@@ -1763,7 +1734,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetArmorCheckPenalty(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetArmorCheckPenalty(creature);
+            return CreaturePluginRuntime.Current.GetArmorCheckPenalty(creature);
         }
 
         /// <summary>
@@ -1778,7 +1749,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetShieldCheckPenalty(uint creature)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetShieldCheckPenalty(creature);
+            return CreaturePluginRuntime.Current.GetShieldCheckPenalty(creature);
         }
 
         /// <summary>
@@ -1795,7 +1766,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetBypassEffectImmunity(uint creature, int immunityType, int chance = 100, bool persist = false)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetBypassEffectImmunity(creature, immunityType, chance, persist ? 1 : 0);
+            CreaturePluginRuntime.Current.SetBypassEffectImmunity(creature, immunityType, chance, persist);
         }
 
         /// <summary>
@@ -1810,7 +1781,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetBypassEffectImmunity(uint creature, int immunityType)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetBypassEffectImmunity(creature, immunityType);
+            return CreaturePluginRuntime.Current.GetBypassEffectImmunity(creature, immunityType);
         }
 
         /// <summary>
@@ -1827,7 +1798,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetNumberOfBonusSpells(uint creature, int multiClass, int spellLevel)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetNumberOfBonusSpells(creature, multiClass, spellLevel);
+            return CreaturePluginRuntime.Current.GetNumberOfBonusSpells(creature, multiClass, spellLevel);
         }
 
         /// <summary>
@@ -1844,7 +1815,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void ModifyNumberBonusSpells(uint creature, int multiClass, int spellLevel, int delta)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.ModifyNumberBonusSpells(creature, multiClass, spellLevel, delta);
+            CreaturePluginRuntime.Current.ModifyNumberBonusSpells(creature, multiClass, spellLevel, delta);
         }
 
         /// <summary>
@@ -1861,7 +1832,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetCasterLevelModifier(uint creature, ClassType classId, int modifier, bool persist = false)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetCasterLevelModifier(creature, (int)classId, modifier, persist ? 1 : 0);
+            CreaturePluginRuntime.Current.SetCasterLevelModifier(creature, classId, modifier, persist);
         }
 
         /// <summary>
@@ -1876,7 +1847,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetCasterLevelModifier(uint creature, ClassType classId)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetCasterLevelModifier(creature, (int)classId);
+            return CreaturePluginRuntime.Current.GetCasterLevelModifier(creature, classId);
         }
 
         /// <summary>
@@ -1893,7 +1864,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetCasterLevelOverride(uint creature, ClassType classId, int casterLevel, bool persist = false)
         {
-            global::NWN.Core.NWNX.CreaturePlugin.SetCasterLevelOverride(creature, (int)classId, casterLevel, persist ? 1 : 0);
+            CreaturePluginRuntime.Current.SetCasterLevelOverride(creature, classId, casterLevel, persist);
         }
 
         /// <summary>
@@ -1908,7 +1879,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetCasterLevelOverride(uint creature, ClassType classId)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.GetCasterLevelOverride(creature, (int)classId);
+            return CreaturePluginRuntime.Current.GetCasterLevelOverride(creature, classId);
         }
 
         /// <summary>
@@ -1916,7 +1887,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </summary>
         public static bool RunEquip(uint creature, uint item, InventorySlot slot)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.RunEquip(creature, item, (int)slot) == 1;
+            return CreaturePluginRuntime.Current.RunEquip(creature, item, slot);
         }
 
         /// <summary>
@@ -1924,7 +1895,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </summary>
         public static bool RunUnequip(uint creature, uint item)
         {
-            return global::NWN.Core.NWNX.CreaturePlugin.RunUnequip(creature, item) == 1;
+            return CreaturePluginRuntime.Current.RunUnequip(creature, item);
         }
     }
 }

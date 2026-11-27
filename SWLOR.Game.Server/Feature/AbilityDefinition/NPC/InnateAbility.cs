@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 {
@@ -106,8 +105,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         /// <summary>Restores <paramref name="amount"/> Stamina to the caster on each successful hit.</summary>
         public static Action<uint, uint> RestoreStaminaOnHit(int amount)
         {
-            return (activator, _) => Combat.RestoreAbilityHitStamina(
-                activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, amount);
+            return (activator, _) => GameServices.CombatResources.RestoreAbilityHitStamina(
+                activator, AbilityImpactState.GetActiveAbilityImpactSummary(activator)?.Ability, amount);
         }
 
         /// <summary>Restores <paramref name="amount"/> FP to the caster on each successful hit.</summary>
@@ -219,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         {
             return (activator, target) =>
             {
-                var sequence = oncePerCast ? Ability.GetAbilityImpactSequence(activator) : null;
+                var sequence = oncePerCast ? AbilityImpactState.GetAbilityImpactSequence(activator) : null;
                 if (sequence != null && !sequence.HasRemainingChainArcs(maxArcs))
                     return;
 
@@ -466,7 +465,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .RequirementStamina(stamina)
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration);
+                    StatusEffectApplication.ApplyStatusEffect(activator, activator, statusEffect, duration);
 
                     if (targetVisualEffect != VisualEffect.None)
                     {

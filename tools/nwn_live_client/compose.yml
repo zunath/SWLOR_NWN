@@ -93,6 +93,11 @@ services:
             SWLOR_PROPERTY_BROADCAST_WEBHOOK_URL: ""
             SWLOR_SERVER_NOTIFICATION_WEBHOOK_URL: ""
             SWLOR_LIVE_MAX_SECONDS: ${SWLOR_LIVE_MAX_SECONDS}
+            # The .NET entry stack.py staged in dotnet/ (--entry): the host by default, or the native entry.
+            SWLOR_DOTNET_ENTRY: ${SWLOR_LIVE_DOTNET_ENTRY}
+            NWNX_DOTNET_ASSEMBLY: ${SWLOR_LIVE_DOTNET_ASSEMBLY}
+            NWNX_DOTNET_ENTRYPOINT: ${SWLOR_LIVE_DOTNET_ENTRYPOINT}
+            NWNX_DOTNET_METHOD: ${SWLOR_LIVE_DOTNET_METHOD}
         extra_hosts:
             - "nwmaster2.beamdog.net:127.0.0.1"
             - "nwn.beamdog.net:127.0.0.1"

@@ -1,7 +1,8 @@
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             var lowHPForceDamageTaken = Stat.GetStatAdjustment(activator, StatType.SparkLightningPressureLowHPForceDamageTakenPercent);
             var lowHPThreshold = Stat.GetStatAdjustment(activator, StatType.SparkLightningPressureLowHPThresholdPercent);
-            StatusEffect.ApplyStatusEffect(
+            StatusEffectApplication.ApplyStatusEffect(
                 activator,
                 target,
                 new UnstablePressureStatusEffect(evasionPenalty, lowHPForceDamageTaken, lowHPThreshold),

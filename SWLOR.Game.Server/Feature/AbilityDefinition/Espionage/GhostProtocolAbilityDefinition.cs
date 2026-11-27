@@ -1,14 +1,13 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
 {
@@ -45,18 +44,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
 
         private static void ApplyGhostProtocol(uint activator, uint target, int level, Location targetLocation)
         {
-            Enmity.ReduceEnmityOnAll(activator, EnmityReductionPercent);
+            EnmityChange.ReduceEnmityOnAll(activator, EnmityReductionPercent);
 
             // The capstone is the only stealth entry allowed while in combat; open the entry
             // window just long enough for the mode change to pass the gate.
-            SetLocalInt(activator, Stealth.CombatEntryWindowVariable, 1);
+            SetLocalInt(activator, StealthService.CombatEntryWindowVariable, 1);
             // The stealth window closes on its own unless the player leaves stealth first.
             Stealth.ScheduleTimedExit(activator, StealthWindowSeconds);
             AssignCommand(activator, () =>
             {
                 SetActionMode(activator, ActionMode.Stealth, true);
             });
-            DelayCommand(1f, () => DeleteLocalInt(activator, Stealth.CombatEntryWindowVariable));
+            DelayCommand(1f, () => DeleteLocalInt(activator, StealthService.CombatEntryWindowVariable));
 
             TemporaryStatModifier.Replace(
                 activator,
@@ -82,8 +81,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
 
             // The caster is vanishing: its smoke and burst would show everyone where it went, so only
             // the caster sees them.
-            Ability.ShowVisualEffectToPlayer(activator, activator, VisualEffect.Vfx_Dur_Ghost_Smoke);
-            Ability.ShowVisualEffectToPlayer(activator, activator, Ability.GetSuccessfulImpactVisualEffect(activator));
+            AbilityImpactVisual.ShowVisualEffectToPlayer(activator, activator, VisualEffect.Vfx_Dur_Ghost_Smoke);
+            AbilityImpactVisual.ShowVisualEffectToPlayer(activator, activator, Ability.GetSuccessfulImpactVisualEffect(activator));
         }
     }
 }

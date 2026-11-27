@@ -1,0 +1,135 @@
+# Phase 5 debt (P5-0): static entry points and static state of SWLOR.Game.Server (target 1), read from the compiled assembly.
+# Line: <type> | <count>: its static fields that can change or share what they hold (every static field except const and
+# static readonly of a deeply immutable type, the P2-D1 rule), plus its static members that resolve a service from the
+# container. Nested types count toward their top-level type. Not listed: the composition root (Composition), whose job is
+# to hold the container; the lookup itself (StaticLookups.txt); the static entry points the owner approved to stay
+# (Exemptions.json, owner decision 3). Every line waits for classification: kept with a reason the owner approves, or removed.
+# The report marks the fields that code writes after their initializer and static constructor (runtime state) with *.
+#
+# The guard (SWLOR.Architecture.Tests, Phase5DebtTests) fails when a line appears, when a count grows, and when a count
+# shrinks or a line disappears: each Phase 5 item shrinks this file in the same pull request. Plan and targets:
+# SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
+# SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
+
+SWLOR.Game.Server.ApplicationSettings | 1
+SWLOR.Game.Server.Composition.NativeHookAccess | 1
+SWLOR.Game.Server.Core.Async.Awaiters.SynchronizationContextAwaiter | 1
+SWLOR.Game.Server.Core.Async.NwTask | 1
+SWLOR.Game.Server.Core.ManagedEntryDepth | 1
+SWLOR.Game.Server.Core.PlayerReloadPlan | 1
+SWLOR.Game.Server.Core.ReloadBootstrap | 2
+SWLOR.Game.Server.Core.Scheduler | 6
+SWLOR.Game.Server.Core.ScriptHandlerManifest | 1
+SWLOR.Game.Server.Core.ServerFrame | 1
+SWLOR.Game.Server.Core.ServerManager | 5
+SWLOR.Game.Server.Core.ValidationOnlyBuildContext | 1
+SWLOR.Game.Server.Domain.Abilities.AnimationPreviewCatalog | 1
+SWLOR.Game.Server.Domain.Administration.DMSearchText | 1
+SWLOR.Game.Server.Domain.Character.OOCDetectionModel | 1
+SWLOR.Game.Server.Domain.Character.OOCMessageScorer | 1
+SWLOR.Game.Server.Domain.Character.RoleplayMessageClassifier | 6
+SWLOR.Game.Server.Domain.Combat.RecastTimestamp | 1
+SWLOR.Game.Server.Domain.Foundation.ActiveAbilityAnimationCatalog | 1
+SWLOR.Game.Server.Domain.Foundation.ColorToken | 1
+SWLOR.Game.Server.Domain.Gameplay.ServerRestart | 1
+SWLOR.Game.Server.Feature.AbilityDefinition.NPC.InnateAbilityProfile | 8
+SWLOR.Game.Server.Feature.AbilityDefinition.WeaponAbilityProfile | 1
+SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.ArmorAppearanceCatalog | 2
+SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.ArmorPartAppearance | 1
+SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit | 1
+SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveCostumeFit | 1
+SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveGripFits | 2
+SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveHandFitCatalog | 1
+SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveHandFitOverrides | 1
+SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveOpenFrameFits | 2
+SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.TrainingSaberCatalog | 2
+SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponHandFit | 3
+SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponHandFitCatalog | 2
+SWLOR.Game.Server.Feature.AppearanceDefinition.Preview.AppearancePartNames | 4
+SWLOR.Game.Server.Feature.AppearanceDefinition.Species.RacialAppearanceRegistry | 2
+SWLOR.Game.Server.Feature.BasicVibrobladeCompatibility | 1
+SWLOR.Game.Server.Feature.ChatCommandDefinition.DMCommunicationChatCommand | 1
+SWLOR.Game.Server.Feature.ChatCommandDefinition.DMSpawnChatCommand | 1
+SWLOR.Game.Server.Feature.EchaniTempleMonks | 1
+SWLOR.Game.Server.Feature.EventRegistration | 1
+SWLOR.Game.Server.Feature.GuiDefinition.AppearanceEditorDefinition | 1
+SWLOR.Game.Server.Feature.GuiDefinition.ExamineItemText | 1
+SWLOR.Game.Server.Feature.GuiDefinition.PerformanceFootworkDefinition | 2
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel | 4
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.BugReportViewModel | 1
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel | 6
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DMPlayerExamineViewModel | 1
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DebugNuiGalleryViewModel | 6
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ExtraHotbarViewModel | 1
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.HoloNetViewModel | 1
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.LineViewModel | 2
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.MarketBuyViewModel | 3
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerformanceCueViewModelBase | 1
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerformanceOptionsViewModel | 4
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerformanceSessionViewModel | 1
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PlayerGuideTopicCatalog | 1
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PlayerListViewModel | 1
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ProspectingViewModel | 2
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ReactionViewModel | 1
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.RefineryViewModel | 1
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ResearchExperimentViewModel | 1
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ResearchViewModel | 1
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.SearchViewModel | 2
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.SettingsViewModel | 1
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.TrainingStoreViewModel | 1
+SWLOR.Game.Server.Feature.ItemDefinition.DroidControlItemDefinition | 1
+SWLOR.Game.Server.Feature.ItemDefinition.SaberUpgradeItemDefinition | 3
+SWLOR.Game.Server.Feature.ItemDefinition.TrapKitItemDefinition | 1
+SWLOR.Game.Server.Feature.ItemDefinition.VenomCoatingItemDefinition | 1
+SWLOR.Game.Server.Feature.KatarAnimationRemapPlan | 2
+SWLOR.Game.Server.Feature.LootTableDefinition.EnzymeLootTableDefinition | 2
+SWLOR.Game.Server.Feature.MigrationDefinition.ArkanianArmorStatRevisionCatalog | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.BuildingIconMigration | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration._26_ConvertCraftingPerksToRanks | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.DroidWeaponSkillMigration | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.EngineStoredItemConverter | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.EnzymeBaseItemMigration | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.EquipmentTypeMigration | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.EquipmentTypeStatRevisionCatalog | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.ForceWeaponEnhancementMigration | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.FoundryLootStatRevisionCatalog | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.FurnitureRenameMigration | 3
+SWLOR.Game.Server.Feature.MigrationDefinition.GaderffiiAppearanceMigration | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.HeadgearSlotMigration | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.ItemAppearanceCatalogMigration | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.ItemIconMigration | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.LootStatRevisionCatalog | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.ObsoleteItemMigration | 2
+SWLOR.Game.Server.Feature.MigrationDefinition.PelvisAppearanceMigration | 2
+SWLOR.Game.Server.Feature.MigrationDefinition.RareLootStatRevisionCatalog | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.RetiredAppearanceMigration | 4
+SWLOR.Game.Server.Feature.MigrationDefinition.RetiredAppearances | 4
+SWLOR.Game.Server.Feature.MigrationDefinition.RetiredDefenseStatRevisionCatalog | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.SavedDataStoredItemConverter | 1
+SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration.LegacyPerkRefundMigration | 3
+SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData | 7
+SWLOR.Game.Server.Feature.PistolBaseItemCompatibility | 1
+SWLOR.Game.Server.Feature.PlayerStatusWindow | 1
+SWLOR.Game.Server.Feature.PropertyLayoutDefinition.BankLayoutDefinition | 1
+SWLOR.Game.Server.Feature.QuestDefinition.BeastStableQuestDefinition | 1
+SWLOR.Game.Server.Feature.QuestDefinition.CapstoneProofDefinitions | 1
+SWLOR.Game.Server.Feature.StandardItemConfigurations | 1
+SWLOR.Game.Server.Feature.StatusEffectDefinition.EmbattledStatusEffect | 1
+SWLOR.Game.Server.Feature.StatusEffectDefinition.GuardedStatusEffect | 3
+SWLOR.Game.Server.Feature.StatusEffectDefinition.InspiredStatusEffect | 2
+SWLOR.Game.Server.Feature.StatusEffectDefinition.IronGuardCoverStatusEffect | 1
+SWLOR.Game.Server.Feature.StatusEffectDefinition.WardBondStatusEffect | 1
+SWLOR.Game.Server.Feature.StoreManagement | 1
+SWLOR.Game.Server.Native.ClientJsonUtf8Guard | 2
+SWLOR.Game.Server.Native.LegacyItemProperties | 1
+SWLOR.Game.Server.Native.OnAIActionAttackObject | 2
+SWLOR.Game.Server.Native.PairedRangedAttackCycle | 1
+SWLOR.Game.Server.Native.PairedRangedPresentation | 5
+SWLOR.Game.Server.Native.PlayerSlotAssignment | 1
+SWLOR.Game.Server.Native.RangedWeaponAttackContext | 3
+SWLOR.Game.Server.Native.SavedPlayerClassLayout | 4
+SWLOR.Game.Server.Native.SavedPlayerInventory | 1
+SWLOR.Game.Server.Native.WeaponAttackAnimation | 1
+SWLOR.Game.Server.Native.WeaponAttackCycle | 1
+SWLOR.Game.Server.NativeSinks.LegacyItemPropertiesSink | 6
+SWLOR.Game.Server.NativeSinks.PlayerFileCheckpointSink | 3

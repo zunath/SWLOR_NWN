@@ -20,6 +20,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!--
+      Expected outputs of the characterization scenarios. The server runs in a container that cannot see the source
+      tree, so the snapshots travel inside the assembly (see Characterization/Support/ScenarioSnapshot.cs).
+    -->
+    <EmbeddedResource Include="Characterization\Snapshots\**\*.json"
+                      LogicalName="Characterization/Snapshots/%(RecursiveDir)%(Filename)%(Extension)" />
+    <!-- The appearance editor's binding transcript, captured before the per-channel colour bindings stopped being declared properties (P5-16e). -->
+    <EmbeddedResource Include="Definitions\Fixtures\AppearanceEditorBindingIdentity.txt"
+                      LogicalName="AppearanceEditor/BindingIdentity.txt" />
+    <EmbeddedResource Include="Definitions\Fixtures\AppearanceEditorBindingIdentityTabs.txt"
+                      LogicalName="AppearanceEditor/BindingIdentityTabs.txt" />
+    <EmbeddedResource Include="Definitions\Fixtures\AppearanceEditorBindingIdentityParts.txt"
+                      LogicalName="AppearanceEditor/BindingIdentityParts.txt" />
+    <EmbeddedResource Include="Definitions\Fixtures\AppearanceEditorBindingIdentityOutfits.txt"
+                      LogicalName="AppearanceEditor/BindingIdentityOutfits.txt" />
+    <!-- The binding transcripts of the six windows of the view model split, captured before any view model code moved (P5-16h). -->
+    <EmbeddedResource Include="Definitions\Fixtures\ViewModelTranscript\*.txt"
+                      LogicalName="ViewModelTranscript/%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
   </ItemGroup>
 

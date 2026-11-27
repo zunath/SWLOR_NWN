@@ -9,16 +9,14 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatRecorderService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -42,15 +40,15 @@ public static class TwinPistolHostileDelayEngineTests
         ctx.Assert(!CombatRecorder.IsRecording, "The stance regression owns its recording");
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
         var actor = player.Creature;
-        var first = Ability.GetAbilityDetail(FeatType.PairedVolley1);
-        var ability = Ability.GetAbilityDetail(FeatType.AkimboStance);
+        var first = AbilityCatalog.GetAbilityDetail(FeatType.PairedVolley1);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.AkimboStance);
         CombatRecordWriter writer = null;
         var firstPressedAt = 0L;
         var initialStamina = 0;
         var afterFirst = 0;
         var castDelay = 0f;
-        Combat.SetAutoAttackHitResolutionOverride(false);
-        Combat.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
         {
             var (target, _) = await Prepare(ctx, player);
@@ -71,7 +69,7 @@ public static class TwinPistolHostileDelayEngineTests
                 afterFirst = Stat.GetCurrentStamina(actor);
                 ctx.AssertEqual(initialStamina - Cost(FeatType.PairedVolley1), afterFirst,
                     "The first ability pays its actual stamina requirement once");
-                Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
                 castDelay = ability.ActivationDelay(actor, actor, 1);
                 ctx.AssertEqual(2f, castDelay, "The stance retains its existing two-second cast");
                 Press(ctx, actor, actor, FeatType.AkimboStance);
@@ -95,8 +93,8 @@ public static class TwinPistolHostileDelayEngineTests
             if (GetIsObjectValid(actor)) AssignCommand(actor, () => ClearAllActions());
             PairedRangedAttackCycle.Cancel(actor);
             HostileAbilityDelay.EndForTesting(actor);
-            Combat.SetAutoAttackHitResolutionOverride(null);
-            Combat.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         }
         await WaitFrames(ctx, () => writer.Completion.IsCompleted, "the stance recording to finish", 10f);
         ctx.Assert(writer.Error == null, $"The stance recording failed: {writer.Error}");
@@ -125,8 +123,8 @@ public static class TwinPistolHostileDelayEngineTests
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
         var actor = player.Creature;
         var winner = replacement ?? held;
-        var first = Ability.GetAbilityDetail(FeatType.PairedVolley1);
-        var winningAbility = Ability.GetAbilityDetail(winner);
+        var first = AbilityCatalog.GetAbilityDetail(FeatType.PairedVolley1);
+        var winningAbility = AbilityCatalog.GetAbilityDetail(winner);
         CombatRecordWriter writer = null;
         var firstPressedAt = 0L;
         var initialStamina = 0;
@@ -134,8 +132,8 @@ public static class TwinPistolHostileDelayEngineTests
         var replayWeaponDamage = 0;
         WeaponAbilityTraitActivation queuedTraits = null;
         var impactAt = DateTime.MaxValue;
-        Combat.SetAutoAttackHitResolutionOverride(false);
-        Combat.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
         {
             var (target, main) = await Prepare(ctx, player);
@@ -164,7 +162,7 @@ public static class TwinPistolHostileDelayEngineTests
                 // capture the held ability ourselves before the shared pipeline replays it.
                 PairedRangedTraits.RecordAccuracyEvasionMiss(actor);
                 ctx.AssertEqual(1, CadenceCharges(actor), "The existing evasion event grants one real Cadence charge");
-                Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
                 Press(ctx, actor, target, held);
                 AssertHeld(ctx, actor, afterFirst);
 
@@ -196,20 +194,19 @@ public static class TwinPistolHostileDelayEngineTests
             else if (winner == FeatType.Headshot1)
             {
                 await WaitFrames(ctx, () => UsePerkFeat.IsWeaponAbilityQueued(actor, winner), "the held Headshot to queue after the shared delay");
-                queuedTraits = ((Dictionary<uint, WeaponAbilityTraitActivation>)typeof(UsePerkFeat)
-                    .GetField("_queuedWeaponTraits", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null))[actor];
+                ctx.Assert(AbilityActivationState.TryGetQueuedWeaponTraits(actor, out queuedTraits), "the queued Headshot captures its traits");
                 ctx.Assert(queuedTraits.ContinuesChain, "Headshot is paid within six seconds of Paired Volley, so it continues the chain");
                 ctx.AssertEqual(afterFirst - Cost(winner), Stat.GetCurrentStamina(actor), "Replay pays the queued requirement exactly once");
                 // Any hostile weapon ability that costs STM spends all Cadence when its cost is paid.
                 ctx.AssertEqual(0, CadenceCharges(actor), "The paid queued cross-skill ability spends the captured Cadence");
-                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null, "Queueing is not an impact");
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) == null, "Queueing is not an impact");
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 AssignCommand(actor, () => ActionAttack(target));
             }
 
             await WaitFrames(ctx, () =>
                 {
-                    var landed = Ability.GetLastCompletedAbilityImpactSummary(actor) is { AttributedDamage: > 0 } summary &&
+                    var landed = AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) is { AttributedDamage: > 0 } summary &&
                         summary.Ability == winningAbility && !UsePerkFeat.HasQueuedWeaponAbility(actor);
                     if (landed && impactAt == DateTime.MaxValue) impactAt = DateTime.UtcNow;
                     return landed;
@@ -218,7 +215,7 @@ public static class TwinPistolHostileDelayEngineTests
             PairedRangedAttackCycle.Cancel(actor);
             if (winner == FeatType.Headshot1)
                 ctx.AssertEqual(replayWeaponDamage,
-                    Ability.GetLastCompletedAbilityImpactSummary(actor).TriggeringWeaponDamage ?? -1,
+                    AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor).TriggeringWeaponDamage ?? -1,
                     "The replayed queue captures the gun changed while input was held");
             await ctx.DelaySecondsAsync(1f);
             ctx.AssertEqual(afterFirst - Cost(winner), Stat.GetCurrentStamina(actor), "Held input replay has only one payment");
@@ -232,7 +229,7 @@ public static class TwinPistolHostileDelayEngineTests
                 "Only a Cadence-spending winner spends the captured Cadence, and a hit inside the chain window grants one fresh charge");
             ctx.Assert(OnRecast(actor, winningAbility.RecastGroup), "The winner applies its ordinary recast");
             if (replacement.HasValue)
-                ctx.Assert(!OnRecast(actor, Ability.GetAbilityDetail(held).RecastGroup), "The replaced queued press starts no recast");
+                ctx.Assert(!OnRecast(actor, AbilityCatalog.GetAbilityDetail(held).RecastGroup), "The replaced queued press starts no recast");
         }
         finally
         {
@@ -244,8 +241,8 @@ public static class TwinPistolHostileDelayEngineTests
             PairedRangedAttackCycle.Cancel(actor);
             PairedRangedTraits.ClearActor(actor);
             HostileAbilityDelay.EndForTesting(actor);
-            Combat.SetAutoAttackHitResolutionOverride(null);
-            Combat.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         }
 
         await WaitFrames(ctx, () => writer.Completion.IsCompleted, "the owned recording to finish", 10f);
@@ -278,7 +275,7 @@ public static class TwinPistolHostileDelayEngineTests
         ctx.Assert(!UsePerkFeat.HasQueuedWeaponAbility(actor), "Held input has not captured a queued weapon activation");
         ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "Held input spends no early stamina");
         ctx.AssertEqual(1, CadenceCharges(actor), "Held input spends no early Cadence");
-        ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null, "Held input resolves no early impact");
+        ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) == null, "Held input resolves no early impact");
     }
 
     private static async Task<(uint Target, uint Main)> Prepare(EngineTestContext ctx, PlayerAbilityFixture player)
@@ -308,23 +305,23 @@ public static class TwinPistolHostileDelayEngineTests
                 SetEventScript(creature, EventScript.Creature_OnMeleeAttacked, "");
             }
             ctx.SuppressNPCNaturalRegen(target);
-            Stat.SetNPCMaxHitPoints(target, 20000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 45f);
             SetCommandable(false, target);
             TemporaryStatModifier.Add(target, StatType.RangedDeflection, -100, 45f);
             ctx.MakeHostile(target);
             player.Update(record => record.Stamina = Stat.GetMaxStamina(actor));
-            Ability.ClearLastCompletedAbilityImpactSummary(actor);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
         });
         return (target, main);
     }
 
     private static void Press(EngineTestContext ctx, uint actor, uint target, FeatType feat) =>
         ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
-            $"{feat} is accepted by the real ability pipeline: {Ability.GetLastActivationDenialReason()}");
+            $"{feat} is accepted by the real ability pipeline: {AbilityActivation.GetLastActivationDenialReason()}");
 
     private static int CadenceCharges(uint actor) => StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0;
-    private static int Cost(FeatType feat) => Ability.GetAbilityDetail(feat).Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM;
+    private static int Cost(FeatType feat) => AbilityCatalog.GetAbilityDetail(feat).Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM;
     private static bool OnRecast(uint actor, RecastGroup group) => Recast.IsOnRecastDelay(actor, group).Item1;
     private static bool IsEvent(JsonElement e, string type, FeatType feat) =>
         e.GetProperty("type").GetString() == type && e.TryGetProperty("feat_id", out var id) && id.GetInt32() == (int)feat;

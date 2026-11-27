@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.ActivityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -37,7 +37,7 @@ public static class SlamActivationEngineTests
             .GetGameObject(active).AsNWSPlaceable();
         native.OpenInventory(player);
         await ctx.WaitUntilAsync(() => Activity.IsBusy(player), 3f, "opening the active collector");
-        await ctx.ExecuteInCreatureContextAsync(stale, Quest.CloseItemCollector);
+        await ctx.ExecuteInCreatureContextAsync(stale, () => Quest.CloseItemCollector());
         ctx.AssertEqual(ActivityStatusType.Quest, Activity.GetBusyType(player), "A stale collector cannot unlock the current collector.");
         native.CloseInventory(player);
         await ctx.WaitUntilAsync(() => !Activity.IsBusy(player), 3f, "closing the active collector to release busy state");
@@ -56,8 +56,7 @@ public static class SlamActivationEngineTests
         native = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(active).AsNWSPlaceable();
         native.OpenInventory(player);
         await ctx.WaitUntilAsync(() => Activity.IsBusy(player), 3f, "opening the collector for timeout cleanup");
-        await ctx.ExecuteInCreatureContextAsync(active, () => typeof(Quest)
-            .GetMethod("DestroyItemCollector", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, new object[] { active }));
+        await ctx.ExecuteInCreatureContextAsync(active, () => QuestInternals.DestroyItemCollector(active));
         ctx.Assert(!Activity.IsBusy(player), "The timeout destruction path releases busy state without a client close event.");
     }
 
@@ -76,8 +75,7 @@ public static class SlamActivationEngineTests
         var quest = new QuestBuilder().Create(questId, "Engine test hand-in")
             .AddState().SetStateJournalText("Turn in the medkit.").AddCollectItemObjective("nw_it_medkit001", 1)
             .AddState().SetStateJournalText("Finished.").Build()[questId];
-        var cache = (Dictionary<string, QuestDetail>)typeof(Quest)
-            .GetField("_quests", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+        var cache = QuestInternals.Quests;
         cache.Add(questId, quest);
         try
         {
@@ -118,7 +116,7 @@ public static class SlamActivationEngineTests
             ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(5000), target, 120f);
             await ctx.ExecuteInCreatureContextAsync(player, () =>
                 ctx.Assert(UsePerkFeat.TryUseAbility(player, target, FeatType.Slam1, GetLocation(target)),
-                    $"Slam I works after hand-in: {Ability.GetLastActivationDenialReason()}"));
+                    $"Slam I works after hand-in: {AbilityActivation.GetLastActivationDenialReason()}"));
             await ctx.WaitUntilAsync(() => !Activity.IsBusy(player), 3f, "Slam I to finish before fixture cleanup");
         }
         finally
@@ -145,17 +143,17 @@ public static class SlamActivationEngineTests
         ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(5000), target, 120f);
         var staminaBefore = Stat.GetCurrentStamina(player);
         var hpBefore = GetCurrentHitPoints(target);
-        Ability.ClearLastCompletedAbilityImpactSummary(player);
-        Combat.SetAbilityHitResolutionOverride(true);
+        AbilityImpactState.ClearLastCompletedAbilityImpactSummary(player);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
         {
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
                 ctx.Assert(!Activity.IsBusy(player), "A fresh player starts idle.");
                 ctx.Assert(UsePerkFeat.TryUseAbility(player, target, FeatType.Slam1, GetLocation(target)),
-                    $"Slam I starts: {Ability.GetLastActivationDenialReason()}");
+                    $"Slam I starts: {AbilityActivation.GetLastActivationDenialReason()}");
             });
-            await ctx.WaitUntilAsync(() => Ability.GetLastCompletedAbilityImpactSummary(player) != null,
+            await ctx.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(player) != null,
                 5f, "Slam I's player impact");
             ctx.Assert(!Activity.IsBusy(player), "Slam I releases busy state after impact.");
             ctx.Assert(Stat.GetCurrentStamina(player) < staminaBefore, "Slam I spends stamina.");
@@ -164,13 +162,13 @@ public static class SlamActivationEngineTests
             {
                 ctx.Assert(!UsePerkFeat.TryUseAbility(player, target, FeatType.Slam1, GetLocation(target)),
                     "A repeated Slam I is rejected during its cooldown.");
-                ctx.Assert(!Ability.GetLastActivationDenialReason().Contains("busy"),
-                    $"The cooldown rejection must not be busy: {Ability.GetLastActivationDenialReason()}");
+                ctx.Assert(!AbilityActivation.GetLastActivationDenialReason().Contains("busy"),
+                    $"The cooldown rejection must not be busy: {AbilityActivation.GetLastActivationDenialReason()}");
             });
         }
         finally
         {
-            Combat.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         }
     }
 }

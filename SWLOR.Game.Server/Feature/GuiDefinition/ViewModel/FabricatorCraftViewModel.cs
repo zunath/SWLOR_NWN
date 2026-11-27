@@ -2,13 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Fabricator;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -233,7 +234,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_session != null)
                 return;
 
-            var result = CraftSessionService.Start(Player, new CraftSessionStartRequest(_recipe, _blueprintItem, _slotItems.ToList()));
+            var result = CraftSessions.Start(Player, new CraftSessionStartRequest(_recipe, _blueprintItem, _slotItems.ToList()));
             if (!result.Succeeded)
             {
                 StatusText = result.Message;
@@ -270,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (index < 0 || index >= actions.Count)
                 return;
 
-            if (!CraftSessionService.IsActive(Player, _session))
+            if (!CraftSessions.IsActive(Player, _session))
             {
                 ReturnToSetup("Your craft has ended.", GuiColor.Red);
                 return;
@@ -287,7 +288,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // The saved craft counts its actions, so a craft settled with no window (a logout, a death, a restart) is held to the same pace.
             if (result.Status == MinigameStatus.InProgress)
-                CraftSessionService.RecordActions(Player, _session, _engine.Turn);
+                CraftSessions.RecordActions(Player, _session, _engine.Turn);
 
             StatusText = $"{result.Outcome.Label}: {FabricatorActionText.DescribeChanges(result.Outcome)}";
             StatusColor = GuiColor.Green;
@@ -310,7 +311,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _settling = true;
             var recipe = Craft.GetRecipe(_recipe);
-            var success = CraftSessionService.Succeed(Player, _session, _engine.Meters.Quality, _engine.Turn);
+            var success = CraftSessions.Succeed(Player, _session, _engine.Meters.Quality, _engine.Turn);
             if (success == null)
             {
                 ReturnToSetup("Your craft had already ended.", GuiColor.Red);
@@ -326,7 +327,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void FinishFailure()
         {
             _settling = true;
-            var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.Broken, _engine.Turn);
+            var settlement = CraftSessions.Fail(Player, CraftSessionEndReason.Broken, _engine.Turn);
             var text = settlement.Settled
                 ? $"The piece broke. {settlement.ItemsLost} of {settlement.ItemsLost + settlement.ItemsKept} items were lost. +{settlement.Xp} XP."
                 : "The piece broke.";

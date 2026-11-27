@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
@@ -5,23 +6,37 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
-using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Feature.GuiDefinition.PerksWindow;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class ForceLightConsularTests
 {
+    private FacadeContainer _facades = null!;
+    private IDisposable _installed = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _installed = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _installed.Dispose();
+
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
@@ -57,7 +72,7 @@ public class ForceLightConsularTests
         var root = FindSourceRepositoryRoot();
         var confusionSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ConfusionStatusEffect.cs").FullName);
         confusionSource.Should().Contain("public override string CanApply(uint creature)");
-        confusionSource.Should().Contain("Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Confused)");
+        confusionSource.Should().Contain("AbilityImmunity.HasHardCrowdControlImmunity(creature, ImmunityType.Confused)");
         confusionSource.Should().Contain("Target is temporarily immune to confusion.");
     }
 
@@ -70,22 +85,21 @@ public class ForceLightConsularTests
         perk.PerkLevels.Values.SelectMany(level => level.StatBonuses)
             .Should().NotContain(bonus => bonus.Stat == StatType.ForceAffinity);
 
-        var cache = (Dictionary<PerkType, PerkDetail>)typeof(Perk)
-            .GetField("_allPerks", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var cache = PerkInternals.AllPerks;
         var hadPrevious = cache.TryGetValue(PerkType.ThrowRock, out var previous);
         cache[PerkType.ThrowRock] = perk;
         try
         {
-            Perk.TryGetForceSideAffinity(0, PerkType.ThrowRock, out var affinity).Should().BeFalse();
+            PerkForceAffinity.TryGetForceSideAffinity(0, PerkType.ThrowRock, out var affinity).Should().BeFalse();
             affinity.Should().Be(0);
-            Perk.GetForceAffinityMagnitudeMultiplier(0, PerkType.ThrowRock).Should().Be(1f);
-            Perk.GetForceAffinityHitChanceAdjustment(0, PerkType.ThrowRock).Should().Be(0);
+            PerkForceAffinity.GetForceAffinityMagnitudeMultiplier(0, PerkType.ThrowRock).Should().Be(1f);
+            PerkForceAffinity.GetForceAffinityHitChanceAdjustment(0, PerkType.ThrowRock).Should().Be(0);
             foreach (var damage in new[] { 22, 40, 60 })
-                Perk.ApplyForceAffinityMagnitude(0, PerkType.ThrowRock, damage).Should().Be(damage);
+                PerkForceAffinity.ApplyForceAffinityMagnitude(0, PerkType.ThrowRock, damage).Should().Be(damage);
 
-            var details = (string)typeof(PerksViewModel)
+            var details = (string)typeof(PerkDetailText)
                 .GetMethod("BuildForceAffinityPerkDetailText", BindingFlags.Instance | BindingFlags.NonPublic)!
-                .Invoke(new PerksViewModel(), new object[] { perk })!;
+                .Invoke(_facades.Get<PerkDetailText>(), new object[] { PerksHostStub.Create(), perk })!;
             details.Should().Contain("UNIVERSAL FORCE POWER")
                 .And.Contain("Does not change Force Affinity")
                 .And.NotContain("LIGHT-ALIGNED");
@@ -230,22 +244,22 @@ public class ForceLightConsularTests
                            item.GetProperty("Subtype").GetProperty("value").GetInt32() == subtype)
             .Sum(item => item.GetProperty("CostValue").GetProperty("value").GetInt32());
         var level = SkinValue(99);
-        var attackerAccuracy = Stat.GetAccuracy(level, attackerWillpower, 0);
-        var attackerAttack = Stat.GetAttack(level, attackerWillpower, 0);
+        var attackerAccuracy = CombatRating.GetAccuracy(level, attackerWillpower, 0);
+        var attackerAttack = CombatRating.GetAttack(level, attackerWillpower, 0);
         var squellbugHP = SkinValue(96);
         squellbugHP.Should().Be(CreatureValue("MaxHitPoints"));
-        var squellbugEvasion = Stat.GetEvasion(level, CreatureValue("Int"), SkinValue(117) + CreatureValue("NaturalAC"));
+        var squellbugEvasion = CombatRating.GetEvasion(level, CreatureValue("Int"), SkinValue(117) + CreatureValue("NaturalAC"));
         var squellbugVitality = CreatureValue("Con");
         var squellbugWillpower = CreatureValue("Wis");
-        var squellbugPhysicalDefense = Stat.CalculateDefense(squellbugVitality, level, SkinValue(94, 1));
-        var squellbugForceDefense = Stat.CalculateDefense(squellbugWillpower, level, SkinValue(94, 2));
+        var squellbugPhysicalDefense = CombatRating.CalculateDefense(squellbugVitality, level, SkinValue(94, 1));
+        var squellbugForceDefense = CombatRating.CalculateDefense(squellbugWillpower, level, SkinValue(94, 2));
         foreach (var abilityType in abilitySources)
         {
             var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / $"{abilityType.Name}.cs").FullName);
             source.Should().NotContain("hitChancePercentAdjustment", $"{abilityType.Name} should use the shared Force accuracy formula");
         }
 
-        var hitRate = Combat.CalculateHitRate(
+        var hitRate = CombatRules.CalculateHitRate(
             attackerAccuracy,
             squellbugEvasion,
             fullLightAffinityHitChance);
@@ -269,7 +283,7 @@ public class ForceLightConsularTests
             var ability = power.Item3[feat];
             var physical = power.Item1 == PerkType.ThrowRock;
             var abilityHitRate = physical
-                ? Combat.CalculateHitRate(attackerAccuracy, squellbugEvasion, 0)
+                ? CombatRules.CalculateHitRate(attackerAccuracy, squellbugEvasion, 0)
                 : hitRate;
             var affinityMagnitude = physical ? 1d : fullLightAffinityMagnitude;
             return (Ability: ability, Damage: ExpectedDamagePerUse(
@@ -278,13 +292,13 @@ public class ForceLightConsularTests
                 physical ? squellbugPhysicalDefense : squellbugForceDefense,
                 physical ? squellbugVitality : squellbugWillpower, abilityHitRate, affinityMagnitude));
         }).ToArray();
-        spentSP.Should().BeLessThanOrEqualTo(level + Skill.StartingSkillPoints);
+        spentSP.Should().BeLessThanOrEqualTo(level + SkillService.StartingSkillPoints);
 
         // One caster, three buttons, no simultaneous casts, no regeneration or consumables.
         var readyAt = new double[rotation.Length];
         var seconds = 0d;
         var damage = 0d;
-        var fp = Stat.GetMaxFP(Stat.BaseFP, attackerWillpower, 0);
+        var fp = Stat.GetMaxFP(StatRecordService.BaseFP, attackerWillpower, 0);
         var casts = 0;
         while (damage < squellbugHP && seconds < 60d)
         {
@@ -330,7 +344,7 @@ public class ForceLightConsularTests
         source.Should().Contain("ApplyRenewal(activator, target, \"Renewal I\", new HealAmount(1, 0.25f));");
         source.Should().Contain("ApplyRenewal(activator, target, \"Renewal II\", new HealAmount(6, 0.5f));");
         source.Should().Contain("ApplyRenewal(activator, target, \"Renewal III\", new HealAmount(14, 0.75f));");
-        source.Should().Contain("var affinityMultiplier = Ability.GetActiveForceAffinityRestorativeMagnitudeMultiplier(activator);");
+        source.Should().Contain("var affinityMultiplier = CombatAbilityMagnitude.GetActiveForceAffinityRestorativeMagnitudeMultiplier(activator);");
         source.Should().Contain("new RegenerativeHealingStatusEffect(name, healPerTick, affinityMultiplier, supportSkill: SkillType.Force, supportCredited: credited)");
         source.Should().MatchRegex(@"new RegenerativeHealingStatusEffect\(name, healPerTick, affinityMultiplier, [^)]*\),\s*30f\)");
         new RegenerativeHealingStatusEffect("Renewal", new HealAmount(14, 0.75f)).Frequency.Should().Be(3f);
@@ -473,7 +487,7 @@ public class ForceLightConsularTests
         int hitRate,
         double affinityMagnitude)
     {
-        var (minimumDamage, maximumDamage) = Combat.CalculateDamageRange(
+        var (minimumDamage, maximumDamage) = CombatRules.CalculateDamageRange(
             attackerAttack,
             baseDamage,
             attackerStat,
@@ -658,7 +672,7 @@ public class ForceLightConsularTests
         var root = FindRepositoryRoot();
         var healing = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceControlHealingEffects.cs").FullName);
 
-        healing.Should().Contain("StatusEffect.RefreshStatusEffectDuration(",
+        healing.Should().Contain("StatusEffectDuration.RefreshStatusEffectDuration(",
             "a fresh application restarts the effect's cadence, so a running instance is refreshed instead");
 
         // Force Sanctuary heals faster than this effect ticks, so re-applying on each pulse would

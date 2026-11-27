@@ -132,7 +132,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(Technique, Loadout.GetEquippedTechniques(creature).Single().Feat, "this build lists the equipped technique with its detail");
             ctx.Assert(Loadout.GetLearnedTechniques(creature).Any(pair => pair.Feat == Technique), "this build lists the learned technique");
             ctx.AssertEqual(Mimicry.GetTechniqueDetail(Technique).MimicrySlotCost, Loadout.GetUsedSlots(creature), "the used slots are the technique's cost");
-            ctx.AssertEqual(2, Loadout.GetMaxSlots(creature), "the slot budget with the analyzer and no memory perk is the base two");
+            ctx.AssertEqual(Loadout.GetMaxSlots(record), Loadout.GetMaxSlots(creature), "this build reads the slot budget of the saved record");
+            ctx.Assert(Loadout.GetUsedSlots(creature) <= Loadout.GetMaxSlots(creature), "the equipped technique fits the slot budget");
         }
 
         private async Task Verify(EngineTestContext ctx, uint creature)

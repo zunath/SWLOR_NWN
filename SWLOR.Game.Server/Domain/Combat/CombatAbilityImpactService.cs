@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatAutoAttackEffectsService _autoAttackEffects;
         private readonly IStatService _stat;
         private readonly IEnmityAttackService _enmityAttack;
-        private readonly IPartyService _party;
+        private readonly IPartyRoster _party;
         private readonly IPairedRangedTraitsService _pairedRangedTraits;
         private readonly ICombatAbilityWeaponRidersService _weaponRiders;
         private readonly ICombatAbilityStatusAppliedService _statusApplied;
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatAutoAttackEffectsService autoAttackEffects,
             IStatService stat,
             IEnmityAttackService enmityAttack,
-            IPartyService party,
+            IPartyRoster party,
             IPairedRangedTraitsService pairedRangedTraits,
             ICombatAbilityWeaponRidersService weaponRiders,
             ICombatAbilityStatusAppliedService statusApplied)

@@ -39,6 +39,7 @@ public abstract class CombatAbilityImpactTestBase
     protected readonly List<string> _log = new();
     protected FacadeContainer _facades = null!;
     protected IPartyService _partyProxy = null!;
+    protected IPartyRoster _rosterProxy = null!;
     protected FakeNWScript _engine = null!;
     protected CombatAbilityImpactService _service = null!;
     protected CombatAbilityDamageBonusService _damageBonus = null!;
@@ -96,15 +97,15 @@ public abstract class CombatAbilityImpactTestBase
     [OneTimeSetUp]
     public void BuildFacades()
     {
-        // The friendly target search of the party buff asks the party roster (GameServices.PartyRoster); the instance
-        // takes a party service that answers the same.
+        // The friendly target search of the party buff asks the party roster (GameServices.PartyRoster), and so does the
+        // instance; the container's party service answers the same for the parts that still read it.
         _partyProxy = ScriptedProxy.Create<IPartyService>(out var partyCalls);
         partyCalls.On(nameof(IPartyService.IsInParty), args =>
         {
             _log.Add($"InParty {args[0]} {args[1]}");
             return _partyMembers.Contains((uint)args[1]!);
         });
-        var roster = ScriptedProxy.Create<IPartyRoster>(out var rosterCalls);
+        var roster = _rosterProxy = ScriptedProxy.Create<IPartyRoster>(out var rosterCalls);
         rosterCalls.On(nameof(IPartyRoster.IsInParty), args =>
         {
             _log.Add($"InParty {args[0]} {args[1]}");
@@ -379,7 +380,7 @@ public abstract class CombatAbilityImpactTestBase
         _areaImpactPart = new CombatAbilityAreaImpactService(queries, resources, triggeredDamage, stat, statusEffect, statusApplication, statusDuration, temporary, ability);
         _weaponRiders = new CombatAbilityWeaponRidersService(queries, resources, defeatedEnemyEffects, stat, statusEffect, statusApplication, temporary, enmity);
         _statusApplied = new CombatAbilityStatusAppliedService(resources, timing, stat, statusEffect, statusApplication, temporary, ability, recorder);
-        return new CombatAbilityImpactService(activity, _hitRiders, _areaImpactPart, autoAttackEffects, stat, enmityAttack, _partyProxy, pairedRangedTraits, _weaponRiders, _statusApplied);
+        return new CombatAbilityImpactService(activity, _hitRiders, _areaImpactPart, autoAttackEffects, stat, enmityAttack, _rosterProxy, pairedRangedTraits, _weaponRiders, _statusApplied);
     }
 
     [TearDown]

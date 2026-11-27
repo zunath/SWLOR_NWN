@@ -2,8 +2,8 @@
   "function": "Recipe definitions: Fabrication (every IRecipeListDefinition recipe in this group)",
   "description": "The built data of every recipe in the group: skill, category, level, practice rank limit, quantity, crafted item, active flag, enhancement type and slots, research cost modifier, minigame parameters (builder method and each named value), components in the order the definition adds them (resref x quantity), requirements (class and field values in declaration order) and the effect lines (count and fingerprint).",
   "seed": null,
-  "inputs": "518 of the 3450 recipes, sorted by recipe id. Groups: Smithery by armor/accessory or weapon categories, Fabrication, Agriculture, Espionage and Engineering by gear, enhancements, starship, droid parts, droid software and music. effectFingerprint is the first 12 hex digits of the SHA-256 of the lines joined with a line feed.",
-  "rowCount": 518,
+  "inputs": "519 of the 3451 recipes, sorted by recipe id. Groups: Smithery by armor/accessory or weapon categories, Fabrication, Agriculture, Espionage and Engineering by gear, enhancements, starship, droid parts, droid software and music. effectFingerprint is the first 12 hex digits of the SHA-256 of the lines joined with a line feed.",
+  "rowCount": 519,
   "columns": ["recipe", "recipeName", "=> skill", "=> category", "=> level", "=> practiceRankLimit", "=> quantity", "=> resref", "=> isActive", "=> enhancementType", "=> enhancementSlots", "=> researchCostModifier", "=> minigameParameters", "=> components", "=> requirements", "=> effectLineCount", "=> effectFingerprint"],
   "rows": [
     [1001, "BedRoll", "Fabrication", "Bed", 1, null, 1, "structure_0085", true, "Structure", 1, 0, "FabricatorParameters(frameSizePercent=51, shellSizePercent=27, frameQualityPercent=56, shellQualityPercent=23, wearRate=4)", ["lth_ruined x1", "fiberp_ruined x1"], [], 0, null],
@@ -523,6 +523,7 @@
     [7426, "SwtorTrashCanMetalChute", "Fabrication", "MiscellaneousFurniture", 3, null, 1, "structure_0863", true, "Structure", 1, 0, "FabricatorParameters(frameSizePercent=33, shellSizePercent=33, frameQualityPercent=34, shellQualityPercent=33, wearRate=3)", ["wood x2", "ref_veldite x1"], [], 0, null],
     [7497, "SwtorCabinetDisplayNarrow", "Fabrication", "Fixtures", 32, null, 1, "structure_0934", true, "Structure", 2, 0, "FabricatorParameters(frameSizePercent=32, shellSizePercent=29, frameQualityPercent=25, shellQualityPercent=20, wearRate=6)", ["ref_keromber x2", "fiberp_imperfect x2"], [], 0, null],
     [7498, "SwtorCabinetDisplayWide", "Fabrication", "Fixtures", 32, null, 1, "structure_0935", true, "Structure", 2, 0, "FabricatorParameters(frameSizePercent=36, shellSizePercent=30, frameQualityPercent=28, shellQualityPercent=22, wearRate=6)", ["ref_keromber x2", "fiberp_imperfect x2"], [], 0, null],
-    [7499, "SwtorCabinetDisplayStocked", "Fabrication", "Fixtures", 32, null, 1, "structure_0936", true, "Structure", 2, 0, "FabricatorParameters(frameSizePercent=34, shellSizePercent=27, frameQualityPercent=30, shellQualityPercent=26, wearRate=8)", ["ref_keromber x2", "fiberp_imperfect x2"], [], 0, null]
+    [7499, "SwtorCabinetDisplayStocked", "Fabrication", "Fixtures", 32, null, 1, "structure_0936", true, "Structure", 2, 0, "FabricatorParameters(frameSizePercent=34, shellSizePercent=27, frameQualityPercent=30, shellQualityPercent=26, wearRate=8)", ["ref_keromber x2", "fiberp_imperfect x2"], [], 0, null],
+    [7500, "StatueDarthFomoire", "Fabrication", "Statues", 50, null, 1, "structure_0937", true, "Structure", 2, 0, "FabricatorParameters(frameSizePercent=28, shellSizePercent=53, frameQualityPercent=21, shellQualityPercent=59, wearRate=8)", ["ref_arkoxit x8", "ref_jasioclase x5", "hyphae_wood x5"], [], 0, null]
   ]
 }

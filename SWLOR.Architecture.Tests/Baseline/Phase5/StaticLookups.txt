@@ -221,7 +221,7 @@ SWLOR.Game.Server.EngineTests/Definitions/StealthedPlayerAreaAbilityEngineTests.
 SWLOR.Game.Server.EngineTests/Definitions/StoredItemUpdateEngineTests.cs | 2
 SWLOR.Game.Server.EngineTests/Definitions/StripMinerEngineTests.cs | 5
 SWLOR.Game.Server.EngineTests/Definitions/TankEnmityEngineTests.cs | 98
-SWLOR.Game.Server.EngineTests/Definitions/TelegraphShaderUpdateEngineTests.cs | 5
+SWLOR.Game.Server.EngineTests/Definitions/TelegraphShaderUpdateEngineTests.cs | 2
 SWLOR.Game.Server.EngineTests/Definitions/TelegraphedAbilityEngineTests.cs | 20
 SWLOR.Game.Server.EngineTests/Definitions/TemporaryHitPointCapEngineTests.cs | 13
 SWLOR.Game.Server.EngineTests/Definitions/TemporaryHitPointDisplayEngineTests.cs | 1

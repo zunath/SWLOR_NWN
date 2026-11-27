@@ -7,7 +7,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,085 | 12,819 uses | none: GameServices and FacadeAccessor deleted |
+| 1. Static service lookup | `StaticLookups.txt` | 1,085 | 12,816 uses | none: GameServices and FacadeAccessor deleted |
 | 2. Large types | `LargeTypes.txt` | 5 | 9,338 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 7 | 2,187 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 10 | 149 services | none over 10 services |
@@ -20,9 +20,9 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 ## 1. Static service lookup
 
-- 1,085 files, 12,819 uses: 826 using directives and 11,993 uses in code (7,257 in a static context).
+- 1,085 files, 12,816 uses: 826 using directives and 11,990 uses in code (7,254 in a static context).
 - SWLOR.Game.Server: 635 file(s), 5,354 use(s) (Feature/ 524, Domain/ 86, Native/ 16, NativeSinks/ 7, Composition/ 1, Core/ 1).
-- SWLOR.Game.Server.EngineTests: 232 file(s), 5,242 use(s).
+- SWLOR.Game.Server.EngineTests: 232 file(s), 5,239 use(s).
 - SWLOR.Game.Server.Tests: 189 file(s), 2,065 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
 - SWLOR.CraftSim.Tests: 5 file(s), 15 use(s).
@@ -166,7 +166,7 @@ Largest 15 of 119 (all in `LogicToContent.txt`):
 
 - 21 pairs of domains depend on each other: 17 between logic (6 of them with Foundation or Platform), 4 between content.
 - Foundation's logic is in a pair with 2 domains, Platform with 5.
-- Members both ways: 3,121.
+- Members both ways: 3,123.
 
 Largest 15 of 21 (all in `DomainCycles.txt`):
 
@@ -176,7 +176,7 @@ Largest 15 of 21 (all in `DomainCycles.txt`):
 | `Gameplay content <-> UI content` | 9 | Gameplay content -> UI content: 2 edge(s), 2 member(s); UI content -> Gameplay content: 7 edge(s), 9 member(s) |
 | `Abilities <-> Platform` | 6 | Abilities -> Platform: 5 edge(s), 75 member(s); Platform -> Abilities: 1 edge(s), 2 member(s) |
 | `Character <-> Platform` | 6 | Character -> Platform: 4 edge(s), 138 member(s); Platform -> Character: 2 edge(s), 32 member(s) |
-| `Combat <-> Platform` | 6 | Combat -> Platform: 5 edge(s), 250 member(s); Platform -> Combat: 1 edge(s), 48 member(s) |
+| `Combat <-> Platform` | 6 | Combat -> Platform: 5 edge(s), 252 member(s); Platform -> Combat: 1 edge(s), 48 member(s) |
 | `Foundation content <-> Gameplay content` | 5 | Foundation content -> Gameplay content: 2 edge(s), 4 member(s); Gameplay content -> Foundation content: 3 edge(s), 3 member(s) |
 | `Abilities content <-> Gameplay content` | 4 | Abilities content -> Gameplay content: 2 edge(s), 5 member(s); Gameplay content -> Abilities content: 2 edge(s), 2 member(s) |
 | `Foundation <-> UI` | 4 | Foundation -> UI: 1 edge(s), 6 member(s); UI -> Foundation: 3 edge(s), 127 member(s) |

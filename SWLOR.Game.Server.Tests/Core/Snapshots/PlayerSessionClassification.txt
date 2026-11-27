@@ -34,7 +34,7 @@ mod_enter (59)
               Frees a HoloCom immobilize left by a crash at login; it would break a call in progress.
   LoginOnly   SWLOR.Game.Server.Domain.Items.ItemService.EnsureInventoryItemActivations
               The activation item properties stay on the items.
-  LoginOnly   SWLOR.Game.Server.Domain.Abilities.MimicryService.OnPlayerLogin
+  LoginOnly   SWLOR.Game.Server.Domain.Abilities.MimicryLoadoutService.OnPlayerLogin
               The technique feats and hotbar slots stay in the engine; a rerun would put back techniques the player removed from the hotbar.
   LoginOnly   SWLOR.Game.Server.Domain.Foundation.ObjectVisibilityService.LoadPlayerVisibilityObjects
               The visibility overrides stay in the engine.

@@ -194,9 +194,9 @@ public sealed partial class AbilityBench
         return service;
     }
 
-    private IMimicryService Mimicry()
+    private IMimicryLoadoutService Mimicry()
     {
-        var service = ScriptedProxy.Create<IMimicryService>(out var proxy);
+        var service = ScriptedProxy.Create<IMimicryLoadoutService>(out var proxy);
         proxy.On("IsTechniqueEquipped", args => TechniqueEquipped);
         return service;
     }

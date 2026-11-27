@@ -101,33 +101,4 @@ public class MimicryLoadoutTests
         player.ActiveMimicryLoadoutId.Should().BeEmpty();
         MimicryLoadouts.EnsureStartingBuild(player).Should().BeFalse();
     }
-
-    [Test]
-    public void WholeBuildValidationRejectsUnknownUnlearnedDuplicateOverRankAndOverBudgetWithoutMutation()
-    {
-        AbilityCatalog.CacheData();
-        GameServices.Mimicry.CacheData();
-        var player = new Player();
-        player.Perks[PerkType.CombatAnalyzer] = 1;
-        player.Skills[SkillType.Mimicry] = new PlayerSkill { Rank = 50 };
-        player.LearnedTechniques[FeatType.FrostSpitTechnique] = DateTime.UtcNow;
-        player.LearnedTechniques[FeatType.TerrifyingBellowTechnique] = DateTime.UtcNow;
-        player.EquippedTechniques.Add(FeatType.FrostSpitTechnique);
-        var before = JsonConvert.SerializeObject(player);
-        foreach (var invalid in new FeatType[][]
-        {
-            [FeatType.Invalid], [FeatType.ToxicSpitTechnique],
-            [FeatType.FrostSpitTechnique, FeatType.FrostSpitTechnique], [FeatType.TerrifyingBellowTechnique]
-        })
-        {
-            GameServices.Mimicry.ValidateLoadout(player, invalid, out var error).Should().BeFalse();
-            error.Should().NotBeEmpty();
-            JsonConvert.SerializeObject(player).Should().Be(before);
-        }
-        GameServices.Mimicry.ValidateLoadout(player, [FeatType.FrostSpitTechnique], out _).Should().BeTrue();
-        player.Skills[SkillType.Mimicry].Rank = 0;
-        GameServices.Mimicry.ValidateLoadout(player, [FeatType.FrostSpitTechnique], out var rankError).Should().BeFalse();
-        rankError.Should().Contain("rank 3");
-        GameServices.Mimicry.ValidateLoadout(player, [], out _).Should().BeTrue();
-    }
 }

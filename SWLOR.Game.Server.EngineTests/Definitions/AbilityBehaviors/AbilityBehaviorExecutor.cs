@@ -198,13 +198,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             {
                 if (playerFixture != null)
                 {
-                    ctx.Assert(!GameServices.Mimicry.CanEquip(caster, behaviorCase.Feat, out _), "unlearned techniques cannot be equipped");
+                    ctx.Assert(!GameServices.MimicryLoadout.CanEquip(caster, behaviorCase.Feat, out _), "unlearned techniques cannot be equipped");
                     playerFixture.Update(record => record.LearnedTechniques[behaviorCase.Feat] = DateTime.UtcNow);
                     ctx.Assert(!AbilityActivation.CanUseAbility(caster, caster, behaviorCase.Feat, ability.AbilityLevel, GetLocation(caster)),
                         "learned but unequipped techniques cannot be activated");
-                    ctx.Assert(GameServices.Mimicry.CanEquip(caster, behaviorCase.Feat, out var equipError), $"learned technique can equip: {equipError}");
-                    ctx.Assert(GameServices.Mimicry.EquipTechnique(caster, behaviorCase.Feat), "learned technique equips through the player service");
-                    ctx.Assert(GameServices.Mimicry.IsTechniqueEquipped(caster, behaviorCase.Feat), "loadout is persisted");
+                    ctx.Assert(GameServices.MimicryLoadout.CanEquip(caster, behaviorCase.Feat, out var equipError), $"learned technique can equip: {equipError}");
+                    ctx.Assert(GameServices.MimicryLoadout.EquipTechnique(caster, behaviorCase.Feat), "learned technique equips through the player service");
+                    ctx.Assert(GameServices.MimicryLoadout.IsTechniqueEquipped(caster, behaviorCase.Feat), "loadout is persisted");
                     if (ability.IsMimicryTrait)
                     {
                         ctx.Assert(!GetHasFeat(behaviorCase.Feat, caster), "passive traits are not granted as active feats");
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                             ctx.AssertEqual(stat.Value, TraitStatBonus(caster, stat.Key), $"equipped {stat.Key} bonus");
                         foreach (var resistance in ability.MimicryTraitResistances)
                             ctx.AssertEqual(resistance.Value, GameServices.Mimicry.GetResistanceBonus(caster, resistance.Key), $"equipped {resistance.Key} resistance");
-                        ctx.Assert(GameServices.Mimicry.UnequipTechnique(caster, behaviorCase.Feat), "passive trait unequips");
+                        ctx.Assert(GameServices.MimicryLoadout.UnequipTechnique(caster, behaviorCase.Feat), "passive trait unequips");
                         foreach (var stat in ability.MimicryTraitStats)
                             ctx.AssertEqual(0, TraitStatBonus(caster, stat.Key), $"removed {stat.Key} bonus");
                         foreach (var resistance in ability.MimicryTraitResistances)

@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly IAbilityCatalog _catalog;
         private readonly ISpaceModeQuery _spaceMode;
         private readonly IPerkGrantedFeatService _perkGrantedFeat;
-        private readonly IMimicryService _mimicry;
+        private readonly IMimicryLoadoutService _mimicryLoadout;
         private readonly IActivityService _activity;
         private readonly IStatService _stat;
         private readonly ICombatQueriesService _queries;
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             IAbilityCatalog catalog,
             ISpaceModeQuery spaceMode,
             IPerkGrantedFeatService perkGrantedFeat,
-            IMimicryService mimicry,
+            IMimicryLoadoutService mimicryLoadout,
             IActivityService activity,
             IStatService stat,
             ICombatQueriesService queries,
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _catalog = catalog;
             _spaceMode = spaceMode;
             _perkGrantedFeat = perkGrantedFeat;
-            _mimicry = mimicry;
+            _mimicryLoadout = mimicryLoadout;
             _activity = activity;
             _stat = stat;
             _queries = queries;
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             // directly by Combat Analyzer. Re-check the loadout at both activation gates so a stale
             // feat, or a technique unequipped while its cast is winding up, cannot still resolve.
             if (ability.IsMimicryTechnique &&
-                !_mimicry.IsTechniqueEquipped(activator, abilityType))
+                !_mimicryLoadout.IsTechniqueEquipped(activator, abilityType))
             {
                 return "That technique is not equipped.";
             }

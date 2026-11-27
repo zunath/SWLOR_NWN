@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Mimicry, PerkType.CombatAnalyzer)
                 .Name("Combat Analyzer")
-                .TriggerRefund(player => GameServices.Mimicry.UnequipAllTechniques(player))
+                .TriggerRefund(player => GameServices.MimicryLoadout.UnequipAllTechniques(player))
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CombatAnalyzerTrait)
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Mimicry, PerkType.AnalyzerMemory)
                 .Name("Analyzer Memory")
-                .TriggerRefund(player => GameServices.Mimicry.EnforceSlotBudget(player))
+                .TriggerRefund(player => GameServices.MimicryLoadout.EnforceSlotBudget(player))
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AnalyzerMemoryTrait)
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Mimicry, PerkType.OverclockedAnalyzer)
                 .Name("Overclocked Analyzer")
-                .TriggerRefund(player => GameServices.Mimicry.EnforceSlotBudget(player))
+                .TriggerRefund(player => GameServices.MimicryLoadout.EnforceSlotBudget(player))
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Overload)

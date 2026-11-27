@@ -70,7 +70,7 @@
     { "facade": "MeleeTechnique" },
     { "facade": "Messaging" },
     { "facade": "Migration", "constants": [ { "name": "RetiredServerMigrationVersion", "owner": "SWLOR.Game.Server.Domain.Foundation.MigrationService" }, { "name": "PlayerFileVersionVariable", "owner": "SWLOR.Game.Server.Domain.Foundation.MigrationService" } ] },
-    { "facade": "Mimicry", "explicit": true, "members": [ { "owner": "MimicryTraitStats", "names": [ "GetSetBonusPotency" ] } ] },
+    { "facade": "Mimicry", "explicit": true, "members": [ { "owner": "MimicryLoadout", "names": [ "ApplyLoadout", "CanEquip", "CaptureLoadoutHotbar", "EnforceSlotBudget", "EquipTechnique", "GetEquippedTechniques", "GetLearnedTechniques", "GetMaxSlots", "GetUsedSlots", "IsTechniqueEquipped", "OnMimicrySkillDecay", "OnPlayerLogin", "UnequipAllTechniques", "UnequipTechnique", "ValidateLoadout" ] }, { "owner": "MimicryTraitStats", "names": [ "GetSetBonusPotency" ] } ] },
     { "facade": "Music", "constants": [ { "name": "MusicPlayerTag", "owner": "SWLOR.Game.Server.Domain.World.MusicService" } ] },
     { "facade": "NPCGroup" },
     { "facade": "NamedAnimation" },

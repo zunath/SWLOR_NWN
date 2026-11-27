@@ -15,8 +15,8 @@ public sealed class TestAbilityActivationService : AbilityActivationService
 {
     private readonly AbilityBench _bench;
 
-    public TestAbilityActivationService(AbilityBench bench, IAbilityCatalog catalog, IMimicryService mimicry, IActivityService activity, IAbilityTargetCheckService targetCheck)
-        : base(catalog, FacadeForwarder.For<ISpaceModeQuery>(), FacadeForwarder.For<IPerkGrantedFeatService>(), mimicry, activity, FacadeForwarder.For<IStatService>(),
+    public TestAbilityActivationService(AbilityBench bench, IAbilityCatalog catalog, IMimicryLoadoutService mimicryLoadout, IActivityService activity, IAbilityTargetCheckService targetCheck)
+        : base(catalog, FacadeForwarder.For<ISpaceModeQuery>(), FacadeForwarder.For<IPerkGrantedFeatService>(), mimicryLoadout, activity, FacadeForwarder.For<IStatService>(),
             FacadeForwarder.For<ICombatQueriesService>(), targetCheck)
     {
         _bench = bench;

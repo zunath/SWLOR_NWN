@@ -61,15 +61,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(1, learned.LearnedTechniques.Count, "unwitnessed techniques are not granted");
             ctx.Assert(DB.Get<Player>(secondFixture.Id).LearnedTechniques.ContainsKey(feat), "the death event also rolls learning for the second witness");
             ctx.AssertEqual(1, DB.Get<Player>(secondFixture.Id).LearnedTechniques.Count, "the second player only learns the witnessed technique");
-            ctx.Assert(!GameServices.Mimicry.IsTechniqueEquipped(player, feat), "learning does not automatically equip");
+            ctx.Assert(!GameServices.MimicryLoadout.IsTechniqueEquipped(player, feat), "learning does not automatically equip");
             fixture.Update(record => record.Perks.Remove(PerkType.CombatAnalyzer));
-            ctx.Assert(!GameServices.Mimicry.CanEquip(player, feat, out _), "zero available slots denies equipment");
+            ctx.Assert(!GameServices.MimicryLoadout.CanEquip(player, feat, out _), "zero available slots denies equipment");
             fixture.Update(record => record.Perks[PerkType.CombatAnalyzer] = 1);
-            ctx.Assert(GameServices.Mimicry.EquipTechnique(player, feat), "learned technique equips within the slot budget");
+            ctx.Assert(GameServices.MimicryLoadout.EquipTechnique(player, feat), "learned technique equips within the slot budget");
             ctx.Assert(GetHasFeat(feat, player), "active technique feat is granted");
             fixture.Update(record => record.Skills[SkillType.Mimicry].Rank = Math.Max(0, detail.MimicrySkillRequirement - 1));
-            GameServices.Mimicry.EnforceSlotBudget(player);
-            ctx.Assert(!GameServices.Mimicry.IsTechniqueEquipped(player, feat) && !GetHasFeat(feat, player), "skill decay removes an invalid loadout and its feat");
+            GameServices.MimicryLoadout.EnforceSlotBudget(player);
+            ctx.Assert(!GameServices.MimicryLoadout.IsTechniqueEquipped(player, feat) && !GetHasFeat(feat, player), "skill decay removes an invalid loadout and its feat");
         }
 
     }

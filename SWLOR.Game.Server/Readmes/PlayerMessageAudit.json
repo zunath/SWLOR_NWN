@@ -35,46 +35,46 @@
     "Call": "_messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => BuildAbilityNoTargetCombatLogMessage(\n                    receiver,\n                    activator,\n                    ability.Name),\n                60f)"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/Abilities/MimicryLoadoutService.cs",
+    "Line": 192,
+    "Member": "EquipTechnique",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(error))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Abilities/MimicryLoadoutService.cs",
+    "Line": 216,
+    "Member": "UnequipTechnique",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, ColorToken.Red(\"You cannot manage techniques while in combat.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
-    "Line": 429,
+    "Line": 414,
     "Member": "TryRecordWitness",
     "Delivery": "Rate limited in Production",
     "Call": "_playerFeedback.SendWarningToPlayer(player, \"MIMICRY_RANK_\" + (int)techniqueFeat, ColorToken.Gray(\n                    $\"Your combat analyzer detects {techniqueDetail.Name}, but the pattern is beyond your current analysis level. (Requires Mimicry {requiredSkillRank})\"), intervalSeconds: 60)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
-    "Line": 434,
+    "Line": 419,
     "Member": "TryRecordWitness",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Your combat analyzer records {techniqueDetail.Name}...\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
-    "Line": 524,
+    "Line": 509,
     "Member": "TryLearnTechniques",
     "Delivery": "Rate limited in Production",
     "Call": "_playerFeedback.SendWarningToPlayer(player, \"MIMICRY_DECODE_\" + (int)feat, ColorToken.Orange(\n                        $\"Your combat analyzer failed to decode {detail.Name}. Analyze it again to retry.\"), intervalSeconds: 60)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
-    "Line": 542,
+    "Line": 527,
     "Member": "TryLearnTechniques",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"You learned the technique: {detail.Name}!\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
-    "Line": 738,
-    "Member": "EquipTechnique",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(error))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
-    "Line": 762,
-    "Member": "UnequipTechnique",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, ColorToken.Red(\"You cannot manage techniques while in combat.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Administration/DMPresenceService.cs",

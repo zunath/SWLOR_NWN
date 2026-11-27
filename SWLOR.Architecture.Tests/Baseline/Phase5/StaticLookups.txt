@@ -281,6 +281,7 @@ SWLOR.Game.Server.Tests/Domain/Abilities/AbilityActivationStateTests.cs | 23
 SWLOR.Game.Server.Tests/Domain/Abilities/AbilityFacadeAllocationTests.cs | 38
 SWLOR.Game.Server.Tests/Domain/Abilities/AbilityServiceDefaultSeamsTests.cs | 2
 SWLOR.Game.Server.Tests/Domain/Abilities/FieldEngineerPulseEmittersServiceTests.cs | 1
+SWLOR.Game.Server.Tests/Domain/Abilities/MimicryLoadoutServiceTests.cs | 21
 SWLOR.Game.Server.Tests/Domain/Administration/DMPlayerDirectoryServiceTests.cs | 2
 SWLOR.Game.Server.Tests/Domain/Administration/DMPresenceServiceTests.cs | 6
 SWLOR.Game.Server.Tests/Domain/Character/AchievementServiceTests.cs | 6
@@ -387,7 +388,7 @@ SWLOR.Game.Server.Tests/Perks/IndependentBuffWindowTests.cs | 3
 SWLOR.Game.Server.Tests/Perks/LeadershipOffensivePartyBuffTests.cs | 3
 SWLOR.Game.Server.Tests/Perks/LightsaberPerkBehaviorTests.cs | 10
 SWLOR.Game.Server.Tests/Perks/MimicryPotencyTests.cs | 3
-SWLOR.Game.Server.Tests/Perks/MimicryTests.cs | 29
+SWLOR.Game.Server.Tests/Perks/MimicryTests.cs | 15
 SWLOR.Game.Server.Tests/Perks/PerkCombinationBehaviorTests.cs | 25
 SWLOR.Game.Server.Tests/Perks/PerkRankProgressionTests.cs | 4
 SWLOR.Game.Server.Tests/Perks/SaberstaffAreaEffectsTests.cs | 8
@@ -428,7 +429,7 @@ SWLOR.Game.Server.Tests/Service/Kitchen/KitchenSessionTests.cs | 2
 SWLOR.Game.Server.Tests/Service/Line/FishingFightLifecycleTests.cs | 5
 SWLOR.Game.Server.Tests/Service/Line/FishingQuickReelTests.cs | 3
 SWLOR.Game.Server.Tests/Service/Line/LineAnglerPerkTests.cs | 2
-SWLOR.Game.Server.Tests/Service/MimicryLoadoutTests.cs | 7
+SWLOR.Game.Server.Tests/Service/MimicryLoadoutTests.cs | 1
 SWLOR.Game.Server.Tests/Service/NaturalStaminaRegenerationTests.cs | 5
 SWLOR.Game.Server.Tests/Service/PerformanceAudienceRulesTests.cs | 2
 SWLOR.Game.Server.Tests/Service/PerkRefundStatusEffectCleanupTests.cs | 6

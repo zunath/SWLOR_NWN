@@ -57,7 +57,7 @@ public class AbilityServiceDefaultSeamsTests
     // The activation part of the ability split with every service forwarded to the installed container.
     private static AbilityActivationService ActivationPart() =>
         new(FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<ISpaceModeQuery>(), FacadeForwarder.For<IPerkGrantedFeatService>(),
-            FacadeForwarder.For<IMimicryService>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IStatService>(),
+            FacadeForwarder.For<IMimicryLoadoutService>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IStatService>(),
             FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<IAbilityTargetCheckService>());
 
     // The damage parts of the ability split with every service forwarded to the installed container.

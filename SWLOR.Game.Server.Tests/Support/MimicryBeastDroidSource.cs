@@ -24,7 +24,11 @@ public static class MimicryBeastDroidSource
     /// <summary>The files of each service, repository-relative, in reading order: the service itself, then each part the split moves out.</summary>
     public static readonly IReadOnlyDictionary<string, IReadOnlyList<string>> Files = new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal)
     {
-        [Mimicry] = new[] { "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs" },
+        [Mimicry] = new[]
+        {
+            "SWLOR.Game.Server/Domain/Abilities/MimicryService.cs",
+            "SWLOR.Game.Server/Domain/Abilities/MimicryLoadoutService.cs",
+        },
         [Beast] = new[]
         {
             "SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs",
@@ -38,7 +42,7 @@ public static class MimicryBeastDroidSource
     /// <summary>The interfaces of each service and of its parts, whose fields lose their receiver in the text (see <see cref="PartSourceFiles"/>).</summary>
     public static readonly IReadOnlyDictionary<string, IReadOnlySet<string>> Interfaces = new Dictionary<string, IReadOnlySet<string>>(StringComparer.Ordinal)
     {
-        [Mimicry] = new HashSet<string>(StringComparer.Ordinal) { "IMimicryService" },
+        [Mimicry] = new HashSet<string>(StringComparer.Ordinal) { "IMimicryService", "IMimicryLoadoutService" },
         [Beast] = new HashSet<string>(StringComparer.Ordinal) { "IBeastMasteryService", "IBeastSpawnService", "IBeastEventService", "IBeastIncubationService" },
         [Droid] = new HashSet<string>(StringComparer.Ordinal) { "IDroidService" },
     };

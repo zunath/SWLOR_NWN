@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
 /// What is left of <c>Combat</c> after its parts were split out (<c>CombatService</c>): the death and exit handlers, which
-/// apply the defeated-enemy effects and forget a creature's combat state in every part in a fixed order, the refresh of the
+/// apply the defeated-enemy effects and forget a creature's combat state by walking the cleanup phases over the state owners, the refresh of the
 /// stat-driven trackers, and the six-second facing cleanup. The parts and services it calls are scripted and
 /// write to one log, so a test sees every call and its order; the last tests run the real parts of a container.
 /// </summary>
@@ -81,24 +81,53 @@ public class CombatServiceTests
         });
 
         _service = new CombatService(
-            Logged<ICombatResourcesService>("Resources", out _, nameof(ICombatResourcesService.ForgetResourceTriggerState),
-                nameof(ICombatResourcesService.ForgetAbilityStaminaCostState)),
-            Logged<ICombatSuppressionService>("Suppression", out _, nameof(ICombatSuppressionService.ForgetSuppressionState),
-                nameof(ICombatSuppressionService.ReconcileOverwatchStatus)),
+            new ICombatCreatureStateOwner[]
+            {
+                new LoggedOwner(_log, "Resources", (CombatForgetPhase.ResourceTriggers, "ForgetResourceTriggerState"),
+                    (CombatForgetPhase.AbilityStaminaCost, "ForgetAbilityStaminaCostState")),
+                new LoggedOwner(_log, "Activity", (CombatForgetPhase.Activity, "ForgetActivityState"),
+                    (CombatForgetPhase.OpeningActivity, "ForgetOpeningActivityState")),
+                new LoggedOwner(_log, "DefenseMemory", (CombatForgetPhase.DefenseMemory, "ForgetDefenseMemory")),
+                new LoggedOwner(_log, "Suppression", (CombatForgetPhase.Suppression, "ForgetSuppressionState")),
+                new LoggedOwner(_log, "OffenseEffects", (CombatForgetPhase.Activation, "ForgetActivationState")),
+                new LoggedOwner(_log, "HitEffects", (CombatForgetPhase.HitEffects, "ForgetHitEffectState")),
+                new LoggedOwner(_log, "Impact", (CombatForgetPhase.AbilityImpact, "ForgetImpactState")),
+                new LoggedOwner(_log, "AttackTiming", (CombatForgetPhase.AttackTiming, "ForgetAttackTimingState")),
+                new LoggedOwner(_log, "RepeatedTarget", (CombatForgetPhase.DamageModifiers, "ForgetDamageModifierState")),
+            },
+            Logged<ICombatSuppressionService>("Suppression", out _, nameof(ICombatSuppressionService.ReconcileOverwatchStatus)),
             activity,
-            Logged<ICombatAttackTimingService>("AttackTiming", out _, nameof(ICombatAttackTimingService.ForgetAttackTimingState)),
             Logged<ICombatRateModifiersService>("RateModifiers", out _, nameof(ICombatRateModifiersService.ClearAutoAttackCycleCriticalRateTracker)),
-            Logged<ICombatRepeatedTargetService>("RepeatedTarget", out _, nameof(ICombatRepeatedTargetService.ForgetDamageModifierState),
-                nameof(ICombatRepeatedTargetService.ClearRangedRepeatedTargetDamageTracker)),
-            Logged<ICombatHitEffectsService>("HitEffects", out _, nameof(ICombatHitEffectsService.ForgetHitEffectState)),
+            Logged<ICombatRepeatedTargetService>("RepeatedTarget", out _, nameof(ICombatRepeatedTargetService.ClearRangedRepeatedTargetDamageTracker)),
             Logged<ICombatDefeatedEnemyEffectsService>("DefeatedEnemyEffects", out _, nameof(ICombatDefeatedEnemyEffectsService.ApplyDefeatedEnemyEffects),
                 nameof(ICombatDefeatedEnemyEffectsService.ApplyRecentDamagerDefeatedEnemyEffects)),
-            Logged<ICombatDefenseMemoryService>("DefenseMemory", out _, nameof(ICombatDefenseMemoryService.ForgetDefenseMemory)),
-            Logged<ICombatAbilityOffenseEffectsService>("OffenseEffects", out _, nameof(ICombatAbilityOffenseEffectsService.ForgetActivationState)),
-            Logged<ICombatAbilityImpactService>("Impact", out _, nameof(ICombatAbilityImpactService.ForgetImpactState)),
             stat,
             Logged<IStatusEffectService>("StatusEffect", out _, nameof(IStatusEffectService.RemoveStatusEffect)),
             temporary);
+    }
+
+    // A creature state owner that writes "<label>.<member> <creature>" for each phase it owns, the line the part's own forget wrote.
+    private sealed class LoggedOwner : ICombatCreatureStateOwner
+    {
+        private readonly List<string> _log;
+        private readonly string _label;
+        private readonly (CombatForgetPhase Phase, string Member)[] _phases;
+
+        public LoggedOwner(List<string> log, string label, params (CombatForgetPhase Phase, string Member)[] phases)
+        {
+            _log = log;
+            _label = label;
+            _phases = phases;
+        }
+
+        public void ForgetCreatureState(uint creature, CombatForgetPhase phase)
+        {
+            foreach (var owned in _phases)
+            {
+                if (owned.Phase == phase)
+                    _log.Add($"{_label}.{owned.Member} {creature}");
+            }
+        }
     }
 
     [TearDown]

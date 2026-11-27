@@ -224,11 +224,11 @@ public class CombatAbilityImpactServiceTests : CombatAbilityImpactTestBase
         _areaImpactPart.ApplyAreaAbilityTargetHitSequenceEffects(Attacker, Defender, ability, SkillType.Throwing);
         _areaImpactPart.ApplyAreaAbilityTargetHitSequenceEffects(Other, Third, ability, SkillType.Throwing);
 
-        _service.ForgetImpactState(Defender);
+        ForgetImpactState(Defender);
 
         SameTargetCounts().Keys.Should().Equal((Other, Third));
         HitSequences().Keys.Cast<(uint, uint)>().Should().Equal((Other, Third));
-        _service.ForgetImpactState(Third);
+        ForgetImpactState(Third);
         SameTargetCounts().Should().BeEmpty();
         HitSequences().Count.Should().Be(0);
     }

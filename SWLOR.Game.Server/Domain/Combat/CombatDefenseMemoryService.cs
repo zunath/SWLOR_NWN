@@ -63,5 +63,16 @@ namespace SWLOR.Game.Server.Domain.Combat
                 _recentDeflections.Remove(key);
             }
         }
+
+        /// <inheritdoc/>
+        public void ForgetCreatureState(uint creature, CombatForgetPhase phase)
+        {
+            switch (phase)
+            {
+                case CombatForgetPhase.DefenseMemory:
+                    ForgetDefenseMemory(creature);
+                    break;
+            }
+        }
     }
 }

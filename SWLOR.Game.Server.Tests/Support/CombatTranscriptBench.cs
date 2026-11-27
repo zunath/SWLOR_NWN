@@ -301,6 +301,8 @@ public sealed class CombatTranscriptBench : IDisposable
         if (contract == typeof(IPartyRoster))
             leaf.Label = "Party";
         leaf.Lines = Lines;
+        if (typeof(ICombatCreatureStateOwner).IsAssignableFrom(contract))
+            leaf.Describe = (label, member, args) => CombatForgetSteps.Describe(label, member, args, leaf.Format);
         leaf.Format = Format;
         _leaves[contract] = leaf;
         return leaf;

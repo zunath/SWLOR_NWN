@@ -23,18 +23,15 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly IStatusEffectApplicationService _statusEffectApplication;
-        private readonly ICombatRateModifiersService _rateModifiers;
 
         public CombatRepeatedTargetService(
             IStatService stat,
             IStatusEffectService statusEffect,
-            IStatusEffectApplicationService statusEffectApplication,
-            ICombatRateModifiersService rateModifiers)
+            IStatusEffectApplicationService statusEffectApplication)
         {
             _stat = stat;
             _statusEffect = statusEffect;
             _statusEffectApplication = statusEffectApplication;
-            _rateModifiers = rateModifiers;
         }
 
         private sealed class SameTargetPressureState
@@ -413,7 +410,6 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         public void ForgetDamageModifierState(uint creature)
         {
-            _rateModifiers.ForgetAutoAttackCycleCriticalRateCount(creature);
             _repeatedTargetDamageStates.Remove(creature);
             _meleeRepeatedTargetDamageStates.Remove(creature);
             _rangedRepeatedTargetDamageStates.Remove(creature);
@@ -421,6 +417,17 @@ namespace SWLOR.Game.Server.Domain.Combat
             foreach (var pressureState in _sameTargetPressureStates.Where(x => x.Value.Target == creature).Select(x => x.Key).ToList())
             {
                 ClearSameTargetPressureState(pressureState);
+            }
+        }
+
+        /// <inheritdoc/>
+        public void ForgetCreatureState(uint creature, CombatForgetPhase phase)
+        {
+            switch (phase)
+            {
+                case CombatForgetPhase.DamageModifiers:
+                    ForgetDamageModifierState(creature);
+                    break;
             }
         }
     }

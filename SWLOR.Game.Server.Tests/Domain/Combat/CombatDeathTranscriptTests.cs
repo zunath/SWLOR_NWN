@@ -10,7 +10,7 @@ using static SWLOR.Game.Server.Tests.Support.CombatTranscriptBench;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// The ordered call-and-draw transcripts of <c>DeathService</c>'s handlers and of <c>CombatService</c>'s handlers, taken
+/// The ordered call-and-draw transcripts of the death handlers (<c>DeathService</c> and the login handler of <c>DeathRespawnService</c>) and of <c>CombatService</c>'s handlers, taken
 /// before either is split. The death handlers run for a player killed by a creature, by a player, and by a player in subdual mode,
 /// with and without a recording; the combat handlers run the defeated-enemy effects, the exit cleanup, the tracker refresh with
 /// every tracker configured and with none, and the six-second facing cleanup. Regenerate with <c>SWLOR_UPDATE_SNAPSHOTS=1</c>
@@ -33,6 +33,7 @@ public class CombatDeathTranscriptTests
     {
         using var bench = new CombatTranscriptBench(DeathLeaves);
         var death = bench.Get<IDeathService>();
+        var respawn = bench.Get<IDeathRespawnService>();
         // The player being killed holds some skill points so the penalty has a size; the killer is a player in one scenario.
         var defender = bench.Db.Get<Player>("uuid-Defender");
         defender.TotalSPAcquired = 120;
@@ -91,21 +92,21 @@ public class CombatDeathTranscriptTests
             death.OnPlayerRespawn();
             bench.Engine.SetReturnHandler("GetLocalInt", args => 0);
         });
-        bench.Step("login: a player with no respawn point gets the default", () => death.InitializeRespawnPoint());
-        bench.Step("login: a player with a respawn point keeps it", () => death.InitializeRespawnPoint());
+        bench.Step("login: a player with no respawn point gets the default", () => respawn.InitializeRespawnPoint());
+        bench.Step("login: a player with a respawn point keeps it", () => respawn.InitializeRespawnPoint());
         bench.Step("login: a DM is skipped", () =>
         {
             bench.Engine.SetReturnHandler("GetIsDM", args => (uint)args[0]! == Defender);
-            death.InitializeRespawnPoint();
+            respawn.InitializeRespawnPoint();
             bench.Engine.SetReturnHandler("GetIsDM", args => false);
         });
         bench.Step("respawn location and area of a player with and without a point", () =>
         {
             var with = new Player("respawn-with") { RespawnAreaResref = "area_a", RespawnLocationX = 1f, RespawnLocationY = 2f, RespawnLocationZ = 0.5f };
-            death.HasRespawnArea(with);
-            death.GetRespawnLocation(with);
-            death.HasRespawnArea(new Player("respawn-without"));
-            death.GetRespawnLocation(new Player("respawn-without"));
+            respawn.HasRespawnArea(with);
+            respawn.GetRespawnLocation(with);
+            respawn.HasRespawnArea(new Player("respawn-without"));
+            respawn.GetRespawnLocation(new Player("respawn-without"));
         });
 
         AssertGolden("SWLOR.Game.Server.Tests/Fixtures/CombatTranscripts/Death.txt", bench.Text);

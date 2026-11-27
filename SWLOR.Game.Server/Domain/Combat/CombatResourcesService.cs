@@ -777,5 +777,19 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         protected virtual void ReplaceTemporaryStatModifier(uint creature, StatType statType, int amount, float durationSeconds, StatType groupStatType) =>
             _temporaryStatModifier.Replace(creature, statType, amount, durationSeconds, groupStatType);
+
+        /// <inheritdoc/>
+        public void ForgetCreatureState(uint creature, CombatForgetPhase phase)
+        {
+            switch (phase)
+            {
+                case CombatForgetPhase.ResourceTriggers:
+                    ForgetResourceTriggerState(creature);
+                    break;
+                case CombatForgetPhase.AbilityStaminaCost:
+                    ForgetAbilityStaminaCostState(creature);
+                    break;
+            }
+        }
     }
 }

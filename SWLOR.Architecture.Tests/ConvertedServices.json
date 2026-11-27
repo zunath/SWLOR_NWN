@@ -50,6 +50,7 @@
     { "name": "DMPreference", "domain": "Administration" },
     { "name": "DMPresence", "domain": "Administration" },
     { "name": "Death", "domain": "Combat" },
+    { "name": "DeathRespawn", "domain": "Combat" },
     { "name": "Disguise", "domain": "Character" },
     { "name": "Droid", "domain": "Companions" },
     { "name": "DroidEquipmentDiagnostics", "domain": "Companions" },

@@ -123,7 +123,7 @@ public class HostedEventsTravelTests
         _enmity.On("HasEnmity", _ => false);
         var space = ScriptedProxy.Create<ISpaceModeQuery>(out _space);
         _space.On("IsPlayerInSpaceMode", _ => false);
-        var death = ScriptedProxy.Create<IDeathService>(out _death);
+        var death = ScriptedProxy.Create<IDeathRespawnService>(out _death);
         _death.On("GetRespawnLocation", _ => EngineStructures.Create<Location>(88));
         var preferences = ScriptedProxy.Create<IDMPreferenceService>(out _preferences);
         _preferences.On("Get", _ => new DMPreferences { TimeZoneId = "America/New_York" });

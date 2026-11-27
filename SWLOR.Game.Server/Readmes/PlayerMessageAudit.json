@@ -484,28 +484,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatRepeatedTargetService.cs",
-    "Line": 149,
+    "Line": 146,
     "Member": "ApplyMeleeRepeatedTargetDamageModifier",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat(MeleeRepeatedTargetStack.GetStackText(statusEffectIcon, state.Stacks, maxStacks, stackBonus)),\n                    attacker,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatRepeatedTargetService.cs",
-    "Line": 212,
+    "Line": 209,
     "Member": "ApplyRangedRepeatedTargetDamageModifier",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Sustained Fire {state.Stacks}/{maxStacks} (+{stackBonus} DMG)\"),\n                    attacker,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatRepeatedTargetService.cs",
-    "Line": 320,
+    "Line": 317,
     "Member": "ConsumeSameTargetPressureWeaponAbilityDamageBonus",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat($\"Spotter's Rhythm (+{bonus} DMG)\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatRepeatedTargetService.cs",
-    "Line": 352,
+    "Line": 349,
     "Member": "ReadySameTargetPressure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Spotter's Rhythm\"), attacker, false)"
@@ -539,32 +539,32 @@
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Overwatch\"), attacker, false)"
   },
   {
+    "File": "SWLOR.Game.Server/Domain/Combat/DeathRespawnService.cs",
+    "Line": 150,
+    "Member": "ApplyPenalties",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"Requiem spares you any XP debt.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Combat/DeathRespawnService.cs",
+    "Line": 192,
+    "Member": "ApplyPenalties",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"{newDebt} XP added to your debt. (Total: {dbPlayer.XPDebt} XP)\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Domain/Combat/DeathService.cs",
-    "Line": 113,
+    "Line": 110,
     "Member": "OnPlayerDeath",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have been subdued.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/DeathService.cs",
-    "Line": 114,
+    "Line": 111,
     "Member": "OnPlayerDeath",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(\n                    player,\n                    receiver => $\"{_playerName.GetDisplayName(receiver, player)} has been subdued by {_playerName.GetDisplayName(receiver, hostile)}.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Combat/DeathService.cs",
-    "Line": 306,
-    "Member": "ApplyPenalties",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, \"Requiem spares you any XP debt.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Combat/DeathService.cs",
-    "Line": 348,
-    "Member": "ApplyPenalties",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, $\"{newDebt} XP added to your debt. (Total: {dbPlayer.XPDebt} XP)\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/PoisonsService.cs",

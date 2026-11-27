@@ -161,7 +161,8 @@ public class CombatRateModifiersServiceTests : CombatModifierTestBase
         _applied.Should().BeEmpty();
 
         _rate.PrepareAutoAttackCycleCriticalRate(Attacker, SkillType.Rifle).Should().Be(0);
-        _repeated.ForgetDamageModifierState(Attacker);
+        _rate.ForgetCreatureState(Attacker, CombatForgetPhase.DamageModifiers);
+        _repeated.ForgetCreatureState(Attacker, CombatForgetPhase.DamageModifiers);
         _rate.PrepareAutoAttackCycleCriticalRate(Attacker, SkillType.Rifle).Should().Be(0, "forgotten: 1 of 3 again");
         _rate.PrepareAutoAttackCycleCriticalRate(Attacker, SkillType.Rifle).Should().Be(0);
         _rate.PrepareAutoAttackCycleCriticalRate(Attacker, SkillType.Rifle).Should().Be(25);

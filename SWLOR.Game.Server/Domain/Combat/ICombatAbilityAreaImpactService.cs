@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// The area abilities and the damage riders of an ability hit: the area pulse, the fragmentation, the ricochet, the splash, the bleed
     /// refresh and spread, and the area ability hit sequence.
     /// </summary>
-    public interface ICombatAbilityAreaImpactService
+    public interface ICombatAbilityAreaImpactService : ICombatCreatureStateOwner
     {
         void ApplyAbilityDamageRiders(
             uint activator,

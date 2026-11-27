@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// Repeated-target and same-target pressure state and effects for combat: the three repeated-target damage stacks,
     /// Spotter's Rhythm, and the per-attacker tables behind them.
     /// </summary>
-    public interface ICombatRepeatedTargetService
+    public interface ICombatRepeatedTargetService : ICombatCreatureStateOwner
     {
         int ApplyRepeatedTargetDamageModifier(
             uint attacker,
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             SkillType skillType,
             int damage);
 
-        /// <summary>Forgets the creature's critical-rate cycle count and every repeated-target and pressure state.</summary>
+        /// <summary>Forgets every repeated-target and pressure state of the creature.</summary>
         void ForgetDamageModifierState(uint creature);
     }
 }

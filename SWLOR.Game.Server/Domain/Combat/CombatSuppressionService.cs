@@ -460,5 +460,16 @@ namespace SWLOR.Game.Server.Domain.Combat
                 RefreshOverwatchMarker(source, Clock.UtcNow);
             }
         }
+
+        /// <inheritdoc/>
+        public void ForgetCreatureState(uint creature, CombatForgetPhase phase)
+        {
+            switch (phase)
+            {
+                case CombatForgetPhase.Suppression:
+                    ForgetSuppressionState(creature);
+                    break;
+            }
+        }
     }
 }

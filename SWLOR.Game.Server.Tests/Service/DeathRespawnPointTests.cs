@@ -26,7 +26,7 @@ public class DeathRespawnPointTests
     [Test]
     public void MissingRecordHasNoRespawnArea()
     {
-        Death.HasRespawnArea(null).Should().BeFalse();
+        DeathRespawn.HasRespawnArea(null).Should().BeFalse();
     }
 
     [TestCase(null)]
@@ -36,7 +36,7 @@ public class DeathRespawnPointTests
     {
         var dbPlayer = new Player("respawn-test") { RespawnAreaResref = resref };
 
-        Death.HasRespawnArea(dbPlayer).Should().BeFalse();
+        DeathRespawn.HasRespawnArea(dbPlayer).Should().BeFalse();
     }
 
     [Test]
@@ -44,6 +44,6 @@ public class DeathRespawnPointTests
     {
         var dbPlayer = new Player("respawn-test") { RespawnAreaResref = "dan_repgarrison" };
 
-        Death.HasRespawnArea(dbPlayer).Should().BeTrue();
+        DeathRespawn.HasRespawnArea(dbPlayer).Should().BeTrue();
     }
 }

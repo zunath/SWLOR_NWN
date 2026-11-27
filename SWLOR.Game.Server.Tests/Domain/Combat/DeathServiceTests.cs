@@ -1,4 +1,3 @@
-using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Abilities;
@@ -17,106 +16,14 @@ using SWLOR.NWN.API.Testing;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// The death instance: dying, the death handler (reputation reset, subdual, the respawn panel, the debt waiver),
-/// respawning with the XP debt penalty, the respawn point and where a player respawns. The engine is a recording
+/// The death service: dying, the death handler (reputation reset, subdual, the respawn panel, the debt waiver) and the respawn handler,
+/// which sends the player home with the XP debt penalty through the respawn part. The engine is a recording
 /// fake with real local variables, the database an in-memory one, the neighbours scripted proxies, and the unconverted
 /// combat, ability, status effect, recorder, log and feature calls are answered by a subclass.
 /// </summary>
 [TestFixture]
-public class DeathServiceTests
+public class DeathServiceTests : DeathPartsTestBase
 {
-    private const uint ObjectInvalid = 0x7F000000;
-    private const uint Player = 1001;
-    private const uint Hostile = 2002;
-    private const uint Area = 500;
-    private const uint Waypoint = 600;
-    private const uint DefaultArea = 700;
-
-    private readonly List<IDisposable> _scopes = new();
-    private FakeNWScript _engine = null!;
-    private LocalVariables _locals = null!;
-    private InMemoryDBService _db = null!;
-    private TestDeath _death = null!;
-    private INamedAnimationService _animationService = null!;
-    private IMessagingService _messagingService = null!;
-    private IPlayerNameService _namesService = null!;
-    private ICityUpgradeLookup _propertyService = null!;
-    private IAreaLookup _areasService = null!;
-    private ScriptedProxy _animation = null!;
-    private ScriptedProxy _messaging = null!;
-    private ScriptedProxy _names = null!;
-    private ScriptedProxy _property = null!;
-    private ScriptedProxy _areas = null!;
-    private bool _playerIsPc = true;
-    private bool _playerIsDm;
-    private bool _hostileIsPlayer;
-    private bool _hostileIsDm;
-    private bool _hostilePossessed;
-    private bool _areaValid;
-    private string _walkable = "1";
-
-    [SetUp]
-    public void SetUp()
-    {
-        _playerIsPc = true;
-        _playerIsDm = false;
-        _hostileIsPlayer = false;
-        _hostileIsDm = false;
-        _hostilePossessed = false;
-        _areaValid = true;
-        _walkable = "1";
-
-        _engine = new FakeNWScript();
-        _locals = new LocalVariables(_engine);
-        _engine.SetReturnHandler("GetIsObjectValid", args => (uint)args[0]! != ObjectInvalid);
-        _engine.SetReturnHandler("GetIsPC", args => ((uint)args[0]! == Player && _playerIsPc) || ((uint)args[0]! == Hostile && _hostileIsPlayer));
-        _engine.SetReturnHandler("GetIsDM", args => ((uint)args[0]! == Hostile && _hostileIsDm) || ((uint)args[0]! == Player && _playerIsDm));
-        _engine.SetReturnHandler("GetIsDMPossessed", args => (uint)args[0]! == Hostile && _hostilePossessed);
-        _engine.SetReturnHandler("GetObjectUUID", args => $"uuid-{(uint)args[0]!}");
-        _engine.SetReturn("GetLastPlayerDying", Player);
-        _engine.SetReturn("GetLastPlayerDied", Player);
-        _engine.SetReturn("GetLastRespawnButtonPresser", Player);
-        _engine.SetReturn("GetEnteringObject", Player);
-        _engine.SetReturnHandler("GetLastHostileActor", _ => Hostile);
-        _engine.SetReturn("GetMaxHitPoints", 90);
-        _engine.SetReturn("GetWaypointByTag", Waypoint);
-        _engine.SetReturnHandler("GetArea", args => (uint)args[0]! == Waypoint ? DefaultArea : Area);
-        _engine.SetReturnHandler("GetResRef", args => (uint)args[0]! == DefaultArea ? "default_area" : "other");
-        _engine.SetReturn("GetSurfaceMaterial", 3);
-        _engine.SetReturnHandler("Get2DAString", _ => _walkable);
-        _engine.SetReturn("GetName", "Area Name");
-        _engine.SetReturn("GetTag", "area_tag");
-        _scopes.Add(NWScriptRuntime.Override(_engine));
-
-        _db = new InMemoryDBService()
-            .With(new Player { Id = "uuid-1001", TotalSPAcquired = 10, Settings = new PlayerSettings() })
-            .With(new Player { Id = "uuid-2002", Settings = new PlayerSettings() });
-
-        _animationService = ScriptedProxy.Create<INamedAnimationService>(out _animation);
-        _animation.On("ClearOnDeath", _ => null);
-        _messagingService = ScriptedProxy.Create<IMessagingService>(out _messaging);
-        _messaging.On("SendMessageNearbyToPlayers", _ => null);
-        _namesService = ScriptedProxy.Create<IPlayerNameService>(out _names);
-        _names.On("GetDisplayName", args => $"name{(uint)args[0]!}-{(uint)args[1]!}")
-            .On("GetAuditName", args => $"audit-{(uint)args[0]!}");
-        _propertyService = ScriptedProxy.Create<ICityUpgradeLookup>(out _property);
-        _property.On("GetEffectiveUpgradeLevel", _ => 0);
-        _areasService = ScriptedProxy.Create<IAreaLookup>(out _areas);
-        _areas.On("GetAreaByResref", _ => _areaValid ? Area : ObjectInvalid);
-
-        _death = new TestDeath(_db, _animationService, _messagingService, _namesService, _propertyService, _areasService);
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        foreach (var scope in _scopes)
-            scope.Dispose();
-        _scopes.Clear();
-    }
-
-    private Player Record => _db.Get<Player>("uuid-1001");
-
     [Test]
     public void OnPlayerDying_KillsThePlayerWhenNothingPreventsIt()
     {
@@ -283,7 +190,7 @@ public class DeathServiceTests
         ((Action)assign.Arguments[1]!)();
         _engine.CallsTo("ClearAllActions").Single().Arguments[0].Should().Be(true);
         _engine.CountOf("JumpToLocation").Should().Be(1);
-        _death.Logs.Should().ContainSingle().Which.Should().Be((LogGroup.Death, "RESPAWN - audit-1001 - 150 XP lost"));
+        _death.Logs.Should().ContainSingle().Which.Should().Be((LogGroup.Death, "RESPAWN - audit-1001 - 150 XP debt"));
     }
 
     [Test]
@@ -362,111 +269,7 @@ public class DeathServiceTests
         Record.XPDebt.Should().Be(500);
         _engine.CallsTo("SendMessageToPC").Select(call => (string)call.Arguments[1]!).Should().Contain("Requiem spares you any XP debt.");
         _locals.Int(Player, "DEATH_DEBT_WAIVED").Should().Be(0);
-        _death.Logs.Should().ContainSingle().Which.Should().Be((LogGroup.Death, "RESPAWN - audit-1001 - 500 XP lost"));
-    }
-
-    [Test]
-    public void InitializeRespawnPoint_SavesTheDefaultWaypointForAPlayerWithoutOne()
-    {
-        _engine.SetReturn("GetPosition", Vector3Of(4f, 5f, 6f));
-        _engine.SetReturn("GetFacing", 90f);
-
-        _death.InitializeRespawnPoint();
-
-        var saved = _db.Saved.OfType<Player>().Last();
-        saved.RespawnLocationX.Should().Be(4f);
-        saved.RespawnLocationY.Should().Be(5f);
-        saved.RespawnLocationZ.Should().Be(6f);
-        saved.RespawnAreaResref.Should().Be("default_area");
-        saved.RespawnLocationOrientation.Should().Be(90f);
-    }
-
-    [Test]
-    public void InitializeRespawnPoint_CreatesARecordForAPlayerWithoutOne()
-    {
-        _db = new InMemoryDBService();
-        _death = new TestDeath(_db, _animationService, _messagingService, _namesService, _propertyService, _areasService);
-
-        _death.InitializeRespawnPoint();
-
-        _db.Saved.OfType<Player>().Single().Id.Should().Be("uuid-1001");
-    }
-
-    [Test]
-    public void InitializeRespawnPoint_KeepsAnExistingPointAndSkipsDMsAndNonPlayers()
-    {
-        Record.RespawnAreaResref = "med_center";
-        _death.InitializeRespawnPoint();
-        _db.Saved.Should().BeEmpty();
-
-        Record.RespawnAreaResref = string.Empty;
-        _playerIsDm = true;
-        _death.InitializeRespawnPoint();
-        _db.Saved.Should().BeEmpty();
-
-        _playerIsDm = false;
-        _playerIsPc = false;
-        _death.InitializeRespawnPoint();
-        _db.Saved.Should().BeEmpty();
-    }
-
-    [Test]
-    public void GetRespawnLocation_UsesTheMedicalCenterWhenItsAreaExistsAndIsWalkable()
-    {
-        var dbPlayer = new Player { RespawnAreaResref = "med_center", RespawnLocationX = 1f, RespawnLocationY = 2f, RespawnLocationZ = 3f };
-
-        _death.GetRespawnLocation(dbPlayer);
-
-        _engine.CountOf("Location").Should().Be(1);
-        _engine.CountOf("GetWaypointByTag").Should().Be(0);
-        _areas.Calls.Should().ContainSingle(call => (string)call.Arguments[0]! == "med_center");
-    }
-
-    [Test]
-    public void GetRespawnLocation_FallsBackToTheDefaultPointWhenTheAreaIsGoneOrNotWalkableOrUnset()
-    {
-        var dbPlayer = new Player { RespawnAreaResref = "med_center" };
-
-        _areaValid = false;
-        _death.GetRespawnLocation(dbPlayer);
-        _engine.CallsTo("GetWaypointByTag").Single().Arguments[0].Should().Be("DTH_DEFAULT_RESPAWN_POINT");
-
-        _engine.ClearCalls();
-        _areaValid = true;
-        _walkable = "0";
-        _death.GetRespawnLocation(dbPlayer);
-        _engine.CountOf("GetWaypointByTag").Should().Be(1);
-
-        _engine.ClearCalls();
-        _walkable = "1";
-        _engine.SetReturn("GetSurfaceMaterial", 0);
-        _death.GetRespawnLocation(dbPlayer);
-        _engine.CountOf("GetWaypointByTag").Should().Be(1);
-
-        _engine.ClearCalls();
-        _walkable = "not a number";
-        _engine.SetReturn("GetSurfaceMaterial", 3);
-        _death.GetRespawnLocation(dbPlayer);
-        _engine.CountOf("GetWaypointByTag").Should().Be(1);
-
-        _engine.ClearCalls();
-        _death.GetRespawnLocation(null!);
-        _engine.CountOf("GetWaypointByTag").Should().Be(1);
-    }
-
-    [TestCase(null, false)]
-    [TestCase("", false)]
-    [TestCase("  ", false)]
-    [TestCase("dan_repgarrison", true)]
-    public void HasRespawnArea_NeedsANonBlankResref(string? resref, bool expected)
-    {
-        _death.HasRespawnArea(new Player { RespawnAreaResref = resref! }).Should().Be(expected);
-    }
-
-    [Test]
-    public void HasRespawnArea_IsFalseWithoutARecord()
-    {
-        _death.HasRespawnArea(null!).Should().BeFalse();
+        _death.Logs.Should().ContainSingle().Which.Should().Be((LogGroup.Death, "RESPAWN - audit-1001 - 500 XP debt"));
     }
 
     [Test]
@@ -481,8 +284,6 @@ public class DeathServiceTests
 
         heard.Should().Equal("first:42", "second:42");
     }
-
-    private static Vector3 Vector3Of(float x, float y, float z) => new(x, y, z);
 
     private sealed class RecordingRevivedListener : ICreatureRevivedListener
     {

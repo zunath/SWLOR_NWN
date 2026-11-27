@@ -172,7 +172,7 @@ SWLOR.Game.Server.Service.ConversationMenu.StartFromLocalConversation SWLOR.Game
 SWLOR.Game.Server.Service.ConversationMenu.StartFromObjectEvent SWLOR.Game.Server.Domain.Foundation.ConversationMenuService.StartFromObjectEvent
 SWLOR.Game.Server.Service.DB.Load SWLOR.Game.Server.Domain.Foundation.DBService.Connect SWLOR.Game.Server.Domain.Foundation.DBService.SyncIndexes
 SWLOR.Game.Server.Service.DMBlueprintCatalog.LoadCustomPalettes SWLOR.Game.Server.Domain.Administration.DMBlueprintCatalogService.LoadCustomPalettes
-SWLOR.Game.Server.Service.Death.InitializeRespawnPoint SWLOR.Game.Server.Domain.Combat.DeathService.InitializeRespawnPoint
+SWLOR.Game.Server.Service.Death.InitializeRespawnPoint SWLOR.Game.Server.Domain.Combat.DeathRespawnService.InitializeRespawnPoint
 SWLOR.Game.Server.Service.Death.OnPlayerDeath SWLOR.Game.Server.Domain.Combat.DeathService.OnPlayerDeath
 SWLOR.Game.Server.Service.Death.OnPlayerDying SWLOR.Game.Server.Domain.Combat.DeathService.OnPlayerDying
 SWLOR.Game.Server.Service.Death.OnPlayerRespawn SWLOR.Game.Server.Domain.Combat.DeathService.OnPlayerRespawn

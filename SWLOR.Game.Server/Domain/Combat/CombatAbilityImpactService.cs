@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// The ability impact part of <c>Combat</c>: the orchestrator of a successful ability hit (the order of its riders, the weapon family
     /// dispatch and the attacking ally check). The weapon riders, the status-applied riders and the hit and area riders are the parts it
     /// calls. The same-target hit counts and the area ability hit sequences are tables of the hit riders and area impact parts, which
-    /// <see cref="ForgetImpactState"/> clears through them.
+    /// forget them as state owners of the cleanup (<see cref="ICombatCreatureStateOwner"/>).
     /// </summary>
     public class CombatAbilityImpactService : ICombatAbilityImpactService
     {
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatAutoAttackEffectsService _autoAttackEffects;
         private readonly IStatService _stat;
         private readonly IEnmityAttackService _enmityAttack;
-        private readonly IPartyService _party;
+        private readonly IPartyRoster _party;
         private readonly IPairedRangedTraitsService _pairedRangedTraits;
         private readonly ICombatAbilityWeaponRidersService _weaponRiders;
         private readonly ICombatAbilityStatusAppliedService _statusApplied;
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatAutoAttackEffectsService autoAttackEffects,
             IStatService stat,
             IEnmityAttackService enmityAttack,
-            IPartyService party,
+            IPartyRoster party,
             IPairedRangedTraitsService pairedRangedTraits,
             ICombatAbilityWeaponRidersService weaponRiders,
             ICombatAbilityStatusAppliedService statusApplied)
@@ -197,12 +197,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             return GetIsObjectValid(attackTarget) &&
                    attackTarget != creature &&
                    _party.IsInParty(creature, attackTarget);
-        }
-
-        public void ForgetImpactState(uint creature)
-        {
-            _hitRiders.ForgetSameTargetHitState(creature);
-            _areaImpact.ForgetAreaAbilityTargetHitSequences(creature);
         }
     }
 }

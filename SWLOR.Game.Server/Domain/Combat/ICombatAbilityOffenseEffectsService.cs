@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// Attack, attack adjustment, sequence and resource restore riders, and the next auto-attack damage bonus. The hostile ability
     /// sequence per activator is the part's own table.
     /// </summary>
-    public interface ICombatAbilityOffenseEffectsService
+    public interface ICombatAbilityOffenseEffectsService : ICombatCreatureStateOwner
     {
         void ApplyAreaAbilityUsedRewards(uint activator, AbilityDetail ability, bool isAreaAbility);
 

@@ -58,7 +58,7 @@ public class HostedEventsServiceTests
             ScriptedProxy.Create<IEnmityService>(out _),
             ScriptedProxy.Create<ISpaceModeQuery>(out _),
             ScriptedProxy.Create<IBackgroundJobService>(out _),
-            ScriptedProxy.Create<IDeathService>(out _),
+            ScriptedProxy.Create<IDeathRespawnService>(out _),
             ScriptedProxy.Create<IDMPreferenceService>(out _));
     }
 

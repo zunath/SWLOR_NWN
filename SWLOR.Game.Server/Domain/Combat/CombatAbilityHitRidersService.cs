@@ -387,5 +387,16 @@ namespace SWLOR.Game.Server.Domain.Combat
                 _sameTargetHostileAbilityHitCounts.Remove(key);
             }
         }
+
+        /// <inheritdoc/>
+        public void ForgetCreatureState(uint creature, CombatForgetPhase phase)
+        {
+            switch (phase)
+            {
+                case CombatForgetPhase.AbilityImpact:
+                    ForgetSameTargetHitState(creature);
+                    break;
+            }
+        }
     }
 }

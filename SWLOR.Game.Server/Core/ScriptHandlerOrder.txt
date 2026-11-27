@@ -754,7 +754,7 @@ mod_enter
   action      SWLOR.Game.Server.Domain.Combat.CombatActivityService.RestoreIdleReadinessOnPlayerEnter
   action      SWLOR.Game.Server.Domain.Social.CommunicationService.ApplyCommsChannelName
   action      SWLOR.Game.Server.Domain.Social.CommunicationService.ApplyShoutChannelName
-  action      SWLOR.Game.Server.Domain.Combat.DeathService.InitializeRespawnPoint
+  action      SWLOR.Game.Server.Domain.Combat.DeathRespawnService.InitializeRespawnPoint
   action      SWLOR.Game.Server.Domain.Character.DisguiseService.ApplyActiveDisguiseOnEnter
   action      SWLOR.Game.Server.Domain.Social.ExtraHotbarsWindowService.LockBarsOnEnter
   action      SWLOR.Game.Server.Domain.UI.GuiService.CreatePlayerWindows

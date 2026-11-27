@@ -20,7 +20,7 @@ public static class DeathRespawnPointEngineTests
 
         // The garrison cloning registration terminal stands here; players register beside it.
         var registered = Record(MedicalArea, 72.2f, 17.7f, 0f);
-        var location = Death.GetRespawnLocation(registered);
+        var location = DeathRespawn.GetRespawnLocation(registered);
         ctx.AssertEqual(medicalArea, GetAreaFromLocation(location), "a registered point keeps its area");
         ctx.Assert(GetDistanceBetweenLocations(location, Location(medicalArea, Vector3(72.2f, 17.7f, 0f), 0f)) < 0.1f,
             "a registered point keeps its position");
@@ -33,7 +33,7 @@ public static class DeathRespawnPointEngineTests
 
         var defaultPosition = GetPosition(defaultPoint);
         var defaultRecord = Record(GetResRef(defaultArea), defaultPosition.X, defaultPosition.Y, defaultPosition.Z);
-        ctx.Assert(GetDistanceBetweenLocations(Death.GetRespawnLocation(defaultRecord), GetLocation(defaultPoint)) < 0.1f,
+        ctx.Assert(GetDistanceBetweenLocations(DeathRespawn.GetRespawnLocation(defaultRecord), GetLocation(defaultPoint)) < 0.1f,
             "the default respawn point is itself a usable registered point");
 
         // Every medical registration terminal must leave ground a registering player can stand on,
@@ -49,7 +49,7 @@ public static class DeathRespawnPointEngineTests
                 var angle = step * MathF.PI / 4f;
                 var x = position.X + 1.5f * MathF.Cos(angle);
                 var y = position.Y + 1.5f * MathF.Sin(angle);
-                var resolved = Death.GetRespawnLocation(Record(GetResRef(area), x, y, position.Z));
+                var resolved = DeathRespawn.GetRespawnLocation(Record(GetResRef(area), x, y, position.Z));
                 kept = GetAreaFromLocation(resolved) == area &&
                        GetDistanceBetweenLocations(resolved, Location(area, Vector3(x, y, position.Z), 0f)) < 0.1f;
             }
@@ -63,7 +63,7 @@ public static class DeathRespawnPointEngineTests
 
         void AssertDefault(Player dbPlayer, string label)
         {
-            var resolved = Death.GetRespawnLocation(dbPlayer);
+            var resolved = DeathRespawn.GetRespawnLocation(dbPlayer);
             ctx.AssertEqual(defaultArea, GetAreaFromLocation(resolved), $"{label}: area");
             ctx.Assert(GetDistanceBetweenLocations(resolved, GetLocation(defaultPoint)) < 0.1f, $"{label}: uses the default respawn point");
         }

@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// Who was guarded or deflected recently: the two tables behind <c>HasRecentGuardedHit</c> and <c>HasRecentDeflection</c>.
     /// It takes no services, so damage modifiers, damage taken and the ability definitions all read it plainly.
     /// </summary>
-    public interface ICombatDefenseMemoryService
+    public interface ICombatDefenseMemoryService : ICombatCreatureStateOwner
     {
         /// <summary>Remembers that the creature just took a guarded hit.</summary>
         void NoteGuardedHit(uint creature);

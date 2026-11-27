@@ -230,7 +230,23 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IShutdownStep>(provider => provider.GetRequiredService<ICombatRecorderService>());
             services.AddSingleton<ICombatResourcesService, CombatResourcesService>();
             services.AddSingleton<ICombatService, CombatService>();
+            // The services that keep state by creature, seen through the cleanup's interface. The registration order is the order of
+            // the cleanup inside a phase: the critical hit part before the hit effects part, the hit riders before the area part,
+            // the rate part before the repeated target part, as the forgets ran before they were parts.
+            services.AddSingleton<ICombatCreatureStateOwner>(provider => provider.GetRequiredService<ICombatResourcesService>());
+            services.AddSingleton<ICombatCreatureStateOwner>(provider => provider.GetRequiredService<ICombatActivityService>());
+            services.AddSingleton<ICombatCreatureStateOwner>(provider => provider.GetRequiredService<ICombatDefenseMemoryService>());
+            services.AddSingleton<ICombatCreatureStateOwner>(provider => provider.GetRequiredService<ICombatSuppressionService>());
+            services.AddSingleton<ICombatCreatureStateOwner>(provider => provider.GetRequiredService<ICombatAbilityOffenseEffectsService>());
+            services.AddSingleton<ICombatCreatureStateOwner>(provider => provider.GetRequiredService<ICombatCriticalHitEffectsService>());
+            services.AddSingleton<ICombatCreatureStateOwner>(provider => provider.GetRequiredService<ICombatHitEffectsService>());
+            services.AddSingleton<ICombatCreatureStateOwner>(provider => provider.GetRequiredService<ICombatAbilityHitRidersService>());
+            services.AddSingleton<ICombatCreatureStateOwner>(provider => provider.GetRequiredService<ICombatAbilityAreaImpactService>());
+            services.AddSingleton<ICombatCreatureStateOwner>(provider => provider.GetRequiredService<ICombatAttackTimingService>());
+            services.AddSingleton<ICombatCreatureStateOwner>(provider => provider.GetRequiredService<ICombatRateModifiersService>());
+            services.AddSingleton<ICombatCreatureStateOwner>(provider => provider.GetRequiredService<ICombatRepeatedTargetService>());
             services.AddSingleton<ICombatSuppressionService, CombatSuppressionService>();
+            services.AddSingleton<IDeathRespawnService, DeathRespawnService>();
             services.AddSingleton<IDeathService, DeathService>();
             services.AddSingleton<IEnmityService, EnmityService>();
             services.AddSingleton<IEnmityChangeService, EnmityChangeService>();

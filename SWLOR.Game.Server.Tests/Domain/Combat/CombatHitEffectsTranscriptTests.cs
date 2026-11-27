@@ -59,7 +59,11 @@ public class CombatHitEffectsTranscriptTests
                 hitEffects.ConsumeAutoAttackCycleDamageBonus(Attacker, SkillType.Vibroblade));
             bench.Step("defeated enemy" + tag, () => defeated.ApplyDefeatedEnemyEffects(Attacker, Defender));
             bench.Step("recent damagers of a defeated enemy" + tag, () => defeated.ApplyRecentDamagerDefeatedEnemyEffects(Defender));
-            bench.Step("forget the attacker" + tag, () => hitEffects.ForgetHitEffectState(Attacker));
+            bench.Step("forget the attacker" + tag, () =>
+            {
+                critical.ForgetCreatureState(Attacker, CombatForgetPhase.HitEffects);
+                hitEffects.ForgetCreatureState(Attacker, CombatForgetPhase.HitEffects);
+            });
         }
 
         AssertGolden(FixturePath, bench.Text);

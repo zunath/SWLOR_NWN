@@ -29,9 +29,8 @@ public sealed partial class TestHitEffects : CombatHitEffectsService
         IStatService stat,
         ICombatRecorderService combatRecorder,
         ICombatDealtEffectsService dealtEffects,
-        ICombatTriggeredDamageService triggeredDamage,
-        ICombatCriticalHitEffectsService criticalHitEffects)
-        : base(queries, suppression, combatActivity, repeatedTarget, stat, combatRecorder, dealtEffects, triggeredDamage, criticalHitEffects)
+        ICombatTriggeredDamageService triggeredDamage)
+        : base(queries, suppression, combatActivity, repeatedTarget, stat, combatRecorder, dealtEffects, triggeredDamage)
     {
     }
 }

@@ -190,7 +190,7 @@ public class DeathServiceTests : DeathPartsTestBase
         ((Action)assign.Arguments[1]!)();
         _engine.CallsTo("ClearAllActions").Single().Arguments[0].Should().Be(true);
         _engine.CountOf("JumpToLocation").Should().Be(1);
-        _death.Logs.Should().ContainSingle().Which.Should().Be((LogGroup.Death, "RESPAWN - audit-1001 - 150 XP lost"));
+        _death.Logs.Should().ContainSingle().Which.Should().Be((LogGroup.Death, "RESPAWN - audit-1001 - 150 XP debt"));
     }
 
     [Test]
@@ -269,7 +269,7 @@ public class DeathServiceTests : DeathPartsTestBase
         Record.XPDebt.Should().Be(500);
         _engine.CallsTo("SendMessageToPC").Select(call => (string)call.Arguments[1]!).Should().Contain("Requiem spares you any XP debt.");
         _locals.Int(Player, "DEATH_DEBT_WAIVED").Should().Be(0);
-        _death.Logs.Should().ContainSingle().Which.Should().Be((LogGroup.Death, "RESPAWN - audit-1001 - 500 XP lost"));
+        _death.Logs.Should().ContainSingle().Which.Should().Be((LogGroup.Death, "RESPAWN - audit-1001 - 500 XP debt"));
     }
 
     [Test]

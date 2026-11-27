@@ -90,7 +90,7 @@ public class DeathRespawnServiceTests : DeathPartsTestBase
     {
         _respawn.WriteAudit(Player, 150);
 
-        _respawn.Logs.Should().ContainSingle().Which.Should().Be((LogGroup.Death, "RESPAWN - audit-1001 - 150 XP lost"));
+        _respawn.Logs.Should().ContainSingle().Which.Should().Be((LogGroup.Death, "RESPAWN - audit-1001 - 150 XP debt"));
     }
 
     [Test]

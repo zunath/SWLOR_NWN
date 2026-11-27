@@ -185,9 +185,9 @@ namespace SWLOR.Game.Server.Domain.Combat
                 ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), player);
 
             _respawn.SendToHomePoint(player);
-            var xpLost = _respawn.ApplyPenalties(player);
+            var xpDebt = _respawn.ApplyPenalties(player);
 
-            _respawn.WriteAudit(player, xpLost);
+            _respawn.WriteAudit(player, xpDebt);
         }
 
         protected virtual bool TryPreventFatalDamageAndGrantTemporaryHP(uint defender, int damage, bool restoreToOneHP) =>

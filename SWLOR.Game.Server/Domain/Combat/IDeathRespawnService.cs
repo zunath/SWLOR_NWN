@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// Writes the audit entry of a respawn to the Death audit group.
         /// </summary>
         /// <param name="player">The player who respawned</param>
-        /// <param name="xpLost">The amount of XP lost</param>
-        void WriteAudit(uint player, int xpLost);
+        /// <param name="xpDebt">The player's total XP debt after the death's penalty, which a waived death leaves unchanged</param>
+        void WriteAudit(uint player, int xpDebt);
     }
 }

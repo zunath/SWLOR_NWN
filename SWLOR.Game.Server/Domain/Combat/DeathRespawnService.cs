@@ -140,6 +140,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// Applies death penalties for a player.
         /// </summary>
         /// <param name="player">The player who we're applying penalties to</param>
+        /// <returns>The player's total XP debt after the penalty.</returns>
         public int ApplyPenalties(uint player)
         {
             var playerId = GetObjectUUID(player);
@@ -198,11 +199,11 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// Writes an audit entry to the Death audit group.
         /// </summary>
         /// <param name="player">The player who respawned</param>
-        /// <param name="xpLost">The amount of XP lost</param>
-        public void WriteAudit(uint player, int xpLost)
+        /// <param name="xpDebt">The player's total XP debt after the death's penalty, which a waived death leaves unchanged</param>
+        public void WriteAudit(uint player, int xpDebt)
         {
             var name = _playerName.GetAuditName(player);
-            var log = $"RESPAWN - {name} - {xpLost} XP lost";
+            var log = $"RESPAWN - {name} - {xpDebt} XP debt";
 
             WriteLog(LogGroup.Death, log);
         }

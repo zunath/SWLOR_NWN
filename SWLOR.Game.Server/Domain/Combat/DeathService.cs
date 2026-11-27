@@ -23,6 +23,8 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// </summary>
     public class DeathService : IDeathService
     {
+        private const string DebtWaivedVariable = DeathRespawnService.DebtWaivedVariable;
+
         private readonly IDBService _db;
         private readonly INamedAnimationService _namedAnimation;
         private readonly IMessagingService _messaging;
@@ -94,7 +96,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             var isSubdual = IsSubdualDeath(hostile);
             // A subdual charges no XP debt, so Requiem is claimed only by a death that can.
             if (isSubdual)
-                DeleteLocalInt(player, DeathRespawnService.DebtWaivedVariable);
+                DeleteLocalInt(player, DebtWaivedVariable);
             else
                 RecordDeathDebtWaiver(player);
             ClearStatusEffectsOnDeath(player);
@@ -157,13 +159,13 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         private void RecordDeathDebtWaiver(uint player)
         {
-            DeleteLocalInt(player, DeathRespawnService.DebtWaivedVariable);
+            DeleteLocalInt(player, DebtWaivedVariable);
             foreach (var effect in GetDeathDebtWaiverEffects(player))
             {
                 if (!effect.TryConsumeDeathDebtWaiver())
                     continue;
 
-                SetLocalInt(player, DeathRespawnService.DebtWaivedVariable, 1);
+                SetLocalInt(player, DebtWaivedVariable, 1);
                 return;
             }
         }

@@ -422,8 +422,8 @@ public class CombatSourceTests
     public void ReflectionReachesTheImpactTablesOfTheInstalledContainer(string name)
     {
         // The same-target hit counts and the area ability hit sequences moved from static fields of Combat to the instance (the hit
-        // riders part and the area impact part); a test that reads one by name gets the installed container's table, which the impact
-        // part's forget step clears through them.
+        // riders part and the area impact part); a test that reads one by name gets the installed container's table, which the
+        // forget step of those two parts clears.
         using var facades = new FacadeContainer();
         using var installed = facades.Install();
 
@@ -447,8 +447,10 @@ public class CombatSourceTests
         const uint creature = 0xFFFFFFF3;
         table[(creature, 0xFFFFFFF4u)] = value;
         table[(0xFFFFFFF5u, 0xFFFFFFF6u)] = value;
-        CombatMembers.FindMethod("ForgetImpactState")!.IsStatic.Should().BeFalse("it is the part's instance method");
-        CombatMembers.Invoke("ForgetImpactState", creature);
+        // The cleanup walks the owners of the ability impact step: the hit riders part, then the area impact part.
+        var owners = new ICombatCreatureStateOwner[] { facades.Get<ICombatAbilityHitRidersService>(), facades.Get<ICombatAbilityAreaImpactService>() };
+        foreach (var owner in owners)
+            owner.ForgetCreatureState(creature, CombatForgetPhase.AbilityImpact);
         table.Keys.Cast<(uint, uint)>().Should().Equal((0xFFFFFFF5u, 0xFFFFFFF6u));
     }
 

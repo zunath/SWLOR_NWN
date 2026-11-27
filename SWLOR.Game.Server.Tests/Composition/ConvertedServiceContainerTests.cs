@@ -177,6 +177,8 @@ public class ConvertedServiceContainerTests
             .Concat(new[] { "IFeatHotBar", "IStatDrivenTrackerRefresh" })
             // The enmity split: the hologram read Combat owns, which the HoloCom service answers.
             .Concat(new[] { "IHologramQuery" })
+            // The combat split: the state owner list the cleanup walks, the same instances as the twelve services behind it.
+            .Concat(new[] { "ICombatCreatureStateOwner" })
             .ToArray();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);

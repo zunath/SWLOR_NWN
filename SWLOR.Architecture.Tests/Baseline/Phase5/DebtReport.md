@@ -7,10 +7,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,084 | 12,817 uses | none: GameServices and FacadeAccessor deleted |
+| 1. Static service lookup | `StaticLookups.txt` | 1,084 | 12,818 uses | none: GameServices and FacadeAccessor deleted |
 | 2. Large types | `LargeTypes.txt` | 6 | 10,645 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 7 | 2,187 lines | none over 150 lines (400 for layout) |
-| 4. Services per type | `ServicesPerType.txt` | 13 | 185 services | none over 10 services |
+| 4. Services per type | `ServicesPerType.txt` | 11 | 160 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 22 | 27 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 119 | 235 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 22 | 80 edges | none |
@@ -20,10 +20,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 ## 1. Static service lookup
 
-- 1,084 files, 12,817 uses: 825 using directives and 11,992 uses in code (7,257 in a static context).
+- 1,084 files, 12,818 uses: 825 using directives and 11,993 uses in code (7,257 in a static context).
 - SWLOR.Game.Server: 635 file(s), 5,354 use(s) (Feature/ 524, Domain/ 86, Native/ 16, NativeSinks/ 7, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 232 file(s), 5,242 use(s).
-- SWLOR.Game.Server.Tests: 188 file(s), 2,063 use(s).
+- SWLOR.Game.Server.Tests: 188 file(s), 2,064 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
 - SWLOR.CraftSim.Tests: 5 file(s), 15 use(s).
 - SWLOR.Game.Server.IntegrationTests: 4 file(s), 20 use(s).
@@ -40,7 +40,7 @@ Largest 15 of 1,084 (all in `StaticLookups.txt`):
 
 | Entry | Uses | Detail |
 |---|---:|---|
-| `SWLOR.Game.Server.Tests/Domain/Combat/CombatFacadeAllocationTests.cs` | 307 | 0 in a static context, 1 import(s) |
+| `SWLOR.Game.Server.Tests/Domain/Combat/CombatFacadeAllocationTests.cs` | 308 | 0 in a static context, 1 import(s) |
 | `SWLOR.Game.Server.EngineTests/Definitions/MeleeTechniqueEngineTests.cs` | 293 | 293 in a static context, 0 import(s) |
 | `SWLOR.Game.Server.EngineTests/Definitions/PerkTrackerRegressionEngineTests.cs` | 245 | 245 in a static context, 0 import(s) |
 | `SWLOR.Game.Server.EngineTests/Definitions/CombatPerkRegressionEngineTests.cs` | 192 | 192 in a static context, 0 import(s) |
@@ -92,16 +92,15 @@ Largest 7 of 7 (all in `LongMethods.txt`):
 
 ## 4. Services per type
 
-- 13 types use more than 10 services: 8 through the constructor only, 5 through the lookup only, 0 through both.
+- 11 types use more than 10 services: 6 through the constructor only, 5 through the lookup only, 0 through both.
 - Exempt and over the limit: 0 (none).
 
-Largest 13 of 13 (all in `ServicesPerType.txt`):
+Largest 11 of 11 (all in `ServicesPerType.txt`):
 
 | Entry | Services | Detail |
 |---|---:|---|
 | `SWLOR.Game.Server.Feature.UsePerkFeat` | 35 | constructor 0, lookup 35 |
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 19 | constructor 19, lookup 0 |
-| `SWLOR.Game.Server.Domain.Combat.CombatService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Companions.DroidService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.AbilityDamageInputService` | 13 | constructor 13, lookup 0 |
 | `SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade.HeavyVibrobladeActiveAbilityDefinitionBase` | 12 | constructor 0, lookup 12 |
@@ -109,7 +108,6 @@ Largest 13 of 13 (all in `ServicesPerType.txt`):
 | `SWLOR.Game.Server.Domain.Abilities.AbilityDamageStageService` | 11 | constructor 11, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.AbilityImpactLifecycleService` | 11 | constructor 11, lookup 0 |
 | `SWLOR.Game.Server.Domain.Abilities.MimicryService` | 11 | constructor 11, lookup 0 |
-| `SWLOR.Game.Server.Domain.Combat.DeathService` | 11 | constructor 11, lookup 0 |
 | `SWLOR.Game.Server.Native.AttackRollCritical` | 11 | constructor 0, lookup 11 |
 | `SWLOR.Game.Server.Native.ResolveAttackRoll` | 11 | constructor 0, lookup 11 |
 

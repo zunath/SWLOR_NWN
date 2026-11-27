@@ -298,7 +298,7 @@ SWLOR.Game.Server.Tests/Domain/Combat/CombatAbilityStatusAppliedServiceTests.cs 
 SWLOR.Game.Server.Tests/Domain/Combat/CombatAbilityWeaponRidersServiceTests.cs | 1
 SWLOR.Game.Server.Tests/Domain/Combat/CombatDamageCatalogServiceTests.cs | 7
 SWLOR.Game.Server.Tests/Domain/Combat/CombatDamageRollServiceTests.cs | 1
-SWLOR.Game.Server.Tests/Domain/Combat/CombatFacadeAllocationTests.cs | 307
+SWLOR.Game.Server.Tests/Domain/Combat/CombatFacadeAllocationTests.cs | 308
 SWLOR.Game.Server.Tests/Domain/Combat/CombatGuardRetaliationServiceTests.cs | 1
 SWLOR.Game.Server.Tests/Domain/Combat/CombatHelperFacadeAllocationTests.cs | 12
 SWLOR.Game.Server.Tests/Domain/Combat/CombatRecordAbilityServiceTests.cs | 1

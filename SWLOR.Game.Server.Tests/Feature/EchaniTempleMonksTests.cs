@@ -162,6 +162,30 @@ public class EchaniTempleMonksTests
         }
     }
 
+    [TestCase("es_monk_path_002", "es_monk_path_silver_out_01")]
+    [TestCase("es_monk_path_silver_ret_03", "es_monk_path_silver_ret_04")]
+    public void SilverGate_RouteCrossesThroughTheModularDoorway(string startTag, string endTag)
+    {
+        var area = Read("Module/git/pw_ar_sc_eshanci.git.json");
+        var doorway = Value(area, "Placeable List").EnumerateArray()
+            .Single(item => Value(item, "Appearance").GetInt32() == 30255);
+        var waypoints = Value(area, "WaypointList").EnumerateArray().ToArray();
+        var start = waypoints.Single(point => Value(point, "Tag").GetString() == startTag);
+        var end = waypoints.Single(point => Value(point, "Tag").GetString() == endTag);
+
+        Variables(start)["ECHANI_NEXT"].GetString().Should().Be(endTag);
+
+        var doorwayX = Value(doorway, "X").GetDouble();
+        Value(start, "XPosition").GetDouble().Should().BeApproximately(doorwayX, 0.1);
+        Value(end, "XPosition").GetDouble().Should().BeApproximately(doorwayX, 0.1);
+
+        var doorwayY = Value(doorway, "Y").GetDouble();
+        var startY = Value(start, "YPosition").GetDouble();
+        var endY = Value(end, "YPosition").GetDouble();
+        Math.Min(startY, endY).Should().BeLessThan(doorwayY - 2);
+        Math.Max(startY, endY).Should().BeGreaterThan(doorwayY + 2);
+    }
+
     [Test]
     public void MonkObjects_HaveEditorMetadataAtTheirMatchingIndices()
     {
@@ -305,6 +329,34 @@ public class EchaniTempleMonksTests
         else
             Variables(points[finish])["ECHANI_TRANSFER"].GetString().Should().Be("WP_eshan_to_keshpeaks");
     }
+
+    [TestCase("es_monk_path_012", "es_monk_path_river_up_lower", "es_monk_path_river_up_upper", "es_monk_path_013", true)]
+    [TestCase("es_monk_path_026", "es_monk_path_river_down_upper", "es_monk_path_river_down_lower", "es_monk_path_027", false)]
+    public void Riverway_UsesBothRampLandings(string start, string firstLanding, string secondLanding, string finish, bool uphill)
+    {
+        var area = Read("Module/git/pw_sc_esh_riverw.git.json");
+        var points = Value(area, "WaypointList").EnumerateArray()
+            .Where(point => Value(point, "Tag").GetString()!.StartsWith("es_monk_path_"))
+            .ToDictionary(point => Value(point, "Tag").GetString()!);
+        Variables(points[start])["ECHANI_NEXT"].GetString().Should().Be(firstLanding);
+        Variables(points[firstLanding])["ECHANI_NEXT"].GetString().Should().Be(secondLanding);
+        Variables(points[secondLanding])["ECHANI_NEXT"].GetString().Should().Be(finish);
+
+        var upper = points[uphill ? secondLanding : firstLanding];
+        var lower = points[uphill ? firstLanding : secondLanding];
+        Value(upper, "XPosition").GetDouble().Should().BeInRange(47, 50);
+        Value(lower, "XPosition").GetDouble().Should().BeInRange(61, 64);
+        Value(upper, "ZPosition").GetDouble().Should().BeApproximately(5, 0.01);
+        Value(lower, "ZPosition").GetDouble().Should().BeApproximately(0, 0.01);
+        foreach (var landing in new[] { upper, lower })
+        {
+            Value(landing, "YPosition").GetDouble().Should().BeApproximately(84.5, 0.1,
+                "both landings align with the walkable center between the ramp's arch supports");
+            Variables(landing)["ECHANI_SCENE"].GetString().Should().BeEmpty();
+            Variables(landing).Should().NotContainKey("ECHANI_TRANSFER");
+        }
+    }
+
 
     [Test]
     public void Route_IsOneClosedLoopAndEveryAreaChangeHasAnExistingTransferDestination()

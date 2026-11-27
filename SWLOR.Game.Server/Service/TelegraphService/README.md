@@ -146,8 +146,27 @@ shape and then clears the entry. There is no separate applied/ticked event.
 
 Shader uniforms are refreshed when a telegraph is created or removed in an area, and when a
 player enters an area. Party membership changes also refresh the affected former/current party
-viewers so active hostile telegraphs switch between red and gray immediately. There is no
-periodic tick.
+viewers so active hostile telegraphs switch between red and gray immediately. The only periodic
+update is the fill clock described under Fill, sent while a viewer has a shape filling.
+
+### Fill
+
+A pre-cast telegraph fills over its wind-up so players can see when it will go off: a sphere's
+filled disc grows outward, and cones and lines fill from their origin to their far edge.
+
+The fill runs on the server's clock. Each client's own world timer (`worldtimerTimeOfDay`) runs
+minutes away from the server's, by an amount that differs per client, so it cannot place a fill
+start. Instead:
+
+- Each slot's vec uniform `w` packs the fill start (milliseconds on the fill clock, which wraps
+  every `FillClockPeriodMilliseconds`) plus the fill length in 250 ms units times that period. The
+  result stays an exact float integer. Zero means the shape does not fill; impact flashes and
+  lingering area indicators send zero. A wind-up longer than the longest packable fill (31.75 s)
+  starts filling later, so it is still full when it fires; one longer than about 97 s does not
+  fill, because its fill start would be too far ahead to place on the clock.
+- The first float uniform carries the fill clock. It is sent with each slot update, then about ten
+  times a second only to viewers that still have a shape filling, and stops once every fill in
+  their slots has completed. The fill steps at that rate.
 
 ## Pre-cast telegraphs vs the impact flash
 
@@ -174,9 +193,11 @@ the two would stack into a double delay and a double render.
 
 ## Testing
 
-`SWLOR.Game.Server.Tests/Service/TelegraphTests.cs` covers the shader bit-packing, the
-impact-flash default, and the double-delay invariant. Rendering itself needs an in-game
-check; there is no headless harness for it.
+`SWLOR.Game.Server.Tests/Service/TelegraphTests.cs` covers the shader bit-packing, the fill
+timing protocol (decoded the way the shader does), the impact-flash default, and the double-delay
+invariant. `TelegraphShaderUpdateEngineTests` (engine filter `TelegraphShader`) checks the slot diff
+and that the fill clock runs only while a shape fills. Rendering itself needs an in-game check;
+there is no headless harness for it.
 
 ## Performance Considerations
 

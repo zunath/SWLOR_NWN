@@ -208,7 +208,7 @@ public class SlicingContentTests
         var root = FindRepositoryRoot();
         var expected = new Dictionary<StructureType, (string Resref, int Appearance)>
         {
-            [StructureType.RustlineDataTerminal] = ("slc_rustterm", 6030),
+            [StructureType.RustlineDataTerminal] = ("slc_rustterm", 7556),
             [StructureType.CipherfileCabinet] = ("slc_ciphcab", 30702),
             [StructureType.ListeningPostMonitor] = ("slc_listmon", 7351),
             [StructureType.GhostChannelConsole] = ("slc_ghostcon", 21450),

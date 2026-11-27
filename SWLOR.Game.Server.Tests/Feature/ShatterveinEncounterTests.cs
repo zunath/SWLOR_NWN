@@ -50,7 +50,17 @@ public class ShatterveinEncounterTests
         beast.Role.Should().Be(BeastRoleType.Force);
         beast.Appearance.Should().Be(AppearanceType.SWLORShatterveinWolf);
         beast.Levels.Keys.Should().BeEquivalentTo(Enumerable.Range(1, 50));
-        beast.PossibleMutations.Should().BeEmpty();
+        var mutation = beast.PossibleMutations.Should().ContainSingle().Which;
+        mutation.Type.Should().Be(BeastType.ThornboundWarden);
+        var requirement = mutation.Requirements.Should().ContainSingle().Which;
+        var enzymes = requirement.Should().BeOfType<MutationRequirementEnzyme>().Which;
+        enzymes.LyaseEnzymeColors.Single().Should().Be(KeyValuePair.Create(EnzymeColorType.Blue, 2));
+        enzymes.IsomeraseEnzymeColors.Single().Should().Be(KeyValuePair.Create(EnzymeColorType.Green, 2));
+        enzymes.HydrolaseEnzymeColors.Single().Should().Be(KeyValuePair.Create(EnzymeColorType.Purple, 1));
+
+        var warden = BeastDefinitionCatalog.All[mutation.Type];
+        warden.Appearance.Should().Be(AppearanceType.SWLORThornboundWarden);
+        warden.Levels.Keys.Should().BeEquivalentTo(Enumerable.Range(1, 50));
     }
 
     [TestCase("esh_veinwolf", (int)AppearanceType.SWLORShatterveinWolf, new[] { 1861, 1862 })]

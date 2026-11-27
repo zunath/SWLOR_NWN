@@ -514,7 +514,7 @@ Done on 2026-11-18, on the owner's rule that every playable species has a dynami
 
 | Before (phases 1 to 5) | Now |
 |---|---|
-| Eight appearance rows 10300-10307, simple type, one model per chassis | One row 10300, `MODELTYPE` `P`, race letter `R`: skeleton `pmr0`/`pfr0`, animation bank `a_astro` |
+| Eight appearance rows 10300-10307, simple type, one model per chassis | One row 10346 (10300 until 2026-11-27, when master's creature replacements took rows 10293-10345), `MODELTYPE` `P`, race letter `R`: skeleton `pmr0`/`pfr0`, animation bank `a_astro` |
 | A chassis picked as a whole in the Chassis Workshop | Dome (head), body (torso) and two legs (thighs) picked in the regular Appearance Editor, eight designs each, mixed freely |
 | Paint stored on the player, three zones in the Workshop | Paint is the dye of the worn Chassis Plating, set on the editor's Equipment tab; a chassis with no plating wears factory white and blue |
 | Prod and blaster built into the model; equipped tools invisible | The shock prod and blaster mount are held items with their own item classes (`WAmPr`, `WAmBl`) that slide out of the body in the attack clips |

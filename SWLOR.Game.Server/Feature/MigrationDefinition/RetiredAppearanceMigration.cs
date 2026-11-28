@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 /// <summary>
 /// Moves anything that still uses a retired appearance (<see cref="RetiredAppearances"/>) to one that still ships,
 /// so a part picked between the usage audit and the release keeps rendering. A retired armor part becomes the editor's
-/// bare option, which shows the wearer's own body part: 0 ("None"), or 1 on shins, whose list has no 0. A retired
+/// bare option, which shows the wearer's own body part: 0 ("None"), or 1 on shins, whose list had no 0 when it shipped. A retired
 /// creature body part becomes 1, the bare limb, or 0 on shoulders and belts, which bodies do not have. A retired head
 /// becomes the first head the race offers, a retired helmet becomes helmet 1, and a retired cloak becomes the Plain
 /// cloak (row 1).

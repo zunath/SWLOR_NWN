@@ -144,9 +144,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
         }
 
         /// <summary>
-        /// Zero shows the wearer's own body part where the wearer's catalog offers it. Otherwise
-        /// (shins, droid parts) use the first catalogued style the body renders, so the editor
-        /// still accepts the repaired armor.
+        /// Zero shows the wearer's own body part where the wearer's catalog offers it (every catalog
+        /// does). Otherwise use the first catalogued style the body renders, so the editor still
+        /// accepts the repaired armor.
         /// </summary>
         public static int GetRepairStyle(IReadOnlyCollection<int> styles, Func<int, bool> renderable)
         {

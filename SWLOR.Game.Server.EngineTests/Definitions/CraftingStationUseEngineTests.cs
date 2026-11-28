@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             new("jeditemp_int", "cookpot", 72.2f, 23.55f, 70.6f, 23.5f),
 
             // Mandalorian refineries: they had no use script, only the retired container scripts.
-            new("sol_mandaloriani", "cft_forge", 125.6f, 46.1f, 126.9f, 47.6f),
+            new("sol_mandaloriani", "cft_forge", 126.2f, 46.1f, 127.5f, 47.6f),
             new("sol_mandaloriani", "cft_forge", 115.9f, 85.5f, 117.5f, 86.9f),
             new("sol_mandaloriani", "cft_forge", 124.1f, 84.5f, 122.7f, 85.0f)
         };

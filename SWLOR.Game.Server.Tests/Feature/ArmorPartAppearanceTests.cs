@@ -90,7 +90,8 @@ public class ArmorPartAppearanceTests
 
         // Zero (the wearer's own body part) wins where offered; otherwise the first style the body renders.
         Assert.That(ArmorPartAppearance.GetRepairStyle(ArmorAppearanceCatalog.GetStyles(human, AppearanceArmor.LeftThigh), _ => true), Is.EqualTo(0));
-        Assert.That(ArmorPartAppearance.GetRepairStyle(ArmorAppearanceCatalog.GetStyles(human, AppearanceArmor.LeftShin), _ => true), Is.EqualTo(1));
+        Assert.That(ArmorPartAppearance.GetRepairStyle(ArmorAppearanceCatalog.GetStyles(human, AppearanceArmor.LeftShin), _ => true), Is.EqualTo(0));
+        Assert.That(ArmorPartAppearance.GetRepairStyle(ArmorAppearanceCatalog.GetStyles(droid, AppearanceArmor.Torso), _ => true), Is.EqualTo(0));
         Assert.That(ArmorPartAppearance.GetRepairStyle(new[] { 5, 7, 9 }, style => style == 7), Is.EqualTo(7));
     }
 
@@ -143,17 +144,15 @@ public class ArmorPartAppearanceTests
     }
 
     [Test]
-    public void StyleOneIsOfferedOnlyWhereTheListHasNoNone()
+    public void StylesOneAndTwoAreNeverOffered()
     {
-        // Styles 1 and 2 add no armor part. Xisifer: drop them where 0 ("None") is offered; a list without 0
-        // keeps 1 as its bare option. The editor offers None on every neck list.
+        // Styles 1 and 2 add no armor part. Xisifer: drop them where 0 ("None") is offered, and every list
+        // offers None (EveryPlayableBodyOffersNoneOnEveryArmorPart).
         foreach (var (type, definition) in ArmorAppearanceCatalog.Definitions)
-        foreach (var part in BareSlots)
+        foreach (var part in ArmorParts)
         {
             var styles = ArmorAppearanceCatalog.GetStyles(definition, part);
-            var offersNone = part == AppearanceArmor.Neck || styles.Contains(0);
-            Assert.That(styles.Contains(1), Is.EqualTo(!offersNone), $"{type} {part}");
-            Assert.That(styles, Does.Not.Contain(2), $"{type} {part}");
+            Assert.That(styles, Does.Not.Contain(1).And.Not.Contain(2), $"{type} {part}");
         }
     }
 
@@ -191,14 +190,15 @@ public class ArmorPartAppearanceTests
     [TestCase(AppearanceType.Human, AppearanceArmor.Neck, 2, 0)]
     [TestCase(AppearanceType.Human, AppearanceArmor.Torso, 1, 0)]
     [TestCase(AppearanceType.Human, AppearanceArmor.LeftFoot, 2, 0)]
-    [TestCase(AppearanceType.Human, AppearanceArmor.LeftShin, 1, 1)]
-    [TestCase(AppearanceType.Human, AppearanceArmor.LeftShin, 2, 1)]
+    [TestCase(AppearanceType.Human, AppearanceArmor.LeftShin, 1, 0)]
+    [TestCase(AppearanceType.Human, AppearanceArmor.LeftShin, 2, 0)]
     [TestCase(AppearanceType.Human, AppearanceArmor.Belt, 2, 2)]
     [TestCase(AppearanceType.Human, AppearanceArmor.Torso, 3, 3)]
     [TestCase(AppearanceType.Human, AppearanceArmor.Torso, 0, 0)]
     [TestCase(AppearanceType.Droid, AppearanceArmor.Neck, 1, 0)]
-    [TestCase(AppearanceType.Droid, AppearanceArmor.Torso, 1, 1)]
-    [TestCase(AppearanceType.Droid, AppearanceArmor.Torso, 2, 1)]
+    [TestCase(AppearanceType.Droid, AppearanceArmor.Torso, 1, 0)]
+    [TestCase(AppearanceType.Droid, AppearanceArmor.Torso, 2, 0)]
+    [TestCase(AppearanceType.Droid, AppearanceArmor.LeftShin, 1, 0)]
     [TestCase(AppearanceType.Droid, AppearanceArmor.Torso, 200, 200)]
     public void RetainedBareStylesShowAsTheListsBareOption(AppearanceType type, AppearanceArmor part, int saved, int shown)
     {
@@ -240,7 +240,7 @@ public class ArmorPartAppearanceTests
         Assert.That(human, Is.EquivalentTo(new Dictionary<AppearanceArmor, int>
         {
             [AppearanceArmor.LeftThigh] = 0,
-            [AppearanceArmor.LeftShin] = 1,
+            [AppearanceArmor.LeftShin] = 0,
         }));
         Assert.That(unsupported, Is.Empty);
         Assert.That(large, Is.Empty);

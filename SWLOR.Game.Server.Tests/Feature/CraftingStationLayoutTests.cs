@@ -99,11 +99,16 @@ public class CraftingStationLayoutTests
                 // Props set on a station's work surface or hung on a wall stand above its base and are not floor obstacles.
                 var obstacles = placed.Where(o => o.Index != station.Index && o.Position.Z - station.Position.Z <= PropHeight &&
                     station.Position.Z - o.Position.Z <= StackHeight && !BoxWalkmeshModels.Contains(o.Model)).ToList();
-                foreach (var other in obstacles)
+                foreach (var other in placed.Where(o => o.Bounds.Count > 0 && o.Index > station.Index &&
+                             MathF.Abs(o.Position.Z - station.Position.Z) <= StackHeight))
                 {
-                    if (other.Bounds.Count > 0 && other.Index > station.Index && Overlap(station.Bounds, other.Bounds) > MaxModelBoundsOverlap)
+                    if (Overlap(station.Bounds, other.Bounds) > MaxModelBoundsOverlap)
                         failures.Add($"{label}: its model overlaps the {other.ResRef} at Placeable List[{other.Index}]");
-                    else if (other.Bounds.Count == 0 && Overlap(station.Footprint, other.Footprint) > MaxFootprintOverlap)
+                }
+
+                foreach (var other in obstacles.Where(o => o.Bounds.Count == 0))
+                {
+                    if (Overlap(station.Footprint, other.Footprint) > MaxFootprintOverlap)
                         failures.Add($"{label}: its footprint overlaps the {other.ResRef} ({other.Model}) at Placeable List[{other.Index}]");
                 }
 

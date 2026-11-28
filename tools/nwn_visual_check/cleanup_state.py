@@ -69,9 +69,11 @@ def _profile_record(path, pid=None):
     return {'profile':str(path),'token':token,'pid':pid}
 
 
-def retain_profile(path, pid=None):
+def retain_profile(path, pid=None, *, engine_log_marker_pending=False):
     """Persist ownership when a live client prevents an immediate removal."""
     record=_profile_record(path,pid)
+    if engine_log_marker_pending:
+        record['engine_log_marker_pending'] = True
     _write_record('profile-'+record['token']+'.json',record)
     return record['token']
 
@@ -79,8 +81,20 @@ def retain_profile(path, pid=None):
 def remove_owned_profile(path, cleanup=None):
     """Snapshot ownership, publishing recovery state only when removal fails."""
     record=_profile_record(path)
+    directory = Path(record['profile'])
+    pending = next((item for item in pending_profiles() if item['token'] == record['token']), {})
+    if pending.get('engine_log_marker_pending'):
+        # The in-memory process retry can reach this path before journal recovery.
+        # Keep the durable intent until the directory accepts its marker.
+        (directory / profile.ENGINE_LOG_RECOVERY).touch()
+    if (directory / profile.ENGINE_LOG_RECOVERY).is_file():
+        # A later process must still discover the original diagnostics if their
+        # evidence copy failed. Only staged, non-evidence contents are disposable.
+        _write_record('profile-'+record['token']+'.json', record)
+        profile.cleanup_engine_log_transients(directory)
+        return
     try:
-        (cleanup or profile.cleanup)(Path(record['profile']))
+        (cleanup or profile.cleanup)(directory)
     except BaseException as error:
         try:
             _write_record('profile-'+record['token']+'.json',record)
@@ -114,8 +128,10 @@ def _records():
             validate_name(record['name'])
             expected=record['name']+'.json'
         else:
-            if set(record)!={'profile','token','pid'}:
+            if set(record) not in ({'profile','token','pid'}, {'profile','token','pid','engine_log_marker_pending'}):
                 raise ValueError('Profile cleanup record has unexpected fields')
+            if 'engine_log_marker_pending' in record and record['engine_log_marker_pending'] is not True:
+                raise ValueError('Profile cleanup record has invalid log recovery intent')
             validate_token(record.get('token'))
             candidate=Path(record.get('profile',''))
             if not candidate.is_absolute() or candidate.parent.resolve()!=Path(tempfile.gettempdir()).resolve() or not candidate.name.startswith('swlor-nwn-'):
@@ -180,5 +196,14 @@ def recover_profile(record):
         actual=json.loads((path/profile.MARKER).read_text(encoding='utf8'))['token']
         if actual!=record['token']:
             raise ValueError('Retained profile ownership token changed')
+        if record.get('engine_log_marker_pending'):
+            # The original directory may have been temporarily unwritable. Never
+            # interpret that failed marker write as permission to discard logs.
+            (path / profile.ENGINE_LOG_RECOVERY).touch()
+            record = {key: value for key, value in record.items() if key != 'engine_log_marker_pending'}
+            _write_record('profile-'+record['token']+'.json', record)
+        if (path / profile.ENGINE_LOG_RECOVERY).is_file():
+            profile.cleanup_engine_log_transients(path)
+            return  # Keep discovery until the diagnostic recovery marker is cleared.
         profile.cleanup(path)
     forget_profile(record['token'])

@@ -135,8 +135,15 @@ def main(argv=None):
             """Do not delete a profile still used by an unconfirmed owned process."""
             if offline_client.has_retained_profile(owned):
                 if owned.exists():
-                    cleanup_state.retain_profile(owned,offline_client.retained_profile_pid(owned))
+                    cleanup_state.retain_profile(owned,offline_client.retained_profile_pid(owned),
+                        engine_log_marker_pending='engine_log_recovery_marker_failure' in manifest)
                 raise RuntimeError('Owned process control retained; preserve profile for shutdown retry')
+            if 'engine_log_copy_failure' in manifest:
+                pending = 'engine_log_recovery_marker_failure' in manifest
+                cleanup_state.retain_profile(owned, engine_log_marker_pending=pending)
+                if not pending:
+                    cleanup_state.remove_owned_profile(owned)
+                return
             if owned.exists():
                 cleanup_state.remove_owned_profile(owned)
             manifest['profile_removed']=True
@@ -153,10 +160,19 @@ def main(argv=None):
 
         if state['frames']:
             finish('capture_cleanup_failure',state['frames'].close)
+        # An unconfirmed client can write diagnostics during its shutdown retry.
+        finish('shutdown_retry_failure',lambda: offline_client.retry_cleanup_before_exit(preserve_profile=owned))
         finish('evidence_failure',lambda: (output/'client.log').write_text(profile.log_text(owned),encoding='utf8'))
+        # Shader and texture failures are written to the engine log, not the
+        # NWScript marker log. Preserve it before removing the isolated profile.
+        for engine_log in sorted((owned/'logs').glob('nwengineLog*.txt')):
+            finish('engine_log_copy_failure',lambda path=engine_log:
+                   profile.copy_input(path,output/path.name))
         if (owned/'isolation.json').exists():
             finish('isolation_copy_failure',lambda: profile.copy_input(owned/'isolation.json',output/'isolation.json'))
-        finish('shutdown_retry_failure',offline_client.retry_cleanup_before_exit)
+        if 'engine_log_copy_failure' in manifest or offline_client.has_retained_profile(owned):
+            manifest['retained_engine_log_profile'] = str(owned)
+            finish('engine_log_recovery_marker_failure',lambda: (owned / profile.ENGINE_LOG_RECOVERY).touch())
         finish('cleanup_failure',remove_profile)
         finish('isolation_refresh_failure',refresh_isolation)
         finish('manifest_failure',lambda: (output/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf8'))

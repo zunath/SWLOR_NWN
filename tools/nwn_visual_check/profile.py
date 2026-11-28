@@ -8,6 +8,7 @@ import tomllib
 import uuid
 
 MARKER = '.swlor-visual-profile.json'
+ENGINE_LOG_RECOVERY = '.preserve-engine-log'
 SETTINGS = """[sound.effects]
 volume=0.0
 [sound.music]
@@ -129,6 +130,27 @@ def copy_input(source, target):
 def log_text(profile):
     path = profile / 'logs/nwclientLog1.txt'
     return path.read_bytes().replace(b'\0', b'').decode('utf8', errors='replace') if path.exists() else ''
+
+
+def cleanup_engine_log_transients(profile):
+    """Keep failed-copy diagnostics and ownership; remove all staged inputs."""
+    profile = Path(profile)
+    validate_owned(profile)
+    for entry in profile.iterdir():
+        if entry.name in (MARKER, ENGINE_LOG_RECOVERY):
+            continue
+        if entry.name == 'logs' and entry.is_dir():
+            for log in entry.iterdir():
+                if log.is_file() and log.match('nwengineLog*.txt'):
+                    continue
+                if log.is_dir():
+                    shutil.rmtree(log)
+                else:
+                    log.unlink()
+        elif entry.is_dir():
+            shutil.rmtree(entry)
+        else:
+            entry.unlink()
 
 
 def cleanup(profile):

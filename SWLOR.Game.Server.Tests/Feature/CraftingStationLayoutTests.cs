@@ -286,8 +286,10 @@ public class CraftingStationLayoutTests
     // Plan-view intersection area of two triangles (Sutherland-Hodgman clip).
     private static float Overlap(Triangle first, Triangle second)
     {
-        var polygon = CounterClockwise(first);
-        var clip = CounterClockwise(second);
+        // Work relative to one vertex so area-sized products stay small at area coordinates in the hundreds.
+        var origin = Flat(first.A);
+        var polygon = CounterClockwise(first).Select(p => p - origin).ToList();
+        var clip = CounterClockwise(second).Select(p => p - origin).ToList();
         for (var i = 0; i < 3 && polygon.Count >= 3; i++)
         {
             var (a, b) = (clip[i], clip[(i + 1) % 3]);
@@ -307,10 +309,14 @@ public class CraftingStationLayoutTests
 
         if (polygon.Count < 3)
             return 0;
-        var area = 0f;
+        var area = 0d;
         for (var i = 0; i < polygon.Count; i++)
-            area += polygon[i].X * polygon[(i + 1) % polygon.Count].Y - polygon[(i + 1) % polygon.Count].X * polygon[i].Y;
-        return MathF.Abs(area) / 2;
+        {
+            var (p, q) = (polygon[i], polygon[(i + 1) % polygon.Count]);
+            area += (double)p.X * q.Y - (double)q.X * p.Y;
+        }
+
+        return (float)(Math.Abs(area) / 2);
     }
 
     private static List<Vector2> CounterClockwise(Triangle t)

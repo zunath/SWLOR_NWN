@@ -226,7 +226,8 @@ public class AppearanceEditorLayoutTests
         AssertSingleHandler(view, "click", nameof(AppearanceEditorViewModel.OnClickPreviewView));
 
         var column = PathTo(partial, preview).OfType<GuiColumn<AppearanceEditorViewModel>>().Last();
-        Width(column).Should().Be(AppearanceEditorDefinition.PreviewColumnWidth);
+        Width(column).Should().Be(partialName == AppearanceEditorViewModel.EditorArmorPartial
+            ? AppearanceEditorDefinition.PreviewColumnWidth - 12f : AppearanceEditorDefinition.PreviewColumnWidth);
         NaturalWidth(column).Should().BeLessThanOrEqualTo(AppearanceEditorDefinition.PreviewColumnWidth - 16f,
             "the picture and its buttons fit their column");
     }
@@ -536,34 +537,28 @@ public class AppearanceEditorLayoutTests
     public void EquipmentSwatchesBindRegionTintCustomAndSelected()
     {
         var armor = _partials[AppearanceEditorViewModel.EditorArmorPartial];
-        foreach (var channel in Channels)
+        foreach (var part in new[] { false, true })
         {
-            var texture = channel is AppearanceArmorColor.Metal1 or AppearanceArmorColor.Metal2
-                ? "gui_pal_armor01"
-                : "gui_pal_tattoo";
-
-            var global = Walk(armor).Single(widget => widget.Id == $"ae_base_swatch_{channel}");
-            AssertSwatch(armor, global, $"Global{channel}", texture);
-            AssertSingleHandler(global, "click", nameof(AppearanceEditorViewModel.OnClickBaseSwatch),
-                (typeof(AppearanceArmorColor), channel));
-
-            var part = Walk(armor).Single(widget => widget.Id == $"ae_part_swatch_{channel}");
-            AssertSwatch(armor, part, $"SelectedPart{channel}", texture);
-            part.Events.Keys.Should().BeEquivalentTo("click", "mousedown");
-            AssertHandler(part.Events["click"], nameof(AppearanceEditorViewModel.OnClickPartSwatch),
-                (typeof(AppearanceArmorColor), channel));
-            AssertHandler(part.Events["mousedown"], nameof(AppearanceEditorViewModel.OnMouseDownPartSwatch),
-                (typeof(AppearanceArmorColor), channel));
-            PathTo(armor, part).Should().Contain(ancestor =>
-                    ReadProperty<string>(ancestor, "IsVisibleBindName") == nameof(AppearanceEditorViewModel.IsPartColorsVisible),
-                "part colours only show while an armor part is selected");
+            var list = Walk(armor).Single(widget => widget.Id == (part ? "ae_part_color_swatches" : "ae_item_color_swatches"));
+            ReadProperty<string>(list, "RowCountBindName").Should().Be((part ? "PartSwatch" : "ItemSwatch") + "LeftLabel_RowCount");
+            ReadProperty<float>(list, "RowHeight").Should().Be(20f);
+            ReadProperty<NuiScrollbars>(list, "Scrollbars").Should().Be(NuiScrollbars.None);
+            var buttons = Walk(list).OfType<GuiButton<AppearanceEditorViewModel>>().ToArray();
+            buttons.Should().HaveCount(2, "three native list rows draw twelve swatches across two sections");
+            foreach (var column in new[] { 0, 1 })
+            {
+                var side = column == 0 ? "Left" : "Right";
+                var name = (part ? "PartSwatch" : "ItemSwatch") + side;
+                var button = buttons[column];
+                AssertEquipmentSwatch(button, name);
+                AssertHandler(button.Events["click"], nameof(AppearanceEditorViewModel.OnClickEquipmentColorSwatch),
+                    (typeof(bool), part), (typeof(int), column));
+                button.Events.Keys.Should().BeEquivalentTo(part ? new[] { "click", "mousedown" } : new[] { "click" });
+            }
+            if (part)
+                PathTo(armor, list).Should().Contain(widget => ReadProperty<string>(widget, "IsVisibleBindName") ==
+                    nameof(AppearanceEditorViewModel.IsPartColorsVisible));
         }
-
-        var swatches = Walk(armor).Where(widget => widget.Id?.Contains("_swatch_") == true).ToArray();
-        swatches.Should().HaveCount(12);
-        Walk(armor).Should().NotContain(widget => widget.Id != null && widget.Id.StartsWith("ae_color_") &&
-            widget.Id != "ae_color_palette", "the 120 per-target swatches were replaced by the selected-part row");
-        Walk(armor).Should().NotContain(widget => widget.Id == "ae_body_swatch_Skin");
     }
 
     [Test]
@@ -591,11 +586,12 @@ public class AppearanceEditorLayoutTests
         Walk(partial).Should().NotContain(widget => widget.Id == "ae_use_base",
             "right-clicking a part swatch already puts it back to the outfit colour");
         typeof(AppearanceEditorViewModel).GetMethod("OnClickUseBase").Should().BeNull();
-        foreach (var channel in Channels)
+        foreach (var column in new[] { 0, 1 })
         {
-            var part = Walk(partial).Single(widget => widget.Id == $"ae_part_swatch_{channel}");
-            AssertHandler(part.Events["mousedown"], nameof(AppearanceEditorViewModel.OnMouseDownPartSwatch),
-                (typeof(AppearanceArmorColor), channel));
+            var side = column == 0 ? "left" : "right";
+            var part = Walk(partial).Single(widget => widget.Id == $"ae_part_swatch_{side}");
+            AssertHandler(part.Events["mousedown"], nameof(AppearanceEditorViewModel.OnMouseDownEquipmentColorSwatch),
+                (typeof(int), column));
         }
     }
 
@@ -611,7 +607,7 @@ public class AppearanceEditorLayoutTests
         ReadProperty<string>(picker, "SelectedColorBindName").Should().Be(nameof(AppearanceEditorViewModel.SelectedTintColor));
         ReadProperty<string>(picker, "IsEnabledBindName").Should().Be(nameof(AppearanceEditorViewModel.IsCustomTintEditable));
         Width(picker).Should().Be(196f);
-        picker.DeclaredHeight.Should().Be(100f);
+        picker.DeclaredHeight.Should().Be(partialName == AppearanceEditorViewModel.EditorArmorPartial ? 96f : 100f);
         picker.Events.Keys.Should().BeEquivalentTo("mousedown", "mouseup");
         AssertHandler(picker.Events["mousedown"], nameof(AppearanceEditorViewModel.OnMouseDownTintPicker));
         AssertHandler(picker.Events["mouseup"], nameof(AppearanceEditorViewModel.OnMouseUpTintPicker));
@@ -1007,5 +1003,28 @@ public class AppearanceEditorLayoutTests
                 return (T)property.GetValue(target)!;
         }
         throw new InvalidOperationException($"Missing widget metadata {target.GetType().Name}.{name}");
+    }
+    private static void AssertEquipmentSwatch(IGuiWidget swatch, string name)
+    {
+        foreach (var (suffix, type) in new[]
+                 {
+                     ("Label", typeof(GuiBindingList<string>)), ("Texture", typeof(GuiBindingList<string>)),
+                     ("Tooltip", typeof(GuiBindingList<string>)), ("Region", typeof(GuiBindingList<GuiRectangle>)),
+                     ("Tint", typeof(GuiBindingList<GuiColor>)), ("Custom", typeof(GuiBindingList<bool>)),
+                     ("Selected", typeof(GuiBindingList<bool>))
+                 })
+            typeof(AppearanceEditorViewModel).GetProperty(name + suffix)!.PropertyType.Should().Be(type);
+        Width(swatch).Should().Be(94f);
+        swatch.DeclaredHeight.Should().Be(20f);
+        ReadProperty<string>(swatch, "TooltipBindName").Should().Be(name + "Tooltip");
+        ReadProperty<string>(swatch, "IsEncouragedBindName").Should().Be(name + "Selected");
+        var items = DrawItems(swatch).ToArray();
+        items.Should().HaveCount(4);
+        ReadProperty<string>(items[0], "TextBindName").Should().Be(name + "Label");
+        ReadProperty<string>(items[1], "ResrefBindName").Should().Be(name + "Texture");
+        ReadProperty<string>(items[1], "DrawTextureRegionBindName").Should().Be(name + "Region");
+        ReadProperty<string>(items[2], "ColorBindName").Should().Be(name + "Tint");
+        ReadProperty<string>(items[2], "IsEnabledBindName").Should().Be(name + "Custom");
+        ReadProperty<string>(items[3], "IsEnabledBindName").Should().Be(name + "Selected");
     }
 }

@@ -290,16 +290,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 foreach (var (channel, layer) in channels)
                 {
                     var regionName = "Global" + channel + "Region";
-                    var swatch = WidgetTree(panel).Single(widget => widget.Id == "ae_base_swatch_" + channel);
-                    ctx.Assert(swatch is GuiButton<AppearanceEditorViewModel>, $"{channel}: base swatch is a button.");
-                    ctx.Assert(swatch.Events.TryGetValue("click", out var click), $"{channel}: base swatch handles click.");
-                    ctx.AssertEqual(1, swatch.Events.Count, $"{channel}: base swatch needs only its click event");
-                    ctx.AssertEqual(nameof(AppearanceEditorViewModel.OnClickBaseSwatch), click.Method.Name,
-                        $"{channel}: base swatch routes to the base colour action");
-                    ctx.AssertEqual(1, click.Arguments.Count, $"{channel}: base swatch captures one dye channel");
-                    ctx.AssertEqual(channel, (AppearanceArmorColor)click.Arguments[0].Value, $"{channel}: captured dye channel");
-                    // Dispatch the action captured by the real definition's button.
-                    ((Action)click.Method.Invoke(editor, click.Arguments.Select(argument => argument.Value).ToArray()))();
+                    DispatchEquipmentSwatch(ctx, civilian, editor, panel, false, channel);
                     AssertActiveColorSwatch(ctx, editor, "Global" + channel + "Selected");
                     AssertTintInput(ctx, editor, TintMapPaletteColors.GetColor(layer, 35 + (int)channel),
                         $"{channel}: base swatch selection previews its own native dye");
@@ -323,7 +314,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         ctx.Assert(source.X == mirror.X && source.Y == mirror.Y && source.Width == mirror.Width &&
                             source.Height == mirror.Height, $"{part}/{channel}: the part swatch mirrors its target region.");
 
-                        editor.OnClickColorTarget(target, channel)();
+                        DispatchEquipmentSwatch(ctx, civilian, editor, panel, true, channel);
                         AssertActiveColorSwatch(ctx, editor, target.ToString() + channel + "Selected");
                         ctx.Assert((bool)editor.GetType().GetProperty($"SelectedPart{channel}Selected").GetValue(editor),
                             $"{part}/{channel}: the mirrored part swatch is highlighted.");
@@ -342,7 +333,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 InvokePrivate(editor, "ResetArmorColorToInheritance", AppearanceEditorViewModel.ColorTarget.Chest, AppearanceArmorColor.Cloth1);
                 AssertActiveColorSwatch(ctx, editor, "ChestCloth1Selected");
             });
-            ctx.SetResultDetail("Six base and six part swatch buttons serialized region, tint, custom, outline and code bindings; the definitions' captured base-swatch actions selected their native dyes, codes and palette outline. Selecting each of the 19 body-map slots mirrored its six target regions and codes into the part swatches, and all 19x6 native armor targets retained a picker, including Chest70. Seeded raw255/raw0/explicit0/explicit77 cases displayed inherited or explicit colors without armor writes. Headless coverage excludes mouse payload delivery and client rendering.");
+            ctx.SetResultDetail("Four paired-list button templates serialize label, texture, region, tint, custom and outline bindings. Their captured handlers receive synthesized native row indices for all six base channels and all19x6 part targets, preserving native previews and palette outlines, including Chest70. Seeded raw255/raw0/explicit0/explicit77 cases retain inherited or explicit colors without armor writes. Headless coverage excludes client mouse transport and rendering.");
         }
 
         [EngineTest("Appearance palette buttons apply only their selected native color channel", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
@@ -687,6 +678,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(editor.IsCustomTintEditable, "The drag fixture must expose the global armor RGB channel");
                 var stateName = TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Leather1);
                 var original = GetLocalInt(item, stateName);
+                var swatchesBefore = EquipmentSwatchValues(editor);
                 using var publications = new BindingPublications(editor);
                 for (byte i = 0; i < 120; i++)
                     ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(i, 170, 43), flushPicker: false);
@@ -697,7 +689,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(final.ToStoredValue(), GetLocalInt(item, stateName), "Release applies the last sample");
                 AssertTintInput(ctx, editor, final, "Released drag");
                 ctx.Assert(!publications.Contains(nameof(editor.SelectedTintColor)), "A deferred batch must not echo into the client picker");
-                ctx.Assert(publications.Count <= 6, "One global color edit must not republish all 120 swatches");
+                var publishedNames = publications.SnapshotWithoutGeometry().Keys.ToArray();
+                var pairedNames = publishedNames.Where(swatchesBefore.ContainsKey).ToArray();
+                var swatchesAfter = EquipmentSwatchValues(editor);
+                var changedNames = swatchesBefore.Keys.Where(name => !JToken.DeepEquals(swatchesBefore[name], swatchesAfter[name])).ToArray();
+                ctx.Assert(pairedNames.OrderBy(name => name, StringComparer.Ordinal).SequenceEqual(
+                        changedNames.OrderBy(name => name, StringComparer.Ordinal)),
+                    "Publish exactly the changed paired-list values: " + string.Join(", ", pairedNames));
+                ctx.Assert(pairedNames.Length <= 8 && pairedNames.All(name =>
+                        (name.StartsWith("ItemSwatchLeft", StringComparison.Ordinal) || name.StartsWith("PartSwatchLeft", StringComparison.Ordinal)) &&
+                        new[] { "Tint", "Custom", "Region", "Tooltip" }.Any(suffix => name.EndsWith(suffix, StringComparison.Ordinal))),
+                    "A Leather1 edit must not republish unchanged columns, labels, textures or selections");
+                ctx.Assert(publications.Count <= 6 + pairedNames.Length,
+                    "Paired-list guard passed (" + string.Join(", ", pairedNames) + "); remaining bindings exceed the original six-name budget: " +
+                    string.Join(", ", publishedNames.Except(pairedNames)));
                 publications.Clear();
                 InvokePrivate(editor, "FlushPendingPickerColor");
                 ctx.AssertEqual(0, publications.Count, "An older scheduled flush cannot replay the released color");
@@ -732,7 +737,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     civilian, replacement, TintMapLayerType.Leather2),
                     "A late picker callback cannot revert the replacement tint");
             });
-            ctx.SetResultDetail("120 samples coalesced into one exact RGB commit, at most six bindings, and no picker echo. Release/late flush, newer text input and target switches cannot replay stale colors. Incoming client events and timer advancement are synthesized.");
+            ctx.SetResultDetail("120 samples coalesced into one exact RGB commit, no picker echo, exactly the changed left-column list bindings, and at most six other bindings. Release/late flush, newer text input and target switches cannot replay stale colors. Incoming client events and timer advancement are synthesized.");
         }
 
         [EngineTest("Appearance editor persists exact RGB through native material transport and reopening", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
@@ -1198,21 +1203,68 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var objects = panel.Descendants().OfType<JObject>().ToArray();
             var swatches = objects.Where(node => node["id"]?.Value<string>()?.Contains("_swatch_", StringComparison.Ordinal) == true).ToArray();
-            ctx.AssertEqual(12, swatches.Length, $"{stage}: six base and six selected-part swatches");
+            ctx.AssertEqual(4, swatches.Length, $"{stage}: two base and two selected-part button templates");
             ctx.Assert(!objects.Any(node => node["id"]?.Value<string>()?.StartsWith("ae_color_", StringComparison.Ordinal) == true &&
                     node["id"].Value<string>() != "ae_color_palette"),
                 $"{stage}: the 120 per-target swatches were replaced by the selected-part row.");
-            foreach (var channel in new[]
+            foreach (var part in new[] { false, true })
             {
-                AppearanceArmorColor.Leather1, AppearanceArmorColor.Cloth1, AppearanceArmorColor.Metal1,
-                AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2, AppearanceArmorColor.Metal2
-            })
+                var list = objects.Single(node => node["id"]?.Value<string>() == (part ? "ae_part_color_swatches" : "ae_item_color_swatches"));
+                var prefix = part ? "PartSwatch" : "ItemSwatch";
+                ctx.AssertEqual(prefix + "LeftLabel_RowCount", list["row_count"]?["bind"]?.Value<string>(), $"{stage}: three paired rows use the label list count");
+                ctx.AssertEqual(20f, list["row_height"]?.Value<float>(), $"{stage}: paired row height");
+                foreach (var side in new[] { "Left", "Right" })
+                {
+                    var name = prefix + side;
+                    var swatch = swatches.Single(node => node["id"].Value<string>() ==
+                        (part ? "ae_part_swatch_" : "ae_base_swatch_") + side.ToLowerInvariant());
+                    ctx.AssertEqual("button", swatch["type"]?.Value<string>(), $"{stage}/{name}: template is a button");
+                    ctx.AssertEqual(name + "Selected", swatch["encouraged"]?["bind"]?.Value<string>(), $"{stage}/{name}: selected binding");
+                    ctx.AssertEqual(name + "Tooltip", swatch["tooltip"]?["bind"]?.Value<string>(), $"{stage}/{name}: tooltip binding");
+                    var drawings = swatch["draw_list"].Children<JObject>().ToArray();
+                    ctx.AssertEqual(4, drawings.Length, $"{stage}/{name}: label, palette crop, RGB fill and outline");
+                    ctx.AssertEqual((int)NuiDrawListItemType.Text, drawings[0]["type"].Value<int>(), $"{stage}/{name}: label drawing");
+                    ctx.AssertEqual(name + "Label", drawings[0]["text"]?["bind"]?.Value<string>(), $"{stage}/{name}: label binding");
+                    ctx.AssertEqual(name + "Texture", drawings[1]["image"]?["bind"]?.Value<string>(), $"{stage}/{name}: palette texture binding");
+                    ctx.AssertEqual(name + "Region", drawings[1]["image_region"]?["bind"]?.Value<string>(), $"{stage}/{name}: palette crop binding");
+                    ctx.AssertEqual(name + "Tint", drawings[2]["color"]?["bind"]?.Value<string>(), $"{stage}/{name}: RGB binding");
+                    ctx.AssertEqual(name + "Custom", drawings[2]["enabled"]?["bind"]?.Value<string>(), $"{stage}/{name}: custom visibility binding");
+                    ctx.AssertEqual(name + "Selected", drawings[3]["enabled"]?["bind"]?.Value<string>(), $"{stage}/{name}: outline binding");
+                }
+            }
+        }
+
+        private static void DispatchEquipmentSwatch(EngineTestContext ctx, uint player, AppearanceEditorViewModel editor,
+            IGuiWidget panel, bool part, AppearanceArmorColor channel)
+        {
+            var row = channel is AppearanceArmorColor.Cloth1 or AppearanceArmorColor.Cloth2 ? 0 :
+                channel is AppearanceArmorColor.Leather1 or AppearanceArmorColor.Leather2 ? 1 : 2;
+            var column = channel is AppearanceArmorColor.Cloth2 or AppearanceArmorColor.Leather2 or AppearanceArmorColor.Metal2 ? 1 : 0;
+            var swatch = WidgetTree(panel).Single(widget => widget.Id ==
+                (part ? "ae_part_swatch_" : "ae_base_swatch_") + (column == 0 ? "left" : "right"));
+            ctx.Assert(swatch is GuiButton<AppearanceEditorViewModel>, $"{channel}: template is a button");
+            ctx.Assert(swatch.Events.TryGetValue("click", out var click), $"{channel}: template handles click");
+            ctx.AssertEqual(part ? 2 : 1, swatch.Events.Count, $"{channel}: template event count");
+            ctx.AssertEqual(nameof(AppearanceEditorViewModel.OnClickEquipmentColorSwatch), click.Method.Name, $"{channel}: paired-list handler");
+            ctx.AssertEqual(2, click.Arguments.Count, $"{channel}: handler captures target and column");
+            ctx.AssertEqual(part, (bool)click.Arguments[0].Value, $"{channel}: captured part target");
+            ctx.AssertEqual(column, (int)click.Arguments[1].Value, $"{channel}: captured column");
+            var nativeEvent = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetModule().m_cCurrentNuiEvent;
+            var previous = (nativeEvent.m_player, nativeEvent.m_token, nativeEvent.m_event, nativeEvent.m_element, nativeEvent.m_array_index);
+            try
             {
-                var texture = channel is AppearanceArmorColor.Metal1 or AppearanceArmorColor.Metal2 ? "gui_pal_armor01" : "gui_pal_tattoo";
-                AssertSwatchJson(ctx, swatches.Single(node => node["id"].Value<string>() == "ae_base_swatch_" + channel),
-                    "Global" + channel, texture, stage);
-                AssertSwatchJson(ctx, swatches.Single(node => node["id"].Value<string>() == "ae_part_swatch_" + channel),
-                    "SelectedPart" + channel, texture, stage);
+                // Supply the synchronous handler's real native row context; no client mouse transport is simulated.
+                nativeEvent.m_player = player;
+                nativeEvent.m_token = 0;
+                nativeEvent.m_event = "click";
+                nativeEvent.m_element = swatch.Id;
+                nativeEvent.m_array_index = row;
+                ctx.AssertEqual(row, NuiGetEventArrayIndex(), $"{channel}: native array index");
+                ((Action)click.Method.Invoke(editor, click.Arguments.Select(argument => argument.Value).ToArray()))();
+            }
+            finally
+            {
+                (nativeEvent.m_player, nativeEvent.m_token, nativeEvent.m_event, nativeEvent.m_element, nativeEvent.m_array_index) = previous;
             }
         }
 
@@ -1320,6 +1372,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         private sealed record BindingPublication(int Sequence, JToken Value);
+
+        private static Dictionary<string, JToken> EquipmentSwatchValues(AppearanceEditorViewModel editor)
+        {
+            var converter = new GuiPropertyConverter();
+            return editor.GetType().GetProperties().Where(property =>
+                    property.Name.StartsWith("ItemSwatch", StringComparison.Ordinal) ||
+                    property.Name.StartsWith("PartSwatch", StringComparison.Ordinal))
+                .ToDictionary(property => property.Name,
+                    property => JToken.Parse(JsonDump(converter.ToJson(property.GetValue(editor)))));
+        }
 
         private sealed class BindingPublications : IDisposable
         {

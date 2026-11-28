@@ -88,6 +88,7 @@ namespace SWLOR.Game.Server.Feature
 
             foreach (var (source, replacement) in changes)
             {
+                if (MeleeWeaponCarry.AppliesTo(creature) && source is "walk_swordr" or "run_swordr") continue;
                 ReplaceObjectAnimation(creature, source, replacement);
             }
 
